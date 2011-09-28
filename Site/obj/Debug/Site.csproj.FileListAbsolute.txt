@@ -1,0 +1,16 @@
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Site.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Site.pdb
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Web.Optimization.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.Helpers.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.Mvc.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.Providers.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.Razor.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.Deployment.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.Razor.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\Site.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\Site.pdb
