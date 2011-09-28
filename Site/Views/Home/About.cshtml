@@ -8,6 +8,14 @@
 </hgroup>
 
 <article>
+<p>
+@*CS: @System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration(null).ConnectionStrings.ConnectionStrings["SQLSERVER_CONNECTION_STRING"]*@
+CS: @System.Configuration.ConfigurationManager.ConnectionStrings["SQLSERVER_CONNECTION_STRING"].ConnectionString
+<br>
+Env: @System.Configuration.ConfigurationManager.AppSettings["Environment"]
+
+
+</p>
     <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin luctus tincidunt justo nec tempor. 
         Aliquam erat volutpat. Fusce facilisis ullamcorper consequat. Vestibulum non sapien lectus. Nam 
