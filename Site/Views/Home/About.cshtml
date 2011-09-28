@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "About Us";
+﻿@using System.Configuration
+@{
+  ViewBag.Title = "About Us";
 }
 
 <hgroup class="title">
@@ -8,11 +9,11 @@
 </hgroup>
 
 <article>
+<h3>Testing</h3>
 <p>
-@*CS: @System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration(null).ConnectionStrings.ConnectionStrings["SQLSERVER_CONNECTION_STRING"]*@
-CS: @System.Configuration.ConfigurationManager.ConnectionStrings["SQLSERVER_CONNECTION_STRING"].ConnectionString
+Connection String: @ConfigurationManager.ConnectionStrings["SQLSERVER_CONNECTION_STRING"].ConnectionString
 <br>
-Env: @System.Configuration.ConfigurationManager.AppSettings["Environment"]
+Environment: @ConfigurationManager.AppSettings["Environment"]
 
 
 </p>
