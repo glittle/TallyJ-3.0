@@ -9,10 +9,20 @@
   <RecentFiles>
     <RecentFiles>
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:HomeController.cs" caret="0" fromTop="0" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="343" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Models/f:AccountModels.cs" caret="234" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:AccountController.cs" caret="1265" fromTop="11" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Account/f:LogOn.cshtml" caret="24" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="326" fromTop="15" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="416" fromTop="8" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.Release.config" caret="0" fromTop="0" />
     </RecentFiles>
     <RecentEdits>
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="345" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="3380" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="3380" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="403" fromTop="11" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="27" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="189" fromTop="11" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="326" fromTop="15" />
     </RecentEdits>
   </RecentFiles>
   <NAntValidationSettings>
