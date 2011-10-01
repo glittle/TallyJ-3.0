@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
-using Site.Code.UnityRelated;
+using TallyJ.Code.UnityRelated;
 
-namespace Site.Code.Resources
+namespace TallyJ.Code.Resources
 {
 	public class ViewResourcesCache : IViewResourcesCache
 	{

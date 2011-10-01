@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Site.Code.UnityRelated
+namespace TallyJ.Code.UnityRelated
 {
 	/// <summary>
 	/// Lifetime manager

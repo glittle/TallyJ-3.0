@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 
-namespace Site.EF
+namespace TallyJ.EF
 {
     #region Contexts
     

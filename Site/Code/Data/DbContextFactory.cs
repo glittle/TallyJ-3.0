@@ -1,8 +1,8 @@
 using System.Configuration;
 using System.Data.EntityClient;
-using Site.EF;
+using TallyJ.EF;
 
-namespace Site.Code.Data
+namespace TallyJ.Code.Data
 {
 	public class DbContextFactory : IDbContextFactory
 	{

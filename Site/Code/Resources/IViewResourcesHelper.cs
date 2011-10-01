@@ -1,7 +1,7 @@
 using System.Web;
 using System.Web.Mvc;
 
-namespace Site.Code.Resources
+namespace TallyJ.Code.Resources
 {
 	public interface IViewResourcesHelper
 	{

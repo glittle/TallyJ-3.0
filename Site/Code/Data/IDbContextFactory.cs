@@ -1,6 +1,6 @@
-using Site.EF;
+using TallyJ.EF;
 
-namespace Site.Code.Data
+namespace TallyJ.Code.Data
 {
 	public interface IDbContextFactory
 	{

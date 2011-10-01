@@ -1,6 +1,6 @@
 using System;
 
-namespace Site.Code.Resources
+namespace TallyJ.Code.Resources
 {
 	public class LinkedResourcesHelper : ILinkedResourcesHelper
 	{

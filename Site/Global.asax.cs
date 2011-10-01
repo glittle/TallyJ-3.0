@@ -3,8 +3,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
-using Site.Code;
-using Site.Code.UnityRelated;
+using TallyJ.Code;
+using TallyJ.Code.UnityRelated;
 using Unity.Mvc3;
 
 namespace Site

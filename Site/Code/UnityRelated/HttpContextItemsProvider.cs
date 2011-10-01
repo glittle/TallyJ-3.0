@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Web;
 
-namespace Site.Code.UnityRelated
+namespace TallyJ.Code.UnityRelated
 {
 	public class HttpContextItemsProvider : IContextItemsProvider
 	{

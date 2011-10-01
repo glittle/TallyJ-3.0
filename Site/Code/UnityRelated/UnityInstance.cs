@@ -2,7 +2,7 @@ using System;
 using Microsoft.Practices.Unity;
 using UnityContainerExtensions = Microsoft.Practices.Unity.Configuration.UnityContainerExtensions;
 
-namespace Site.Code.UnityRelated
+namespace TallyJ.Code.UnityRelated
 {
 	///<summary>Service locator for dependency injection .</summary>
 	public class UnityInstance

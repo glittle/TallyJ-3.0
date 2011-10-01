@@ -1,11 +1,11 @@
 using System.Web;
 using System.Web.Mvc;
-using Site.Code.Data;
-using Site.Code.Resources;
-using Site.Code.UnityRelated;
-using Site.EF;
+using TallyJ.Code.Data;
+using TallyJ.Code.Resources;
+using TallyJ.Code.UnityRelated;
+using TallyJ.EF;
 
-namespace Site.Code
+namespace TallyJ.Code
 {
 	public abstract class BaseView : BaseView<string>
 	{

@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Web;
 using Microsoft.Practices.Unity;
 
-namespace Site.Code.UnityRelated
+namespace TallyJ.Code.UnityRelated
 {
 	//public class WCFContextItemsProvider : IContextItemsProvider
 	//{

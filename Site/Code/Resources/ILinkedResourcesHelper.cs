@@ -1,4 +1,4 @@
-namespace Site.Code.Resources
+namespace TallyJ.Code.Resources
 {
 	public interface ILinkedResourcesHelper
 	{

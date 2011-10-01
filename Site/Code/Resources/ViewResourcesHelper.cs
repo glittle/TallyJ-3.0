@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Site.Code.UnityRelated;
+using TallyJ.Code.UnityRelated;
 
-namespace Site.Code.Resources
+namespace TallyJ.Code.Resources
 {
 	public class ViewResourcesHelper : IViewResourcesHelper
 	{

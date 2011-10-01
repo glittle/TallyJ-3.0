@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace Site.Code
+namespace TallyJ.Code
 {
 	public static class Extensions
 	{
