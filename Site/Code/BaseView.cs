@@ -7,7 +7,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Code
 {
-	public abstract class BaseView : BaseView<string>
+	public abstract class BaseView : BaseView<object>
 	{
 		// use string as the model??
 		// is there a better way to have two base classes?

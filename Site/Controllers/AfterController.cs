@@ -29,5 +29,10 @@ namespace TallyJ.Controllers
     	{
     		return View();
     	}
+
+    	public ActionResult Monitor()
+    	{
+    		return View();
+    	}
     }
 }

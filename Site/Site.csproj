@@ -292,6 +292,7 @@
     <Content Include="Views\After\Analyze.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\After\Presenter.cshtml" />
+    <Content Include="Views\After\Monitor.cshtml" />
     <None Include="Views\Home\Index.cshtml.css">
       <DependentUpon>Index.cshtml</DependentUpon>
     </None>

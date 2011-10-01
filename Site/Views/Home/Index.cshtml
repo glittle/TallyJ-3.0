@@ -1,4 +1,4 @@
-﻿@using TallyJ.Code
+﻿@model HomeViewModel
 @{
   ViewBag.Title = "Home Page";
   ViewBag.Message = "Modules for Bahá’í tellers";
@@ -11,6 +11,8 @@
       </hgroup>
       <p>Select from the modules below. To get started, setup your Election. To learn more,
         please read more in the @Html.ActionLink("Learning Center", "Learning"). </p>
+
+    @Model.ElectionList().Select(e=>"<div>{0}</div>".FilledWith(e.Title)).JoinedAsString().AsRawHtml()
     </div>
   </section>
 }
@@ -23,6 +25,9 @@
   </section>
   <section class="feature"><h3>@Html.ActionLink("Enter Ballots", "Index", "Ballots")</h3>
     <p>Type in the names found on ballots. </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Monitor", "Monitor", "After")</h3>
+    <p>Centrally monitor progress of tellers.</p>
   </section>
   <section class="feature"><h3>@Html.ActionLink("Analyze Results", "Analyze", "After")</h3>
     <p>Review results, checking for ties. </p>

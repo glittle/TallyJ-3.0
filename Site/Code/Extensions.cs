@@ -86,6 +86,14 @@ namespace TallyJ.Code
 		/// <summary>
 		///   For an enumeration of strings, join them.
 		/// </summary>
+		public static string JoinedAsString(this IEnumerable<string> list)
+		{
+			return JoinedAsString(list, string.Empty);
+		}
+
+		/// <summary>
+		///   For an enumeration of strings, join them.
+		/// </summary>
 		public static string JoinedAsString(this IEnumerable<string> list, string separator)
 		{
 			return list.JoinedAsString(separator, string.Empty, string.Empty);
