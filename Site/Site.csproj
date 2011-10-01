@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Code\BaseViewModel.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
     <Compile Include="Code\UnityRelated\HttpContextItemsProvider.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -19,7 +19,7 @@ namespace TallyJ.Code
 		IViewResourcesHelper _viewResourcesHelper;
 
 		/// <summary>Access to the database</summary>
-		public tallyj2dEntities DataContext
+		public tallyj2dEntities DbContext
 		{
 			get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
 		}
