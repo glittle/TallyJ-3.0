@@ -14,3 +14,13 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\Site.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\Site.pdb
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\log4net.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\log4net.xml
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Configuration.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Unity.Mvc3.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.pdb
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.xml
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.xml
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Configuration.xml

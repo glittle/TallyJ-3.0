@@ -10,8 +10,6 @@ namespace Site.Controllers
 	{
 		public ActionResult Index()
 		{
-			ViewBag.Message = "Modify this template to kick-start your ASP.NET MVC application.";
-
 			return View();
 		}
 
@@ -26,6 +24,11 @@ namespace Site.Controllers
 		{
 			ViewBag.Message = "Your quintessential contact page.";
 
+			return View();
+		}
+
+		public ActionResult Learning()
+		{
 			return View();
 		}
 	}

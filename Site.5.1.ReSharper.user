@@ -8,27 +8,55 @@
   </SettingsComponent>
   <RecentFiles>
     <RecentFiles>
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:HomeController.cs" caret="0" fromTop="0" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Models/f:AccountModels.cs" caret="234" fromTop="0" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Account/f:LogOn.cshtml" caret="24" fromTop="0" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="326" fromTop="15" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:AccountController.cs" caret="7078" fromTop="16" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.Debug.config" caret="1162" fromTop="10" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="267" fromTop="7" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Global.asax.cs" caret="1026" fromTop="3" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:Error.cshtml" caret="224" fromTop="9" />
       <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.Release.config" caret="781" fromTop="13" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="64" fromTop="2" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/f:_ViewStart.cshtml" caret="0" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:SetupController.cs" caret="305" fromTop="15" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Setup/f:Index.cshtml" caret="409" fromTop="10" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:_LogOnPartial.cshtml" caret="0" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:_Layout.cshtml" caret="499" fromTop="8" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="4892" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="4029" fromTop="23" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="390" fromTop="9" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:HomeController.cs" caret="622" fromTop="27" />
     </RecentFiles>
     <RecentEdits>
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="3381" fromTop="7" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="3381" fromTop="7" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="403" fromTop="11" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="27" fromTop="0" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="189" fromTop="11" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:About.cshtml" caret="326" fromTop="15" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="456" fromTop="9" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:Error.cshtml" caret="224" fromTop="9" />
-      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.Release.config" caret="811" fromTop="13" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="0" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:SetupController.cs" caret="323" fromTop="15" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Setup/f:Index.cshtml" caret="50" fromTop="1" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Setup/f:Index.cshtml" caret="3081" fromTop="2" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:_Layout.cshtml" caret="1450" fromTop="14" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Setup/f:Index.cshtml" caret="3081" fromTop="11" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Setup/f:Index.cshtml" caret="409" fromTop="10" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="749" fromTop="29" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="749" fromTop="35" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="0" fromTop="0" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="749" fromTop="13" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1571" fromTop="17" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1762" fromTop="26" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1212" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1009" fromTop="22" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1365" fromTop="8" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1520" fromTop="14" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="1669" fromTop="20" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="9410" fromTop="18" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="9408" fromTop="17" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="1436" fromTop="12" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Shared/f:_Layout.cshtml" caret="499" fromTop="8" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="10328" fromTop="9" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/f:Web.config" caret="4892" fromTop="7" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="3842" fromTop="17" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Content/f:Site.css" caret="4029" fromTop="23" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="749" fromTop="2" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:HomeController.cs" caret="278" fromTop="12" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Views/d:Home/f:Index.cshtml" caret="369" fromTop="9" />
+      <File id="A444CE75-8087-4828-BCE5-87A82752E0EC/d:Controllers/f:HomeController.cs" caret="622" fromTop="27" />
     </RecentEdits>
   </RecentFiles>
   <NAntValidationSettings>
@@ -42,4 +70,12 @@
     </NUnitInstallDir>
     <UseAddins>Never</UseAddins>
   </UnitTestRunnerNUnit>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="public" priority="1" />
+      <Item value="ActionResult" priority="0" />
+      <Item value="ActionResult`0" priority="0" />
+      <Item value="View`0" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
 </Configuration>

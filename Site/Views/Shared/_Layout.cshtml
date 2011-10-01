@@ -2,14 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>@ViewBag.Title - My ASP.NET MVC Application</title>
-        <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-        <link href="@Url.Content("~/Content/themes/base/jquery.ui.all.css")" rel="stylesheet" type="text/css" />
-        <script src="@Url.Content("~/Scripts/jquery-1.6.2.min.js")" type="text/javascript"></script>
-        <script src="@Url.Content("~/Scripts/jquery-ui-1.8.11.js")" type="text/javascript"></script>
-        <script src="@Url.Content("~/Scripts/modernizr-2.0.6-development-only.js")" type="text/javascript"></script>
-        <script src="@Url.Content("~/Scripts/AjaxLogin.js")" type="text/javascript"></script>
-        <meta name="viewport" content="width=device-width">
+        <title>@ViewBag.Title - TallyJ</title>
     </head>
     <body>
         <header>
@@ -24,6 +17,7 @@
                     <nav>
                         <ul id="menu">
                             <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Setup", "Index", "Setup")</li>
                             <li>@Html.ActionLink("About", "About", "Home")</li>
                             <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                         </ul>
