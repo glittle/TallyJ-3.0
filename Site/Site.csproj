@@ -189,12 +189,14 @@
     <Compile Include="EF\Vote.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Content Include="Images\favicon.ico" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />
     <Content Include="Images\LogoM.png" />
     <Content Include="Images\LogoS.png" />
     <Content Include="Images\LogoSideL.png" />
     <Content Include="Images\LogoSideM.png" />
+    <Content Include="Images\LogoSq.png" />
     <Content Include="JsTemplates\ElectionListItem.html" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
