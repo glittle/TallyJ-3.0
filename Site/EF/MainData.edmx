@@ -197,20 +197,20 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="tallyj2dModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="tallyj2dEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="C_Log" EntityType="tallyj2dModel.C_Log" />
-          <EntitySet Name="Ballots" EntityType="tallyj2dModel.Ballot" />
-          <EntitySet Name="Computers" EntityType="tallyj2dModel.Computer" />
-          <EntitySet Name="Elections" EntityType="tallyj2dModel.Election" />
-          <EntitySet Name="Messages" EntityType="tallyj2dModel.Message" />
-          <EntitySet Name="People" EntityType="tallyj2dModel.Person" />
-          <EntitySet Name="Reasons" EntityType="tallyj2dModel.Reason" />
-          <EntitySet Name="Results" EntityType="tallyj2dModel.Result" />
-          <EntitySet Name="ResultSummaries" EntityType="tallyj2dModel.ResultSummary" />
-          <EntitySet Name="Tellers" EntityType="tallyj2dModel.Teller" />
-          <EntitySet Name="Votes" EntityType="tallyj2dModel.Vote" />
-          <EntitySet Name="Locations" EntityType="tallyj2dModel.Location" />
+      <Schema Namespace="TallyJ2Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C_Log" EntityType="TallyJ2Model.C_Log" />
+          <EntitySet Name="Ballots" EntityType="TallyJ2Model.Ballot" />
+          <EntitySet Name="Computers" EntityType="TallyJ2Model.Computer" />
+          <EntitySet Name="Elections" EntityType="TallyJ2Model.Election" />
+          <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
+          <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
+          <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />
+          <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
+          <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
+          <EntitySet Name="Tellers" EntityType="TallyJ2Model.Teller" />
+          <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
+          <EntitySet Name="Locations" EntityType="TallyJ2Model.Location" />
         </EntityContainer>
         <EntityType Name="C_Log">
           <Key>
@@ -392,8 +392,8 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="tallyj2dModelStoreContainer" CdmEntityContainer="tallyj2dEntities">
-          <EntitySetMapping Name="C_Log"><EntityTypeMapping TypeName="tallyj2dModel.C_Log"><MappingFragment StoreEntitySet="_Log">
+        <EntityContainerMapping StorageEntityContainer="tallyj2dModelStoreContainer" CdmEntityContainer="TallyJ2Entities">
+          <EntitySetMapping Name="C_Log"><EntityTypeMapping TypeName="TallyJ2Model.C_Log"><MappingFragment StoreEntitySet="_Log">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="AsOf" ColumnName="AsOf" />
@@ -401,7 +401,7 @@
             <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
             <ScalarProperty Name="Details" ColumnName="Details" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Ballots"><EntityTypeMapping TypeName="tallyj2dModel.Ballot"><MappingFragment StoreEntitySet="Ballot">
+          <EntitySetMapping Name="Ballots"><EntityTypeMapping TypeName="TallyJ2Model.Ballot"><MappingFragment StoreEntitySet="Ballot">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
@@ -414,7 +414,7 @@
             <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Computers"><EntityTypeMapping TypeName="tallyj2dModel.Computer"><MappingFragment StoreEntitySet="Computer">
+          <EntitySetMapping Name="Computers"><EntityTypeMapping TypeName="TallyJ2Model.Computer"><MappingFragment StoreEntitySet="Computer">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
@@ -423,7 +423,7 @@
             <ScalarProperty Name="LastBallotNum" ColumnName="LastBallotNum" />
             <ScalarProperty Name="C_LastContact" ColumnName="_LastContact" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Elections"><EntityTypeMapping TypeName="tallyj2dModel.Election"><MappingFragment StoreEntitySet="Election">
+          <EntitySetMapping Name="Elections"><EntityTypeMapping TypeName="TallyJ2Model.Election"><MappingFragment StoreEntitySet="Election">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="Title" ColumnName="Title" />
@@ -441,7 +441,7 @@
             <ScalarProperty Name="ElectionPasscode" ColumnName="ElectionPasscode" />
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Messages"><EntityTypeMapping TypeName="tallyj2dModel.Message"><MappingFragment StoreEntitySet="Message">
+          <EntitySetMapping Name="Messages"><EntityTypeMapping TypeName="TallyJ2Model.Message"><MappingFragment StoreEntitySet="Message">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="Title" ColumnName="Title" />
@@ -449,7 +449,7 @@
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
             <ScalarProperty Name="AsOf" ColumnName="AsOf" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="People"><EntityTypeMapping TypeName="tallyj2dModel.Person"><MappingFragment StoreEntitySet="Person">
+          <EntitySetMapping Name="People"><EntityTypeMapping TypeName="TallyJ2Model.Person"><MappingFragment StoreEntitySet="Person">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
@@ -469,14 +469,14 @@
             <ScalarProperty Name="EnvNum" ColumnName="EnvNum" />
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Reasons"><EntityTypeMapping TypeName="tallyj2dModel.Reason"><MappingFragment StoreEntitySet="Reasons">
+          <EntitySetMapping Name="Reasons"><EntityTypeMapping TypeName="TallyJ2Model.Reason"><MappingFragment StoreEntitySet="Reasons">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ReasonGuid" ColumnName="ReasonGuid" />
             <ScalarProperty Name="ReasonGroup" ColumnName="ReasonGroup" />
             <ScalarProperty Name="ReasonDescription" ColumnName="ReasonDescription" />
             <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Results"><EntityTypeMapping TypeName="tallyj2dModel.Result"><MappingFragment StoreEntitySet="Result">
+          <EntitySetMapping Name="Results"><EntityTypeMapping TypeName="TallyJ2Model.Result"><MappingFragment StoreEntitySet="Result">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
@@ -491,7 +491,7 @@
             <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
             <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="ResultSummaries"><EntityTypeMapping TypeName="tallyj2dModel.ResultSummary"><MappingFragment StoreEntitySet="ResultSummary">
+          <EntitySetMapping Name="ResultSummaries"><EntityTypeMapping TypeName="TallyJ2Model.ResultSummary"><MappingFragment StoreEntitySet="ResultSummary">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="ResultType" ColumnName="ResultType" />
@@ -502,7 +502,7 @@
             <ScalarProperty Name="DroppedOffBallots" ColumnName="DroppedOffBallots" />
             <ScalarProperty Name="InPersonBallots" ColumnName="InPersonBallots" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Tellers"><EntityTypeMapping TypeName="tallyj2dModel.Teller"><MappingFragment StoreEntitySet="Teller">
+          <EntitySetMapping Name="Tellers"><EntityTypeMapping TypeName="TallyJ2Model.Teller"><MappingFragment StoreEntitySet="Teller">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
@@ -512,7 +512,7 @@
             <ScalarProperty Name="IsHeadTeller" ColumnName="IsHeadTeller" />
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="Votes"><EntityTypeMapping TypeName="tallyj2dModel.Vote"><MappingFragment StoreEntitySet="Vote">
+          <EntitySetMapping Name="Votes"><EntityTypeMapping TypeName="TallyJ2Model.Vote"><MappingFragment StoreEntitySet="Vote">
             <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
             <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
             <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
@@ -524,7 +524,7 @@
             <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
           <EntitySetMapping Name="Locations">
-            <EntityTypeMapping TypeName="tallyj2dModel.Location">
+            <EntityTypeMapping TypeName="TallyJ2Model.Location">
               <MappingFragment StoreEntitySet="Location">
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
                 <ScalarProperty Name="Long" ColumnName="Long" />
@@ -552,23 +552,24 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="MainData">
-        <EntityTypeShape EntityType="tallyj2dModel.C_Log" Width="1.5" PointX="0.75" PointY="0.75" Height="1.9210009765624996" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Ballot" Width="1.5" PointX="2.75" PointY="0.75" Height="2.7427376302083326" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Computer" Width="1.5" PointX="4.75" PointY="0.75" Height="2.0853483072916656" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Election" Width="1.5" PointX="0.75" PointY="4.75" Height="3.5644742838541656" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Message" Width="1.5" PointX="2.75" PointY="4.75" Height="1.9210009765624996" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Person" Width="1.5" PointX="4.75" PointY="3.75" Height="3.8931689453124996" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Reason" Width="1.5" PointX="6.75" PointY="0.75" Height="1.7566536458333317" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Result" Width="1.5" PointX="6.75" PointY="3.75" Height="3.0714322916666674" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.ResultSummary" Width="1.5" PointX="6.75" PointY="7.75" Height="2.4140429687499996" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Teller" Width="1.5" PointX="8.75" PointY="0.75" Height="2.2496956380208317" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Vote" Width="1.5" PointX="2.75" PointY="8.75" Height="2.4140429687500031" IsExpanded="true" />
-        <EntityTypeShape EntityType="tallyj2dModel.Location" Width="1.5" PointX="9.375" PointY="3.75" Height="2.0853483072916674" />
+        <EntityTypeShape EntityType="TallyJ2Model.C_Log" Width="1.5" PointX="0.75" PointY="0.75" Height="1.9210009765624996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Ballot" Width="1.5" PointX="2.75" PointY="0.75" Height="2.7427376302083326" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Computer" Width="1.5" PointX="4.75" PointY="0.75" Height="2.0853483072916656" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Election" Width="1.5" PointX="0.75" PointY="4.75" Height="3.5644742838541656" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Message" Width="1.5" PointX="2.75" PointY="4.75" Height="1.9210009765624996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Person" Width="1.5" PointX="4.75" PointY="3.75" Height="3.8931689453124996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Reason" Width="1.5" PointX="6.75" PointY="0.75" Height="1.7566536458333317" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Result" Width="1.5" PointX="6.75" PointY="3.75" Height="3.0714322916666674" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.ResultSummary" Width="1.5" PointX="6.75" PointY="7.75" Height="2.4140429687499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Teller" Width="1.5" PointX="8.75" PointY="0.75" Height="2.2496956380208317" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="2.75" PointY="8.75" Height="2.4140429687500031" IsExpanded="true" />
+        <EntityTypeShape EntityType="TallyJ2Model.Location" Width="1.5" PointX="9.375" PointY="3.75" Height="2.0853483072916674" />
       </Diagram>
     </Diagrams>
   </Designer>

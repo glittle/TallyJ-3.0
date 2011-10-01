@@ -1,7 +1,14 @@
-﻿@model HomeViewModel
+﻿@using System.Web.Script.Serialization
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model HomeViewModel
 @{
   ViewBag.Title = "Home Page";
   ViewBag.Message = "Modules for Bahá’í tellers";
+
+  ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElections.SerializedAsJson()));
+  TemplateLoader.RequireTemplates(TemplateLoader.File.ElectionListItem);
 }
 @section featured {
   <section class="featured">
@@ -11,8 +18,9 @@
       </hgroup>
       <p>Select from the modules below. To get started, setup your Election. To learn more,
         please read more in the @Html.ActionLink("Learning Center", "Learning"). </p>
-
-    @Model.ElectionList().Select(e=>"<div>{0}</div>".FilledWith(e.Title)).JoinedAsString().AsRawHtml()
+      <h3>Elections on file</h3>
+      <div id="ElectionList">
+      </div>
     </div>
   </section>
 }

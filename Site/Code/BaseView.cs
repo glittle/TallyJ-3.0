@@ -15,19 +15,30 @@ namespace TallyJ.Code
 
 	public abstract class BaseView<TModel> : WebViewPage<TModel>
 	{
-		tallyj2dEntities _db;
+		TallyJ2Entities _db;
 		IViewResourcesHelper _viewResourcesHelper;
 
 		/// <summary>Access to the database</summary>
-		public tallyj2dEntities DbContext
+		public TallyJ2Entities DbContext
 		{
-			get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+			get
+			{
+				return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext);
+			}
 		}
 
 		public IHtmlString AddResourceFilesForViews(string extension)
 		{
 			return _viewResourcesHelper.CreateTagsToReferenceClientResourceFiles(extension);
 		}
+
+
+		/// <summary>Return a client usable URL to the supplied URL.  If {0} is included, a modifier is inserted, either the production or debugging one.</summary>
+		public string ClientFile(string url, string productionNameModifier = "", string debuggingNameModifier = "")
+		{
+			return url.AsClientFileWithVersion(productionNameModifier, debuggingNameModifier);
+		}
+
 
 		protected override void InitializePage()
 		{

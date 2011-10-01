@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace TallyJ.Code
 {
@@ -110,6 +112,27 @@ namespace TallyJ.Code
 					 : string.Join(separator, list.Select(s => itemLeft + s + itemRight).ToArray());
 		}
 
+		public static string SurroundWith(this string input, string bothSides)
+		{
+			return SurroundWith(input, bothSides, bothSides);
+		}
+
+		public static string SurroundWith(this string input, string left, string right)
+		{
+			return left + input + right;
+		}
+
+		/// <summary>
+		///   Surround with left and right strings. If the input has no content, an empty string is returned.
+		/// </summary>
+		public static string SurroundContentWith(this string input, string left, string right)
+		{
+			if (input.HasNoContent())
+				return string.Empty;
+
+			return left + input + right;
+		}
+
 
 		/// <summary>Add new item to the end of the enumeration</summary>
 		public static IEnumerable<T> AddTo<T>(this IEnumerable<T> input, List<T> addToThis)
@@ -117,6 +140,88 @@ namespace TallyJ.Code
 			var list = input.ToList();
 			addToThis.AddRange(list);
 			return list;
+		}
+
+	   /// <summary>
+	   /// Get a named object from Session.
+	   /// </summary>
+	   /// <typeparam name="T">The type of the stored object</typeparam>
+	   /// <param name="input">Name in Session</param>
+	   /// <param name="defaultValue">Default value to use if nothing found</param>
+	   /// <returns></returns>
+		public static T FromSession<T>(this string input, T defaultValue = null) where T : class 
+		{
+			var value = HttpContext.Current.Session[input];
+			if (value == null || value.GetType() != typeof(T))
+			{
+				return defaultValue;
+			}
+			return (T)value;
+		}
+
+
+		/// <summary>
+		///   If input is empty, use <paramref name = "defaultValue" />
+		/// </summary>
+		public static string DefaultTo(this string input, string defaultValue)
+		{
+			return input.HasNoContent() ? defaultValue : input;
+		}
+
+		/// <summary>
+		///   If input is 0, use <paramref name = "defaultValue" />
+		/// </summary>
+		public static int DefaultTo(this int input, int defaultValue)
+		{
+			return input == 0 ? defaultValue : input;
+		}
+
+
+		public static string QuotedForJavascript(this string input)
+		{
+			return String.Format("\"{0}\"", input
+											  .CleanedForJavascriptStrings()
+											  .Replace("\"", "\\\"")
+			  );
+		}
+
+		public static string CleanedForJavascriptStrings(this string input)
+		{
+			if (input.HasNoContent())
+				return string.Empty;
+			return input
+			  .Replace(@"\", @"\\")
+			  .Replace("\n", "\\n")
+			  .Replace("\r", string.Empty);
+		}
+
+
+		/// <summary>
+		/// Converts this object to a JSON string
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public static string SerializedAsJson(this object input)
+		{
+			return new JavaScriptSerializer().Serialize(input);
+		}
+
+
+		/// <summary>
+		/// Wrap object for returning to client as a JsonResult
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="behavior">Behavior to use, usually only POST is allowed.</param>
+		/// <returns></returns>
+		public static JsonResult AsJsonResult(this object input, JsonRequestBehavior behavior = JsonRequestBehavior.DenyGet)
+		{
+			var jsonResult = new JsonResult
+			{
+				ContentType = "text/plain", // allow client full control over reading response (don't send as JSON type)
+				Data = input,
+				JsonRequestBehavior = behavior
+			};
+			return jsonResult;
 		}
 	}
 }

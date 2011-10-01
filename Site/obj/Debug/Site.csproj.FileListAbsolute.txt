@@ -1,7 +1,6 @@
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.pdb
-C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\log4net.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Configuration.dll
@@ -15,7 +14,6 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.Deployme
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\System.Web.WebPages.Razor.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Unity.Mvc3.dll
-C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\log4net.xml
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.pdb
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.ServiceLocation.xml
@@ -24,3 +22,5 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Co
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.pdb
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml

@@ -6,9 +6,9 @@ namespace TallyJ.Code.Data
 {
 	public class DbContextFactory : IDbContextFactory
 	{
-		private tallyj2dEntities _db;
+		private TallyJ2Entities _db;
 
-		public tallyj2dEntities DbContext
+		public TallyJ2Entities DbContext
 		{
 			get
 			{
@@ -17,7 +17,7 @@ namespace TallyJ.Code.Data
 
 				var cnString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 				var final = new EntityConnection("metadata=res://*;provider=System.Data.SqlClient;provider connection string='" + cnString + "'");
-				return _db = new tallyj2dEntities(final);
+				return _db = new TallyJ2Entities(final.ConnectionString);
 			}
 		}
 	}

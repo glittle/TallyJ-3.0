@@ -1,49 +1,55 @@
-﻿<!DOCTYPE html>
+﻿@using TallyJ.Code.Session
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        @RenderPage("Headers.cshtml")
-        <title>@ViewBag.Title - TallyJ</title>
-    </head>
-    <body>
-        <header>
-            <div class="content-wrapper">
-                <div class="float-left">
-                    <p class="site-title">@Html.ActionLink("your logo here.", "Index", "Home")</p>
-                </div>
-                <div class="float-right">
-                    <section id="login">
-                        @Html.Partial("_LogOnPartial")
-                    </section>
-                    <nav>
-                        <ul id="menu">
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("Setup", "Index", "Setup")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </header>
-        <div id="body">
-            @RenderSection("featured", false)
-            <section class="content-wrapper main-content clear-fix">
-                @RenderBody()
-            </section>
-        </div>
-        <footer>
-            <div class="content-wrapper">
-                <div class="float-left">
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Application</p>
-                </div>
-                <div class="float-right">
-                    <ul id="social">
-                        <li><a href="http://facebook.com" class="facebook">Facebook</a></li>
-                        <li><a href="http://twitter.com" class="twitter">Twitter</a></li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
-    </body>
+<head>
+  <meta charset="utf-8" />
+  @RenderPage("Headers.cshtml")
+  <title>@ViewBag.Title - TallyJ</title>
+  <link rel="shortcut icon" href="./Images/favicon.ico" >
+</head>
+<body>
+  <header>
+    <div class="content-wrapper">
+      <div class="float-left">
+        <p class="site-title"></p>
+      </div>
+      <div class="float-right">
+        <section id="login">
+          @Html.Partial("_LogOnPartial")
+        </section>
+        <nav><ul id="menu">
+          <li>@Html.ActionLink("Home", "Index", "Home")</li>
+          <li>@Html.ActionLink("About", "About", "Home")</li>
+          <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+        </ul>
+        </nav>
+        <section>
+          <div class="CurrentElectionTitle">@UserSession.CurrentElectionTitle</div>
+        </section>
+      </div>
+    </div>
+  </header>
+  <div id="body">
+    @RenderSection("featured", false)
+    <section class="content-wrapper main-content clear-fix">
+      @RenderBody()
+    </section>
+  </div>
+  <footer>
+    <div class="content-wrapper">
+      <div class="float-left">
+        <p>&copy; @DateTime.Now.Year - TallyJ</p>
+      </div>
+      <div class="float-right">
+        <ul id="social">
+          <li><a target="facebook" href="http://www.facebook.com/TallyJ.Support" class="facebook"
+            title="Go to the TallyJ Support page">Facebook</a></li>
+          <li><a target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+            title="View news from #TallyJ_Bahai">Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  @ContextItems.GetJavascriptForPage()
+</body>
 </html>

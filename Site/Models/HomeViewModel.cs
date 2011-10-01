@@ -1,16 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TallyJ.Code;
 using TallyJ.EF;
-using System.Linq;
 
 namespace TallyJ.Models
 {
 	public class HomeViewModel : BaseViewModel
 	{
-		public IEnumerable<Election> ElectionList()
+		public IEnumerable<Election> MyElections
 		{
-			return DbContext.Elections.ToList();
+			get { return DbContext.Elections.ToList(); }
 		}
 	}
 }

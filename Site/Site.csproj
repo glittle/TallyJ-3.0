@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
@@ -111,9 +111,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Code\BaseController.cs" />
     <Compile Include="Code\BaseViewModel.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
+    <Compile Include="Code\Resources\TemplateLoader.cs" />
+    <Compile Include="Code\Session\CurrentContext.cs" />
+    <Compile Include="Code\Session\ContextItems.cs" />
+    <Compile Include="Code\Session\ItemKey.cs" />
+    <Compile Include="Code\Session\SiteInfo.cs" />
+    <Compile Include="Code\Session\SessionKey.cs" />
+    <Compile Include="Code\Session\UserSession.cs" />
     <Compile Include="Code\UnityRelated\HttpContextItemsProvider.cs" />
     <Compile Include="Code\UnityRelated\IContextItemsProvider.cs" />
     <Compile Include="Code\Resources\ILinkedResourcesHelper.cs" />
@@ -130,7 +138,57 @@
     <Compile Include="Controllers\BallotsController.cs" />
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
+    <Compile Include="Controllers\ElectionsController.cs" />
+    <Compile Include="Models\ElectionsModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="EF\Ballot.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Computer.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\C_Log.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\DbContextGenerator.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbContextGenerator.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\DbContextGenerator.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Election.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Location.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Message.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Person.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Reason.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Result.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ResultSummary.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\TallyJ2Entities.cs" />
+    <Compile Include="EF\Teller.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Vote.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Content Include="JsTemplates\ElectionListItem.html" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">
@@ -273,7 +331,7 @@
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Setup\Index.cshtml" />
+    <Content Include="Views\Setup\xIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Before\FrontDesk.cshtml" />
@@ -293,12 +351,24 @@
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\After\Presenter.cshtml" />
     <Content Include="Views\After\Monitor.cshtml" />
+    <None Include="EF\DbContextGenerator.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbContextGenerator.Context.cs</LastGenOutput>
+    </None>
+    <None Include="EF\DbContextGenerator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbContextGenerator.cs</LastGenOutput>
+    </None>
     <None Include="Views\Home\Index.cshtml.css">
       <DependentUpon>Index.cshtml</DependentUpon>
     </None>
     <None Include="Views\Home\Index.cshtml.js">
       <DependentUpon>Index.cshtml</DependentUpon>
     </None>
+    <Content Include="Views\Setup\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

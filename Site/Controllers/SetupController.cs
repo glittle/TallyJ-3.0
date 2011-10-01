@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Web.Mvc;
+using TallyJ.Code;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 
 namespace TallyJ.Controllers
 {
-    public class SetupController : Controller
-    {
-        //
-        // GET: /Setup/
+	public class SetupController : BaseController
+	{
+		//
+		// GET: /Setup/
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-    }
+		public ActionResult Index()
+		{
+			var election = DbContext.Elections.FirstOrDefault();
+			return View(election);
+		}
+	}
 }
