@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
-namespace Site.Controllers
+namespace TallyJ.Controllers
 {
-    public class BeforeController : Controller
-    {
-        //
-        // GET: /Setup/
+	public class BeforeController : Controller
+	{
+		//
+		// GET: /Setup/
 
-        public ActionResult Index()
-        {
-            return View();
-        }
+		public ActionResult Index()
+		{
+			return View();
+		}
 
-        public ActionResult FrontDesk()
-        {
-            return View();
-        }
-
-    }
+		public ActionResult FrontDesk()
+		{
+			return View();
+		}
+	}
 }

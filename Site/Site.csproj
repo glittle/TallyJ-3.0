@@ -126,6 +126,7 @@
     <Compile Include="Code\UnityRelated\ContextLifetimeManager.cs" />
     <Compile Include="Code\Data\IDbContextFactory.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BallotsController.cs" />
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -217,6 +218,7 @@
     <Content Include="Scripts\knockout-1.3.0beta.debug.js" />
     <Content Include="Scripts\knockout-1.3.0beta.js" />
     <Content Include="Scripts\modernizr-2.0.6-development-only.js" />
+    <Content Include="Scripts\site.js" />
     <Content Include="Unity.Mvc3.README.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -252,7 +254,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\Learning.cshtml" />
@@ -282,6 +286,10 @@
     <Content Include="Views\Shared\Headers.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\Ballots\Index.cshtml" />
+    <Content Include="Views\After\Analyze.cshtml" />
+    <Content Include="Views\After\Reports.cshtml" />
+    <Content Include="Views\After\Presenter.cshtml" />
     <None Include="Views\Home\Index.cshtml.css">
       <DependentUpon>Index.cshtml</DependentUpon>
     </None>

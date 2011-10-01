@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Site.Controllers
+namespace TallyJ.Controllers
 {
 	public class HomeController : Controller
 	{

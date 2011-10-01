@@ -2,7 +2,7 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Unity.Mvc3;
 
-namespace Site
+namespace TallyJ
 {
     public static class Bootstrapper
     {

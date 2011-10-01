@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Web.Mvc;
 using System.Web.Security;
 
-namespace Site.Models
+namespace TallyJ.Models
 {
 
 	public class ChangePasswordModel

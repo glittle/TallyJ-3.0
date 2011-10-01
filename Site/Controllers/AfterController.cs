@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Site.Controllers
+namespace TallyJ.Controllers
 {
     public class AfterController : Controller
     {
@@ -15,6 +15,19 @@ namespace Site.Controllers
         {
             return View();
         }
+		public ActionResult Analyze()
+		{
+			return View();
+		}
 
+    	public ActionResult Reports()
+    	{
+    		return View();
+    	}
+
+    	public ActionResult Presenter()
+    	{
+    		return View();
+    	}
     }
 }

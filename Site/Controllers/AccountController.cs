@@ -4,9 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using Site.Models;
+using TallyJ.Models;
 
-namespace Site.Controllers
+namespace TallyJ.Controllers
 {
 
 	[Authorize]
