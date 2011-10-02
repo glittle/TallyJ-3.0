@@ -590,3 +590,15 @@ a.twitter
   color: #8dc63e;
   font-weight: bold;
 }
+
+.Heartbeat {
+  color: #8dc63e;
+  float: right;
+  font-weight: bold;
+  padding: 0 0 0 10px;
+}
+.Heartbeat.Frozen {
+  padding: 0 10px 0 10px;
+  color: red;
+  background-color: #ffcccc;
+}

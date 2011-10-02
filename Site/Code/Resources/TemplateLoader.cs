@@ -14,7 +14,8 @@ namespace TallyJ.Code.Resources
 		public enum File
 		{
 			// This enum is manually created and maintained. Add a new item when needed.
-			ElectionListItem
+			ElectionListItem,
+			ElectionEditScreen,
 		}
 
 		#endregion

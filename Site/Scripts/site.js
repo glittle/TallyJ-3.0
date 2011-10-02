@@ -4,7 +4,15 @@
 var site = {
     onload: [],
     languageCode: 'EN',
-    templates: {}
+    computerCode: '',
+    computerName: '',
+    teller1: '',
+    teller2: '',
+    templates: {},
+    computerActive: true,
+    infoForHeartbeat: {},
+    heartbeatTime: 15 * 1000,
+    heartbeatInterval: null    
 };
 var MyResources = {};
 
@@ -16,7 +24,10 @@ function Onload() {
     if (site.onload.length !== 0) {
         eval(site.onload.join(';'));
     }
-  PrepareStatusDisplay();
+    PrepareStatusDisplay();
+
+    ProcessHeartbeat({ Active: true });
+    site.heartbeatInterval = setInterval(SendHeartbeat, site.heartbeatTime);
 }
 
 /// Called after AJAX server calls
@@ -54,6 +65,26 @@ function LogMessage(msg) {
 
 function GetResource(resourceKey) {
     return MyResources[resourceKey];
+}
+
+function SendHeartbeat() {
+    var form = {
+        computer: site.computerCode
+    };
+    // add other info if needed
+    form.teller1 = 2345; //TEMP
+    
+    CallAjaxHandler(GetRootUrl() + '/Home/Heartbeat', form, ProcessHeartbeat);
+}
+
+function ProcessHeartbeat(info){
+    site.computerActive = info.Active;
+    if (info.Active) {
+        $('.Heartbeat').removeClass('Frozen').text('Active').effect('highlight', 'slow');
+    }
+    else {
+        $('.Heartbeat').addClass('Frozen').text('Stopped');
+    }
 }
 
 // function ShowQaPanel(url) {

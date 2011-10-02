@@ -22,5 +22,3 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Co
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.pdb
-C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
-C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml

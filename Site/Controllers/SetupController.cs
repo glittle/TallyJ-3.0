@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using TallyJ.Code;
 using System.Linq;
+using TallyJ.Code.Session;
 
 namespace TallyJ.Controllers
 {
@@ -11,8 +12,12 @@ namespace TallyJ.Controllers
 
 		public ActionResult Index()
 		{
-			var election = DbContext.Elections.FirstOrDefault();
-			return View(election);
+		  ContextItems.AddJavascriptForPage("setupIndexInfo", "setupIndexPage.info={0};".FilledWith(
+		    new
+		      {
+		        Election = UserSession.CurrentElection
+		      }.SerializedAsJson()));
+			return View();
 		}
 	}
 }

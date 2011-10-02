@@ -140,6 +140,9 @@
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
+    <Compile Include="EF\Election.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ElectionsModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="EF\Ballot.cs">
@@ -159,9 +162,6 @@
     <Compile Include="EF\DbContextGenerator.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Election.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Location.cs">
@@ -197,7 +197,7 @@
     <Content Include="Images\LogoSideL.png" />
     <Content Include="Images\LogoSideM.png" />
     <Content Include="Images\LogoSq.png" />
-    <Content Include="JsTemplates\ElectionListItem.html" />
+    <Content Include="JsTemplates\ElectionEditScreen.html" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">
@@ -270,6 +270,9 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
+    <Content Include="JsTemplates\ElectionListItem.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
@@ -287,6 +290,12 @@
     <Content Include="Scripts\modernizr-2.0.6-development-only.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Unity.Mvc3.README.txt" />
+    <Content Include="Views\Setup\Index.cshtml.css">
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Index.cshtml.js">
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -336,9 +345,6 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MainData.Designer.cs</LastGenOutput>
     </EntityDeploy>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Setup\xIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Before\FrontDesk.cshtml" />

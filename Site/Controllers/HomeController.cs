@@ -35,5 +35,13 @@ namespace TallyJ.Controllers
 			return View();
 		}
 
+		public JsonResult Heartbeat(string computerCode, string teller1, string teller2)
+		{
+			var active = new Random().NextDouble() > 0.7;
+			return new
+			       	{
+			       		Active = active,
+			       	}.AsJsonResult();
+		}
 	}
 }

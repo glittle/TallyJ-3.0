@@ -1,3 +1,11 @@
-﻿@using TallyJ.EF
-@model Election
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+	ViewBag.Title = "Election Setup";
+	ViewBag.Message = "Who, What, When and Where!";
 
+	ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWith(@Url.Action("Index").QuotedForJavascript()));
+	TemplateLoader.RequireTemplates(TemplateLoader.File.ElectionEditScreen);
+}
+<div id="editArea">
+</div>

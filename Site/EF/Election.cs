@@ -16,13 +16,15 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public string Title { get; set; }
-        public string ConvenorOrAssembly { get; set; }
-        public string ElectoralUnitName { get; set; }
+        public string Name { get; set; }
+        public string Convenor { get; set; }
         public Nullable<System.DateTime> DateOfElection { get; set; }
         public string ElectionType { get; set; }
+        public string ElectionMode { get; set; }
         public Nullable<int> NumberToElect { get; set; }
-        public Nullable<int> NumberNextHighest { get; set; }
+        public Nullable<int> NumberExtra { get; set; }
+        public string CanVote { get; set; }
+        public string CanReceive { get; set; }
         public Nullable<int> LastEnvNum { get; set; }
         public Nullable<bool> ApprovedForReporting { get; set; }
         public Nullable<System.Guid> LinkedElectionGuid { get; set; }

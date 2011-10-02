@@ -28,7 +28,6 @@ namespace TallyJ.EF
         public DbSet<C_Log> C_Log { get; set; }
         public DbSet<Ballot> Ballots { get; set; }
         public DbSet<Computer> Computers { get; set; }
-        public DbSet<Election> Elections { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Person> People { get; set; }
         public DbSet<Reason> Reasons { get; set; }
@@ -37,5 +36,6 @@ namespace TallyJ.EF
         public DbSet<Teller> Tellers { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Election> Elections { get; set; }
     }
 }
