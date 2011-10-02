@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.Code.Resources
@@ -43,9 +45,8 @@ namespace TallyJ.Code.Resources
 
 			// make a local copy, so we can clear the ones we've done
 			var list = _list.ToList();
-			//_list.Clear();
-			// --> is an included View creates tags, other ones will be re-injected too... should find way to stop this
-			//     however, browsers are forgiving, and only call for the resource once!
+
+		  ContextItems.AddJavascriptForPage(new Random().Next(1, 555).ToString(), "// " + list.JoinedAsString(", "));
 
 			var alreadySent = HttpContext.Current.Items["ClientFilesSent"] as List<string>;
 			if (alreadySent == null)
