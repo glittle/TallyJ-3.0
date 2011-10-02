@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.Code.Resources
@@ -26,8 +28,11 @@ namespace TallyJ.Code.Resources
 			if (!_dict.ContainsKey(rawPath))
 			{
 				// learn about this possible file
-				_dict.Add(rawPath, File.Exists(rawPath));
-			}
+			  var exists = File.Exists(rawPath);
+			  _dict.Add(rawPath, exists);
+      
+        ContextItems.AddJavascriptForPage(rawPath, "// {0} {1}".FilledWith(exists, rawPath));
+      }
 
 			if (!_dict[rawPath])
 			{
