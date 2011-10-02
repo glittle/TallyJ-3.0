@@ -51,6 +51,8 @@ var SetupIndexPage = function () {
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
+    //TODO: move this logic to server code, access by ajax call
+
     var num = 0;
     var extra = 0;
     var canVote = '';
@@ -126,6 +128,10 @@ var SetupIndexPage = function () {
         ui.canVoteLocked = true;
 
         $('#modeB').attr('disabled', 'disabled');
+        if (mode == 'B') {
+          $('#ddlMode').val('N');
+          mode = 'N';
+        }
 
         switch (mode) {
           case 'N':
@@ -148,9 +154,6 @@ var SetupIndexPage = function () {
             canRecieve = 'N';
             break;
 
-          case 'B':
-            throw 'invalid';
-            break;
           default:
         }
         ui.canRecieveLocked = true;

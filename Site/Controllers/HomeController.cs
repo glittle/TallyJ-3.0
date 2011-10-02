@@ -41,6 +41,7 @@ namespace TallyJ.Controllers
 			return new
 			       	{
 			       		Active = active,
+                VersionNum = new Random().Next(1, 100)
 			       	}.AsJsonResult();
 		}
 	}
