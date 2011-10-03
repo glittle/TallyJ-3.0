@@ -7,7 +7,7 @@ namespace TallyJ.Controllers
 		//
 		public ActionResult Index()
 		{
-			return View();
+			return View("Before");
 		}
 
 		public ActionResult FrontDesk()

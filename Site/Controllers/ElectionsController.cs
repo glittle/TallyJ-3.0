@@ -18,7 +18,7 @@ namespace TallyJ.Controllers
 			var model = new ElectionsModel();
 			if (model.Select(guid))
 			{
-				return UserSession.CurrentElectionTitle.AsJsonResult();
+				return UserSession.CurrentElection.AsJsonResult();
 			}
 			return false.AsJsonResult();
 		}

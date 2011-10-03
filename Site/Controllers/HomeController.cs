@@ -13,7 +13,7 @@ namespace TallyJ.Controllers
 		public ActionResult Index()
 		{
 
-			return View(new HomeViewModel());
+			return View("Home", new HomeViewModel());
 		}
 
 		public ActionResult About()

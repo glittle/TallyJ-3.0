@@ -46,7 +46,7 @@ namespace TallyJ.Code.Resources
 			// make a local copy, so we can clear the ones we've done
 			var list = _list.ToList();
 
-		  ContextItems.AddJavascriptForPage(new Random().Next(1, 555).ToString(), "// " + list.JoinedAsString(", "));
+		  //Debug: ContextItems.AddJavascriptForPage(new Random().Next(1, 555).ToString(), "// " + list.JoinedAsString(", "));
 
 			var alreadySent = HttpContext.Current.Items["ClientFilesSent"] as List<string>;
 			if (alreadySent == null)

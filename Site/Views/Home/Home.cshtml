@@ -1,0 +1,52 @@
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model HomeViewModel
+@{
+  ViewBag.Title = "Home Page";
+  ViewBag.Message = "Modules for Bahá’í tellers";
+
+  ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElections.SerializedAsJson()));
+  TemplateLoader.RequireTemplates(TemplateLoader.File.ElectionListItem);
+}
+@section featured {
+  <section class="featured">
+    <div class="content-wrapper">
+      <hgroup class="title"><h1>@ViewBag.Title.</h1>
+        <h2>@ViewBag.Message</h2>
+      </hgroup>
+      <p>Select from the modules below. To get started, setup your Election. To learn more,
+        please read more in the @Html.ActionLink("Reference Materials", "Learning"). </p>
+
+      <h3>Elections on file: (@Model.MyElections.Count())</h3>
+      <div id="ElectionList">
+      </div>
+    </div>
+  </section>
+}
+<section class="features"><section class="feature"><h3>@Html.ActionLink("Election Setup", "Index", "Setup")</h3>
+                            <p>Create a new election. Import/edit people's names. </p>
+                          </section>
+  <section class="feature"><h3>@Html.ActionLink("Front Desk", "FrontDesk", "Before")</h3>
+    <p>Welcome voters to the election venue. Record who is participating in the election.
+    </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Enter Ballots", "Index", "Ballots")</h3>
+    <p>Type in the names found on ballots. </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Monitor", "Monitor", "After")</h3>
+    <p>Centrally monitor progress of tellers.</p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Analyze Results", "Analyze", "After")</h3>
+    <p>Review results, checking for ties. </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Generate Reports", "Reports", "After")</h3>
+    <p>Generate Election Reports </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Present Results", "Presenter", "After")</h3>
+    <p>Display results of the election. </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Reference Materials", "Learning")</h3>
+    <p>Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
+  </section>
+</section>

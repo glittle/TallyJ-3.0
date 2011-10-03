@@ -296,11 +296,11 @@
     <Content Include="Views\Home\About.cshtml.js">
       <DependentUpon>About.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\Index.cshtml.css">
-      <DependentUpon>Index.cshtml</DependentUpon>
+    <Content Include="Views\Setup\Setup.cshtml.css">
+      <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\Index.cshtml.js">
-      <DependentUpon>Index.cshtml</DependentUpon>
+    <Content Include="Views\Setup\Setup.cshtml.js">
+      <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -332,7 +332,7 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Home.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -356,16 +356,16 @@
     <Content Include="Views\Before\FrontDesk.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Before\Index.cshtml" />
+    <Content Include="Views\Before\Before.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\After\Index.cshtml" />
+    <Content Include="Views\After\After.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\Headers.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Ballots\Index.cshtml" />
+    <Content Include="Views\Ballots\Ballots.cshtml" />
     <Content Include="Views\After\Analyze.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\After\Presenter.cshtml" />
@@ -378,13 +378,13 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DbContextGenerator.cs</LastGenOutput>
     </None>
-    <Content Include="Views\Home\Index.cshtml.css">
-      <DependentUpon>Index.cshtml</DependentUpon>
+    <Content Include="Views\Home\Home.cshtml.css">
+      <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Home\Index.cshtml.js">
-      <DependentUpon>Index.cshtml</DependentUpon>
+    <Content Include="Views\Home\Home.cshtml.js">
+      <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\Index.cshtml" />
+    <Content Include="Views\Setup\Setup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

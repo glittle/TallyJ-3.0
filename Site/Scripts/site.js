@@ -17,7 +17,7 @@ var site = {
   heartbeatTimeout: null
 };
 var lsName = {
-  electionInfo: 'electionInfo',
+  election: 'election',
   lastVersionNum: 'lastVersionNum'
 };
 var MyResources = {};
@@ -32,19 +32,31 @@ function Onload() {
   }
   PrepareStatusDisplay();
 
-  if (localStorage.getItem(lsName.electionInfo)) {
+  ProcessHeartbeat({ Active: true });
+
+  UpdateActiveInfo();
+
+}
+
+var UpdateActiveInfo = function () {
+  var election = GetFromStorage(lsName.election);
+  if (election) {
+    var electionDisplay = $('.CurrentElectionName');
+    electionDisplay.text(election.Name);
+    electionDisplay.effect('highlight', { mode: 'slow' });
+    site.heartbeatActive = true;
+    SetInStorage(lsName.election, election);
     ActivateHeartbeat(true);
   }
-  ProcessHeartbeat({ Active: true });
-}
+};
 
 var lastVersionNum = function () {
   return {
     get: function (defaultValue) {
-      return localStorage[lsName.lastVersionNum] || defaultValue;
+      return GetFromStorage(lsName.lastVersionNum) || defaultValue;
     },
     set: function (value) {
-      localStorage[lsName.lastVersionNum] = value;
+      SetInStorage(lsName.lastVersionNum, value);
       return value;
     }
   };
@@ -56,12 +68,12 @@ function HasErrors(data) {
   // PrepareNextKeepAlive(); 
   // --> would like to update KeepAlive after each AJAX call, but session is not extended on the server for AJAX calls!
 
-  if (data.search(/login/i) !== -1) {
-    var now = new Date();
-    alert('{0}\n\nYou are no longer logged in.\n\nYou must login again to continue.\n\nThis happened at...  {1}'.filledWith(document.title, now.toLocaleTimeString()));
-    top.location.href = GetRootUrl() + '/login';
-    return true;
-  }
+  //  if (data.search(/login/i) !== -1) {
+  //    var now = new Date();
+  //    alert('{0}\n\nYou are no longer logged in.\n\nYou must login again to continue.\n\nThis happened at...  {1}'.filledWith(document.title, now.toLocaleTimeString()));
+  //    top.location.href = GetRootUrl() + '/login';
+  //    return true;
+  //  }
   if (data.search(/Internal Server Error/) !== -1) {
     ShowStatusFailed('Server Error.');
     return true;
@@ -99,7 +111,7 @@ function ActivateHeartbeat(makeActive) {
 
 function SendHeartbeat() {
   if (!site.heartbeatActive) return;
-  
+
   var form = {
     computer: site.computerCode,
     lastVer: lastVersionNum().get(0)
@@ -647,3 +659,28 @@ function OptionsFromResourceList(resourceList, defaultValue) {
     .filledWithEach(items);
 }
 
+//  Storge  //////////////////////////////////////////////////
+var ObjectConstant = '$****$';
+
+function GetFromStorage(key, defaultValue) {
+
+  var checkForObject = function (obj) {
+
+    if (obj.substring(0, ObjectConstant.length) == ObjectConstant) {
+      obj = JSON.parse(obj.substring(ObjectConstant.length));
+    }
+    return obj;
+  };
+
+  var value = localStorage[key];
+  if (typeof value !== 'undefined' && value != null) return checkForObject(value);
+  return defaultValue;
+}
+
+function SetInStorage(key, value) {
+  if (typeof value === 'object') {
+    var strObj = StringifyObject(value);
+    value = ObjectConstant + strObj;
+  }
+  localStorage[key] = value;
+}

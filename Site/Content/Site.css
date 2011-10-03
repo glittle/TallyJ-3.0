@@ -580,9 +580,9 @@ a.twitter
 
 /* End: Statuses */
 
-.CurrentElectionTitle {
+.CurrentElectionName {
   text-align: right;
-  color: #8dc63e;
+  color: #013d7a;
   font-weight: bold;
 }
 

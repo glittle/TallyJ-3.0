@@ -1,0 +1,10 @@
+﻿section.features
+{
+  cursor: pointer;
+}
+section.feature {
+  border: 2px solid transparent;
+}
+section.feature:active {
+  border: 2px solid #8dc63e;
+}

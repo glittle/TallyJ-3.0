@@ -29,7 +29,7 @@ namespace TallyJ.Code.Session
 		/// <summary>
 		/// Title of election, if one is selected
 		/// </summary>
-		public static string CurrentElectionTitle
+		public static string CurrentElectionName
 		{
 			get { return CurrentElection == null ? "[No election selected]" : CurrentElection.Name; }
 		}

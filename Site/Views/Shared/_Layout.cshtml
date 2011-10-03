@@ -10,7 +10,11 @@
   <header>
     <div class="content-wrapper">
       <div class="float-left">
-        @Html.ActionLink(" ", "Index", "Home", null, new { Class = "site-title", title="Go to Home Page" })
+        @Html.ActionLink(" ", "Index", "Home", null, new
+   {
+     Class = "site-title",
+     title = "Go to Home Page"
+   })
       </div>
       <div class="float-right">
         <section id="login">
@@ -23,9 +27,11 @@
         </ul>
         </nav>
 *@ <section>
-  <div class="CurrentElectionTitle">@UserSession.CurrentElectionTitle</div>
-  <div class="Heartbeat"></div>
-  <div class="Version">Version: pre-beta</div>
+  <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+  <div class="Heartbeat">
+  </div>
+  <div class="Version">
+    Version: pre-beta</div>
 </section>
       </div>
     </div>

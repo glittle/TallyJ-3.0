@@ -31,7 +31,7 @@ namespace TallyJ.Code.Resources
 			  var exists = File.Exists(rawPath);
 			  _dict.Add(rawPath, exists);
       
-        ContextItems.AddJavascriptForPage(rawPath, "// {0} {1}".FilledWith(exists, rawPath));
+        //Debug: ContextItems.AddJavascriptForPage(rawPath, "// {0} {1}".FilledWith(exists, rawPath));
       }
 
 			if (!_dict[rawPath])

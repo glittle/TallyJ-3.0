@@ -1,0 +1,22 @@
+﻿@{
+  ViewBag.Title = "Before the Vote";
+  ViewBag.Message = "Getting ready";
+}
+@section featured {
+  <section class="featured">
+    <div class="content-wrapper">
+      <hgroup class="title"><h1>@ViewBag.Title.</h1>
+        <h2>@ViewBag.Message</h2>
+      </hgroup>
+      <p>Select from the modules below.</p>
+    </div>
+  </section>
+}
+<section class="features"><section class="feature"><h3>@Html.ActionLink("Election Setup", "Index", "Setup")</h3>
+  <p>Create a new election. Import/edit people's names. </p>
+</section>
+  <section class="feature"><h3>@Html.ActionLink("Front Desk", "Present", "After")</h3>
+    <p>Welcome voters to the election venue. Record who is participating in the election.
+    </p>
+  </section>
+</section>

@@ -1,0 +1,21 @@
+﻿table.Main, table.Demographics
+{
+  float: left;
+  padding-right: 20px;
+}
+table.Main th, table.Demographics th
+{
+  text-align: right;
+  padding-right: 3px;
+}
+
+table.Demographics
+{
+}
+
+input[type='number'] {
+  width: 60px;
+}
+input[type='date'] {
+  width: 100px;
+}
