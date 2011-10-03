@@ -40,6 +40,9 @@ header, footer, hgroup nav, section
 {
   float: right;
 }
+.float-right section {
+  text-align: right;
+}
 
 .highlight
 {
@@ -125,21 +128,13 @@ footer
 ----------------------------------------------------------*/
 .site-title
 {
+  display: block;
   color: #c8c8c8;
   margin: 20px 0;
   background-image: url('../Images/LogoSideM.png');
   width: 400px;
   height: 106px;
 }
-
-.site-title a, .site-title a:hover, .site-title a:active
-{
-  background: none;
-  color: #c8c8c8;
-  outline: none;
-  text-decoration: none;
-}
-
 
 /* login  
 ----------------------------------------------------------*/
@@ -593,12 +588,17 @@ a.twitter
 
 .Heartbeat {
   color: #8dc63e;
-  float: right;
   font-weight: bold;
-  padding: 0 0 0 10px;
+  display: inline-block;
+  position: relative;
+  right: 0;
+  padding: 0 0px 0 10px;
 }
 .Heartbeat.Frozen {
   padding: 0 10px 0 10px;
   color: red;
   background-color: #ffcccc;
+}
+.Version {
+  color: #ddd ;
 }

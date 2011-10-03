@@ -17,10 +17,7 @@
         <h2>@ViewBag.Message</h2>
       </hgroup>
       <p>Select from the modules below. To get started, setup your Election. To learn more,
-        please read more in the @Html.ActionLink("Learning Center", "Learning"). </p>
-
-        Test:
-
+        please read more in the @Html.ActionLink("Reference Materials", "Learning"). </p>
 
       <h3>Elections on file: (@Model.MyElections.Count())</h3>
       <div id="ElectionList">
@@ -49,5 +46,8 @@
   </section>
   <section class="feature"><h3>@Html.ActionLink("Present Results", "Presenter", "After")</h3>
     <p>Display results of the election. </p>
+  </section>
+  <section class="feature"><h3>@Html.ActionLink("Reference Materials", "Learning")</h3>
+    <p>Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
   </section>
 </section>

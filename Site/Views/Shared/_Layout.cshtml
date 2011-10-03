@@ -4,29 +4,29 @@
 <head>
   <meta charset="utf-8" />
   @RenderPage("Headers.cshtml")
-  <title>@ViewBag.Title - TallyJ</title>
-  <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
+  <title>@ViewBag.Title - TallyJ</title><link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
 </head>
 <body>
   <header>
     <div class="content-wrapper">
       <div class="float-left">
-        <p class="site-title"></p>
+        @Html.ActionLink(" ", "Index", "Home", null, new { Class = "site-title", title="Go to Home Page" })
       </div>
       <div class="float-right">
         <section id="login">
           @Html.Partial("_LogOnPartial")
         </section>
-        <nav><ul id="menu">
+        @*        <nav><ul id="menu">
           <li>@Html.ActionLink("Home", "Index", "Home")</li>
           <li>@Html.ActionLink("About", "About", "Home")</li>
           <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
         </ul>
         </nav>
-        <section>
-        <div class="Heartbeat"></div>
-          <div class="CurrentElectionTitle">@UserSession.CurrentElectionTitle</div>
-        </section>
+*@ <section>
+  <div class="CurrentElectionTitle">@UserSession.CurrentElectionTitle</div>
+  <div class="Heartbeat"></div>
+  <div class="Version">Version: pre-beta</div>
+</section>
       </div>
     </div>
   </header>

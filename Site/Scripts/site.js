@@ -35,6 +35,7 @@ function Onload() {
   if (localStorage.getItem(lsName.electionInfo)) {
     ActivateHeartbeat(true);
   }
+  ProcessHeartbeat({ Active: true });
 }
 
 var lastVersionNum = function () {
