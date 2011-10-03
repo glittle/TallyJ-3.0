@@ -378,12 +378,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DbContextGenerator.cs</LastGenOutput>
     </None>
-    <None Include="Views\Home\Index.cshtml.css">
+    <Content Include="Views\Home\Index.cshtml.css">
       <DependentUpon>Index.cshtml</DependentUpon>
-    </None>
-    <None Include="Views\Home\Index.cshtml.js">
+    </Content>
+    <Content Include="Views\Home\Index.cshtml.js">
       <DependentUpon>Index.cshtml</DependentUpon>
-    </None>
+    </Content>
     <Content Include="Views\Setup\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
