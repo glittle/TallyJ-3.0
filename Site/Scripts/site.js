@@ -45,7 +45,7 @@ var UpdateActiveInfo = function () {
     electionDisplay.text(election.Name);
     electionDisplay.effect('highlight', { mode: 'slow' });
     site.heartbeatActive = true;
-    SetInStorage(lsName.election, election);
+    // SetInStorage(lsName.election, election);
     ActivateHeartbeat(true);
   }
 };
@@ -489,12 +489,7 @@ function FormatDate(date, format, forDisplayOnly) {
     return '';
   }
   if (!format) {
-    if (site.languageCode == 'FR') {
-      format = 'D MMM YYYY';
-    }
-    else {
-      format = 'MMM D, YYYY';
-    }
+      format = 'YYYY-MM-DD';
   }
 
   var months = 'January February March April May June July August September October November December'.split(' ');
@@ -505,35 +500,33 @@ function FormatDate(date, format, forDisplayOnly) {
     return '[Invalid Date]';
   }
 
-  var day_value = mydate.getDate();
-  var month_value = mydate.getMonth();
-  var year_value = mydate.getFullYear();
+  var dayValue = mydate.getDate();
+  var monthValue = mydate.getMonth();
+  var yearValue = mydate.getFullYear();
 
   switch (format) {
     case 'MMM D, YYYY':
-      return months[month_value].substring(0, 3) + ' ' + day_value + ', ' + year_value;
+      return months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
     case 'D MMM YYYY':
-      var returnVal = day_value + ' ' + months[month_value].substring(0, 3) + ' ' + year_value;
-      if (site.languageCode == 'FR' && forDisplayOnly && +day_value == 1) {
+      var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+      if (site.languageCode == 'FR' && forDisplayOnly && +dayValue == 1) {
         returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
       }
       return returnVal;
     case 'DDD, D MMM YYYY':
-      return days[mydate.getDay()] + ', ' + day_value + ' ' + months[month_value].substring(0, 3) + ' ' + year_value;
-    case 'YYYY-M-DD':
-      if (month_value.toString().length === 1) {
-        month_value = '0' + (month_value + 1);
-      }
-      return year_value + '-' + month_value + '-' + day_value;
+      return days[mydate.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+    case 'YYYY-MM-DD':
+      var monthNum = monthValue + 1;
+      return yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
     case 'MMM YYYY':
-      return months[month_value].substring(0, 3) + ' ' + year_value;
+      return months[monthValue].substring(0, 3) + ' ' + yearValue;
     case 'MMMM YYYY':
-      return months[month_value] + ' ' + year_value;
+      return months[monthValue] + ' ' + yearValue;
     case 'MM/DD/YYYY':
-      var monthval = month_value + 1;
+      var monthval = monthValue + 1;
       var monthStr = ('0' + monthval).slice(-2);
-      var dayStr = ('0' + day_value).slice(-2);
-      return monthStr + '/' + dayStr + '/' + year_value;
+      var dayStr = ('0' + dayValue).slice(-2);
+      return monthStr + '/' + dayStr + '/' + yearValue;
   }
 
   return date;
@@ -614,20 +607,26 @@ function JoinProperties(obj, sep1, sep2, sepInner1, sepInner2) {
 
 
 function StringifyObject(obj) {
-  var toJoin = [];
+  return JSON.stringify(obj);
+  
+//  var toJoin = [];
 
-  for (var i in obj) {
-    var prop = obj[i];
-    if (typeof prop !== 'function' && obj.hasOwnProperty(i)) {
-      if (typeof prop === 'object') {
-        toJoin.push('"' + i + '":' + StringifyObject(prop));
-      } else {
-        toJoin.push('"' + i + '":' + JSON.stringify(prop));
-      }
+//  for (var i in obj) {
+//    var prop = obj[i];
+//    if (typeof prop !== 'function' && obj.hasOwnProperty(i)) {
+//      if (typeof prop === 'object') {
+//        if (prop === null) {
+//          toJoin.push('"' + i + '":null');
+//        } else {
+//          toJoin.push('"' + i + '":' + StringifyObject(prop));
+//        } 
+//      } else {
+//        toJoin.push('"' + i + '":' + JSON.stringify(prop));
+//      }
 
-    }
-  }
-  return ('{' + toJoin.join() + '}');
+//    }
+//  }
+//  return ('{' + toJoin.join() + '}');
 }
 
 function Plural(num, plural, single, zero) {
@@ -684,3 +683,9 @@ function SetInStorage(key, value) {
   }
   localStorage[key] = value;
 }
+
+var adjustElection = function (election) {
+  election.DateOfElection = FormatDate(election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
+  return election;
+};
+

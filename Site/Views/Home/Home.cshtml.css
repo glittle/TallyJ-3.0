@@ -2,9 +2,16 @@
 {
   cursor: pointer;
 }
-section.feature {
+section.features a {
+  text-decoration: none;
+}
+section.features a section {
   border: 2px solid transparent;
 }
-section.feature:active {
+section.features a:hover section {
+  border: 2px solid #ddd;
+}
+
+section.features a:active section {
   border: 2px solid #8dc63e;
 }

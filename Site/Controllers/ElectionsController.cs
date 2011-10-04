@@ -15,7 +15,7 @@ namespace TallyJ.Controllers
 
 		public JsonResult SelectElection(Guid guid)
 		{
-			var model = new ElectionsModel();
+			var model = new ElectionListModel();
 			if (model.Select(guid))
 			{
 				return UserSession.CurrentElection.AsJsonResult();

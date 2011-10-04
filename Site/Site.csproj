@@ -114,6 +114,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\BaseController.cs" />
     <Compile Include="Code\BaseViewModel.cs" />
+    <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
     <Compile Include="Code\Resources\TemplateLoader.cs" />
@@ -143,7 +144,8 @@
     <Compile Include="EF\Election.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ElectionsModel.cs" />
+    <Compile Include="Models\ElectionModel.cs" />
+    <Compile Include="Models\ElectionListModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
@@ -197,7 +199,6 @@
     <Content Include="Images\LogoSideL.png" />
     <Content Include="Images\LogoSideM.png" />
     <Content Include="Images\LogoSq.png" />
-    <Content Include="JsTemplates\ElectionEditScreen.html" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">

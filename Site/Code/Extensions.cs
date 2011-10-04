@@ -8,7 +8,7 @@ using System.Web.Script.Serialization;
 
 namespace TallyJ.Code
 {
-	public static class Extensions
+  public static class Extensions
 	{
 
 		/// <summary>

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
-using TallyJ.Code.Session;
 using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.Controllers
 {
@@ -11,14 +11,21 @@ namespace TallyJ.Controllers
     //
     // GET: /Setup/
 
+    readonly string[] _fieldsToEdit = new[]
+                                        {
+                                          "Name",
+                                          "DateOfElection",
+                                          "Convenor",
+                                          "ElectionType",
+                                          "ElectionMode",
+                                          "NumberToElect",
+                                          "NumberExtra",
+                                          "CanVote",
+                                          "CanReceive",
+                                        };
+
     public ActionResult Index()
     {
-      //TODO: the client should already have this info...
-      ContextItems.AddJavascriptForPage("setupIndexInfo", "setupIndexPage.info={0};".FilledWith(
-        new
-          {
-            Election = UserSession.CurrentElection
-          }.SerializedAsJson()));
       return View("Setup");
     }
 
@@ -27,17 +34,28 @@ namespace TallyJ.Controllers
       var onFile = DbContext.Elections.Where(e => e.C_RowId == election.C_RowId).SingleOrDefault();
       if (onFile != null)
       {
-        return new
+        // apply changes
+        if (election.CopyPropertyValuesTo(onFile, _fieldsToEdit))
         {
-          Status = "Test",
-          Election = onFile
-        }.AsJsonResult();
+          DbContext.SaveChanges();
+        }
+
+        return new
+                 {
+                   Status = "Saved",
+                   Election = onFile
+                 }.AsJsonResult();
       }
 
       return new
                {
                  Status = "Unkown ID"
                }.AsJsonResult();
+    }
+
+    public JsonResult DetermineRules(string type, string mode)
+    {
+      return new ElectionModel().GetRules(type, mode).AsJsonResult();
     }
   }
 }

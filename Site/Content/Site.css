@@ -40,7 +40,8 @@ header, footer, hgroup nav, section
 {
   float: right;
 }
-.float-right section {
+.float-right section
+{
   text-align: right;
 }
 
@@ -99,6 +100,16 @@ h5, h6
 {
   margin: 0 auto;
   max-width: 960px;
+  position: relative;
+}
+
+.headerRight
+{
+  position: absolute;
+  right: 0;
+  top: 20px;
+  text-align: right;
+  padding-right: 3px;
 }
 
 #body
@@ -142,7 +153,6 @@ footer
 {
   display: block;
   font-size: .85em;
-  margin-top: 20px;
   text-align: right;
 }
 
@@ -162,6 +172,11 @@ footer
   text-decoration: underline;
 }
 
+#login ul
+{
+  padding: 0;
+  margin-left: -20px;
+}
 #login li
 {
   display: inline;
@@ -250,14 +265,14 @@ hgroup.title h2
 /* features */
 section.feature
 {
-    float: left;
-    width: 200px;
-    height: 133px;
-    margin: 5px;
-    background-image: url('../Images/Blank.png');
-    background-repeat: no-repeat;
-    text-align: center;
-    padding: 10px 15px 10px 10px;
+  float: left;
+  width: 200px;
+  height: 133px;
+  margin: 5px;
+  background-image: url('../Images/Blank.png');
+  background-repeat: no-repeat;
+  text-align: center;
+  padding: 10px 15px 10px 10px;
 }
 
 /* ordered list */
@@ -580,25 +595,29 @@ a.twitter
 
 /* End: Statuses */
 
-.CurrentElectionName {
+.CurrentElectionName
+{
   text-align: right;
   color: #013d7a;
   font-weight: bold;
 }
 
-.Heartbeat {
+.Heartbeat
+{
   color: #8dc63e;
   font-weight: bold;
   display: inline-block;
-  position: relative;
-  right: 0;
   padding: 0 0px 0 10px;
+  text-align: right;
 }
-.Heartbeat.Frozen {
+.Heartbeat.Frozen
+{
   padding: 0 10px 0 10px;
   color: red;
   background-color: #ffcccc;
 }
-.Version {
-  color: #ddd ;
+.Version
+{
+  color: #ddd;
+  text-align: right;
 }

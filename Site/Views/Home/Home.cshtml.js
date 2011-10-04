@@ -1,5 +1,5 @@
-﻿/// <reference path=".././../Scripts/site.js" />
-/// <reference path=".././../Scripts/jquery-1.6.4-vsdoc.js" />
+﻿/// <reference path="../../Scripts/site.js" />
+/// <reference path="../../Scripts/jquery-1.6.4-vsdoc.js" />
 
 var HomeIndexPage = function () {
   var localSettings = {
@@ -15,8 +15,8 @@ var HomeIndexPage = function () {
         };
 
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, function (election) {
-      SetInStorage(lsName.election, election);
-      
+      SetInStorage(lsName.election, adjustElection(election));
+
       var electionDisplay = $('.CurrentElectionName');
       electionDisplay.text(election.Name);
       electionDisplay.effect('highlight', { mode: 'slow' });
@@ -25,6 +25,7 @@ var HomeIndexPage = function () {
       ActivateHeartbeat(true);
     });
   };
+
   var publicInterface = {
     elections: [],
     electionsUrl: '',
@@ -32,10 +33,6 @@ var HomeIndexPage = function () {
       showElections();
 
       $('.btnSelectElection').click(selectElection);
-
-      $('section.feature').live('click', function () {
-        location.href = $(this).find('h3 a').eq(0).attr('href');
-      });
     }
   };
 

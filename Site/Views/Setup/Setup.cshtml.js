@@ -1,31 +1,23 @@
-﻿/// <reference path=".././../Scripts/site.js" />
-/// <reference path=".././../Scripts/jquery-1.6.4-vsdoc.js" />
+﻿/// <reference path="../../Scripts/site.js" />
+/// <reference path="../../Scripts/jquery-1.6.4-vsdoc.js" />
 
 var SetupIndexPage = function () {
-  var ui = {
-    canVoteLocked: false,
-    canRecieveLocked: false,
-    numLocked: false,
-    extraLocked: false
+  var cachedRules = {
+    // temporary cache of rules, for the life of this page
+  };
+  var local = {
+    Election: null
   };
   var publicInterface = {
-    info: {
-      Election: null
-    },
     setupUrl: '',
     PreparePage: function () {
-      buildPage();
 
-      publicInterface.info.Election = GetFromStorage(lsName.election, null);
+      local.Election = GetFromStorage(lsName.election, null);
 
-      adjustByType();
+      applyValues(local.Election);
 
-      applyValues(publicInterface.info.Election);
-
-      $('#ddlType').live('change keyup', adjustByType);
-      $('#ddlMode').live('change keyup', adjustByType);
-      $('#ddlCanVote').live('change', changeCan);
-      $('#ddlCanReceive').live('change', changeCan);
+      $('#ddlType').live('change keyup', startToAdjustByType);
+      $('#ddlMode').live('change keyup', startToAdjustByType);
 
       $('#btnSave').live('click', saveChanges);
 
@@ -35,229 +27,80 @@ var SetupIndexPage = function () {
 
   var applyValues = function (election) {
     if (election == null) {
-      // $('#txtDate').val(new Date());
       return;
     };
 
-    $('#txtName').val(election.Name);
-    $('#txtConvenor').val(election.Convenor);
-    $('#txtDate').val(election.DateOfElection); // ? election.DateOfElection.parseJsonDate() : '');
+    $(':input["data-name"]').each(function () {
+      var input = $(this);
+      input.val(election[input.data('name')] || '');
+    });
 
-    $('#ddlType').val(election.ElectionType);
-    $('#ddlMode').val(election.ElectionMode);
-
-
-  };
-
-  var changeCan = function () {
-    // just need to save
+    startToAdjustByType();
   };
 
   var saveChanges = function () {
-    // just need to save
     var form = {
-      C_RowId: publicInterface.info.Election.C_RowId
+      C_RowId: local.Election ? local.Election.C_RowId : 0
     };
+
+    $(':input["data-name"]').each(function () {
+      var input = $(this);
+      form[input.data('name')] = input.val();
+    });
+
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.setupUrl + '/SaveElection', form, function (info) {
-      //TODO...
+      if (info.Election) {
+        var election = adjustElection(info.Election);
+        SetInStorage(lsName.election, election);
+        applyValues(election);
+      }
       ShowStatusDisplay(info.Status);
     });
   };
 
-  var adjustByType = function () {
+  var startToAdjustByType = function () {
+
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
-    //TODO: move this logic to server code, access by ajax call
-
-    var num = 0;
-    var extra = 0;
-    var canVote = '';
-    var canRecieve = '';
-
-    $('#modeB').removeAttr('disabled');
-
-    var combinedType = type + '-' + mode;
-    switch (type) {
-      case 'LSA':
-        canVote = 'A';
-        ui.canVoteLocked = true;
-
-        extra = 0;
-        ui.extraLocked = true;
-
-        switch (mode) {
-          case 'N':
-            num = 9;
-            ui.numLocked = true;
-            canRecieve = 'A';
-            break;
-          case 'T':
-            num = 1;
-            ui.numLocked = false;
-            canRecieve = 'N';
-            break;
-          case 'B':
-            num = 1;
-            ui.numLocked = false;
-            canRecieve = 'A';
-            break;
-
-          default:
-        }
-        ui.canRecieveLocked = true;
-
-        break;
-
-      case 'NSA':
-        canVote = 'N';  // delegates
-        ui.canVoteLocked = true;
-
-        extra = 0;
-        ui.extraLocked = true;
-
-        switch (mode) {
-          case 'N':
-            num = 9;
-            ui.numLocked = true;
-            canRecieve = 'A';
-            break;
-          case 'T':
-            num = 1;
-            ui.numLocked = false;
-            canRecieve = 'N';
-            break;
-          case 'B':
-            num = 1;
-            ui.numLocked = false;
-            canRecieve = 'A';
-            break;
-
-          default:
-        }
-
-        ui.canRecieveLocked = true;
-
-        break;
-
-      case 'Con':
-        canVote = 'A';
-        ui.canVoteLocked = true;
-
-        $('#modeB').attr('disabled', 'disabled');
-        if (mode == 'B') {
-          $('#ddlMode').val('N');
-          mode = 'N';
-        }
-
-        switch (mode) {
-          case 'N':
-            num = 5;
-            ui.numLocked = false;
-
-            extra = 3;
-            ui.extraLocked = false;
-
-            canRecieve = 'A';
-            break;
-
-          case 'T':
-            num = 1;
-            ui.numLocked = false;
-
-            extra = 0;
-            ui.extraLocked = true;
-
-            canRecieve = 'N';
-            break;
-
-          default:
-        }
-        ui.canRecieveLocked = true;
-        break;
-
-      case 'Reg':
-        canVote = 'N'; // LSA members
-        ui.canVoteLocked = false;
-
-        switch (mode) {
-          case 'N':
-            num = 9;
-            ui.numLocked = false;
-
-            extra = 3;
-            ui.extraLocked = false;
-
-            canRecieve = 'A';
-            break;
-
-          case 'T':
-            num = 1;
-            ui.numLocked = false;
-
-            extra = 0;
-            ui.extraLocked = true;
-
-            canRecieve = 'N';
-            break;
-
-          case 'B':
-            num = 1;
-            ui.numLocked = false;
-
-            extra = 0;
-            ui.extraLocked = true;
-
-            canRecieve = 'A';
-            break;
-
-          default:
-        }
-        ui.canRecieveLocked = true;
-        break;
-
-      case 'Oth':
-        canVote = 'A';
-
-        ui.canVoteLocked = false;
-        ui.canRecieveLocked = false;
-        ui.numLocked = false;
-        ui.extraLocked = false;
-
-        switch (mode) {
-          case 'N':
-            num = 9;
-            extra = 0;
-            canRecieve = 'A';
-            break;
-
-          case 'T':
-            num = 1;
-            extra = 0;
-            canRecieve = 'N';
-            break;
-
-          case 'B':
-            num = 1;
-            extra = 0;
-            canRecieve = 'A';
-            break;
-
-          default:
-        }
-        break;
+    if (type == 'Con') {
+      if (mode == "B") {
+        mode = "N";
+        $("#ddlMode").val("N");
+      }
+      $("#modeB").attr("disabled", "disabled");
+    }
+    else {
+      $("#modeB").removeAttr("disabled");
+    }
+    var combined = type + '.' + mode;
+    var cachedRule = cachedRules[combined];
+    if (cachedRule) {
+      applyRules(cachedRule);
+      return;
     }
 
-    $('#txtNames').prop('disabled', ui.numLocked).val(num);
-    $('#txtExtras').prop('disabled', ui.extraLocked).val(extra);
-    $('#ddlCanVote').prop('disabled', ui.canVoteLocked).val(canVote);
-    $('#ddlCanReceive').prop('disabled', ui.canRecieveLocked).val(canRecieve);
+    var form = {
+      type: type,
+      mode: mode
+    };
+
+    CallAjaxHandler(publicInterface.setupUrl + '/DetermineRules', form, applyRules, combined);
   };
 
-  var buildPage = function () {
-    $('#editArea').html(site.templates.ElectionEditScreen.filledWith(publicInterface.info.Election));
-  };
+  function applyRules(info, combined) {
+    $('#txtNames').prop('disabled', info.NumLocked).val(info.Num);
+    $('#txtExtras').prop('disabled', info.ExtraLocked).val(info.Extra);
+    $('#ddlCanVote').prop('disabled', info.CanVoteLocked).val(info.CanVote);
+    $('#ddlCanReceive').prop('disabled', info.CanReceiveLocked).val(info.CanReceive);
+
+    cachedRules[combined] = info;
+  }
+
+  //  var buildPage = function () {
+  //    $('#editArea').html(site.templates.ElectionEditScreen.filledWith(local.Election));
+  //  };
 
   return publicInterface;
 };
