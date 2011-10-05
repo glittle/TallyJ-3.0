@@ -39,23 +39,29 @@ namespace TallyJ.Controllers
         .Where(p => p.ElectionGuid == currentElection.ElectionGuid)
         .Where(p => includeInelligible || p.IneligibleReasonGuid == null)
         .Where(p => p.CombinedInfo.Contains(part0)
-                     && p.CombinedInfo.Contains(part1)
-                     || p.CombinedInfo.Contains(SqlFunctions.SoundCode(part0))
-                    )
+                    && p.CombinedInfo.Contains(part1)
+                    || p.CombinedInfo.Contains(SqlFunctions.SoundCode(part0))
+        )
         .Take(max + 1)
-        .ToList();
+        .OrderBy(p => p.LastName)
+        .ThenBy(p => p.FirstName)
+        .Select(p => new
+                       {
+                         p.C_RowId,
+                         p.FirstName,
+                         p.LastName,
+                       })
+                    .ToList();
 
       return new
                {
                  People = persons
-                   .OrderBy(p => p.LastName)
-                   .ThenBy(p => p.FirstName)
                    .Take(max)
                    .Select(p => new
-                                  {
-                                    p.C_RowId,
-                                    Name = "{0} {1}".FilledWith(p.FirstName, p.LastName),
-                                  }),
+                   {
+                     p.C_RowId,
+                     Name = "{0} {1}".FilledWith(p.FirstName, p.LastName)
+                   }),
                  MoreFound = persons.Count > max ? "More than {0} matches".FilledWith(max) : ""
                }
         .AsJsonResult();
