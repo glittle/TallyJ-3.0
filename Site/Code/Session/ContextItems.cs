@@ -62,7 +62,7 @@ namespace TallyJ.Code.Session
 				javascriptForPage.Add("resources", script.JoinedAsString());
 			}
 
-			ContextItems.AddJavascriptForPage("jsTemplates", TemplateLoader.GetTemplates());
+			AddJavascriptForPage("jsTemplates", TemplateLoader.GetTemplates());
 
 			// read it again, to get the new values
 			javascriptForPage = JavascriptForPage;

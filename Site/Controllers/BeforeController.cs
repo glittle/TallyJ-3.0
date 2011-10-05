@@ -1,8 +1,9 @@
 ﻿using System.Web.Mvc;
+using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
-	public class BeforeController : Controller
+	public class BeforeController : BaseController
 	{
 		//
 		public ActionResult Index()
@@ -14,5 +15,6 @@ namespace TallyJ.Controllers
 		{
 			return View();
 		}
+
 	}
 }

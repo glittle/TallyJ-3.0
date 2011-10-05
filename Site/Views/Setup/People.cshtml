@@ -1,0 +1,11 @@
+﻿@using TallyJ.Code.Session
+@{
+  ViewBag.Title = "People";
+  ViewBag.Message = "The community";
+
+  ContextItems.AddJavascriptForPage("peopleUrl", "namesPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+}
+<script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<input id=txtSearch><span id=action></span> <span id=more></span>
+<div id=nameList>
+</div>

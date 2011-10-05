@@ -6,7 +6,7 @@ using TallyJ.Models;
 
 namespace TallyJ.Controllers
 {
-	public class ElectionsController : Controller
+	public class ElectionsController : BaseController
 	{
 		public ActionResult Index()
 		{

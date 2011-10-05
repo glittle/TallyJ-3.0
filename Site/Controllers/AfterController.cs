@@ -1,8 +1,9 @@
 ﻿using System.Web.Mvc;
+using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
-  public class AfterController : Controller
+  public class AfterController : BaseController
   {
     //
     // GET: /Setup/

@@ -6,80 +6,89 @@
 
   ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWith(@Url.Action("Index").QuotedForJavascript()));
 }
-<form action="" onsubmit="return false">
-  <table class="Demographics">
-    <tr>
-      <th>Name</th>
-      <td>
-        <input type="text" id="txtName" data-name="Name">
-      </td>
-    </tr>
-    <tr>
-      <th>Convenor</th>
-      <td>
-        <input type="text" id="txtConvenor" data-name="Convenor">
-      </td>
-    </tr>
-    <tr>
-      <th>Election Date</th>
-      <td>
-        <input type="date" id="txtDate" data-name="DateOfElection">
-      </td>
-    </tr>
-  </table>
-  <table class="Main">
-    <tr>
-      <th>Type of Election</th>
-      <td>
-        <select id="ddlType" data-name="ElectionType">
-          <option value="LSA">Local Spiritual Assembly</option>
-          <option value="NSA">National Spiritual Assembly</option>
-          <option value="Con">Unit Convention</option>
-          <option value="Reg">Regional Council</option>
-          <option value="Oth">Other</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>Variation</th>
-      <td>
-        <select id="ddlMode" data-name="ElectionMode">
-          <option value="N">Normal Election</option>
-          <option value="T">Tie-Break</option>
-          <option value="B" id="modeB">Bi-election</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>Names on Ballot</th>
-      <td>
-        <input type="number" min="2" id="txtNames" data-name="NumberToElect" />
-      </td>
-    </tr>
-    <tr>
-      <th>Report on next highest</th>
-      <td>
-        <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
-      </td>
-    </tr>
-    <tr>
-      <th>Who can vote?</th>
-      <td>
-        <select id=ddlCanVote data-name="CanVote">
-          <option value="A">Everyone on the list</option>
-          <option value="N">Named delegates</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>Who can be voted for?</th>
-      <td>
-        <select id=ddlCanReceive data-name="CanReceive">
-          <option value="A">Everyone on the list</option>
-          <option value="N">Named individuals</option>
-        </select>
-      </td>
-    </tr>
-  </table>
-  <button type="button" id="btnSave">Save</button>
-</form>
+<table class="Demographics">
+  <tr>
+    <th>Name</th>
+    <td>
+      <input type="text" id="txtName" data-name="Name">
+    </td>
+  </tr>
+  <tr>
+    <th>Convenor</th>
+    <td>
+      <input type="text" id="txtConvenor" data-name="Convenor">
+    </td>
+  </tr>
+  <tr>
+    <th>Election Date</th>
+    <td>
+      <input type="date" id="txtDate" data-name="DateOfElection">
+    </td>
+  </tr>
+  <tr>
+    <th>Type of Election</th>
+    <td>
+      <select id="ddlType" data-name="ElectionType">
+        <option value="LSA">Local Spiritual Assembly</option>
+        <option value="NSA">National Spiritual Assembly</option>
+        <option value="Con">Unit Convention</option>
+        <option value="Reg">Regional Council</option>
+        <option value="Oth">Other</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>Variation</th>
+    <td>
+      <select id="ddlMode" data-name="ElectionMode">
+        <option value="N">Normal Election</option>
+        <option value="T">Tie-Break</option>
+        <option value="B" id="modeB">Bi-election</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>Names on Ballot</th>
+    <td>
+      <input type="number" min="2" id="txtNames" data-name="NumberToElect" />
+    </td>
+  </tr>
+  <tr>
+    <th>Report on next highest</th>
+    <td>
+      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
+    </td>
+  </tr>
+  <tr>
+    <th>Who can vote?</th>
+    <td>
+      <select id=ddlCanVote data-name="CanVote">
+        <option value="A">Everyone on the list</option>
+        <option value="N">Named delegates</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>Who can be voted for?</th>
+    <td>
+      <select id=ddlCanReceive data-name="CanReceive">
+        <option value="A">Everyone on the list</option>
+        <option value="N">Named individuals</option>
+      </select>
+    </td>
+  </tr>
+</table>
+<table class="More">
+  <tr>
+    <th>Locations</th>
+    <td>
+      <div id="locationList">
+        <div>
+          Downtown</div>
+        <div>
+          Main</div>
+      </div>
+    </td>
+  </tr>
+</table>
+<button type="button" id="btnSave">Save</button>

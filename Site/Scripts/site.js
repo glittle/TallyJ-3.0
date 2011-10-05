@@ -17,8 +17,10 @@ var site = {
   heartbeatTimeout: null
 };
 var lsName = {
-  election: 'election',
-  lastVersionNum: 'lastVersionNum'
+  Election: 'Election',
+  People: 'People',
+  PeopleColumns: 'PeopleColumns',
+  LastVersionNum: 'VerNum'
 };
 var MyResources = {};
 
@@ -39,13 +41,13 @@ function Onload() {
 }
 
 var UpdateActiveInfo = function () {
-  var election = GetFromStorage(lsName.election);
+  var election = GetFromStorage(lsName.Election);
   if (election) {
     var electionDisplay = $('.CurrentElectionName');
     electionDisplay.text(election.Name);
     electionDisplay.effect('highlight', { mode: 'slow' });
     site.heartbeatActive = true;
-    // SetInStorage(lsName.election, election);
+    // SetInStorage(lsName.Election, election);
     ActivateHeartbeat(true);
   }
 };
@@ -53,10 +55,10 @@ var UpdateActiveInfo = function () {
 var lastVersionNum = function () {
   return {
     get: function (defaultValue) {
-      return GetFromStorage(lsName.lastVersionNum) || defaultValue;
+      return GetFromStorage(lsName.LastVersionNum) || defaultValue;
     },
     set: function (value) {
-      SetInStorage(lsName.lastVersionNum, value);
+      SetInStorage(lsName.LastVersionNum, value);
       return value;
     }
   };
@@ -218,7 +220,7 @@ function PrepareStatusDisplay() {
     + '</div></div></div>');
 }
 
-function ShowStatusDisplay(msg, minDisplayTimeBeforeStatusReset, showAsError, dontShowUntilAfter) {
+function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError) {
   if (typeof minDisplayTimeBeforeStatusReset === 'number') {
     statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset;
   }
@@ -682,6 +684,7 @@ function SetInStorage(key, value) {
     value = ObjectConstant + strObj;
   }
   localStorage[key] = value;
+  return value;
 }
 
 var adjustElection = function (election) {

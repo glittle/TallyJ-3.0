@@ -8,7 +8,7 @@ using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
-	public class HomeController : Controller
+	public class HomeController : BaseController
 	{
 		public ActionResult Index()
 		{

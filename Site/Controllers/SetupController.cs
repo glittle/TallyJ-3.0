@@ -29,6 +29,11 @@ namespace TallyJ.Controllers
       return View("Setup");
     }
 
+    public ActionResult People()
+    {
+      return View();
+    }
+
     public JsonResult SaveElection(Election election)
     {
       var onFile = DbContext.Elections.Where(e => e.C_RowId == election.C_RowId).SingleOrDefault();

@@ -1,8 +1,9 @@
 using System.Web.Mvc;
+using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
-	public class BallotsController : Controller
+	public class BallotsController : BaseController
 	{
 		//
 		// GET: /Setup/

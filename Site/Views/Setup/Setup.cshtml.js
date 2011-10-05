@@ -12,7 +12,7 @@ var SetupIndexPage = function () {
     setupUrl: '',
     PreparePage: function () {
 
-      local.Election = GetFromStorage(lsName.election, null);
+      local.Election = GetFromStorage(lsName.Election, null);
 
       applyValues(local.Election);
 
@@ -52,10 +52,10 @@ var SetupIndexPage = function () {
     CallAjaxHandler(publicInterface.setupUrl + '/SaveElection', form, function (info) {
       if (info.Election) {
         var election = adjustElection(info.Election);
-        SetInStorage(lsName.election, election);
+        SetInStorage(lsName.Election, election);
         applyValues(election);
       }
-      ShowStatusDisplay(info.Status);
+      ShowStatusDisplay(info.Status, 0);
     });
   };
 

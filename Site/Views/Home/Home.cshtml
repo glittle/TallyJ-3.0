@@ -23,9 +23,13 @@
     </div>
   </section>
 }
-<section class="features"><a href="@Url.Action("Index", "Setup")"><section class="feature">
+<section class="features">
+<a href="@Url.Action("Index", "Setup")"><section class="feature">
   <h3>Election Setup</h3>
-  <p>Create a new election. Import/edit people's names. </p>
+  <p>Edit election details.</p>
+</section></a> <a href="@Url.Action("People", "Setup")"><section class="feature">
+  <h3>Names Management</h3>
+  <p>Import/edit people's names. </p>
 </section></a> <a href="@Url.Action("FrontDesk", "Before")"><section class="feature">
   <h3>Front Desk</h3>
   <p>Welcome voters to the election venue. Record who is participating in the election.
