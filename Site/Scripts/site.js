@@ -14,7 +14,8 @@ var site = {
   infoForHeartbeat: {},
   heartbeatActive: true,
   heartbeatTime: 15 * 1000,
-  heartbeatTimeout: null
+  heartbeatTimeout: null,
+  rootUrl: ''
 };
 var lsName = {
   Election: 'Election',
@@ -205,7 +206,7 @@ function JsonParse(json) {
 // Root Url ////////////////////////////////////////////////////////////////////////////
 
 function GetRootUrl() {
-  return location.pathname.substring(0, location.pathname.substring(1).indexOf('/') + 1);
+  return site.rootUrl;
 }
 
 //  Status Display //////////////////////////////////////
