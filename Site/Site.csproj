@@ -199,6 +199,7 @@
     <Compile Include="EF\Vote.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\favicon.ico" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />
