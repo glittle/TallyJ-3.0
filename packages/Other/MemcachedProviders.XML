@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MemcachedProviders</name>
+    </assembly>
+    <members>
+        <member name="M:MemcachedProviders.Common.ConfigurationUtil.GetConfigValue(System.String,System.String)">
+            <summary>
+            Helper method to validate the given configuration value and assign the given default
+            if the configuration value is not valid.
+            </summary>
+            <param name="configValue">value to test.</param>
+            <param name="defaultValue">value to assign if <c>configValue</c> is not valid.</param>
+            <returns>A valid configuration value.</returns>
+        </member>
+        <member name="M:MemcachedProviders.Cache.MemcachedCacheProvider.Get(System.String[])">
+            <summary>
+            This method will work with memcached 1.2.4 and higher
+            </summary>
+            <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MemcachedProviders.Session.Db.SQLDbOperations.ResetItemTimeout(System.String,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="strSessionId"></param>
+            <param name="strApplicationName"></param>
+            <param name="iTime">Time in Minutes</param>
+            <returns></returns>
+        </member>
+        <member name="M:MemcachedProviders.Cache.DistCache.LoadProvider">
+            <summary>
+            This function loads providers from the App.Config or Web.config file
+            </summary>
+        </member>
+        <member name="T:MemcachedProviders.Properties.Resource">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MemcachedProviders.Properties.Resource.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MemcachedProviders.Properties.Resource.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MemcachedProviders.Properties.Resource.No_Cache_Server">
+            <summary>
+              Looks up a localized string similar to No cache server is specified.
+            </summary>
+        </member>
+        <member name="P:MemcachedProviders.Properties.Resource.Unable_to_add">
+            <summary>
+              Looks up a localized string similar to Unable to add element to cache.
+            </summary>
+        </member>
+    </members>
+</doc>

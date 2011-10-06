@@ -7,6 +7,7 @@ var NamesPage = function () {
     People: [],
     peopleHelper: null,
     keyTimer: null,
+    keyTime: 300,
     lastSearch: '',
     actionTag: null,
     template: '<div>{Name} ({C_RowId})</div>'
@@ -38,7 +39,7 @@ var NamesPage = function () {
       local.actionTag.addClass('searching');
 
       local.peopleHelper.SearchNames(text, onNamesReady);
-    }, 250);
+    }, local.keyTime);
   };
 
   return publicInterface;
