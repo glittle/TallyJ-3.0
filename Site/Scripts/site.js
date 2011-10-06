@@ -206,6 +206,7 @@ function JsonParse(json) {
 // Root Url ////////////////////////////////////////////////////////////////////////////
 
 function GetRootUrl() {
+  LogMessage(site.rootUrl);
   return site.rootUrl;
 }
 
