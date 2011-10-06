@@ -74,7 +74,7 @@ function HasErrors(data) {
   //  if (data.search(/login/i) !== -1) {
   //    var now = new Date();
   //    alert('{0}\n\nYou are no longer logged in.\n\nYou must login again to continue.\n\nThis happened at...  {1}'.filledWith(document.title, now.toLocaleTimeString()));
-  //    top.location.href = GetRootUrl() + '/login';
+  //    top.location.href = GetRootUrl() + 'login';
   //    return true;
   //  }
   if (data.search(/Internal Server Error/) !== -1) {
@@ -122,7 +122,7 @@ function SendHeartbeat() {
   // add other info if needed
   form.teller1 = 2345; //TEMP
 
-  CallAjaxHandler(GetRootUrl() + '/Home/Heartbeat', form, ProcessHeartbeat);
+  CallAjaxHandler(GetRootUrl() + 'Home/Heartbeat', form, ProcessHeartbeat);
 }
 
 function ProcessHeartbeat(info) {
@@ -241,7 +241,7 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
   if (target.length === 0) {
     // ??? on a page without a Status display
   }
-  var loaderPath = GetRootUrl() + '/images/ajax-loader.gif';
+  var loaderPath = GetRootUrl() + 'images/ajax-loader.gif';
   target.html((showAsError ? '<span class="ui-icon ui-icon-alert"></span>' : '<img class=ajaxIcon src="' + loaderPath + '"> ') + msg)
     .show();
   if (showAsError) {
