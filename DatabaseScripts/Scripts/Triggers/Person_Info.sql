@@ -8,7 +8,8 @@ GO
 -- Description:	
 -- =============================================
 -- CREATE TRIGGER tj.PersonInfo 
-ALTER TRIGGER tj.PersonInfo 
+-- ALTER TRIGGER tj.PersonInfo 
+NO LONGER USED
    ON  tj.Person 
    AFTER INSERT,UPDATE
 AS 
@@ -22,27 +23,38 @@ BEGIN
        or update(OtherLastNames)
        or update(OtherNames)
        or update(OtherInfo)
-	update p
-	   set CombinedInfo =
-	     rtrim(
-	       lower(
-			 coalesce(LastName + ' ', '')
-			 + coalesce(FirstName + ' ', '')
-			 + coalesce(OtherLastNames + ' ', '')
-			 + coalesce(OtherNames + ' ', '')
-			 + coalesce(OtherInfo + ' ', '')
-			 )
-		+ coalesce(soundex(lastName) + ' ', '')
-		+ coalesce(soundex(firstName) + ' ', '')
-		+ coalesce(soundex(OtherlastNames) + ' ', '')
-		+ coalesce(soundex(OtherNames) + ' ', '')
-		+ coalesce(soundex(OtherInfo) + ' ', '')
 
-		+ coalesce(BahaiId, '')
-		)
-	  from tj.Person p 
-	  where p._RowId in (select _RowId from inserted)
+	begin
+
+		update p
+			set CombinedInfo =
+				rtrim(
+				lower(
+					coalesce(LastName + ' ', '')
+					+ coalesce(FirstName + ' ', '')
+					+ coalesce(OtherLastNames + ' ', '')
+					+ coalesce(OtherNames + ' ', '')
+					+ coalesce(OtherInfo + ' ', '')
+					)
+			+ coalesce(BahaiId, '')
+			)
+			from tj.Person p 
+			where p._RowId in (select _RowId from inserted)
 	    
-	    			 
+	
+		update p
+			set CombinedSoundEx =
+				rtrim(
+			   coalesce(soundex(lastName) + ' ', '')
+			+ coalesce(soundex(firstName) + ' ', '')
+			+ coalesce(soundex(OtherlastNames) + ' ', '')
+			+ coalesce(soundex(OtherNames) + ' ', '')
+			+ coalesce(soundex(OtherInfo) + ' ', '')
+			)
+			from tj.Person p 
+			where p._RowId in (select _RowId from inserted)
+	    
+	
+	end    			 
 END
 GO

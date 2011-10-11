@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="ca564fca-7981-42ee-a744-01f1b1b17acc" name="glittle@SUNLAP200 2011-10-10 21:56:40" runUser="SUNCORP\glittle" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Local" id="45670355-df23-4383-86da-d2f44957bcac">
+    <Description>These are default test settings for a local test run.</Description>
+    <Deployment enabled="false" runDeploymentRoot="glittle_SUNLAP200 2011-10-10 21_56_40">
+      <DeploymentItem filename="C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2011-10-10T21:56:40.1875000-06:00" queuing="2011-10-10T21:56:44.1718750-06:00" start="2011-10-10T21:56:44.4062500-06:00" finish="2011-10-10T21:56:46.2968750-06:00" />
+  <ResultSummary outcome="Error">
+    <Counters total="4" executed="4" passed="3" error="0" failed="0" timeout="0" aborted="1" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <RunInfos>
+      <RunInfo computerName="SUNLAP200" outcome="Error" timestamp="2011-10-10T21:56:46.2343750-06:00">
+        <Text>Test host process exited unexpectedly.</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="SearchTest_FirstName" storage="c:\users\glen\bahai\tallyj\v2d\server\site\tests\bin\debug\tests.dll" id="343bb677-cf22-3ae5-a231-60662c4b16be">
+      <Execution id="5ebd31d2-8856-49dc-b94b-e2bf89f5281e" />
+      <TestMethod codeBase="C:/Users/Glen/Bahai/TallyJ/V2d/Server/Site/Tests/bin/Debug/Tests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Tests.BusinessTests.PeopleTests, Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="SearchTest_FirstName" />
+    </UnitTest>
+    <UnitTest name="SearchTest_FirstLast_Match" storage="c:\users\glen\bahai\tallyj\v2d\server\site\tests\bin\debug\tests.dll" id="3fcb5ec7-8186-9c17-46aa-43555f8b9c4f">
+      <Execution id="2167cd24-a1ab-406c-baad-0549fe3ec59a" />
+      <TestMethod codeBase="C:/Users/Glen/Bahai/TallyJ/V2d/Server/Site/Tests/bin/Debug/Tests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Tests.BusinessTests.PeopleTests, Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="SearchTest_FirstLast_Match" />
+    </UnitTest>
+    <UnitTest name="JoinedAsStringTest1" storage="c:\users\glen\bahai\tallyj\v2d\server\site\tests\bin\debug\tests.dll" id="5c3cc45e-7c98-67cc-9019-c9a2b4732d8c">
+      <Execution id="0d239c3f-c75a-40ae-b818-f649c94783dd" />
+      <TestMethod codeBase="C:/Users/Glen/Bahai/TallyJ/V2d/Server/Site/Tests/bin/Debug/Tests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Tests.FrameworkTests.ExtensionTests, Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="JoinedAsStringTest1" />
+    </UnitTest>
+    <UnitTest name="SearchTest_FirstLast_NoMatch" storage="c:\users\glen\bahai\tallyj\v2d\server\site\tests\bin\debug\tests.dll" id="8d96ede1-7acc-67d6-1586-6375f18dafdb">
+      <Execution id="c506d4c2-814a-42ba-af6c-c45b655a3dbd" />
+      <TestMethod codeBase="C:/Users/Glen/Bahai/TallyJ/V2d/Server/Site/Tests/bin/Debug/Tests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Tests.BusinessTests.PeopleTests, Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="SearchTest_FirstLast_NoMatch" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="5c3cc45e-7c98-67cc-9019-c9a2b4732d8c" executionId="0d239c3f-c75a-40ae-b818-f649c94783dd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="343bb677-cf22-3ae5-a231-60662c4b16be" executionId="5ebd31d2-8856-49dc-b94b-e2bf89f5281e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8d96ede1-7acc-67d6-1586-6375f18dafdb" executionId="c506d4c2-814a-42ba-af6c-c45b655a3dbd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3fcb5ec7-8186-9c17-46aa-43555f8b9c4f" executionId="2167cd24-a1ab-406c-baad-0549fe3ec59a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="0d239c3f-c75a-40ae-b818-f649c94783dd" testId="5c3cc45e-7c98-67cc-9019-c9a2b4732d8c" testName="JoinedAsStringTest1" computerName="SUNLAP200" duration="00:00:00.0158302" startTime="2011-10-10T21:56:44.6093750-06:00" endTime="2011-10-10T21:56:45.9531250-06:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d239c3f-c75a-40ae-b818-f649c94783dd">
+    </UnitTestResult>
+    <UnitTestResult executionId="5ebd31d2-8856-49dc-b94b-e2bf89f5281e" testId="343bb677-cf22-3ae5-a231-60662c4b16be" testName="SearchTest_FirstName" computerName="SUNLAP200" duration="00:00:00.0417173" startTime="2011-10-10T21:56:45.9687500-06:00" endTime="2011-10-10T21:56:46.0312500-06:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5ebd31d2-8856-49dc-b94b-e2bf89f5281e">
+    </UnitTestResult>
+    <UnitTestResult executionId="c506d4c2-814a-42ba-af6c-c45b655a3dbd" testId="8d96ede1-7acc-67d6-1586-6375f18dafdb" testName="SearchTest_FirstLast_NoMatch" computerName="SUNLAP200" duration="00:00:00.0041256" startTime="2011-10-10T21:56:46.0468750-06:00" endTime="2011-10-10T21:56:46.0781250-06:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c506d4c2-814a-42ba-af6c-c45b655a3dbd">
+    </UnitTestResult>
+    <UnitTestResult executionId="2167cd24-a1ab-406c-baad-0549fe3ec59a" testId="3fcb5ec7-8186-9c17-46aa-43555f8b9c4f" testName="SearchTest_FirstLast_Match" computerName="SUNLAP200" duration="00:00:00.1875000" startTime="2011-10-10T21:56:46.1093750-06:00" endTime="2011-10-10T21:56:46.2968750-06:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Aborted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2167cd24-a1ab-406c-baad-0549fe3ec59a">
+    </UnitTestResult>
+  </Results>
+</TestRun>

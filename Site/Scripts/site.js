@@ -206,7 +206,6 @@ function JsonParse(json) {
 // Root Url ////////////////////////////////////////////////////////////////////////////
 
 function GetRootUrl() {
-  LogMessage(site.rootUrl);
   return site.rootUrl;
 }
 
@@ -543,6 +542,13 @@ String.prototype.filledWith = function () {
   /// Notes: the { } symbols cannot be escaped and should only be used for replacement target tokens;  only a single pass is done. 
   /// </summary>
   var values = typeof arguments[0] === 'object' && arguments.length === 1 ? arguments[0] : arguments;
+  if (arguments.length == 0 && arguments[0].length) {
+    // use values in array, substituting {0}, {1}, etc.
+    values = {};
+    $.each(arguments[0], function (i, value) {
+      values[i] = value;
+    });
+  }
 
   //return this.replace(/{(.+)}/g, function () {
 

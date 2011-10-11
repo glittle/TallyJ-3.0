@@ -41,6 +41,9 @@
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\Other\Enyim.Caching.dll</HintPath>
     </Reference>
+    <Reference Include="LinqKit">
+      <HintPath>..\packages\Other\LinqKit.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
@@ -130,6 +133,7 @@
     <Compile Include="Code\Session\SiteInfo.cs" />
     <Compile Include="Code\Session\SessionKey.cs" />
     <Compile Include="Code\Session\UserSession.cs" />
+    <Compile Include="Code\SoundEx.cs" />
     <Compile Include="Code\UnityRelated\HttpContextItemsProvider.cs" />
     <Compile Include="Code\UnityRelated\IContextItemsProvider.cs" />
     <Compile Include="Code\Resources\ILinkedResourcesHelper.cs" />
@@ -148,6 +152,7 @@
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
+    <Compile Include="Models\PeopleSearchModel.cs" />
     <Compile Include="EF\Election.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>

@@ -24,10 +24,13 @@ namespace TallyJ.EF
         public string OtherInfo { get; set; }
         public string BahaiId { get; set; }
         public string CombinedInfo { get; set; }
+        public string CombinedSoundEx { get; set; }
+        public string CombinedInfoAtStart { get; set; }
         public string AgeGroup { get; set; }
         public Nullable<bool> CanVote { get; set; }
         public Nullable<bool> CanReceiveVotes { get; set; }
         public Nullable<System.Guid> IneligibleReasonGuid { get; set; }
+        public Nullable<System.DateTime> RegistrationTime { get; set; }
         public Nullable<System.Guid> VotingLocationGuid { get; set; }
         public string VotingMethod { get; set; }
         public Nullable<int> EnvNum { get; set; }

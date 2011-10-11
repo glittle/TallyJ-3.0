@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="39384f4f-7c59-41bc-8839-8c6932460a24" name="glittle@SUNLAP200 2011-10-10 21:43:17" runUser="SUNCORP\glittle" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Local" id="45670355-df23-4383-86da-d2f44957bcac">
+    <Description>These are default test settings for a local test run.</Description>
+    <Deployment enabled="false" runDeploymentRoot="glittle_SUNLAP200 2011-10-10 21_43_17">
+      <DeploymentItem filename="C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2011-10-10T21:43:17.3125000-06:00" queuing="2011-10-10T21:43:17.4218750-06:00" start="2011-10-10T21:43:17.4531250-06:00" finish="2011-10-10T21:43:19.3906250-06:00" />
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" error="0" failed="1" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="SearchTest" storage="c:\users\glen\bahai\tallyj\v2d\server\site\tests\bin\debug\tests.dll" id="eff957c9-1013-d0e6-afa3-d648532a88e3">
+      <Execution id="2207bcdc-615c-4097-b1ab-e94302936c94" />
+      <TestMethod codeBase="C:/Users/Glen/Bahai/TallyJ/V2d/Server/Site/Tests/bin/Debug/Tests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="Tests.BusinessTests.PeopleTests, Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="SearchTest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="eff957c9-1013-d0e6-afa3-d648532a88e3" executionId="2207bcdc-615c-4097-b1ab-e94302936c94" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="2207bcdc-615c-4097-b1ab-e94302936c94" testId="eff957c9-1013-d0e6-afa3-d648532a88e3" testName="SearchTest" computerName="SUNLAP200" duration="00:00:01.6408744" startTime="2011-10-10T21:43:17.4531250-06:00" endTime="2011-10-10T21:43:19.3593750-06:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2207bcdc-615c-4097-b1ab-e94302936c94">
+      <Output>
+        <ErrorInfo>
+          <Message>Test method Tests.BusinessTests.PeopleTests.SearchTest threw exception: 
+System.NotSupportedException: This function can only be invoked from LINQ to Entities.</Message>
+          <StackTrace>    at System.Data.Objects.SqlClient.SqlFunctions.SoundCode(String arg)
+   at lambda_method(Closure , Person )
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)
+   at System.Linq.OrderedEnumerable`1.&lt;GetEnumerator&gt;d__0.MoveNext()
+   at System.Linq.Enumerable.&lt;TakeIterator&gt;d__3a`1.MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at TallyJ.Models.PeopleSearchModel.InnerSearch(String search, Int32 max) in C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\Models\PeopleSearchModel.cs:line 55
+   at Tests.BusinessTests.PeopleTests.SearchTest() in C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\BusinessTests\PeopleTests.cs:line 26
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+</TestRun>
