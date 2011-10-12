@@ -13,7 +13,7 @@ var site = {
   lastVersionNum: 0,
   infoForHeartbeat: {},
   heartbeatActive: true,
-  heartbeatTime: 15 * 1000,
+  heartbeatTime: 30 * 1000, // default time
   heartbeatTimeout: null,
   rootUrl: ''
 };
@@ -81,7 +81,7 @@ function HasErrors(data) {
     ShowStatusFailed('Server Error.');
     return true;
   }
-  if (data.search(/Error/) !== -1) {
+  if (data.search(/Error\:/) !== -1) {
     ShowStatusFailed('An error occurred on the server. The Technical Support Team has been provided with the error details.');
     return true;
   }
@@ -102,8 +102,11 @@ function GetResource(resourceKey) {
   return MyResources[resourceKey];
 }
 
-function ActivateHeartbeat(makeActive) {
+function ActivateHeartbeat(makeActive, delaySeconds) {
   if (makeActive) {
+    if (delaySeconds) {
+      site.heartbeatTime = +delaySeconds * 1000;
+    }
     clearTimeout(site.heartbeatTimeout);
     site.heartbeatTimeout = setTimeout(SendHeartbeat, site.heartbeatTime);
   }
@@ -158,7 +161,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
       }
 
-      ResetStatusDisplay();
+      //ResetStatusDisplay();
     },
     error: function (xmlHttpRequest, textStatus) {
       if (callbackOnFailed) {
@@ -231,11 +234,10 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
 
   if (dontShowUntilAfter > 0) {
     statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function () {
-      ShowStatusDisplay(msg, minDisplayTimeBeforeStatusReset, showAsError, 0);
+      ShowStatusDisplay(msg, 0, minDisplayTimeBeforeStatusReset, showAsError);
     }, dontShowUntilAfter);
     return;
   }
-
   var target = $('#statusDisplay');
   if (target.length === 0) {
     // ??? on a page without a Status display
@@ -271,7 +273,7 @@ function ShowStatusFailed(msg, keep) {
     }
   }
 
-  ShowStatusDisplay(text, keep ? null : 15000, true, 0);
+  ShowStatusDisplay(text, 0, keep ? null : 15000, true);
 
   return text;
 }
@@ -281,15 +283,14 @@ function ResetStatusDisplay() {
     clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
     statusDisplay.delayedShowStatusArray.length--;
   }
+
   if (statusDisplay.minDisplayTimeBeforeStatusReset !== 0) {
-    $('.ajaxIcon').hide();
     setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
     statusDisplay.minDisplayTimeBeforeStatusReset = 0;
     return;
   }
 
-  $('#statusDisplay')
-    .fadeOut('slow');
+  $('#statusDisplay').hide();
 }
 
 function HideStatusDisplay() {

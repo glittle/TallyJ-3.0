@@ -36,9 +36,13 @@ namespace TallyJ.Models
                                   object[]
                                   {
                                     p.C_RowId,
-                                    "{0}, {1}".FilledWith(p.LastName, p.FirstName),
-                                    "{0}".FilledWith(p.OtherInfo),
-                                    new[] {p.OtherNames, p.OtherLastNames}.JoinedAsString(" ").Trim(),
+                                    "{0}{1}, {2}{3}{4}".FilledWith(
+                                      p.LastName,
+                                      p.OtherLastNames.SurroundContentWith(" [", "]"),
+                                      p.FirstName,
+                                      p.OtherNames.SurroundContentWith(" [", "]"),
+                                      p.OtherInfo.SurroundContentWith(" (", ")")
+                                      ),
                                   }),
                  MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : "",
                  DefaultTo = 2 // which of these matches is the most referenced right now? 0 based.
@@ -91,25 +95,29 @@ namespace TallyJ.Models
       IQueryable<Person> query;
       if (callingSqlDb)
       {
-        query = People.Where(p => p.CombinedSoundEx.Contains(SqlFunctions.SoundCode(part0))
-                                  || p.CombinedInfo.Contains(part0)
-                                  && (part1 == null
-                                      ||
-                                      SqlFunctions.CharIndex(part1, p.CombinedInfo,
-                                                             SqlFunctions.CharIndex(" ", p.CombinedInfo,
-                                                                                    SqlFunctions.CharIndex(part0,
-                                                                                                           p.
-                                                                                                             CombinedInfo))) !=
-                                      -1));
+        query = People.Where(p =>
+                             p.CombinedSoundEx.Contains(part0Sx)
+                             &&
+                             (part1Sx == null ||
+                              SqlFunctions.CharIndex(part1Sx, p.CombinedSoundEx,
+                                                     SqlFunctions.CharIndex(part0Sx, p.CombinedSoundEx)) != -1)
+                             || p.CombinedInfo.Contains(part0)
+                             && (part1 == null
+                                 ||
+                                 SqlFunctions.CharIndex(part1, p.CombinedInfo,
+                                                        SqlFunctions.CharIndex(" ", p.CombinedInfo,
+                                                                               SqlFunctions.CharIndex(part0,
+                                                                                                      p.CombinedInfo))) !=
+                                 -1));
       }
       else
       {
         query = People.Where(p =>
-                             //p.CombinedSoundEx.Contains(part0Sx)
-                             //                        &&
-                             //                        (part1Sx == null ||
-                             //                         p.CombinedSoundEx.IndexOf(part1Sx, 1 + p.CombinedSoundEx.IndexOf(part0Sx)) != -1)
-                             //                        || 
+                             p.CombinedSoundEx.Contains(part0Sx)
+                             &&
+                             (part1Sx == null ||
+                              p.CombinedSoundEx.IndexOf(part1Sx, p.CombinedSoundEx.IndexOf(part0Sx)) != -1)
+                             ||
                              p.CombinedInfo.Contains(part0.ToLower())
                              && (part1 == null
                                  ||

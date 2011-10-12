@@ -6,7 +6,7 @@ var PeopleHelper = function (url) {
     url: url
   };
   var startGettingPeople = function (search, onNamesReady) {
-    ShowStatusDisplay('searching...', 0);
+    ShowStatusDisplay('searching...', 500);
     CallAjaxHandler(local.url + '/GetPeople', {
       search: search,
       includeInelligible: true
@@ -21,8 +21,11 @@ var PeopleHelper = function (url) {
     }
     onNamesReady(info);
   };
-  var onFail = function() {
-    
+  var onFail = function (xmlHttpRequest) {
+    var msg = '';
+    if (msg) {
+      ShowStatusFailed(msg);
+    }
   };
   var wrapPerson = function (flatPerson) {
     var person = {};

@@ -1,6 +1,6 @@
 ﻿#nameList {
   height: 300px;
-  width: 600px;
+  width: 350px;
   border: solid 1px #999;
   padding: 4px;
   overflow: auto;
@@ -10,6 +10,12 @@
 }
 #nameList li {
   border: 1px solid transparent;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+#nameList li:hover {
+  border-color: #ddd;
 }
 #nameList li.selected {
   background-color: #c1f1b4;

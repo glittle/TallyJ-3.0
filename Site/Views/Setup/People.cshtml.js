@@ -13,7 +13,7 @@ var NamesPage = function () {
     inputField: null,
     nameList: null,
     rowSelected: 0,
-    template: '<li id=P{0}><u>{1}</u><u>{2}</u></li>'
+    template: '<li id=P{0}>{1}</li>'
   };
   var onNamesReady = function (info) {
     local.People = markUp(info.People);
@@ -21,6 +21,9 @@ var NamesPage = function () {
     $('#more').html(info.MoreFound);
     if (info.MoreFound) {
       local.nameList.append('<li>...</li>');
+    }
+    if (!local.People.length && local.lastSearch) {
+      local.nameList.append('<li>...no matches found...</li>');
     }
     local.actionTag.removeClass('searching');
     local.inputField.removeClass('searching');
@@ -36,18 +39,23 @@ var NamesPage = function () {
       }
     });
     $.each(people, function (i, personInfo) {
+      var foundHit = false;
       $.each(personInfo, function (j, item) {
         if (j == 0 || !item) return; // skip ID; skip blanks
         if (typeof item != 'String') item = '' + item;
         $.each(searchParts, function (k, searchPart) {
           var changed = false;
           var r = item.replace(searchPart, function () {
-            changed = true;
+            foundHit = changed = true;
             return '<b>' + arguments[0] + '</b>';
           });
           if (changed) { item = personInfo[j] = r; }
         });
       });
+      if (!foundHit) {
+        // must be soundex
+        personInfo[1] = '<i>' + personInfo[1] + '</i>';
+      }
       results.push(personInfo);
     });
     return results;
@@ -61,22 +69,44 @@ var NamesPage = function () {
     rowNum = rowNum + delta;
     if (rowNum < 0) { rowNum = numChildren - 1; }
     if (rowNum >= numChildren) { rowNum = 0; }
-
+    setSelected(children, rowNum);
+  };
+  var setSelected = function (children, rowNum) {
     children.removeClass('selected');
     children.eq(local.rowSelected = rowNum).addClass('selected');
+  };
+  var edit = function (personId) {
+    var id = 'P' + personId;
+    var children = local.nameList.children();
+    children.each(function (i, el) {
+      if (el.id == id) {
+        setSelected(children, i);
+        return false;
+      }
+    });
+    $('#editPanel').text('edit ' + personId);
   };
   var navigating = function (ev) {
     switch (ev.which) {
       case 38: // up
         moveSelected(-1);
         ev.preventDefault();
-        break;
+        return true;
+
       case 40: // down
         moveSelected(1);
         ev.preventDefault();
-        break;
+        return true;
+
+      case 13: // enter
+        var id = +local.nameList.children().eq(local.rowSelected).attr('id').substr(1);
+        ev.preventDefault();
+        edit(id);
+        return true;
+
       default:
     }
+    return false;
   };
   var runSearch = function (ev) {
     clearTimeout(local.keyTimer);
@@ -109,6 +139,14 @@ var NamesPage = function () {
       MoreFound: ''
     });
   };
+  var nameClick = function (ev) {
+    var el = ev.target;
+    while (el.tagName != 'LI') {
+      el = el.parentNode();
+      if (el == null) return;
+    }
+    edit(+el.id.substr(1));
+  };
   var publicInterface = {
     peopleUrl: '',
     PreparePage: function () {
@@ -118,7 +156,7 @@ var NamesPage = function () {
       local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
       local.actionTag = $('#action');
       local.nameList = $('#nameList');
-
+      $('#nameList li').live('click', nameClick).focus();
       resetSearch();
     }
   };

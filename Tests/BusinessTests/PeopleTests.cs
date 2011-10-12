@@ -37,6 +37,12 @@ namespace Tests.BusinessTests
       result[0].FirstName.ShouldEqual("Bb");
     }
 
+
+    //  TODO:
+    // add soundex to each word in a field
+    // indicate which word in matched? or, indicate if a soundex was used
+    // if soundex works, but text does NOT, should not match the person
+
     [TestMethod]
     public void SearchTest_FirstLast_NoMatch()
     {
