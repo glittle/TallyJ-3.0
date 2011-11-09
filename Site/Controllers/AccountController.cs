@@ -95,7 +95,7 @@ namespace TallyJ.Controllers
 		{
 			FormsAuthentication.SignOut();
 
-			return RedirectToAction("Index", "Dashboard");
+			return RedirectToAction("Index", "Public");
 		}
 
 		//

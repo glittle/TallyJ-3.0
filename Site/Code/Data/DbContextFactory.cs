@@ -15,7 +15,7 @@ namespace TallyJ.Code.Data
 				if (_db != null)
 					return _db;
 
-				var cnString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+        var cnString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString + ";MultipleActiveResultSets=True";
 				var final = new EntityConnection("metadata=res://*;provider=System.Data.SqlClient;provider connection string='" + cnString + "'");
 				return _db = new TallyJ2Entities(final.ConnectionString);
 			}
