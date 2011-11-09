@@ -1,65 +1,61 @@
 ﻿@using TallyJ.Code.Session
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  @RenderPage("Headers.cshtml")
-  <title>@ViewBag.Title - TallyJ</title><link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
-</head>
-<body>
-  <header>
-    <div class="content-wrapper">
-      <div class="float-left">
-        @Html.ActionLink(" ", "Index", "Home", null, new
-   {
-     Class = "site-title",
-     title = "Go to Home Page"
-   })
+  <head>
+    <meta charset="utf-8" />
+    @RenderPage("Headers.cshtml")
+    <title>TallyJ @ViewBag.Title</title><link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
+  </head>
+  <body>
+    <header>
+      <div class="content-wrapper">
+        <div class="float-left">
+          @Html.ActionLink(" ", "Index", "Public", null, new
+                                                         {
+                                                           Class = "site-title",
+                                                           title = "Return to Welcome Page"
+                                                         })
+        </div>
+        <div class="headerRight">
+          <section id="login">
+            @Html.Partial("_LogOnPartial")
+          </section>
+          <section>
+            @if (Request.IsAuthenticated)
+            {
+              <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+              <div class="Heartbeat"></div>
+            }
+            <div class="Version">
+              Version: pre-beta</div>
+          </section>
+        </div>
       </div>
-      <div class="headerRight">
-        <section id="login">
-          @Html.Partial("_LogOnPartial")
-        </section>
-        @*        <nav><ul id="menu">
-          <li>@Html.ActionLink("Home", "Index", "Home")</li>
-          <li>@Html.ActionLink("About", "About", "Home")</li>
-          <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-        </ul>
-        </nav>
-*@ <section>
-  <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
-  <div class="Heartbeat">
-  </div>
-  <div class="Version">
-    Version: pre-beta</div>
-</section>
-      </div>
+    </header>
+    <div id="body">
+      @RenderSection("featured", false)
+      <section class="content-wrapper main-content clear-fix">
+        @RenderBody()
+      </section>
     </div>
-  </header>
-  <div id="body">
-    @RenderSection("featured", false)
-    <section class="content-wrapper main-content clear-fix">
-      @RenderBody()
-    </section>
-  </div>
-  <footer>
-    <div class="content-wrapper">
-      <div class="float-left">
-        <p>&copy; @DateTime.Now.Year - TallyJ</p>
+    <footer>
+      <div class="content-wrapper">
+        <div class="float-left">
+          <p>&copy; @DateTime.Now.Year - TallyJ</p>
+        </div>
+        <div class="float-right">
+          <ul id="social">
+            <li><a target="facebook" href="http://www.facebook.com/TallyJ.Support" class="facebook"
+                   title="Go to the TallyJ Support page">Facebook</a></li>
+            <li><a target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+                   title="View news from #TallyJ_Bahai">Twitter</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="float-right">
-        <ul id="social">
-          <li><a target="facebook" href="http://www.facebook.com/TallyJ.Support" class="facebook"
-            title="Go to the TallyJ Support page">Facebook</a></li>
-          <li><a target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
-            title="View news from #TallyJ_Bahai">Twitter</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
-  @{
-    ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
-  }
-  @ContextItems.GetJavascriptForPage()
-</body>
+    </footer>
+    @{
+      ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWithObjects(@Url.Content("~")));
+    }
+    @ContextItems.GetJavascriptForPage()
+  </body>
 </html>

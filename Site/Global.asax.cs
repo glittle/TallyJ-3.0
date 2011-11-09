@@ -41,7 +41,7 @@ namespace TallyJ
 				"{controller}/{action}/{id}", // URL with parameters
 				new
 					{
-						controller = "Home",
+						controller = "Public",
 						action = "Index",
 						id = UrlParameter.Optional
 					} // Parameter defaults

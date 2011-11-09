@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using TallyJ.Code.Session;
 using TallyJ.Models;
+using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
@@ -34,6 +36,7 @@ namespace TallyJ.Controllers
 				if (Membership.ValidateUser(model.UserName, model.Password))
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+				  UserSession.ProcessLogin(model.UserName);
 					return Json(new
 					{
 						success = true,
@@ -65,13 +68,14 @@ namespace TallyJ.Controllers
 				if (Membership.ValidateUser(model.UserName, model.Password))
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-					if (Url.IsLocalUrl(returnUrl))
+          UserSession.ProcessLogin(model.UserName);
+          if (Url.IsLocalUrl(returnUrl))
 					{
 						return Redirect(returnUrl);
 					}
 					else
 					{
-						return RedirectToAction("Index", "Home");
+						return RedirectToAction("Index", "Dashboard");
 					}
 				}
 				else
@@ -91,7 +95,7 @@ namespace TallyJ.Controllers
 		{
 			FormsAuthentication.SignOut();
 
-			return RedirectToAction("Index", "Home");
+			return RedirectToAction("Index", "Dashboard");
 		}
 
 		//
@@ -153,7 +157,8 @@ namespace TallyJ.Controllers
 				if (createStatus == MembershipCreateStatus.Success)
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
-					return RedirectToAction("Index", "Home");
+
+					return RedirectToAction("Index", "Dashboard");
 				}
 				else
 				{
@@ -217,9 +222,9 @@ namespace TallyJ.Controllers
 			return View();
 		}
 
-		private ActionResult ContextDependentView()
+		private ActionResult ContextDependentView(string overrideActionName = "")
 		{
-			string actionName = ControllerContext.RouteData.GetRequiredString("action");
+			string actionName = overrideActionName.DefaultTo(ControllerContext.RouteData.GetRequiredString("action"));
 			if (Request.QueryString["content"] != null)
 			{
 				ViewBag.FormAction = "Json" + actionName;

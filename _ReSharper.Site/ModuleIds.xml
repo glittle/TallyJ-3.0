@@ -1,5 +1,6 @@
 <Modules>
   <Module PersistentId="A444CE75-8087-4828-BCE5-87A82752E0EC" ModuleId="Site" />
-  <Module PersistentId="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" ModuleId="EntityFramework" />
   <Module PersistentId="A22FBFB0-0240-4BE0-8E12-18C01D4D604D" ModuleId="Tests" />
+  <Module PersistentId="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" ModuleId="System.Web.WebPages" />
+  <Module PersistentId="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" ModuleId="System.Web.Mvc" />
 </Modules>

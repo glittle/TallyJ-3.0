@@ -12,6 +12,7 @@ namespace TallyJ.EF
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Objects;
     
     public partial class TallyJ2Entities : DbContext
     {
@@ -27,7 +28,6 @@ namespace TallyJ.EF
     
         public DbSet<C_Log> C_Log { get; set; }
         public DbSet<Ballot> Ballots { get; set; }
-        public DbSet<Computer> Computers { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Reason> Reasons { get; set; }
         public DbSet<Result> Results { get; set; }
@@ -35,7 +35,25 @@ namespace TallyJ.EF
         public DbSet<Teller> Tellers { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<Election> Elections { get; set; }
         public DbSet<Person> People { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Election> Elections { get; set; }
+        public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
+        public DbSet<Computer> Computers { get; set; }
+    
+        public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
+        {
+            ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace.LoadFromAssembly(typeof(CloneElection_Result).Assembly);
+    
+            var sourceElectionParameter = sourceElection.HasValue ?
+                new ObjectParameter("SourceElection", sourceElection) :
+                new ObjectParameter("SourceElection", typeof(System.Guid));
+    
+            var byLoginIdParameter = byLoginId != null ?
+                new ObjectParameter("ByLoginId", byLoginId) :
+                new ObjectParameter("ByLoginId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CloneElection_Result>("CloneElection", sourceElectionParameter, byLoginIdParameter);
+        }
     }
 }

@@ -1,0 +1,11 @@
+﻿.election {
+  border-bottom: 1px solid #ccc;
+  padding: 9px 0 9px 5px;
+}
+.election.True {
+  color:  #8dc63e;
+  font-weight: bold;
+}
+.election.True button.btnSelectElection {
+  visibility: hidden;
+}

@@ -15,11 +15,13 @@ namespace TallyJ.EF
     public partial class Computer
     {
         public int C_RowId { get; set; }
-        public System.Guid ElectionGuid { get; set; }
-        public System.Guid LocationGuid { get; set; }
+        public Nullable<System.DateTime> LastContact { get; set; }
+        public Nullable<System.Guid> ElectionGuid { get; set; }
+        public Nullable<System.Guid> LocationGuid { get; set; }
         public string ComputerCode { get; set; }
         public Nullable<int> ComputerInternalCode { get; set; }
         public Nullable<int> LastBallotNum { get; set; }
-        public Nullable<System.DateTime> C_LastContact { get; set; }
+        public Nullable<System.Guid> Teller1 { get; set; }
+        public Nullable<System.Guid> Teller2 { get; set; }
     }
 }

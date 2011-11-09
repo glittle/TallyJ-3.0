@@ -31,6 +31,7 @@ namespace TallyJ.EF
         public string LinkedElectionKind { get; set; }
         public string OwnerLoginId { get; set; }
         public string ElectionPasscode { get; set; }
+        public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
         public byte[] C_RowVersion { get; set; }
     }
 }

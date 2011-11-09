@@ -27,3 +27,5 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\MemcachedProviders.dll
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\MemcachedProviders.pdb
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\MemcachedProviders.xml
 C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\LinqKit.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.xml

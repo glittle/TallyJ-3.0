@@ -4,7 +4,7 @@
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
 
-  ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWith(@Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWithObjects(@Url.Action("Index").QuotedForJavascript()));
 }
 <table class="Demographics">
   <tr>
@@ -47,19 +47,19 @@
       </select>
     </td>
   </tr>
-  <tr>
+  <tr class="electionDetailT">
     <th>Names on Ballot</th>
     <td>
       <input type="number" min="2" id="txtNames" data-name="NumberToElect" />
     </td>
   </tr>
-  <tr>
+  <tr class="electionDetail">
     <th>Report on next highest</th>
     <td>
       <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
     </td>
   </tr>
-  <tr>
+  <tr class="electionDetail">
     <th>Who can vote?</th>
     <td>
       <select id=ddlCanVote data-name="CanVote">
@@ -68,7 +68,7 @@
       </select>
     </td>
   </tr>
-  <tr>
+  <tr class="electionDetailB">
     <th>Who can be voted for?</th>
     <td>
       <select id=ddlCanReceive data-name="CanReceive">

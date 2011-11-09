@@ -9,7 +9,7 @@ namespace TallyJ.Code
 		TallyJ2Entities _db;
 
 		/// <summary>Access to the database</summary>
-		public TallyJ2Entities DbContext
+		public TallyJ2Entities Db
 		{
 			get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
 		}

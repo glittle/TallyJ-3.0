@@ -1,5 +1,5 @@
 ﻿/// <reference path="site.js" />
-/// <reference path="jquery-1.6.4-vsdoc.js" />
+/// <reference path="jquery-1.7-vsdoc.js" />
 
 var PeopleHelper = function (url) {
   var local = {

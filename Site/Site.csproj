@@ -34,9 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\Other\Enyim.Caching.dll</HintPath>
@@ -134,6 +134,7 @@
     <Compile Include="Code\Session\SessionKey.cs" />
     <Compile Include="Code\Session\UserSession.cs" />
     <Compile Include="Code\SoundEx.cs" />
+    <Compile Include="Code\TemplateHelper.cs" />
     <Compile Include="Code\UnityRelated\HttpContextItemsProvider.cs" />
     <Compile Include="Code\UnityRelated\IContextItemsProvider.cs" />
     <Compile Include="Code\Resources\ILinkedResourcesHelper.cs" />
@@ -152,18 +153,30 @@
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
-    <Compile Include="Models\PeopleSearchModel.cs" />
-    <Compile Include="EF\Election.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Partials\Election.cs" />
-    <Compile Include="Models\ElectionModel.cs" />
-    <Compile Include="Models\ElectionListModel.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="EF\Ballot.cs">
+    <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="EF\CloneElection_Result.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Computer.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Election.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\JoinElectionUser.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\User.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\vElectionPartial.cs" />
+    <Compile Include="Models\ComputerModel.cs" />
+    <Compile Include="Models\PeopleSearchModel.cs" />
+    <Compile Include="EF\Partials\MakeSerializable.cs" />
+    <Compile Include="Models\ElectionModel.cs" />
+    <Compile Include="Models\ElectionListModel.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\C_Log.cs">
@@ -213,7 +226,7 @@
     <Content Include="Images\LogoSideL.png" />
     <Content Include="Images\LogoSideM.png" />
     <Content Include="Images\LogoSq.png" />
-    <Compile Include="Models\HomeViewModel.cs" />
+    <Compile Include="Models\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -224,6 +237,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\PublicHomeViewModel.cs" />
+    <Compile Include="Models\PulseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -288,9 +303,9 @@
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.6.4.js" />
-    <Content Include="Scripts\jquery-1.6.4.min.js" />
+    <Content Include="Scripts\jquery-1.7-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.7.js" />
+    <Content Include="Scripts\jquery-1.7.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.16.js" />
     <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -306,11 +321,23 @@
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Unity.Mvc3.README.txt" />
-    <Content Include="Views\Home\About.cshtml.css">
+    <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
+      <DependentUpon>ChooseElection.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Dashboard\ChooseElection.cshtml.js">
+      <DependentUpon>ChooseElection.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\About.cshtml.css">
       <DependentUpon>About.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Home\About.cshtml.js">
+    <Content Include="Views\Public\About.cshtml.js">
       <DependentUpon>About.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\Home.cshtml.css">
+      <DependentUpon>Home.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\Home.cshtml.js">
+      <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml</DependentUpon>
@@ -352,9 +379,9 @@
     <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
     <Content Include="Views\Account\LogOn.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Home.cshtml" />
+    <Content Include="Views\Public\About.cshtml" />
+    <Content Include="Views\Public\Contact.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -363,7 +390,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Home\Learning.cshtml" />
+    <Content Include="Views\Public\Learning.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -400,14 +427,17 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DbContextGenerator.cs</LastGenOutput>
     </None>
-    <Content Include="Views\Home\Home.cshtml.css">
-      <DependentUpon>Home.cshtml</DependentUpon>
+    <Content Include="Views\Dashboard\Index.cshtml.css">
+      <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Home\Home.cshtml.js">
-      <DependentUpon>Home.cshtml</DependentUpon>
+    <Content Include="Views\Dashboard\Index.cshtml.js">
+      <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\Setup.cshtml" />
     <Content Include="Views\Setup\People.cshtml" />
+    <Content Include="Views\Public\Home.cshtml" />
+    <Content Include="Views\Public\Install.cshtml" />
+    <Content Include="Views\Dashboard\ChooseElection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

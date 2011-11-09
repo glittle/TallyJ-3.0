@@ -1,5 +1,5 @@
 ﻿// Sunwapta Solutions Inc.
-/// <reference path="jquery-1.6.4-vsdoc.js" />
+/// <reference path="jquery-1.7-vsdoc.js" />
 
 var site = {
   onload: [],
@@ -13,7 +13,7 @@ var site = {
   lastVersionNum: 0,
   infoForHeartbeat: {},
   heartbeatActive: true,
-  heartbeatTime: 30 * 1000, // default time
+  heartbeatTime: 3 * 1000, // default time
   heartbeatTimeout: null,
   rootUrl: ''
 };
@@ -117,15 +117,7 @@ function ActivateHeartbeat(makeActive, delaySeconds) {
 
 function SendHeartbeat() {
   if (!site.heartbeatActive) return;
-
-  var form = {
-    computer: site.computerCode,
-    lastVer: lastVersionNum().get(0)
-  };
-  // add other info if needed
-  form.teller1 = 2345; //TEMP
-
-  CallAjaxHandler(GetRootUrl() + 'Home/Heartbeat', form, ProcessHeartbeat);
+  CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', null, ProcessHeartbeat);
 }
 
 function ProcessHeartbeat(info) {
@@ -138,6 +130,9 @@ function ProcessHeartbeat(info) {
   }
   if (info.VersionNum) {
     lastVersionNum().set(info.VersionNum);
+  }
+  if (info.PulseSeconds) {
+    site.heartbeatTime = info.PulseSeconds * 1000;
   }
   ActivateHeartbeat(site.heartbeatActive);
 }
@@ -152,7 +147,7 @@ function ProcessHeartbeat(info) {
 function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObjectForCallbackFunction, callbackOnFailed, waitForResponse) {
   /// <summary>Do a GET or POST to the named handler. If form is not needed, pass null. Query and Form are objects with named properties.</summary>
   var options = {
-    type: 'POST',
+    type: 'GET',
     url: handlerUrl,
     success: function (data) {
       if (HasErrors(data)) return;
@@ -174,6 +169,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 
   if (form) {
     options.data = JoinProperties(form);
+    options.type = 'POST';
   }
   if (waitForResponse) {
     options.async = false;

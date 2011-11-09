@@ -30,7 +30,7 @@ namespace TallyJ.Controllers
       }
 
       var model = new PeopleSearchModel(
-        DbContext.People
+        Db.People
         .Where(p => p.ElectionGuid == currentElection.ElectionGuid)
         .Where(p => includeInelligible || p.IneligibleReasonGuid == null)
         );

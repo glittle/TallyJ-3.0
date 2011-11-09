@@ -46,17 +46,123 @@ namespace TallyJ.Code
     public static string[] SplitWithString(this string input, string separator, StringSplitOptions stringSplitOptions)
     {
       return input == null
-           ? null
-           : input.Split(new[] { separator }, stringSplitOptions);
+               ? null
+               : input.Split(new[] {separator}, stringSplitOptions);
     }
 
     /// <summary>
     ///   Use the input string as the format with string.Format
     /// </summary>
-    public static string FilledWith(this string input, params object[] values)
+    public static string FilledWithList<T>(this string input, IEnumerable<T> values)
+    {
+      if (values == null)
+      {
+        return input;
+      }
+      var array = values.ToArray();
+
+      return string.Format(input, array);
+    }
+
+    /// <summary>
+    /// Fill template with named items
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="input"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static string FilledWithObject<T>(this string input, T value)
+    {
+      if (value == null)
+      {
+        return input;
+      }
+      var properties = value.GetAllProperties();
+
+      return new TemplateHelper(input).FillByName(properties);
+    }
+
+    public static string FilledWithEachObject<T>(this string input, IEnumerable<T> values)
+    {
+      if (values == null)
+      {
+        return input;
+      }
+      // don't remove <T, string> or compile will fail
+      var answers = values.Select<T, string>(input.FilledWithObject);
+      return answers.JoinedAsString();
+    }
+
+    public static string FilledWithArray<T>(this string input, IEnumerable<T> values)
+    {
+      if (values == null)
+      {
+        return input;
+      }
+
+      return new TemplateHelper(input).FillByArray(values);
+    }
+
+    public static bool AsBool(this bool? input)
+    {
+      if (input.HasValue)
+      {
+        return input.Value;
+      }
+      return false;
+    }
+
+    public static HtmlString AsHtmlString(this DateTime input)
+    {
+      if (input == DateTime.MinValue)
+      {
+        return "".AsRawHtml();
+      }
+      return input.ToLongDateString().AsRawHtml();
+    }
+
+    public static HtmlString AsHtmlString(this DateTime? input)
+    {
+      return input.HasValue ? input.Value.AsHtmlString() : "".AsRawHtml();
+    }
+
+    public static int AsInt(this object input)
+    {
+      return AsInt(input, 0);
+    }
+
+    public static int AsInt(this object input, int defaultValue)
+    {
+      if (input == null)
+        return defaultValue;
+      if (input == DBNull.Value)
+        return defaultValue;
+
+      try
+      {
+        return (int)Math.Truncate(Convert.ToDouble(input));
+      }
+      catch (Exception)
+      {
+        return defaultValue;
+      }
+      //return Util.Strings.Coalesce(input, 0);
+    }
+
+
+    /// <summary>
+    ///   Use the input string as the format with string.Format
+    /// </summary>
+    public static string FilledWithObjects(this string input, params object[] values)
     {
       if (input.HasNoContent())
         return string.Empty;
+
+      if (values == null)
+      {
+        return input;
+      }
+
       return string.Format(input, values);
     }
 
@@ -67,7 +173,7 @@ namespace TallyJ.Code
 
       if (productionNameModifier.HasContent() || debuggingNameModifier.HasContent())
       {
-        contentFilePath = contentFilePath.FilledWith(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
+        contentFilePath = contentFilePath.FilledWithObjects(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
       }
 
       var rawPath = HttpContext.Current.Request.MapPath(contentFilePath);
@@ -158,7 +264,7 @@ namespace TallyJ.Code
     /// <param name="input">Name in Session</param>
     /// <param name="defaultValue">Default value to use if nothing found</param>
     /// <returns></returns>
-    public static T FromSession<T>(this string input, T defaultValue = null) where T : class
+    public static T FromSession<T>(this string input, T defaultValue)
     {
       var value = HttpContext.Current.Session[input];
       if (value == null || value.GetType() != typeof(T))
@@ -166,6 +272,12 @@ namespace TallyJ.Code
         return defaultValue;
       }
       return (T)value;
+    }
+
+    public static T SetInSession<T>(this string input, T newValue)
+    {
+      HttpContext.Current.Session[input] = newValue;
+      return newValue;
     }
 
 
@@ -232,5 +344,11 @@ namespace TallyJ.Code
       };
       return jsonResult;
     }
+
+    public static TimeSpan seconds(this int input)
+    {
+      return new TimeSpan(0, 0, input);
+    }
+
   }
 }

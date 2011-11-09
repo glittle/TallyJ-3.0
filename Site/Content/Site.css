@@ -1,4 +1,13 @@
-﻿html
+﻿/*
+Logo colors:
+1: #f6941e
+2: #8dc63e
+3: #013d7a 
+
+error: #e80c4d
+
+*/
+html
 {
   background-color: #e2e2e2;
   margin: 0;
@@ -613,7 +622,7 @@ a.twitter
 .Heartbeat.Frozen
 {
   padding: 0 10px 0 10px;
-  color: red;
+  color: #e80c4d;
   background-color: #ffcccc;
 }
 .Version

@@ -46,6 +46,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
     <Compile Include="Support\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +57,9 @@
       <Project>{A444CE75-8087-4828-BCE5-87A82752E0EC}</Project>
       <Name>Site</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

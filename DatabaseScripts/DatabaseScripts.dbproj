@@ -119,6 +119,7 @@
     <Folder Include="Schema Objects\Database Level Objects\Storage\Partition Schemes\" />
     <Folder Include="Scripts\Views" />
     <Folder Include="Scripts\Triggers" />
+    <Folder Include="Scripts\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <PropertiesFile Include="Properties\Database.sqlsettings">
@@ -142,6 +143,12 @@
   </ItemGroup>
   <ItemGroup>
     <NotInBuild Include="Scripts\Triggers\Person_Info.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
+    <NotInBuild Include="Scripts\Stored Procedures\CloneElection.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
+    <NotInBuild Include="Scripts\Views\vElection.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
   </ItemGroup>

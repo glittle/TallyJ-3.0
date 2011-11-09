@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.EF;
 
 namespace TallyJ.Models
 {
@@ -22,6 +25,19 @@ namespace TallyJ.Models
 
   public class ElectionModel : BaseViewModel
   {
+    readonly string[] _editableFields = new[]
+                                        {
+                                          "Name",
+                                          "DateOfElection",
+                                          "Convenor",
+                                          "ElectionType",
+                                          "ElectionMode",
+                                          "NumberToElect",
+                                          "NumberExtra",
+                                          "CanVote",
+                                          "CanReceive",
+                                        };
+
     public ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
@@ -200,5 +216,32 @@ namespace TallyJ.Models
 
       return rules;
     }
+
+
+    public JsonResult SaveElection(Election election)
+    {
+
+      var onFile = Db.Elections.Where(e => e.C_RowId == election.C_RowId).SingleOrDefault();
+      if (onFile != null)
+      {
+        // apply changes
+        if (election.CopyPropertyValuesTo(onFile, _editableFields))
+        {
+          Db.SaveChanges();
+        }
+
+        return new
+        {
+          Status = "Saved",
+          Election = onFile
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        Status = "Unkown ID"
+      }.AsJsonResult();
+    }
+
   }
 }

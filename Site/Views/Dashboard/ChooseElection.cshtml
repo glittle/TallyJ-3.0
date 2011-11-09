@@ -1,0 +1,18 @@
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model ElectionsListViewModel
+@{
+  ViewBag.Title = "Choose an Election";
+  ViewBag.Message = "Select or create an election";
+
+  ContextItems.AddJavascriptForPage("homeIndexUrl", "chooseElectionPage.electionsUrl={0};".FilledWithObjects(@Url.Action("Index", "Elections").QuotedForJavascript()));
+}
+<hgroup class="title"><h1>@ViewBag.Title.</h1>
+  <h2>@ViewBag.Message</h2>
+</hgroup>
+<h3>Your elections: (@Model.MyElectionsInfo.Count())</h3>
+<div id="ElectionList">
+  @TemplateLoader.FillTemplate(TemplateLoader.File.ElectionListItem, Model.MyElectionsInfo)
+  <div class="election">
+    <button type="button" id="btnCreate">Create a New Election</button></div>
+</div>

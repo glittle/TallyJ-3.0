@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using TallyJ.Code.Session;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Resources
 {
@@ -68,5 +69,11 @@ namespace TallyJ.Code.Resources
 
 			return content;
 		}
+
+	  public static HtmlString FillTemplate<T>(File templateFile, IEnumerable<T> items)
+	  {
+	    var content = GetFileContent(templateFile.ToString());
+	    return content.FilledWithEachObject(items).AsRawHtml();
+	  }
 	}
 }

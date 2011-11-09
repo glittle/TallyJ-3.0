@@ -2,6 +2,7 @@
 {
   float: left;
   padding-right: 20px;
+  border-spacing: 0;
 }
 table.More th, table.Demographics th
 {
@@ -30,3 +31,23 @@ input[type='date']
   padding: 1px 24px 1px 4px;
   margin-bottom: 2px;
 }
+tr.electionDetail TD
+{
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ccc;
+}
+tr.electionDetailT TD
+{
+  border-top: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ccc;
+}
+tr.electionDetailB TD
+{
+  border-bottom: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ccc;
+ }
