@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.Configuration;
+using System.Reflection;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Microsoft.Practices.ServiceLocation;
@@ -19,6 +21,7 @@ namespace TallyJ
 			ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
 			DependencyResolver.SetResolver(new UnityDependencyResolver(UnityInstance.Container));
 
+		  FixUpConnectionString();
 			Bootstrapper.Initialise();
 
 			AreaRegistration.RegisterAllAreas();
@@ -27,7 +30,17 @@ namespace TallyJ
 			RegisterRoutes(RouteTable.Routes);
 		}
 
-		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+	  void FixUpConnectionString()
+	  {
+      var cnString = ConfigurationManager.ConnectionStrings["MainConnection"];
+
+      var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
+      fi.SetValue(cnString, false);
+
+      cnString.ConnectionString = cnString.ConnectionString + ";MultipleActiveResultSets=True";
+	  }
+
+	  public static void RegisterGlobalFilters(GlobalFilterCollection filters)
 		{
 			filters.Add(new HandleErrorAttribute());
 		}

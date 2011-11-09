@@ -126,7 +126,7 @@ function ProcessHeartbeat(info) {
     $('.Heartbeat').removeClass('Frozen').text('Active').effect('highlight', 'slow');
   }
   else {
-    $('.Heartbeat').addClass('Frozen').text('Stopped');
+    $('.Heartbeat').addClass('Frozen').text('Not in Election');
   }
   if (info.VersionNum) {
     lastVersionNum().set(info.VersionNum);
