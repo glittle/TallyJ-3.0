@@ -35,7 +35,7 @@ function Onload() {
   }
   PrepareStatusDisplay();
 
-  ProcessHeartbeat({ Active: true });
+  SendHeartbeat();
 
   UpdateActiveInfo();
 

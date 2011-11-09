@@ -218,6 +218,9 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Content Include="Images\ajax-loader.gif" />
+    <Content Include="Images\BlankBig.png" />
+    <Content Include="Images\BlankBigB.png" />
+    <Content Include="Images\BlankBigT.png" />
     <Content Include="Images\favicon.ico" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />
