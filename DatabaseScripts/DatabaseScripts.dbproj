@@ -142,13 +142,10 @@
     <BuildContributorArgument Include="OutDir=$(OutDir)" />
   </ItemGroup>
   <ItemGroup>
-    <NotInBuild Include="Scripts\Triggers\Person_Info.sql">
-      <SubType>NotInBuild</SubType>
-    </NotInBuild>
     <NotInBuild Include="Scripts\Stored Procedures\CloneElection.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
-    <NotInBuild Include="Scripts\Views\vElection.sql">
+    <NotInBuild Include="Scripts\Views\vBallot.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
   </ItemGroup>

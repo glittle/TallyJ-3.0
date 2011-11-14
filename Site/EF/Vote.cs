@@ -23,5 +23,6 @@ namespace TallyJ.EF
         public string StatusCode { get; set; }
         public Nullable<System.Guid> InvalidReasonGuid { get; set; }
         public byte[] C_RowVersion { get; set; }
+        public Nullable<int> BielectionCount { get; set; }
     }
 }

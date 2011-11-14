@@ -2,7 +2,7 @@
 /// <reference path="../../Scripts/PeopleHelper.js" />
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
 
-var NamesPage = function () {
+var PeoplePage = function () {
   var local = {
     People: [],
     peopleHelper: null,
@@ -19,11 +19,13 @@ var NamesPage = function () {
     local.People = markUp(info.People);
     local.nameList.html(local.template.filledWithEach(local.People));
     $('#more').html(info.MoreFound);
-    if (info.MoreFound) {
-      local.nameList.append('<li>...</li>');
-    }
     if (!local.People.length && local.lastSearch) {
       local.nameList.append('<li>...no matches found...</li>');
+    }
+    else {
+      if (info.MoreFound && local.lastSearch) {
+        local.nameList.append('<li>...</li>');
+      }
     }
     local.actionTag.removeClass('searching');
     local.inputField.removeClass('searching');
@@ -136,7 +138,7 @@ var NamesPage = function () {
   var resetSearch = function () {
     onNamesReady({
       People: [],
-      MoreFound: ''
+      MoreFound: comma(publicInterface.namesOnFile) + '  people on file'
     });
   };
   var nameClick = function (ev) {
@@ -149,6 +151,7 @@ var NamesPage = function () {
   };
   var publicInterface = {
     peopleUrl: '',
+    namesOnFile: 0,
     PreparePage: function () {
       local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
       local.peopleHelper.Prepare();
@@ -163,8 +166,8 @@ var NamesPage = function () {
   return publicInterface;
 };
 
-var namesPage = NamesPage();
+var peoplePage = PeoplePage();
 
 $(function () {
-  namesPage.PreparePage();
+  peoplePage.PreparePage();
 });

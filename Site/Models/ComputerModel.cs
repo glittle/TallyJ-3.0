@@ -1,33 +1,43 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using System.Web.WebPages;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ComputerModel : BaseViewModel
+  public class ComputerModel : DataAccessibleModel
   {
-    public int CreateComputerRecord()
+    public Computer CreateComputerRecord()
     {
       var computer = new Computer
                        {
-                         LastContact = DateTime.Now
+                         ShadowElectionGuid = Guid.NewGuid(),
+                         LastContact = DateTime.Now,
+                         BrowserInfo = HttpContext.Current.Request.Browser.Type
                        };
-
 
       Db.Computers.Add(computer);
       Db.SaveChanges();
 
-      return computer.C_RowId;
+      return computer;
     }
 
     public void AddComputerIntoElection(int computerRowId, Guid electionGuid)
     {
       var dbSet = Db.Computers;
 
-      var computer = dbSet.Where(c => c.C_RowId == computerRowId).Single();
+      var computer = dbSet.Where(c => c.C_RowId == computerRowId).SingleOrDefault();
+
+      if (computer == null)
+      {
+        computer = new ComputerModel().CreateComputerRecord();
+        UserSession.ComputerRowId = computer.C_RowId;
+      }
+
       computer.ElectionGuid = electionGuid;
       computer.ComputerCode =
         DetermineNextFreeComputerCode(
@@ -81,7 +91,7 @@ namespace TallyJ.Models
     public bool ProcessPulse()
     {
       var computer = Db.Computers.Where(c => c.C_RowId == UserSession.ComputerRowId).SingleOrDefault();
-      
+
       if (computer == null)
       {
         return false;
@@ -90,11 +100,16 @@ namespace TallyJ.Models
       {
         return false;
       }
-      
+
       computer.LastContact = DateTime.Now;
       Db.SaveChanges();
 
       return true;
+    }
+
+    public void DeleteAtLogout(int computerRowId)
+    {
+      //TODO: should this be deleted at logout??
     }
   }
 }

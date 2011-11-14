@@ -26,7 +26,7 @@ namespace TallyJ.EF
         public string CanVote { get; set; }
         public string CanReceive { get; set; }
         public Nullable<int> LastEnvNum { get; set; }
-        public Nullable<bool> ApprovedForReporting { get; set; }
+        public string TallyStatus { get; set; }
         public Nullable<System.Guid> LinkedElectionGuid { get; set; }
         public string LinkedElectionKind { get; set; }
         public string OwnerLoginId { get; set; }

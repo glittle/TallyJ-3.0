@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Models;
 using System.Linq;
+using Tests.Support;
 
 namespace Tests.BusinessTests
 {

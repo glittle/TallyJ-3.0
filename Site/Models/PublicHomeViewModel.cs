@@ -8,7 +8,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class PublicHomeViewModel : BaseViewModel
+  public class PublicHomeViewModel : DataAccessibleModel
   {
     /// <summary>
     /// Get elections listed for public access requests

@@ -16,7 +16,7 @@ namespace TallyJ.Controllers
 
     public ActionResult People()
     {
-      return View();
+      return View(new SetupModel());
     }
 
     public JsonResult SaveElection(Election election)
@@ -27,6 +27,17 @@ namespace TallyJ.Controllers
     public JsonResult DetermineRules(string type, string mode)
     {
       return new ElectionModel().GetRules(type, mode).AsJsonResult();
+    }
+
+    public ActionResult ImportExport()
+    {
+      return View(new ImportExportModel());
+    }
+
+    public JsonResult ResetAll()
+    {
+      new PeopleModel().CleanAllPersonRecordsBeforeStarting();
+      return "Done".AsJsonResult();
     }
   }
 }

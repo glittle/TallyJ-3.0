@@ -10,8 +10,6 @@ namespace TallyJ.Code.Session
 {
   public static class UserSession
   {
-    static int _computerRowId;
-
     /// <summary>Logged in identity name.</summary>
     public static string LoginId
     {
@@ -88,7 +86,12 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogin(string userName)
     {
-      ComputerRowId = new ComputerModel().CreateComputerRecord();
+      ComputerRowId = new ComputerModel().CreateComputerRecord().C_RowId;
+    }
+
+    public static void ProcessLogout()
+    {
+      new ComputerModel().DeleteAtLogout(ComputerRowId);
     }
   }
 }

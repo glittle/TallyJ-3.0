@@ -6,7 +6,7 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.Models
 {
-	public class ElectionListModel : BaseViewModel
+	public class ElectionListModel : DataAccessibleModel
 	{
 		public bool Select(Guid wantedElectionGuid)
 		{

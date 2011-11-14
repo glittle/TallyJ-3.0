@@ -24,7 +24,7 @@ namespace TallyJ.EF
         public string OtherInfo { get; set; }
         public string BahaiId { get; set; }
         public string CombinedInfo { get; set; }
-        public string CombinedSoundEx { get; set; }
+        public string CombinedSoundCodes { get; set; }
         public string CombinedInfoAtStart { get; set; }
         public string AgeGroup { get; set; }
         public Nullable<bool> CanVote { get; set; }

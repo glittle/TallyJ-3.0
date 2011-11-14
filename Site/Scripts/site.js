@@ -126,7 +126,7 @@ function ProcessHeartbeat(info) {
     $('.Heartbeat').removeClass('Frozen').text('Active').effect('highlight', 'slow');
   }
   else {
-    $('.Heartbeat').addClass('Frozen').text('Not in Election');
+    $('.Heartbeat').addClass('Frozen').text('No Election selected');
   }
   if (info.VersionNum) {
     lastVersionNum().set(info.VersionNum);
@@ -145,9 +145,9 @@ function ProcessHeartbeat(info) {
 
 
 function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObjectForCallbackFunction, callbackOnFailed, waitForResponse) {
-  /// <summary>Do a GET or POST to the named handler. If form is not needed, pass null. Query and Form are objects with named properties.</summary>
+  /// <summary>Do a POST to the named handler. If form is not needed, pass null. Query and Form are objects with named properties.</summary>
   var options = {
-    type: 'GET',
+    type: 'POST',
     url: handlerUrl,
     success: function (data) {
       if (HasErrors(data)) return;
@@ -169,7 +169,6 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 
   if (form) {
     options.data = JoinProperties(form);
-    options.type = 'POST';
   }
   if (waitForResponse) {
     options.async = false;

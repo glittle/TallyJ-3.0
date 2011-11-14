@@ -122,7 +122,8 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\BaseController.cs" />
-    <Compile Include="Code\BaseViewModel.cs" />
+    <Compile Include="Code\DataAccessibleModel.cs" />
+    <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Code\Session\SiteInfo.cs" />
     <Compile Include="Code\Session\SessionKey.cs" />
     <Compile Include="Code\Session\UserSession.cs" />
-    <Compile Include="Code\SoundEx.cs" />
+    <Compile Include="Code\Helpers\SoundEx.cs" />
     <Compile Include="Code\TemplateHelper.cs" />
     <Compile Include="Code\UnityRelated\HttpContextItemsProvider.cs" />
     <Compile Include="Code\UnityRelated\IContextItemsProvider.cs" />
@@ -166,19 +167,31 @@
     <Compile Include="EF\JoinElectionUser.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Location.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Person.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Teller.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\User.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\vElectionPartial.cs" />
+    <Compile Include="EF\vBallot.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ComputerModel.cs" />
+    <Compile Include="Models\Helper\AgeGroup.cs" />
+    <Compile Include="Models\Helper\InelligibleReason.cs" />
+    <Compile Include="Models\ImportExportModel.cs" />
+    <Compile Include="Models\PeopleModel.cs" />
     <Compile Include="Models\PeopleSearchModel.cs" />
-    <Compile Include="EF\Partials\MakeSerializable.cs" />
+    <Compile Include="EF\Partials\SerializableClasses.cs" />
     <Compile Include="Models\ElectionModel.cs" />
     <Compile Include="Models\ElectionListModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
-    <Compile Include="EF\Ballot.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\C_Log.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -192,13 +205,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\Location.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\Message.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Reason.cs">
@@ -211,9 +218,6 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
-    <Compile Include="EF\Teller.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\Vote.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -240,8 +244,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\Helper\PersonHelper.cs" />
     <Compile Include="Models\PublicHomeViewModel.cs" />
     <Compile Include="Models\PulseModel.cs" />
+    <Compile Include="Models\SetupModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +348,12 @@
     <Content Include="Views\Public\Home.cshtml.js">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\ImportExport.cshtml.css">
+      <DependentUpon>ImportExport.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportExport.cshtml.js">
+      <DependentUpon>ImportExport.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml</DependentUpon>
     </Content>
@@ -441,6 +453,7 @@
     <Content Include="Views\Public\Home.cshtml" />
     <Content Include="Views\Public\Install.cshtml" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml" />
+    <Content Include="Views\Setup\ImportExport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

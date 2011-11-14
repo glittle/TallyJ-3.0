@@ -23,7 +23,7 @@ namespace TallyJ.Models
     public int Extra { get; set; }
   };
 
-  public class ElectionModel : BaseViewModel
+  public class ElectionModel : DataAccessibleModel
   {
     readonly string[] _editableFields = new[]
                                         {

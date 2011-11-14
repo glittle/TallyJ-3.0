@@ -6,7 +6,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ElectionsListViewModel : BaseViewModel
+  public class ElectionsListViewModel : DataAccessibleModel
   {
     public IEnumerable<object> MyElectionsInfo
     {
@@ -21,7 +21,7 @@ namespace TallyJ.Models
                              e.ElectionGuid,
                              e.DateOfElection
                            })
-            .ToList()
+            .ToList() // execute sql and then work on result in code
             .Select(x => new
                            {
                              x.Name,

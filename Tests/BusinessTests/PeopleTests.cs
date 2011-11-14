@@ -4,6 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
 using TallyJ.EF;
 using TallyJ.Models;
+using TallyJ.Code.Helpers;
+using Tests.Support;
 
 namespace Tests.BusinessTests
 {
@@ -85,16 +87,18 @@ namespace Tests.BusinessTests
                                   person.OtherLastNames,
                                   person.OtherInfo,
                                 }.JoinedAsString(" ").ToLower();
-        person.CombinedSoundEx = new[]
+        person.CombinedSoundCodes = new[]
                                    {
-                                     person.FirstName.ToSoundex(),
-                                     person.LastName.ToSoundex(),
-                                     person.OtherNames.ToSoundex(),
-                                     person.OtherLastNames.ToSoundex(),
-                                     person.OtherInfo.ToSoundex(),
+                                     person.FirstName.GenerateDoubleMetaphone(),
+                                     person.LastName.GenerateDoubleMetaphone(),
+                                     person.OtherNames.GenerateDoubleMetaphone(),
+                                     person.OtherLastNames.GenerateDoubleMetaphone(),
+                                     person.OtherInfo.GenerateDoubleMetaphone(),
                                    }.JoinedAsString(" ").ToLower();
         yield return person;
       }
     }
+
+
   }
 }

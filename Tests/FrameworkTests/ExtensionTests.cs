@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TallyJ.EF;
-using TallyJ.Models;
 using TallyJ.Code;
+using Tests.Support;
 
 namespace Tests.FrameworkTests
 {
@@ -79,7 +76,8 @@ namespace Tests.FrameworkTests
 
       template.FilledWithObject(item).ShouldEqual("A:23 B:Hello");
     }
-   [TestMethod]
+
+    [TestMethod]
     public void FilledWithObject2()
     {
       var template = "Name:{Name} Recursive:{MyName}";

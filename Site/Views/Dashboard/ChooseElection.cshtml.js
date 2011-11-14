@@ -15,7 +15,7 @@ var HomeIndexPage = function () {
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, function (success) {
 
       if (success) {
-        location.href = '.';
+        location.href = site.rootUrl + 'Dashboard';
         return;
       }
       //      var electionDisplay = $('.CurrentElectionName');

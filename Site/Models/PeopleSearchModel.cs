@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.EF;
+using TallyJ.Code.Helpers;
 
 namespace TallyJ.Models
 {
@@ -24,7 +25,7 @@ namespace TallyJ.Models
 
     public JsonResult Search(string nameToFind)
     {
-      const int max = 5;
+      const int max = 9;
 
       var matched = InnerSearch(nameToFind, max, true);
 
@@ -56,7 +57,7 @@ namespace TallyJ.Models
       var numParts = parts.Length;
 
       var part0 = parts[0];
-      var part0Sx = part0.ToSoundex();
+      var part0Sx = part0.GenerateDoubleMetaphone();
 
       // IQueryable<Person> query;
       //var whereClause = PredicateBuilder.False<Person>();
@@ -89,18 +90,18 @@ namespace TallyJ.Models
       if (parts.Length > 1)
       {
         part1 = parts[1];
-        part1Sx = part1.ToSoundex();
+        part1Sx = part1.GenerateDoubleMetaphone();
       }
 
       IQueryable<Person> query;
       if (callingSqlDb)
       {
         query = People.Where(p =>
-                             p.CombinedSoundEx.Contains(part0Sx)
+                             p.CombinedSoundCodes.Contains(part0Sx)
                              &&
                              (part1Sx == null ||
-                              SqlFunctions.CharIndex(part1Sx, p.CombinedSoundEx,
-                                                     SqlFunctions.CharIndex(part0Sx, p.CombinedSoundEx)) != -1)
+                              SqlFunctions.CharIndex(part1Sx, p.CombinedSoundCodes,
+                                                     SqlFunctions.CharIndex(part0Sx, p.CombinedSoundCodes)) != -1)
                              || p.CombinedInfo.Contains(part0)
                              && (part1 == null
                                  ||
@@ -113,10 +114,10 @@ namespace TallyJ.Models
       else
       {
         query = People.Where(p =>
-                             p.CombinedSoundEx.Contains(part0Sx)
+                             p.CombinedSoundCodes.Contains(part0Sx)
                              &&
                              (part1Sx == null ||
-                              p.CombinedSoundEx.IndexOf(part1Sx, p.CombinedSoundEx.IndexOf(part0Sx)) != -1)
+                              p.CombinedSoundCodes.IndexOf(part1Sx, p.CombinedSoundCodes.IndexOf(part0Sx)) != -1)
                              ||
                              p.CombinedInfo.Contains(part0.ToLower())
                              && (part1 == null

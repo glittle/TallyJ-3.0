@@ -29,11 +29,7 @@ namespace TallyJ.Controllers
                  }.AsJsonResult();
       }
 
-      var model = new PeopleSearchModel(
-        Db.People
-        .Where(p => p.ElectionGuid == currentElection.ElectionGuid)
-        .Where(p => includeInelligible || p.IneligibleReasonGuid == null)
-        );
+      var model = new PeopleSearchModel(new PeopleModel().PeopleInCurrentElection(includeInelligible));
       return model.Search(search);
     }
   }

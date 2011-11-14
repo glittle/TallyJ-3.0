@@ -93,7 +93,12 @@ namespace TallyJ.Controllers
 
 		public ActionResult LogOff()
 		{
-			FormsAuthentication.SignOut();
+      if (UserSession.IsLoggedIn)
+      {
+        UserSession.ProcessLogout();
+      }
+
+		  FormsAuthentication.SignOut();
 
 			return RedirectToAction("Index", "Public");
 		}

@@ -23,5 +23,7 @@ namespace TallyJ.EF
         public Nullable<int> LastBallotNum { get; set; }
         public Nullable<System.Guid> Teller1 { get; set; }
         public Nullable<System.Guid> Teller2 { get; set; }
+        public Nullable<System.Guid> ShadowElectionGuid { get; set; }
+        public string BrowserInfo { get; set; }
     }
 }
