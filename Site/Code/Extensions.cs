@@ -118,7 +118,7 @@ namespace TallyJ.Code
       {
         return "".AsRawHtml();
       }
-      return input.ToLongDateString().AsRawHtml();
+      return input.ToString("d MMMM yyyy").AsRawHtml();
     }
 
     public static HtmlString AsHtmlString(this DateTime? input)

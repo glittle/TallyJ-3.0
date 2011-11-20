@@ -1,0 +1,8 @@
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts_Script.PreDeployment.sql
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts_Script.PostDeployment.sql
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts_Database.sqlsettings
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts_Database.sqldeployment
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts_Database.sqlcmdvars
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts.deploymanifest
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\sql\debug\DatabaseScripts.dbschema
+C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\DatabaseScripts\obj\Debug\DatabaseScripts.dbschema
