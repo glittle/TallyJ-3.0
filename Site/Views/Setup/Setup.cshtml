@@ -1,10 +1,13 @@
-﻿@using TallyJ.Code.Resources
+﻿@model SetupModel
+@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
 
-  ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWithObjects(@Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("election", "setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJson()));
+  ContextItems.AddJavascriptForPage("rules", "setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
 }
 <table class="Demographics">
   <tr>
@@ -43,14 +46,14 @@
       <select id="ddlMode" data-name="ElectionMode">
         <option value="N">Normal Election</option>
         <option value="T">Tie-Break</option>
-        <option value="B" id="modeB">Bi-election</option>
+        <option value="B" id="modeB">By-election</option>
       </select>
     </td>
   </tr>
   <tr class="electionDetailT">
     <th>Names on Ballot</th>
     <td>
-      <input type="number" min="2" id="txtNames" data-name="NumberToElect" />
+      <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
     </td>
   </tr>
   <tr class="electionDetail">

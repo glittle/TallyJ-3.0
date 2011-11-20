@@ -5,8 +5,8 @@
   ViewBag.Title = "Dashboard";
   ViewBag.Message = ("For election &nbsp; " + UserSession.CurrentElectionName).AsRawHtml();
 
-  ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWithObjects(@Url.Action("Index", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWithObjects(Model.MyElectionsInfo.SerializedAsJson()));
+  ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.ElectionListItem);
 }
 @section featured {

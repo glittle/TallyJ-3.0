@@ -54,7 +54,7 @@
       </div>
     </footer>
     @{
-      ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWithObjects(@Url.Content("~")));
+      ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
     }
     @ContextItems.GetJavascriptForPage()
   </body>

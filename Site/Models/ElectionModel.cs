@@ -35,7 +35,7 @@ namespace TallyJ.Models
                                           "NumberToElect",
                                           "NumberExtra",
                                           "CanVote",
-                                          "CanReceive",
+                                          "CanReceive"
                                         };
 
     public ElectionRules GetRules(string type, string mode)
@@ -137,7 +137,7 @@ namespace TallyJ.Models
               break;
 
             case "B":
-              throw new ApplicationException("Unit Conventions cannot have bi-elections");
+              throw new ApplicationException("Unit Conventions cannot have by-elections");
           }
           rules.CanReceiveLocked = true;
           break;
@@ -169,7 +169,7 @@ namespace TallyJ.Models
               break;
 
             case "B":
-              // Regional Councils often do not have bi-elections, but some countries may allow it?
+              // Regional Councils often do not have by-elections, but some countries may allow it?
 
               rules.Num = 1;
               rules.NumLocked = false;
@@ -221,7 +221,7 @@ namespace TallyJ.Models
     public JsonResult SaveElection(Election election)
     {
 
-      var onFile = Db.Elections.Where(e => e.C_RowId == election.C_RowId).SingleOrDefault();
+      var onFile = Db.Elections.SingleOrDefault(e => e.C_RowId == election.C_RowId);
       if (onFile != null)
       {
         // apply changes

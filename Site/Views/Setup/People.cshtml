@@ -4,8 +4,8 @@
   ViewBag.Title = "People";
   ViewBag.Message = "The community";
 
-  ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWithObjects(@Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWithObjects(@Model.NumberOfPeople));
+  ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(@Model.NumberOfPeople));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <input id=txtSearch><span id=action></span> <span id=more></span>

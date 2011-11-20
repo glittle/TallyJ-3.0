@@ -153,7 +153,7 @@ namespace TallyJ.Code
     /// <summary>
     ///   Use the input string as the format with string.Format
     /// </summary>
-    public static string FilledWithObjects(this string input, params object[] values)
+    public static string FilledWith(this string input, params object[] values)
     {
       if (input.HasNoContent())
         return string.Empty;
@@ -163,7 +163,16 @@ namespace TallyJ.Code
         return input;
       }
 
-      return string.Format(input, values);
+        if(values.Length==1)
+        {
+            var value = values[0];
+            if(value.GetType().Namespace!="System")
+            {
+                return input.FilledWithObject(value);
+            }
+        }
+
+        return string.Format(input, values);
     }
 
     /// <summary>Return the URL to the content file, with a version number based on the timestamp.</summary>
@@ -173,7 +182,7 @@ namespace TallyJ.Code
 
       if (productionNameModifier.HasContent() || debuggingNameModifier.HasContent())
       {
-        contentFilePath = contentFilePath.FilledWithObjects(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
+        contentFilePath = contentFilePath.FilledWith(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
       }
 
       var rawPath = HttpContext.Current.Request.MapPath(contentFilePath);

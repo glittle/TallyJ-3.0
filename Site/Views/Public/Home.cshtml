@@ -28,7 +28,7 @@
         <div>
           <span>Elections:</span> <select id="ddlElections" size="4">
             @(Model.PublicElections
-                                                              .Select(x => "<option value=\"{0}\">{1}</option>".FilledWithObjects(x.Key, x.Value))
+                                                              .Select(x => "<option value=\"{0}\">{1}</option>".FilledWith(x.Key, x.Value))
                                                               .JoinedAsString()
                                                               .AsRawHtml())
           </select></div>

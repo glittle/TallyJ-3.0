@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Session;
 using TallyJ.EF;
 using TallyJ.Models;
 
@@ -11,7 +12,7 @@ namespace TallyJ.Controllers
     
     public ActionResult Index()
     {
-      return View("Setup");
+      return View("Setup", new SetupModel());
     }
 
     public ActionResult People()

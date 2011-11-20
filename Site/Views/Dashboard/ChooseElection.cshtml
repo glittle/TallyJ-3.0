@@ -5,7 +5,7 @@
   ViewBag.Title = "Choose an Election";
   ViewBag.Message = "Select or create an election";
 
-  ContextItems.AddJavascriptForPage("homeIndexUrl", "chooseElectionPage.electionsUrl={0};".FilledWithObjects(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("homeIndexUrl", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
 }
 <hgroup class="title"><h1>@ViewBag.Title.</h1>
   <h2>@ViewBag.Message</h2>

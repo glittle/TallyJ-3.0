@@ -33,7 +33,7 @@ namespace Tests.FrameworkTests
       var values = new object[] {"string", 1234};
       var template = "0:{0} 1:{1}";
 
-      template.FilledWithObjects(values).ShouldEqual("0:string 1:1234");
+      template.FilledWith(values).ShouldEqual("0:string 1:1234");
     }
 
     [TestMethod]
@@ -42,7 +42,7 @@ namespace Tests.FrameworkTests
       var values = new object[] {"string", 1234};
       var template = "0:{0} 0:{0}";
 
-      template.FilledWithObjects(values).ShouldEqual("0:string 0:string");
+      template.FilledWith(values).ShouldEqual("0:string 0:string");
     }
 
     [TestMethod]

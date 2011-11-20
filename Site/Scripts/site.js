@@ -10,18 +10,15 @@ var site = {
   teller2: '',
   templates: {},
   computerActive: true,
-  lastVersionNum: 0,
+  //lastVersionNum: 0,
   infoForHeartbeat: {},
   heartbeatActive: true,
-  heartbeatTime: 3 * 1000, // default time
+  heartbeatSeconds: 60, // default seconds
   heartbeatTimeout: null,
   rootUrl: ''
 };
 var lsName = {
-  Election: 'Election',
-  People: 'People',
-  PeopleColumns: 'PeopleColumns',
-  LastVersionNum: 'VerNum'
+  
 };
 var MyResources = {};
 
@@ -37,33 +34,33 @@ function Onload() {
 
   SendHeartbeat();
 
-  UpdateActiveInfo();
+  // UpdateActiveInfo();
 
 }
 
-var UpdateActiveInfo = function () {
-  var election = GetFromStorage(lsName.Election);
-  if (election) {
-    var electionDisplay = $('.CurrentElectionName');
-    electionDisplay.text(election.Name);
-    electionDisplay.effect('highlight', { mode: 'slow' });
-    site.heartbeatActive = true;
-    // SetInStorage(lsName.Election, election);
-    ActivateHeartbeat(true);
-  }
-};
+//var UpdateActiveInfo = function () {
+//  var election = GetFromStorage(lsName.Election);
+//  if (election) {
+//    var electionDisplay = $('.CurrentElectionName');
+//    electionDisplay.text(election.Name);
+//    electionDisplay.effect('highlight', { mode: 'slow' });
+//    site.heartbeatActive = true;
+//    // SetInStorage(lsName.Election, election);
+//    ActivateHeartbeat(true);
+//  }
+//};
 
-var lastVersionNum = function () {
-  return {
-    get: function (defaultValue) {
-      return GetFromStorage(lsName.LastVersionNum) || defaultValue;
-    },
-    set: function (value) {
-      SetInStorage(lsName.LastVersionNum, value);
-      return value;
-    }
-  };
-};
+//var lastVersionNum = function () {
+//  return {
+//    get: function (defaultValue) {
+//      return GetFromStorage(lsName.LastVersionNum) || defaultValue;
+//    },
+//    set: function (value) {
+//      SetInStorage(lsName.LastVersionNum, value);
+//      return value;
+//    }
+//  };
+//};
 
 /// Called after AJAX server calls
 
@@ -105,10 +102,10 @@ function GetResource(resourceKey) {
 function ActivateHeartbeat(makeActive, delaySeconds) {
   if (makeActive) {
     if (delaySeconds) {
-      site.heartbeatTime = +delaySeconds * 1000;
+      site.heartbeatSeconds = +delaySeconds;
     }
     clearTimeout(site.heartbeatTimeout);
-    site.heartbeatTimeout = setTimeout(SendHeartbeat, site.heartbeatTime);
+    site.heartbeatTimeout = setTimeout(SendHeartbeat, 1000 * site.heartbeatSeconds);
   }
   else {
     clearTimeout(site.heartbeatTimeout);
@@ -128,11 +125,11 @@ function ProcessHeartbeat(info) {
   else {
     $('.Heartbeat').addClass('Frozen').text('No Election selected');
   }
-  if (info.VersionNum) {
-    lastVersionNum().set(info.VersionNum);
-  }
+//  if (info.VersionNum) {
+//    lastVersionNum().set(info.VersionNum);
+//  }
   if (info.PulseSeconds) {
-    site.heartbeatTime = info.PulseSeconds * 1000;
+    site.heartbeatSeconds = info.PulseSeconds;
   }
   ActivateHeartbeat(site.heartbeatActive);
 }
@@ -178,14 +175,16 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 
 
 String.prototype.parseJsonDate = function () {
-  var answer = this;
-  this.replace(/\((.+)\)/g, function () { answer = arguments[1]; });
-  return new Date(parseFloat(answer));
+    var answer = this;
+    this.replace(/\((.+)\)/g, function () { answer = arguments[1]; });
+    var num = parseFloat(answer);
+    if (isNaN(num)) return NaN;
+    return new Date(num);
 
-  ///Date(1072940400000)/
-  ///Date(1654149600000)/
-  ///Date(165414960000)/
-  ///Date(-1566496800000)/
+    ///Date(1072940400000)/
+    ///Date(1654149600000)/
+    ///Date(165414960000)/
+    ///Date(-1566496800000)/
 };
 
 function JsonParse(json) {
@@ -484,7 +483,7 @@ function GetValue(sNum) {
 function FormatDate(date, format, forDisplayOnly) {
   // MMM = JAN
   // MMMM = JANUARY
-  if (date == null || date == 'NaN' || date === '01/01/0001' || date === '') {
+  if (date == null || isNaN(date) || date == 'NaN' || date === '01/01/0001' || date === '') {
     return '';
   }
   if (!format) {
