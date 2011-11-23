@@ -105,11 +105,12 @@ namespace TallyJ.Code
 
     public static bool AsBool(this bool? input)
     {
-      if (input.HasValue)
-      {
-        return input.Value;
-      }
-      return false;
+      return input.HasValue && input.Value;
+    }
+
+    public static Guid AsGuid(this Guid? input)
+    {
+      return input.HasValue ? input.Value : Guid.Empty;
     }
 
     public static HtmlString AsHtmlString(this DateTime input)

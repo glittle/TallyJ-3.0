@@ -1,7 +1,47 @@
-﻿@model object
-
+﻿@using TallyJ.Code.Session
+@model ResultsModel
 @{
-	ViewBag.Title = "title";
-}
+    ViewBag.Title = "Election Analysis";
+    ViewBag.Message = "Review the results";
 
-<h2>After</h2>
+    ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.CurrentResults.SerializedAsJson()));
+}
+<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
+<script src="@Url.Content("~/Scripts/highcharts/themes/dark-blue.js")"></script>
+
+<table class="Main">
+    <thead>
+        <tr>
+            <th>
+                Person
+            </th>
+            <th>
+                Votes
+            </th>
+            <th>
+                Rank
+            </th>
+            <th>
+                Comments
+            </th>
+        </tr>
+    </thead>
+    <tbody id="mainBody">
+        <tr class="{ClassName}">
+            <th>
+                {PersonName}
+            </th>
+            <td>
+                {VoteCount}
+            </td>
+            <td>
+                {Rank}
+            </td>
+            <td>
+                {Comments}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div id="chart"></div>

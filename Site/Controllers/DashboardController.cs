@@ -8,21 +8,21 @@ using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
-	public class DashboardController : BaseController
-	{
-		public ActionResult Index()
-		{
-      if (UserSession.CurrentElection == null)
-      {
-        return View("ChooseElection", new ElectionsListViewModel());
-      }
-
-		  return View(new ElectionsListViewModel());
-		}
-
-    public ActionResult ChooseElection()
+    public class DashboardController : BaseController
     {
-      return View(new ElectionsListViewModel());
+        public ActionResult Index()
+        {
+            if (UserSession.CurrentElection == null)
+            {
+                return View("ChooseElection", new ElectionsListViewModel());
+            }
+
+            return View(new ElectionsListViewModel());
+        }
+
+        public ActionResult ChooseElection()
+        {
+            return View(new ElectionsListViewModel());
+        }
     }
-	}
 }

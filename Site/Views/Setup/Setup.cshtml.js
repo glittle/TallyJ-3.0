@@ -5,7 +5,6 @@ var SetupIndexPage = function () {
     var cachedRules = {
         // temporary cache of rules, for the life of this page
     };
-
     var preparePage = function () {
 
         $('#ddlType').live('change keyup', startToAdjustByType);
@@ -18,8 +17,19 @@ var SetupIndexPage = function () {
         });
 
         applyValues(publicInterface.Election);
+        showLocations(publicInterface.Locations);
 
         $('#txtName').focus();
+    };
+
+    var showLocations = function (locations) {
+        if (locations == null) {
+            $('#locationList').html('[None]');
+            return;
+        }
+        var template = '<div>{Name}</div>';
+
+        $('#locationList').html(template.filledWithEach(locations));
     };
 
     var applyValues = function (election) {
@@ -52,7 +62,7 @@ var SetupIndexPage = function () {
         });
 
         ShowStatusDisplay("Saving...");
-        CallAjaxHandler(publicInterface.setupUrl + '/SaveElection', form, function (info) {
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
             if (info.Election) {
                 var election = adjustElection(info.Election);
                 applyValues(election);
@@ -88,7 +98,7 @@ var SetupIndexPage = function () {
             mode: mode
         };
 
-        CallAjaxHandler(publicInterface.setupUrl + '/DetermineRules', form, applyRules, combined);
+        CallAjaxHandler(publicInterface.controllerUrl + '/DetermineRules', form, applyRules, combined);
     };
 
     function applyRules(info, combined) {
@@ -105,8 +115,9 @@ var SetupIndexPage = function () {
     //  };
 
     var publicInterface = {
-        setupUrl: '',
+        controllerUrl: '',
         Election: null,
+        Locations: null,
         initialRules: function (type, mode, info) {
             var combined = type + '.' + mode;
             cachedRules[combined] = info;

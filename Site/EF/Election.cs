@@ -33,5 +33,6 @@ namespace TallyJ.EF
         public string ElectionPasscode { get; set; }
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
         public byte[] C_RowVersion { get; set; }
+        public Nullable<bool> IsSingleNameElection { get; set; }
     }
 }

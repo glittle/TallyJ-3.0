@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Models;
 
 namespace TallyJ.Controllers
 {
@@ -15,7 +16,11 @@ namespace TallyJ.Controllers
 
     public ActionResult Analyze()
     {
-      return View();
+      var resultsModel = new ResultsModel();
+
+      resultsModel.GenerateResults();
+
+      return View(resultsModel);
     }
 
     public ActionResult Reports()
@@ -30,7 +35,13 @@ namespace TallyJ.Controllers
 
     public ActionResult Monitor()
     {
-      return View();
+      return View(new MonitorModel());
+    }
+
+    public JsonResult RefreshMonitor()
+    {
+      return new MonitorModel().LocationInfo.AsJsonResult();
     }
   }
+
 }

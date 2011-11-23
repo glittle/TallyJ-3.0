@@ -9,13 +9,13 @@ var ImportExportPage = function () {
   var preparePage = function () {
     $('#btnResetList').click(function () {
       ShowStatusDisplay('Resetting...');
-      CallAjaxHandler(publicInterface.setupUrl + '/ResetAll', null, function (info) {
+      CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null, function (info) {
         ResetStatusDisplay();
       });
     });
   };
   var publicInterface = {
-    setupUrl: '',
+    controllerUrl: '',
     PreparePage: preparePage
   };
   return publicInterface;

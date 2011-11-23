@@ -1,2 +1,64 @@
-﻿@model object
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model MonitorModel
+@{
+    ViewBag.Title = "Election Monitor";
+    ViewBag.Message = "What's Happening?";
 
+    ContextItems.AddJavascriptForPage("pageUrl", "monitorPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("locations", "monitorPage.LocationInfos={0};".FilledWith(Model.LocationInfoJson));
+}
+<table class="Main">
+    <thead>
+        <tr>
+            <th>
+                Location
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Teller Computers
+            </th>
+            <th>
+                # Ballots
+            </th>
+            <th>
+                Contact Info
+            </th>
+        </tr>
+    </thead>
+    <tbody id="mainBody">
+        <tr class="{ClassName}">
+            <th>
+                {Name}
+            </th>
+            <td>
+                {TallyStatus}
+            </td>
+            <td>
+                {ActiveComputers}
+            </td>
+            <td>
+                {Ballots}
+            </td>
+            <td>
+                {ContactInfo}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="AutoButtons">
+    <input type="checkbox" id="chkAutoRefresh" />
+    <span>Auto-refresh every </span>
+    <select id="ddlRefresh">
+        <option value="10">10 seconds</option>
+        <option value="15">20 seconds</option>
+        <option value="30">30 seconds</option>
+        <option value="60">minute</option>
+        <option value="120">2 minutes</option>
+    </select>
+  <button type="button" id="btnRefesh">
+    Refresh Now</button>
+    <span id="lastRefresh"></span>
+</div>

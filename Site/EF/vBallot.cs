@@ -24,7 +24,6 @@ namespace TallyJ.EF
         public Nullable<System.Guid> TellerAtKeyboard { get; set; }
         public Nullable<System.Guid> TellerAssisting { get; set; }
         public byte[] C_RowVersion { get; set; }
-        public int C_RowId2 { get; set; }
         public System.Guid ElectionGuid { get; set; }
     }
 }

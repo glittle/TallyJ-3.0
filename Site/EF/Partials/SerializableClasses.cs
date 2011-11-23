@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Objects.DataClasses;
 
 namespace TallyJ.EF
 {
@@ -11,4 +12,5 @@ namespace TallyJ.EF
   public partial class Computer
   {
   }
+
 }

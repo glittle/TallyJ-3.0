@@ -6,7 +6,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ElectionsListViewModel : DataAccessibleModel
+  public class ElectionsListViewModel : DataConnectedModel
   {
     public IEnumerable<object> MyElectionsInfo
     {

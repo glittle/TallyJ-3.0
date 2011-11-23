@@ -124,7 +124,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\BaseController.cs" />
-    <Compile Include="Code\DataAccessibleModel.cs" />
+    <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
@@ -157,6 +157,9 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="EF\Ballot.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\CloneElection_Result.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -175,6 +178,9 @@
     <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Result.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Teller.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -184,10 +190,27 @@
     <Compile Include="EF\vBallot.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\vLocationInfo.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Vote.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\vResultInfo.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\vVoteInfo.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BallotModel.cs" />
     <Compile Include="Models\ComputerModel.cs" />
+    <Compile Include="Models\ElectionAnalyzer.cs" />
+    <Compile Include="Models\ElectionAnalyzerCore.cs" />
     <Compile Include="Models\Helper\AgeGroup.cs" />
     <Compile Include="Models\Helper\InelligibleReason.cs" />
+    <Compile Include="Models\IElectionAnalyzer.cs" />
     <Compile Include="Models\ImportExportModel.cs" />
+    <Compile Include="Models\MonitorModel.cs" />
     <Compile Include="Models\PeopleModel.cs" />
     <Compile Include="Models\PeopleSearchModel.cs" />
     <Compile Include="EF\Partials\SerializableClasses.cs" />
@@ -213,16 +236,10 @@
     <Compile Include="EF\Reason.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\Result.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\ResultSummary.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
-    <Compile Include="EF\Vote.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\BlankBig.png" />
     <Content Include="Images\BlankBigB.png" />
@@ -249,7 +266,9 @@
     <Compile Include="Models\Helper\PersonHelper.cs" />
     <Compile Include="Models\PublicHomeViewModel.cs" />
     <Compile Include="Models\PulseModel.cs" />
+    <Compile Include="Models\ResultsModel.cs" />
     <Compile Include="Models\SetupModel.cs" />
+    <Compile Include="Models\SingleNameElectionAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -314,6 +333,11 @@
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Scripts\highcharts\highcharts.js" />
+    <Content Include="Scripts\highcharts\themes\dark-blue.js" />
+    <Content Include="Scripts\highcharts\themes\dark-green.js" />
+    <Content Include="Scripts\highcharts\themes\gray.js" />
+    <Content Include="Scripts\highcharts\themes\grid.js" />
     <Content Include="Scripts\jquery-1.7-vsdoc.js" />
     <Content Include="Scripts\jquery-1.7.js" />
     <Content Include="Scripts\jquery-1.7.min.js" />
@@ -332,6 +356,12 @@
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Unity.Mvc3.README.txt" />
+    <Content Include="Views\After\Monitor.cshtml.css">
+      <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Monitor.cshtml.js">
+      <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
@@ -433,6 +463,12 @@
   <ItemGroup>
     <Content Include="Views\Ballots\Ballots.cshtml" />
     <Content Include="Views\After\Analyze.cshtml" />
+    <Content Include="Views\After\Analyze.cshtml.css">
+      <DependentUpon>Analyze.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Analyze.cshtml.js">
+      <DependentUpon>Analyze.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\After\Presenter.cshtml" />
     <Content Include="Views\After\Monitor.cshtml" />

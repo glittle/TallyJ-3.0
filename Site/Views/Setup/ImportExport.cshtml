@@ -4,6 +4,6 @@
   ViewBag.Title = "Import / Export";
   ViewBag.Message = "Dealing with the names in the community";
 
-  ContextItems.AddJavascriptForPage("setupUrl", "importExportPage.setupUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("controllerUrl", "importExportPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
 }
 <button type="button" id="btnResetList">Reset all information</button>

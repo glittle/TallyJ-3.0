@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
+    <Compile Include="BusinessTests\ResultAnalysisTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
     <Compile Include="Support\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

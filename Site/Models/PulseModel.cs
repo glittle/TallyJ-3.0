@@ -4,7 +4,7 @@ using TallyJ.Code;
 
 namespace TallyJ.Models
 {
-  public class PulseModel : DataAccessibleModel
+  public class PulseModel : DataConnectedModel
   {
     public JsonResult ProcessPulse()
     {

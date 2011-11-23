@@ -15,7 +15,7 @@ var HomeIndexPage = function () {
         };
 
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, function (election) {
-      SetInStorage(lsName.Election, adjustElection(election));
+      SetInStorage(storageKey.Election, adjustElection(election));
 
       var electionDisplay = $('.CurrentElectionName');
       electionDisplay.text(election.Name);

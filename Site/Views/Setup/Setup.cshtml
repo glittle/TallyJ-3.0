@@ -2,96 +2,110 @@
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
-  ViewBag.Title = "Election Setup";
-  ViewBag.Message = "Who, What, When and Where!";
+    ViewBag.Title = "Election Setup";
+    ViewBag.Message = "Who, What, When and Where!";
 
-  ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.setupUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("election", "setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJson()));
-  ContextItems.AddJavascriptForPage("rules", "setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
+    ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("election", "setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJson()));
+    ContextItems.AddJavascriptForPage("locations", "setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
+    ContextItems.AddJavascriptForPage("rules", "setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
 }
 <table class="Demographics">
-  <tr>
-    <th>Name</th>
-    <td>
-      <input type="text" id="txtName" data-name="Name">
-    </td>
-  </tr>
-  <tr>
-    <th>Convenor</th>
-    <td>
-      <input type="text" id="txtConvenor" data-name="Convenor">
-    </td>
-  </tr>
-  <tr>
-    <th>Election Date</th>
-    <td>
-      <input type="date" id="txtDate" data-name="DateOfElection">
-    </td>
-  </tr>
-  <tr>
-    <th>Type of Election</th>
-    <td>
-      <select id="ddlType" data-name="ElectionType">
-        <option value="LSA">Local Spiritual Assembly</option>
-        <option value="NSA">National Spiritual Assembly</option>
-        <option value="Con">Unit Convention</option>
-        <option value="Reg">Regional Council</option>
-        <option value="Oth">Other</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <th>Variation</th>
-    <td>
-      <select id="ddlMode" data-name="ElectionMode">
-        <option value="N">Normal Election</option>
-        <option value="T">Tie-Break</option>
-        <option value="B" id="modeB">By-election</option>
-      </select>
-    </td>
-  </tr>
-  <tr class="electionDetailT">
-    <th>Names on Ballot</th>
-    <td>
-      <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>Report on next highest</th>
-    <td>
-      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>Who can vote?</th>
-    <td>
-      <select id=ddlCanVote data-name="CanVote">
-        <option value="A">Everyone on the list</option>
-        <option value="N">Named delegates</option>
-      </select>
-    </td>
-  </tr>
-  <tr class="electionDetailB">
-    <th>Who can be voted for?</th>
-    <td>
-      <select id=ddlCanReceive data-name="CanReceive">
-        <option value="A">Everyone on the list</option>
-        <option value="N">Named individuals</option>
-      </select>
-    </td>
-  </tr>
+    <tr>
+        <th>
+            Name
+        </th>
+        <td>
+            <input type="text" id="txtName" data-name="Name">
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Convenor
+        </th>
+        <td>
+            <input type="text" id="txtConvenor" data-name="Convenor">
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Election Date
+        </th>
+        <td>
+            <input type="date" id="txtDate" data-name="DateOfElection">
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Type of Election
+        </th>
+        <td>
+            <select id="ddlType" data-name="ElectionType">
+                <option value="LSA">Local Spiritual Assembly</option>
+                <option value="NSA">National Spiritual Assembly</option>
+                <option value="Con">Unit Convention</option>
+                <option value="Reg">Regional Council</option>
+                <option value="Oth">Other</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Variation
+        </th>
+        <td>
+            <select id="ddlMode" data-name="ElectionMode">
+                <option value="N">Normal Election</option>
+                <option value="T">Tie-Break</option>
+                <option value="B" id="modeB">By-election</option>
+            </select>
+        </td>
+    </tr>
+    <tr class="electionDetailT">
+        <th>
+            Names on Ballot
+        </th>
+        <td>
+            <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
+        </td>
+    </tr>
+    <tr class="electionDetail">
+        <th>
+            Report on next highest
+        </th>
+        <td>
+            <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
+        </td>
+    </tr>
+    <tr class="electionDetail">
+        <th>
+            Who can vote?
+        </th>
+        <td>
+            <select id="ddlCanVote" data-name="CanVote">
+                <option value="A">Everyone on the list</option>
+                <option value="N">Named delegates</option>
+            </select>
+        </td>
+    </tr>
+    <tr class="electionDetailB">
+        <th>
+            Who can be voted for?
+        </th>
+        <td>
+            <select id="ddlCanReceive" data-name="CanReceive">
+                <option value="A">Everyone on the list</option>
+                <option value="N">Named individuals</option>
+            </select>
+        </td>
+    </tr>
 </table>
-<table class="More">
-  <tr>
-    <th>Locations</th>
-    <td>
-      <div id="locationList">
-        <div>
-          Downtown</div>
-        <div>
-          Main</div>
-      </div>
-    </td>
-  </tr>
-</table>
-<button type="button" id="btnSave">Save</button>
+<div class="More">
+    <button type="button" id="btnSave">
+        Save</button>
+</div>
+<div class="More">
+  <h3>Locations</h3>
+    <div id="locationList">
+    </div>
+</div>

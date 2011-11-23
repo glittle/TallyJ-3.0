@@ -1,4 +1,4 @@
-﻿IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'tj.vBallot')
+﻿IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vBallot')
   BEGIN
     DROP  View tj.vBallot
   END
@@ -12,7 +12,6 @@ create
 View [tj].[vBallot]
 as
   select b.*
-         , ISNULL(b._RowId,0) _RowId2  -- non nullable result for EF4 to use
 		 , l.ElectionGuid
   from tj.Ballot b
     join tj.Location l on l.LocationGuid = b.BallotGuid

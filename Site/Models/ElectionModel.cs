@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Session;
 using TallyJ.EF;
 
 namespace TallyJ.Models
@@ -14,29 +15,43 @@ namespace TallyJ.Models
     public bool ExtraLocked { get; set; }
 
     /// <summary>
-    /// Can Vote/Receive - All or Named people
+    ///     Can Vote/Receive - All or Named people
     /// </summary>
     public string CanVote { get; set; }
-
     public string CanReceive { get; set; }
+
+    public bool IsSingleNameElection { get; set; }
+
     public int Num { get; set; }
     public int Extra { get; set; }
   };
 
-  public class ElectionModel : DataAccessibleModel
+  public class ElectionModel : DataConnectedModel
   {
-    readonly string[] _editableFields = new[]
-                                        {
-                                          "Name",
-                                          "DateOfElection",
-                                          "Convenor",
-                                          "ElectionType",
-                                          "ElectionMode",
-                                          "NumberToElect",
-                                          "NumberExtra",
-                                          "CanVote",
-                                          "CanReceive"
-                                        };
+    /// <Summary>List of fields to allow edit from setup page</Summary>
+    private readonly string[] _editableFields = new[]
+                                                  {
+                                                    "Name",
+                                                    "DateOfElection",
+                                                    "Convenor",
+                                                    "ElectionType",
+                                                    "ElectionMode",
+                                                    "NumberToElect",
+                                                    "NumberExtra",
+                                                    "CanVote",
+                                                    "CanReceive"
+                                                  };
+
+    /// <Summary>List of Locations</Summary>
+    public IQueryable<Location> Locations
+    {
+      get
+      {
+        return
+          Db.Locations
+            .Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid);
+      }
+    }
 
     public ElectionRules GetRules(string type, string mode)
     {
@@ -45,7 +60,8 @@ namespace TallyJ.Models
                       Num = 0,
                       Extra = 0,
                       CanVote = "",
-                      CanReceive = ""
+                      CanReceive = "",
+                      IsSingleNameElection = false
                     };
 
 
@@ -218,30 +234,38 @@ namespace TallyJ.Models
     }
 
 
+    /// <Summary>Saves changes to this electoin</Summary>
     public JsonResult SaveElection(Election election)
     {
-
-      var onFile = Db.Elections.SingleOrDefault(e => e.C_RowId == election.C_RowId);
-      if (onFile != null)
+      var savedElection = Db.Elections.SingleOrDefault(e => e.C_RowId == election.C_RowId);
+      if (savedElection != null)
       {
-        // apply changes
-        if (election.CopyPropertyValuesTo(onFile, _editableFields))
+        var changed = election.CopyPropertyValuesTo(savedElection, _editableFields);
+
+        var isSingleNameElection = election.NumberToElect == 1;
+        if (election.IsSingleNameElection != isSingleNameElection)
+        {
+          election.IsSingleNameElection = isSingleNameElection;
+          changed = true;
+        }
+
+        if (changed)
         {
           Db.SaveChanges();
         }
 
         return new
-        {
-          Status = "Saved",
-          Election = onFile
-        }.AsJsonResult();
+                 {
+                   Status = "Saved",
+                   // TODO 2011-11-20 Glen Little: Return entire election?
+                   Election = savedElection
+                 }.AsJsonResult();
       }
 
       return new
-      {
-        Status = "Unkown ID"
-      }.AsJsonResult();
+               {
+                 Status = "Unkown ID"
+               }.AsJsonResult();
     }
-
   }
 }

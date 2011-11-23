@@ -3,7 +3,7 @@ using TallyJ.Code;
 
 namespace TallyJ.Models
 {
-  public class ImportExportModel : DataAccessibleModel
+  public class ImportExportModel : DataConnectedModel
   {
     public int NumberOfPeople
     {

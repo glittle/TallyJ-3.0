@@ -6,7 +6,7 @@ using TallyJ.Models.Helper;
 
 namespace TallyJ.Models
 {
-  public class PeopleModel : DataAccessibleModel
+  public class PeopleModel : DataConnectedModel
   {
     public IQueryable<Person> PeopleInCurrentElection(bool includeInelligible)
     {

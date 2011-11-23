@@ -1,8 +1,11 @@
-﻿table.More, table.Demographics
+﻿.More, table.Demographics
 {
   float: left;
-  padding-right: 20px;
+  padding-right: 30px;
   border-spacing: 0;
+}
+div.More h3 {
+    margin: 0 0 5px 0;
 }
 table.More th, table.Demographics th
 {

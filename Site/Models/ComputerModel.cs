@@ -9,7 +9,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ComputerModel : DataAccessibleModel
+  public class ComputerModel : DataConnectedModel
   {
     public Computer CreateComputerRecord()
     {

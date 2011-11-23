@@ -15,7 +15,6 @@ namespace TallyJ.EF
     public partial class Ballot
     {
         public int C_RowId { get; set; }
-        public System.Guid ElectionGuid { get; set; }
         public System.Guid LocationGuid { get; set; }
         public System.Guid BallotGuid { get; set; }
         public string C_BallotCode { get; set; }

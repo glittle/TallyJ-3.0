@@ -37,13 +37,15 @@ namespace TallyJ.Models
                                   object[]
                                   {
                                     p.C_RowId,
-                                    "{0}{1}, {2}{3}{4}".FilledWith(
-                                      p.LastName,
-                                      p.OtherLastNames.SurroundContentWith(" [", "]"),
-                                      p.FirstName,
-                                      p.OtherNames.SurroundContentWith(" [", "]"),
-                                      p.OtherInfo.SurroundContentWith(" (", ")")
-                                      ),
+                                    p.C_FullName
+                                    //"{0}{1}, {2}{3}{4}".FilledWith(
+                                    //  p.LastName,
+                                    //  p.OtherLastNames.SurroundContentWith(" [", "]"),
+                                    //  p.FirstName,
+                                    //  p.OtherNames.SurroundContentWith(" [", "]"),
+                                    //  p.OtherInfo.SurroundContentWith(" (", ")")
+                                      //)
+                                      ,
                                   }),
                  MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : "",
                  DefaultTo = 2 // which of these matches is the most referenced right now? 0 based.

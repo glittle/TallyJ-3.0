@@ -8,10 +8,9 @@ namespace TallyJ.Controllers
 		//
 		// GET: /Setup/
 
-		public ActionResult Index()
+	  public ActionResult Index()
 		{
 			return View("Ballots");
 		}
-
 	}
 }
