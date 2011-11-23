@@ -39,8 +39,9 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
       }
 
+      var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 new Fakes().RemoveResult);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
 
       model.GenerateResults();
 
@@ -79,8 +80,9 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
       }
 
+      var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 new Fakes().RemoveResult);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
 
       model.GenerateResults();
 
@@ -125,8 +127,9 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
       }
 
+      var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 new Fakes().RemoveResult);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
 
       model.GenerateResults();
 
@@ -174,8 +177,9 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
       }
 
+      var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 new Fakes().RemoveResult);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
 
       model.GenerateResults();
 
@@ -239,8 +243,9 @@ namespace Tests.BusinessTests
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
       votes[5].PersonRowVersion = 2;
 
+      var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 new Fakes().RemoveResult);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
 
       model.GenerateResults();
 
@@ -264,13 +269,20 @@ namespace Tests.BusinessTests
 
     internal class Fakes
     {
-      public int RemoveResultCount { get; set; }
-
       public Result RemoveResult(Result input)
       {
- throw new ApplicationException("Should not be called in tests!");
-        RemoveResultCount++;
+        throw new ApplicationException("Should not be called in tests!");
         return input;
+      }
+
+      public Result AddResult(Result arg)
+      {
+        return arg;
+      }
+
+      public int SaveChanges()
+      {
+        return 0;
       }
     }
 

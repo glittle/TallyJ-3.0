@@ -13,8 +13,10 @@ namespace TallyJ.Models
     }
 
     public SingleNameElectionAnalyzer(Election election, ResultSummary resultSummary, List<Result> results,
-                                      List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult)
-      : base(election, resultSummary, results, voteinfos, deleteResult)
+                                      List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult,
+                                      Func<Result, Result> addResult
+                                      , Func<int> saveChanges)
+      : base(election, resultSummary, results, voteinfos, deleteResult, addResult, saveChanges)
     {
     }
 
@@ -43,7 +45,7 @@ namespace TallyJ.Models
                        PersonGuid = voteInfo.PersonGuid.AsGuid()
                      };
           Results.Add(result);
-          Db.Results.Add(result);
+          AddResult(result);
         }
         var voteCount = result.VoteCount.AsInt() + voteInfo.SingleNameElectionCount;
         result.VoteCount = voteCount;
@@ -59,7 +61,7 @@ namespace TallyJ.Models
 
       AnalyzeForTies();
 
-      Db.SaveChanges();
+      SaveChanges();
     }
 
     private static void ResetValues(Result result)

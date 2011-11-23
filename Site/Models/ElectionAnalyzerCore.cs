@@ -14,19 +14,23 @@ namespace TallyJ.Models
     private ResultSummary _resultSummary;
     private List<Result> _results;
     private List<vVoteInfo> _voteinfos;
+    private readonly Func<Result, Result> _addResult;
+    private Func<int> _saveChanges;
 
     public ElectionAnalyzerCore()
     {
     }
 
     public ElectionAnalyzerCore(Election election, ResultSummary resultSummary, List<Result> results,
-                                List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult)
+                                List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult, Func<Result, Result> addResult, Func<int> saveChanges)
     {
       _election = election;
       _resultSummary = resultSummary;
       _results = results;
       _voteinfos = voteinfos;
       _deleteResult = deleteResult;
+      _addResult = addResult;
+      _saveChanges = saveChanges;
     }
 
     /// <Summary>Remove this result from the datastore</Summary>
@@ -34,10 +38,17 @@ namespace TallyJ.Models
     {
       get { return _deleteResult ?? Db.Results.Remove; }
     }
-
-    private Func<Result, Result> AddResult
+    
+    /// <Summary>Remove this result from the datastore</Summary>
+    protected Func<int> SaveChanges
     {
-      get { return _deleteResult ?? Db.Results.Remove; }
+      get { return _saveChanges ?? Db.SaveChanges; }
+    }
+    
+    /// <Summary>Remove this result from the datastore</Summary>
+    protected Func<Result, Result> AddResult
+    {
+      get { return _addResult ?? Db.Results.Add; }
     }
 
     /// <Summary>Current Results records</Summary>
