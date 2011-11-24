@@ -1,0 +1,15 @@
+﻿@using TallyJ.Code.Session
+@model BallotModel
+@{
+    ViewBag.Title = "Ballots";
+    ViewBag.Message = "Tally the votes for a single position";
+
+    ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("peopleUrl", "ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+}
+<script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<input id="txtSearch"><span id="action"></span> <span id="more"></span>
+<ul id="nameList">
+</ul>
+<div id="editPanel">
+</div>

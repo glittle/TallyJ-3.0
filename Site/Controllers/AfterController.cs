@@ -16,11 +16,12 @@ namespace TallyJ.Controllers
 
     public ActionResult Analyze()
     {
-      var resultsModel = new ResultsModel();
+      //var resultsModel = new ResultsModel();
 
-      resultsModel.GenerateResults();
+      //resultsModel.GenerateResults();
 
-      return View(resultsModel);
+      //return View(resultsModel);
+      return View();
     }
 
     public ActionResult Reports()
@@ -41,6 +42,14 @@ namespace TallyJ.Controllers
     public JsonResult RefreshMonitor()
     {
       return new MonitorModel().LocationInfo.AsJsonResult();
+    }
+
+    public JsonResult RunAnalyze()
+    {
+      var resultsModel = new ResultsModel();
+      resultsModel.GenerateResults();
+
+      return resultsModel.CurrentResults.AsJsonResult();
     }
   }
 

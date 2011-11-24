@@ -114,16 +114,16 @@ function ActivateHeartbeat(makeActive, delaySeconds) {
 
 function SendHeartbeat() {
     if (!site.heartbeatActive) return;
-    CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', null, ProcessHeartbeat);
+    CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', null, ProcessPulseResult);
 }
 
-function ProcessHeartbeat(info) {
+function ProcessPulseResult(info) {
     site.computerActive = info.Active;
     if (info.Active) {
-        $('.Heartbeat').removeClass('Frozen').text('Active').effect('highlight', 'slow');
+        $('.Heartbeat').removeClass('Frozen').text('Connected').effect('highlight', 'slow');
     }
     else {
-        $('.Heartbeat').addClass('Frozen').text('No Election selected');
+        $('.Heartbeat').addClass('Frozen').text('Not Connected');
     }
     //  if (info.VersionNum) {
     //    lastVersionNum().set(info.VersionNum);
@@ -153,7 +153,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
                 callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
             }
 
-            //ResetStatusDisplay();
+            ResetStatusDisplay();
         },
         error: function (xmlHttpRequest, textStatus) {
             if (callbackOnFailed) {
@@ -209,6 +209,7 @@ function GetRootUrl() {
 //  Status Display //////////////////////////////////////
 var statusDisplay = {
     minDisplayTimeBeforeStatusReset: 0,
+    resetTimer: null,
     delayedShowStatusArray: []
 };
 
@@ -248,6 +249,7 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
 }
 
 function ShowStatusFailed(msg, keep) {
+    if (typeof keep == 'undefined') keep = 15000;
     if (!keep) ResetStatusDisplay();
 
     var text;
@@ -273,13 +275,15 @@ function ShowStatusFailed(msg, keep) {
 }
 
 function ResetStatusDisplay() {
+    clearTimeout(statusDisplay.resetTimer);
+    
     for (; statusDisplay.delayedShowStatusArray.length; ) {
         clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
         statusDisplay.delayedShowStatusArray.length--;
     }
 
     if (statusDisplay.minDisplayTimeBeforeStatusReset !== 0) {
-        setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
+        statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
         statusDisplay.minDisplayTimeBeforeStatusReset = 0;
         return;
     }

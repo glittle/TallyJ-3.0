@@ -6,68 +6,68 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.Models
 {
-	public class ElectionListModel : DataConnectedModel
-	{
-		public bool Select(Guid wantedElectionGuid)
-		{
-			var election = Db.Elections.Where(e => e.ElectionGuid == wantedElectionGuid).SingleOrDefault();
-			if (election == null)
-			{
-				return false;
-			}
-			UserSession.CurrentElection = election;
-			return true;
-		}
+  public class ElectionListModel : DataConnectedModel
+  {
+    public bool JoinIntoElection(Guid wantedElectionGuid)
+    {
+      var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == wantedElectionGuid);
+      if (election == null)
+      {
+        return false;
+      }
 
-	  public JsonResult Copy(Guid guidOfElectionToCopy)
-	  {
-      var election = Db.Elections.Where(e => e.ElectionGuid == guidOfElectionToCopy).SingleOrDefault();
+      SessionKey.CurrentElection.SetInSession(election);
+
+      new ComputerModel().AddCurrentComputerIntoElection(election.ElectionGuid);
+       
+      return true;
+    }
+
+    public JsonResult Copy(Guid guidOfElectionToCopy)
+    {
+      var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
       if (election == null)
       {
         return new
-        {
-          Success = false,
-          Message = "Not found"
-        }.AsJsonResult();
+                 {
+                   Success = false,
+                   Message = "Not found"
+                 }.AsJsonResult();
       }
 
       // copy in SQL
-	    var result = Db.CloneElection(election.ElectionGuid, UserSession.LoginId).SingleOrDefault();
+      var result = Db.CloneElection(election.ElectionGuid, UserSession.LoginId).SingleOrDefault();
       if (result == null)
       {
-         return new
-        {
-          Success = false,
-          Message = "Unable to copy"
-        }.AsJsonResult();
-;
+        return new
+                 {
+                   Success = false,
+                   Message = "Unable to copy"
+                 }.AsJsonResult();
       }
       if (!result.Success.AsBool())
       {
         return new
-        {
-          Success = false,
-          Message = "Sorry: " + result.Message
-        }.AsJsonResult();
-
+                 {
+                   Success = false,
+                   Message = "Sorry: " + result.Message
+                 }.AsJsonResult();
       }
-	    election = Db.Elections.Where(e => e.ElectionGuid == result.NewElectionGuid).SingleOrDefault();
+      election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
       if (election == null)
       {
         return new
-        {
-          Success = false,
-          Message = "New election not found"
-        }.AsJsonResult();
-        
+                 {
+                   Success = false,
+                   Message = "New election not found"
+                 }.AsJsonResult();
       }
-      UserSession.CurrentElection = election;
+      SessionKey.CurrentElection.SetInSession(election);
       return new
-      {
-        Success = true,
-        election.ElectionGuid
-      }.AsJsonResult();
-
+               {
+                 Success = true,
+                 election.ElectionGuid
+               }.AsJsonResult();
     }
-	}
+  }
 }

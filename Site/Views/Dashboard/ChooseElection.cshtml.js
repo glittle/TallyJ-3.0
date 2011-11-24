@@ -2,70 +2,105 @@
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
 
 var HomeIndexPage = function () {
-  var localSettings = {
-  };
+    var localSettings = {
+    };
 
-  var selectElection = function () {
-    var btn = $(this);
-    var form =
+    var preparePage = function () {
+        $(document).on('click', '.btnSelectElection', null, selectElection);
+        $(document).on('click', '.btnCopyElection', null, copyElection);
+        $(document).on('click', '.btnSelectLocation', null, selectLocation);
+    };
+
+    var selectElection = function () {
+        var btn = $(this);
+        var row = btn.parents('.Election');
+        var form =
         {
-          guid: btn.data('guid')
+            guid: row.data('guid')
         };
 
-    CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, function (success) {
+        CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection, row);
+    };
 
-      if (success) {
-        location.href = site.rootUrl + 'Dashboard';
-        return;
-      }
-      //      var electionDisplay = $('.CurrentElectionName');
-      //      electionDisplay.text(election.Name);
-      //      electionDisplay.effect('highlight', { mode: 'slow' });
+    var afterSelectElection = function (info, row) {
+        if (info.Pulse) {
+            ProcessPulseResult(info.Pulse);
+        }
 
-      site.heartbeatActive = true;
-      ActivateHeartbeat(true);
-    });
-  };
+        if (info.Selected) {
+            $('.Election.True').removeClass('True');
+            row.addClass('True');
 
-  var copyElection = function () {
-    var btn = $(this);
-    var form =
+            $('.CurrentElectionName').text(info.ElectionName);
+            $('.CurrentLocationName').text('[No location selected]');
+
+            showLocations(info.Locations, row);
+
+            site.heartbeatActive = true;
+            ActivateHeartbeat(true);
+        }
+
+    };
+
+    var showLocations = function (list, row) {
+        var host = row.find('.Locations');
+        var template = site.templates.LocationSelectItem;
+        host.html(template.filledWithEach(list));
+    };
+
+    var selectLocation = function () {
+        var btn = $(this);
+        var form =
         {
-          guid: btn.data('guid')
+            id: btn.data('id')
         };
 
-    if (!confirm('Are you sure you want to make a new election based on this one?')) {
-      return;
-    }
+        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
+    };
 
-    CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
+    var afterSelectLocation = function (info) {
+        if (info.Selected) {
+            location.href = site.rootUrl + 'Dashboard';
+            return;
+        }
+    };
 
-      if (info.Success) {
-        location.href = '.';
-        return;
-      }
+    var copyElection = function () {
 
-      alert(info.Message);
+        var btn = $(this);
+        var form =
+        {
+            guid: btn.parents('.Election').data('guid')
+        };
 
-      site.heartbeatActive = true;
-      ActivateHeartbeat(true);
-    });
-  };
+        if (!confirm('Are you sure you want to make a new election based on this one?')) {
+            return;
+        }
 
-  var publicInterface = {
-    elections: [],
-    electionsUrl: '',
-    PreparePage: function () {
-      $(document).on('click', '.btnSelectElection', null, selectElection);
-      $(document).on('click', '.btnCopyElection', null, copyElection);
-    }
-  };
+        CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
 
-  return publicInterface;
+            if (info.Success) {
+                location.href = '.';
+                return;
+            }
+
+            alert(info.Message);
+
+            site.heartbeatActive = true;
+            ActivateHeartbeat(true);
+        });
+    };
+    var publicInterface = {
+        elections: [],
+        electionsUrl: '',
+        PreparePage: preparePage
+    };
+
+    return publicInterface;
 };
 
 var chooseElectionPage = HomeIndexPage();
 
 $(function () {
-  chooseElectionPage.PreparePage();
+    chooseElectionPage.PreparePage();
 });

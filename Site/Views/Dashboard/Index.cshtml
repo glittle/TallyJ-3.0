@@ -14,7 +14,7 @@
     <div class="content-wrapper">
       <hgroup class="title"><h1>@ViewBag.Title.</h1>
         <h2>@ViewBag.Message</h2>
-        @Html.ActionLink("Change to different election", "ChooseElection", "Dashboard")
+        @*@Html.ActionLink("Change to different election", "ChooseElection", "Dashboard")*@
       </hgroup>
       <p>Select from the modules below. To get started, setup your Election. To learn more,
         please read more in the @Html.ActionLink("Reference Materials", "Learning", "Public"). </p>
@@ -22,7 +22,10 @@
   </section>
 }
 <section class="features">
-<a href="@Url.Action("Index", "Setup")"><section class="feature">
+<a href="@Url.Action("ChooseElection", "Dashboard")"><section class="feature">
+  <h3>Select Election</h3>
+  <p>Select the election and/or location.</p>
+</section></a> <a href="@Url.Action("Index", "Setup")"><section class="feature">
   <h3>Election Setup</h3>
   <p>Edit election details.</p>
 </section></a> <a href="@Url.Action("ImportExport", "Setup")"><section class="feature">

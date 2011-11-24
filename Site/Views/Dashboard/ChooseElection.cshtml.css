@@ -1,11 +1,30 @@
-﻿.election {
-  border-bottom: 1px solid #ccc;
-  padding: 9px 0 9px 5px;
+﻿.Election
+{
+    border-bottom: 1px solid #ccc;
+    padding: 9px 0 9px 5px;
 }
-.election.True {
-  color:  #8dc63e;
-  font-weight: bold;
+.Election.True .Detail
+{
+    color: #8dc63e;
+    font-weight: bold;
 }
-.election.True button.btnSelectElection {
-  visibility: hidden;
+.Election.True button.btnSelectElection,
+.Locations .True button
+{
+    opacity: .5;
+}
+.Locations
+{
+    display: none;
+    margin-left: 150px;
+}
+.Election.True .Locations {
+    display: block;
+}
+.SelectLocation {
+    margin-left: 120px;
+}
+.Locations .True {
+    color: #8dc63e;
+    font-weight: bold;
 }

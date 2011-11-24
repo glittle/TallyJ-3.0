@@ -18,7 +18,7 @@ namespace TallyJ.Models
     {
       get
       {
-        return CurrentElectionModel.Locations
+        return CurrentElectionModel.LocationsForCurrentElection
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new

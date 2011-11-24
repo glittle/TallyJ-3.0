@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace TallyJ.Code.Resources
 
 		public enum File
 		{
-			// This enum is manually created and maintained. Add a new item when needed.
+			// This enum is manually created and maintained. Add a new item when needed, matching file names
 			ElectionListItem,
-			ElectionEditScreen,
+			LocationSelectItem
 		}
 
 		#endregion
@@ -42,13 +43,13 @@ namespace TallyJ.Code.Resources
 			return templateList
 			  .Select(templateName =>
 					  string.Format("site.templates.{0}={1}", templateName,
-									GetFileContent(templateName.ToString()).QuotedForJavascript()
+									GetFileContent(templateName).QuotedForJavascript()
 						))
 			  .JoinedAsString(";")
 			  .SurroundWith(";", ";");
 		}
 
-		private static string GetFileContent(string templateName)
+	  public static string GetFileContent(File templateName)
 		{
 			var nameInCache = "JsTemplate." + templateName;
 
@@ -56,7 +57,7 @@ namespace TallyJ.Code.Resources
 
 			if (content == null)
 			{
-				var path = string.Format("{0}JsTemplates\\{1}.html", new SiteInfo().RootPath, templateName.Replace("_", "\\"));
+				var path = string.Format("{0}JsTemplates\\{1}.html", new SiteInfo().RootPath, templateName.ToString().Replace("_", "\\"));
 
 				if (!System.IO.File.Exists(path))
 				{
@@ -69,11 +70,14 @@ namespace TallyJ.Code.Resources
 
 			return content;
 		}
-
-	  public static HtmlString FillTemplate<T>(File templateFile, IEnumerable<T> items)
-	  {
-	    var content = GetFileContent(templateFile.ToString());
-	    return content.FilledWithEachObject(items).AsRawHtml();
-	  }
 	}
+
+  public static class TemplateLoaderExtensions
+  {
+    public static String FilledWithEach<T>(this TemplateLoader.File templateCode, IEnumerable<T> items)
+    {
+      var content = TemplateLoader.GetFileContent(templateCode);
+      return content.FilledWithEachObject(items);
+    }
+  }
 }

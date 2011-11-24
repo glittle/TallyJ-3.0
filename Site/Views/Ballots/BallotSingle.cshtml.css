@@ -1,0 +1,40 @@
+﻿#nameList {
+  height: 220px;
+  width: 350px;
+  border: solid 1px #999;
+  padding: 4px;
+  overflow: auto;
+}
+#nameList u {
+  text-decoration: none;
+}
+#nameList li {
+  border: 1px solid transparent;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+#nameList li:hover {
+  border-color: #ddd;
+}
+#nameList li.selected {
+  background-color: #c1f1b4;
+  border-color: #999;
+}
+#action {
+  width: 20px;
+  height: 1em;
+  display: inline-block;
+}
+span.delaying {
+  background-color: #f8f541;
+}
+span.searching {
+  background-color: #c1f1b4;
+}
+input.delaying {
+  border-color: #f8f541;
+}
+input.searching {
+  border-color: #c1f1b4;
+}

@@ -43,7 +43,7 @@ namespace TallyJ.Models
                                                   };
 
     /// <Summary>List of Locations</Summary>
-    public IQueryable<Location> Locations
+    public IQueryable<Location> LocationsForCurrentElection
     {
       get
       {

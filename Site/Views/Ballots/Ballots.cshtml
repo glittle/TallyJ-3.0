@@ -1,7 +1,8 @@
-﻿@model object
-
+﻿@using TallyJ.Code.Session
+@model BallotModel
 @{
-	ViewBag.Title = "title";
-}
+    ViewBag.Title = "Ballots";
+    ViewBag.Message = "Tally the votes";
 
-<h2>Ballots</h2>
+    ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+}

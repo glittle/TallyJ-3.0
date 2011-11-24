@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -12,6 +13,11 @@ namespace TallyJ.Models
     {
       get
       {
+        var locations = new ElectionModel().LocationsForCurrentElection
+          .OrderBy(l => l.SortOrder)
+          .Select(l => new { l.Name, l.C_RowId, IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid });
+        var locationJson = TemplateLoader.File.LocationSelectItem.FilledWithEach(locations);
+
         return
           MyElections()
             .OrderByDescending(e => e.DateOfElection)
@@ -22,17 +28,22 @@ namespace TallyJ.Models
                              e.DateOfElection
                            })
             .ToList() // execute sql and then work on result in code
-            .Select(x => new
-                           {
-                             x.Name,
-                             x.ElectionGuid,
-                             DateOfElection = x.DateOfElection.AsHtmlString(),
-                             IsCurrent = x.ElectionGuid == UserSession.CurrentElectionGuid
-                           });
+            .Select(x =>
+                      {
+                        var isCurrent = x.ElectionGuid == UserSession.CurrentElectionGuid;
+                        return new
+                                    {
+                                      x.Name,
+                                      x.ElectionGuid,
+                                      DateOfElection = x.DateOfElection.AsHtmlString(),
+                                      IsCurrent = isCurrent,
+                                      Locations = isCurrent ? locationJson : ""
+                                    };
+                      });
       }
     }
 
-    IQueryable<Election> MyElections()
+    private IQueryable<Election> MyElections()
     {
       var userGuid = UserSession.UserGuid;
       return Db

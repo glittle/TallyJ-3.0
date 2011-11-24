@@ -1,9 +1,21 @@
 ﻿@model ImportExportModel
 @using TallyJ.Code.Session
 @{
-  ViewBag.Title = "Import / Export";
-  ViewBag.Message = "Dealing with the names in the community";
+    ViewBag.Title = "Import / Export";
+    ViewBag.Message = "Dealing with the names in the community";
 
-  ContextItems.AddJavascriptForPage("controllerUrl", "importExportPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("controllerUrl", "importExportPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
 }
-<button type="button" id="btnResetList">Reset all information</button>
+<p>
+    Before an election, to remove all extra information about people, e.g. whether they
+    have voted and where:
+    <button type="button" id="btnResetList">
+        Reset all information</button>
+</p>
+<p>
+    Import from Excel, Access, XML or a text file...
+</p>
+<input type="file" disabled />
+<div>
+    (not implemented)
+</div>

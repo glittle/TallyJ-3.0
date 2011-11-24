@@ -9,30 +9,59 @@ var AnalyzePage = function () {
     };
 
     var preparePage = function () {
+
+        $('#btnRefesh').click(function () {
+            runAnalysis(false);
+        });
+
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
+        tableBody.html('');
 
-        showInfo(publicInterface.results, true);
-
-        showChart(publicInterface.results);
+        var info = publicInterface.results;
+        if (info) {
+            showInfo(info, true);
+        }
+        else {
+            runAnalysis(true);
+        }
     };
 
+    var runAnalysis = function (firstLoad) {
+        if (!firstLoad) ShowStatusDisplay('Analyzing...');
+
+        CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo);
+    };
 
     var showInfo = function (info, firstLoad) {
         var table = $('#mainBody');
+
+        if (!firstLoad) {
+            table.animate({
+                opacity: 0.5
+            }, 100, function () {
+                table.animate({
+                    opacity: 1
+                }, 500);
+            });
+        }
+
         table.html(settings.rowTemplate.filledWithEach(expand(info)));
+
+        showChart(info);
     };
 
     var showChart = function (info) {
+        var maxToShow = 25; //TODO what is good limit?
 
         var getVoteCounts = function () {
-            return $.map(info, function (item, i) {
+            return $.map(info.slice(0, maxToShow), function (item, i) {
                 return item.VoteCount;
             });
         };
-        
+
         var getNames = function () {
-            return $.map(info, function (item, i) {
+            return $.map(info.slice(0, maxToShow), function (item, i) {
                 return item.PersonName;
             });
         };

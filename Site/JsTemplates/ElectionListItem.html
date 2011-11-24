@@ -1,6 +1,13 @@
-﻿<div class="election {IsCurrent}">
-  <button type="button" class="btnCopyElection" data-guid="{ElectionGuid}">Copy</button>
-  <button type="button" class="btnSelectElection" data-guid="{ElectionGuid}">Select</button>
-  {Name}
-  ({DateOfElection})
+﻿<div class="Election {IsCurrent}" data-guid="{ElectionGuid}">
+    <div class="Detail">
+        <button type="button" class="btnCopyElection">
+            Copy</button>
+        <button type="button" class="btnSelectElection">
+            Select</button>
+        {Name} ({DateOfElection})</div>
+    <div class="SelectLocation">
+        Select the location you are at...</div>
+    <div class="Locations">
+        {Locations}
+    </div>
 </div>

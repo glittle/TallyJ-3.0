@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web;
-using System.Web.WebPages;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -13,6 +13,10 @@ namespace TallyJ.Models
   {
     public Computer CreateComputerRecord()
     {
+      ClearOutOldComputerRecords();
+
+      SessionKey.CurrentElection.SetInSession<Election>(null);
+
       var computer = new Computer
                        {
                          ShadowElectionGuid = Guid.NewGuid(),
@@ -26,22 +30,62 @@ namespace TallyJ.Models
       return computer;
     }
 
-    public void AddComputerIntoElection(int computerRowId, Guid electionGuid)
+    private void ClearOutOldComputerRecords()
     {
-      var dbSet = Db.Computers;
+      const int maxMinutesOfNoContact = 5;
 
-      var computer = dbSet.Where(c => c.C_RowId == computerRowId).SingleOrDefault();
+      var now = DateTime.Now;
+      var oldComputers =
+        Db.Computers.Where(c => SqlFunctions.DateDiff("n", c.LastContact.Value, now) > maxMinutesOfNoContact);
+
+      foreach (var oldComputer in oldComputers)
+      {
+        Db.Computers.Remove(oldComputer);
+      }
+      Db.SaveChanges();
+    }
+
+    public bool AddCurrentComputerIntoLocation(int id)
+    {
+      var location =
+        new ElectionModel().LocationsForCurrentElection.SingleOrDefault(
+          l => l.C_RowId == id);
+
+      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
+
+      if (location == null || computer == null)
+      {
+        SessionKey.CurrentLocationGuid.SetInSession(Guid.Empty);
+        return false;
+      }
+
+      SessionKey.CurrentLocationName.SetInSession(location.Name);
+      SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
+      computer.LocationGuid = location.LocationGuid;
+      Db.SaveChanges();
+
+      return true;
+    }
+
+    public void AddCurrentComputerIntoElection(Guid electionGuid)
+    {
+      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
 
       if (computer == null)
       {
-        computer = new ComputerModel().CreateComputerRecord();
+        computer = CreateComputerRecord();
         UserSession.ComputerRowId = computer.C_RowId;
       }
 
       computer.ElectionGuid = electionGuid;
+      computer.LocationGuid = null;
+      SessionKey.CurrentLocationGuid.SetInSession(Guid.Empty);
+      SessionKey.CurrentLocationName.SetInSession<string>(null);
+
       computer.ComputerCode =
         DetermineNextFreeComputerCode(
-          dbSet.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(c => c.ComputerCode));
+          Db.Computers.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(
+            c => c.ComputerCode));
 
       Db.SaveChanges();
     }
@@ -50,11 +94,11 @@ namespace TallyJ.Models
     {
       var code = 'A';
       var twoDigit = false;
-      var firstDigit = (char) ('A' - 1);
+      var firstDigit = (char)('A' - 1);
 
       foreach (var computerCode in existingCodesSortedAsc)
       {
-        var testChar = ' ';
+        char testChar;
         if (computerCode.Length == 2)
         {
           twoDigit = true;
@@ -68,18 +112,18 @@ namespace TallyJ.Models
         if (testChar == code)
         {
           // push the answer to the next one
-          code = (char) (code + 1);
+          code = (char)(code + 1);
           if (code > 'Z')
           {
             twoDigit = true;
             code = 'A';
-            firstDigit = (char) (firstDigit + 1);
+            firstDigit = (char)(firstDigit + 1);
           }
         }
       }
       if (code > 'Z')
       {
-        return "" + firstDigit + (char) ('A' - 1 + code - 'Z');
+        return "" + firstDigit + (char)('A' - 1 + code - 'Z');
       }
       if (twoDigit)
       {
@@ -90,19 +134,20 @@ namespace TallyJ.Models
 
     public bool ProcessPulse()
     {
-      var computer = Db.Computers.Where(c => c.C_RowId == UserSession.ComputerRowId).SingleOrDefault();
+      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
 
       if (computer == null)
-      {
-        return false;
-      }
-      if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
       {
         return false;
       }
 
       computer.LastContact = DateTime.Now;
       Db.SaveChanges();
+
+      if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
+      {
+        return false;
+      }
 
       return true;
     }

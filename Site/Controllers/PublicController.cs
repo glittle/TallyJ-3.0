@@ -40,7 +40,7 @@ namespace TallyJ.Controllers
 
         public JsonResult Heartbeat()
         {
-          return new PulseModel().ProcessPulse();
+          return new PulseModel().ProcessPulseJson();
         }
 
       public ActionResult Install()

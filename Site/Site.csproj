@@ -330,6 +330,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
+    <Content Include="JsTemplates\LocationSelectItem.html" />
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
     </Content>
@@ -362,6 +363,10 @@
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\Ballots.cshtml.css" />
+    <Content Include="Views\Ballots\Ballots.cshtml.js" />
+    <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
+    <Content Include="Views\Ballots\BallotSingle.cshtml.js" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
@@ -493,6 +498,7 @@
     <Content Include="Views\Public\Install.cshtml" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml" />
     <Content Include="Views\Setup\ImportExport.cshtml" />
+    <Content Include="Views\Ballots\BallotSingle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
