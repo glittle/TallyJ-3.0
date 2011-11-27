@@ -269,6 +269,8 @@ namespace Tests.BusinessTests
 
     internal class Fakes
     {
+      private int _count;
+
       public Result RemoveResult(Result input)
       {
         throw new ApplicationException("Should not be called in tests!");
@@ -277,6 +279,7 @@ namespace Tests.BusinessTests
 
       public Result AddResult(Result arg)
       {
+        arg.C_RowId = ++_count;
         return arg;
       }
 

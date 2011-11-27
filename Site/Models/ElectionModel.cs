@@ -252,7 +252,9 @@ namespace TallyJ.Models
         if (changed)
         {
           Db.SaveChanges();
+          SessionKey.CurrentElection.SetInSession(savedElection);
         }
+
 
         return new
                  {
@@ -266,6 +268,136 @@ namespace TallyJ.Models
                {
                  Status = "Unkown ID"
                }.AsJsonResult();
+    }
+
+
+
+    public bool JoinIntoElection(Guid wantedElectionGuid)
+    {
+      var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == wantedElectionGuid);
+      if (election == null)
+      {
+        return false;
+      }
+
+      SessionKey.CurrentElection.SetInSession(election);
+
+      new ComputerModel().AddCurrentComputerIntoElection(election.ElectionGuid);
+
+      return true;
+    }
+
+    public JsonResult Copy(Guid guidOfElectionToCopy)
+    {
+      var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
+      if (election == null)
+      {
+        return new
+        {
+          Success = false,
+          Message = "Not found"
+        }.AsJsonResult();
+      }
+
+      // copy in SQL
+      var result = Db.CloneElection(election.ElectionGuid, UserSession.LoginId).SingleOrDefault();
+      if (result == null)
+      {
+        return new
+        {
+          Success = false,
+          Message = "Unable to copy"
+        }.AsJsonResult();
+      }
+      if (!result.Success.AsBool())
+      {
+        return new
+        {
+          Success = false,
+          Message = "Sorry: " + result.Message
+        }.AsJsonResult();
+      }
+      election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
+      if (election == null)
+      {
+        return new
+        {
+          Success = false,
+          Message = "New election not found"
+        }.AsJsonResult();
+      }
+      SessionKey.CurrentElection.SetInSession(election);
+      return new
+      {
+        Success = true,
+        election.ElectionGuid
+      }.AsJsonResult();
+    }
+
+    public JsonResult Create()
+    {
+      // create an election for this ID
+      // create a default Location
+      // assign all of these to this person and computer
+
+      var election = new Election
+      {
+        Convenor = "[Convenor]",
+        ElectionGuid = Guid.NewGuid(),
+        Name = "[New Election]",
+        ElectionType = "LSA",
+        ElectionMode = "N",
+        NumberToElect = 9,
+        NumberExtra = 0,
+        CanVote = "A",
+        CanReceive = "A"
+      };
+      Db.Elections.Add(election);
+      Db.SaveChanges();
+
+
+      var join = new JoinElectionUser
+      {
+        ElectionGuid = election.ElectionGuid,
+        UserId = UserSession.UserGuid
+      };
+      Db.JoinElectionUsers.Add(join);
+
+
+      var mainLocation = new Location
+      {
+        Name = "Main Location",
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = election.ElectionGuid
+      };
+      Db.Locations.Add(mainLocation);
+      Db.SaveChanges();
+
+      var mailedInLocation = new Location
+      {
+        Name = "Mailed In Ballots",
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = election.ElectionGuid
+      };
+      Db.Locations.Add(mailedInLocation);
+      Db.SaveChanges();
+
+
+
+      var computerModel = new ComputerModel();
+      computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
+      computerModel.AddCurrentComputerIntoLocation(mainLocation.C_RowId);
+
+
+      SessionKey.CurrentElection.SetInSession(election);
+      SessionKey.CurrentLocationGuid.SetInSession(mainLocation.LocationGuid);
+      SessionKey.CurrentLocationName.SetInSession(mainLocation.Name);
+
+
+      return new
+      {
+        Success = true
+      }.AsJsonResult();
     }
   }
 }

@@ -38,3 +38,11 @@ input.delaying {
 input.searching {
   border-color: #c1f1b4;
 }
+#votesPanel {
+    margin-left: 15px;
+}
+#votesList input {
+    width: 70px;
+    margin-right: 5px;
+    text-align: right;
+}

@@ -9,6 +9,7 @@ var HomeIndexPage = function () {
         $(document).on('click', '.btnSelectElection', null, selectElection);
         $(document).on('click', '.btnCopyElection', null, copyElection);
         $(document).on('click', '.btnSelectLocation', null, selectLocation);
+        $(document).on('click', '#btnCreate', null, createElection);
     };
 
     var selectElection = function () {
@@ -46,6 +47,11 @@ var HomeIndexPage = function () {
         var host = row.find('.Locations');
         var template = site.templates.LocationSelectItem;
         host.html(template.filledWithEach(list));
+        if (list.length) {
+            $('.SelectLocation').show();
+        } else {
+            $('.SelectLocation').hide();
+        }
     };
 
     var selectLocation = function () {
@@ -63,6 +69,18 @@ var HomeIndexPage = function () {
             location.href = site.rootUrl + 'Dashboard';
             return;
         }
+    };
+
+    var createElection = function () {
+        // get the server to make an election, then go see it
+        CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
+            //var row = $(site.templates.ElectionListItem.filledWith(info.Election)).prependTo($('#ElectionList'));
+            //afterSelectElection(info, row);
+            if (info.Success) {
+                location.href = site.rootUrl + 'Setup';
+                return;
+            }
+        });
     };
 
     var copyElection = function () {

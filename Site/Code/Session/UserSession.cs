@@ -101,14 +101,26 @@ namespace TallyJ.Code.Session
       set { SessionKey.CurrentComputerRowId.SetInSession(value); }
     }
 
+    public static Guid? CurrentTellerAtKeyboard
+    {
+      get { return null; }
+    }
+
+    public static Guid? CurrentTellerAssisting
+    {
+      get { return null; }
+    }
+
     public static void ProcessLogin(string userName)
     {
+      HttpContext.Current.Session.Clear();
       ComputerRowId = new ComputerModel().CreateComputerRecord().C_RowId;
     }
 
     public static void ProcessLogout()
     {
       new ComputerModel().DeleteAtLogout(ComputerRowId);
+      HttpContext.Current.Session.Clear();
     }
   }
 }

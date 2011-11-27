@@ -12,16 +12,17 @@ create
 View [tj].[vVoteInfo]
 as
   select 
-       v._RowId
+       v._RowId [VoteRowId]
 	 , v.BallotGuid
-     , v.PersonGuid -- may be null
-	 , cast(v.PersonRowVersion as bigint) [PersonRowVersionInVote]
 	 , v.StatusCode [VoteStatusCode]
 	 , v.InvalidReasonGuid
 	 , v.SingleNameElectionCount
+	 , cast(v.PersonRowVersion as bigint) [PersonRowVersionInVote]
+	 , cast(p._RowVersion as bigint) [PersonRowVersion]
+     , v.PersonGuid
+	 , p._RowId [PersonRowId]
 	 , p.CanReceiveVotes
 	 , p.IneligibleReasonGuid [PersonIneligibleReasonGuid]
-	 , cast(p._RowVersion as bigint) [PersonRowVersion]
 	 , l.ElectionGuid [ElectionGuid]
 	 , l.TallyStatus [LocationTallyStatus]
 	 , b.StatusCode [BallotStatusCode]
@@ -31,8 +32,8 @@ as
   from tj.Vote v
 	join tj.Ballot b on b.BallotGuid = v.BallotGuid
 	join tj.Location l on l.LocationGuid = b.LocationGuid
-    left join tj.Person p on p.PersonGuid = v.PersonGuid
-	left join tj.Result r on r.PersonGuid = p.PersonGuid
+    join tj.Person p on p.PersonGuid = v.PersonGuid
+	join tj.Result r on r.PersonGuid = p.PersonGuid
 
 GO
 

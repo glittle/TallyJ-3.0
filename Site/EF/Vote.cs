@@ -17,7 +17,7 @@ namespace TallyJ.EF
         public int C_RowId { get; set; }
         public System.Guid BallotGuid { get; set; }
         public int PositionOnBallot { get; set; }
-        public Nullable<System.Guid> PersonGuid { get; set; }
+        public System.Guid PersonGuid { get; set; }
         public byte[] PersonRowVersion { get; set; }
         public string StatusCode { get; set; }
         public Nullable<System.Guid> InvalidReasonGuid { get; set; }

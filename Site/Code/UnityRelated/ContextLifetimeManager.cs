@@ -15,7 +15,7 @@ namespace TallyJ.Code.UnityRelated
 	//  }
 	//}
 
-	public class ContextLifetimeManager : LifetimeManager
+  public class ContextLifetimeManager : LifetimeManager
 	{
 
 		/// Context collection key, the value of which is a list of ContextLifetimeManager

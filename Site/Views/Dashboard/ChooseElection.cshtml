@@ -2,18 +2,21 @@
 @using TallyJ.Code.Session
 @model ElectionsListViewModel
 @{
-  ViewBag.Title = "Choose an Election";
-  ViewBag.Message = "Select or create an election";
+    ViewBag.Title = "Choose an Election";
+    ViewBag.Message = "Select or create an election";
 
-  ContextItems.AddJavascriptForPage("homeIndexUrl", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-  TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem);
+    ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem);
 }
-<hgroup class="title"><h1>@ViewBag.Title.</h1>
-  <h2>@ViewBag.Message</h2>
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
 </hgroup>
-<h3>Your elections: (@Model.MyElectionsInfo.Count())</h3>
+<h3>
+    Your elections: (@Model.MyElectionsInfo.Count())</h3>
 <div id="ElectionList">
-  @TemplateLoader.File.ElectionListItem.FilledWithEach(Model.MyElectionsInfo).AsRawHtml()
-  <div class="Election">
-    <button type="button" id="btnCreate">Create a New Election</button></div>
+    @TemplateLoader.File.ElectionListItem.FilledWithEach(Model.MyElectionsInfo).AsRawHtml()
 </div>
+<div class="Election">
+    <button type="button" id="btnCreate">
+        Create a New Election</button></div>

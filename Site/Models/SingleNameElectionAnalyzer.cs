@@ -42,7 +42,7 @@ namespace TallyJ.Models
           result = new Result
                      {
                        ElectionGuid = CurrentElection.ElectionGuid,
-                       PersonGuid = voteInfo.PersonGuid.AsGuid()
+                       PersonGuid = voteInfo.PersonGuid
                      };
           Results.Add(result);
           AddResult(result);

@@ -14,21 +14,22 @@ namespace TallyJ.EF
     
     public partial class vVoteInfo
     {
-        public int C_RowId { get; set; }
+        public int VoteRowId { get; set; }
         public System.Guid BallotGuid { get; set; }
-        public Nullable<System.Guid> PersonGuid { get; set; }
-        public Nullable<long> PersonRowVersionInVote { get; set; }
         public string VoteStatusCode { get; set; }
         public Nullable<System.Guid> InvalidReasonGuid { get; set; }
         public Nullable<int> SingleNameElectionCount { get; set; }
+        public Nullable<long> PersonRowVersionInVote { get; set; }
+        public Nullable<long> PersonRowVersion { get; set; }
+        public System.Guid PersonGuid { get; set; }
+        public int PersonRowId { get; set; }
         public Nullable<bool> CanReceiveVotes { get; set; }
         public Nullable<System.Guid> PersonIneligibleReasonGuid { get; set; }
-        public Nullable<long> PersonRowVersion { get; set; }
         public System.Guid ElectionGuid { get; set; }
         public string LocationTallyStatus { get; set; }
         public string BallotStatusCode { get; set; }
         public string C_BallotCode { get; set; }
-        public Nullable<int> ResultRowId { get; set; }
-        public Nullable<System.Guid> ResultElectionGuid { get; set; }
+        public int ResultRowId { get; set; }
+        public System.Guid ResultElectionGuid { get; set; }
     }
 }

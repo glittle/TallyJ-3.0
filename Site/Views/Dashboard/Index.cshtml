@@ -3,11 +3,10 @@
 @model ElectionsListViewModel
 @{
   ViewBag.Title = "Dashboard";
-  ViewBag.Message = ("For election &nbsp; " + UserSession.CurrentElectionName).AsRawHtml();
+  ViewBag.Message = (UserSession.CurrentElectionName).AsRawHtml();
 
-  ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
-  TemplateLoader.RequireTemplates(TemplateLoader.File.ElectionListItem);
+  //ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  //ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
 }
 @section featured {
   <section class="featured">
@@ -23,16 +22,16 @@
 }
 <section class="features">
 <a href="@Url.Action("ChooseElection", "Dashboard")"><section class="feature">
-  <h3>Select Election</h3>
-  <p>Select the election and/or location.</p>
+  <h3>Choose Election Location</h3>
+  <p>Switch to a different election or location. Or start another election.</p>
 </section></a> <a href="@Url.Action("Index", "Setup")"><section class="feature">
-  <h3>Election Setup</h3>
+  <h3>Setup Election</h3>
   <p>Edit election details.</p>
 </section></a> <a href="@Url.Action("ImportExport", "Setup")"><section class="feature">
-  <h3>Import/Export</h3>
+  <h3>Import/Export People</h3>
   <p>Import/edit people.</p>
 </section></a> <a href="@Url.Action("People", "Setup")"><section class="feature">
-  <h3>Names Management</h3>
+  <h3>Manage People</h3>
   <p>Edit people's names. </p>
 </section></a> <a href="@Url.Action("FrontDesk", "Before")"><section class="feature">
   <h3>Front Desk</h3>

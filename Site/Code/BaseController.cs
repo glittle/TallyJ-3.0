@@ -5,7 +5,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Code
 {
-	public abstract class BaseController : Controller
+  public abstract class BaseController : Controller
 	{
 		TallyJ2Entities _db;
 

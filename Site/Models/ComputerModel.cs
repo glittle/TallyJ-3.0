@@ -87,6 +87,8 @@ namespace TallyJ.Models
           Db.Computers.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(
             c => c.ComputerCode));
 
+      SessionKey.ComputerCode.SetInSession(computer.ComputerCode);
+
       Db.SaveChanges();
     }
 

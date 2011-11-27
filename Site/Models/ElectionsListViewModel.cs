@@ -28,14 +28,14 @@ namespace TallyJ.Models
                              e.DateOfElection
                            })
             .ToList() // execute sql and then work on result in code
-            .Select(x =>
+            .Select(info =>
                       {
-                        var isCurrent = x.ElectionGuid == UserSession.CurrentElectionGuid;
+                        var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
                         return new
                                     {
-                                      x.Name,
-                                      x.ElectionGuid,
-                                      DateOfElection = x.DateOfElection.AsHtmlString(),
+                                      info.Name,
+                                      info.ElectionGuid,
+                                      DateOfElection = info.DateOfElection.AsHtmlString(),
                                       IsCurrent = isCurrent,
                                       Locations = isCurrent ? locationJson : ""
                                     };

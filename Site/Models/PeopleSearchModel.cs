@@ -48,7 +48,7 @@ namespace TallyJ.Models
                                       ,
                                   }),
                  MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : "",
-                 DefaultTo = 2 // which of these matches is the most referenced right now? 0 based.
+                 DefaultTo = 0 // which of these matches is the most referenced right now? 0 based.
                }
         .AsJsonResult();
     }

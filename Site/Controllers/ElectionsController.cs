@@ -21,11 +21,10 @@ namespace TallyJ.Controllers
 
     public JsonResult SelectElection(Guid guid)
     {
-      var listModel = new ElectionListModel();
+      var model = new ElectionModel();
 
-      if (listModel.JoinIntoElection(guid))
+      if (model.JoinIntoElection(guid))
       {
-        var model = new ElectionModel();
         return new
                  {
                    Locations = model.LocationsForCurrentElection.OrderBy(l => l.SortOrder).Select(l => new {l.Name, l.C_RowId}),
@@ -39,8 +38,14 @@ namespace TallyJ.Controllers
 
     public JsonResult CopyElection(Guid guid)
     {
-      var model = new ElectionListModel();
+      var model = new ElectionModel();
       return model.Copy(guid);
+    }
+
+    public JsonResult CreateElection()
+    {
+      var model = new ElectionModel();
+      return model.Create();
     }
   }
 }

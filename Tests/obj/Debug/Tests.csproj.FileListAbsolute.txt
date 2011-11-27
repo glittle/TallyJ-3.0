@@ -34,3 +34,4 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.U
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\FluentSecurity.dll

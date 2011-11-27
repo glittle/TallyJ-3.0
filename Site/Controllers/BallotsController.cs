@@ -13,6 +13,8 @@ namespace TallyJ.Controllers
 
 	  public ActionResult Index()
 	  {
+	    var x = UserSession.IsLoggedIn;
+
 	    var model = new BallotModel();
       if (UserSession.CurrentElection.IsSingleNameElection.AsBool())
       {
@@ -21,5 +23,10 @@ namespace TallyJ.Controllers
 
 	    return View("Ballots", model);
 		}
+
+    public JsonResult SaveVoteSingle(int pid, int vid, int count)
+    {
+      return new BallotModel().SaveVoteSingle(pid, vid, count);
+    }
 	}
 }

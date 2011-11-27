@@ -61,3 +61,4 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReferen
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.pdb
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.dll.config
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\FluentSecurity.dll

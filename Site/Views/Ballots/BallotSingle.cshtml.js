@@ -20,12 +20,41 @@ var BallotPageFunc = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
 
-        local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
+        local.inputField = $('#txtSearch').live('keypress paste', runSearch).focus();
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
-        $('#nameList li').live('click', nameClick).focus();
+        $('#nameList').on('click', 'li', nameClick);
+        $('#votesList').on('change keypress', 'input', voteNumChange);
         resetSearch();
     };
+    var voteNumChange = function (ev) {
+        var input = $(ev.target);
+
+        switch (ev.which) {
+            case 13: // enter
+                ev.preventDefault();
+                ev.stopPropagation();
+                ev.stopImmediatePropagation();
+                local.inputField.focus();
+                return;
+
+            default:
+        }
+
+        saveVote(input);
+    };
+
+    var saveVote = function (input) {
+        var form = {
+            pid: input.parent().attr('id').substr(1),
+            vid: input.parent().data('voteId') || 0,
+            count: input.val() || 0
+        };
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveVoteSingle', form, function (info) {
+            
+        });
+    };
+
 
     var onNamesReady = function (info) {
         local.People = markUp(info.People);
@@ -41,7 +70,9 @@ var BallotPageFunc = function () {
         }
         local.actionTag.removeClass('searching');
         local.inputField.removeClass('searching');
-        local.nameList.children().eq(local.rowSelected = info.DefaultTo).addClass('selected');
+
+        // single:
+        local.nameList.children().removeClass('selected').eq(local.rowSelected = 0).addClass('selected');
     };
     var markUp = function (people) {
         var results = [];
@@ -89,17 +120,35 @@ var BallotPageFunc = function () {
         children.removeClass('selected');
         children.eq(local.rowSelected = rowNum).addClass('selected');
     };
-    var edit = function (personId) {
-        var id = 'P' + personId;
-        var children = local.nameList.children();
-        children.each(function (i, el) {
-            if (el.id == id) {
-                setSelected(children, i);
-                return false;
-            }
-        });
-        $('#editPanel').text('edit ' + personId);
+    var edit = function (selectedPersonLi) {
+        local.nameList.children().removeClass('selected');
+        selectedPersonLi.addClass('selected');
+        local.inputField.val('');
+
+        addToVotesList(selectedPersonLi);
     };
+
+    var addToVotesList = function (selectedPersonLi) {
+
+        var personId = selectedPersonLi.attr('id').substr(1);
+        if (!personId) return;
+
+        var existing = $('#V' + personId);
+        if (existing.length != 0) {
+            existing.find('input').focus();
+            return;
+        }
+
+        var info = {
+            id: personId,
+            name: selectedPersonLi.text()
+        };
+
+        $('#votesList').append("<div id=V{id}><input type=number value=0><span>{name}<span>{id}</div>".filledWith(info));
+
+        saveVote($('#V' + personId));
+    }
+
     var navigating = function (ev) {
         switch (ev.which) {
             case 38: // up
@@ -113,9 +162,8 @@ var BallotPageFunc = function () {
                 return true;
 
             case 13: // enter
-                var id = +local.nameList.children().eq(local.rowSelected).attr('id').substr(1);
                 ev.preventDefault();
-                edit(id);
+                edit(local.nameList.children().eq(local.rowSelected));
                 return true;
 
             default:
@@ -161,7 +209,7 @@ var BallotPageFunc = function () {
             el = el.parentNode();
             if (el == null) return;
         }
-        edit(+el.id.substr(1));
+        edit($(el));
     };
     var publicInterface = {
         peopleUrl: '',

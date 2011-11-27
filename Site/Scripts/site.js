@@ -74,6 +74,10 @@ function HasErrors(data) {
     //    top.location.href = GetRootUrl() + 'login';
     //    return true;
     //  }
+    if (data.search(/\<h2\>Object moved to/) !== -1) {
+        location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
+        return true;
+    }
     if (data.search(/Internal Server Error/) !== -1) {
         ShowStatusFailed('Server Error.');
         return true;
@@ -175,10 +179,8 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 
 
 String.prototype.parseJsonDate = function () {
-    var answer = this;
-    this.replace(/\((.+)\)/g, function () { answer = arguments[1]; });
-    var num = parseFloat(answer);
-    if (isNaN(num)) return NaN;
+    if (this == '') return null;
+    var num = new RegExp('\((.+)\)').exec(this)[1];
     return new Date(num);
 
     ///Date(1072940400000)/
@@ -219,10 +221,10 @@ function PrepareStatusDisplay() {
     + '</div></div></div>');
 }
 
-function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError) {
-    if (typeof minDisplayTimeBeforeStatusReset === 'number') {
-        statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset;
-    }
+function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError, showStatic) {
+    statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset =
+         (typeof minDisplayTimeBeforeStatusReset === 'number') ? minDisplayTimeBeforeStatusReset : 15 * 1000;
+
     if (typeof dontShowUntilAfter !== 'number') {
         dontShowUntilAfter = 500;
     }
@@ -237,9 +239,10 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
     if (target.length === 0) {
         // ??? on a page without a Status display
     }
-    var loaderPath = GetRootUrl() + 'images/ajax-loader.gif';
-    target.html((showAsError ? '<span class="ui-icon ui-icon-alert"></span>' : '<img class=ajaxIcon src="' + loaderPath + '"> ') + msg)
-    .show();
+    var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif> ';
+    var imageHtml = showAsError ? '<span class="ui-icon ui-icon-alert"></span>' :
+                        showStatic ? '' : loaderPath;
+    target.html(imageHtml + msg).show();
     if (showAsError) {
         target.addClass('error');
     } else {
@@ -258,7 +261,13 @@ function ShowStatusFailed(msg, keep) {
     } else if (typeof msg.statusText === 'string') {
         if (msg.status === 200 || msg.status === 406) {
             text = msg.responseText;
+        } else if (msg.status === 0 && msg.statusText == 'error') {
+            text = 'The server did not respond.';
+        } else if (msg.status === 503) {
+            top.location.href = top.location.href;
+            return '';
         } else {
+            LogMessage(msg);
             text = '(' + msg.status + ') ' + msg.statusText + ': ';
             var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);
             if (matches !== null) {
@@ -267,6 +276,8 @@ function ShowStatusFailed(msg, keep) {
                 text = text + msg.responseText;
             }
         }
+    } else {
+        text = 'Error';
     }
 
     ShowStatusDisplay(text, 0, keep ? null : 15000, true);
@@ -276,7 +287,7 @@ function ShowStatusFailed(msg, keep) {
 
 function ResetStatusDisplay() {
     clearTimeout(statusDisplay.resetTimer);
-    
+
     for (; statusDisplay.delayedShowStatusArray.length; ) {
         clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
         statusDisplay.delayedShowStatusArray.length--;
@@ -557,12 +568,21 @@ String.prototype.filledWith = function () {
     var replaceTokens = function (input) {
         return input.replace(extractTokens, function () {
             var token = arguments[1];
-            var value = values[token];
-            if (testForFunc.test(token)) {
-                //LogMessage(token);
-                value = eval(token.substring(1));
+            var value = undefined;
+            try {
+                value = values[token];
+                if (testForFunc.test(token)) {
+                    //LogMessage(token);
+                    value = eval(token.substring(1));
+                }
             }
-            return value == null ? '' : ('' + value);
+            catch (err) {
+                LogMessage('src data');
+                LogMessage(values);
+                LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
+                throw 'Error in Filled With';
+            }
+            return typeof value == 'undefined' || value == null ? '' : ('' + value);
         });
     };
 
@@ -695,7 +715,10 @@ function SetInStorage(key, value) {
 }
 
 var adjustElection = function (election) {
-    election.DateOfElection = FormatDate(election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
+    return election;
+    election.DateOfElection = FormatDate(
+        !isNaN(election) ? election :
+           election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
     return election;
 };
 

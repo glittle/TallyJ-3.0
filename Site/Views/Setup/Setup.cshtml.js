@@ -48,6 +48,8 @@ var SetupIndexPage = function () {
             }
         });
 
+        $('.CurrentElectionName').text(election.Name);
+
         startToAdjustByType();
     };
 
@@ -64,10 +66,10 @@ var SetupIndexPage = function () {
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
             if (info.Election) {
-                var election = adjustElection(info.Election);
-                applyValues(election);
+                applyValues(info.Election);
             }
-            ShowStatusDisplay(info.Status, 0);
+            ResetStatusDisplay();
+            ShowStatusDisplay(info.Status, 0, null, false, true);
         });
     };
 

@@ -65,7 +65,7 @@ namespace TallyJ.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				if (Membership.ValidateUser(model.UserName, model.Password))
+			  if (Membership.ValidateUser(model.UserName, model.Password))
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
           UserSession.ProcessLogin(model.UserName);
@@ -73,18 +73,13 @@ namespace TallyJ.Controllers
 					{
 						return Redirect(returnUrl);
 					}
-					else
-					{
-						return RedirectToAction("Index", "Dashboard");
-					}
+				  return RedirectToAction("Index", "Dashboard");
 				}
-				else
-				{
-					ModelState.AddModelError("", "The user name or password provided is incorrect.");
-				}
+			  
+        ModelState.AddModelError("", "The user name or password provided is incorrect.");
 			}
 
-			// If we got this far, something failed, redisplay form
+		  // If we got this far, something failed, redisplay form
 			return View(model);
 		}
 

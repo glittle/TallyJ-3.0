@@ -23,6 +23,7 @@
 }
 .SelectLocation {
     margin-left: 120px;
+    display: none;
 }
 .Locations .True {
     color: #8dc63e;

@@ -43,6 +43,9 @@
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\Other\Enyim.Caching.dll</HintPath>
     </Reference>
+    <Reference Include="FluentSecurity">
+      <HintPath>..\packages\FluentSecurity.1.3.0\lib\FluentSecurity.dll</HintPath>
+    </Reference>
     <Reference Include="LinqKit">
       <HintPath>..\packages\Other\LinqKit.dll</HintPath>
     </Reference>
@@ -127,9 +130,11 @@
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
+    <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
     <Compile Include="Code\Resources\TemplateLoader.cs" />
+    <Compile Include="Code\RequireElectionPolicy.cs" />
     <Compile Include="Code\Session\CurrentContext.cs" />
     <Compile Include="Code\Session\ContextItems.cs" />
     <Compile Include="Code\Session\ItemKey.cs" />
@@ -145,6 +150,7 @@
     <Compile Include="Code\Extensions.cs" />
     <Compile Include="Code\Resources\IViewResourcesCache.cs" />
     <Compile Include="Code\Resources\IViewResourcesHelper.cs" />
+    <Compile Include="Code\UnityRelated\SecurityServiceLocator.cs" />
     <Compile Include="Code\UnityRelated\UnityInstance.cs" />
     <Compile Include="Code\Resources\ViewResourcesHelper.cs" />
     <Compile Include="Code\Resources\ViewResourcesCache.cs" />
@@ -215,7 +221,6 @@
     <Compile Include="Models\PeopleSearchModel.cs" />
     <Compile Include="EF\Partials\SerializableClasses.cs" />
     <Compile Include="Models\ElectionModel.cs" />
-    <Compile Include="Models\ElectionListModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="EF\C_Log.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
