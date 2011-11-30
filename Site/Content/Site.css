@@ -612,6 +612,12 @@ a.twitter
 }
 .CurrentLocationName
 {
+    
+}
+.CurrentComputerCode {
+    margin-left: 15px;
+}
+.CurrentLocationAndCode {
     text-align: right;
     color: #013d7a;
 }

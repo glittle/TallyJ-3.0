@@ -368,7 +368,8 @@ namespace TallyJ.Models
       {
         Name = "Main Location",
         LocationGuid = Guid.NewGuid(),
-        ElectionGuid = election.ElectionGuid
+        ElectionGuid = election.ElectionGuid,
+        SortOrder = 1
       };
       Db.Locations.Add(mainLocation);
       Db.SaveChanges();
@@ -377,7 +378,8 @@ namespace TallyJ.Models
       {
         Name = "Mailed In Ballots",
         LocationGuid = Guid.NewGuid(),
-        ElectionGuid = election.ElectionGuid
+        ElectionGuid = election.ElectionGuid,
+        SortOrder = 99
       };
       Db.Locations.Add(mailedInLocation);
       Db.SaveChanges();
@@ -399,5 +401,6 @@ namespace TallyJ.Models
         Success = true
       }.AsJsonResult();
     }
+
   }
 }

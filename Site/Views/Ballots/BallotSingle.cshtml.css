@@ -46,3 +46,8 @@ input.searching {
     margin-right: 5px;
     text-align: right;
 }
+.ui-icon {
+    display: inline-block;
+    margin-left: 15px;
+    cursor: pointer;
+}

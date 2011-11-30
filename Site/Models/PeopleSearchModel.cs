@@ -4,21 +4,21 @@ using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
-using TallyJ.EF;
 using TallyJ.Code.Helpers;
+using TallyJ.EF;
 
 namespace TallyJ.Models
 {
   public class PeopleSearchModel
   {
-    readonly IQueryable<Person> _people;
+    private readonly IQueryable<Person> _people;
 
     public PeopleSearchModel(IQueryable<Person> people)
     {
       _people = people;
     }
 
-    IQueryable<Person> People
+    private IQueryable<Person> People
     {
       get { return _people; }
     }
@@ -44,8 +44,8 @@ namespace TallyJ.Models
                                     //  p.FirstName,
                                     //  p.OtherNames.SurroundContentWith(" [", "]"),
                                     //  p.OtherInfo.SurroundContentWith(" (", ")")
-                                      //)
-                                      ,
+                                    //)
+                                    ,
                                   }),
                  MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : "",
                  DefaultTo = 0 // which of these matches is the most referenced right now? 0 based.
@@ -58,8 +58,8 @@ namespace TallyJ.Models
       var parts = search.Split(new[] {' ', '-', '\''}, 2, StringSplitOptions.RemoveEmptyEntries);
       var numParts = parts.Length;
 
-      var part0 = parts[0];
-      var part0Sx = part0.GenerateDoubleMetaphone();
+      var term1 = parts[0];
+      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
 
       // IQueryable<Person> query;
       //var whereClause = PredicateBuilder.False<Person>();
@@ -87,47 +87,66 @@ namespace TallyJ.Models
       //  .Take(max + 1)
       //  .ToList();
 
-      string part1 = null;
-      string part1Sx = null;
+      string term2 = null;
+      string metaphone2 = null;
       if (parts.Length > 1)
       {
-        part1 = parts[1];
-        part1Sx = part1.GenerateDoubleMetaphone();
+        term2 = parts[1];
+        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
+
+        if (term2 == term1)
+        {
+          term2 = null;
+          metaphone2 = null;
+        }
       }
 
       IQueryable<Person> query;
       if (callingSqlDb)
       {
         query = People.Where(p =>
-                             p.CombinedSoundCodes.Contains(part0Sx)
-                             &&
-                             (part1Sx == null ||
-                              SqlFunctions.CharIndex(part1Sx, p.CombinedSoundCodes,
-                                                     SqlFunctions.CharIndex(part0Sx, p.CombinedSoundCodes)) != -1)
-                             || p.CombinedInfo.Contains(part0)
-                             && (part1 == null
-                                 ||
-                                 SqlFunctions.CharIndex(part1, p.CombinedInfo,
-                                                        SqlFunctions.CharIndex(" ", p.CombinedInfo,
-                                                                               SqlFunctions.CharIndex(part0,
-                                                                                                      p.CombinedInfo))) !=
-                                 -1));
+                             (p.CombinedInfo.Contains(term1) ||
+                              p.CombinedSoundCodes.Contains(metaphone1)));
+        if (term2.HasContent())
+        {
+          query = query.Where(p =>
+                               (p.CombinedInfo.Contains(term2) ||
+                                p.CombinedSoundCodes.Contains(metaphone2)));
+          //query = query.Where(p =>
+          //                    (SqlFunctions.CharIndex(p.CombinedInfo, term2,
+          //                                            SqlFunctions.CharIndex(p.CombinedInfo, term1)) != 0 ||
+          //                     SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone2,
+          //                                            SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone1)) != 0));
+        }
       }
       else
       {
         query = People.Where(p =>
-                             p.CombinedSoundCodes.Contains(part0Sx)
-                             &&
-                             (part1Sx == null ||
-                              p.CombinedSoundCodes.IndexOf(part1Sx, p.CombinedSoundCodes.IndexOf(part0Sx)) != -1)
-                             ||
-                             p.CombinedInfo.Contains(part0.ToLower())
-                             && (part1 == null
-                                 ||
-                                 p.CombinedInfo.IndexOf(part1.ToLower(),
-                                                        p.CombinedInfo.IndexOf(" ",
-                                                                               p.CombinedInfo.IndexOf(part0.ToLower()))) !=
-                                 -1));
+                             (p.CombinedInfo.Contains(term1) ||
+                              p.CombinedSoundCodes.Contains(metaphone1)));
+        if (term2.HasContent())
+        {
+          query = query.Where(p =>
+                              (p.CombinedInfo.IndexOf(term2, p.CombinedInfo.IndexOf(term1, StringComparison.Ordinal),
+                                                      StringComparison.Ordinal) != -1 ||
+                               p.CombinedSoundCodes.IndexOf(metaphone2,
+                                                            p.CombinedSoundCodes.IndexOf(metaphone1,
+                                                                                         StringComparison.Ordinal),
+                                                            StringComparison.Ordinal) != -1));
+        }
+        //query = People.Where(p =>
+        //                     p.CombinedSoundCodes.Contains(metaphone1)
+        //                     &&
+        //                     (metaphone2 == null ||
+        //                      p.CombinedSoundCodes.IndexOf(metaphone2, p.CombinedSoundCodes.IndexOf(metaphone1)) != -1)
+        //                     ||
+        //                     p.CombinedInfo.Contains(term1.ToLower())
+        //                     && (term2 == null
+        //                         ||
+        //                         p.CombinedInfo.IndexOf(term2.ToLower(),
+        //                                                p.CombinedInfo.IndexOf(" ",
+        //                                                                       p.CombinedInfo.IndexOf(term1.ToLower()))) !=
+        //                         -1));
       }
 
       return query

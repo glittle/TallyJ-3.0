@@ -35,8 +35,8 @@ namespace Tests.BusinessTests
         vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
-        vVoteInfo.BallotStatusCode = BallotModel.BallotStatusCode.Ok;
-        vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
       var fakes = new Fakes();
@@ -76,8 +76,8 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
-        vVoteInfo.BallotStatusCode = BallotModel.BallotStatusCode.Ok;
-        vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
       var fakes = new Fakes();
@@ -123,8 +123,8 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
-        vVoteInfo.BallotStatusCode = BallotModel.BallotStatusCode.Ok;
-        vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
       var fakes = new Fakes();
@@ -173,8 +173,8 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
-        vVoteInfo.BallotStatusCode = BallotModel.BallotStatusCode.Ok;
-        vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
       var fakes = new Fakes();
@@ -235,8 +235,8 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
-        vVoteInfo.BallotStatusCode = BallotModel.BallotStatusCode.Ok;
-        vVoteInfo.VoteStatusCode = BallotModel.VoteStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
       votes[3].VoteStatusCode = "Unreadable";
       votes[4].BallotStatusCode = "Incomplete";

@@ -11,11 +11,9 @@ namespace TallyJ.Models
 {
   public class ComputerModel : DataConnectedModel
   {
-    public Computer CreateComputerRecord()
+    public Computer CreateComputerRecordForMe()
     {
       ClearOutOldComputerRecords();
-
-      SessionKey.CurrentElection.SetInSession<Election>(null);
 
       var computer = new Computer
                        {
@@ -26,6 +24,9 @@ namespace TallyJ.Models
 
       Db.Computers.Add(computer);
       Db.SaveChanges();
+
+      SessionKey.CurrentComputerRowId.SetInSession(computer.C_RowId);
+      SessionKey.ComputerCode.SetInSession("");
 
       return computer;
     }
@@ -73,8 +74,7 @@ namespace TallyJ.Models
 
       if (computer == null)
       {
-        computer = CreateComputerRecord();
-        UserSession.ComputerRowId = computer.C_RowId;
+        computer = CreateComputerRecordForMe();
       }
 
       computer.ElectionGuid = electionGuid;

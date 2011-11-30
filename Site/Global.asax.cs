@@ -21,6 +21,9 @@ namespace TallyJ
 		protected void Application_Start()
 		{
 			ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
+      
+      UnityInstance.Container.RegisterControllers();
+
 			DependencyResolver.SetResolver(new UnityDependencyResolver(UnityInstance.Container));
       
 		  FixUpConnectionString();
@@ -33,29 +36,36 @@ namespace TallyJ
         // Let Fluent Security know how to get the authentication status of the current user
         configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
 
-        // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
-        
-        configuration.For<PublicController>().Ignore();
-
-        //configuration.ResolveServicesUsing(UnityInstance);
-        // is this working????
         configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
 
-        configuration.For<AfterController>().DenyAnonymousAccess();
-        configuration.For<AfterController>().DenyAnonymousAccess().AddPolicy(new RequireElectionPolicy());
-        configuration.For<BallotsController>().DenyAnonymousAccess().AddPolicy(new RequireElectionPolicy());
-        configuration.For<BeforeController>().DenyAnonymousAccess().AddPolicy(new RequireElectionPolicy());
+        // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
+
+        configuration.ForAllControllers().DenyAnonymousAccess();
+
+        configuration.For<PublicController>().Ignore();
+
+
+        configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
+        
+        configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
+        configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+
+        configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
+        
         configuration.For<DashboardController>().DenyAnonymousAccess();
+        
         configuration.For<ElectionsController>().DenyAnonymousAccess();
-        configuration.For<PeopleController>().DenyAnonymousAccess().AddPolicy(new RequireElectionPolicy());
-        configuration.For<SetupController>().DenyAnonymousAccess().AddPolicy(new RequireElectionPolicy());
+        
+        configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
+        
+        configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
         
         configuration.For<AccountController>().DenyAuthenticatedAccess();
         configuration.For<AccountController>(x => x.LogOff()).DenyAnonymousAccess();
       });
 
 
-			AreaRegistration.RegisterAllAreas();
+			//AreaRegistration.RegisterAllAreas();
 
 			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);

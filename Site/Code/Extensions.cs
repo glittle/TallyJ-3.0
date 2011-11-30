@@ -113,18 +113,23 @@ namespace TallyJ.Code
       return input.HasValue ? input.Value : Guid.Empty;
     }
 
-    public static HtmlString AsHtmlString(this DateTime input)
+    public static HtmlString AsHtmlString(this DateTime input, string format = "d MMMM yyyy")
     {
       if (input == DateTime.MinValue)
       {
         return "".AsRawHtml();
       }
-      return input.ToString("d MMMM yyyy").AsRawHtml();
+      return input.ToString(format).AsRawHtml();
     }
 
-    public static HtmlString AsHtmlString(this DateTime? input)
+    public static HtmlString AsHtmlString(this DateTime? input, string format = "d MMMM yyyy")
     {
-      return input.HasValue ? input.Value.AsHtmlString() : "".AsRawHtml();
+      return input.HasValue ? input.Value.AsHtmlString(format) : "".AsRawHtml();
+    }
+
+    public static string AsString(this DateTime? input, string format = "d MMMM yyyy")
+    {
+      return input.HasValue ? input.Value.ToString(format) : "";
     }
 
     public static int AsInt(this object input)

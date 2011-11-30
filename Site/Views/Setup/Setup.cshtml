@@ -1,4 +1,5 @@
 ﻿@model SetupModel
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
@@ -41,11 +42,7 @@
         </th>
         <td>
             <select id="ddlType" data-name="ElectionType">
-                <option value="LSA">Local Spiritual Assembly</option>
-                <option value="NSA">National Spiritual Assembly</option>
-                <option value="Con">Unit Convention</option>
-                <option value="Reg">Regional Council</option>
-                <option value="Oth">Other</option>
+                @ElectionTypeEnum.ForHtmlSelect()
             </select>
         </td>
     </tr>
@@ -54,11 +51,15 @@
             Variation
         </th>
         <td>
-            <select id="ddlMode" data-name="ElectionMode">
-                <option value="N">Normal Election</option>
+          <select id="ddlMode" data-name="ElectionMode">
+          @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
+                                            {
+                                              {"B"," id=modeB"}
+                                            })
+@*                <option value="N">Normal Election</option>
                 <option value="T">Tie-Break</option>
                 <option value="B" id="modeB">By-election</option>
-            </select>
+*@            </select>
         </td>
     </tr>
     <tr class="electionDetailT">
@@ -105,7 +106,8 @@
         Save</button>
 </div>
 <div class="More">
-  <h3>Locations</h3>
+    <h3>
+        Locations</h3>
     <div id="locationList">
     </div>
 </div>

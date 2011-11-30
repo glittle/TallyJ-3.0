@@ -30,7 +30,7 @@ namespace TallyJ.Code.UnityRelated
 		/// The key of the instance being managed in the context provider
 		private Guid contextKey = Guid.NewGuid();
 
-
+    
 		public ContextLifetimeManager()
 		{
 

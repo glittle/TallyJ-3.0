@@ -3,13 +3,13 @@
     border-bottom: 1px solid #ccc;
     padding: 9px 0 9px 5px;
 }
-.Election.True .Detail
+.Election.true .Detail
 {
     color: #8dc63e;
     font-weight: bold;
 }
-.Election.True button.btnSelectElection,
-.Locations .True button
+.Election.true button.btnSelectElection,
+.Locations .true button
 {
     opacity: .5;
 }
@@ -18,14 +18,18 @@
     display: none;
     margin-left: 150px;
 }
-.Election.True .Locations {
-    display: block;
-}
+
 .SelectLocation {
     margin-left: 120px;
     display: none;
 }
-.Locations .True {
+
+.Election.true .SelectLocation,
+.Election.true .Locations {
+    display: block;
+}
+
+.Locations .true {
     color: #8dc63e;
     font-weight: bold;
 }

@@ -114,7 +114,7 @@ namespace TallyJ.Code.Session
     public static void ProcessLogin(string userName)
     {
       HttpContext.Current.Session.Clear();
-      ComputerRowId = new ComputerModel().CreateComputerRecord().C_RowId;
+      ComputerRowId = new ComputerModel().CreateComputerRecordForMe().C_RowId;
     }
 
     public static void ProcessLogout()

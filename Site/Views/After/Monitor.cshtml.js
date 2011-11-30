@@ -3,13 +3,15 @@
 
 var MonitorPage = function () {
     var settings = {
-        rowTemplate: '',
+        rowTemplateMain: '',
+        rowTemplateExtra: '',
         refreshTimeout: null
     };
 
     var preparePage = function () {
         var tableBody = $('#mainBody');
-        settings.rowTemplate = tableBody.html();
+        settings.rowTemplateMain = '<tr class="{ClassName}">' + tableBody.children().eq(0).html() + '</tr>';
+        settings.rowTemplateExtra = '<tr class="Extra {ClassName}">' + tableBody.children().eq(1).html() + '</tr>';
 
         showInfo(publicInterface.LocationInfos, true);
 
@@ -28,6 +30,8 @@ var MonitorPage = function () {
     };
 
     var showInfo = function (info, firstLoad) {
+        clearInterval(settings.autoMinutesTimeout);
+        
         var table = $('#mainBody');
         if (!firstLoad) {
             table.animate({
@@ -38,11 +42,35 @@ var MonitorPage = function () {
                 }, 500);
             });
         }
-        table.html(settings.rowTemplate.filledWithEach(expand(info)));
-        
+        table.html(expandWithTemplates(info));
+
         $('#lastRefresh').html(new Date().toLocaleTimeString());
 
+        startAutoMinutes();
         setAutoRefresh();
+    };
+    var startAutoMinutes = function () {
+        var startTime = new Date();
+        $('.minutesOld').each(function () {
+            var span = $(this);
+            span.data('startTime', startTime);
+        });
+        settings.autoMinutesTimeout = setInterval(function () {
+            updateAutoMinutes();
+        }, 15 * 1000);
+    };
+
+    var updateAutoMinutes = function () {
+        $('.minutesOld').each(function () {
+            var span = $(this);
+            var start = +span.data('start');
+            if (start) {
+                var startTime = span.data('startTime');
+                var now = new Date();
+                var ms = now.getTime() - startTime.getTime();
+                span.text(Math.round(ms / 1000 / 6 + start * 10) / 10);
+            }
+        });
     };
 
     var setAutoRefresh = function (ev) {
@@ -64,11 +92,41 @@ var MonitorPage = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/RefreshMonitor', null, showInfo);
     };
 
-    var expand = function (locationInfos) {
-        $.each(locationInfos, function (i) {
-            this.ClassName = i % 2 == 0 ? 'Even' : 'Odd';
+    var expandWithTemplates = function (info) {
+        var lastName = '';
+        var count = 0;
+        var rows = -1;
+        var last = null;
+        var html = [];
+
+        $.each(info.Locations, function (i) {
+            rows++;
+
+            if (this.Name != lastName) {
+                if (last != null) {
+                    last.rows = rows;
+                    rows = 0;
+                }
+
+                count++;
+                this.ClassName = count % 2 == 0 ? 'Even' : 'Odd';
+                lastName = this.Name;
+                last = this;
+            } else {
+                this.ClassName = last.ClassName;
+            }
         });
-        return locationInfos;
+
+        $.each(info.Locations, function () {
+            if (this.rows) {
+                html.push(settings.rowTemplateMain.filledWith(this));
+            }
+            else {
+                html.push(settings.rowTemplateExtra.filledWith(this));
+            }
+        });
+
+        return html.join('');
     };
 
     var publicInterface = {

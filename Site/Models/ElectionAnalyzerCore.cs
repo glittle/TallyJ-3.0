@@ -112,8 +112,8 @@ namespace TallyJ.Models
     {
       return !voteInfo.InvalidReasonGuid.HasValue
              && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             && voteInfo.BallotStatusCode == BallotModel.BallotStatusCode.Ok
-             && voteInfo.VoteStatusCode == BallotModel.VoteStatusCode.Ok
+             && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
+             && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
              && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
     }
 

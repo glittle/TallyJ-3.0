@@ -128,9 +128,15 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\BaseController.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
+    <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
+    <Compile Include="Code\Enumerations\ElectionModeEnum.cs" />
+    <Compile Include="Code\Enumerations\ElectionTypeEnum.cs" />
+    <Compile Include="Code\Enumerations\EnumerationExt.cs" />
+    <Compile Include="Code\Enumerations\IEnumeration.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
+    <Compile Include="Code\RequireLocationPolicy.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
     <Compile Include="Code\Resources\TemplateLoader.cs" />
@@ -208,7 +214,9 @@
     <Compile Include="EF\vVoteInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\BallotModel.cs" />
+    <Compile Include="Models\BallotHelper.cs" />
+    <Compile Include="Models\BallotNormalModel.cs" />
+    <Compile Include="Models\BallotSingleModel.cs" />
     <Compile Include="Models\ComputerModel.cs" />
     <Compile Include="Models\ElectionAnalyzer.cs" />
     <Compile Include="Models\ElectionAnalyzerCore.cs" />
@@ -335,6 +343,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
+    <Content Include="JsTemplates\SingleVoteLine.html" />
     <Content Include="JsTemplates\LocationSelectItem.html" />
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
@@ -368,8 +377,8 @@
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Ballots\Ballots.cshtml.css" />
-    <Content Include="Views\Ballots\Ballots.cshtml.js" />
+    <Content Include="Views\Ballots\BallotNormal.cshtml.css" />
+    <Content Include="Views\Ballots\BallotNormal.cshtml.js" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.js" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
@@ -471,7 +480,7 @@
     <Content Include="Views\Shared\Headers.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Ballots\Ballots.cshtml" />
+    <Content Include="Views\Ballots\BallotNormal.cshtml" />
     <Content Include="Views\After\Analyze.cshtml" />
     <Content Include="Views\After\Analyze.cshtml.css">
       <DependentUpon>Analyze.cshtml</DependentUpon>

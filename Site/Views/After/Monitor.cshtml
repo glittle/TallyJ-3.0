@@ -1,5 +1,4 @@
-﻿@using TallyJ.Code.Resources
-@using TallyJ.Code.Session
+﻿@using TallyJ.Code.Session
 @model MonitorModel
 @{
     ViewBag.Title = "Election Monitor";
@@ -18,7 +17,10 @@
                 Status
             </th>
             <th>
-                Teller Computers
+                Computer
+            </th>
+            <th>
+                Minutes Ago
             </th>
             <th>
                 # Ballots
@@ -29,21 +31,35 @@
         </tr>
     </thead>
     <tbody id="mainBody">
-        <tr class="{ClassName}">
-            <th>
+        <tr>
+            <th rowspan="{rows}">
                 {Name}
             </th>
-            <td>
+            <td rowspan="{rows}">
                 {TallyStatus}
             </td>
             <td>
-                {ActiveComputers}
+                {ComputerCode}
+            </td>
+            <td>
+                <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
             </td>
             <td>
                 {Ballots}
             </td>
-            <td>
+            <td rowspan="{rows}">
                 {ContactInfo}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {ComputerCode}
+            </td>
+            <td>
+                <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
+            </td>
+            <td>
+                {Ballots}
             </td>
         </tr>
     </tbody>
@@ -58,7 +74,7 @@
         <option value="60">minute</option>
         <option value="120">2 minutes</option>
     </select>
-  <button type="button" id="btnRefesh">
-    Refresh Now</button>
+    <button type="button" id="btnRefesh">
+        Refresh Now</button>
     <span id="lastRefresh"></span>
 </div>

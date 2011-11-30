@@ -10,6 +10,16 @@ var HomeIndexPage = function () {
         $(document).on('click', '.btnCopyElection', null, copyElection);
         $(document).on('click', '.btnSelectLocation', null, selectLocation);
         $(document).on('click', '#btnCreate', null, createElection);
+        showElections(publicInterface.elections);
+    };
+
+    var showElections = function (info) {
+        $.each(info, function () {
+            if (this.Locations) {
+                this.Locations = site.templates.LocationSelectItem.filledWithEach(this.Locations);
+            }
+        });
+        $('#ElectionList').html(site.templates.ElectionListItem.filledWithEach(info));
     };
 
     var selectElection = function () {
@@ -20,6 +30,8 @@ var HomeIndexPage = function () {
             guid: row.data('guid')
         };
 
+        ShowStatusDisplay("Selecting election and getting locations...");
+
         CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection, row);
     };
 
@@ -29,8 +41,8 @@ var HomeIndexPage = function () {
         }
 
         if (info.Selected) {
-            $('.Election.True').removeClass('True');
-            row.addClass('True');
+            $('.Election.true').removeClass('true');
+            row.addClass('true');
 
             $('.CurrentElectionName').text(info.ElectionName);
             $('.CurrentLocationName').text('[No location selected]');
@@ -45,13 +57,7 @@ var HomeIndexPage = function () {
 
     var showLocations = function (list, row) {
         var host = row.find('.Locations');
-        var template = site.templates.LocationSelectItem;
-        host.html(template.filledWithEach(list));
-        if (list.length) {
-            $('.SelectLocation').show();
-        } else {
-            $('.SelectLocation').hide();
-        }
+        host.html(site.templates.LocationSelectItem.filledWithEach(list));
     };
 
     var selectLocation = function () {
@@ -60,7 +66,9 @@ var HomeIndexPage = function () {
         {
             id: btn.data('id')
         };
-
+        
+        ShowStatusDisplay('Selecting location...');
+        
         CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
     };
 

@@ -5,6 +5,7 @@
 var AnalyzePage = function () {
     var settings = {
         rowTemplate: '',
+        footTemplate: '',
         chart: null
     };
 
@@ -16,6 +17,7 @@ var AnalyzePage = function () {
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
+        settings.footTemplate = $('#mainFoot').html();
         tableBody.html('');
 
         var info = publicInterface.results;
@@ -34,19 +36,21 @@ var AnalyzePage = function () {
     };
 
     var showInfo = function (info, firstLoad) {
-        var table = $('#mainBody');
+        var tableBody = $('#mainBody');
 
         if (!firstLoad) {
-            table.animate({
+            tableBody.animate({
                 opacity: 0.5
             }, 100, function () {
-                table.animate({
+                tableBody.animate({
                     opacity: 1
                 }, 500);
             });
         }
 
-        table.html(settings.rowTemplate.filledWithEach(expand(info)));
+        tableBody.html(settings.rowTemplate.filledWithEach(expand(info)));
+
+        //TODO: add foot info
 
         showChart(info);
     };

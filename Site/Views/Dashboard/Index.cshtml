@@ -8,21 +8,21 @@
   //ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
   //ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
 }
-@section featured {
+@*@section featured {
   <section class="featured">
     <div class="content-wrapper">
       <hgroup class="title"><h1>@ViewBag.Title.</h1>
         <h2>@ViewBag.Message</h2>
-        @*@Html.ActionLink("Change to different election", "ChooseElection", "Dashboard")*@
       </hgroup>
       <p>Select from the modules below. To get started, setup your Election. To learn more,
         please read more in the @Html.ActionLink("Reference Materials", "Learning", "Public"). </p>
     </div>
   </section>
 }
+*@
 <section class="features">
 <a href="@Url.Action("ChooseElection", "Dashboard")"><section class="feature">
-  <h3>Choose Election Location</h3>
+  <h3>Choose Election/Location</h3>
   <p>Switch to a different election or location. Or start another election.</p>
 </section></a> <a href="@Url.Action("Index", "Setup")"><section class="feature">
   <h3>Setup Election</h3>

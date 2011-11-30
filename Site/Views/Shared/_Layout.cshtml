@@ -38,8 +38,12 @@
                     @if (Request.IsAuthenticated)
                     {
                         <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
-                        <div class="CurrentLocationName">@UserSession.CurrentLocationName</div>
-                        <div class="Heartbeat">Connected</div>
+                        <div class="CurrentLocationAndCode">
+                            <span class="CurrentLocationName">@UserSession.CurrentLocationName</span>
+                            <span class="CurrentComputerCode">@SessionKey.ComputerCode.FromSession("")</span>
+                        </div>
+                        <div class="Heartbeat">
+                            Connected</div>
                     }
                 </section>
             </div>

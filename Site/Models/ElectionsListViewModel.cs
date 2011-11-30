@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -13,10 +14,10 @@ namespace TallyJ.Models
     {
       get
       {
-        var locations = new ElectionModel().LocationsForCurrentElection
+        var electionModel = new ElectionModel();
+        var locations = electionModel.LocationsForCurrentElection
           .OrderBy(l => l.SortOrder)
           .Select(l => new { l.Name, l.C_RowId, IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid });
-        var locationJson = TemplateLoader.File.LocationSelectItem.FilledWithEach(locations);
 
         return
           MyElections()
@@ -25,7 +26,9 @@ namespace TallyJ.Models
                            {
                              e.Name,
                              e.ElectionGuid,
-                             e.DateOfElection
+                             e.DateOfElection,
+                             e.ElectionType,
+                             e.ElectionMode
                            })
             .ToList() // execute sql and then work on result in code
             .Select(info =>
@@ -35,9 +38,11 @@ namespace TallyJ.Models
                                     {
                                       info.Name,
                                       info.ElectionGuid,
-                                      DateOfElection = info.DateOfElection.AsHtmlString(),
+                                      DateOfElection = info.DateOfElection.HasValue ? info.DateOfElection.AsString("yyyy MMMM d") : "[No Date]",
                                       IsCurrent = isCurrent,
-                                      Locations = isCurrent ? locationJson : ""
+                                      Locations = isCurrent ? locations : null,
+                                      Type = ElectionTypeEnum.TextFor(info.ElectionType),
+                                      Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (",")")
                                     };
                       });
       }

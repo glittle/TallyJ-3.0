@@ -180,8 +180,8 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 
 String.prototype.parseJsonDate = function () {
     if (this == '') return null;
-    var num = new RegExp('\((.+)\)').exec(this)[1];
-    return new Date(num);
+    var num = /\((.+)\)/.exec(this)[1];
+    return new Date(+num);
 
     ///Date(1072940400000)/
     ///Date(1654149600000)/

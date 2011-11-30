@@ -4,6 +4,7 @@
 
 var BallotPageFunc = function () {
     var local = {
+        //voteTemplate: "<div class=VoteHost id=V{vid} data-vote-id={vid} data-person-id={pid}><input name=Vote type=text value='{count}'><span>{name}<span> (Vote {vid} Person {pid})</div>",
         People: [],
         peopleHelper: null,
         keyTimer: null,
@@ -13,59 +14,100 @@ var BallotPageFunc = function () {
         inputField: null,
         nameList: null,
         rowSelected: 0,
-        template: '<li id=P{0}>{1}</li>'
+        searchResultTemplate: '<li id=P{0}>{1}</li>'
     };
 
     var preparePage = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
 
-        local.inputField = $('#txtSearch').live('keypress paste', runSearch).focus();
+        local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
         $('#nameList').on('click', 'li', nameClick);
-        $('#votesList').on('change keypress', 'input', voteNumChange);
+        $('#votesList').on('change keyup', 'input', voteNumChange);
+        $('#votesList').on('click', '.ui-icon-trash', deleteVote);
         resetSearch();
+
+        loadExisting();
     };
+    var loadExisting = function () {
+        if (publicInterface.initialVotes) {
+            $('#votesList').html(site.templates.SingleVoteLine.filledWithEach(publicInterface.initialVotes));
+        }
+    };
+
     var voteNumChange = function (ev) {
         var input = $(ev.target);
 
         switch (ev.which) {
-            case 13: // enter
+            case 13:
+                // enter
                 ev.preventDefault();
                 ev.stopPropagation();
                 ev.stopImmediatePropagation();
                 local.inputField.focus();
                 return;
-
             default:
         }
 
-        saveVote(input);
+        if (ev.type == 'change') {
+            saveVote(input, input.parent());
+        }
     };
 
-    var saveVote = function (input) {
+    var saveVote = function (input, host) {
         var form = {
-            pid: input.parent().attr('id').substr(1),
-            vid: input.parent().data('voteId') || 0,
+            pid: host.data('person-id') || 0,
+            vid: host.data('vote-id') || 0,
             count: input.val() || 0
         };
-        CallAjaxHandler(publicInterface.controllerUrl + '/SaveVoteSingle', form, function (info) {
-            
+        ShowStatusDisplay('Saving...');
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveSingleNameVote', form, function (info) {
+            // TODO:
+            if (info.Updated) {
+                ShowStatusDisplay('Saved', 0, 3000, false, true);
+            }
+
+            if (form.vid == 0) {
+                if (info.VoteId) {
+                    host.data('vote-id', info.VoteId);
+                }
+                else {
+                    ShowStatusFailed('Error on save. Please reload this page.');
+                }
+            }
         });
     };
 
+    var deleteVote = function () {
+        var host = $(this).parent();
+        var voteId = host.data('vote-id') || 0;
+        var form = {
+            vid: voteId
+        };
+        ShowStatusDisplay('Deleting...');
+        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteSingleNameVote', form, function (info) {
+            if (info.Deleted) {
+                ShowStatusDisplay('Deleted', 0, 3000, false, true);
+                $('#votesList').html(site.templates.SingleVoteLine.filledWithEach(info.AllVotes));
+            }
+            else {
+                ShowStatusFailed(info.Message);
+            }
+        });
+    };
 
     var onNamesReady = function (info) {
         local.People = markUp(info.People);
-        local.nameList.html(local.template.filledWithEach(local.People));
+        local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
         $('#more').html(info.MoreFound);
         if (!local.People.length && local.lastSearch) {
             local.nameList.append('<li>...no matches found...</li>');
         }
         else {
             if (info.MoreFound && local.lastSearch) {
-                local.nameList.append('<li>...</li>');
+                local.nameList.append('<li>...more than 9 matched...</li>');
             }
         }
         local.actionTag.removeClass('searching');
@@ -133,21 +175,25 @@ var BallotPageFunc = function () {
         var personId = selectedPersonLi.attr('id').substr(1);
         if (!personId) return;
 
-        var existing = $('#V' + personId);
-        if (existing.length != 0) {
-            existing.find('input').focus();
+        var votesList = $('#votesList');
+        var existingHost = votesList.find('.VoteHost[data-person-id={0}]'.filledWith(personId)).eq(0);
+        if (existingHost.length != 0) {
+            existingHost.find('input').focus();
             return;
         }
 
         var info = {
-            id: personId,
-            name: selectedPersonLi.text()
+            vid: 0,
+            pid: personId,
+            name: selectedPersonLi.text(),
+            count: 0
         };
 
-        $('#votesList').append("<div id=V{id}><input type=number value=0><span>{name}<span>{id}</div>".filledWith(info));
-
-        saveVote($('#V' + personId));
-    }
+        var newHost = $(site.templates.SingleVoteLine.filledWith(info)).appendTo(votesList);
+        var input = newHost.find('input');
+        saveVote(input, newHost);
+        input.focus();
+    };
 
     var navigating = function (ev) {
         switch (ev.which) {
@@ -176,7 +222,7 @@ var BallotPageFunc = function () {
         var input = $(this);
         var text = input.val();
         if (navigating(ev)) {
-            return false;
+            return;
         }
         if (local.lastSearch === text.trim()) return;
         if (text == '') {
@@ -214,6 +260,7 @@ var BallotPageFunc = function () {
     var publicInterface = {
         peopleUrl: '',
         controllerUrl: '',
+        initialVotes: null,
         PreparePage: preparePage
     };
 

@@ -1,32 +1,26 @@
 using System.Web.Mvc;
-using System.Web.Providers.Entities;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Models;
 
 namespace TallyJ.Controllers
 {
-	public class BallotsController : BaseController
-	{
-		//
-		// GET: /Setup/
-
-	  public ActionResult Index()
-	  {
-	    var x = UserSession.IsLoggedIn;
-
-	    var model = new BallotModel();
-      if (UserSession.CurrentElection.IsSingleNameElection.AsBool())
-      {
-        return View("BallotSingle", model);
-      }
-
-	    return View("Ballots", model);
-		}
-
-    public JsonResult SaveVoteSingle(int pid, int vid, int count)
+  public class BallotsController : BaseController
+  {
+    public ActionResult Index()
     {
-      return new BallotModel().SaveVoteSingle(pid, vid, count);
+      return UserSession.CurrentElection.IsSingleNameElection.AsBool()
+               ? View("BallotSingle", new BallotSingleModel())
+               : View("BallotNormal", new BallotNormalModel());
     }
-	}
+
+    public JsonResult SaveSingleNameVote(int pid, int vid, int count)
+    {
+      return new BallotSingleModel().SaveVote(pid, vid, count);
+    }
+    public JsonResult DeleteSingleNameVote(int vid)
+    {
+      return new BallotSingleModel().DeleteVote(vid);
+    }
+  }
 }

@@ -2,6 +2,7 @@
 {
     border-collapse: separate;
     border-spacing: 0px 0px;
+    float: left;
 }
 thead th
 {
@@ -11,13 +12,12 @@ thead th
 tr th:first-child
 {
     text-align: left;
-    vertical-align: top;
 }
+
 td
 {
     text-align: center;
-    vertical-align: top;
-    min-width: 100px;
+    min-width: 40px;
     padding: 2px 7px;
     border-left: 1px solid #e0e0e0;
 }
@@ -29,12 +29,13 @@ tr.Odd td {
     border-left: 1px solid #d0d0d0;
 }
 
-tr.Extra td {
+tr.Tied {
+    color: red;
 }
 
-.AutoButtons {
-    margin-top: 20px;
-}
-.Rows {
-    display: none;
+#chart {
+    float: left;
+    width: 340px;
+    height: 500px;
+    margin-left: 10px;
 }

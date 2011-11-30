@@ -23,7 +23,10 @@ namespace TallyJ.EF
         public string Lat { get; set; }
         public string TallyStatus { get; set; }
         public Nullable<int> SortOrder { get; set; }
-        public Nullable<int> ActiveComputers { get; set; }
+        public string ComputerCode { get; set; }
         public Nullable<int> Ballots { get; set; }
+        public Nullable<System.DateTime> LastContact { get; set; }
+        public string TellerName { get; set; }
+        public long SortOrder2 { get; set; }
     }
 }

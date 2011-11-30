@@ -6,7 +6,8 @@
     ViewBag.Message = "Select or create an election";
 
     ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-    TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem);
+    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 <hgroup class="title">
     <h1>@ViewBag.Title.</h1>
@@ -15,7 +16,6 @@
 <h3>
     Your elections: (@Model.MyElectionsInfo.Count())</h3>
 <div id="ElectionList">
-    @TemplateLoader.File.ElectionListItem.FilledWithEach(Model.MyElectionsInfo).AsRawHtml()
 </div>
 <div class="Election">
     <button type="button" id="btnCreate">
