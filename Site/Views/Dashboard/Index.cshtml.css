@@ -25,3 +25,8 @@ hgroup.title a
 hgroup.title a:hover {
   text-decoration: underline;
 }
+section.todo h3,
+section.todo
+ {
+    color: #ccc;
+}

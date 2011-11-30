@@ -120,6 +120,7 @@
     <Folder Include="Scripts\Views" />
     <Folder Include="Scripts\Triggers" />
     <Folder Include="Scripts\Stored Procedures" />
+    <Folder Include="Scripts\Functions" />
   </ItemGroup>
   <ItemGroup>
     <PropertiesFile Include="Properties\Database.sqlsettings">
@@ -155,6 +156,9 @@
       <SubType>NotInBuild</SubType>
     </NotInBuild>
     <NotInBuild Include="Scripts\Views\vResultInfo.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
+    <NotInBuild Include="Scripts\Functions\HasMatch.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
   </ItemGroup>

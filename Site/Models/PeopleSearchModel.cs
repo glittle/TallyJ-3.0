@@ -9,7 +9,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class PeopleSearchModel
+  public class PeopleSearchModel : DataConnectedModel
   {
     private readonly IQueryable<Person> _people;
 
@@ -105,19 +105,20 @@ namespace TallyJ.Models
       if (callingSqlDb)
       {
         query = People.Where(p =>
-                             (p.CombinedInfo.Contains(term1) ||
-                              p.CombinedSoundCodes.Contains(metaphone1)));
-        if (term2.HasContent())
-        {
-          query = query.Where(p =>
-                               (p.CombinedInfo.Contains(term2) ||
-                                p.CombinedSoundCodes.Contains(metaphone2)));
-          //query = query.Where(p =>
-          //                    (SqlFunctions.CharIndex(p.CombinedInfo, term2,
-          //                                            SqlFunctions.CharIndex(p.CombinedInfo, term1)) != 0 ||
-          //                     SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone2,
-          //                                            SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone1)) != 0));
-        }
+                             (
+                              SqlFunc.HasMatch(p.CombinedInfo, term1, term2) ||
+                              SqlFunc.HasMatch(p.CombinedSoundCodes, metaphone1, metaphone2)));
+        //if (term2.HasContent())
+        //{
+        //  query = query.Where(p =>
+        //                       (p.CombinedInfo.Contains(term2) ||
+        //                        p.CombinedSoundCodes.Contains(metaphone2)));
+        //  //query = query.Where(p =>
+        //  //                    (SqlFunctions.CharIndex(p.CombinedInfo, term2,
+        //  //                                            SqlFunctions.CharIndex(p.CombinedInfo, term1)) != 0 ||
+        //  //                     SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone2,
+        //  //                                            SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone1)) != 0));
+        //}
       }
       else
       {

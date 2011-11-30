@@ -187,6 +187,7 @@
     <Compile Include="EF\Location.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>

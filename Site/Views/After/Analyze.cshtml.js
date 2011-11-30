@@ -17,8 +17,11 @@ var AnalyzePage = function () {
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
-        settings.footTemplate = $('#mainFoot').html();
+        var tFoot = $('#mainFoot');
+        settings.footTemplate = tFoot.html();
         tableBody.html('');
+        tFoot.html('');
+
 
         var info = publicInterface.results;
         if (info) {
@@ -30,7 +33,7 @@ var AnalyzePage = function () {
     };
 
     var runAnalysis = function (firstLoad) {
-        if (!firstLoad) ShowStatusDisplay('Analyzing...');
+        ShowStatusDisplay('Analyzing...', 0);
 
         CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo);
     };
@@ -52,7 +55,9 @@ var AnalyzePage = function () {
 
         //TODO: add foot info
 
-        showChart(info);
+        setTimeout(function() {
+            showChart(info);
+        }, 100);
     };
 
     var showChart = function (info) {
