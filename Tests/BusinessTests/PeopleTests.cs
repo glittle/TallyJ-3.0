@@ -45,33 +45,33 @@ namespace Tests.BusinessTests
     // indicate which word in matched? or, indicate if a soundex was used
     // if soundex works, but text does NOT, should not match the person
 
-    [TestMethod]
-    public void SearchTest_FirstLast_NoMatch()
-    {
-      var result = _model.InnerSearch("b z", 5, false);
-      result.Count.ShouldEqual(0);
-    }
+    //[TestMethod]
+    //public void SearchTest_FirstLast_NoMatch()
+    //{
+    //  var result = _model.InnerSearch("b z", 5, false);
+    //  result.Count.ShouldEqual(0);
+    //}
 
-    [TestMethod]
-    public void SearchTest_FirstLast_Match()
-    {
-      var result = _model.InnerSearch("b y", 5, false);
-      result.Count.ShouldEqual(1);
+    //[TestMethod]
+    //public void SearchTest_FirstLast_Match()
+    //{
+    //  var result = _model.InnerSearch("b y", 5, false);
+    //  result.Count.ShouldEqual(1);
 
-      result = _model.InnerSearch("b    y", 5, false);
-      result.Count.ShouldEqual(1);
-    }
+    //  result = _model.InnerSearch("b    y", 5, false);
+    //  result.Count.ShouldEqual(1);
+    //}
 
-    [TestMethod]
-    public void SearchTest_FirstLast_SameMatch()
-    {
-      // should only match if two different words both have same letter
-      var result = _model.InnerSearch("d", 5, false);
-      result.Count.ShouldEqual(2, "Find D in the names");
+    //[TestMethod]
+    //public void SearchTest_FirstLast_SameMatch()
+    //{
+    //  // should only match if two different words both have same letter
+    //  var result = _model.InnerSearch("d", 5, false);
+    //  result.Count.ShouldEqual(2, "Find D in the names");
 
-      result = _model.InnerSearch("d d", 5, false);
-      result.Count.ShouldEqual(1, "Find two parts of the names with D");
-    }
+    //  result = _model.InnerSearch("d d", 5, false);
+    //  result.Count.ShouldEqual(1, "Find two parts of the names with D");
+    //}
 
     static IEnumerable<Person> FillCombined(IEnumerable<Person> persons)
     {
