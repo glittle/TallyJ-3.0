@@ -2,53 +2,85 @@
 /// <reference path="jquery-1.7-vsdoc.js" />
 
 var PeopleHelper = function (url) {
-  var local = {
-    url: url
-  };
-  var startGettingPeople = function (search, onNamesReady) {
-    ShowStatusDisplay('searching...', 500);
-    CallAjaxHandler(local.url + '/GetPeople', {
-      search: search,
-      includeInelligible: true
-    }, onComplete, onNamesReady, onFail);
-  };
+    var local = {
+        url: url
+    };
+    var startGettingPeople = function (search, onNamesReady, includeMatches) {
+        ShowStatusDisplay('searching...', 500);
+        CallAjaxHandler(local.url + '/GetPeople', {
+            search: search,
+            includeInelligible: true,
+            includeMatches: includeMatches
+        }, onComplete, { callback: onNamesReady, search: search }, onFail);
+    };
 
-  var onComplete = function (info, onNamesReady) {
-    ResetStatusDisplay();
-    if (info.Error) {
-      ShowStatusFailed(info.Error);
-      return;
-    }
-    onNamesReady(info);
-  };
-  var onFail = function (xmlHttpRequest) {
-    var msg = '';
-    if (msg) {
-      ShowStatusFailed(msg);
-    }
-  };
-  var wrapPerson = function (flatPerson) {
-    var person = {};
-    $.each(local.Columns.Num, function (i, value) {
-      person[value] = flatPerson[i];
-    });
-    return person;
-  };
-  var wrapPeople = function (people) {
-    var wrapped = [];
-    for (var i = 0; i < people.length; i++) {
-      wrapped.push(wrapPerson(people[i]));
-    }
-    return wrapped;
-  };
-  var publicInterface = {
-    Prepare: function () {
-    },
-    SearchNames: function (searchText, onNamesReady) {
-      startGettingPeople(searchText, onNamesReady);
-    }
-  };
+    var onComplete = function (info, extra) {
+        ResetStatusDisplay();
+        if (info.Error) {
+            ShowStatusFailed(info.Error);
+            return;
+        }
+        extra.callback(markUp(info, extra.search));
+    };
 
-  return publicInterface;
+    var markUp = function (info, search) {
+        var results = [];
+        var searchParts = [];
+        var parts = search.split(' ');
+        $.each(parts, function (i, part) {
+            if (part) {
+                searchParts.push(new RegExp(part, "ig"));
+            }
+        });
+        $.each(info.People, function (i, personInfo) {
+            var foundHit = false;
+            $.each(searchParts, function (k, searchPart) {
+                personInfo.Name = personInfo.Name.replace(searchPart, function () {
+                    foundHit = true;
+                    return '<b>' + arguments[0] + '</b>';
+                });
+            });
+            if (!foundHit) {
+                // must be soundex
+                personInfo.Name = '<i>' + personInfo.Name + '</i>';
+            }
+            if (personInfo.Inelligible) {
+                personInfo.Name = '<span class=Inelligible>' + personInfo.Name + '</span>';
+            }
+            results.push(personInfo);
+        });
+        info.People = results;
+        return info;
+    };
+
+    var onFail = function (xmlHttpRequest) {
+        var msg = '';
+        if (msg) {
+            ShowStatusFailed(msg);
+        }
+    };
+    var wrapPerson = function (flatPerson) {
+        var person = {};
+        $.each(local.Columns.Num, function (i, value) {
+            person[value] = flatPerson[i];
+        });
+        return person;
+    };
+    var wrapPeople = function (people) {
+        var wrapped = [];
+        for (var i = 0; i < people.length; i++) {
+            wrapped.push(wrapPerson(people[i]));
+        }
+        return wrapped;
+    };
+    var publicInterface = {
+        Prepare: function () {
+        },
+        SearchNames: function (searchText, onNamesReady, includeMatches) {
+            startGettingPeople(searchText, onNamesReady, includeMatches);
+        }
+    };
+
+    return publicInterface;
 };
 

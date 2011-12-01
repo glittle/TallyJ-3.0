@@ -1,4 +1,5 @@
-﻿IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vVoteInfo')
+﻿
+IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vVoteInfo')
   BEGIN
     DROP  View tj.vVoteInfo
   END

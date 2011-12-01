@@ -1,14 +1,118 @@
 ﻿@model SetupModel
+@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
-  ViewBag.Title = "People";
-  ViewBag.Message = "The community";
+    ViewBag.Title = "People";
+    ViewBag.Message = "The community";
 
-  ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(@Model.NumberOfPeople));
+    ContextItems.AddJavascriptForPage("url", "peoplePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(Model.NumberOfPeople));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
-<input id=txtSearch><span id=action></span> <span id=more></span>
-<ul id=nameList>
-</ul>
-<div id="editPanel"></div>
+<div class="float-left">
+    <input id="txtSearch" autocomplete="off"><span id="action"></span> <span id="more">
+    </span>
+    <ul id="nameList">
+    </ul>
+</div>
+<div id="editPanel">
+    <input type="hidden" data-name="C_RowId" />
+    <table class="personEdit">
+        <tr>
+            <td>
+                First Name
+            </td>
+            <td>
+                <input type="text" data-name="FirstName" maxlength="50" class="text50" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Last Name
+            </td>
+            <td>
+                <input type="text" data-name="LastName" maxlength="50" class="text50" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Other First Name(s)
+            </td>
+            <td>
+                <input type="text" data-name="OtherNames" maxlength="100" class="text100" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Other Last Name(s) / Maiden Name
+            </td>
+            <td>
+                <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Other Identifying Information
+            </td>
+            <td>
+                <input type="text" data-name="OtherInfo" maxlength="150" class="text150" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Bahá'í ID
+            </td>
+            <td>
+                <input type="text" data-name="BahaiId" maxlength="20" class="text20" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Age Group
+            </td>
+            <td>
+                <select data-name="AgeGroup">
+                    <option value="A">Adult</option>
+                    <option value="Y">Youth</option>
+                    <option value="JY">Junior Youth</option>
+                    <option value="C">Child</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Ineligible?
+            </td>
+            <td>
+                <select data-name="IneligibleReasonGuid">
+                    @Model.IneligibleReasonsForSelect()
+                </select>
+            </td>
+        </tr>
+        <tr id="trCanVote">
+            <td>
+                Can Vote in This Election?
+            </td>
+            <td>
+                <input type="checkbox" data-name="CanVote" />
+            </td>
+        </tr>
+        <tr id="trCanReceiveVotes">
+            <td>
+                Can Receive Votes in This Election?
+            </td>
+            <td>
+                <input type="checkbox" data-name="CanReceiveVotes" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <button type="button" id="btnSave" accesskey="S">
+                  <u>S</u>ave Changes</button>
+            </td>
+        </tr>
+    </table>
+</div>

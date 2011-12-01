@@ -18,6 +18,7 @@ namespace TallyJ.Models
     ///     Can Vote/Receive - All or Named people
     /// </summary>
     public string CanVote { get; set; }
+
     public string CanReceive { get; set; }
 
     public bool IsSingleNameElection { get; set; }
@@ -28,20 +29,6 @@ namespace TallyJ.Models
 
   public class ElectionModel : DataConnectedModel
   {
-    /// <Summary>List of fields to allow edit from setup page</Summary>
-    private readonly string[] _editableFields = new[]
-                                                  {
-                                                    "Name",
-                                                    "DateOfElection",
-                                                    "Convenor",
-                                                    "ElectionType",
-                                                    "ElectionMode",
-                                                    "NumberToElect",
-                                                    "NumberExtra",
-                                                    "CanVote",
-                                                    "CanReceive"
-                                                  };
-
     /// <Summary>List of Locations</Summary>
     public IQueryable<Location> LocationsForCurrentElection
     {
@@ -240,7 +227,22 @@ namespace TallyJ.Models
       var savedElection = Db.Elections.SingleOrDefault(e => e.C_RowId == election.C_RowId);
       if (savedElection != null)
       {
-        var changed = election.CopyPropertyValuesTo(savedElection, _editableFields);
+        // List of fields to allow edit from setup page
+        var editableFields = new
+                               {
+                                 election.Name,
+                                 election.DateOfElection,
+                                 election.Convenor,
+                                 election.ElectionType,
+                                 election.ElectionMode,
+                                 election.NumberToElect,
+                                 election.NumberExtra,
+                                 election.CanVote,
+                                 election.CanReceive
+                               }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
+
+
+        var changed = election.CopyPropertyValuesTo(savedElection, editableFields);
 
         var isSingleNameElection = election.NumberToElect == 1;
         if (election.IsSingleNameElection != isSingleNameElection)
@@ -255,7 +257,6 @@ namespace TallyJ.Models
           SessionKey.CurrentElection.SetInSession(savedElection);
         }
 
-
         return new
                  {
                    Status = "Saved",
@@ -266,10 +267,9 @@ namespace TallyJ.Models
 
       return new
                {
-                 Status = "Unkown ID"
+                 Status = "Unknown ID"
                }.AsJsonResult();
     }
-
 
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
@@ -293,10 +293,10 @@ namespace TallyJ.Models
       if (election == null)
       {
         return new
-        {
-          Success = false,
-          Message = "Not found"
-        }.AsJsonResult();
+                 {
+                   Success = false,
+                   Message = "Not found"
+                 }.AsJsonResult();
       }
 
       // copy in SQL
@@ -304,34 +304,34 @@ namespace TallyJ.Models
       if (result == null)
       {
         return new
-        {
-          Success = false,
-          Message = "Unable to copy"
-        }.AsJsonResult();
+                 {
+                   Success = false,
+                   Message = "Unable to copy"
+                 }.AsJsonResult();
       }
       if (!result.Success.AsBool())
       {
         return new
-        {
-          Success = false,
-          Message = "Sorry: " + result.Message
-        }.AsJsonResult();
+                 {
+                   Success = false,
+                   Message = "Sorry: " + result.Message
+                 }.AsJsonResult();
       }
       election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
       if (election == null)
       {
         return new
-        {
-          Success = false,
-          Message = "New election not found"
-        }.AsJsonResult();
+                 {
+                   Success = false,
+                   Message = "New election not found"
+                 }.AsJsonResult();
       }
       SessionKey.CurrentElection.SetInSession(election);
       return new
-      {
-        Success = true,
-        election.ElectionGuid
-      }.AsJsonResult();
+               {
+                 Success = true,
+                 election.ElectionGuid
+               }.AsJsonResult();
     }
 
     public JsonResult Create()
@@ -341,49 +341,48 @@ namespace TallyJ.Models
       // assign all of these to this person and computer
 
       var election = new Election
-      {
-        Convenor = "[Convenor]",
-        ElectionGuid = Guid.NewGuid(),
-        Name = "[New Election]",
-        ElectionType = "LSA",
-        ElectionMode = "N",
-        NumberToElect = 9,
-        NumberExtra = 0,
-        CanVote = "A",
-        CanReceive = "A"
-      };
+                       {
+                         Convenor = "[Convenor]",
+                         ElectionGuid = Guid.NewGuid(),
+                         Name = "[New Election]",
+                         ElectionType = "LSA",
+                         ElectionMode = "N",
+                         NumberToElect = 9,
+                         NumberExtra = 0,
+                         CanVote = "A",
+                         CanReceive = "A"
+                       };
       Db.Elections.Add(election);
       Db.SaveChanges();
 
 
       var join = new JoinElectionUser
-      {
-        ElectionGuid = election.ElectionGuid,
-        UserId = UserSession.UserGuid
-      };
+                   {
+                     ElectionGuid = election.ElectionGuid,
+                     UserId = UserSession.UserGuid
+                   };
       Db.JoinElectionUsers.Add(join);
 
 
       var mainLocation = new Location
-      {
-        Name = "Main Location",
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = election.ElectionGuid,
-        SortOrder = 1
-      };
+                           {
+                             Name = "Main Location",
+                             LocationGuid = Guid.NewGuid(),
+                             ElectionGuid = election.ElectionGuid,
+                             SortOrder = 1
+                           };
       Db.Locations.Add(mainLocation);
       Db.SaveChanges();
 
       var mailedInLocation = new Location
-      {
-        Name = "Mailed In Ballots",
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = election.ElectionGuid,
-        SortOrder = 99
-      };
+                               {
+                                 Name = "Mailed In Ballots",
+                                 LocationGuid = Guid.NewGuid(),
+                                 ElectionGuid = election.ElectionGuid,
+                                 SortOrder = 99
+                               };
       Db.Locations.Add(mailedInLocation);
       Db.SaveChanges();
-
 
 
       var computerModel = new ComputerModel();
@@ -397,10 +396,9 @@ namespace TallyJ.Models
 
 
       return new
-      {
-        Success = true
-      }.AsJsonResult();
+               {
+                 Success = true
+               }.AsJsonResult();
     }
-
   }
 }

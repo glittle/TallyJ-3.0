@@ -10,6 +10,8 @@ var SetupIndexPage = function () {
         $('#ddlType').live('change keyup', startToAdjustByType);
         $('#ddlMode').live('change keyup', startToAdjustByType);
 
+        $('#btnResetPeople').live('click', resetVoteStatuses);
+
         $('#btnSave').live('click', saveChanges);
 
         $("#txtDate").datepicker({
@@ -20,6 +22,11 @@ var SetupIndexPage = function () {
         showLocations(publicInterface.Locations);
 
         $('#txtName').focus();
+    };
+
+    var resetVoteStatuses = function () {
+        ShowStatusDisplay('Updating...', 0);
+        CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null);
     };
 
     var showLocations = function (locations) {

@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Web;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -55,6 +57,16 @@ namespace TallyJ.Models
                    rules = rules.SerializedAsJson()
                  };
       }
+    }
+
+    public HtmlString IneligibleReasonsForSelect()
+    {
+      var reasons = Db.Reasons.Where(r => r.ReasonGroup == "Ineligible").OrderBy(r => r.SortOrder).ToList();
+      reasons.Insert(0, new Reason {ReasonGuid = Guid.Empty, ReasonDescription = "-"});
+
+      return reasons
+        .Select(r => "<option value='{0}'>{1}</option>".FilledWith(r.ReasonGuid, r.ReasonDescription))
+        .JoinedAsString().AsRawHtml();
     }
   }
 }

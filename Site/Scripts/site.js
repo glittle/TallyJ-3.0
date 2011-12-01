@@ -239,7 +239,7 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
     if (target.length === 0) {
         // ??? on a page without a Status display
     }
-    var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif> ';
+    var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
     var imageHtml = showAsError ? '<span class="ui-icon ui-icon-alert"></span>' :
                         showStatic ? '' : loaderPath;
     target.html(imageHtml + msg).show();

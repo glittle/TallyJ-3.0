@@ -46,8 +46,11 @@ input.searching {
     margin-right: 5px;
     text-align: right;
 }
-.ui-icon {
+.ui-icon-trash {
     display: inline-block;
     margin-left: 15px;
     cursor: pointer;
+}
+.Inelligible {
+    text-decoration: line-through;
 }

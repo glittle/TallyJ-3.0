@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
+using TallyJ.Code.Session;
 using TallyJ.EF;
 
 namespace TallyJ.Models
@@ -23,32 +23,45 @@ namespace TallyJ.Models
       get { return _people; }
     }
 
-    public JsonResult Search(string nameToFind)
+    public JsonResult Search(string nameToFind, bool includeMatches)
     {
       const int max = 9;
 
-      var matched = InnerSearch(nameToFind, max, true);
+      var matched = InnerSearch(nameToFind, max, true).Take(max + 1).ToList();
+      var toShow = matched.Select(x=>x).Take(max).ToList();
+
+      Guid topVote;
+
+      if (includeMatches)
+      {
+        var guids = toShow.Select(p => p.PersonGuid).ToList();
+        
+        topVote = Db
+          .vVoteInfoes
+          .Where(v => v.ElectionGuid == UserSession.CurrentElectionGuid && guids.Contains(v.PersonGuid))
+          .GroupBy(vi => vi.PersonGuid)
+          .Select(g => new {personGuid = g.Key, count = g.Sum(v => v.SingleNameElectionCount)})
+          .Where(x => x.count > 0)
+          .OrderByDescending(x => x.count)
+          .Select(x => x.personGuid)
+          .FirstOrDefault();
+      }
+      else
+      {
+        topVote = Guid.Empty;
+      }
 
       return new
                {
-                 People = matched
-                   .Take(max)
+                 People = toShow
                    .Select(p => new
-                                  object[]
                                   {
-                                    p.C_RowId,
-                                    p.C_FullName
-                                    //"{0}{1}, {2}{3}{4}".FilledWith(
-                                    //  p.LastName,
-                                    //  p.OtherLastNames.SurroundContentWith(" [", "]"),
-                                    //  p.FirstName,
-                                    //  p.OtherNames.SurroundContentWith(" [", "]"),
-                                    //  p.OtherInfo.SurroundContentWith(" (", ")")
-                                    //)
-                                    ,
+                                    Id = p.C_RowId,
+                                    Name = p.C_FullName,
+                                    Inelligible = p.IneligibleReasonGuid.HasValue || p.AgeGroup.DefaultTo("A") != "A",
+                                    BestMatch = p.PersonGuid == topVote
                                   }),
-                 MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : "",
-                 DefaultTo = 0 // which of these matches is the most referenced right now? 0 based.
+                 MoreFound = matched.Count > max ? "More than {0} matches".FilledWith(max) : ""
                }
         .AsJsonResult();
     }
@@ -106,8 +119,8 @@ namespace TallyJ.Models
       {
         query = People.Where(p =>
                              (
-                              SqlFunc.HasMatch(p.CombinedInfo, term1, term2) ||
-                              SqlFunc.HasMatch(p.CombinedSoundCodes, metaphone1, metaphone2)));
+                               SqlFunc.HasMatch(p.CombinedInfo, term1, term2) ||
+                               SqlFunc.HasMatch(p.CombinedSoundCodes, metaphone1, metaphone2)));
         //if (term2.HasContent())
         //{
         //  query = query.Where(p =>

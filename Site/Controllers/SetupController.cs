@@ -35,6 +35,11 @@ namespace TallyJ.Controllers
       return View(new ImportExportModel());
     }
 
+    public JsonResult SavePerson(Person person)
+    {
+      return new PeopleModel().SavePerson(person);
+    }
+
     public JsonResult ResetAll()
     {
       new PeopleModel().CleanAllPersonRecordsBeforeStarting();

@@ -14,7 +14,7 @@ var BallotPageFunc = function () {
         inputField: null,
         nameList: null,
         rowSelected: 0,
-        searchResultTemplate: '<li id=P{0}>{1}</li>'
+        searchResultTemplate: '<li id=P{Id}>{Name}</li>'
     };
 
     var preparePage = function () {
@@ -99,53 +99,29 @@ var BallotPageFunc = function () {
     };
 
     var onNamesReady = function (info) {
-        local.People = markUp(info.People);
+        local.People = info.People;
         local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
         $('#more').html(info.MoreFound);
         if (!local.People.length && local.lastSearch) {
             local.nameList.append('<li>...no matches found...</li>');
         }
         else {
+            local.rowSelected = 0;
             if (info.MoreFound && local.lastSearch) {
                 local.nameList.append('<li>...more than 9 matched...</li>');
             }
+            $.each(local.People, function (i, item) {
+                if (item.BestMatch) {
+                    local.rowSelected = i;
+                }
+            });
         }
         local.actionTag.removeClass('searching');
         local.inputField.removeClass('searching');
 
         // single:
-        local.nameList.children().removeClass('selected').eq(local.rowSelected = 0).addClass('selected');
-    };
-    var markUp = function (people) {
-        var results = [];
-        var searchParts = [];
-        var parts = local.lastSearch.split(' ');
-        $.each(parts, function (i, part) {
-            if (part) {
-                searchParts.push(new RegExp(part, "ig"));
-            }
-        });
-        $.each(people, function (i, personInfo) {
-            var foundHit = false;
-            $.each(personInfo, function (j, item) {
-                if (j == 0 || !item) return; // skip ID; skip blanks
-                if (typeof item != 'String') item = '' + item;
-                $.each(searchParts, function (k, searchPart) {
-                    var changed = false;
-                    var r = item.replace(searchPart, function () {
-                        foundHit = changed = true;
-                        return '<b>' + arguments[0] + '</b>';
-                    });
-                    if (changed) { item = personInfo[j] = r; }
-                });
-            });
-            if (!foundHit) {
-                // must be soundex
-                personInfo[1] = '<i>' + personInfo[1] + '</i>';
-            }
-            results.push(personInfo);
-        });
-        return results;
+        local.nameList.children().removeClass('selected');
+        local.nameList.children().eq(local.rowSelected).addClass('selected');
     };
     var moveSelected = function (delta) {
         var children = local.nameList.children();
@@ -239,7 +215,7 @@ var BallotPageFunc = function () {
             local.actionTag.addClass('searching');
             input.addClass('searching');
 
-            local.peopleHelper.SearchNames(text, onNamesReady);
+            local.peopleHelper.SearchNames(text, onNamesReady, true);
         }, local.keyTime);
     };
 
