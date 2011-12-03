@@ -29,7 +29,7 @@ namespace TallyJ.Models
                            l.ContactInfo,
                            l.C_RowId
                          })
-          .SerializedAsJson();
+          .SerializedAsJsonString();
       }
     }
 
@@ -54,7 +54,7 @@ namespace TallyJ.Models
                  {
                    type = currentElection.ElectionType,
                    mode = currentElection.ElectionMode,
-                   rules = rules.SerializedAsJson()
+                   rules = rules.SerializedAsJsonString()
                  };
       }
     }

@@ -4,7 +4,6 @@
 
 var BallotPageFunc = function () {
     var local = {
-        //voteTemplate: "<div class=VoteHost id=V{vid} data-vote-id={vid} data-person-id={pid}><input name=Vote type=text value='{count}'><span>{name}<span> (Vote {vid} Person {pid})</div>",
         People: [],
         peopleHelper: null,
         keyTimer: null,
@@ -13,6 +12,7 @@ var BallotPageFunc = function () {
         actionTag: null,
         inputField: null,
         nameList: null,
+        invalidReasonsHtml: null,
         rowSelected: 0,
         searchResultTemplate: '<li id=P{Id}>{Name}</li>'
     };
@@ -25,15 +25,24 @@ var BallotPageFunc = function () {
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
         $('#nameList').on('click', 'li', nameClick);
+        $('#btnAddSpoiled').on('click', addSpoiled);
         $('#votesList').on('change keyup', 'input', voteNumChange);
         $('#votesList').on('click', '.ui-icon-trash', deleteVote);
+        $('#votesList').on('change', 'select', invalidReasonChanged);
         resetSearch();
+
+        local.invalidReasonsHtml = prepareReasons();
 
         loadExisting();
     };
     var loadExisting = function () {
         if (publicInterface.initialVotes) {
-            $('#votesList').html(site.templates.SingleVoteLine.filledWithEach(publicInterface.initialVotes));
+            var list = $('#votesList');
+            list.html(site.templates.SingleVoteLine.filledWithEach(extend(publicInterface.initialVotes)));
+            list.find('select:visible').each(function () {
+                var select = $(this);
+                select.val(select.data('invalid'));
+            });
         }
     };
 
@@ -52,17 +61,32 @@ var BallotPageFunc = function () {
         }
 
         if (ev.type == 'change') {
-            saveVote(input, input.parent());
+            saveVote(input.parent());
         }
     };
 
-    var saveVote = function (input, host) {
+    var invalidReasonChanged = function (ev) {
+        var select = $(ev.target);
+        var reason = select.val();
+        if (reason == '0') {
+            return;  // don't save with no reason
+        }
+        var parent = select.parent();
+        saveVote(parent);
+    };
+
+    var saveVote = function (host) {
+        var input = host.find('input');
+        var invalids = host.find('select:visible');
         var form = {
             pid: host.data('person-id') || 0,
             vid: host.data('vote-id') || 0,
+            invalid: invalids.val() || 0,
             count: input.val() || 0
         };
         ShowStatusDisplay('Saving...');
+        input.focus();
+
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveSingleNameVote', form, function (info) {
             // TODO:
             if (info.Updated) {
@@ -166,9 +190,62 @@ var BallotPageFunc = function () {
         };
 
         var newHost = $(site.templates.SingleVoteLine.filledWith(info)).appendTo(votesList);
-        var input = newHost.find('input');
-        saveVote(input, newHost);
+        saveVote(newHost);
+    };
+
+    var addSpoiled = function () {
+        var votesList = $('#votesList');
+
+        var info = {
+            vid: 0,
+            count: 0,
+            invalid: 0,
+            InvalidReasons: local.invalidReasonsHtml
+        };
+
+        var newHost = $(site.templates.SingleVoteLine.filledWith(info)).appendTo(votesList);
+        var input = newHost.find('select');
+        // vote not saved until a reason is chosen
         input.focus();
+    };
+
+    var extend = function (votes) {
+        $.each(votes, function () {
+            if (this.invalid !== null) {
+                this.InvalidReasons = local.invalidReasonsHtml;
+            }
+            if (this.ineligible !== null) {
+                // person is invalid!
+                var vote = this;
+                var reasonList = $.grep(publicInterface.invalidReasons, function (item) {
+                    return item.Id == vote.ineligible;
+                });
+                var reason = 'Ineligible';
+                if (reasonList.length == 1) {
+                    reason = reasonList[0].Desc;
+                }
+                this.name = '<span class=Ineligible>{0}</span> ({1})'.filledWith(reason, this.name);
+            }
+        });
+        return votes;
+    };
+
+    var prepareReasons = function () {
+        var html = ['<option value="0">Select a reason...</option>'];
+        var group = '';
+        $.each(publicInterface.invalidReasons, function () {
+            var reasonGroup = this.Group;
+            if (reasonGroup != group) {
+                if (group) {
+                    html.push('</optgroup>');
+                }
+                html.push('<optgroup label="{0}">'.filledWith(reasonGroup));
+                group = reasonGroup;
+            }
+            html.push('<option value="{Id}">{Desc}</option>'.filledWith(this));
+        });
+        html.push('</optgroup>');
+        return html.join('\n');
     };
 
     var navigating = function (ev) {
@@ -210,8 +287,10 @@ var BallotPageFunc = function () {
 
         local.keyTimer = setTimeout(function () {
             local.lastSearch = text;
+
             local.actionTag.removeClass('delaying');
             input.removeClass('delaying');
+
             local.actionTag.addClass('searching');
             input.addClass('searching');
 
@@ -236,6 +315,7 @@ var BallotPageFunc = function () {
     var publicInterface = {
         peopleUrl: '',
         controllerUrl: '',
+        invalidReasons: [],
         initialVotes: null,
         PreparePage: preparePage
     };

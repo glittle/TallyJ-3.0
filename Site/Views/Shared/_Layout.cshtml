@@ -39,8 +39,7 @@
                     {
                         <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
                         <div class="CurrentLocationAndCode">
-                            <span class="CurrentLocationName">@UserSession.CurrentLocationName</span>
-                            <span class="CurrentComputerCode">@SessionKey.ComputerCode.FromSession("")</span>
+                            <span class="CurrentLocationName">@(UserSession.CurrentLocationName + " " + UserSession.CurrentComputerCode)</span>
                         </div>
                         <div class="Heartbeat">
                             Connected</div>

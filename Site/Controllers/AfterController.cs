@@ -47,9 +47,10 @@ namespace TallyJ.Controllers
     public JsonResult RunAnalyze()
     {
       var resultsModel = new ResultsModel();
+
       resultsModel.GenerateResults();
 
-      return resultsModel.CurrentResults.AsJsonResult();
+      return resultsModel.CurrentResults;
     }
   }
 

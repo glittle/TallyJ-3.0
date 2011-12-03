@@ -31,7 +31,7 @@ var MonitorPage = function () {
 
     var showInfo = function (info, firstLoad) {
         clearInterval(settings.autoMinutesTimeout);
-        
+
         var table = $('#mainBody');
         if (!firstLoad) {
             table.animate({
@@ -99,8 +99,9 @@ var MonitorPage = function () {
         var last = null;
         var html = [];
 
-        $.each(info.Locations, function (i) {
+        $.each(info.Locations, function () {
             rows++;
+            var joinBtn = ['<span class="ui-icon ui-icon-zoomin"></span>'];
 
             if (this.Name != lastName) {
                 if (last != null) {
@@ -113,16 +114,19 @@ var MonitorPage = function () {
                 lastName = this.Name;
                 last = this;
             } else {
+                this.Extra = true;
                 this.ClassName = last.ClassName;
+                joinBtn.push('<span class="ui-icon ui-icon-zoomin" data-code="{0}"></span>'.filledWith(this.Code));
+
             }
         });
 
         $.each(info.Locations, function () {
-            if (this.rows) {
-                html.push(settings.rowTemplateMain.filledWith(this));
+            if (this.Extra) {
+                html.push(settings.rowTemplateExtra.filledWith(this));
             }
             else {
-                html.push(settings.rowTemplateExtra.filledWith(this));
+                html.push(settings.rowTemplateMain.filledWith(this));
             }
         });
 

@@ -52,16 +52,6 @@ namespace TallyJ.Code.Session
       get { return LoginId.HasContent(); }
     }
 
-    public static Guid CurrentLocationGuid
-    {
-      get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
-    }
-
-    public static string CurrentLocationName
-    {
-      get { return SessionKey.CurrentLocationName.FromSession("[No location selected]"); }
-    }
-
     /// <summary>
     ///     The current election, as stored in Session.  Could be null.
     /// </summary>
@@ -75,7 +65,11 @@ namespace TallyJ.Code.Session
     /// </summary>
     public static string CurrentElectionName
     {
-      get { return CurrentElection == null ? "[No election selected]" : CurrentElection.Name; }
+      get
+      {
+        var current = CurrentElection;
+        return current == null ? "[No election selected]" : current.Name;
+      }
     }
 
     public static Guid CurrentElectionGuid
@@ -87,6 +81,29 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static Location CurrentLocation
+    {
+      get { return SessionKey.CurrentLocation.FromSession<Location>(null); }
+    }
+
+    public static string CurrentLocationName
+    {
+      get
+      {
+        var current = CurrentLocation;
+        return current==null?"[No location selected]" : current.Name;
+      }
+    }
+
+    public static Guid CurrentLocationGuid
+    {
+      get
+      {
+        var current = CurrentLocation;
+        return current == null ? Guid.Empty : current.LocationGuid;
+      }
+    }
+
     /// <summary>
     /// </summary>
     public static long LastVersionNum
@@ -95,10 +112,27 @@ namespace TallyJ.Code.Session
       set { SessionKey.LastVersionNum.SetInSession(value); }
     }
 
+    public static Computer CurrentComputer
+    {
+      get { return SessionKey.CurrentComputer.FromSession<Computer>(null); }
+    }
+
     public static int ComputerRowId
     {
-      get { return SessionKey.CurrentComputerRowId.FromSession(0); }
-      set { SessionKey.CurrentComputerRowId.SetInSession(value); }
+      get
+      {
+        var current = CurrentComputer;
+        return current == null ? 0 : current.C_RowId;
+      }
+    }
+
+    public static string CurrentComputerCode
+    {
+      get
+      {
+        var current = CurrentComputer;
+        return current == null ? "" : current.ComputerCode;
+      }
     }
 
     public static Guid? CurrentTellerAtKeyboard
@@ -114,7 +148,7 @@ namespace TallyJ.Code.Session
     public static void ProcessLogin(string userName)
     {
       HttpContext.Current.Session.Clear();
-      ComputerRowId = new ComputerModel().CreateComputerRecordForMe().C_RowId;
+      SessionKey.CurrentComputer.SetInSession(new ComputerModel().CreateComputerRecordForMe());
     }
 
     public static void ProcessLogout()

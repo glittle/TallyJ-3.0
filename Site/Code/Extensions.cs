@@ -132,6 +132,13 @@ namespace TallyJ.Code
       return input.HasValue ? input.Value.ToString(format) : "";
     }
 
+    public static Guid? AsNullableGuid(this Guid input)
+    {
+      if (input == Guid.Empty) return null;
+
+      return input;
+    }
+
     public static int AsInt(this object input)
     {
       return AsInt(input, 0);
@@ -337,7 +344,7 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static string SerializedAsJson(this object input)
+    public static string SerializedAsJsonString(this object input)
     {
       return new JavaScriptSerializer().Serialize(input);
     }

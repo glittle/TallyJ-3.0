@@ -6,7 +6,7 @@
     ViewBag.Message = "Select or create an election";
 
     ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
+    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 <hgroup class="title">

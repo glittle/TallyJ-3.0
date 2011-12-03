@@ -13,4 +13,9 @@ namespace TallyJ.EF
   {
   }
 
+  [Serializable]
+  public partial class Location
+  {
+  }
+
 }

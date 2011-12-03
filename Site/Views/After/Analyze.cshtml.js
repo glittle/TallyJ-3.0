@@ -6,6 +6,7 @@ var AnalyzePage = function () {
     var settings = {
         rowTemplate: '',
         footTemplate: '',
+        invalidsRowTemplate: '',
         chart: null
     };
 
@@ -17,47 +18,72 @@ var AnalyzePage = function () {
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
+        tableBody.html('');
+
         var tFoot = $('#mainFoot');
         settings.footTemplate = tFoot.html();
-        tableBody.html('');
         tFoot.html('');
 
+        var invalidsBody = $('#invalidsBody');
+        settings.invalidsRowTemplate = invalidsBody.html();
+        invalidsBody.html('');
 
-        var info = publicInterface.results;
-        if (info) {
-            showInfo(info, true);
-        }
-        else {
+        setTimeout(function () {
             runAnalysis(true);
-        }
+        }, 0);
     };
 
     var runAnalysis = function (firstLoad) {
-        ShowStatusDisplay('Analyzing...', 0);
+        ShowStatusDisplay('Analyzing ballots...', 0);
 
-        CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo);
+        CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
     };
 
     var showInfo = function (info, firstLoad) {
-        var tableBody = $('#mainBody');
+        var votesTable = $('table.Main');
+        var invalidsTable = $('table#invalids');
+        var table;
+
+        if (info.Votes) {
+            votesTable.show();
+            invalidsTable.hide();
+            table = votesTable;
+
+            $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.Votes)));
+
+            //TODO: add foot info
+
+            setTimeout(function () {
+                $('#chart').show();
+                showChart(info.Votes);
+            }, 100);
+        }
+        else {
+            table = invalidsTable;
+            votesTable.hide();
+            $('#chart').hide();
+            invalidsTable.show();
+
+            $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
+        }
+
+        $('#totalCounts').find('span[data-name]').each(function () {
+            var span = $(this);
+            var value = info[span.data('name')] || '';
+            span.text(value);
+        });
 
         if (!firstLoad) {
-            tableBody.animate({
+            table.animate({
                 opacity: 0.5
             }, 100, function () {
-                tableBody.animate({
+                table.animate({
                     opacity: 1
                 }, 500);
             });
         }
 
-        tableBody.html(settings.rowTemplate.filledWithEach(expand(info)));
 
-        //TODO: add foot info
-
-        setTimeout(function() {
-            showChart(info);
-        }, 100);
     };
 
     var showChart = function (info) {
@@ -102,6 +128,14 @@ var AnalyzePage = function () {
         });
     };
 
+    var expandInvalids = function (needReview) {
+        $.each(needReview, function () {
+            this.Ballot = '<a href="../Ballots?l={LocationId}&b={BallotId}">{Ballot}</a>'.filledWith(this);
+            this.Link = this.PositionOnBallot;
+        });
+        return needReview;
+    };
+
     var expand = function (results) {
         $.each(results, function (i) {
             this.ClassName = (i % 2 == 0 ? 'Even' : 'Odd')
@@ -113,7 +147,6 @@ var AnalyzePage = function () {
 
     var publicInterface = {
         controllerUrl: '',
-        results: null,
         PreparePage: preparePage
     };
 

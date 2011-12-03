@@ -25,12 +25,12 @@ namespace TallyJ.Models
       Db.Computers.Add(computer);
       Db.SaveChanges();
 
-      SessionKey.CurrentComputerRowId.SetInSession(computer.C_RowId);
-      SessionKey.ComputerCode.SetInSession("");
+      SessionKey.CurrentComputer.SetInSession(computer);
 
       return computer;
     }
 
+    /// <Summary>Remove all computer records in the entire database (all elections) that are not active</Summary>
     private void ClearOutOldComputerRecords()
     {
       const int maxMinutesOfNoContact = 5;
@@ -46,57 +46,68 @@ namespace TallyJ.Models
       Db.SaveChanges();
     }
 
+    /// <Summary>Add computer into election, with unique computer code</Summary>
+    public void AddCurrentComputerIntoElection(Guid electionGuid)
+    {
+      var computer = UserSession.CurrentComputer ?? CreateComputerRecordForMe();
+
+      computer.ElectionGuid = electionGuid;
+      computer.LocationGuid = null;
+      SessionKey.CurrentLocation.SetInSession<Location>(null);
+
+      computer.ComputerCode = DetermineNextFreeComputerCode(
+        Db.Computers.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(
+          c => c.ComputerCode));
+
+      SessionKey.CurrentComputer.SetInSession(computer);
+
+      Db.SaveChanges();
+    }
+
+    /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
     public bool AddCurrentComputerIntoLocation(int id)
     {
       var location =
         new ElectionModel().LocationsForCurrentElection.SingleOrDefault(
           l => l.C_RowId == id);
 
-      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
-
-      if (location == null || computer == null)
+      if (location == null)
       {
-        SessionKey.CurrentLocationGuid.SetInSession(Guid.Empty);
+        SessionKey.CurrentLocation.SetInSession<Location>(null);
         return false;
       }
 
-      SessionKey.CurrentLocationName.SetInSession(location.Name);
-      SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
+      var computer = UserSession.CurrentComputer;
+
+      Db.Computers.Attach(computer);
       computer.LocationGuid = location.LocationGuid;
       Db.SaveChanges();
 
-      return true;
-    }
+      SessionKey.CurrentLocation.SetInSession(location);
 
-    public void AddCurrentComputerIntoElection(Guid electionGuid)
-    {
-      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
-
-      if (computer == null)
+      // reset ballot #
+      SessionKey.CurrentBallotId.SetInSession(0);
+      if (UserSession.CurrentElection.IsSingleNameElection.AsBool())
       {
-        computer = CreateComputerRecordForMe();
+        // for single name elections, only have one ballot per computer per location
+        var ballotId =
+          Db.Ballots.Where(
+            b => b.LocationGuid == location.LocationGuid && b.ComputerCode == computer.ComputerCode)
+            .Select(b => b.C_RowId).SingleOrDefault();
+        if (ballotId != 0)
+        {
+          SessionKey.CurrentBallotId.SetInSession(ballotId);
+        }
       }
 
-      computer.ElectionGuid = electionGuid;
-      computer.LocationGuid = null;
-      SessionKey.CurrentLocationGuid.SetInSession(Guid.Empty);
-      SessionKey.CurrentLocationName.SetInSession<string>(null);
-
-      computer.ComputerCode =
-        DetermineNextFreeComputerCode(
-          Db.Computers.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(
-            c => c.ComputerCode));
-
-      SessionKey.ComputerCode.SetInSession(computer.ComputerCode);
-
-      Db.SaveChanges();
+      return true;
     }
 
     public string DetermineNextFreeComputerCode(IEnumerable<string> existingCodesSortedAsc)
     {
       var code = 'A';
       var twoDigit = false;
-      var firstDigit = (char)('A' - 1);
+      var firstDigit = (char) ('A' - 1);
 
       foreach (var computerCode in existingCodesSortedAsc)
       {
@@ -114,18 +125,18 @@ namespace TallyJ.Models
         if (testChar == code)
         {
           // push the answer to the next one
-          code = (char)(code + 1);
+          code = (char) (code + 1);
           if (code > 'Z')
           {
             twoDigit = true;
             code = 'A';
-            firstDigit = (char)(firstDigit + 1);
+            firstDigit = (char) (firstDigit + 1);
           }
         }
       }
       if (code > 'Z')
       {
-        return "" + firstDigit + (char)('A' - 1 + code - 'Z');
+        return "" + firstDigit + (char) ('A' - 1 + code - 'Z');
       }
       if (twoDigit)
       {

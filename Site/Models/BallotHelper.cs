@@ -7,6 +7,7 @@ namespace TallyJ.Models
     public static class BallotStatusCode
     {
       public const string Ok = "Ok";
+      public const string Review = "Review";
     }
 
     #endregion

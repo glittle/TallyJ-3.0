@@ -12,6 +12,7 @@ tr th:first-child
 {
     text-align: left;
     vertical-align: top;
+    padding-right: 5px;
 }
 td
 {

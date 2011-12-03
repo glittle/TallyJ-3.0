@@ -7,7 +7,7 @@
     ViewBag.Message = "Who, What, When and Where!";
 
     ContextItems.AddJavascriptForPage("setupIndexPageUrl", "setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("election", "setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJson()));
+    ContextItems.AddJavascriptForPage("election", "setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("locations", "setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
     ContextItems.AddJavascriptForPage("rules", "setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
 }

@@ -39,7 +39,8 @@ var HomeIndexPage = function () {
         if (info.Pulse) {
             ProcessPulseResult(info.Pulse);
         }
-
+        ResetStatusDisplay();
+        
         if (info.Selected) {
             $('.Election.true').removeClass('true');
             row.addClass('true');
@@ -66,9 +67,9 @@ var HomeIndexPage = function () {
         {
             id: btn.data('id')
         };
-        
+
         ShowStatusDisplay('Selecting location...');
-        
+
         CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
     };
 

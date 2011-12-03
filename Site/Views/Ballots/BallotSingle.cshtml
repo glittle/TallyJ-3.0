@@ -1,24 +1,37 @@
 ﻿@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
-@model BallotSingleModel
+@model IBallotModel
 @{
     ViewBag.Title = "Ballots";
     ViewBag.Message = "Tally the votes for a single position";
 
     ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("peopleUrl", "ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("invalids", "ballotPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJson()));
     ContextItems.AddJavascriptForPage("initial", "ballotPage.initialVotes={0};".FilledWith(Model.CurrentVotesJson()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<p>
+    In this election, each ballot consists of a single name. Sort ballot slips into
+    piles, one per person receiving a vote, including piles for spoiled votes.
+    <br />
+    For each pile, select the person's name below then enter the number of votes they
+    received.</p>
 <div class="float-left">
-    <h3>
-        Single Vote Election</h3>
-    <input id="txtSearch" autocomplete="off"><span id="action"></span> <span id="more"></span>
+    Select a name by starting to type it here:<br />
+    <input id="txtSearch" autocomplete="off"><span id="action"></span> <span id="more">
+    </span>
     <ul id="nameList">
     </ul>
 </div>
 <div id="votesPanel" class="float-left">
-  Names of People Receiving Votes
-  <div id="votesList"></div>
+    <div class="titleDiv">
+        <span class="Vote"># Votes</span>Name of each person receiving a vote (in any order)</div>
+    <div id="votesList">
+    </div>
+    <div>
+        <button id="btnAddSpoiled" type="button">
+            Add for spoiled vote</button>
+    </div>
 </div>

@@ -74,15 +74,23 @@ function HasErrors(data) {
     //    top.location.href = GetRootUrl() + 'login';
     //    return true;
     //  }
-    if (data.search(/\<h2\>Object moved to/) !== -1) {
-        location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
+    if (/\<h2\>Object moved to/.test(data)) {
+        top.location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
         return true;
     }
-    if (data.search(/Internal Server Error/) !== -1) {
+    
+    if(/\<\!DOCTYPE html\>/.test(data))
+    {
+        // seem to have a complete web page!
+        top.location.reload();
+        return true;
+    }
+
+    if (/Internal Server Error/.test(data)) {
         ShowStatusFailed('Server Error.');
         return true;
     }
-    if (data.search(/Error\:/) !== -1) {
+    if (/Error\:/.test(data)) {
         ShowStatusFailed('An error occurred on the server. The Technical Support Team has been provided with the error details.');
         return true;
     }
@@ -93,7 +101,7 @@ function LogMessage(msg) {
     /// <summary>Log the message to the console, if the browser supports it
     /// </summary>
     if (typeof console != 'undefined' && console) {
-        console.log(msg);
+        console.log(msg.toString());
     } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
         window.console.log(msg);
     }
@@ -198,7 +206,12 @@ function JsonParse(json) {
             ShowStatusFailed(e.message);
         }
     }
-    return eval('(' + json + ')');
+    try {
+        return eval('(' + json + ')');
+    } catch(e) {
+        LogMessage(e);
+        LogMessage(json);
+    } 
 }
 
 

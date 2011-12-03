@@ -22,11 +22,18 @@ namespace TallyJ.Models
 
     public override void GenerateResults()
     {
-      var numVotes = VoteInfos.Count();
-      var totalInvalid = VoteInfos.Count(IsNotValid);
-      var needReview = VoteInfos.Count(vi => vi.PersonRowVersion != vi.PersonRowVersionInVote);
+      TotalVotes = VoteInfos.Sum(vi=>vi.SingleNameElectionCount).AsInt();
 
-      // clear results
+      var invalidBallotGuids = VoteInfos.Where(vi => vi.BallotStatusCode != "Ok").Select(ib => ib.BallotGuid).Distinct().ToList();
+
+      TotalInvalidBallots = invalidBallotGuids.Count();
+
+      TotalInvalidVotes = VoteInfos.Where(vi=> !invalidBallotGuids.Contains(vi.BallotGuid) && IsNotValid(vi)).Sum(vi => vi.SingleNameElectionCount).AsInt();
+
+      TotalInputsNeedingReview = VoteInfos.Count(NeedReview);
+
+
+      // clear any existing results
       Results.ForEach(ResetValues);
 
       // collect only valid votes
@@ -36,17 +43,18 @@ namespace TallyJ.Models
 
         // get existing result record for this person, if available
         var result =
-          Results.SingleOrDefault(r => r.C_RowId == voteInfo.ResultRowId || r.PersonGuid == voteInfo.PersonGuid);
+          Results.SingleOrDefault(r => r.C_RowId == voteInfo.ResultId || r.PersonGuid == voteInfo.PersonGuid);
         if (result == null)
         {
           result = new Result
                      {
                        ElectionGuid = CurrentElection.ElectionGuid,
-                       PersonGuid = voteInfo.PersonGuid
+                       PersonGuid = voteInfo.PersonGuid.AsGuid()
                      };
           Results.Add(result);
           AddResult(result);
         }
+
         var voteCount = result.VoteCount.AsInt() + voteInfo.SingleNameElectionCount;
         result.VoteCount = voteCount;
       }

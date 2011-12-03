@@ -20,10 +20,10 @@
       [vBallot].[_RowId] AS [_RowId], 
       [vBallot].[LocationGuid] AS [LocationGuid], 
       [vBallot].[BallotGuid] AS [BallotGuid], 
-      [vBallot].[_BallotCode] AS [_BallotCode], 
       [vBallot].[StatusCode] AS [StatusCode], 
       [vBallot].[ComputerCode] AS [ComputerCode], 
       [vBallot].[BallotNumAtComputer] AS [BallotNumAtComputer], 
+      [vBallot].[_BallotCode] AS [_BallotCode], 
       [vBallot].[TellerAtKeyboard] AS [TellerAtKeyboard], 
       [vBallot].[TellerAssisting] AS [TellerAssisting], 
       [vBallot].[_RowVersion] AS [_RowVersion], 
@@ -65,25 +65,30 @@
     </EntitySet>
     <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" store:Schema="tj" store:Name="vVoteInfo">
       <DefiningQuery>SELECT 
-      [vVoteInfo].[VoteRowId] AS [VoteRowId], 
-      [vVoteInfo].[BallotGuid] AS [BallotGuid], 
+      [vVoteInfo].[VoteId] AS [VoteId], 
       [vVoteInfo].[VoteStatusCode] AS [VoteStatusCode], 
-      [vVoteInfo].[InvalidReasonGuid] AS [InvalidReasonGuid], 
       [vVoteInfo].[SingleNameElectionCount] AS [SingleNameElectionCount], 
       [vVoteInfo].[PositionOnBallot] AS [PositionOnBallot], 
+      [vVoteInfo].[VoteInvalidReasonGuid] AS [VoteInvalidReasonGuid], 
+      [vVoteInfo].[VoteInvalidReasonId] AS [VoteInvalidReasonId], 
+      [vVoteInfo].[VoteInvalidReasonDesc] AS [VoteInvalidReasonDesc], 
       [vVoteInfo].[PersonRowVersionInVote] AS [PersonRowVersionInVote], 
       [vVoteInfo].[PersonRowVersion] AS [PersonRowVersion], 
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
-      [vVoteInfo].[PersonRowId] AS [PersonRowId], 
+      [vVoteInfo].[PersonId] AS [PersonId], 
       [vVoteInfo].[PersonFullName] AS [PersonFullName], 
       [vVoteInfo].[CanReceiveVotes] AS [CanReceiveVotes], 
       [vVoteInfo].[PersonIneligibleReasonGuid] AS [PersonIneligibleReasonGuid], 
-      [vVoteInfo].[ElectionGuid] AS [ElectionGuid], 
-      [vVoteInfo].[LocationTallyStatus] AS [LocationTallyStatus], 
+      [vVoteInfo].[PersonIneligibleReasonId] AS [PersonIneligibleReasonId], 
+      [vVoteInfo].[PersonIneligibleReasonDesc] AS [PersonIneligibleReasonDesc], 
+      [vVoteInfo].[ResultId] AS [ResultId], 
+      [vVoteInfo].[BallotGuid] AS [BallotGuid], 
+      [vVoteInfo].[BallotId] AS [BallotId], 
       [vVoteInfo].[BallotStatusCode] AS [BallotStatusCode], 
       [vVoteInfo].[_BallotCode] AS [_BallotCode], 
-      [vVoteInfo].[ResultRowId] AS [ResultRowId], 
-      [vVoteInfo].[ResultElectionGuid] AS [ResultElectionGuid]
+      [vVoteInfo].[LocationId] AS [LocationId], 
+      [vVoteInfo].[LocationTallyStatus] AS [LocationTallyStatus], 
+      [vVoteInfo].[ElectionGuid] AS [ElectionGuid]
       FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>
     </EntitySet>
     <AssociationSet Name="FK_JoinElectionUser_Users" Association="tallyj2dModel.Store.FK_JoinElectionUser_Users">
@@ -119,7 +124,7 @@
     <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="5" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="ComputerCode" Type="varchar" Nullable="false" MaxLength="2" />
     <Property Name="BallotNumAtComputer" Type="int" Nullable="false" />
     <Property Name="_BallotCode" Type="varchar" MaxLength="32" StoreGeneratedPattern="Computed" />
@@ -291,9 +296,9 @@
     <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="PositionOnBallot" Type="int" Nullable="false" />
-    <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" />
     <Property Name="PersonRowVersion" Type="binary" MaxLength="8" />
-    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="5" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="InvalidReasonGuid" Type="uniqueidentifier" />
     <Property Name="SingleNameElectionCount" Type="int" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
@@ -315,10 +320,10 @@
     <Property Name="_RowId" Type="int" Nullable="false" />
     <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
-    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="5" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="ComputerCode" Type="varchar" Nullable="false" MaxLength="2" />
     <Property Name="BallotNumAtComputer" Type="int" Nullable="false" />
+    <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
     <Property Name="TellerAtKeyboard" Type="uniqueidentifier" />
     <Property Name="TellerAssisting" Type="uniqueidentifier" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
@@ -377,34 +382,39 @@
       -->
   <EntityType Name="vVoteInfo">
     <Key>
-      <PropertyRef Name="VoteRowId" />
-      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="VoteId" />
       <PropertyRef Name="VoteStatusCode" />
       <PropertyRef Name="PositionOnBallot" />
-      <PropertyRef Name="PersonGuid" />
-      <PropertyRef Name="PersonRowId" />
-      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="BallotId" />
       <PropertyRef Name="BallotStatusCode" />
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="ElectionGuid" />
     </Key>
-    <Property Name="VoteRowId" Type="int" Nullable="false" />
-    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="5" />
-    <Property Name="InvalidReasonGuid" Type="uniqueidentifier" />
+    <Property Name="VoteId" Type="int" Nullable="false" />
+    <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="SingleNameElectionCount" Type="int" />
     <Property Name="PositionOnBallot" Type="int" Nullable="false" />
+    <Property Name="VoteInvalidReasonGuid" Type="uniqueidentifier" />
+    <Property Name="VoteInvalidReasonId" Type="int" />
+    <Property Name="VoteInvalidReasonDesc" Type="nvarchar" MaxLength="50" />
     <Property Name="PersonRowVersionInVote" Type="bigint" />
     <Property Name="PersonRowVersion" Type="bigint" />
-    <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="PersonRowId" Type="int" Nullable="false" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" />
+    <Property Name="PersonId" Type="int" />
     <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />
     <Property Name="CanReceiveVotes" Type="bit" />
     <Property Name="PersonIneligibleReasonGuid" Type="uniqueidentifier" />
-    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="LocationTallyStatus" Type="varchar" MaxLength="9" />
-    <Property Name="BallotStatusCode" Type="varchar" Nullable="false" MaxLength="5" />
+    <Property Name="PersonIneligibleReasonId" Type="int" />
+    <Property Name="PersonIneligibleReasonDesc" Type="nvarchar" MaxLength="50" />
+    <Property Name="ResultId" Type="int" />
+    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BallotId" Type="int" Nullable="false" />
+    <Property Name="BallotStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
-    <Property Name="ResultRowId" Type="int" />
-    <Property Name="ResultElectionGuid" Type="uniqueidentifier" />
+    <Property Name="LocationId" Type="int" Nullable="false" />
+    <Property Name="LocationTallyStatus" Type="varchar" MaxLength="9" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
   </EntityType>
   <Association Name="FK_JoinElectionUser_Users">
     <End Role="Users" Type="tallyj2dModel.Store.Users" Multiplicity="1" />
@@ -423,7 +433,7 @@
     <Parameter Name="ByLoginId" Type="varchar" Mode="In" />
   </Function>
   <Function Name="HasMatch" ReturnType="bit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
-    <Parameter Name="AllTerms" Type="varchar" Mode="In" />
+    <Parameter Name="AllTerms" Type="varchar(max)" Mode="In" />
     <Parameter Name="Term1" Type="varchar" Mode="In" />
     <Parameter Name="Term2" Type="varchar" Mode="In" />
   </Function>

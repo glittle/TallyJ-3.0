@@ -216,6 +216,7 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BallotHelper.cs" />
+    <Compile Include="Models\BallotModelCore.cs" />
     <Compile Include="Models\BallotNormalModel.cs" />
     <Compile Include="Models\BallotSingleModel.cs" />
     <Compile Include="Models\ComputerModel.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Models\ElectionAnalyzerCore.cs" />
     <Compile Include="Models\Helper\AgeGroup.cs" />
     <Compile Include="Models\Helper\InelligibleReason.cs" />
+    <Compile Include="Models\IBallotModel.cs" />
     <Compile Include="Models\IElectionAnalyzer.cs" />
     <Compile Include="Models\ImportExportModel.cs" />
     <Compile Include="Models\MonitorModel.cs" />

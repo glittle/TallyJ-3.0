@@ -14,7 +14,7 @@ as
   select b.*
 		 , l.ElectionGuid
   from tj.Ballot b
-    join tj.Location l on l.LocationGuid = b.BallotGuid
+    join tj.Location l on l.LocationGuid = b.LocationGuid
 
 GO
 

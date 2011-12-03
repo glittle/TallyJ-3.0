@@ -38,12 +38,12 @@ namespace TallyJ.Models
         
         topVote = Db
           .vVoteInfoes
-          .Where(v => v.ElectionGuid == UserSession.CurrentElectionGuid && guids.Contains(v.PersonGuid))
+          .Where(v => v.ElectionGuid == UserSession.CurrentElectionGuid && v.PersonGuid.HasValue && guids.Contains(v.PersonGuid.Value))
           .GroupBy(vi => vi.PersonGuid)
           .Select(g => new {personGuid = g.Key, count = g.Sum(v => v.SingleNameElectionCount)})
           .Where(x => x.count > 0)
           .OrderByDescending(x => x.count)
-          .Select(x => x.personGuid)
+          .Select(x => x.personGuid.Value)
           .FirstOrDefault();
       }
       else

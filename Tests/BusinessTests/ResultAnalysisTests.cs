@@ -253,6 +253,11 @@ namespace Tests.BusinessTests
 
       results.Count.ShouldEqual(3);
 
+      model.TotalInputsNeedingReview.ShouldEqual(1);
+      model.TotalVotes.ShouldEqual(125);
+      model.TotalInvalidVotes.ShouldEqual(85);
+      model.TotalInvalidBallots.ShouldEqual(1);
+
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);
       result1.Rank.ShouldEqual(1);
@@ -274,7 +279,6 @@ namespace Tests.BusinessTests
       public Result RemoveResult(Result input)
       {
         throw new ApplicationException("Should not be called in tests!");
-        return input;
       }
 
       public Result AddResult(Result arg)

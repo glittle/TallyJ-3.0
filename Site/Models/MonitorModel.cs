@@ -9,7 +9,7 @@ namespace TallyJ.Models
   {
     public string LocationInfoJson
     {
-      get { return LocationInfo.SerializedAsJson(); }
+      get { return LocationInfo.SerializedAsJsonString(); }
     }
 
     public object LocationInfo

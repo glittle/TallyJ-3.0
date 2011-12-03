@@ -391,9 +391,7 @@ namespace TallyJ.Models
 
 
       SessionKey.CurrentElection.SetInSession(election);
-      SessionKey.CurrentLocationGuid.SetInSession(mainLocation.LocationGuid);
-      SessionKey.CurrentLocationName.SetInSession(mainLocation.Name);
-
+      SessionKey.CurrentLocation.SetInSession(mainLocation);
 
       return new
                {

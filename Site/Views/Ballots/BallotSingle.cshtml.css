@@ -1,56 +1,96 @@
-﻿#nameList {
-  height: 220px;
-  width: 350px;
-  border: solid 1px #999;
-  padding: 4px;
-  overflow: auto;
+﻿#nameList
+{
+    height: 220px;
+    width: 350px;
+    border: solid 1px #999;
+    padding: 4px;
+    overflow: auto;
 }
-#nameList u {
-  text-decoration: none;
+#nameList u
+{
+    text-decoration: none;
 }
-#nameList li {
-  border: 1px solid transparent;
-  cursor: pointer;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+#nameList li
+{
+    border: 1px solid transparent;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
-#nameList li:hover {
-  border-color: #ddd;
+#nameList li:hover
+{
+    border-color: #ddd;
 }
-#nameList li.selected {
-  background-color: #c1f1b4;
-  border-color: #999;
+#nameList li.selected
+{
+    background-color: #c1f1b4;
+    border-color: #999;
 }
-#action {
-  width: 20px;
-  height: 1em;
-  display: inline-block;
+#action
+{
+    width: 20px;
+    height: 1em;
+    display: inline-block;
 }
-span.delaying {
-  background-color: #f8f541;
+span.delaying
+{
+    background-color: #f8f541;
 }
-span.searching {
-  background-color: #c1f1b4;
+span.searching
+{
+    background-color: #f1c1b4;
 }
-input.delaying {
-  border-color: #f8f541;
+input.delaying
+{
+    border-color: #f8f541;
 }
-input.searching {
-  border-color: #c1f1b4;
+input.searching
+{
+    border-color: #c1f1b4;
 }
-#votesPanel {
+#votesPanel
+{
     margin-left: 15px;
 }
-#votesList input {
-    width: 70px;
-    margin-right: 5px;
-    text-align: right;
-}
-.ui-icon-trash {
+.ui-icon-trash
+{
     display: inline-block;
     margin-left: 15px;
     cursor: pointer;
 }
-.Inelligible {
+.Inelligible
+{
     text-decoration: line-through;
 }
+span.Vote
+{
+    width: 60px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 9px;
+}
+input.Vote
+{
+    width: 60px;
+    margin-right: 5px;
+    text-align: right;
+}
+.titleDiv
+{
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+}
+#btnAddSpoiled {
+    font-size: 90%;
+    margin: 25px 0 0 5px;
+}
+select.Show 
+{
+    /* if class has InlineIf0 or a number, will stay hidden */
+    display: none;
+}
+.Ineligible {
+    color: #e80c4d;
+    font-weight: bold;
+}
+

@@ -11,56 +11,105 @@
 }
 <script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
 <script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
-
+<button type="button" id="btnRefesh">
+    Refresh</button>
 <table class="Main">
-  <thead>
-    <tr>
-      <th>
-        Person
-      </th>
-      <th>
-        Votes
-      </th>
-      <th>
-        Rank
-      </th>
-      <th>
-        Comments
-      </th>
-    </tr>
-  </thead>
-  <tbody id="mainBody">
-    <tr class="{ClassName}">
-      <th>
-        {PersonName}
-      </th>
-      <td>
-        {VoteCount}
-      </td>
-      <td>
-        {Rank}
-      </td>
-      <td>
-        {Comments}
-      </td>
-    </tr>
-  </tbody>
-  <tfoot id="mainFoot">
-    <tr class="{ClassName}">
-      <th>
-        {PersonName}
-      </th>
-      <td>
-        {VoteCount}
-      </td>
-      <td>
-        {Rank}
-      </td>
-      <td>
-        {Comments}
-      </td>
-    </tr>
-  </tfoot>
+    <thead>
+        <tr>
+            <th>
+                Person
+            </th>
+            <th>
+                Votes
+            </th>
+            <th>
+                Rank
+            </th>
+            <th>
+                Comments
+            </th>
+        </tr>
+    </thead>
+    <tbody id="mainBody">
+        <tr class="{ClassName}">
+            <th>
+                {PersonName}
+            </th>
+            <td>
+                {VoteCount}
+            </td>
+            <td>
+                {Rank}
+            </td>
+            <td>
+                {Comments}
+            </td>
+        </tr>
+    </tbody>
+    <tfoot id="mainFoot">
+        <tr class="{ClassName}">
+            <th>
+                {PersonName}
+            </th>
+            <td>
+                {VoteCount}
+            </td>
+            <td>
+                {Rank}
+            </td>
+            <td>
+                {Comments}
+            </td>
+        </tr>
+    </tfoot>
 </table>
-<button type="button" id="btnRefesh">Refresh</button>
-<div id="chart"></div>
+<table id="invalids">
+    <thead>
+        <tr>
+            <td>
+                Ballot
+            </td>
+            <td>
+                Link
+            </td>
+        </tr>
+    </thead>
+    <tbody id="invalidsBody">
+        <tr>
+            <td>
+                {Ballot}
+            </td>
+            <td>
+                {Link}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table id="totalCounts">
+    <tr>
+        <td>
+            Total Votes Recorded
+        </td>
+        <td>
+            <span data-name="TotalVotes"></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Total Invalid Ballots
+        </td>
+        <td>
+            <span data-name="TotalInvalidBallots"></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Total Invalid Votes
+        </td>
+        <td>
+            <span data-name="TotalInvalidVotes"></span>
+        </td>
+    </tr>
+</table>
+<div id="chart">
+</div>

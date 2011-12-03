@@ -7,7 +7,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ElectionAnalyzerCore : DataConnectedModel, IElectionAnalyzer
+  public abstract class ElectionAnalyzerCore : DataConnectedModel, IElectionAnalyzer
   {
     private readonly Func<Result, Result> _deleteResult;
     private Election _election;
@@ -19,11 +19,13 @@ namespace TallyJ.Models
 
     public ElectionAnalyzerCore()
     {
+      TotalInputsNeedingReview = -1;
     }
 
     public ElectionAnalyzerCore(Election election, ResultSummary resultSummary, List<Result> results,
                                 List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult, Func<Result, Result> addResult, Func<int> saveChanges)
     {
+      TotalInputsNeedingReview = -1;
       _election = election;
       _resultSummary = resultSummary;
       _results = results;
@@ -92,6 +94,12 @@ namespace TallyJ.Models
       }
     }
 
+    public virtual int TotalInputsNeedingReview { get; protected set; }
+
+    public virtual int TotalInvalidVotes { get; protected set; }
+    public virtual int TotalInvalidBallots { get; protected set; }
+    public virtual int TotalVotes { get; protected set; }
+
     #region IElectionAnalyzer Members
 
     public virtual void GenerateResults()
@@ -107,14 +115,20 @@ namespace TallyJ.Models
       return !IsValid(voteInfo);
     }
 
+    public static bool NeedReview(vVoteInfo voteInfo)
+    {
+      return voteInfo.PersonRowVersion != voteInfo.PersonRowVersionInVote 
+           || voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Review;
+    }
+
     /// <Summary>Is this Vote valid?</Summary>
     public static bool IsValid(vVoteInfo voteInfo)
     {
-      return !voteInfo.InvalidReasonGuid.HasValue
-             && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
-             && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
-             && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
+      return  !voteInfo.VoteInvalidReasonGuid.HasValue
+           && !voteInfo.PersonIneligibleReasonGuid.HasValue
+           && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
+           && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
+           && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
     }
 
 
@@ -134,6 +148,9 @@ namespace TallyJ.Models
           rank++;
         }
         result.Rank = rank;
+
+        DetermineSection(result, election, rank);
+        
         if (result.Section == Section.Extra)
         {
           if (rankInExtra == 0 || lastResult.VoteCount != result.VoteCount)
@@ -143,8 +160,6 @@ namespace TallyJ.Models
 
           result.RankInExtra = rankInExtra;
         }
-
-        DetermineSection(result, election, rank);
 
         lastResult = result;
       }
@@ -167,6 +182,7 @@ namespace TallyJ.Models
             {
               lastResult.TieBreakGroup = "A";
             }
+
             result.TieBreakGroup = lastResult.TieBreakGroup;
           }
         }

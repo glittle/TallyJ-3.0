@@ -66,13 +66,6 @@ var PeopleHelper = function (url) {
         });
         return person;
     };
-    var wrapPeople = function (people) {
-        var wrapped = [];
-        for (var i = 0; i < people.length; i++) {
-            wrapped.push(wrapPerson(people[i]));
-        }
-        return wrapped;
-    };
     var publicInterface = {
         Prepare: function () {
         },
