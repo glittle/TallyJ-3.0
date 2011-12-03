@@ -223,13 +223,13 @@ namespace Tests.BusinessTests
 
       var votes = new List<vVoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 33, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 5, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 4, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 27, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 27, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 27, PersonGuid = Guid.NewGuid()},
+                      new vVoteInfo {SingleNameElectionCount = 33},
+                      new vVoteInfo {SingleNameElectionCount = 5},
+                      new vVoteInfo {SingleNameElectionCount = 2},
+                      new vVoteInfo {SingleNameElectionCount = 4},
+                      new vVoteInfo {SingleNameElectionCount = 27},
+                      new vVoteInfo {SingleNameElectionCount = 27},
+                      new vVoteInfo {SingleNameElectionCount = 27},
                     };
       foreach (var vVoteInfo in votes)
       {
@@ -237,6 +237,8 @@ namespace Tests.BusinessTests
         vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.BallotGuid = Guid.NewGuid();
+        vVoteInfo.PersonGuid = Guid.NewGuid();
       }
       votes[3].VoteStatusCode = "Unreadable";
       votes[4].BallotStatusCode = "Incomplete";
@@ -255,8 +257,8 @@ namespace Tests.BusinessTests
 
       model.TotalInputsNeedingReview.ShouldEqual(1);
       model.TotalVotes.ShouldEqual(125);
-      model.TotalInvalidVotes.ShouldEqual(85);
       model.TotalInvalidBallots.ShouldEqual(1);
+      model.TotalInvalidVotes.ShouldEqual(58);
 
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);
