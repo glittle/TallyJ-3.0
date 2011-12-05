@@ -22,11 +22,11 @@
     <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
     <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
     <EntitySet Name="Ballots" EntityType="TallyJ2Model.Ballot" />
-    <EntitySet Name="vBallots" EntityType="TallyJ2Model.vBallot" />
     <EntitySet Name="vResultInfoes" EntityType="TallyJ2Model.vResultInfo" />
     <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
     <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
     <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
+    <EntitySet Name="vBallotInfoes" EntityType="TallyJ2Model.vBallotInfo" />
   </EntityContainer>
   <EntityType Name="C_Log">
     <Key>
@@ -139,7 +139,7 @@
     <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
     <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="TallyStatus" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Int32" Name="SortOrder" />
   </EntityType>
   <EntityType Name="Teller">
@@ -170,7 +170,7 @@
     <Property Type="String" Name="CanVote" MaxLength="1" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="CanReceive" MaxLength="1" FixedLength="false" Unicode="false" />
     <Property Type="Int32" Name="LastEnvNum" />
-    <Property Type="String" Name="TallyStatus" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Guid" Name="LinkedElectionGuid" />
     <Property Type="String" Name="LinkedElectionKind" MaxLength="2" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="OwnerLoginId" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -240,29 +240,6 @@
     <Property Type="Guid" Name="TellerAssisting" />
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
   </EntityType>
-  <EntityType Name="vBallot">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-      <PropertyRef Name="LocationGuid" />
-      <PropertyRef Name="BallotGuid" />
-      <PropertyRef Name="StatusCode" />
-      <PropertyRef Name="ComputerCode" />
-      <PropertyRef Name="BallotNumAtComputer" />
-      <PropertyRef Name="C_RowVersion" />
-      <PropertyRef Name="ElectionGuid" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" />
-    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
-    <Property Type="Guid" Name="TellerAtKeyboard" />
-    <Property Type="Guid" Name="TellerAssisting" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-  </EntityType>
   <EntityType Name="vResultInfo">
     <Key>
       <PropertyRef Name="ElectionGuid" />
@@ -304,6 +281,7 @@
     <Property Type="DateTime" Name="LastContact" />
     <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Type="Int64" Name="SortOrder2" Nullable="false" />
+    <Property Type="Int32" Name="BallotId" />
   </EntityType>
   <EntityType Name="Vote">
     <Key>
@@ -354,5 +332,38 @@
     <Property Type="Int32" Name="LocationId" Nullable="false" />
     <Property Type="String" Name="LocationTallyStatus" MaxLength="9" FixedLength="false" Unicode="false" />
     <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="vBallotInfo">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+      <PropertyRef Name="LocationGuid" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="StatusCode" />
+      <PropertyRef Name="ComputerCode" />
+      <PropertyRef Name="BallotNumAtComputer" />
+      <PropertyRef Name="C_RowVersion" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="LocationName" />
+      <PropertyRef Name="LocationId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" />
+    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
+    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+    <Property Type="Guid" Name="TellerAtKeyboard" />
+    <Property Type="Guid" Name="TellerAssisting" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="LocationName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TellerAtKeyboardName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TellerAssistingName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int64" Name="RowVersionInt" />
+    <Property Type="Int32" Name="LocationSortOrder" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="LocationId" Nullable="false" />
   </EntityType>
 </Schema>

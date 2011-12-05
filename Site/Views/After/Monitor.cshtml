@@ -17,13 +17,16 @@
                 Status
             </th>
             <th>
-                Computer
+                # Ballots
             </th>
             <th>
                 Minutes Ago
             </th>
             <th>
-                # Ballots
+                Computer
+            </th>
+            <th>
+                View
             </th>
             <th>
                 Contact Info
@@ -39,13 +42,16 @@
                 {TallyStatus}
             </td>
             <td>
-                {ComputerCode}
+                {Ballots}
             </td>
             <td>
                 <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
             </td>
             <td>
-                {Ballots}
+                {ComputerCode}
+            </td>
+            <td>
+                {Btn}
             </td>
             <td rowspan="{rows}">
                 {ContactInfo}
@@ -53,13 +59,16 @@
         </tr>
         <tr>
             <td>
-                {ComputerCode}
+                {Ballots}
             </td>
             <td>
                 <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
             </td>
             <td>
-                {Ballots}
+                {ComputerCode}
+            </td>
+            <td>
+                {Btn}
             </td>
         </tr>
     </tbody>

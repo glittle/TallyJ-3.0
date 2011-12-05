@@ -13,7 +13,11 @@
 <script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
 <button type="button" id="btnRefesh">
     Refresh</button>
+<div id="chart">
+</div>
 <table class="Main">
+    <caption>
+        Results</caption>
     <thead>
         <tr>
             <th>
@@ -64,13 +68,15 @@
     </tfoot>
 </table>
 <table id="invalids">
+    <caption>
+        Ballots Requiring Attention</caption>
     <thead>
         <tr>
             <td>
                 Ballot
             </td>
             <td>
-                Link
+                Vote Line
             </td>
         </tr>
     </thead>
@@ -86,6 +92,8 @@
     </tbody>
 </table>
 <table id="totalCounts">
+    <caption>
+        Total Counts</caption>
     <tr>
         <td>
             Total Votes Recorded
@@ -111,5 +119,3 @@
         </td>
     </tr>
 </table>
-<div id="chart">
-</div>

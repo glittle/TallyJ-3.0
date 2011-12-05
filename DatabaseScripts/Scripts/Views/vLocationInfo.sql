@@ -12,18 +12,19 @@ create
 View [tj].[vLocationInfo]
 as
   with bv as (
-    select b.LocationGuid, b.ComputerCode, sum(v.SingleNameElectionCount) SingleNameElectionCounts, COUNT(v._RowId) NormalCounts
+    select b.BallotId, b.LocationGuid, b.ComputerCode, sum(v.SingleNameElectionCount) SingleNameElectionCounts, COUNT(v._RowId) NormalCounts
 	from
 	  (
-	    select LocationGuid, ComputerCode, BallotGuid from tj.Ballot
+	    select LocationGuid, ComputerCode, BallotGuid, _RowId [BallotId] from tj.Ballot
 	    union
-		select LocationGuid, ComputerCode, null from tj.Computer
+		select LocationGuid, ComputerCode, null, null from tj.Computer
 	  ) b
 	  left join tj.Vote v on v.BallotGuid = b.BallotGuid
-	group by b.LocationGuid, b.ComputerCode
+	group by b.BallotId, b.LocationGuid, b.ComputerCode
   )
   select l.*
 	   , bv.ComputerCode ComputerCode
+	   , bv.BallotId
 	   , case when e.IsSingleNameElection = 1 then bv.SingleNameElectionCounts
 	          else bv.NormalCounts end [Ballots]
 	   , c.LastContact

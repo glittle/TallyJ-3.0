@@ -7,38 +7,8 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class ElectionRules
-  {
-    public bool CanVoteLocked { get; set; }
-    public bool CanReceiveLocked { get; set; }
-    public bool NumLocked { get; set; }
-    public bool ExtraLocked { get; set; }
-
-    /// <summary>
-    ///     Can Vote/Receive - All or Named people
-    /// </summary>
-    public string CanVote { get; set; }
-
-    public string CanReceive { get; set; }
-
-    public bool IsSingleNameElection { get; set; }
-
-    public int Num { get; set; }
-    public int Extra { get; set; }
-  };
-
   public class ElectionModel : DataConnectedModel
   {
-    /// <Summary>List of Locations</Summary>
-    public IQueryable<Location> LocationsForCurrentElection
-    {
-      get
-      {
-        return
-          Db.Locations
-            .Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid);
-      }
-    }
 
     public ElectionRules GetRules(string type, string mode)
     {
@@ -372,7 +342,6 @@ namespace TallyJ.Models
                              SortOrder = 1
                            };
       Db.Locations.Add(mainLocation);
-      Db.SaveChanges();
 
       var mailedInLocation = new Location
                                {
@@ -384,14 +353,11 @@ namespace TallyJ.Models
       Db.Locations.Add(mailedInLocation);
       Db.SaveChanges();
 
+      SessionKey.CurrentElection.SetInSession(election);
 
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
       computerModel.AddCurrentComputerIntoLocation(mainLocation.C_RowId);
-
-
-      SessionKey.CurrentElection.SetInSession(election);
-      SessionKey.CurrentLocation.SetInSession(mainLocation);
 
       return new
                {

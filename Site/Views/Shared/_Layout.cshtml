@@ -28,7 +28,7 @@
     })   }
                 }
                 <div class="Version">
-                    Version: pre-beta</div>
+                    Version: By-Election Only (Beta)</div>
             </div>
             <div class="headerRight">
                 <section id="login">
@@ -37,9 +37,9 @@
                 <section>
                     @if (Request.IsAuthenticated)
                     {
-                        <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+                        <div class="CurrentElectionName">@(UserSession.CurrentElectionName + ", " + UserSession.CurrentComputerCode)</div>
                         <div class="CurrentLocationAndCode">
-                            <span class="CurrentLocationName">@(UserSession.CurrentLocationName + " " + UserSession.CurrentComputerCode)</span>
+                            <span class="CurrentLocationName">@UserSession.CurrentLocationName </span>
                         </div>
                         <div class="Heartbeat">
                             Connected</div>
@@ -62,9 +62,9 @@
             </div>
             <div class="float-right">
                 <ul id="social">
-                    <li><a target="facebook" href="http://www.facebook.com/TallyJ.Support" class="facebook"
+                    <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support" class="facebook"
                         title="Go to the TallyJ Support page">Facebook</a></li>
-                    <li><a target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+                    <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
                         title="View news from #TallyJ_Bahai">Twitter</a></li>
                 </ul>
             </div>

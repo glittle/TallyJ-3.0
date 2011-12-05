@@ -7,31 +7,75 @@
 
     ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("peopleUrl", "ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("invalids", "ballotPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJson()));
-    ContextItems.AddJavascriptForPage("initial", "ballotPage.initialVotes={0};".FilledWith(Model.CurrentVotesJson()));
+    ContextItems.AddJavascriptForPage("invalids", "ballotPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+    ContextItems.AddJavascriptForPage("location", "ballotPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
+    ContextItems.AddJavascriptForPage("ballot", "ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
+    ContextItems.AddJavascriptForPage("ballotList", "ballotPage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
-<p>
-    In this election, each ballot consists of a single name. Sort ballot slips into
-    piles, one per person receiving a vote, including piles for spoiled votes.
-    <br />
-    For each pile, select the person's name below then enter the number of votes they
-    received.</p>
-<div class="float-left">
-    Select a name by starting to type it here:<br />
-    <input id="txtSearch" autocomplete="off"><span id="action"></span> <span id="more">
-    </span>
-    <ul id="nameList">
-    </ul>
+<div class="float-left div1">
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabNameSearch">Add name to this ballot</a></li>
+            <li><a href="#tabBallots">All ballots</a> </li>
+        </ul>
+        <div id="tabNameSearch">
+            <p>
+                Select a name by starting to type it here:</p>
+            <input id="txtSearch" tabindex="1" autocomplete="off"><span id="action"></span><span id="more">
+            </span>
+            <ul id="nameList">
+            </ul>
+        </div>
+        <div id="tabBallots">
+            <ul id="ballotList">
+            </ul>
+        </div>
+    </div>
 </div>
-<div id="votesPanel" class="float-left">
+<div id="votesPanel">
+    <p>
+        In this election, each paper ballot consists of a single name. Sort ballot slips into
+        piles, one per person receiving a vote, including piles for spoiled votes.
+    </p>
+    <p>
+        For each pile, select the person's name below then enter the number of votes they
+        received.</p>
+    <div class="titleDiv">
+    </div>
+    <table class="locationInfo">
+        <tr>
+            <th>
+                <span data-name="Name"></span>
+            </th>
+            <td>
+                <span>Status:</span>
+                <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2">
+                    <option value="">Please select...</option>
+                    <option value="NotStarted">Not started</option>
+                    <option value="Collecting">Collecting ballots</option>
+                    <option value="Counting">Counting and entering ballots</option>
+                    <option value="Done">Done - All ballots entered and checked</option>
+                    <option value="NeedHelp">Need Help!</option>
+                </select>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <span>Contact Info:</span>
+                <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+            </td>
+        </tr>
+    </table>
+    <button id="btnAddSpoiled" type="button"  tabindex="1">
+        Add line for spoiled vote(s)</button>
+    <div style="font-weight: bold;">
+        Ballot Group <span id="ballotCode"></span>
+    </div>
     <div class="titleDiv">
         <span class="Vote"># Votes</span>Name of each person receiving a vote (in any order)</div>
     <div id="votesList">
-    </div>
-    <div>
-        <button id="btnAddSpoiled" type="button">
-            Add for spoiled vote</button>
     </div>
 </div>

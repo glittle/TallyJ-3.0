@@ -39,3 +39,6 @@ tr.Extra td {
 .Rows {
     display: none;
 }
+.ZoomIn {
+    display: inline-block;
+}

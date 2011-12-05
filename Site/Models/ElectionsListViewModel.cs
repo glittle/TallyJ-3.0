@@ -14,8 +14,8 @@ namespace TallyJ.Models
     {
       get
       {
-        var electionModel = new ElectionModel();
-        var locations = electionModel.LocationsForCurrentElection
+        var locationModel = new LocationModel();
+        var locations = locationModel.LocationsForCurrentElection
           .OrderBy(l => l.SortOrder)
           .Select(l => new { l.Name, l.C_RowId, IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid });
 

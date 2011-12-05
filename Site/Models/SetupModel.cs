@@ -10,6 +10,7 @@ namespace TallyJ.Models
   public class SetupModel : DataConnectedModel
   {
     private ElectionModel _electionModel;
+    private LocationModel _locationModel;
 
     public int NumberOfPeople
     {
@@ -20,7 +21,7 @@ namespace TallyJ.Models
     {
       get
       {
-        return CurrentElectionModel.LocationsForCurrentElection
+        return CurrentLocationModel.LocationsForCurrentElection
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
@@ -43,6 +44,11 @@ namespace TallyJ.Models
       get { return _electionModel ?? (_electionModel = new ElectionModel()); }
     }
 
+    public LocationModel CurrentLocationModel
+    {
+      get { return _locationModel ?? (_locationModel = new LocationModel()); }
+    }
+
     public object RulesForCurrentElection
     {
       get
@@ -61,7 +67,7 @@ namespace TallyJ.Models
 
     public HtmlString IneligibleReasonsForSelect()
     {
-      var reasons = Db.Reasons.Where(r => r.ReasonGroup == "Ineligible").OrderBy(r => r.SortOrder).ToList();
+      var reasons = Db.Reasons.Where(r => r.ReasonGroup == BallotModelCore.ReasonGroupIneligible).OrderBy(r => r.SortOrder).ToList();
       reasons.Insert(0, new Reason {ReasonGuid = Guid.Empty, ReasonDescription = "-"});
 
       return reasons

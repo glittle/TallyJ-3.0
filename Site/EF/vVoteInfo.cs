@@ -38,5 +38,6 @@ namespace TallyJ.EF
         public int LocationId { get; set; }
         public string LocationTallyStatus { get; set; }
         public System.Guid ElectionGuid { get; set; }
+        public byte[] PersonRowVersionRaw { get; set; }
     }
 }

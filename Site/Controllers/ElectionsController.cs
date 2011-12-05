@@ -21,13 +21,14 @@ namespace TallyJ.Controllers
 
     public JsonResult SelectElection(Guid guid)
     {
-      var model = new ElectionModel();
+      var electionModel = new ElectionModel();
+      var locationModel = new LocationModel();
 
-      if (model.JoinIntoElection(guid))
+      if (electionModel.JoinIntoElection(guid))
       {
         return new
                  {
-                   Locations = model.LocationsForCurrentElection.OrderBy(l => l.SortOrder).Select(l => new {l.Name, l.C_RowId}),
+                   Locations = locationModel.LocationsForCurrentElection.OrderBy(l => l.SortOrder).Select(l => new {l.Name, l.C_RowId}),
                    Selected = true,
                    ElectionName = UserSession.CurrentElectionName,
                    Pulse = new PulseModel().Pulse()

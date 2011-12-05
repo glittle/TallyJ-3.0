@@ -1,7 +1,18 @@
-﻿#nameList
+﻿.div1 {
+    width: 340px;
+}
+
+#bnHolder {
+    position: relative;
+    height: 300px;
+    width: 330px;
+}
+
+
+#nameList
 {
-    height: 220px;
-    width: 350px;
+    height: 200px;
+    width: 300px;
     border: solid 1px #999;
     padding: 4px;
     overflow: auto;
@@ -26,27 +37,54 @@
     background-color: #c1f1b4;
     border-color: #999;
 }
-#action
+
+
+
+#ballotList
+{
+    overflow: auto;
+    padding: 2px;
+}
+#ballotList li
+{
+    border: 1px solid transparent;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+#ballotList li:hover
+{
+    border-color: #ddd;
+}
+#ballotList li.selected
+{
+    background-color: #c1f1b4;
+    border-color: #999;
+}
+
+
+
+#actionZZ
 {
     width: 20px;
     height: 1em;
     display: inline-block;
 }
-span.delaying
+span.delayingZZ
 {
     background-color: #f8f541;
 }
-span.searching
+span.searchingZZ
 {
     background-color: #f1c1b4;
 }
 input.delaying
 {
-    border-color: #f8f541;
+    background-color: #fffebf;
 }
 input.searching
 {
-    border-color: #c1f1b4;
+    background-color: #ffe8e2;
 }
 #votesPanel
 {
@@ -82,15 +120,66 @@ input.Vote
 }
 #btnAddSpoiled {
     font-size: 90%;
-    margin: 25px 0 0 5px;
+    float: right;
 }
-select.Show 
+.Valid .Invalid 
 {
-    /* if class has InlineIf0 or a number, will stay hidden */
     display: none;
 }
-.Ineligible {
+.VoteHost span.Name
+{
+    display: none;
+}
+.VoteHost.Valid span.Name {
+    display: inline;
+}
+.Ineligible, span.Invalid {
     color: #e80c4d;
     font-weight: bold;
 }
 
+#txtContact 
+{
+    width: 300px;
+}
+#votesPanel {
+    float: left;
+    width: 605px;
+}
+table.locationInfo {
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    width: 100%;
+}
+table.locationInfo th {
+    vertical-align: top;
+    padding-right: 20px;
+    text-align: left;
+}
+table.locationInfo td {
+    vertical-align: top;
+}
+
+.ui-widget {
+    font-size: .85em;
+}
+.ui-helper-reset {
+    font-size: 12px;
+}
+#votesList {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.Changedfalse .ChangedMessage {
+    display: none;
+}
+.Changedtrue .ChangedMessage {
+    color: #e80c4d;
+    margin-left: 70px;
+    padding-bottom: 5px;
+}
+.Changedtrue {
+    border: 1px solid red;
+    background-color: #ffcccc;
+}

@@ -161,14 +161,14 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
         success: function (data) {
             if (HasErrors(data)) return;
 
-            if (callbackWithInfo) {
+            if (typeof callbackWithInfo != 'undefined') {
                 callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
             }
 
             ResetStatusDisplay();
         },
         error: function (xmlHttpRequest, textStatus) {
-            if (callbackOnFailed) {
+            if (typeof callbackOnFailed != 'undefined') {
                 callbackOnFailed(xmlHttpRequest);
             } else {
                 ShowStatusFailed(xmlHttpRequest);
@@ -264,9 +264,10 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
     // idea: hold errors until click ok?    <button onclick="ClearDisplay()" type=button>Ok</button>
 }
 
-function ShowStatusFailed(msg, keep) {
-    if (typeof keep == 'undefined') keep = 15000;
-    if (!keep) ResetStatusDisplay();
+function ShowStatusFailed(msg, keepTime) {
+    ResetStatusDisplay();
+
+    if (typeof keepTime == 'undefined') keepTime = 15000;
 
     var text;
     if (typeof msg === 'string') {
@@ -293,7 +294,7 @@ function ShowStatusFailed(msg, keep) {
         text = 'Error';
     }
 
-    ShowStatusDisplay(text, 0, keep ? null : 15000, true);
+    ShowStatusDisplay(text, 0, keepTime, true);
 
     return text;
 }

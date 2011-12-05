@@ -101,7 +101,8 @@ var MonitorPage = function () {
 
         $.each(info.Locations, function () {
             rows++;
-            var joinBtn = ['<span class="ui-icon ui-icon-zoomin"></span>'];
+
+            this.Btn = '<a class=ZoomIn title=View href="../Ballots?l={LocationId}&b={BallotId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
 
             if (this.Name != lastName) {
                 if (last != null) {
@@ -116,10 +117,14 @@ var MonitorPage = function () {
             } else {
                 this.Extra = true;
                 this.ClassName = last.ClassName;
-                joinBtn.push('<span class="ui-icon ui-icon-zoomin" data-code="{0}"></span>'.filledWith(this.Code));
+                //joinBtn.push('<span title="View" class="ui-icon ui-icon-zoomin" data-code="{0}"></span>'.filledWith(this.Code));
 
             }
         });
+
+        if (last != null) {
+            last.rows = rows + 1;
+        }
 
         $.each(info.Locations, function () {
             if (this.Extra) {

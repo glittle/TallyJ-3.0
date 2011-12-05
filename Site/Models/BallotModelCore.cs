@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -10,12 +11,38 @@ namespace TallyJ.Models
 {
   public abstract class BallotModelCore : DataConnectedModel, IBallotModel
   {
+    #region IBallotModel Members
+
     /// <Summary>Current Ballot... could be null</Summary>
-    public Ballot GetCurrentBallot()
+    public vBallotInfo GetCurrentBallotInfo(bool createIfNeeded)
     {
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
-      var ballot = Db.Ballots.SingleOrDefault(b => b.C_RowId == currentBallotId);
+      var ballot = Db.vBallotInfoes.SingleOrDefault(b => b.C_RowId == currentBallotId);
+
+      if (ballot == null && createIfNeeded)
+      {
+        return CreateBallot();
+      }
+
       return ballot;
+    }
+
+    public JsonResult SwitchToBallotJson(int ballotId)
+    {
+      SetAsCurrentBallot(ballotId);
+
+      var ballotInfo = GetCurrentBallotInfo(false);
+      var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+
+      return new
+      {
+        BallotInfo = new
+          {
+            Ballot = BallotForJson(ballotInfo),
+            Votes = CurrentVotes()
+          },
+        Location = LocationModel.LocationInfoForJson(location)
+      }.AsJsonResult();
     }
 
     /// <Summary>Switch current ballot</Summary>
@@ -27,7 +54,8 @@ namespace TallyJ.Models
       }
 
       // learn about the one wanted
-      var ballotInfo = Db.vBallots.SingleOrDefault(b => b.C_RowId == ballotId && b.ElectionGuid == UserSession.CurrentElectionGuid);
+      var ballotInfo =
+        Db.vBallotInfoes.SingleOrDefault(b => b.C_RowId == ballotId && b.ElectionGuid == UserSession.CurrentElectionGuid);
 
       if (ballotInfo == null)
       {
@@ -35,56 +63,43 @@ namespace TallyJ.Models
         return;
       }
 
-      var wantedComputerCode = ballotInfo.ComputerCode;
-      if (wantedComputerCode != UserSession.CurrentComputerCode)
-      {
-        // get our record, update it, and save it back
-        var computer = UserSession.CurrentComputer;
-        Db.Computers.Attach(computer);
+      //var wantedComputerCode = ballotInfo.ComputerCode;
+      //if (wantedComputerCode != UserSession.CurrentComputerCode)
+      //{
+      //  // get our record, update it, and save it back
+      //  var computer = UserSession.CurrentComputer;
+      //  Db.Computers.Attach(computer);
 
-        computer.ComputerCode = wantedComputerCode;
-        Db.SaveChanges();
+      //  computer.ComputerCode = wantedComputerCode;
+      //  computer.LastContact = DateTime.Now;
+      //  Db.SaveChanges();
 
-        SessionKey.CurrentComputer.SetInSession(computer);
-      }
+      //  SessionKey.CurrentComputer.SetInSession(computer);
+      //}
 
       SessionKey.CurrentBallotId.SetInSession(ballotInfo.C_RowId);
     }
 
-    public Ballot CreateBallot()
-    {
-      var currentLocationGuid = UserSession.CurrentLocationGuid;
-      var computerCode = UserSession.CurrentComputerCode;
-
-      var ballot = new Ballot
-                     {
-                       BallotGuid = Guid.NewGuid(),
-                       LocationGuid = currentLocationGuid,
-                       ComputerCode = computerCode,
-                       BallotNumAtComputer = NextBallotNumAtComputer(),
-                       // for single  ballots, always use #0
-                       StatusCode = BallotHelper.BallotStatusCode.Ok,
-                       TellerAtKeyboard = UserSession.CurrentTellerAtKeyboard,
-                       TellerAssisting = UserSession.CurrentTellerAssisting
-                     };
-      Db.Ballots.Add(ballot);
-      Db.SaveChanges();
-
-      SessionKey.CurrentBallotId.SetInSession(ballot.C_RowId);
-
-      return ballot;
-    }
-
     public abstract int NextBallotNumAtComputer();
 
-    public string CurrentVotesJson()
+    public string CurrentBallotJsonString()
     {
-      return CurrentVotes().SerializedAsJsonString();
+      var ballotInfo = GetCurrentBallotInfo(false);
+      if (ballotInfo == null)
+      {
+        return "null";
+      }
+
+      return new
+               {
+                 Ballot = BallotForJson(ballotInfo),
+                 Votes = CurrentVotes()
+               }.SerializedAsJsonString();
     }
 
     public IEnumerable<object> CurrentVotes()
     {
-      var ballot = GetCurrentBallot();
+      var ballot = GetCurrentBallotInfo(false);
 
       if (ballot == null)
       {
@@ -100,6 +115,7 @@ namespace TallyJ.Models
                          count = v.SingleNameElectionCount,
                          pid = v.PersonId,
                          name = v.PersonFullName,
+                         changed = v.PersonRowVersion.HasValue && v.PersonRowVersionInVote.HasValue && v.PersonRowVersion != v.PersonRowVersionInVote,
                          invalid = v.VoteInvalidReasonId,
                          ineligible = v.PersonIneligibleReasonId
                        });
@@ -118,10 +134,12 @@ namespace TallyJ.Models
         if (existingVoteInfo != null)
         {
           existingVoteInfo.vote.SingleNameElectionCount = count;
+          existingVoteInfo.vote.PersonRowVersion = existingVoteInfo.info.PersonRowVersionRaw;
 
           if (invalidReason != 0)
           {
-            var invalidReasonGuid = Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
+            var invalidReasonGuid =
+              Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
             if (invalidReasonGuid != Guid.Empty && invalidReasonGuid != existingVoteInfo.vote.InvalidReasonGuid)
             {
               existingVoteInfo.vote.InvalidReasonGuid = invalidReasonGuid;
@@ -138,7 +156,7 @@ namespace TallyJ.Models
       }
       else
       {
-        var ballot = GetCurrentBallot();
+        var ballot = GetCurrentBallotInfo(true);
         if (ballot != null)
         {
           // make a new Vote record
@@ -148,7 +166,8 @@ namespace TallyJ.Models
 
           if (invalidReason != 0)
           {
-            invalidReasonGuid = Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
+            invalidReasonGuid =
+              Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
             ok = invalidReasonGuid != Guid.Empty;
           }
           else
@@ -215,10 +234,14 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public string InvalidReasonsJson()
+    public const string ReasonGroupIneligible = "Ineligible";
+
+    public string InvalidReasonsJsonString()
     {
+
       return Db.Reasons
-        .OrderByDescending(r => r.ReasonGroup) // put Inelligible at the bottom
+        .Where(r => r.ReasonGroup != ReasonGroupIneligible)
+        .OrderBy(r => r.ReasonGroup) // put Inelligible at the bottom
         .ThenBy(r => r.SortOrder)
         .Select(r => new
                        {
@@ -228,5 +251,64 @@ namespace TallyJ.Models
                        })
         .SerializedAsJsonString();
     }
+
+    public string CurrentBallotsJsonString()
+    {
+      var ballots = Db.vBallotInfoes
+        .Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid);
+
+      return BallotsList(ballots);
+    }
+
+    #endregion
+
+    public vBallotInfo CreateBallot()
+    {
+      var currentLocationGuid = UserSession.CurrentLocationGuid;
+      var computerCode = UserSession.CurrentComputerCode;
+
+      var ballot = new Ballot
+                     {
+                       BallotGuid = Guid.NewGuid(),
+                       LocationGuid = currentLocationGuid,
+                       ComputerCode = computerCode,
+                       BallotNumAtComputer = NextBallotNumAtComputer(),
+                       StatusCode = BallotHelper.BallotStatusCode.Ok,
+                       TellerAtKeyboard = UserSession.CurrentTellerAtKeyboard,
+                       TellerAssisting = UserSession.CurrentTellerAssisting
+                     };
+      Db.Ballots.Add(ballot);
+      Db.SaveChanges();
+
+      SessionKey.CurrentBallotId.SetInSession(ballot.C_RowId);
+
+      return Db.vBallotInfoes.Single(bi => bi.C_RowId == ballot.C_RowId);
+    }
+
+    public string NewBallotsJsonString(int lastRowVersion)
+    {
+      var ballots = Db.vBallotInfoes
+        .Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid
+                    && b.RowVersionInt > lastRowVersion);
+
+      return ballots.Any()
+               ? BallotsList(ballots)
+               : "";
+
+      //todo...
+    }
+
+    private string BallotsList(IQueryable<vBallotInfo> ballots)
+    {
+      var maxRowVersion = ballots.Max(b => b.RowVersionInt);
+
+      return new
+               {
+                 Ballots = ballots.ToList().Select(BallotForJson),
+                 Last = maxRowVersion
+               }.SerializedAsJsonString();
+    }
+
+    protected abstract object BallotForJson(vBallotInfo b);
   }
 }

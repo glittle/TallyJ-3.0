@@ -20,20 +20,27 @@
           <EntitySet Name="ResultSummary" EntityType="tallyj2dModel.Store.ResultSummary" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Teller" EntityType="tallyj2dModel.Store.Teller" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Vote" EntityType="tallyj2dModel.Store.Vote" store:Type="Tables" Schema="tj" />
-          <EntitySet Name="vBallot" EntityType="tallyj2dModel.Store.vBallot" store:Type="Views" store:Schema="tj" store:Name="vBallot">
+          <EntitySet Name="vBallotInfo" EntityType="tallyj2dModel.Store.vBallotInfo" store:Type="Views" store:Schema="tj" store:Name="vBallotInfo">
             <DefiningQuery>SELECT 
-      [vBallot].[_RowId] AS [_RowId], 
-      [vBallot].[LocationGuid] AS [LocationGuid], 
-      [vBallot].[BallotGuid] AS [BallotGuid], 
-      [vBallot].[StatusCode] AS [StatusCode], 
-      [vBallot].[ComputerCode] AS [ComputerCode], 
-      [vBallot].[BallotNumAtComputer] AS [BallotNumAtComputer], 
-      [vBallot].[_BallotCode] AS [_BallotCode], 
-      [vBallot].[TellerAtKeyboard] AS [TellerAtKeyboard], 
-      [vBallot].[TellerAssisting] AS [TellerAssisting], 
-      [vBallot].[_RowVersion] AS [_RowVersion], 
-      [vBallot].[ElectionGuid] AS [ElectionGuid]
-      FROM [tj].[vBallot] AS [vBallot]</DefiningQuery>
+      [vBallotInfo].[_RowId] AS [_RowId], 
+      [vBallotInfo].[LocationGuid] AS [LocationGuid], 
+      [vBallotInfo].[BallotGuid] AS [BallotGuid], 
+      [vBallotInfo].[StatusCode] AS [StatusCode], 
+      [vBallotInfo].[ComputerCode] AS [ComputerCode], 
+      [vBallotInfo].[BallotNumAtComputer] AS [BallotNumAtComputer], 
+      [vBallotInfo].[_BallotCode] AS [_BallotCode], 
+      [vBallotInfo].[TellerAtKeyboard] AS [TellerAtKeyboard], 
+      [vBallotInfo].[TellerAssisting] AS [TellerAssisting], 
+      [vBallotInfo].[_RowVersion] AS [_RowVersion], 
+      [vBallotInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vBallotInfo].[LocationId] AS [LocationId], 
+      [vBallotInfo].[LocationName] AS [LocationName], 
+      [vBallotInfo].[LocationSortOrder] AS [LocationSortOrder], 
+      [vBallotInfo].[TallyStatus] AS [TallyStatus], 
+      [vBallotInfo].[TellerAtKeyboardName] AS [TellerAtKeyboardName], 
+      [vBallotInfo].[TellerAssistingName] AS [TellerAssistingName], 
+      [vBallotInfo].[RowVersionInt] AS [RowVersionInt]
+      FROM [tj].[vBallotInfo] AS [vBallotInfo]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
             <DefiningQuery>SELECT 
@@ -47,6 +54,7 @@
       [vLocationInfo].[TallyStatus] AS [TallyStatus], 
       [vLocationInfo].[SortOrder] AS [SortOrder], 
       [vLocationInfo].[ComputerCode] AS [ComputerCode], 
+      [vLocationInfo].[BallotId] AS [BallotId], 
       [vLocationInfo].[Ballots] AS [Ballots], 
       [vLocationInfo].[LastContact] AS [LastContact], 
       [vLocationInfo].[TellerName] AS [TellerName], 
@@ -79,6 +87,7 @@
       [vVoteInfo].[VoteInvalidReasonDesc] AS [VoteInvalidReasonDesc], 
       [vVoteInfo].[PersonRowVersionInVote] AS [PersonRowVersionInVote], 
       [vVoteInfo].[PersonRowVersion] AS [PersonRowVersion], 
+      [vVoteInfo].[PersonRowVersionRaw] AS [PersonRowVersionRaw], 
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
       [vVoteInfo].[PersonId] AS [PersonId], 
       [vVoteInfo].[PersonFullName] AS [PersonFullName], 
@@ -169,7 +178,7 @@
           <Property Name="CanVote" Type="varchar" MaxLength="1" />
           <Property Name="CanReceive" Type="varchar" MaxLength="1" />
           <Property Name="LastEnvNum" Type="int" />
-          <Property Name="TallyStatus" Type="varchar" MaxLength="9" />
+          <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="LinkedElectionGuid" Type="uniqueidentifier" />
           <Property Name="LinkedElectionKind" Type="varchar" MaxLength="2" />
           <Property Name="OwnerLoginId" Type="varchar" MaxLength="50" />
@@ -198,7 +207,7 @@
           <Property Name="ContactInfo" Type="nvarchar" MaxLength="250" />
           <Property Name="Long" Type="varchar" MaxLength="50" />
           <Property Name="Lat" Type="varchar" MaxLength="50" />
-          <Property Name="TallyStatus" Type="varchar" MaxLength="9" />
+          <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="SortOrder" Type="int" />
         </EntityType>
         <EntityType Name="Message">
@@ -309,9 +318,9 @@
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vBallot' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
-        <EntityType Name="vBallot">
+        <EntityType Name="vBallotInfo">
           <Key>
             <PropertyRef Name="_RowId" />
             <PropertyRef Name="LocationGuid" />
@@ -321,6 +330,8 @@
             <PropertyRef Name="BallotNumAtComputer" />
             <PropertyRef Name="_RowVersion" />
             <PropertyRef Name="ElectionGuid" />
+            <PropertyRef Name="LocationId" />
+            <PropertyRef Name="LocationName" />
           </Key>
           <Property Name="_RowId" Type="int" Nullable="false" />
           <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
@@ -333,6 +344,13 @@
           <Property Name="TellerAssisting" Type="uniqueidentifier" />
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LocationId" Type="int" Nullable="false" />
+          <Property Name="LocationName" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="LocationSortOrder" Type="int" />
+          <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+          <Property Name="TellerAtKeyboardName" Type="nvarchar" MaxLength="50" />
+          <Property Name="TellerAssistingName" Type="nvarchar" MaxLength="50" />
+          <Property Name="RowVersionInt" Type="bigint" />
         </EntityType>
         <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -352,9 +370,10 @@
           <Property Name="ContactInfo" Type="nvarchar" MaxLength="250" />
           <Property Name="Long" Type="varchar" MaxLength="50" />
           <Property Name="Lat" Type="varchar" MaxLength="50" />
-          <Property Name="TallyStatus" Type="varchar" MaxLength="9" />
+          <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="SortOrder" Type="int" />
           <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
+          <Property Name="BallotId" Type="int" />
           <Property Name="Ballots" Type="int" />
           <Property Name="LastContact" Type="datetime2" Precision="1" />
           <Property Name="TellerName" Type="nvarchar" MaxLength="50" />
@@ -405,6 +424,7 @@
           <Property Name="VoteInvalidReasonDesc" Type="nvarchar" MaxLength="50" />
           <Property Name="PersonRowVersionInVote" Type="bigint" />
           <Property Name="PersonRowVersion" Type="bigint" />
+          <Property Name="PersonRowVersionRaw" Type="timestamp" StoreGeneratedPattern="Computed" />
           <Property Name="PersonGuid" Type="uniqueidentifier" />
           <Property Name="PersonId" Type="int" />
           <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />
@@ -418,7 +438,7 @@
           <Property Name="BallotStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
           <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
           <Property Name="LocationId" Type="int" Nullable="false" />
-          <Property Name="LocationTallyStatus" Type="varchar" MaxLength="9" />
+          <Property Name="LocationTallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <Association Name="FK_JoinElectionUser_Users">
@@ -468,11 +488,11 @@
           <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
           <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
           <EntitySet Name="Ballots" EntityType="TallyJ2Model.Ballot" />
-          <EntitySet Name="vBallots" EntityType="TallyJ2Model.vBallot" />
           <EntitySet Name="vResultInfoes" EntityType="TallyJ2Model.vResultInfo" />
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
           <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
           <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
+          <EntitySet Name="vBallotInfoes" EntityType="TallyJ2Model.vBallotInfo" />
         </EntityContainer>
         <EntityType Name="C_Log">
           <Key>
@@ -585,7 +605,7 @@
           <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="TallyStatus" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="SortOrder" />
         </EntityType>
         <EntityType Name="Teller">
@@ -616,7 +636,7 @@
           <Property Type="String" Name="CanVote" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="CanReceive" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="LastEnvNum" />
-          <Property Type="String" Name="TallyStatus" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Type="Guid" Name="LinkedElectionGuid" />
           <Property Type="String" Name="LinkedElectionKind" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="OwnerLoginId" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -686,29 +706,6 @@
           <Property Type="Guid" Name="TellerAssisting" />
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
         </EntityType>
-        <EntityType Name="vBallot">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-            <PropertyRef Name="LocationGuid" />
-            <PropertyRef Name="BallotGuid" />
-            <PropertyRef Name="StatusCode" />
-            <PropertyRef Name="ComputerCode" />
-            <PropertyRef Name="BallotNumAtComputer" />
-            <PropertyRef Name="C_RowVersion" />
-            <PropertyRef Name="ElectionGuid" />
-          </Key>
-          <Property Type="Int32" Name="C_RowId" Nullable="false" />
-          <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-          <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-          <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
-          <Property Type="Guid" Name="TellerAtKeyboard" />
-          <Property Type="Guid" Name="TellerAssisting" />
-          <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-        </EntityType>
         <EntityType Name="vResultInfo">
           <Key>
             <PropertyRef Name="ElectionGuid" />
@@ -750,6 +747,7 @@
           <Property Type="DateTime" Name="LastContact" />
           <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="SortOrder2" Nullable="false" />
+          <Property Type="Int32" Name="BallotId" />
         </EntityType>
         <EntityType Name="Vote">
           <Key>
@@ -800,6 +798,39 @@
           <Property Type="Int32" Name="LocationId" Nullable="false" />
           <Property Type="String" Name="LocationTallyStatus" MaxLength="9" FixedLength="false" Unicode="false" />
           <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="vBallotInfo">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+            <PropertyRef Name="LocationGuid" />
+            <PropertyRef Name="BallotGuid" />
+            <PropertyRef Name="StatusCode" />
+            <PropertyRef Name="ComputerCode" />
+            <PropertyRef Name="BallotNumAtComputer" />
+            <PropertyRef Name="C_RowVersion" />
+            <PropertyRef Name="ElectionGuid" />
+            <PropertyRef Name="LocationName" />
+            <PropertyRef Name="LocationId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" />
+          <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+          <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+          <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
+          <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="TellerAtKeyboard" />
+          <Property Type="Guid" Name="TellerAssisting" />
+          <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="String" Name="LocationName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="TellerAtKeyboardName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="TellerAssistingName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int64" Name="RowVersionInt" />
+          <Property Type="Int32" Name="LocationSortOrder" />
+          <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="LocationId" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1006,23 +1037,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vBallots">
-            <EntityTypeMapping TypeName="TallyJ2Model.vBallot">
-              <MappingFragment StoreEntitySet="vBallot">
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
-                <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
-                <ScalarProperty Name="TellerAtKeyboard" ColumnName="TellerAtKeyboard" />
-                <ScalarProperty Name="BallotNumAtComputer" ColumnName="BallotNumAtComputer" />
-                <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
-                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
-                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
-                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
-                <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="vResultInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vResultInfo">
               <MappingFragment StoreEntitySet="vResultInfo">
@@ -1043,6 +1057,7 @@
           <EntitySetMapping Name="vLocationInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
               <MappingFragment StoreEntitySet="vLocationInfo">
+                <ScalarProperty Name="BallotId" ColumnName="BallotId" />
                 <ScalarProperty Name="SortOrder2" ColumnName="SortOrder2" />
                 <ScalarProperty Name="TellerName" ColumnName="TellerName" />
                 <ScalarProperty Name="LastContact" ColumnName="LastContact" />
@@ -1078,6 +1093,7 @@
           <EntitySetMapping Name="vVoteInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
               <MappingFragment StoreEntitySet="vVoteInfo">
+                <ScalarProperty Name="PersonRowVersionRaw" ColumnName="PersonRowVersionRaw" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
                 <ScalarProperty Name="LocationId" ColumnName="LocationId" />
@@ -1102,6 +1118,30 @@
                 <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
                 <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
                 <ScalarProperty Name="VoteId" ColumnName="VoteId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vBallotInfoes">
+            <EntityTypeMapping TypeName="TallyJ2Model.vBallotInfo">
+              <MappingFragment StoreEntitySet="vBallotInfo">
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
+                <ScalarProperty Name="LocationSortOrder" ColumnName="LocationSortOrder" />
+                <ScalarProperty Name="RowVersionInt" ColumnName="RowVersionInt" />
+                <ScalarProperty Name="TellerAssistingName" ColumnName="TellerAssistingName" />
+                <ScalarProperty Name="TellerAtKeyboardName" ColumnName="TellerAtKeyboardName" />
+                <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+                <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
+                <ScalarProperty Name="TellerAtKeyboard" ColumnName="TellerAtKeyboard" />
+                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+                <ScalarProperty Name="BallotNumAtComputer" ColumnName="BallotNumAtComputer" />
+                <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+                <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1131,11 +1171,11 @@
         <EntityTypeShape EntityType="TallyJ2Model.Message" Width="1.5" PointX="2.75" PointY="4.75" Height="2.1725878906249996" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2Model.Reason" Width="1.5" PointX="4.75" PointY="4.75" Height="1.9802864583333317" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultSummary" Width="1.5" PointX="5.75" PointY="0.75" Height="2.7494921874999996" IsExpanded="true" />
-        <EntityTypeShape EntityType="TallyJ2Model.User" Width="1.5" PointX="0.75" PointY="0.875" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="TallyJ2Model.User" Width="1.5" PointX="0.75" PointY="1.125" Height="2.1725878906249996" />
         <EntityTypeShape EntityType="TallyJ2Model.JoinElectionUser" Width="1.5" PointX="3" PointY="1" Height="1.9802864583333335" />
         <AssociationConnector Association="TallyJ2Model.FK_JoinElectionUser_Users" >
-          <ConnectorPoint PointX="2.25" PointY="1.9901432291666668" />
-          <ConnectorPoint PointX="3" PointY="1.9901432291666668" />
+          <ConnectorPoint PointX="2.25" PointY="2.0526432291666667" />
+          <ConnectorPoint PointX="3" PointY="2.0526432291666667" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TallyJ2Model.Computer" Width="1.5" PointX="6.75" PointY="4.75" Height="3.1340950520833317" />
         <EntityTypeShape EntityType="TallyJ2Model.Location" Width="1.5" PointX="7.75" PointY="0.75" Height="2.7494921874999996" />
@@ -1144,11 +1184,11 @@
         <EntityTypeShape EntityType="TallyJ2Model.Person" Width="1.5" PointX="4.75" PointY="8.75" Height="5.057109375" />
         <EntityTypeShape EntityType="TallyJ2Model.Result" Width="1.5" PointX="6.75" PointY="10.75" Height="3.7109993489583335" />
         <EntityTypeShape EntityType="TallyJ2Model.Ballot" Width="1.5" PointX="0.75" PointY="11.75" Height="2.9417936197916674" />
-        <EntityTypeShape EntityType="TallyJ2Model.vBallot" Width="1.5" PointX="11.75" PointY="8.75" Height="3.1340950520833388" />
         <EntityTypeShape EntityType="TallyJ2Model.vResultInfo" Width="1.5" PointX="12.375" PointY="0.75" Height="3.1340950520833388" />
         <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="14.375" PointY="0.75" Height="3.7109993489583282" />
         <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="11.375" PointY="4.75" Height="2.7494921875000067" />
         <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="9.375" PointY="12.75" Height="5.63401367187501" />
+        <EntityTypeShape EntityType="TallyJ2Model.vBallotInfo" Width="1.5" PointX="11.375" PointY="8.75" Height="3.9033007812500031" />
       </Diagram>
     </Diagrams>
   </Designer>

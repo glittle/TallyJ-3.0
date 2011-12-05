@@ -44,14 +44,14 @@ namespace TallyJ.Controllers
       }
 
       var isSingle = UserSession.CurrentElection.IsSingleNameElection.AsBool();
-      var ballotModel = isSingle ? (IBallotModel)new BallotSingleModel() : new BallotNormalModel();
+      var ballotModel = BallotModelFactory.GetForCurrentElection();
 
       var ballotId = Request.QueryString["b"].AsInt();
       if (ballotId == 0)
       {
         if (isSingle)
         {
-          ballotModel.CreateBallot();
+          ballotModel.GetCurrentBallotInfo(false);
         }
       }
       else
@@ -64,11 +64,26 @@ namespace TallyJ.Controllers
 
     public JsonResult SaveSingleNameVote(int pid, int vid, int count, int invalid = 0)
     {
-      return new BallotSingleModel().SaveVote(pid, vid, count, invalid);
+      return BallotModelFactory.GetForCurrentElection().SaveVote(pid, vid, count, invalid);
     }
+
     public JsonResult DeleteSingleNameVote(int vid)
     {
-      return new BallotSingleModel().DeleteVote(vid);
+      return BallotModelFactory.GetForCurrentElection().DeleteVote(vid);
+    }
+
+    public JsonResult SwitchToBallot(int ballotId)
+    {
+      return BallotModelFactory.GetForCurrentElection().SwitchToBallotJson(ballotId);
+    }
+
+    public JsonResult UpdateLocationStatus(int id, string status)
+    {
+      return new LocationModel().UpdateStatus(id, status);
+    }
+    public JsonResult UpdateLocationInfo(string info)
+    {
+      return new LocationModel().UpdateContactInfo(info);
     }
   }
 }

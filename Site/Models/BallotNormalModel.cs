@@ -1,6 +1,7 @@
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Session;
+using TallyJ.EF;
 
 namespace TallyJ.Models
 {
@@ -10,7 +11,7 @@ namespace TallyJ.Models
     {
       var computerCode = UserSession.CurrentComputerCode;
 
-      var nextBallotNum = 1 + Db.vBallots.Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid
+      var nextBallotNum = 1 + Db.vBallotInfoes.Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid
                                                      && b.ComputerCode == computerCode)
                                 .OrderByDescending(b => b.BallotNumAtComputer)
                                 .Take(1)
@@ -18,6 +19,11 @@ namespace TallyJ.Models
                                 .SingleOrDefault();
 
       return nextBallotNum;
+    }
+
+    protected override object BallotForJson(vBallotInfo b)
+    {
+      throw new System.NotImplementedException();
     }
   }
 }

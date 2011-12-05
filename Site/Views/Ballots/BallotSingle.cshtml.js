@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../Scripts/site.js" />
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
+/// <reference path="../../Scripts/jquery-ui-1.8.16.js" />
 /// <reference path="../../Scripts/PeopleHelper.js" />
 
 var BallotPageFunc = function () {
@@ -12,11 +13,15 @@ var BallotPageFunc = function () {
         actionTag: null,
         inputField: null,
         nameList: null,
+        searchPanel: null,
+        ballotsPanel: null,
         invalidReasonsHtml: null,
         rowSelected: 0,
-        searchResultTemplate: '<li id=P{Id}>{Name}</li>'
+        lastBallotRowVersion: 0,
+        searchResultTemplate: '<li id=P{Id}>{Name}</li>',
+        //ballotListTemplate: '<li id=B{Id}>{Location} {Code} - {StatusCode}</li>'
+        ballotListTemplate: '<li id=B{Id}>{Location} (<span data-location={LocationId}>{TallyStatus}</span>) - {Code}</li>'
     };
-
     var preparePage = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
@@ -24,26 +29,112 @@ var BallotPageFunc = function () {
         local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
+        local.searchPanel = $('#nameSearch');
+        local.ballotsPanel = $('#ballots');
+
         $('#nameList').on('click', 'li', nameClick);
+        $('#ballotList').on('click', 'li', ballotClick);
+
         $('#btnAddSpoiled').on('click', addSpoiled);
         $('#votesList').on('change keyup', 'input', voteNumChange);
         $('#votesList').on('click', '.ui-icon-trash', deleteVote);
+        $('#votesList').on('click', '.btnClearChangeError', resaveVote);
         $('#votesList').on('change', 'select', invalidReasonChanged);
+
+        $('#tabs').tabs();
+
+        $('#ddlLocationStatus').on('change', changeLocationStatus);
+        $('#txtContact').on('change', function () {
+            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
+                ShowStatusDisplay('Updated', 0, 3000, false, true);
+            });
+        });
         resetSearch();
 
         local.invalidReasonsHtml = prepareReasons();
 
-        loadExisting();
+        loadExisting(publicInterface);
     };
-    var loadExisting = function () {
-        if (publicInterface.initialVotes) {
+
+    var changeLocationStatus = function () {
+        var form = {
+            id: publicInterface.Location.Id,
+            status: $(this).val()
+        };
+        CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationStatus', form, function (info) {
+            if (info.Location) {
+                showLocation(info.Location); // not critical
+                $('span[data-location]').each(function () {
+                    var span = $(this);
+                    if (span.data('location') == info.Location.Id) {
+                        span.text(info.Location.TallyStatus);
+                    }
+                });
+            }
+            ShowStatusDisplay('Updated', 0, 3000, false, true);
+        });
+    };
+    var loadExisting = function (info) {
+
+        if (info.BallotsList) {
+            showBallots(info.BallotsList);
+        }
+
+        var ballotInfo = info.BallotInfo;
+        if (ballotInfo) {
+            $('#ballotCode').text(ballotInfo.Ballot.Code);
+            $('#ballotStatus').text(ballotInfo.Ballot.StatusCode);
+
             var list = $('#votesList');
-            list.html(site.templates.SingleVoteLine.filledWithEach(extend(publicInterface.initialVotes)));
+            list.html(site.templates.SingleVoteLine.filledWithEach(extendVotes(ballotInfo.Votes)));
             list.find('select:visible').each(function () {
                 var select = $(this);
                 select.val(select.data('invalid'));
             });
+
+            highlightBallotInList(ballotInfo.Ballot.Id);
         }
+
+        if (info.Location) {
+            showLocation(info.Location);
+            publicInterface.Location = info.Location;
+        }
+    };
+
+    var showLocation = function (location) {
+        $('.locationInfo').find('[data-name]').each(function () {
+            var target = $(this);
+            var value = location[target.data('name')];
+
+            switch (this.tagName) {
+                case 'SPAN':
+                case 'DIV':
+                    target.html(value);
+                    break;
+                default:
+                    target.val(value);
+                    break;
+            }
+        });
+    };
+
+    var showBallots = function (info) {
+        var list = info.Ballots;
+        list.sort(function (a, b) {
+            if (a.LocationSort == b.LocationSort) {
+                return a.Code > b.Code;
+            }
+            return a.LocationSort > b.LocationSort;
+        });
+
+        $('#ballotList')
+            .html(local.ballotListTemplate.filledWithEach(list));
+
+        local.lastBallotRowVersion = info.Last;
+    };
+
+    var highlightBallotInList = function (ballotId) {
+        $('#ballotList').children().removeClass('selected').end().find('#B{0}'.filledWith(ballotId)).addClass('selected');
     };
 
     var voteNumChange = function (ev) {
@@ -75,6 +166,11 @@ var BallotPageFunc = function () {
         saveVote(parent);
     };
 
+    var resaveVote = function (ev) {
+        var host = $(ev.target).parents('.VoteHost');
+        saveVote(host);
+    };
+
     var saveVote = function (host) {
         var input = host.find('input');
         var invalids = host.find('select:visible');
@@ -84,13 +180,21 @@ var BallotPageFunc = function () {
             invalid: invalids.val() || 0,
             count: input.val() || 0
         };
+
+        if (isNaN(form.count) || +form.count < 0) {
+            alert('Invalid number. Please correct.');
+            input.focus();
+            return;
+        }
+
         ShowStatusDisplay('Saving...');
         input.focus();
 
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveSingleNameVote', form, function (info) {
-            // TODO:
             if (info.Updated) {
                 ShowStatusDisplay('Saved', 0, 3000, false, true);
+                // assume any error was removed
+                host.removeClass('Changedtrue').addClass('Changedfalse');
             }
 
             if (form.vid == 0) {
@@ -110,6 +214,12 @@ var BallotPageFunc = function () {
         var form = {
             vid: voteId
         };
+
+        if (voteId == 0) {
+            host.remove();
+            return;
+        }
+
         ShowStatusDisplay('Deleting...');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteSingleNameVote', form, function (info) {
             if (info.Deleted) {
@@ -125,11 +235,13 @@ var BallotPageFunc = function () {
     var onNamesReady = function (info) {
         local.People = info.People;
         local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
-        $('#more').html(info.MoreFound);
+        $('#more').html(''); //info.MoreFound
         if (!local.People.length && local.lastSearch) {
-            local.nameList.append('<li>...no matches found...</li>');
-        }
-        else {
+            var search = $('#txtSearch').val();
+            if (search) {
+                local.nameList.append('<li>...no matches found...</li>');
+            }
+        } else {
             local.rowSelected = 0;
             if (info.MoreFound && local.lastSearch) {
                 local.nameList.append('<li>...more than 9 matched...</li>');
@@ -171,6 +283,7 @@ var BallotPageFunc = function () {
     };
 
     var addToVotesList = function (selectedPersonLi) {
+        if (!selectedPersonLi.length) return;
 
         var personId = selectedPersonLi.attr('id').substr(1);
         if (!personId) return;
@@ -200,6 +313,7 @@ var BallotPageFunc = function () {
             vid: 0,
             count: 0,
             invalid: 0,
+            changed: false,
             InvalidReasons: local.invalidReasonsHtml
         };
 
@@ -209,7 +323,7 @@ var BallotPageFunc = function () {
         input.focus();
     };
 
-    var extend = function (votes) {
+    var extendVotes = function (votes) {
         $.each(votes, function () {
             if (this.invalid !== null) {
                 this.InvalidReasons = local.invalidReasonsHtml;
@@ -224,7 +338,7 @@ var BallotPageFunc = function () {
                 if (reasonList.length == 1) {
                     reason = reasonList[0].Desc;
                 }
-                this.name = '<span class=Ineligible>{0}</span> ({1})'.filledWith(reason, this.name);
+                this.name = '<span class=Ineligible>Spoiled: {0}</span> ({1})'.filledWith(reason, this.name);
             }
         });
         return votes;
@@ -265,6 +379,11 @@ var BallotPageFunc = function () {
                 edit(local.nameList.children().eq(local.rowSelected));
                 return true;
 
+            case 27: // esc
+                $('#txtSearch').val('');
+                runSearch();
+                return true;
+
             default:
         }
         return false;
@@ -272,9 +391,9 @@ var BallotPageFunc = function () {
 
     var runSearch = function (ev) {
         clearTimeout(local.keyTimer);
-        var input = $(this);
+        var input = $('#txtSearch');
         var text = input.val();
-        if (navigating(ev)) {
+        if (ev && navigating(ev)) {
             return;
         }
         if (local.lastSearch === text.trim()) return;
@@ -304,10 +423,26 @@ var BallotPageFunc = function () {
             MoreFound: ''
         });
     };
+    var ballotClick = function (ev) {
+        var el = ev.target;
+        while (el.tagName != 'LI') {
+            el = el.parentNode;
+            if (el == null) return;
+        }
+        showBallot(el.id);
+    };
+
+    var showBallot = function (ballotId) {
+        if (ballotId.substr(0, 1) == 'B') {
+            ballotId = ballotId.substr(1);
+        }
+        CallAjaxHandler(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId }, loadExisting);
+    };
+
     var nameClick = function (ev) {
         var el = ev.target;
         while (el.tagName != 'LI') {
-            el = el.parentNode();
+            el = el.parentNode;
             if (el == null) return;
         }
         edit($(el));
@@ -316,7 +451,9 @@ var BallotPageFunc = function () {
         peopleUrl: '',
         controllerUrl: '',
         invalidReasons: [],
-        initialVotes: null,
+        BallotInfo: null,
+        BallotsList: null,
+        Location: null,
         PreparePage: preparePage
     };
 

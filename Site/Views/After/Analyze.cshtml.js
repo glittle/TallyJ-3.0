@@ -97,7 +97,7 @@ var AnalyzePage = function () {
 
         var getNames = function () {
             return $.map(info.slice(0, maxToShow), function (item, i) {
-                return item.PersonName;
+                return i + 1;
             });
         };
 

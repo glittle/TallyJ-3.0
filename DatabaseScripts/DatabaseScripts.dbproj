@@ -146,7 +146,7 @@
     <NotInBuild Include="Scripts\Stored Procedures\CloneElection.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
-    <NotInBuild Include="Scripts\Views\vBallot.sql">
+    <NotInBuild Include="Scripts\Views\vBallotInfo.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
     <NotInBuild Include="Scripts\Views\vLocationInfo.sql">

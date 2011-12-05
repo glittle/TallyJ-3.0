@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="tallyj2dModelStoreContainer" CdmEntityContainer="TallyJ2Entities">
+    <EntitySetMapping Name="C_Log">
+      <EntityTypeMapping TypeName="TallyJ2Model.C_Log">
+        <MappingFragment StoreEntitySet="_Log">
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="AsOf" ColumnName="AsOf" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+          <ScalarProperty Name="Details" ColumnName="Details" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="TallyJ2Model.Message">
+        <MappingFragment StoreEntitySet="Message">
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Details" ColumnName="Details" />
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="AsOf" ColumnName="AsOf" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Reasons">
+      <EntityTypeMapping TypeName="TallyJ2Model.Reason">
+        <MappingFragment StoreEntitySet="Reasons">
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+          <ScalarProperty Name="ReasonGuid" ColumnName="ReasonGuid" />
+          <ScalarProperty Name="ReasonGroup" ColumnName="ReasonGroup" />
+          <ScalarProperty Name="ReasonDescription" ColumnName="ReasonDescription" />
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ResultSummaries">
+      <EntityTypeMapping TypeName="TallyJ2Model.ResultSummary">
+        <MappingFragment StoreEntitySet="ResultSummary">
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="ResultType" ColumnName="ResultType" />
+          <ScalarProperty Name="UseOnReports" ColumnName="UseOnReports" />
+          <ScalarProperty Name="NumVoters" ColumnName="NumVoters" />
+          <ScalarProperty Name="NumEligible" ColumnName="NumEligible" />
+          <ScalarProperty Name="MailedInBallots" ColumnName="MailedInBallots" />
+          <ScalarProperty Name="DroppedOffBallots" ColumnName="DroppedOffBallots" />
+          <ScalarProperty Name="InPersonBallots" ColumnName="InPersonBallots" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="CloneElection" FunctionName="tallyj2dModel.Store.CloneElection">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TallyJ2Model.CloneElection_Result">
+          <ScalarProperty Name="Success" ColumnName="Success" />
+          <ScalarProperty Name="NewElectionGuid" ColumnName="NewElectionGuid" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="TallyJ2Model.User">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
+          <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="JoinElectionUsers">
+      <EntityTypeMapping TypeName="TallyJ2Model.JoinElectionUser">
+        <MappingFragment StoreEntitySet="JoinElectionUser">
+          <ScalarProperty Name="Role" ColumnName="Role" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Computers">
+      <EntityTypeMapping TypeName="TallyJ2Model.Computer">
+        <MappingFragment StoreEntitySet="Computer">
+          <ScalarProperty Name="BrowserInfo" ColumnName="BrowserInfo" />
+          <ScalarProperty Name="ShadowElectionGuid" ColumnName="ShadowElectionGuid" />
+          <ScalarProperty Name="Teller2" ColumnName="Teller2" />
+          <ScalarProperty Name="Teller1" ColumnName="Teller1" />
+          <ScalarProperty Name="LastBallotNum" ColumnName="LastBallotNum" />
+          <ScalarProperty Name="ComputerInternalCode" ColumnName="ComputerInternalCode" />
+          <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="LastContact" ColumnName="LastContact" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Locations">
+      <EntityTypeMapping TypeName="TallyJ2Model.Location">
+        <MappingFragment StoreEntitySet="Location">
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
+          <ScalarProperty Name="Lat" ColumnName="Lat" />
+          <ScalarProperty Name="Long" ColumnName="Long" />
+          <ScalarProperty Name="ContactInfo" ColumnName="ContactInfo" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Tellers">
+      <EntityTypeMapping TypeName="TallyJ2Model.Teller">
+        <MappingFragment StoreEntitySet="Teller">
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="IsHeadTeller" ColumnName="IsHeadTeller" />
+          <ScalarProperty Name="UsingComputerCode" ColumnName="UsingComputerCode" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="TellerGuid" ColumnName="TellerGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Elections">
+      <EntityTypeMapping TypeName="TallyJ2Model.Election">
+        <MappingFragment StoreEntitySet="Election">
+          <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="ListedForPublicAsOf" ColumnName="ListedForPublicAsOf" />
+          <ScalarProperty Name="ElectionPasscode" ColumnName="ElectionPasscode" />
+          <ScalarProperty Name="OwnerLoginId" ColumnName="OwnerLoginId" />
+          <ScalarProperty Name="LinkedElectionKind" ColumnName="LinkedElectionKind" />
+          <ScalarProperty Name="LinkedElectionGuid" ColumnName="LinkedElectionGuid" />
+          <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
+          <ScalarProperty Name="LastEnvNum" ColumnName="LastEnvNum" />
+          <ScalarProperty Name="CanReceive" ColumnName="CanReceive" />
+          <ScalarProperty Name="CanVote" ColumnName="CanVote" />
+          <ScalarProperty Name="NumberExtra" ColumnName="NumberExtra" />
+          <ScalarProperty Name="NumberToElect" ColumnName="NumberToElect" />
+          <ScalarProperty Name="ElectionMode" ColumnName="ElectionMode" />
+          <ScalarProperty Name="ElectionType" ColumnName="ElectionType" />
+          <ScalarProperty Name="DateOfElection" ColumnName="DateOfElection" />
+          <ScalarProperty Name="Convenor" ColumnName="Convenor" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="People">
+      <EntityTypeMapping TypeName="TallyJ2Model.Person">
+        <MappingFragment StoreEntitySet="Person">
+          <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="EnvNum" ColumnName="EnvNum" />
+          <ScalarProperty Name="VotingMethod" ColumnName="VotingMethod" />
+          <ScalarProperty Name="VotingLocationGuid" ColumnName="VotingLocationGuid" />
+          <ScalarProperty Name="RegistrationTime" ColumnName="RegistrationTime" />
+          <ScalarProperty Name="IneligibleReasonGuid" ColumnName="IneligibleReasonGuid" />
+          <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
+          <ScalarProperty Name="CanVote" ColumnName="CanVote" />
+          <ScalarProperty Name="AgeGroup" ColumnName="AgeGroup" />
+          <ScalarProperty Name="CombinedInfoAtStart" ColumnName="CombinedInfoAtStart" />
+          <ScalarProperty Name="CombinedSoundCodes" ColumnName="CombinedSoundCodes" />
+          <ScalarProperty Name="CombinedInfo" ColumnName="CombinedInfo" />
+          <ScalarProperty Name="BahaiId" ColumnName="BahaiId" />
+          <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
+          <ScalarProperty Name="OtherNames" ColumnName="OtherNames" />
+          <ScalarProperty Name="OtherLastNames" ColumnName="OtherLastNames" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Results">
+      <EntityTypeMapping TypeName="TallyJ2Model.Result">
+        <MappingFragment StoreEntitySet="Result">
+          <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+          <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
+          <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
+          <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
+          <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
+          <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+          <ScalarProperty Name="IsTied" ColumnName="IsTied" />
+          <ScalarProperty Name="CloseToNext" ColumnName="CloseToNext" />
+          <ScalarProperty Name="CloseToPrev" ColumnName="CloseToPrev" />
+          <ScalarProperty Name="Section" ColumnName="Section" />
+          <ScalarProperty Name="Rank" ColumnName="Rank" />
+          <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Ballots">
+      <EntityTypeMapping TypeName="TallyJ2Model.Ballot">
+        <MappingFragment StoreEntitySet="Ballot">
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
+          <ScalarProperty Name="TellerAtKeyboard" ColumnName="TellerAtKeyboard" />
+          <ScalarProperty Name="BallotNumAtComputer" ColumnName="BallotNumAtComputer" />
+          <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+          <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+          <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+          <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vResultInfoes">
+      <EntityTypeMapping TypeName="TallyJ2Model.vResultInfo">
+        <MappingFragment StoreEntitySet="vResultInfo">
+          <ScalarProperty Name="C_FakeRowId" ColumnName="_FakeRowId" />
+          <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+          <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
+          <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+          <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
+          <ScalarProperty Name="IsTied" ColumnName="IsTied" />
+          <ScalarProperty Name="PersonName" ColumnName="PersonName" />
+          <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
+          <ScalarProperty Name="Rank" ColumnName="Rank" />
+          <ScalarProperty Name="Section" ColumnName="Section" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vLocationInfoes">
+      <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
+        <MappingFragment StoreEntitySet="vLocationInfo">
+          <ScalarProperty Name="SortOrder2" ColumnName="SortOrder2" />
+          <ScalarProperty Name="TellerName" ColumnName="TellerName" />
+          <ScalarProperty Name="LastContact" ColumnName="LastContact" />
+          <ScalarProperty Name="Ballots" ColumnName="Ballots" />
+          <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
+          <ScalarProperty Name="Lat" ColumnName="Lat" />
+          <ScalarProperty Name="Long" ColumnName="Long" />
+          <ScalarProperty Name="ContactInfo" ColumnName="ContactInfo" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Votes">
+      <EntityTypeMapping TypeName="TallyJ2Model.Vote">
+        <MappingFragment StoreEntitySet="Vote">
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
+          <ScalarProperty Name="InvalidReasonGuid" ColumnName="InvalidReasonGuid" />
+          <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+          <ScalarProperty Name="PersonRowVersion" ColumnName="PersonRowVersion" />
+          <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+          <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
+          <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vVoteInfoes">
+      <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
+        <MappingFragment StoreEntitySet="vVoteInfo">
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
+          <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+          <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+          <ScalarProperty Name="BallotStatusCode" ColumnName="BallotStatusCode" />
+          <ScalarProperty Name="BallotId" ColumnName="BallotId" />
+          <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+          <ScalarProperty Name="ResultId" ColumnName="ResultId" />
+          <ScalarProperty Name="PersonIneligibleReasonDesc" ColumnName="PersonIneligibleReasonDesc" />
+          <ScalarProperty Name="PersonIneligibleReasonId" ColumnName="PersonIneligibleReasonId" />
+          <ScalarProperty Name="PersonIneligibleReasonGuid" ColumnName="PersonIneligibleReasonGuid" />
+          <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
+          <ScalarProperty Name="PersonFullName" ColumnName="PersonFullName" />
+          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+          <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+          <ScalarProperty Name="PersonRowVersion" ColumnName="PersonRowVersion" />
+          <ScalarProperty Name="PersonRowVersionInVote" ColumnName="PersonRowVersionInVote" />
+          <ScalarProperty Name="VoteInvalidReasonDesc" ColumnName="VoteInvalidReasonDesc" />
+          <ScalarProperty Name="VoteInvalidReasonId" ColumnName="VoteInvalidReasonId" />
+          <ScalarProperty Name="VoteInvalidReasonGuid" ColumnName="VoteInvalidReasonGuid" />
+          <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
+          <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
+          <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
+          <ScalarProperty Name="VoteId" ColumnName="VoteId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vBallotInfoes">
+      <EntityTypeMapping TypeName="TallyJ2Model.vBallotInfo">
+        <MappingFragment StoreEntitySet="vBallotInfo">
+          <ScalarProperty Name="LocationSortOrder" ColumnName="LocationSortOrder" />
+          <ScalarProperty Name="RowVersionInt" ColumnName="RowVersionInt" />
+          <ScalarProperty Name="TellerAssistingName" ColumnName="TellerAssistingName" />
+          <ScalarProperty Name="TellerAtKeyboardName" ColumnName="TellerAtKeyboardName" />
+          <ScalarProperty Name="LocationName" ColumnName="LocationName" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+          <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
+          <ScalarProperty Name="TellerAtKeyboard" ColumnName="TellerAtKeyboard" />
+          <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+          <ScalarProperty Name="BallotNumAtComputer" ColumnName="BallotNumAtComputer" />
+          <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
+          <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+          <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+          <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

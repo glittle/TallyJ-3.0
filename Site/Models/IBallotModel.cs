@@ -6,17 +6,20 @@ namespace TallyJ.Models
 {
   public interface IBallotModel
   {
+    /// <param name="b"></param>
+    /// <param name="createIfNeeded"></param>
     /// <Summary>Current Ballot... could be null</Summary>
-    Ballot GetCurrentBallot();
+    vBallotInfo GetCurrentBallotInfo(bool createIfNeeded);
 
     void SetAsCurrentBallot(int ballotId);
 
-    Ballot CreateBallot();
     int NextBallotNumAtComputer();
-    string CurrentVotesJson();
+    string CurrentBallotJsonString();
     IEnumerable<object> CurrentVotes();
     JsonResult SaveVote(int personId, int voteId, int count, int invalid);
     JsonResult DeleteVote(int vid);
-    string InvalidReasonsJson();
+    string InvalidReasonsJsonString();
+    string CurrentBallotsJsonString();
+    JsonResult SwitchToBallotJson(int ballotId);
   }
 }

@@ -34,11 +34,19 @@ tr.Tied {
 }
 
 #chart {
-    float: left;
+    float: right;
     width: 340px;
     height: 500px;
     margin-left: 10px;
 }
+table.Main, table#invalids, table#totalCounts {
+    float: left;
+    clear: left;
+}
 table.Main, table#invalids {
     display: none;
+}
+table caption {
+    font-weight: bold;
+    margin-top: 25px;
 }

@@ -51,13 +51,23 @@ namespace TallyJ.Models
     {
       var computer = UserSession.CurrentComputer ?? CreateComputerRecordForMe();
 
+      Db.Computers.Attach(computer);
+
       computer.ElectionGuid = electionGuid;
       computer.LocationGuid = null;
       SessionKey.CurrentLocation.SetInSession<Location>(null);
 
       computer.ComputerCode = DetermineNextFreeComputerCode(
-        Db.Computers.Where(c => c.ElectionGuid == electionGuid).OrderBy(c => c.ComputerCode).Select(
-          c => c.ComputerCode));
+        Db.Computers
+          .Where(c => c.ElectionGuid == electionGuid)
+          .Select(c => c.ComputerCode)
+          .Union(Db.vBallotInfoes
+                   .Where(b => b.ElectionGuid == electionGuid)
+                   .Select(b => b.ComputerCode)
+          )
+          .Distinct()
+          .OrderBy(s => s)
+          .ToList());
 
       SessionKey.CurrentComputer.SetInSession(computer);
 
@@ -68,7 +78,7 @@ namespace TallyJ.Models
     public bool AddCurrentComputerIntoLocation(int id)
     {
       var location =
-        new ElectionModel().LocationsForCurrentElection.SingleOrDefault(
+        new LocationModel().LocationsForCurrentElection.SingleOrDefault(
           l => l.C_RowId == id);
 
       if (location == null)
@@ -81,6 +91,7 @@ namespace TallyJ.Models
 
       Db.Computers.Attach(computer);
       computer.LocationGuid = location.LocationGuid;
+      computer.LastContact = DateTime.Now;
       Db.SaveChanges();
 
       SessionKey.CurrentLocation.SetInSession(location);
@@ -147,14 +158,15 @@ namespace TallyJ.Models
 
     public bool ProcessPulse()
     {
-      var computer = Db.Computers.SingleOrDefault(c => c.C_RowId == UserSession.ComputerRowId);
-
+      var computer = UserSession.CurrentComputer;
       if (computer == null)
       {
         return false;
       }
+      Db.Computers.Attach(computer);
 
       computer.LastContact = DateTime.Now;
+
       Db.SaveChanges();
 
       if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
