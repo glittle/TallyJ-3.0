@@ -8,6 +8,7 @@
     ContextItems.AddJavascriptForPage("url", "peoplePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(Model.NumberOfPeople));
+    ContextItems.AddJavascriptForPage("rules", "peoplePage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="float-left">
@@ -15,6 +16,7 @@
     </span>
     <ul id="nameList">
     </ul>
+    <button id="txtAddNew" type="button">Add New Person</button>
 </div>
 <div id="editPanel">
     <input type="hidden" data-name="C_RowId" />

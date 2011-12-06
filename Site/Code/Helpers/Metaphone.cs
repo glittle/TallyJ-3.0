@@ -30,14 +30,14 @@ using System.Text;
 
 namespace TallyJ.Code.Helpers
 {
-  /// <summary>
-  /// DoubleMetaphone string extension
-  /// </summary>
-  /// <remarks>
-  /// Original C++ implementation:
-  ///		"Double Metaphone (c) 1998, 1999 by Lawrence Philips"
-  ///		http://www.ddj.com/cpp/184401251?pgno=1
-  /// </remarks>
+  ///<summary>
+  ///    DoubleMetaphone string extension
+  ///</summary>
+  ///<remarks>
+  ///    Original C++ implementation:
+  ///    "Double Metaphone (c) 1998, 1999 by Lawrence Philips"
+  ///    http://www.ddj.com/cpp/184401251?pgno=1
+  ///</remarks>
   //[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Metaphone")]
   public static class DoubleMetaphoneStringExtension
   {
@@ -51,6 +51,16 @@ namespace TallyJ.Code.Helpers
         return "";
       }
 
+      var words = self.Split(new[] {',', '-', '\'', '"', ' ', '.', '(', ')', '[', ']'},
+                             StringSplitOptions.RemoveEmptyEntries);
+      return words.Select(s => s.Trim())
+        .Where(s => s.HasContent())
+        .Select(s => s.GenerateDoubleMetaphoneInternal())
+        .JoinedAsString(" ", true);
+    }
+
+    private static string GenerateDoubleMetaphoneInternal(this string self)
+    {
       var metaphoneData = new MetaphoneData();
       var current = 0;
 
@@ -913,18 +923,18 @@ namespace TallyJ.Code.Helpers
     }
 
 
-    static bool IsVowel(this char self)
+    private static bool IsVowel(this char self)
     {
       return (self == 'A') || (self == 'E') || (self == 'I') || (self == 'O') || (self == 'U') || (self == 'Y');
     }
 
 
-    static bool StartsWith(this string self, StringComparison comparison, params string[] strings)
+    private static bool StartsWith(this string self, StringComparison comparison, params string[] strings)
     {
       return strings.Any(str => self.StartsWith(str, comparison));
     }
 
-    static bool StringAt(this string self, int startIndex, params string[] strings)
+    private static bool StringAt(this string self, int startIndex, params string[] strings)
     {
       if (startIndex < 0)
       {
@@ -936,14 +946,14 @@ namespace TallyJ.Code.Helpers
 
     #region Nested type: MetaphoneData
 
-    class MetaphoneData
+    private class MetaphoneData
     {
-      readonly StringBuilder _primary = new StringBuilder(5);
-      readonly StringBuilder _secondary = new StringBuilder(5);
+      private readonly StringBuilder _primary = new StringBuilder(5);
+      private readonly StringBuilder _secondary = new StringBuilder(5);
 
       #region Properties
 
-      bool Alternative { get; set; }
+      private bool Alternative { get; set; }
 
       internal int PrimaryLength
       {

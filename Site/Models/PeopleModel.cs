@@ -116,17 +116,35 @@ namespace TallyJ.Models
 
     public JsonResult SavePerson(Person personFromInput)
     {
+      Guid currentElectionGuid = UserSession.CurrentElectionGuid;
+
       var savedPerson =
-        Db.People.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == UserSession.CurrentElectionGuid);
+        Db.People.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == currentElectionGuid);
+
       if (savedPerson == null)
       {
-        return new
-                 {
-                   Status = "Unknown ID"
-                 }.AsJsonResult();
+        if (personFromInput.C_RowId != -1)
+        {
+          return new
+                   {
+                     Status = "Unknown ID"
+                   }.AsJsonResult();
+        }
+        
+        savedPerson = new Person
+                        {
+                          PersonGuid = Guid.NewGuid(),
+                          ElectionGuid = currentElectionGuid
+                        };
+        Db.People.Add(savedPerson);
       }
 
-      var editableFields = new 
+      if (personFromInput.IneligibleReasonGuid == Guid.Empty)
+      {
+        personFromInput.IneligibleReasonGuid = null;
+      }
+
+      var editableFields = new
                              {
                                personFromInput.AgeGroup,
                                personFromInput.BahaiId,
@@ -140,13 +158,7 @@ namespace TallyJ.Models
                                personFromInput.OtherNames
                              }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
-      if (personFromInput.IneligibleReasonGuid == Guid.Empty)
-      {
-        personFromInput.IneligibleReasonGuid = null;
-      }
-
       var changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields);
-
 
       if (changed)
       {

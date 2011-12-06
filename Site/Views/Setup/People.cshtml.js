@@ -23,13 +23,19 @@ var PeoplePage = function () {
             local.nameList.append('<li>...no matches found...</li>');
         }
         else {
+            local.rowSelected = 0;
             if (info.MoreFound && local.lastSearch) {
-                local.nameList.append('<li>...</li>');
+                local.nameList.append('<li>...more than 9 matched...</li>');
             }
+            $.each(local.People, function (i, item) {
+                if (item.BestMatch) {
+                    local.rowSelected = i;
+                }
+            });
         }
         local.actionTag.removeClass('searching');
         local.inputField.removeClass('searching');
-        local.nameList.children().eq(local.rowSelected = info.DefaultTo).addClass('selected');
+        local.nameList.children().eq(local.rowSelected).addClass('selected');
     };
     var moveSelected = function (delta) {
         var children = local.nameList.children();
@@ -59,6 +65,16 @@ var PeoplePage = function () {
         CallAjaxHandler(publicInterface.peopleUrl + '/GetDetail', { id: personId }, showPersonDetail);
     };
 
+    var addNewPerson = function () {
+        showPersonDetail({
+            Person: {
+                C_RowId: -1,
+                CanVote: publicInterface.defaultRules.CanVote == 'A',
+                CanReceiveVotes: publicInterface.defaultRules.CanReceive == 'A'
+            }
+        });
+    };
+
     var showPersonDetail = function (info) {
         applyValues(info.Person);
         ResetStatusDisplay();
@@ -71,7 +87,7 @@ var PeoplePage = function () {
             return;
         };
 
-        panel.find(':input["data-name"]').each(function () {
+        panel.find(':input[data-name]').each(function () {
             var input = $(this);
             var value = person[input.data('name')] || '';
             switch (input.attr('type')) {
@@ -80,33 +96,46 @@ var PeoplePage = function () {
                     break;
                 default:
                     input.val(value);
-
                     break;
             }
         });
 
-        panel.fadeIn();
+        //TODO...
+        //        if (publicInterface.defaultRules.CanVoteLocked) {
+        //            $('[data-name="CanVote"]').prop('enabled', false).propertyIsEnumerable('checked', publicInterface.defaultRules.CanVote=='A');
+        //        }
+        //        if (publicInterface.defaultRules.CanReceiveLocked) {
+        //            $('[data-name="CanReceiveVote"]').prop('enabled', false).propertyIsEnumerable('checked', publicInterface.defaultRules.CanReceive=='A');
+        //        }
 
-        //TODO: enhance by applying logic
-        //        if (person.whoCanVote == 'A') {
-        //        }
-        //        if (person.whoCanVote == 'A') {
-        //        }
+        panel.fadeIn();
+        panel.find('[data-name="FirstName"]').focus();
     };
 
     var saveChanges = function () {
         var form = {};
-
-        $(':input["data-name"]').each(function () {
+        $(':input[data-name]').each(function () {
             var input = $(this);
-            form[input.data('name')] = input.val();
+            var value;
+            switch (input.attr('type')) {
+                case 'checkbox':
+                    value = input.prop('checked');
+                    break;
+                default:
+                    value = input.val();
+                    break;
+            }
+            form[input.data('name')] = value;
         });
 
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
             if (info.Person) {
                 applyValues(info.Person);
-                local.peopleHelper.SearchNames($('#txtSearch').val(), onNamesReady, false);
+                var searchText = $('#txtSearch').val();
+                if (searchText) {
+                    local.peopleHelper.SearchNames(searchText, onNamesReady, false);
+                }
             }
             ShowStatusDisplay(info.Status, 0, null, false, true);
         });
@@ -183,11 +212,13 @@ var PeoplePage = function () {
         local.nameList = $('#nameList');
         $('#nameList li').live('click', nameClick).focus();
         $('#btnSave').live('click', saveChanges);
+        $('#txtAddNew').live('click', addNewPerson);
         resetSearch();
     };
 
     var publicInterface = {
         peopleUrl: '',
+        defaultRules: null,
         namesOnFile: 0,
         PreparePage: preparePage
     };

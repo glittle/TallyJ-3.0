@@ -26,18 +26,22 @@
   height: 1em;
   display: inline-block;
 }
-span.delaying {
+span.ZZdelaying {
   background-color: #f8f541;
 }
-span.searching {
+span.ZZsearching {
   background-color: #c1f1b4;
 }
-input.delaying {
-  border-color: #f8f541;
+input.delaying
+{
+    background-color: #fffebf;
 }
-input.searching {
-  border-color: #c1f1b4;
+input.searching
+{
+    background-color: #ffe8e2;
 }
+
+
 #editPanel {
     float: left;
     margin-left: 20px;
