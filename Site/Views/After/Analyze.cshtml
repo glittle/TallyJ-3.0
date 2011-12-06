@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Session
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Session
 @model ResultsModel
 @{
     ViewBag.Title = "Election Analysis";
@@ -12,22 +13,30 @@
 <script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
 <script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
 <button type="button" id="btnRefesh">
-    Refresh</button>
+    Refresh Analysis</button>
+<div style="padding-bottom: 15px;">
+    Election Status:
+  <select id="ddlElectionStatus">
+    <option value="">Please select...</option>
+    @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
+  </select>
+  <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")> <label for="chkShowAll">Present "full report" with all votes?</label>
+</div>
 <div id="chart">
 </div>
 <table class="Main">
     <caption>
-        Results</caption>
+        Full Voting Results</caption>
     <thead>
         <tr>
+            <th>
+                Rank
+            </th>
             <th>
                 Person
             </th>
             <th>
                 Votes
-            </th>
-            <th>
-                Rank
             </th>
             <th>
                 Comments
@@ -36,14 +45,14 @@
     </thead>
     <tbody id="mainBody">
         <tr class="{ClassName}">
-            <th>
-                {PersonName}
-            </th>
-            <td>
-                {VoteCount}
-            </td>
             <td>
                 {Rank}
+            </td>
+            <td class="Left">
+                {PersonName}
+            </td>
+            <td>
+                {VoteCount}
             </td>
             <td>
                 {Comments}
@@ -69,24 +78,11 @@
 </table>
 <table id="invalids">
     <caption>
-        Ballots Requiring Attention</caption>
-    <thead>
-        <tr>
-            <td>
-                Ballot
-            </td>
-            <td>
-                Vote Line
-            </td>
-        </tr>
-    </thead>
+        Ballots Requiring Review</caption>
     <tbody id="invalidsBody">
         <tr>
             <td>
                 {Ballot}
-            </td>
-            <td>
-                {Link}
             </td>
         </tr>
     </tbody>

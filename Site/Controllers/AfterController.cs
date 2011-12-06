@@ -52,6 +52,22 @@ namespace TallyJ.Controllers
 
       return resultsModel.CurrentResults;
     }
+
+    public JsonResult GetReport()
+    {
+      var resultsModel = new ResultsModel();
+
+      return resultsModel.FinalResults;
+    }
+
+    public JsonResult UpdateElectionStatus(string status)
+    {
+      return new ElectionModel().SetTallyStatusJson(status);
+    }
+    public JsonResult UpdateElectionShowAll(bool showAll)
+    {
+      return new ElectionModel().UpdateElectionShowAllJson(showAll);
+    }
   }
 
 }

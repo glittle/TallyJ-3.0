@@ -1,2 +1,100 @@
-﻿@model object
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Session
+@model ResultsModel
+@{
+    ViewBag.Title = "Election Results";
+    ViewBag.Message = "Celebrate the election";
 
+    ContextItems.AddJavascriptForPage("pageUrl", "presenterPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+}
+<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
+<script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
+<button type="button" id="btnRefesh">
+    Refresh</button>
+<div id="Wait">
+    Election Status: <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
+</div>
+<div id="Results" class="Hidden">
+    <div id="chart">
+    </div>
+    <table class="Main">
+        <caption>
+            Voting Results</caption>
+        <thead>
+            <tr>
+                <th>
+                    Rank
+                </th>
+                <th>
+                    Person
+                </th>
+                <th>
+                    Votes
+                </th>
+                <th>
+                    Comments
+                </th>
+            </tr>
+        </thead>
+        <tbody id="mainBody">
+            <tr class="{ClassName}">
+                <td>
+                    {Rank}
+                </td>
+                <td class="Left">
+                    {PersonName}
+                </td>
+                <td>
+                    {VoteCount}
+                </td>
+                <td>
+                    {Comments}
+                </td>
+            </tr>
+        </tbody>
+        <tfoot id="mainFoot">
+            <tr class="{ClassName}">
+                <th>
+                    {PersonName}
+                </th>
+                <td>
+                    {VoteCount}
+                </td>
+                <td>
+                    {Rank}
+                </td>
+                <td>
+                    {Comments}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <table id="totalCounts">
+        <caption>
+            Total Counts</caption>
+        <tr>
+            <td>
+                Total Votes Recorded
+            </td>
+            <td>
+                <span data-name="TotalVotes"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Total Invalid Ballots
+            </td>
+            <td>
+                <span data-name="SpoiledBallots"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Total Invalid Votes
+            </td>
+            <td>
+                <span data-name="SpoiledVotes"></span>
+            </td>
+        </tr>
+    </table>
+</div>

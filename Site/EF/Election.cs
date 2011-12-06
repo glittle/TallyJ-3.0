@@ -34,5 +34,6 @@ namespace TallyJ.EF
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
         public byte[] C_RowVersion { get; set; }
         public Nullable<bool> IsSingleNameElection { get; set; }
+        public Nullable<bool> ShowFullReport { get; set; }
     }
 }

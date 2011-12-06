@@ -4,7 +4,6 @@
     <EntitySet Name="C_Log" EntityType="TallyJ2Model.C_Log" />
     <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
     <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />
-    <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
     <FunctionImport Name="CloneElection" ReturnType="Collection(TallyJ2Model.CloneElection_Result)">
       <Parameter Name="SourceElection" Mode="In" Type="Guid" />
       <Parameter Name="ByLoginId" Mode="In" Type="String" />
@@ -27,6 +26,7 @@
     <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
     <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
     <EntitySet Name="vBallotInfoes" EntityType="TallyJ2Model.vBallotInfo" />
+    <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
   </EntityContainer>
   <EntityType Name="C_Log">
     <Key>
@@ -59,20 +59,6 @@
     <Property Name="ReasonGroup" Type="String" Nullable="false" MaxLength="30" Unicode="true" FixedLength="false" />
     <Property Name="ReasonDescription" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
     <Property Name="SortOrder" Type="Int32" />
-  </EntityType>
-  <EntityType Name="ResultSummary">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-    <Property Name="ResultType" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="true" />
-    <Property Name="UseOnReports" Type="Boolean" />
-    <Property Name="NumVoters" Type="Int32" />
-    <Property Name="NumEligible" Type="Int32" />
-    <Property Name="MailedInBallots" Type="Int32" />
-    <Property Name="DroppedOffBallots" Type="Int32" />
-    <Property Name="InPersonBallots" Type="Int32" />
   </EntityType>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -178,6 +164,7 @@
     <Property Type="DateTime" Name="ListedForPublicAsOf" />
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Boolean" Name="IsSingleNameElection" />
+    <Property Type="Boolean" Name="ShowFullReport" />
   </EntityType>
   <EntityType Name="Person">
     <Key>
@@ -365,5 +352,24 @@
     <Property Type="Int32" Name="LocationSortOrder" />
     <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Int32" Name="LocationId" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ResultSummary">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="ResultType" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Type="Boolean" Name="UseOnReports" />
+    <Property Type="Int32" Name="NumVoters" />
+    <Property Type="Int32" Name="NumEligibleToVote" />
+    <Property Type="Int32" Name="MailedInBallots" />
+    <Property Type="Int32" Name="DroppedOffBallots" />
+    <Property Type="Int32" Name="InPersonBallots" />
+    <Property Type="Int32" Name="SpoiledBallots" />
+    <Property Type="Int32" Name="SpoiledVotes" />
+    <Property Type="Int32" Name="TotalVotes" />
+    <Property Type="Int32" Name="BallotsReceived" />
+    <Property Type="Int32" Name="BallotsNeedingReview" />
   </EntityType>
 </Schema>

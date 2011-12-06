@@ -13,11 +13,6 @@ namespace TallyJ.Models
     /// <Summary>Current Results records</Summary>
     ResultSummary ResultSummaryAuto { get; }
 
-    int TotalInputsNeedingReview { get; }
-    int TotalInvalidVotes { get; }
-    int TotalVotes { get; }
-    int TotalInvalidBallots { get; }
-
     /// <Summary>Current VoteInfo records</Summary>
     List<vVoteInfo> VoteInfos { get; }
   }

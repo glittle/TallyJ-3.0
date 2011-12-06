@@ -11,6 +11,22 @@ namespace Tests.BusinessTests
   [TestClass]
   public class ResultAnalysisTests
   {
+    private List<Person> SamplePeople
+    {
+      get
+      {
+        return new List<Person>
+                 {
+                   new Person{ PersonGuid=Guid.NewGuid()},
+                   new Person{ PersonGuid=Guid.NewGuid()},
+                   new Person{ PersonGuid=Guid.NewGuid()},
+                   new Person{ PersonGuid=Guid.NewGuid()},
+                   new Person{ PersonGuid=Guid.NewGuid()},
+                 };
+      }
+    }
+
+
     [TestMethod]
     public void SingleNameElection_1_person()
     {
@@ -41,7 +57,7 @@ namespace Tests.BusinessTests
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -82,7 +98,7 @@ namespace Tests.BusinessTests
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -129,7 +145,7 @@ namespace Tests.BusinessTests
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -179,7 +195,7 @@ namespace Tests.BusinessTests
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -247,7 +263,7 @@ namespace Tests.BusinessTests
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges);
+                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -255,10 +271,11 @@ namespace Tests.BusinessTests
 
       results.Count.ShouldEqual(3);
 
-      model.TotalInputsNeedingReview.ShouldEqual(1);
-      model.TotalVotes.ShouldEqual(125);
-      model.TotalInvalidBallots.ShouldEqual(1);
-      model.TotalInvalidVotes.ShouldEqual(58);
+      var summary = model.ResultSummaryAuto;
+      summary.TotalVotes.ShouldEqual(125);
+      summary.SpoiledBallots.ShouldEqual(1);
+      summary.SpoiledVotes.ShouldEqual(58);
+      summary.BallotsNeedingReview.ShouldEqual(1);
 
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);

@@ -9,26 +9,27 @@ namespace TallyJ.Models
 {
   public abstract class ElectionAnalyzerCore : DataConnectedModel, IElectionAnalyzer
   {
+    private readonly Func<Result, Result> _addResult;
     private readonly Func<Result, Result> _deleteResult;
+    private readonly Func<int> _saveChanges;
     private Election _election;
+    private List<Person> _people;
     private ResultSummary _resultSummary;
     private List<Result> _results;
     private List<vVoteInfo> _voteinfos;
-    private readonly Func<Result, Result> _addResult;
-    private Func<int> _saveChanges;
 
     public ElectionAnalyzerCore()
     {
-      TotalInputsNeedingReview = -1;
     }
 
     public ElectionAnalyzerCore(Election election, ResultSummary resultSummary, List<Result> results,
-                                List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult, Func<Result, Result> addResult, Func<int> saveChanges)
+                                List<Person> people, List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult,
+                                Func<Result, Result> addResult, Func<int> saveChanges)
     {
-      TotalInputsNeedingReview = -1;
       _election = election;
       _resultSummary = resultSummary;
       _results = results;
+      _people = people;
       _voteinfos = voteinfos;
       _deleteResult = deleteResult;
       _addResult = addResult;
@@ -40,18 +41,36 @@ namespace TallyJ.Models
     {
       get { return _deleteResult ?? Db.Results.Remove; }
     }
-    
+
     /// <Summary>Remove this result from the datastore</Summary>
     protected Func<int> SaveChanges
     {
       get { return _saveChanges ?? Db.SaveChanges; }
     }
-    
+
     /// <Summary>Remove this result from the datastore</Summary>
     protected Func<Result, Result> AddResult
     {
       get { return _addResult ?? Db.Results.Add; }
     }
+
+    /// <Summary>Current Results records</Summary>
+    public List<Person> People
+    {
+      get
+      {
+        return _people ?? (_people = Db.People
+                                       .Where(p => p.ElectionGuid == CurrentElection.ElectionGuid)
+                                       .ToList());
+      }
+    }
+
+    internal Election CurrentElection
+    {
+      get { return _election ?? (_election = UserSession.CurrentElection); }
+    }
+
+    #region IElectionAnalyzer Members
 
     /// <Summary>Current Results records</Summary>
     public List<Result> Results
@@ -64,21 +83,29 @@ namespace TallyJ.Models
       }
     }
 
-    internal Election CurrentElection
-    {
-      get { return _election ?? (_election = UserSession.CurrentElection); }
-    }
-
     /// <Summary>Current Results records</Summary>
     public ResultSummary ResultSummaryAuto
     {
       get
       {
-        return _resultSummary ?? (_resultSummary = Db.ResultSummaries
-                                                     .SingleOrDefault(
-                                                       r => r.ElectionGuid == CurrentElection.ElectionGuid) ??
-                                                   new ResultSummary
-                                                     {ElectionGuid = CurrentElection.ElectionGuid, ResultType = "A"});
+        if (_resultSummary != null)
+        {
+          return _resultSummary;
+        }
+
+        _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == CurrentElection.ElectionGuid);
+
+        if (_resultSummary == null)
+        {
+          _resultSummary = new ResultSummary
+                             {
+                               ElectionGuid = CurrentElection.ElectionGuid,
+                               ResultType = "A"
+                             };
+          Db.ResultSummaries.Add(_resultSummary);
+        }
+
+        return _resultSummary;
       }
     }
 
@@ -93,14 +120,6 @@ namespace TallyJ.Models
                                              .ToList());
       }
     }
-
-    public virtual int TotalInputsNeedingReview { get; protected set; }
-
-    public virtual int TotalInvalidVotes { get; protected set; }
-    public virtual int TotalInvalidBallots { get; protected set; }
-    public virtual int TotalVotes { get; protected set; }
-
-    #region IElectionAnalyzer Members
 
     public virtual void GenerateResults()
     {
@@ -117,18 +136,18 @@ namespace TallyJ.Models
 
     public static bool NeedReview(vVoteInfo voteInfo)
     {
-      return voteInfo.PersonRowVersion != voteInfo.PersonRowVersionInVote 
-           || voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Review;
+      return voteInfo.PersonRowVersion != voteInfo.PersonRowVersionInVote
+             || voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Review;
     }
 
     /// <Summary>Is this Vote valid?</Summary>
     public static bool IsValid(vVoteInfo voteInfo)
     {
-      return  !voteInfo.VoteInvalidReasonGuid.HasValue
-           && !voteInfo.PersonIneligibleReasonGuid.HasValue
-           && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
-           && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
-           && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
+      return !voteInfo.VoteInvalidReasonGuid.HasValue
+             && !voteInfo.PersonIneligibleReasonGuid.HasValue
+             && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
+             && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
+             && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
     }
 
 
@@ -150,7 +169,7 @@ namespace TallyJ.Models
         result.Rank = rank;
 
         DetermineSection(result, election, rank);
-        
+
         if (result.Section == Section.Extra)
         {
           if (rankInExtra == 0 || lastResult.VoteCount != result.VoteCount)

@@ -174,6 +174,7 @@
     <Property Name="CanReceive" Type="varchar" MaxLength="1" />
     <Property Name="LastEnvNum" Type="int" />
     <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="ShowFullReport" Type="bit" />
     <Property Name="LinkedElectionGuid" Type="uniqueidentifier" />
     <Property Name="LinkedElectionKind" Type="varchar" MaxLength="2" />
     <Property Name="OwnerLoginId" Type="varchar" MaxLength="50" />
@@ -281,10 +282,15 @@
     <Property Name="ResultType" Type="char" Nullable="false" MaxLength="1" />
     <Property Name="UseOnReports" Type="bit" />
     <Property Name="NumVoters" Type="int" />
-    <Property Name="NumEligible" Type="int" />
+    <Property Name="NumEligibleToVote" Type="int" />
     <Property Name="MailedInBallots" Type="int" />
     <Property Name="DroppedOffBallots" Type="int" />
     <Property Name="InPersonBallots" Type="int" />
+    <Property Name="SpoiledBallots" Type="int" />
+    <Property Name="SpoiledVotes" Type="int" />
+    <Property Name="TotalVotes" Type="int" />
+    <Property Name="BallotsReceived" Type="int" />
+    <Property Name="BallotsNeedingReview" Type="int" />
   </EntityType>
   <EntityType Name="Teller">
     <Key>

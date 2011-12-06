@@ -364,5 +364,43 @@ namespace TallyJ.Models
                  Success = true
                }.AsJsonResult();
     }
+
+    public void SetTallyStatus(string status)
+    {
+      var election = UserSession.CurrentElection;
+      if (election.TallyStatus != status)
+      {
+        Db.Elections.Attach(election);
+
+        election.TallyStatus = status;
+
+        Db.SaveChanges();
+      }
+    }
+
+    public JsonResult SetTallyStatusJson(string status)
+    {
+      SetTallyStatus(status);
+
+      return new
+               {
+                 Saved = true
+               }.AsJsonResult();
+    }
+
+    public JsonResult UpdateElectionShowAllJson(bool showFullReport)
+    {
+      var election = UserSession.CurrentElection;
+      if (election.ShowFullReport != showFullReport)
+      {
+        Db.Elections.Attach(election);
+
+        election.ShowFullReport = showFullReport;
+
+        Db.SaveChanges();
+      }
+
+      return new {Saved = true}.AsJsonResult();
+    }
   }
 }

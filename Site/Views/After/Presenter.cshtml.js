@@ -2,35 +2,19 @@
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
 /// <reference path="../../Scripts/highcharts.js" />
 
-var AnalyzePage = function () {
+var PresenterPage = function () {
     var settings = {
         rowTemplate: '',
         footTemplate: '',
         invalidsRowTemplate: '',
+        refreshTimeout: null,
         chart: null
     };
 
     var preparePage = function () {
 
         $('#btnRefesh').click(function () {
-            runAnalysis(false);
-        });
-        $('#chkShowAll').on('click change', function () {
-            ShowStatusDisplay('Updating...', 0);
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionShowAll', {
-                showAll: $(this).prop('checked')
-            }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
-            });
-        });
-
-        $('#ddlElectionStatus').on('change', function () {
-            ShowStatusDisplay('Updating...', 0);
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-                status: $(this).val()
-            }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
-            });
+            getReportData(false);
         });
 
         var tableBody = $('#mainBody');
@@ -41,49 +25,52 @@ var AnalyzePage = function () {
         settings.footTemplate = tFoot.html();
         tFoot.html('');
 
-        var invalidsBody = $('#invalidsBody');
-        settings.invalidsRowTemplate = invalidsBody.html();
-        invalidsBody.html('');
-
         setTimeout(function () {
-            runAnalysis(true);
+            getReportData(true);
         }, 0);
     };
 
-    var runAnalysis = function (firstLoad) {
-        ShowStatusDisplay('Analyzing ballots...', 0);
-
-        CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
+    var getReportData = function (firstLoad) {
+        ShowStatusDisplay('Getting results...', 0);
+        clearTimeout(settings.refreshTimeout);
+        CallAjaxHandler(publicInterface.controllerUrl + '/GetReport', null, showInfo, firstLoad);
     };
 
     var showInfo = function (info, firstLoad) {
         var votesTable = $('table.Main');
-        var invalidsTable = $('table#invalids');
-        var table;
 
         ResetStatusDisplay();
 
-        if (info.Votes) {
-            votesTable.show();
-            invalidsTable.hide();
-            table = votesTable;
+        // refresh again...
+        settings.refreshTimeout = setTimeout(function () {
+            getReportData();
+        }, 1000 * 60);
 
-            $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.Votes)));
+        if (info.Status != 'Report') {
+            $('#Results').hide();
+            $('#Wait').show();
+            $('#Status').text(info.StatusText);
+
+            return;
+        }
+
+        $('#Results').show();
+        $('#Wait').hide();
+
+        if (info.ReportVotes) {
+
+            votesTable.show();
+
+            $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.ReportVotes)));
 
             //TODO: add foot info
 
             setTimeout(function () {
                 $('#chart').show();
-                showChart(info.Votes);
+                showChart(info.ChartVotes);
             }, 100);
         }
         else {
-            table = invalidsTable;
-            votesTable.hide();
-            $('#chart').hide();
-            invalidsTable.show();
-
-            $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
         }
 
         $('#totalCounts').find('span[data-name]').each(function () {
@@ -91,17 +78,6 @@ var AnalyzePage = function () {
             var value = info[span.data('name')] || '';
             span.text(value);
         });
-
-        if (!firstLoad) {
-            table.animate({
-                opacity: 0.5
-            }, 100, function () {
-                table.animate({
-                    opacity: 1
-                }, 500);
-            });
-        }
-
 
     };
 
@@ -116,7 +92,7 @@ var AnalyzePage = function () {
 
         var getNames = function () {
             return $.map(info.slice(0, maxToShow), function (item, i) {
-                return i + 1;
+                return item.Rank;
             });
         };
 
@@ -127,7 +103,7 @@ var AnalyzePage = function () {
                 type: 'bar'
             },
             title: {
-                text: 'Votes'
+                text: 'Top Vote Counts'
             },
             legend: {
                 enabled: false
@@ -172,8 +148,8 @@ var AnalyzePage = function () {
     return publicInterface;
 };
 
-var analyzePage = AnalyzePage();
+var presenterPage = PresenterPage();
 
 $(function () {
-    analyzePage.PreparePage();
+    presenterPage.PreparePage();
 });

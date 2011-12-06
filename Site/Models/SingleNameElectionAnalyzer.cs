@@ -15,22 +15,29 @@ namespace TallyJ.Models
     public SingleNameElectionAnalyzer(Election election, ResultSummary resultSummary, List<Result> results,
                                       List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult,
                                       Func<Result, Result> addResult
-                                      , Func<int> saveChanges)
-      : base(election, resultSummary, results, voteinfos, deleteResult, addResult, saveChanges)
+                                      , Func<int> saveChanges, List<Person> people)
+      : base(election, resultSummary, results, people, voteinfos, deleteResult, addResult, saveChanges)
     {
     }
 
     public override void GenerateResults()
     {
-      TotalVotes = VoteInfos.Sum(vi=>vi.SingleNameElectionCount).AsInt();
+      ResultSummaryAuto.BallotsReceived
+        = ResultSummaryAuto.TotalVotes
+        = ResultSummaryAuto.NumVoters
+        = VoteInfos.Sum(vi => vi.SingleNameElectionCount).AsInt();
 
-      var invalidBallotGuids = VoteInfos.Where(vi => vi.BallotStatusCode != "Ok").Select(ib => ib.BallotGuid).Distinct().ToList();
+      var invalidBallotGuids =
+        VoteInfos.Where(vi => vi.BallotStatusCode != "Ok").Select(ib => ib.BallotGuid).Distinct().ToList();
 
-      TotalInvalidBallots = invalidBallotGuids.Count();
+      ResultSummaryAuto.SpoiledBallots = invalidBallotGuids.Count();
 
-      TotalInvalidVotes = VoteInfos.Where(vi=> !invalidBallotGuids.Contains(vi.BallotGuid) && IsNotValid(vi)).Sum(vi => vi.SingleNameElectionCount).AsInt();
+      ResultSummaryAuto.SpoiledVotes = VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && IsNotValid(vi)).Sum(
+          vi => vi.SingleNameElectionCount).AsInt();
 
-      TotalInputsNeedingReview = VoteInfos.Count(NeedReview);
+      ResultSummaryAuto.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBool());
+
+      ResultSummaryAuto.BallotsNeedingReview = VoteInfos.Count(NeedReview);
 
 
       // clear any existing results

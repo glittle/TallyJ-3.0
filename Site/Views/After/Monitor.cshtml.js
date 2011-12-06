@@ -17,6 +17,15 @@ var MonitorPage = function () {
 
         var desiredTime = GetFromStorage(storageKey.MonitorRefresh, 60);
 
+        $('#ddlElectionStatus').on('change', function () {
+            ShowStatusDisplay('Updating...', 0);
+            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
+                status: $(this).val()
+            }, function () {
+                ShowStatusDisplay('Updated', 0, 3000, false, true);
+            });
+        });
+
         $('#ddlRefresh').val(desiredTime).change(function () {
             $('#chkAutoRefresh').prop('checked', true);
             setAutoRefresh(true);

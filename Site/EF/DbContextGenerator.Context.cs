@@ -29,7 +29,6 @@ namespace TallyJ.EF
         public DbSet<C_Log> C_Log { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Reason> Reasons { get; set; }
-        public DbSet<ResultSummary> ResultSummaries { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
         public DbSet<Computer> Computers { get; set; }
@@ -44,6 +43,7 @@ namespace TallyJ.EF
         public DbSet<Vote> Votes { get; set; }
         public DbSet<vVoteInfo> vVoteInfoes { get; set; }
         public DbSet<vBallotInfo> vBallotInfoes { get; set; }
+        public DbSet<ResultSummary> ResultSummaries { get; set; }
     
         public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
         {

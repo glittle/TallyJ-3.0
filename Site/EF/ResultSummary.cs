@@ -19,9 +19,14 @@ namespace TallyJ.EF
         public string ResultType { get; set; }
         public Nullable<bool> UseOnReports { get; set; }
         public Nullable<int> NumVoters { get; set; }
-        public Nullable<int> NumEligible { get; set; }
+        public Nullable<int> NumEligibleToVote { get; set; }
         public Nullable<int> MailedInBallots { get; set; }
         public Nullable<int> DroppedOffBallots { get; set; }
         public Nullable<int> InPersonBallots { get; set; }
+        public Nullable<int> SpoiledBallots { get; set; }
+        public Nullable<int> SpoiledVotes { get; set; }
+        public Nullable<int> TotalVotes { get; set; }
+        public Nullable<int> BallotsReceived { get; set; }
+        public Nullable<int> BallotsNeedingReview { get; set; }
     }
 }

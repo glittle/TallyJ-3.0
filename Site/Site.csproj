@@ -130,6 +130,7 @@
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
     <Compile Include="Code\Enumerations\ElectionModeEnum.cs" />
+    <Compile Include="Code\Enumerations\ElectionTallyStatusEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionTypeEnum.cs" />
     <Compile Include="Code\Enumerations\EnumerationExt.cs" />
     <Compile Include="Code\Enumerations\IEnumeration.cs" />
@@ -187,11 +188,15 @@
     <Compile Include="EF\Location.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Result.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ResultSummary.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Teller.cs">
@@ -224,6 +229,7 @@
     <Compile Include="Models\ElectionAnalyzer.cs" />
     <Compile Include="Models\ElectionAnalyzerCore.cs" />
     <Compile Include="Models\ElectionRules.cs" />
+    <Compile Include="Models\Helpers.cs" />
     <Compile Include="Models\Helper\AgeGroup.cs" />
     <Compile Include="Models\Helper\InelligibleReason.cs" />
     <Compile Include="Models\IBallotModel.cs" />
@@ -253,9 +259,6 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Reason.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\ResultSummary.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
@@ -384,6 +387,8 @@
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Presenter.cshtml.css" />
+    <Content Include="Views\After\Presenter.cshtml.js" />
     <Content Include="Views\Ballots\BallotNormal.cshtml.css" />
     <Content Include="Views\Ballots\BallotNormal.cshtml.js" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
