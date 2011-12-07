@@ -27,14 +27,14 @@ namespace TallyJ.EF
         public string CanReceive { get; set; }
         public Nullable<int> LastEnvNum { get; set; }
         public string TallyStatus { get; set; }
+        public Nullable<bool> ShowFullReport { get; set; }
         public Nullable<System.Guid> LinkedElectionGuid { get; set; }
         public string LinkedElectionKind { get; set; }
         public string OwnerLoginId { get; set; }
         public string ElectionPasscode { get; set; }
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
-        public byte[] C_RowVersion { get; set; }
         public Nullable<bool> IsSingleNameElection { get; set; }
-        public Nullable<bool> ShowFullReport { get; set; }
+        public byte[] C_RowVersion { get; set; }
         public Nullable<bool> ListForPublic { get; set; }
     }
 }
