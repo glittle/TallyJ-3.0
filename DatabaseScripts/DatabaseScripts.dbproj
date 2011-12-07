@@ -161,5 +161,8 @@
     <NotInBuild Include="Scripts\Functions\HasMatch.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
+    <NotInBuild Include="Scripts\Views\vElectionListInfo.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
   </ItemGroup>
 </Project>

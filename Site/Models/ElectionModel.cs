@@ -403,12 +403,9 @@ namespace TallyJ.Models
       }
     }
 
-    public IQueryable<Election> VisibleElections()
+    public IQueryable<vElectionListInfo> VisibleElectionInfo()
     {
-      return Db.Elections.Where(e => e.ListForPublic.HasValue
-                                     && e.ListForPublic.Value
-                                     && !string.IsNullOrEmpty(e.ElectionPasscode)
-                                     && SqlFunctions.DateDiff("n", e.ListedForPublicAsOf, DateTime.Now) <= 5);
+      return Db.vElectionListInfoes.Where(e => SqlFunctions.DateDiff("n", e.ListedForPublicAsOf, DateTime.Now) <= 5);
     }
 
     public JsonResult SetTallyStatusJson(string status)

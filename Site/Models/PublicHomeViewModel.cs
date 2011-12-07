@@ -20,7 +20,7 @@ namespace TallyJ.Models
       {
         var model = new ElectionModel();
 
-        var dictionary = model.VisibleElections()
+        var dictionary = model.VisibleElectionInfo()
           .OrderBy(e => e.Name)
           .ToDictionary(e => e.C_RowId, e => e.Name);
 
