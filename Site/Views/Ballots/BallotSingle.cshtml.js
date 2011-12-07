@@ -19,7 +19,6 @@ var BallotPageFunc = function () {
         rowSelected: 0,
         lastBallotRowVersion: 0,
         searchResultTemplate: '<li id=P{Id}>{Name}</li>',
-        //ballotListTemplate: '<li id=B{Id}>{Location} {Code} - {StatusCode}</li>'
         ballotListTemplate: '<li id=B{Id}>{Location} (<span data-location={LocationId}>{TallyStatus}</span>) - {Code}</li>'
     };
     var preparePage = function () {
@@ -197,6 +196,12 @@ var BallotPageFunc = function () {
                 host.removeClass('Changedtrue').addClass('Changedfalse');
             }
 
+            if (!publicInterface.Location) {
+                location.href = location.href;
+                //TODO: use Ajax to reload the content
+                return;
+            }
+
             if (form.vid == 0) {
                 if (info.VoteId) {
                     host.data('vote-id', info.VoteId);
@@ -208,8 +213,8 @@ var BallotPageFunc = function () {
         });
     };
 
-    var deleteVote = function () {
-        var host = $(this).parent();
+    var deleteVote = function (ev) {
+        var host = $(ev.target).parent();
         var voteId = host.data('vote-id') || 0;
         var form = {
             vid: voteId
@@ -224,7 +229,8 @@ var BallotPageFunc = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteSingleNameVote', form, function (info) {
             if (info.Deleted) {
                 ShowStatusDisplay('Deleted', 0, 3000, false, true);
-                $('#votesList').html(site.templates.SingleVoteLine.filledWithEach(info.AllVotes));
+                //$('#votesList').html(site.templates.SingleVoteLine.filledWithEach(info.AllVotes));
+                host.remove();
             }
             else {
                 ShowStatusFailed(info.Message);

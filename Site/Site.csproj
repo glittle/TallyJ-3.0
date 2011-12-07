@@ -167,6 +167,7 @@
     <Compile Include="Controllers\BallotsController.cs" />
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
+    <Compile Include="Code\ForAuthenticatedTellerAttribute.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="Models\ResultsModel.cs" />
     <Compile Include="Models\SetupModel.cs" />
     <Compile Include="Models\SingleNameElectionAnalyzer.cs" />
+    <Compile Include="Models\TellerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

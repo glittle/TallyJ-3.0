@@ -5,6 +5,9 @@ var SetupIndexPage = function () {
     var cachedRules = {
         // temporary cache of rules, for the life of this page
     };
+    var settings = {
+        locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span></div>'
+    };
     var preparePage = function () {
 
         $('#ddlType').live('change keyup', startToAdjustByType);
@@ -13,6 +16,9 @@ var SetupIndexPage = function () {
         $('#btnResetPeople').live('click', resetVoteStatuses);
 
         $('#btnSave').live('click', saveChanges);
+        $('#btnAddLocation').live('click', addLocation);
+
+        $('#locationList').live('change', 'input', locationChanged);
 
         $("#txtDate").datepicker({
             dateFormat: 'd MM yy'
@@ -26,7 +32,9 @@ var SetupIndexPage = function () {
 
     var resetVoteStatuses = function () {
         ShowStatusDisplay('Updating...', 0);
-        CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null);
+        CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null, function () {
+            ShowStatusDisplay('Updated', 0, 3000, false, true);
+        });
     };
 
     var showLocations = function (locations) {
@@ -34,9 +42,60 @@ var SetupIndexPage = function () {
             $('#locationList').html('[None]');
             return;
         }
-        var template = '<div>{Name}</div>';
 
-        $('#locationList').html(template.filledWithEach(locations));
+        $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
+
+        setupLocationSortable();
+    };
+
+    var locationChanged = function (ev) {
+        var input = $(ev.target);
+        var form = {
+            id: input.data('id'),
+            text: input.val()
+        };
+        ShowStatusDisplay("Saving...");
+        CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
+            ShowStatusDisplay("Saved", 0, 3000, false, true);
+
+            if (info.Id != form.id) {
+                input.data('id', info.Id);
+            }
+        });
+    };
+
+    var setupLocationSortable = function () {
+        $('#locationList').sortable({
+            handle: '.ui-icon',
+            stop: orderChanged
+        });
+    };
+    var orderChanged = function (ev, ui) {
+        var ids = [];
+        $('#locationList input').each(function () {
+            var id = $(this).data('id');
+            if (+id < 1) {
+                // an item not saved yet!?
+            }
+            ids.push(id);
+        });
+        var form = {
+            ids: ids
+        };
+        ShowStatusDisplay("Saving...");
+        CallAjaxHandler(publicInterface.controllerUrl + '/SortLocations', form, function (info) {
+            ShowStatusDisplay("Saved", 0, 3000, false, true);
+        });
+    };
+
+    var addLocation = function () {
+        var location = {
+            C_RowId: -1
+        };
+        var line = $(settings.locationTemplate.filledWith(location));
+        line.appendTo('#locationList').find('input').focus();
+
+        setupLocationSortable();
     };
 
     var applyValues = function (election) {
@@ -44,14 +103,19 @@ var SetupIndexPage = function () {
             return;
         };
 
-        $(':input["data-name"]').each(function () {
+        $('.Demographics :input["data-name"]').each(function () {
             var input = $(this);
             var value = election[input.data('name')] || '';
-            if (input.attr('type') == 'date') {
+            switch (input.attr('type')) {
+            case 'date':
                 input.datepicker('setDate', ('' + value).parseJsonDate());
-            }
-            else {
+                break;
+            case 'checkbox':
+                input.prop('checked', value);
+                break;
+            default:
                 input.val(value);
+                break;
             }
         });
 
@@ -67,7 +131,16 @@ var SetupIndexPage = function () {
 
         $(':input["data-name"]').each(function () {
             var input = $(this);
-            form[input.data('name')] = input.val();
+            var value;
+            switch (input.attr('type')) {
+                case 'checkbox':
+                    value = input.prop('checked');
+                    break;
+                default:
+                    value = input.val();
+                    break;
+            }
+            form[input.data('name')] = value;
         });
 
         ShowStatusDisplay("Saving...");

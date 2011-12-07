@@ -36,7 +36,9 @@ namespace TallyJ.Controllers
 				if (Membership.ValidateUser(model.UserName, model.Password))
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-				  UserSession.ProcessLogin(model.UserName);
+				  UserSession.ProcessLogin();
+				  UserSession.IsKnownTeller = true;
+
 					return Json(new
 					{
 						success = true,
@@ -68,7 +70,9 @@ namespace TallyJ.Controllers
 			  if (Membership.ValidateUser(model.UserName, model.Password))
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-          UserSession.ProcessLogin(model.UserName);
+          UserSession.ProcessLogin();
+				  UserSession.IsKnownTeller = true;
+
           if (Url.IsLocalUrl(returnUrl))
 					{
 						return Redirect(returnUrl);

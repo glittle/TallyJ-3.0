@@ -35,5 +35,6 @@ namespace TallyJ.EF
         public byte[] C_RowVersion { get; set; }
         public Nullable<bool> IsSingleNameElection { get; set; }
         public Nullable<bool> ShowFullReport { get; set; }
+        public Nullable<bool> ListForPublic { get; set; }
     }
 }

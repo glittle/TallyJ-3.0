@@ -28,17 +28,20 @@ namespace TallyJ.Models
       const int max = 9;
 
       var matched = InnerSearch(nameToFind, max, true).Take(max + 1).ToList();
-      var toShow = matched.Select(x=>x).Take(max).ToList();
+      var toShow = matched.Select(x => x).Take(max).ToList();
 
       Guid topVote;
 
       if (includeMatches)
       {
         var guids = toShow.Select(p => p.PersonGuid).ToList();
-        
+
         topVote = Db
           .vVoteInfoes
-          .Where(v => v.ElectionGuid == UserSession.CurrentElectionGuid && v.PersonGuid.HasValue && guids.Contains(v.PersonGuid.Value))
+          .Where(
+            v =>
+            v.ElectionGuid == UserSession.CurrentElectionGuid && v.PersonGuid.HasValue &&
+            guids.Contains(v.PersonGuid.Value))
           .GroupBy(vi => vi.PersonGuid)
           .Select(g => new {personGuid = g.Key, count = g.Sum(v => v.SingleNameElectionCount)})
           .Where(x => x.count > 0)
@@ -74,32 +77,6 @@ namespace TallyJ.Models
       var term1 = parts[0];
       var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
 
-      // IQueryable<Person> query;
-      //var whereClause = PredicateBuilder.False<Person>();
-
-      //whereClause = callingSqlDb 
-      //  ? whereClause.Or(p => p.CombinedInfo.Contains(SqlFunctions.SoundCode(part0))) 
-      //  : whereClause.Or(p => p.CombinedInfo.Contains(SoundEx.ToSoundex(part0)));
-
-      //var nameMatch = PredicateBuilder.True<Person>();
-      //nameMatch = nameMatch.And(p => p.CombinedInfo.Contains(part0));
-
-      //if (numParts > 1)
-      //{
-      //  var part1 = parts[1];
-      //  nameMatch = nameMatch.And(p => p.CombinedInfo.Contains(part1));
-      //  nameMatch = nameMatch.And(p => SqlFunctions.PatIndex(part0, p.CombinedInfo) != SqlFunctions.PatIndex(part1, p.CombinedInfo));
-      //}
-
-      //whereClause = whereClause.Or(nameMatch);
-
-      //return People
-      //  .Where(whereClause)
-      //  .OrderBy(p => p.LastName)
-      //  .ThenBy(p => p.FirstName)
-      //  .Take(max + 1)
-      //  .ToList();
-
       string term2 = null;
       string metaphone2 = null;
       if (parts.Length > 1)
@@ -114,69 +91,51 @@ namespace TallyJ.Models
         }
       }
 
-      IQueryable<Person> query;
+      IQueryable<Person> query1;
+      IQueryable<Person> query2;
       if (callingSqlDb)
       {
-        query = People.Where(p =>
-                             (
-                               SqlFunc.HasMatch(p.CombinedInfo, term1, term2) ||
-                               SqlFunc.HasMatch(p.CombinedSoundCodes, metaphone1, metaphone2)));
-        //if (term2.HasContent())
-        //{
-        //  query = query.Where(p =>
-        //                       (p.CombinedInfo.Contains(term2) ||
-        //                        p.CombinedSoundCodes.Contains(metaphone2)));
-        //  //query = query.Where(p =>
-        //  //                    (SqlFunctions.CharIndex(p.CombinedInfo, term2,
-        //  //                                            SqlFunctions.CharIndex(p.CombinedInfo, term1)) != 0 ||
-        //  //                     SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone2,
-        //  //                                            SqlFunctions.CharIndex(p.CombinedSoundCodes, metaphone1)) != 0));
-        //}
+        query1 = People.Where(p => SqlFunc.HasMatch(p.CombinedInfo, term1, term2, false));
+        query2 = People.Where(p => SqlFunc.HasMatch(p.CombinedSoundCodes, metaphone1, metaphone2, true));
       }
       else
       {
-        query = People.Where(p =>
-                             (p.CombinedInfo.Contains(term1) ||
-                              p.CombinedSoundCodes.Contains(metaphone1)));
+        query1 = People.Where(p => p.CombinedInfo.Contains(term1));
+        query2 = People.Where(p => p.CombinedSoundCodes.Contains(metaphone1));
+
         if (term2.HasContent())
         {
-          query = query.Where(p =>
-                              (p.CombinedInfo.IndexOf(term2, p.CombinedInfo.IndexOf(term1, StringComparison.Ordinal),
-                                                      StringComparison.Ordinal) != -1 ||
-                               p.CombinedSoundCodes.IndexOf(metaphone2,
-                                                            p.CombinedSoundCodes.IndexOf(metaphone1,
-                                                                                         StringComparison.Ordinal),
-                                                            StringComparison.Ordinal) != -1));
+          query1 = query1.Where(p =>
+                                (p.CombinedInfo.IndexOf(term2, p.CombinedInfo.IndexOf(term1, StringComparison.Ordinal),
+                                                        StringComparison.Ordinal) != -1 ||
+                                 p.CombinedSoundCodes.IndexOf(metaphone2,
+                                                              p.CombinedSoundCodes.IndexOf(metaphone1,
+                                                                                           StringComparison.Ordinal),
+                                                              StringComparison.Ordinal) != -1));
         }
-        //query = People.Where(p =>
-        //                     p.CombinedSoundCodes.Contains(metaphone1)
-        //                     &&
-        //                     (metaphone2 == null ||
-        //                      p.CombinedSoundCodes.IndexOf(metaphone2, p.CombinedSoundCodes.IndexOf(metaphone1)) != -1)
-        //                     ||
-        //                     p.CombinedInfo.Contains(term1.ToLower())
-        //                     && (term2 == null
-        //                         ||
-        //                         p.CombinedInfo.IndexOf(term2.ToLower(),
-        //                                                p.CombinedInfo.IndexOf(" ",
-        //                                                                       p.CombinedInfo.IndexOf(term1.ToLower()))) !=
-        //                         -1));
       }
 
-      return query
+      var list1 = query1
         .OrderBy(p => p.LastName)
         .ThenBy(p => p.FirstName)
         .Take(max + 1)
         .ToList();
 
-      //if (numParts > 1)
-      //{
-      //  var part1 = parts[1];
-      //  nameMatch = nameMatch.And(p => p.CombinedInfo.Contains(part1));
-      //  nameMatch = nameMatch.And(p => SqlFunctions.PatIndex(part0, p.CombinedInfo) != SqlFunctions.PatIndex(part1, p.CombinedInfo));
-      //}
+      if (list1.Count < max)
+      {
+        var idsInList1 = list1.Select(x => x.C_RowId).ToList();
 
-      //whereClause = whereClause.Or(nameMatch);
+        var list2 = query2
+          .Where(p => !idsInList1.Contains(p.C_RowId))
+          .OrderBy(p => p.LastName)
+          .ThenBy(p => p.FirstName)
+          .Take(max + 1 - list1.Count)
+          .ToList();
+
+        list1.AddRange(list2);
+      }
+
+      return list1;
     }
   }
 }

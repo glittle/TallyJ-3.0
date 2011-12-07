@@ -17,8 +17,9 @@ namespace TallyJ.Controllers
     public JsonResult SelectLocation(int id)
     {
       return new { Selected = new ComputerModel().AddCurrentComputerIntoLocation(id) }.AsJsonResult();
-    } 
+    }
 
+    [ForAuthenticatedTeller]
     public JsonResult SelectElection(Guid guid)
     {
       var electionModel = new ElectionModel();
@@ -37,12 +38,14 @@ namespace TallyJ.Controllers
       return new {Selected = false}.AsJsonResult();
     }
 
+    [ForAuthenticatedTeller]
     public JsonResult CopyElection(Guid guid)
     {
       var model = new ElectionModel();
       return model.Copy(guid);
     }
 
+    [ForAuthenticatedTeller]
     public JsonResult CreateElection()
     {
       var model = new ElectionModel();

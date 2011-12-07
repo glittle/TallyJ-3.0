@@ -17,10 +17,19 @@ Function [tj].[HasMatch] (
     @AllTerms varchar(max)
   , @Term1 varchar(50)
   , @Term2 varchar(50)
+  , @CompleteMatch bit
   )
 returns bit
 AS
 BEGIN
+  set @AllTerms = '^' + @AllTerms + '^'
+
+  if @CompleteMatch = 1
+  begin
+    set @Term1 = '^' + @Term1 + '^'
+    set @Term2 = '^' + @Term2 + '^'
+  end
+
   if @Term2 is null
     begin
 	  return case when charindex(@Term1, @AllTerms) > 0 then 1 else 0 end
@@ -55,23 +64,23 @@ GO
 
 -- Testing code
 -- / *
-select 1, tj.HasMatch('John Doe', 'Jo', 'D')
+select 1, tj.HasMatch('John Doe', 'Jo', 'D', 0)
 union all
-select 0, tj.HasMatch('John John', 'Jo', 'D')
+select 0, tj.HasMatch('John John', 'Jo', 'D', 0)
 union all
-select 1, tj.HasMatch('John John', 'Jo', 'Jo')
+select 1, tj.HasMatch('John John', 'Jo', 'Jo', 0)
 union all
-select 1, tj.HasMatch('John John', 'Jo', null)
+select 1, tj.HasMatch('John John', 'Jo', null, 0)
 union all
-select 0, tj.HasMatch('xyz abc xyz', 'abc', 'abc')
+select 0, tj.HasMatch('xyz abc xyz', 'abc', 'abc', 1)
 union all
-select 1, tj.HasMatch('Glen Little', 'gl', 'li')
+select 1, tj.HasMatch('Glen Little', 'gl', 'li', 0)
 union all
-select 1, tj.HasMatch('abc abc abc', 'abc', null)
+select 1, tj.HasMatch('abc abc abc', 'abc', null, 0)
 union all
-select 0, tj.HasMatch('abc abc abc', 'xyz', 'xzy')
+select 0, tj.HasMatch('abc abc abc', 'xyz', 'xzy', 0)
 union all
-select 0, tj.HasMatch('abcdef', 'xyz', 'xzy')
+select 0, tj.HasMatch('abcdef', 'xyz', 'xzy', 0)
 
 
 -- * /

@@ -7,6 +7,7 @@
 
     ContextItems.AddJavascriptForPage("pageUrl", "monitorPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("locations", "monitorPage.LocationInfos={0};".FilledWith(Model.LocationInfoJson));
+    ContextItems.AddJavascriptForPage("guest", "monitorPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <div style="padding-bottom: 15px;">
     Election Status:
@@ -94,4 +95,7 @@
     <button type="button" id="btnRefesh">
         Refresh Now</button>
     <span id="lastRefresh"></span>
+</div>
+<div>
+  <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBool() ? " checked" : "") /><label for="chkList">Show on TallyJ welcome screen</label>
 </div>

@@ -11,6 +11,11 @@ var HomeIndexPage = function () {
         $(document).on('click', '.btnSelectLocation', null, selectLocation);
         $(document).on('click', '#btnCreate', null, createElection);
         showElections(publicInterface.elections);
+
+        if (publicInterface.isGuest) {
+            $('#btnCreate').prop('disabled', true);
+        }
+
     };
 
     var showElections = function (info) {
@@ -20,9 +25,17 @@ var HomeIndexPage = function () {
             }
         });
         $('#ElectionList').html(site.templates.ElectionListItem.filledWithEach(info));
+
+        if (publicInterface.isGuest) {
+            $('#ElectionList').find('.Detail button').each(function () {
+                $(this).prop('disabled', true);
+            });
+        }
     };
 
     var selectElection = function () {
+        if (publicInterface.isGuest) return;
+
         var btn = $(this);
         var row = btn.parents('.Election');
         var form =
@@ -40,7 +53,7 @@ var HomeIndexPage = function () {
             ProcessPulseResult(info.Pulse);
         }
         ResetStatusDisplay();
-        
+
         if (info.Selected) {
             $('.Election.true').removeClass('true');
             row.addClass('true');
@@ -81,6 +94,8 @@ var HomeIndexPage = function () {
     };
 
     var createElection = function () {
+        if (publicInterface.isGuest) return;
+
         // get the server to make an election, then go see it
         CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
             //var row = $(site.templates.ElectionListItem.filledWith(info.Election)).prependTo($('#ElectionList'));
@@ -93,6 +108,7 @@ var HomeIndexPage = function () {
     };
 
     var copyElection = function () {
+        if (publicInterface.isGuest) return;
 
         var btn = $(this);
         var form =
@@ -119,6 +135,7 @@ var HomeIndexPage = function () {
     };
     var publicInterface = {
         elections: [],
+        isGuest: false,
         electionsUrl: '',
         PreparePage: preparePage
     };

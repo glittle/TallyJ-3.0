@@ -1,91 +1,145 @@
 ﻿section.feature
 {
-  cursor: pointer;
+    cursor: pointer;
 }
-section.features a {
-  text-decoration: none;
+section.features a
+{
+    text-decoration: none;
 }
-section.features a section {
-  border: 2px solid transparent;
+section.features a section
+{
+    border: 2px solid transparent;
 }
-section.features a:hover section {
-  border: 2px solid #ddd;
+section.features a:hover section
+{
+    border: 2px solid #ddd;
 }
 
-section.features a:active section {
-  border: 2px solid #8dc63e;
+section.features a:active section
+{
+    border: 2px solid #8dc63e;
 }
 
 section.featureBig
 {
-  float: left;
-  width: 425px;
-  margin: 5px;
-  background-image: url('../../Images/BlankBigB.png');
-  background-position: left bottom;
-  background-repeat: no-repeat;
-  text-align: center;
-  padding: 10px 15px 20px 10px;
-  position: relative;
+    float: left;
+    width: 425px;
+    margin: 5px;
+    min-height: 300px;
+    background-image: url('../../Images/BlankBigB.png');
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    text-align: center;
+    padding: 10px 15px 20px 10px;
+    position: relative;
 }
-section.featureBig div.top 
+section.featureBig div.top
 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 450px;
-  height: 3px;
-  background-image: url('../../Images/BlankBigT.png');
-  background-position: left top;
-  background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 3px;
+    background-image: url('../../Images/BlankBigT.png');
+    background-position: left top;
+    background-repeat: no-repeat;
 }
-.featureBig h3 {
-  margin-top: 0;
+.featureBig h3
+{
+    margin-top: 0;
 }
-.featureBig ol {
-  text-align: left;
+.featureBig ol
+{
+    text-align: left;
 }
-.featureBig li p {
-  margin-bottom: 0;
+.featureBig.LoginPanel ol {
+    text-align: center;
 }
-#txtCode {
-  width: 50px;
+.featureBig li p
+{
+    margin-bottom: 0;
 }
-#txtWhoAmI {
-  width: 250px;
+#txtCode
+{
+    width: 50px;
 }
-#ddlElections {
-  width: 170px;
+#txtPasscode
+{
+    width: 100px;
 }
-div.table div {
-  display: table-cell;
-  vertical-align: top;
-  padding: 0 10px 0 5px;
+#ddlElections
+{
+    width: 170px;
 }
-div.table div span {
-  margin-right: 3px;
-  vertical-align: top;
+div.table div
+{
+    display: table-cell;
+    vertical-align: top;
+    padding: 0 10px 0 5px;
 }
-div.or {
-  font-style: italic;
-  font-weight: bold;
+div.table div span
+{
+    margin-right: 3px;
+    vertical-align: top;
 }
-#joinStatus {
-  padding-left: 5px;
+div.or
+{
+    font-style: italic;
+    font-weight: bold;
 }
-#joinStatus.idle {
-  color: #999;
+#joinStatus
+{
+    padding-left: 5px;
 }
-.featureBig hgroup h1 {
-  display: none;
+#joinStatus.idle
+{
+    color: #999;
+}
+#joinStatus.error {
+    color: red;
+}
+
+.featureBig hgroup h1
+{
+    display: none;
 }
 .featureBig h2
- {
-  font-size: 100%;
+{
+    font-size: 100%;
 }
-.featureBig fieldset label,
-.featureBig fieldset input
- {
-  font-size: 100%;
-  font-weight: normal;
+.featureBig fieldset label, .featureBig fieldset input
+{
+    font-size: 100%;
+    font-weight: normal;
+}
+
+section.CenterPanel
+{
+    float: none;
+    margin: 0 auto 0 auto;
+}
+.JoinPanel
+{
+    display: none;
+}
+.LoginPanel
+{
+    display: none;
+}
+.StartJoin {
+    padding: 0 20px 0 20px;
+    font-size: 20px;
+    width: 150px;
+    cursor: pointer;
+}
+
+
+fieldset input[type="text"], fieldset input[type="password"]
+{
+    border: 1px solid #e2e2e2;
+    color: #333;
+    margin: 5px 0 6px 0;
+    padding: 5px;
+    width: 150px;
+    text-align: center;
 }

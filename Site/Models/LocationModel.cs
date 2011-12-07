@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
@@ -83,6 +84,51 @@ namespace TallyJ.Models
       Db.SaveChanges();
 
       return new { Saved = true }.AsJsonResult();
+    }
+
+    public JsonResult EditLocation(int id, string text)
+    {
+      var location =
+        Db.Locations.SingleOrDefault(l => l.C_RowId == id && l.ElectionGuid == UserSession.CurrentElectionGuid);
+      if (location == null)
+      {
+        location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
+        Db.Locations.Add(location);
+      }
+
+      location.Name = text;
+
+      Db.SaveChanges();
+
+      return new
+               {
+                 Id = location.C_RowId
+               }.AsJsonResult();
+    }
+
+    public JsonResult SortLocations(string idList)
+    {
+      var ids = idList.Split(new[] {','}).AsInts().ToList();
+
+      var locations =
+        Db.Locations.Where(l => ids.Contains(l.C_RowId) && l.ElectionGuid == UserSession.CurrentElectionGuid);
+
+      var sortOrder = 1;
+      foreach (var id in ids)
+      {
+        var location = locations.SingleOrDefault(l => l.C_RowId == id);
+        if (location != null)
+        {
+          location.SortOrder = sortOrder++;
+        }
+      }
+
+      Db.SaveChanges();
+
+      return new
+               {
+                 Saved = true
+               }.AsJsonResult();
     }
   }
 }

@@ -27,6 +27,7 @@ var PeopleHelper = function (url) {
         var results = [];
         var searchParts = [];
         var parts = search.split(' ');
+        var foundFuzzy = false;
         $.each(parts, function (i, part) {
             if (part) {
                 searchParts.push(new RegExp(part, "ig"));
@@ -42,7 +43,8 @@ var PeopleHelper = function (url) {
             });
             if (!foundHit) {
                 // must be soundex
-                personInfo.Name = '<i>' + personInfo.Name + '</i>';
+                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
+                foundFuzzy = true;
             }
             if (personInfo.Inelligible) {
                 personInfo.Name = '<span class=Inelligible>' + personInfo.Name + '</span>';

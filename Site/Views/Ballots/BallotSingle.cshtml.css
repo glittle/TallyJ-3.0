@@ -15,6 +15,8 @@
     width: 300px;
     border: solid 1px #999;
     padding: 4px;
+    font-size: 110%;
+    line-height: 1.5;
     overflow: auto;
 }
 #nameList u
@@ -37,7 +39,11 @@
     background-color: #c1f1b4;
     border-color: #999;
 }
-
+#nameList i.First {
+    border-top: 3px double #ccc;
+    width: 100%;
+    display: block;
+}
 
 
 #ballotList

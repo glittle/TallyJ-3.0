@@ -187,6 +187,7 @@
           <Property Name="ListedForPublicAsOf" Type="datetime2" />
           <Property Name="IsSingleNameElection" Type="bit" />
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+          <Property Name="ListForPublic" Type="bit" />
         </EntityType>
         <EntityType Name="JoinElectionUser">
           <Key>
@@ -467,6 +468,7 @@
           <Parameter Name="AllTerms" Type="varchar(max)" Mode="In" />
           <Parameter Name="Term1" Type="varchar" Mode="In" />
           <Parameter Name="Term2" Type="varchar" Mode="In" />
+          <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
         </Function>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -637,6 +639,7 @@
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="Boolean" Name="IsSingleNameElection" />
           <Property Type="Boolean" Name="ShowFullReport" />
+          <Property Type="Boolean" Name="ListForPublic" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
@@ -951,6 +954,7 @@
           <EntitySetMapping Name="Elections">
             <EntityTypeMapping TypeName="TallyJ2Model.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
                 <ScalarProperty Name="ShowFullReport" ColumnName="ShowFullReport" />
                 <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />

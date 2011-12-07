@@ -1,27 +1,28 @@
-﻿@if (Request.IsAuthenticated)
+﻿@using TallyJ.Code.Session
+@if (Request.IsAuthenticated)
 {
-  <p>
-    @Html.ActionLink("Dashboard", "Index", "Dashboard")
-    Active: @Html.ActionLink(User.Identity.Name, "ChangePassword", "Account", null, new
-       {
-         @class = "username"
-       })!
-    @Html.ActionLink("Log Off", "LogOff", "Account")
-  </p>
+    <p>
+        @Html.ActionLink("Dashboard", "Index", "Dashboard")
+        @if(UserSession.IsKnownTeller)
+        {
+            @Html.ActionLink(User.Identity.Name, "ChangePassword", "Account");
+        }
+        @Html.ActionLink("Log Off", "LogOff", "Account")
+    </p>
 }
 else
 {
-  <ul>
-    <li>@Html.ActionLink("Home", "Index", "Public")</li>
-    <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new
+    <ul>
+        <li>@Html.ActionLink("Home", "Index", "Public")</li>
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new
    {
      id = "registerLink",
      data_dialog_title = "Registration"
    })</li>
-    <li>@Html.ActionLink("Log on", "LogOn", "Account", routeValues: null, htmlAttributes: new
+        <li>@Html.ActionLink("Log on", "LogOn", "Account", routeValues: null, htmlAttributes: new
    {
      id = "logonLink",
      data_dialog_title = "Identification"
    })</li>
-  </ul>
+    </ul>
 }

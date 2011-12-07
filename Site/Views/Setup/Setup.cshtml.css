@@ -31,12 +31,18 @@ input[type='date']
   width: 140px;
 }
 
+.Locations {
+    border: 1px solid #8dc63e;
+    border-radius: 3px;
+    padding: 10px 10px 20px 20px;
+    margin-left: 50px;
+}
 #locationList div
 {
-  border-radius: 3px;
-  border: solid 1px #8dc63e;
-  padding: 1px 24px 1px 4px;
-  margin-bottom: 2px;
+    padding-right: 20px;
+}
+#locationList input {
+    
 }
 tr.electionDetail TD
 {
@@ -58,3 +64,7 @@ tr.electionDetailB TD
   border-right: 1px solid #666;
   background-color: #ddd;
  }
+.ui-icon {
+    display: inline-block;
+    cursor: pointer;
+}

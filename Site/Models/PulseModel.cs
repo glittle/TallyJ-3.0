@@ -22,6 +22,8 @@ namespace TallyJ.Models
     public object Pulse()
     {
       var isStillAllowed = new ComputerModel().ProcessPulse();
+      
+      new ElectionModel().ProcessPulse();
 
       var result = new
                      {

@@ -21,15 +21,11 @@ namespace TallyJ.Controllers
 
     public ActionResult About()
     {
-      ViewBag.Message = "Your quintessential app description page.";
-
       return View();
     }
 
     public ActionResult Contact()
     {
-      ViewBag.Message = "Your quintessential contact page.";
-
       return View();
     }
 
@@ -46,6 +42,11 @@ namespace TallyJ.Controllers
     public ActionResult Install()
     {
       return View();
+    }
+
+    public JsonResult TellerJoin(int election, string pc)
+    {
+      return new TellerModel().GrantAccessToGuestTeller(election, pc);
     }
   }
 }

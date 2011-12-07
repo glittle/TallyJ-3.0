@@ -30,7 +30,6 @@ namespace TallyJ.Models
                              e.ElectionType,
                              e.ElectionMode
                            })
-            .ToList() // execute sql and then work on result in code
             .Select(info =>
                       {
                         var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
@@ -48,15 +47,27 @@ namespace TallyJ.Models
       }
     }
 
-    private IQueryable<Election> MyElections()
+    private IEnumerable<Election> MyElections()
     {
-      var userGuid = UserSession.UserGuid;
-      return Db
-        .Elections
-        .SelectMany(e => Db.JoinElectionUsers.Where(j => j.UserId == userGuid),
-                    (e, j) => new {e, j})
-        .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
-        .Select(joined => joined.e);
+      if (UserSession.IsKnownTeller)
+      {
+        var userGuid = UserSession.UserGuid;
+        return Db
+          .Elections
+          .SelectMany(e => Db.JoinElectionUsers.Where(j => j.UserId == userGuid),
+                      (e, j) => new {e, j})
+          .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
+          .Select(joined => joined.e)
+          .ToList();
+      }
+
+      var currentElection = UserSession.CurrentElection;
+      if (UserSession.IsGuestTeller && currentElection!=null)
+      {
+        return new List<Election> { currentElection };
+      }
+
+      return null;
     }
   }
 }

@@ -33,7 +33,13 @@ var MonitorPage = function () {
         });
 
         $('#chkAutoRefresh').click(setAutoRefresh);
+        $('#chkList').click(updateListing);
         $('#btnRefesh').click(refresh);
+
+        if (publicInterface.isGuest) {
+            $('#chkList').prop('disabled', true);
+            $('#ddlElectionStatus').prop('disabled', true);
+        }
 
         setAutoRefresh(false);
     };
@@ -97,6 +103,14 @@ var MonitorPage = function () {
         }
     };
 
+    var updateListing = function () {
+        var chk = $('#chkList');
+        var form = {
+            listOnPage: chk.prop('checked')
+        };
+        CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing', form);
+    };
+
     var refresh = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/RefreshMonitor', null, showInfo);
     };
@@ -149,6 +163,7 @@ var MonitorPage = function () {
 
     var publicInterface = {
         controllerUrl: '',
+        isGuest: false,
         LocationInfos: null,
         PreparePage: preparePage
     };

@@ -35,7 +35,35 @@ function Onload() {
     SendHeartbeat();
 
     // UpdateActiveInfo();
+    ActivatePullInstructions();
+}
 
+function ActivatePullInstructions() {
+    var pi = $('.PullInstructions');
+    pi.before($('<div class=PullInstructionsHandle>Show Instructions</div>'));
+
+    var toggleIt = function (handle, fast) {
+        var next = handle.next();
+        if (fast) {
+            next.toggle();
+        }
+        else {
+            next.slideToggle();
+        }
+        handle.toggleClass('Closed');
+        SetInStorage('HidePI_' + location.pathname, handle.hasClass('Closed') ? 'hide' : 'show');
+    };
+
+    $(document).on('click', '.PullInstructionsHandle', function (ev) {
+        var handle = $(ev.target);
+        toggleIt(handle, false);
+    });
+
+    if (GetFromStorage('HidePI_' + location.pathname, 'show') == 'hide') {
+        $('.PullInstructionsHandle').each(function () {
+            toggleIt($(this), true);
+        });
+    }
 }
 
 //var UpdateActiveInfo = function () {
@@ -78,9 +106,8 @@ function HasErrors(data) {
         top.location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
         return true;
     }
-    
-    if(/\<\!DOCTYPE html\>/.test(data))
-    {
+
+    if (/\<\!DOCTYPE html\>/.test(data)) {
         // seem to have a complete web page!
         top.location.reload();
         return true;
@@ -208,10 +235,10 @@ function JsonParse(json) {
     }
     try {
         return eval('(' + json + ')');
-    } catch(e) {
+    } catch (e) {
         LogMessage(e);
         LogMessage(json);
-    } 
+    }
 }
 
 
@@ -276,7 +303,7 @@ function ShowStatusFailed(msg, keepTime) {
         if (msg.status === 200 || msg.status === 406) {
             text = msg.responseText;
         } else if (msg.status === 0 && msg.statusText == 'error') {
-            text = 'The server did not respond.';
+            text = 'The browser is busy. Please try again is a second or two.';
         } else if (msg.status === 503) {
             top.location.href = top.location.href;
             return '';
@@ -638,6 +665,8 @@ function JoinProperties(obj, sep1, sep2, sepInner1, sepInner2) {
                 toJoin.push(i + sep1);
             } else if (typeof prop === 'object' && prop.jquery) {
                 toJoin.push(i + sep1 + escape(prop.val()));
+            } else if ($.isArray(prop)) {
+                toJoin.push(i + sep1 + escape(prop.join()));
             } else if (typeof prop === 'object') {
                 toJoin.push(i + sep1 + JoinProperties(prop.jquery ? escape(prop.val()) : prop, sepInner1, sepInner2));
             } else {

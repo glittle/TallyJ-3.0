@@ -2,8 +2,8 @@
 @using TallyJ.Code.Session
 @model ElectionsListViewModel
 @{
-  ViewBag.Title = "Dashboard";
-  ViewBag.Message = (UserSession.CurrentElectionName).AsRawHtml();
+    ViewBag.Title = "Dashboard";
+    ViewBag.Message = (UserSession.CurrentElectionName).AsRawHtml();
 
   //ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
   //ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
@@ -21,38 +21,95 @@
 }
 *@
 <section class="features">
-<a href="@Url.Action("ChooseElection", "Dashboard")"><section class="feature">
-  <h3>Choose Election/Location</h3>
-  <p>Switch to a different election or location. Or start another election.</p>
-</section></a> <a href="@Url.Action("Index", "Setup")"><section class="feature">
-  <h3>Setup Election</h3>
-  <p>Edit election details.</p>
-</section></a> <a href="@Url.Action("ImportExport", "Setup")"><section class="feature todo">
-  <h3>Import/Export People</h3>
-  <p>Import/edit people.</p>
-</section></a> <a href="@Url.Action("People", "Setup")"><section class="feature">
-  <h3>Manage People</h3>
-  <p>Edit people's names. </p>
-</section></a> <a href="@Url.Action("FrontDesk", "Before")"><section class="feature todo">
-  <h3>Front Desk</h3>
-  <p>Welcome voters to the election venue. Record who is participating in the election.
-  </p>
-</section></a> <a href="@Url.Action("Index", "Ballots")"><section class="feature">
-  <h3>Enter Ballots</h3>
-  <p>Type in the names found on ballots. </p>
-</section></a> <a href="@Url.Action("Monitor", "After")"><section class="feature">
-  <h3>Monitor</h3>
-  <p>Centrally monitor progress of tellers.</p>
-</section></a> <a href="@Url.Action("Analyze", "After")"><section class="feature">
-  <h3>Analyze Results</h3>
-  <p>Review results, checking for ties. </p>
-</section></a> <a href="@Url.Action("Reports", "After")"><section class="feature todo">
-  <h3>Generate Reports</h3>
-  <p>Generate Election Reports </p>
-</section></a> <a href="@Url.Action("Presenter", "After")"><section class="feature">
-  <h3>Present Results</h3>
-  <p>Display results of the election. </p>
-</section></a> <a href="@Url.Action("Learning", "Public")"><section class="feature"><h3>Reference
-  Materials</h3>
-  <p>Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
-</section></a> </section>
+    <a href="@Url.Action("ChooseElection", "Dashboard")">
+        <section class="feature">
+            <h3>
+                Choose Election/Location</h3>
+            <p>
+                Switch to a different election or location. Or start another election.</p>
+        </section></a>
+    @if (UserSession.IsKnownTeller)
+    {
+        <a href="@Url.Action("Index", "Setup")">
+            <section class="feature">
+                <h3>
+                    Setup Election</h3>
+                <p>
+                    Edit election details.</p>
+            </section></a>
+        <a href="@Url.Action("ImportExport", "Setup")">
+            <section class="feature todo">
+                <h3>
+                    Import/Export People</h3>
+                <p>
+                    Import/edit people.</p>
+            </section></a>
+    }
+    <a href="@Url.Action("People", "Setup")">
+        <section class="feature">
+            <h3>
+                Manage People</h3>
+            <p>
+                Edit people's names.
+            </p>
+        </section></a>
+    @if (UserSession.IsKnownTeller)
+    {
+
+        <a href="@Url.Action("FrontDesk", "Before")">
+            <section class="feature todo">
+                <h3>
+                    Front Desk</h3>
+                <p>
+                    Welcome voters to the election venue. Record who is participating in the election.
+                </p>
+            </section></a>
+    }
+    <a href="@Url.Action("Index", "Ballots")">
+        <section class="feature">
+            <h3>
+                Enter Ballots</h3>
+            <p>
+                Type in the names found on ballots.
+            </p>
+        </section></a> <a href="@Url.Action("Monitor", "After")">
+            <section class="feature">
+                <h3>
+                    Monitor</h3>
+                <p>
+                    Centrally monitor progress of tellers.</p>
+            </section></a>
+    @if (UserSession.IsKnownTeller)
+    {
+        <a href="@Url.Action("Analyze", "After")">
+            <section class="feature">
+                <h3>
+                    Analyze Results</h3>
+                <p>
+                    Review results, checking for ties.
+                </p>
+            </section></a>
+        <a href="@Url.Action("Reports", "After")">
+            <section class="feature todo">
+                <h3>
+                    Generate Reports</h3>
+                <p>
+                    Generate Election Reports
+                </p>
+            </section></a>
+    }
+    <a href="@Url.Action("Presenter", "After")">
+        <section class="feature">
+            <h3>
+                Present Results</h3>
+            <p>
+                Display results of the election.
+            </p>
+        </section></a> <a href="@Url.Action("Learning", "Public")">
+            <section class="feature">
+                <h3>
+                    Reference Materials</h3>
+                <p>
+                    Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
+            </section></a>
+</section>

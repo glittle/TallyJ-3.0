@@ -23,8 +23,8 @@
         <div id="tabNameSearch">
             <p>
                 Select a name by starting to type it here:</p>
-            <input id="txtSearch" tabindex="1" autocomplete="off"><span id="action"></span><span id="more">
-            </span>
+            <input id="txtSearch" tabindex="1" autocomplete="off"><span id="action"></span><span
+                id="more"> </span>
             <ul id="nameList">
             </ul>
         </div>
@@ -35,14 +35,15 @@
     </div>
 </div>
 <div id="votesPanel">
-    <p>
-        In this election, each paper ballot consists of a single name. Sort ballot slips into
-        piles, one per person receiving a vote, including piles for spoiled votes.
-    </p>
-    <p>
+    <div class="PullInstructions">
+        <p>
+            In this election, each paper ballot consists of a single name. Sort ballot slips
+            into piles, one per person receiving a vote, including piles for spoiled votes.
+        </p>
+      <p>
         For each pile, select the person's name below then enter the number of votes they
         received.</p>
-    <div class="titleDiv">
+        <p>Update the Status input to indicate the status of your counting process, and the Contact Info in case </p>
     </div>
     <table class="locationInfo">
         <tr>
@@ -69,7 +70,7 @@
             </td>
         </tr>
     </table>
-    <button id="btnAddSpoiled" type="button"  tabindex="1">
+    <button id="btnAddSpoiled" type="button" tabindex="1">
         Add line for spoiled vote(s)</button>
     <div style="font-weight: bold;">
         Ballot Group <span id="ballotCode"></span>

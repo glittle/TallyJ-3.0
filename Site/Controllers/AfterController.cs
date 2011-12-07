@@ -14,6 +14,7 @@ namespace TallyJ.Controllers
       return View("After");
     }
 
+    [ForAuthenticatedTeller]
     public ActionResult Analyze()
     {
       //var resultsModel = new ResultsModel();
@@ -24,6 +25,7 @@ namespace TallyJ.Controllers
       return View();
     }
 
+    [ForAuthenticatedTeller]
     public ActionResult Reports()
     {
       return View();
@@ -44,6 +46,7 @@ namespace TallyJ.Controllers
       return new MonitorModel().LocationInfo.AsJsonResult();
     }
 
+    [ForAuthenticatedTeller]
     public JsonResult RunAnalyze()
     {
       var resultsModel = new ResultsModel();
@@ -60,13 +63,20 @@ namespace TallyJ.Controllers
       return resultsModel.FinalResults;
     }
 
+    [ForAuthenticatedTeller]
     public JsonResult UpdateElectionStatus(string status)
     {
       return new ElectionModel().SetTallyStatusJson(status);
     }
+    [ForAuthenticatedTeller]
     public JsonResult UpdateElectionShowAll(bool showAll)
     {
       return new ElectionModel().UpdateElectionShowAllJson(showAll);
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult UpdateListing(bool listOnPage)
+    {
+      return new ElectionModel().UpdateListOnPageJson(listOnPage);
     }
   }
 

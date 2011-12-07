@@ -638,3 +638,21 @@ a.twitter
     text-align: right;
     margin-top: -35px;
 }
+.PullInstructions {
+    border: 1px solid #8dc63e;
+    border-radius: 3px;
+    font-size: 95%;
+    padding: 0 5px 0 15px;
+    margin-bottom: 5px;
+}
+.PullInstructionsHandle {
+    font-size: 80%;
+    color: #aaa;
+    cursor: pointer;
+}
+.PullInstructionsHandle.Closed {
+    color: #8dc63e;
+    font-size: 90%;
+    margin-bottom: 10px;
+    font-style: italic;
+}

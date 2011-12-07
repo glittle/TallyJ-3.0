@@ -12,7 +12,8 @@
 <button type="button" id="btnRefesh">
     Refresh</button>
 <div id="Wait">
-    Election Status: <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
+  Election Status: <br /> <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
+  <p>Results will be available when the head teller releases them. This page will automatically show them when they are available.</p>
 </div>
 <div id="Results" class="Hidden">
     <div id="chart">

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Web;
+using System.Web.Providers.Entities;
+using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.UnityRelated;
 using TallyJ.EF;
@@ -145,7 +147,7 @@ namespace TallyJ.Code.Session
       get { return null; }
     }
 
-    public static void ProcessLogin(string userName)
+    public static void ProcessLogin()
     {
       HttpContext.Current.Session.Clear();
       SessionKey.CurrentComputer.SetInSession(new ComputerModel().CreateComputerRecordForMe());
@@ -155,6 +157,19 @@ namespace TallyJ.Code.Session
     {
       new ComputerModel().DeleteAtLogout(ComputerRowId);
       HttpContext.Current.Session.Clear();
+    }
+
+    public static bool IsGuestTeller
+    {
+      get { return SessionKey.IsGuestTeller.FromSession(false); }
+      set { SessionKey.IsGuestTeller.SetInSession(value); }
+    }
+
+    /// <Summary>If logged in with an account</Summary>
+    public static bool IsKnownTeller
+    {
+      get { return SessionKey.IsKnownTeller.FromSession(false); }
+      set { SessionKey.IsKnownTeller.SetInSession(value); }
     }
   }
 }

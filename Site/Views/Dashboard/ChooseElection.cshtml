@@ -7,6 +7,7 @@
 
     ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 <hgroup class="title">

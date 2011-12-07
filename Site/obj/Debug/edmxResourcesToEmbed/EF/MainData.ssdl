@@ -182,6 +182,7 @@
     <Property Name="ListedForPublicAsOf" Type="datetime2" />
     <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="ListForPublic" Type="bit" />
   </EntityType>
   <EntityType Name="JoinElectionUser">
     <Key>
@@ -462,5 +463,6 @@
     <Parameter Name="AllTerms" Type="varchar(max)" Mode="In" />
     <Parameter Name="Term1" Type="varchar" Mode="In" />
     <Parameter Name="Term2" Type="varchar" Mode="In" />
+    <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
   </Function>
 </Schema>

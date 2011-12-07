@@ -1,4 +1,5 @@
 using System;
+using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -9,7 +10,6 @@ namespace TallyJ.Models
 {
   public class ElectionModel : DataConnectedModel
   {
-
     public ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
@@ -192,10 +192,10 @@ namespace TallyJ.Models
 
 
     /// <Summary>Saves changes to this electoin</Summary>
-    public JsonResult SaveElection(Election election)
+    public JsonResult SaveElection(Election electionFromBrowser)
     {
-      var savedElection = Db.Elections.SingleOrDefault(e => e.C_RowId == election.C_RowId);
-      if (savedElection != null)
+      var election = Db.Elections.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
+      if (election != null)
       {
         // List of fields to allow edit from setup page
         var editableFields = new
@@ -208,13 +208,15 @@ namespace TallyJ.Models
                                  election.NumberToElect,
                                  election.NumberExtra,
                                  election.CanVote,
-                                 election.CanReceive
+                                 election.CanReceive,
+                                 election.ListForPublic,
+                                 election.ElectionPasscode
                                }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
-        var changed = election.CopyPropertyValuesTo(savedElection, editableFields);
+        var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
-        var isSingleNameElection = election.NumberToElect == 1;
+        var isSingleNameElection = election.NumberToElect.AsInt() == 1;
         if (election.IsSingleNameElection != isSingleNameElection)
         {
           election.IsSingleNameElection = isSingleNameElection;
@@ -224,14 +226,14 @@ namespace TallyJ.Models
         if (changed)
         {
           Db.SaveChanges();
-          SessionKey.CurrentElection.SetInSession(savedElection);
+          SessionKey.CurrentElection.SetInSession(election);
         }
 
         return new
                  {
                    Status = "Saved",
                    // TODO 2011-11-20 Glen Little: Return entire election?
-                   Election = savedElection
+                   Election = election
                  }.AsJsonResult();
       }
 
@@ -259,6 +261,15 @@ namespace TallyJ.Models
 
     public JsonResult Copy(Guid guidOfElectionToCopy)
     {
+      if (UserSession.IsGuestTeller)
+      {
+        return new
+                 {
+                   Success = false,
+                   Message = "Not authorized"
+                 }.AsJsonResult();
+      }
+
       var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
       if (election == null)
       {
@@ -306,6 +317,15 @@ namespace TallyJ.Models
 
     public JsonResult Create()
     {
+      if (UserSession.IsGuestTeller)
+      {
+        return new
+                 {
+                   Success = false,
+                   Message = "Not authorized"
+                 }.AsJsonResult();
+      }
+
       // create an election for this ID
       // create a default Location
       // assign all of these to this person and computer
@@ -367,6 +387,11 @@ namespace TallyJ.Models
 
     public void SetTallyStatus(string status)
     {
+      if (UserSession.IsGuestTeller)
+      {
+        return;
+      }
+
       var election = UserSession.CurrentElection;
       if (election.TallyStatus != status)
       {
@@ -376,6 +401,14 @@ namespace TallyJ.Models
 
         Db.SaveChanges();
       }
+    }
+
+    public IQueryable<Election> VisibleElections()
+    {
+      return Db.Elections.Where(e => e.ListForPublic.HasValue
+                                     && e.ListForPublic.Value
+                                     && !string.IsNullOrEmpty(e.ElectionPasscode)
+                                     && SqlFunctions.DateDiff("n", e.ListedForPublicAsOf, DateTime.Now) <= 5);
     }
 
     public JsonResult SetTallyStatusJson(string status)
@@ -401,6 +434,37 @@ namespace TallyJ.Models
       }
 
       return new {Saved = true}.AsJsonResult();
+    }
+
+    public JsonResult UpdateListOnPageJson(bool listOnPage)
+    {
+      var election = UserSession.CurrentElection;
+      if (election.ListForPublic != listOnPage && UserSession.IsKnownTeller)
+      {
+        Db.Elections.Attach(election);
+
+        election.ListForPublic = listOnPage;
+        election.ListedForPublicAsOf = DateTime.Now;
+
+        Db.SaveChanges();
+        return new {Saved = true}.AsJsonResult();
+      }
+
+      return new {Saved = false}.AsJsonResult();
+    }
+
+    public void ProcessPulse()
+    {
+      var election = UserSession.CurrentElection;
+
+      if (election == null) return;
+
+      if (election.ListForPublic.AsBool() && UserSession.IsKnownTeller)
+      {
+        Db.Elections.Attach(election);
+        election.ListedForPublicAsOf = DateTime.Now;
+        Db.SaveChanges();
+      }
     }
   }
 }

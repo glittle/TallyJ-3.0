@@ -139,6 +139,14 @@ namespace TallyJ.Code
       return input;
     }
 
+    public static IEnumerable<int> AsInts(this IEnumerable<string> input)
+    {
+      foreach (var s in input)
+      {
+        yield return s.AsInt();
+      }
+    }
+
     public static int AsInt(this object input)
     {
       return AsInt(input, 0);

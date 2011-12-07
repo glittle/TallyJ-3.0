@@ -7,7 +7,10 @@ namespace TallyJ.Code.Session
 	  public const string CurrentComputer = "CurrentComputer";
 	  public const string CurrentElection = "CurrentElection";
     public const string CurrentLocation = "CurrentLocation";
-    
+
+    public const string IsGuestTeller = "IsGuestTeller";
+    public const string IsKnownTeller = "IsKnownTeller";
+
     public const string CurrentUserGuid = "CurrentUserGuid";
     public const string LastVersionNum = "LastVersionNum";
     public const string UserGuidRetrieved = "UserGuidRetrieved";
