@@ -35,3 +35,6 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\ResolveAssemblyRefere
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.pdb
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\FluentSecurity.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\le_nlog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.xml

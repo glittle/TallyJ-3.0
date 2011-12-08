@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NLog;
 using TallyJ.Code;
 using TallyJ.EF;
 
@@ -19,6 +21,12 @@ namespace TallyJ.Models
         .DefaultTo(template.FilledWith(0, "[No active elections]"))
         .AsRawHtml();
     }
+
+    //private void TestLogging()
+    //{
+    //  //var logger = LogManager.GetCurrentClassLogger();
+    //  //logger.WarnException("Test Warning", new ApplicationException("App Exception"));
+    //}
 
     ///// <summary>
     /////     Get elections listed for public access requests

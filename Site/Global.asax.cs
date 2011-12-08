@@ -1,106 +1,176 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Data.Entity.Validation;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using FluentSecurity;
+using Le;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
+using NLog;
 using TallyJ.Code;
+using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers;
 using Unity.Mvc3;
 
 namespace TallyJ
 {
-	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
-	// visit http://go.microsoft.com/?LinkId=9394801
+  // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
+  // visit http://go.microsoft.com/?LinkId=9394801
 
-	public class MvcApplication : HttpApplication
-	{
-		protected void Application_Start()
-		{
-			ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
-      
+  public class MvcApplication : HttpApplication
+  {
+    protected void Application_Start()
+    {
+      ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
+
       UnityInstance.Container.RegisterControllers();
 
-			DependencyResolver.SetResolver(new UnityDependencyResolver(UnityInstance.Container));
-      
-		  FixUpConnectionString();
-			Bootstrapper.Initialise();
+      DependencyResolver.SetResolver(new UnityDependencyResolver(UnityInstance.Container));
 
-      SecurityConfigurator.Configure(configuration =>
+      FixUpConnectionString();
+      Bootstrapper.Initialise();
+
+      SecurityConfigurator.Configure(
+        configuration =>
+          {
+            // http://www.fluentsecurity.net/getting-started
+
+            // Let Fluent Security know how to get the authentication status of the current user
+            configuration.GetAuthenticationStatusFrom(
+              () => HttpContext.Current.User.Identity.IsAuthenticated);
+
+            configuration.ResolveServicesUsing(
+              type => UnityInstance.Container.ResolveAll(type));
+
+            // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
+
+            configuration.ForAllControllers().DenyAnonymousAccess();
+
+            configuration.For<PublicController>().Ignore();
+
+
+            configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
+
+            configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
+            configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+
+            configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
+
+            configuration.For<DashboardController>().DenyAnonymousAccess();
+
+            configuration.For<ElectionsController>().DenyAnonymousAccess();
+
+            configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
+
+            configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
+
+            configuration.For<AccountController>().DenyAuthenticatedAccess();
+            configuration.For<AccountController>(x => x.LogOff()).DenyAnonymousAccess();
+          });
+
+
+      //AreaRegistration.RegisterAllAreas();
+
+      RegisterGlobalFilters(GlobalFilters.Filters);
+      RegisterRoutes(RouteTable.Routes);
+
+      ConfigureNLog();
+    }
+
+    private void ConfigureNLog()
+    {
+      // see http://nlog-project.org/wiki/Configuration_API
+      var config = LogManager.Configuration;
+      var target = config.FindTargetByName("logentries") as LeTarget;
+      if (target != null)
       {
-        // http://www.fluentsecurity.net/getting-started
+        var siteInfo = new SiteInfo();
+        var newKey = "";
+        if (siteInfo.CurrentEnvironment == "Dev")
+        {
+          try
+          {
+            newKey = File.ReadAllText(@"c:\AppHarborConfig.LogEntries.txt");
+          }
+          catch
+          {
+            // swallow this
+          }
+        }
+        else
+        {
+          newKey = ConfigurationManager.AppSettings["LOGENTRIES_ACCOUNT_KEY"];
+        }
 
-        // Let Fluent Security know how to get the authentication status of the current user
-        configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
+        if (newKey.HasContent())
+        {
+          target.Key = newKey;
+        }
+      }
+    }
 
-        configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
+    private void Application_Error(object sender, EventArgs e)
+    {
+      var mainException = Server.GetLastError().GetBaseException();
 
-        // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
-
-        configuration.ForAllControllers().DenyAnonymousAccess();
-
-        configuration.For<PublicController>().Ignore();
-
-
-        configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
-        
-        configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-        configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
-
-        configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
-        
-        configuration.For<DashboardController>().DenyAnonymousAccess();
-        
-        configuration.For<ElectionsController>().DenyAnonymousAccess();
-        
-        configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
-        
-        configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
-        
-        configuration.For<AccountController>().DenyAuthenticatedAccess();
-        configuration.For<AccountController>(x => x.LogOff()).DenyAnonymousAccess();
-      });
+      var logger = LogManager.GetCurrentClassLogger();
+      var siteInfo = new SiteInfo();
+      logger.FatalException("Env: " + siteInfo.CurrentEnvironment, mainException);
 
 
-			//AreaRegistration.RegisterAllAreas();
+      var dbEntityValidation = mainException as DbEntityValidationException;
+      if (dbEntityValidation != null)
+      {
+        var msg = dbEntityValidation.EntityValidationErrors
+          .Select(eve => eve.ValidationErrors
+                           .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
+                           .JoinedAsString("; "))
+          .JoinedAsString("; ");
+        logger.Debug(msg);
+      }
 
-			RegisterGlobalFilters(GlobalFilters.Filters);
-			RegisterRoutes(RouteTable.Routes);
-		}
+      var url = siteInfo.RootUrl;
+      Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+      Response.End();
+    }
 
-	  void FixUpConnectionString()
-	  {
+
+    private void FixUpConnectionString()
+    {
       var cnString = ConfigurationManager.ConnectionStrings["MainConnection"];
 
-      var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
+      var fi = typeof (ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
       fi.SetValue(cnString, false);
 
       cnString.ConnectionString = cnString.ConnectionString + ";MultipleActiveResultSets=True";
-	  }
+    }
 
-	  public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-		{
+    public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+    {
       filters.Add(new HandleSecurityAttribute(), 0);
       filters.Add(new HandleErrorAttribute());
-		}
+    }
 
-		public static void RegisterRoutes(RouteCollection routes)
-		{
-			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+    public static void RegisterRoutes(RouteCollection routes)
+    {
+      routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-			routes.MapRoute(
-				"Default", // Route name
-				"{controller}/{action}", // URL with parameters
-				new
-					{
-						controller = "Public",
-						action = "Index",
-						//id = UrlParameter.Optional
-					} // Parameter defaults
-				);
-		}
-	}
+      routes.MapRoute(
+        "Default", // Route name
+        "{controller}/{action}", // URL with parameters
+        new
+          {
+            controller = "Public",
+            action = "Index",
+            //id = UrlParameter.Optional
+          } // Parameter defaults
+        );
+    }
+  }
 }
