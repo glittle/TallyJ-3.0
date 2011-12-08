@@ -406,10 +406,9 @@ namespace TallyJ.Models
     public IEnumerable<Election> VisibleElectionInfo()
     {
       return Db.Elections
-        .Where(e=>e.ListForPublic.HasValue && e.ListForPublic.Value)
-        .Where(e=>!string.IsNullOrEmpty(e.ElectionPasscode))
+        .Where(e => !string.IsNullOrEmpty(e.ElectionPasscode))
         .ToList()
-        .Where(e => DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+        .Where(e => e.ListForPublic.AsBool() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
 
     public JsonResult SetTallyStatusJson(string status)
