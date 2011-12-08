@@ -379,6 +379,10 @@ namespace TallyJ.Code
     {
       return new TimeSpan(0, 0, input);
     }
+    public static TimeSpan minutes(this int input)
+    {
+      return new TimeSpan(0, input, 0);
+    }
 
   }
 }

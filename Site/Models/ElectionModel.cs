@@ -1,5 +1,5 @@
 using System;
-using System.Data.Objects.SqlClient;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -403,9 +403,11 @@ namespace TallyJ.Models
       }
     }
 
-    public IQueryable<vElectionListInfo> VisibleElectionInfo()
+    public IEnumerable<vElectionListInfo> VisibleElectionInfo()
     {
-      return Db.vElectionListInfoes.Where(e => SqlFunctions.DateDiff("n", e.ListedForPublicAsOf, DateTime.Now) <= 5);
+      return Db.vElectionListInfoes
+        .ToList()
+        .Where(e => DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
 
     public JsonResult SetTallyStatusJson(string status)
