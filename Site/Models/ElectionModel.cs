@@ -403,12 +403,16 @@ namespace TallyJ.Models
       }
     }
 
-    public IEnumerable<vElectionListInfo> VisibleElectionInfo()
+    public IEnumerable<vElectionListInfo> VisibleElectionInfo1()
     {
       return Db.vElectionListInfoes
-        .Where(e=>e.C_RowId > 0)
         .ToList()
         .Where(e => DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+    }
+    public IEnumerable<vElectionListInfo> VisibleElectionInfo2()
+    {
+      return Db.vElectionListInfoes
+        .ToList();
     }
 
     public JsonResult SetTallyStatusJson(string status)

@@ -9,7 +9,13 @@ namespace TallyJ.Models
   {
     public List<Election> TestElections()
     {
-      return Db.Elections.ToList();
+      var testElections = Db.Elections.ToList();
+
+      var other1 = new ElectionModel().VisibleElectionInfo1();
+
+      var other2 = new ElectionModel().VisibleElectionInfo2();
+
+      return testElections;
     }
 
     /// <summary>
@@ -26,7 +32,7 @@ namespace TallyJ.Models
       {
         var model = new ElectionModel();
 
-        var dictionary = model.VisibleElectionInfo()
+        var dictionary = model.VisibleElectionInfo1()
           .OrderBy(e => e.Name)
           .ToDictionary(e => e.C_RowId, e => e.Name);
 
