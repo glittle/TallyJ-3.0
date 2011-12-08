@@ -501,7 +501,7 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TallyJ2Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="false">
           <EntitySet Name="C_Log" EntityType="TallyJ2Model.C_Log" />
           <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
           <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />

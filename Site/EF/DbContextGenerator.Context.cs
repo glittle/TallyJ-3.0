@@ -19,6 +19,7 @@ namespace TallyJ.EF
         public TallyJ2Entities()
             : base("name=TallyJ2Entities")
         {
+            this.Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
