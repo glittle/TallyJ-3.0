@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity.Validation;
 using System.IO;
@@ -119,23 +120,35 @@ namespace TallyJ
     {
       var mainException = Server.GetLastError().GetBaseException();
 
+      var msgs = new List<string>();
+
       var logger = LogManager.GetCurrentClassLogger();
       var siteInfo = new SiteInfo();
-      logger.FatalException("Env: " + siteInfo.CurrentEnvironment, mainException);
+      var mainMsg = mainException.GetAllMsgs("; ");
+      logger.Fatal("Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, mainMsg));
 
+      msgs.Add(mainMsg);
 
-      var dbEntityValidation = mainException as DbEntityValidationException;
-      if (dbEntityValidation != null)
+      var ex = mainException;
+      while (ex != null)
       {
-        var msg = dbEntityValidation.EntityValidationErrors
-          .Select(eve => eve.ValidationErrors
-                           .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
-                           .JoinedAsString("; "))
-          .JoinedAsString("; ");
-        logger.Debug(msg);
+        var dbEntityValidation = ex as DbEntityValidationException;
+        if (dbEntityValidation != null)
+        {
+          var msg = dbEntityValidation.EntityValidationErrors
+            .Select(eve => eve.ValidationErrors
+                             .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
+                             .JoinedAsString("; "))
+            .JoinedAsString("; ");
+          logger.Debug(msg);
+          msgs.Add(msg);
+        }
+
+        ex = ex.InnerException;
       }
 
       var url = siteInfo.RootUrl;
+      Response.Write(String.Format("<!-- FATAL ERROR: {0} -->", msgs.JoinedAsString("\r\n")));
       Response.Write(String.Format("<script>location.href='{0}'</script>", url));
       Response.End();
     }

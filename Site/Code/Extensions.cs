@@ -48,7 +48,7 @@ namespace TallyJ.Code
     {
       return input == null
                ? null
-               : input.Split(new[] {separator}, stringSplitOptions);
+               : input.Split(new[] { separator }, stringSplitOptions);
     }
 
     /// <summary>
@@ -185,16 +185,16 @@ namespace TallyJ.Code
         return input;
       }
 
-        if(values.Length==1)
+      if (values.Length == 1)
+      {
+        var value = values[0];
+        if (value.GetType().Namespace != "System")
         {
-            var value = values[0];
-            if(value.GetType().Namespace!="System")
-            {
-                return input.FilledWithObject(value);
-            }
+          return input.FilledWithObject(value);
         }
+      }
 
-        return string.Format(input, values);
+      return string.Format(input, values);
     }
 
     /// <summary>Return the URL to the content file, with a version number based on the timestamp.</summary>
@@ -391,5 +391,16 @@ namespace TallyJ.Code
       return new TimeSpan(0, input, 0);
     }
 
+    public static string GetAllMsgs(this Exception input, string sep)
+    {
+      if (input == null) return "";
+
+      var list = new List<string>
+                   {
+                     input.Message, 
+                     input.InnerException.GetAllMsgs(sep)
+                   };
+      return list.JoinedAsString(sep, true);
+    }
   }
 }

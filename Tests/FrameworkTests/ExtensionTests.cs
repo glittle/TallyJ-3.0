@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
 using Tests.Support;
@@ -88,6 +89,15 @@ namespace Tests.FrameworkTests
                    };
 
       template.FilledWithObject(item).ShouldEqual("Name:John Recursive:John");
+    }
+
+    [TestMethod]
+    public void TestGetAllMsg()
+    {
+      new Exception("Test 123").GetAllMsgs(",").ShouldEqual("Test 123");
+      
+      new Exception("Test 123", new ExternalException("Test 456"))
+        .GetAllMsgs(",").ShouldEqual("Test 123,Test 456");
     }
   }
 }
