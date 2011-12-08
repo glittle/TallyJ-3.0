@@ -159,9 +159,10 @@ namespace TallyJ.Code.Session
       HttpContext.Current.Session.Clear();
     }
 
+    /// <Summary>defaults to true</Summary>
     public static bool IsGuestTeller
     {
-      get { return SessionKey.IsGuestTeller.FromSession(false); }
+      get { return SessionKey.IsGuestTeller.FromSession(true); }
       set { SessionKey.IsGuestTeller.SetInSession(value); }
     }
 
@@ -169,7 +170,14 @@ namespace TallyJ.Code.Session
     public static bool IsKnownTeller
     {
       get { return SessionKey.IsKnownTeller.FromSession(false); }
-      set { SessionKey.IsKnownTeller.SetInSession(value); }
+      set
+      {
+        SessionKey.IsKnownTeller.SetInSession(value);
+        if (value)
+        {
+          IsGuestTeller = false;
+        }
+      }
     }
   }
 }
