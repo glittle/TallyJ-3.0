@@ -1,65 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="TallyJ2Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
   <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="false">
-    <EntitySet Name="C_Log" EntityType="TallyJ2Model.C_Log" />
-    <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
-    <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />
     <FunctionImport Name="CloneElection" ReturnType="Collection(TallyJ2Model.CloneElection_Result)">
       <Parameter Name="SourceElection" Mode="In" Type="Guid" />
       <Parameter Name="ByLoginId" Mode="In" Type="String" />
     </FunctionImport>
     <EntitySet Name="Users" EntityType="TallyJ2Model.User" />
+    <EntitySet Name="C_Log" EntityType="TallyJ2Model.C_Log" />
+    <EntitySet Name="Ballots" EntityType="TallyJ2Model.Ballot" />
+    <EntitySet Name="Computers" EntityType="TallyJ2Model.Computer" />
+    <EntitySet Name="Elections" EntityType="TallyJ2Model.Election" />
+    <EntitySet Name="Locations" EntityType="TallyJ2Model.Location" />
+    <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
+    <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
+    <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />
+    <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
+    <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
+    <EntitySet Name="Tellers" EntityType="TallyJ2Model.Teller" />
+    <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
+    <EntitySet Name="vBallotInfoes" EntityType="TallyJ2Model.vBallotInfo" />
+    <EntitySet Name="vElectionListInfoes" EntityType="TallyJ2Model.vElectionListInfo" />
+    <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
+    <EntitySet Name="vResultInfoes" EntityType="TallyJ2Model.vResultInfo" />
+    <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
     <EntitySet Name="JoinElectionUsers" EntityType="TallyJ2Model.JoinElectionUser" />
     <AssociationSet Name="FK_JoinElectionUser_Users" Association="TallyJ2Model.FK_JoinElectionUser_Users">
       <End Role="User" EntitySet="Users" />
       <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
     </AssociationSet>
-    <EntitySet Name="Computers" EntityType="TallyJ2Model.Computer" />
-    <EntitySet Name="Locations" EntityType="TallyJ2Model.Location" />
-    <EntitySet Name="Tellers" EntityType="TallyJ2Model.Teller" />
-    <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
-    <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
-    <EntitySet Name="Ballots" EntityType="TallyJ2Model.Ballot" />
-    <EntitySet Name="vResultInfoes" EntityType="TallyJ2Model.vResultInfo" />
-    <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
-    <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
-    <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
-    <EntitySet Name="vBallotInfoes" EntityType="TallyJ2Model.vBallotInfo" />
-    <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
-    <EntitySet Name="Elections" EntityType="TallyJ2Model.Election" />
   </EntityContainer>
-  <EntityType Name="C_Log">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-    <Property Name="AsOf" Type="DateTime" Nullable="false" />
-    <Property Name="LocationGuid" Type="Guid" />
-    <Property Name="ComputerCode" Type="String" MaxLength="2" Unicode="false" FixedLength="false" />
-    <Property Name="Details" Type="String" MaxLength="250" Unicode="false" FixedLength="false" />
-  </EntityType>
-  <EntityType Name="Message">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-    <Property Name="Title" Type="String" Nullable="false" MaxLength="150" Unicode="true" FixedLength="false" />
-    <Property Name="Details" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
-    <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-    <Property Name="AsOf" Type="DateTime" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Reason">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="ReasonGuid" Type="Guid" Nullable="false" />
-    <Property Name="ReasonGroup" Type="String" Nullable="false" MaxLength="30" Unicode="true" FixedLength="false" />
-    <Property Name="ReasonDescription" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
-    <Property Name="SortOrder" Type="Int32" />
-  </EntityType>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
     <Property Type="Guid" Name="NewElectionGuid" Nullable="true" />
@@ -76,28 +45,32 @@
     <Property Type="DateTime" Name="LastActivityDate" Nullable="false" />
     <NavigationProperty Name="JoinElectionUsers" Relationship="TallyJ2Model.FK_JoinElectionUser_Users" FromRole="User" ToRole="JoinElectionUser" />
   </EntityType>
-  <EntityType Name="JoinElectionUser">
+  <EntityType Name="C_Log">
     <Key>
       <PropertyRef Name="C_RowId" />
     </Key>
     <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="DateTime" Name="AsOf" Nullable="false" />
     <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="UserId" Nullable="false" />
-    <Property Type="String" Name="Role" MaxLength="10" FixedLength="false" Unicode="false" />
-    <NavigationProperty Name="User" Relationship="TallyJ2Model.FK_JoinElectionUser_Users" FromRole="JoinElectionUser" ToRole="User" />
+    <Property Type="Guid" Name="LocationGuid" />
+    <Property Type="String" Name="ComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="Details" MaxLength="Max" FixedLength="false" Unicode="false" />
   </EntityType>
-  <Association Name="FK_JoinElectionUser_Users">
-    <End Type="TallyJ2Model.User" Role="User" Multiplicity="1" />
-    <End Type="TallyJ2Model.JoinElectionUser" Role="JoinElectionUser" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="User">
-        <PropertyRef Name="UserId" />
-      </Principal>
-      <Dependent Role="JoinElectionUser">
-        <PropertyRef Name="UserId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
+  <EntityType Name="Ballot">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
+    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Guid" Name="TellerAtKeyboard" />
+    <Property Type="Guid" Name="TellerAssisting" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+  </EntityType>
   <EntityType Name="Computer">
     <Key>
       <PropertyRef Name="C_RowId" />
@@ -113,239 +86,6 @@
     <Property Type="Guid" Name="Teller2" />
     <Property Type="Guid" Name="ShadowElectionGuid" />
     <Property Type="String" Name="BrowserInfo" MaxLength="Max" FixedLength="false" Unicode="false" />
-  </EntityType>
-  <EntityType Name="Location">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="SortOrder" />
-  </EntityType>
-  <EntityType Name="Teller">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="TellerGuid" Nullable="false" />
-    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="UsingComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Boolean" Name="IsHeadTeller" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-  </EntityType>
-  <EntityType Name="Person">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="PersonGuid" Nullable="false" />
-    <Property Type="String" Name="LastName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="FirstName" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="OtherLastNames" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="OtherNames" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="OtherInfo" MaxLength="150" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="BahaiId" MaxLength="20" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="CombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="CombinedSoundCodes" MaxLength="Max" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="CombinedInfoAtStart" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="AgeGroup" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Boolean" Name="CanVote" />
-    <Property Type="Boolean" Name="CanReceiveVotes" />
-    <Property Type="Guid" Name="IneligibleReasonGuid" />
-    <Property Type="DateTime" Name="RegistrationTime" />
-    <Property Type="Guid" Name="VotingLocationGuid" />
-    <Property Type="String" Name="VotingMethod" MaxLength="1" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="EnvNum" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-    <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
-    <Property Type="String" Name="Area" MaxLength="50" FixedLength="false" Unicode="true" />
-  </EntityType>
-  <EntityType Name="Result">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="PersonGuid" Nullable="false" />
-    <Property Type="Int32" Name="Rank" Nullable="false" />
-    <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-    <Property Type="Boolean" Name="CloseToPrev" />
-    <Property Type="Boolean" Name="CloseToNext" />
-    <Property Type="Boolean" Name="IsTied" />
-    <Property Type="String" Name="TieBreakGroup" MaxLength="1" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="TieBreakCount" />
-    <Property Type="Boolean" Name="IsTieResolved" />
-    <Property Type="Int32" Name="RankInExtra" />
-    <Property Type="Boolean" Name="ForceShowInOther" />
-    <Property Type="Int32" Name="VoteCount" />
-  </EntityType>
-  <EntityType Name="Ballot">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
-    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
-    <Property Type="Guid" Name="TellerAtKeyboard" />
-    <Property Type="Guid" Name="TellerAssisting" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-  </EntityType>
-  <EntityType Name="vResultInfo">
-    <Key>
-      <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="Section" />
-      <PropertyRef Name="Rank" />
-      <PropertyRef Name="C_FakeRowId" />
-    </Key>
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-    <Property Type="Int32" Name="Rank" Nullable="false" />
-    <Property Type="Int32" Name="RankInExtra" />
-    <Property Type="String" Name="PersonName" MaxLength="461" FixedLength="false" Unicode="true" />
-    <Property Type="Boolean" Name="IsTied" />
-    <Property Type="Boolean" Name="IsTieResolved" />
-    <Property Type="String" Name="TieBreakGroup" MaxLength="1" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="TieBreakCount" />
-    <Property Type="Int32" Name="VoteCount" />
-    <Property Type="Int64" Name="C_FakeRowId" Nullable="false" />
-  </EntityType>
-  <EntityType Name="vLocationInfo">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-      <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="LocationGuid" />
-      <PropertyRef Name="Name" />
-      <PropertyRef Name="SortOrder2" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="TallyStatus" MaxLength="9" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="SortOrder" />
-    <Property Type="String" Name="ComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="Ballots" />
-    <Property Type="DateTime" Name="LastContact" />
-    <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="Int64" Name="SortOrder2" Nullable="false" />
-    <Property Type="Int32" Name="BallotId" />
-  </EntityType>
-  <EntityType Name="Vote">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-    <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
-    <Property Type="Guid" Name="PersonGuid" />
-    <Property Type="Binary" Name="PersonRowVersion" MaxLength="8" FixedLength="true" />
-    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Type="Guid" Name="InvalidReasonGuid" />
-    <Property Type="Int32" Name="SingleNameElectionCount" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-  </EntityType>
-  <EntityType Name="vVoteInfo">
-    <Key>
-      <PropertyRef Name="VoteId" />
-      <PropertyRef Name="VoteStatusCode" />
-      <PropertyRef Name="PositionOnBallot" />
-      <PropertyRef Name="BallotGuid" />
-      <PropertyRef Name="BallotId" />
-      <PropertyRef Name="BallotStatusCode" />
-      <PropertyRef Name="LocationId" />
-      <PropertyRef Name="ElectionGuid" />
-    </Key>
-    <Property Type="Int32" Name="VoteId" Nullable="false" />
-    <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="SingleNameElectionCount" />
-    <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
-    <Property Type="Guid" Name="VoteInvalidReasonGuid" />
-    <Property Type="Int32" Name="VoteInvalidReasonId" />
-    <Property Type="String" Name="VoteInvalidReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="Int64" Name="PersonRowVersionInVote" />
-    <Property Type="Int64" Name="PersonRowVersion" />
-    <Property Type="Guid" Name="PersonGuid" />
-    <Property Type="Int32" Name="PersonId" />
-    <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />
-    <Property Type="Boolean" Name="CanReceiveVotes" />
-    <Property Type="Guid" Name="PersonIneligibleReasonGuid" />
-    <Property Type="Int32" Name="PersonIneligibleReasonId" />
-    <Property Type="String" Name="PersonIneligibleReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="Int32" Name="ResultId" />
-    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-    <Property Type="Int32" Name="BallotId" Nullable="false" />
-    <Property Type="String" Name="BallotStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="LocationId" Nullable="false" />
-    <Property Type="String" Name="LocationTallyStatus" MaxLength="9" FixedLength="false" Unicode="false" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-  </EntityType>
-  <EntityType Name="vBallotInfo">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-      <PropertyRef Name="LocationGuid" />
-      <PropertyRef Name="BallotGuid" />
-      <PropertyRef Name="StatusCode" />
-      <PropertyRef Name="ComputerCode" />
-      <PropertyRef Name="BallotNumAtComputer" />
-      <PropertyRef Name="C_RowVersion" />
-      <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="LocationName" />
-      <PropertyRef Name="LocationId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" />
-    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
-    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
-    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
-    <Property Type="Guid" Name="TellerAtKeyboard" />
-    <Property Type="Guid" Name="TellerAssisting" />
-    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="String" Name="LocationName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="TellerAtKeyboardName" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="String" Name="TellerAssistingName" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="Int64" Name="RowVersionInt" />
-    <Property Type="Int32" Name="LocationSortOrder" />
-    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="LocationId" Nullable="false" />
-  </EntityType>
-  <EntityType Name="ResultSummary">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="String" Name="ResultType" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-    <Property Type="Boolean" Name="UseOnReports" />
-    <Property Type="Int32" Name="NumVoters" />
-    <Property Type="Int32" Name="NumEligibleToVote" />
-    <Property Type="Int32" Name="MailedInBallots" />
-    <Property Type="Int32" Name="DroppedOffBallots" />
-    <Property Type="Int32" Name="InPersonBallots" />
-    <Property Type="Int32" Name="SpoiledBallots" />
-    <Property Type="Int32" Name="SpoiledVotes" />
-    <Property Type="Int32" Name="TotalVotes" />
-    <Property Type="Int32" Name="BallotsReceived" />
-    <Property Type="Int32" Name="BallotsNeedingReview" />
   </EntityType>
   <EntityType Name="Election">
     <Key>
@@ -374,4 +114,278 @@
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Boolean" Name="ListForPublic" />
   </EntityType>
+  <EntityType Name="Location">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="SortOrder" />
+  </EntityType>
+  <EntityType Name="Message">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="Title" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Details" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="DateTime" Name="AsOf" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Person">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="PersonGuid" Nullable="false" />
+    <Property Type="String" Name="LastName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="FirstName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="OtherLastNames" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="OtherNames" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="OtherInfo" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Area" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="BahaiId" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="CombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="CombinedSoundCodes" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="CombinedInfoAtStart" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="AgeGroup" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Boolean" Name="CanVote" />
+    <Property Type="Boolean" Name="CanReceiveVotes" />
+    <Property Type="Guid" Name="IneligibleReasonGuid" />
+    <Property Type="DateTime" Name="RegistrationTime" />
+    <Property Type="Guid" Name="VotingLocationGuid" />
+    <Property Type="String" Name="VotingMethod" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="EnvNum" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="Reason">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ReasonGuid" Nullable="false" />
+    <Property Type="String" Name="ReasonGroup" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="ReasonDescription" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="SortOrder" />
+  </EntityType>
+  <EntityType Name="Result">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="PersonGuid" Nullable="false" />
+    <Property Type="Int32" Name="VoteCount" />
+    <Property Type="Int32" Name="Rank" Nullable="false" />
+    <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Type="Boolean" Name="CloseToPrev" />
+    <Property Type="Boolean" Name="CloseToNext" />
+    <Property Type="Boolean" Name="IsTied" />
+    <Property Type="String" Name="TieBreakGroup" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="TieBreakCount" />
+    <Property Type="Boolean" Name="IsTieResolved" />
+    <Property Type="Int32" Name="RankInExtra" />
+    <Property Type="Boolean" Name="ForceShowInOther" />
+  </EntityType>
+  <EntityType Name="ResultSummary">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="ResultType" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Type="Boolean" Name="UseOnReports" />
+    <Property Type="Int32" Name="NumVoters" />
+    <Property Type="Int32" Name="NumEligibleToVote" />
+    <Property Type="Int32" Name="MailedInBallots" />
+    <Property Type="Int32" Name="DroppedOffBallots" />
+    <Property Type="Int32" Name="InPersonBallots" />
+    <Property Type="Int32" Name="SpoiledBallots" />
+    <Property Type="Int32" Name="SpoiledVotes" />
+    <Property Type="Int32" Name="TotalVotes" />
+    <Property Type="Int32" Name="BallotsReceived" />
+    <Property Type="Int32" Name="BallotsNeedingReview" />
+  </EntityType>
+  <EntityType Name="Teller">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="TellerGuid" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="UsingComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Boolean" Name="IsHeadTeller" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="Vote">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+    <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
+    <Property Type="Guid" Name="PersonGuid" />
+    <Property Type="Binary" Name="PersonRowVersion" MaxLength="8" FixedLength="true" />
+    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="Guid" Name="InvalidReasonGuid" />
+    <Property Type="Int32" Name="SingleNameElectionCount" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="vBallotInfo">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+      <PropertyRef Name="LocationGuid" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="StatusCode" />
+      <PropertyRef Name="ComputerCode" />
+      <PropertyRef Name="BallotNumAtComputer" />
+      <PropertyRef Name="C_RowVersion" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="LocationName" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" />
+    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+    <Property Type="String" Name="StatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="ComputerCode" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="BallotNumAtComputer" Nullable="false" />
+    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+    <Property Type="Guid" Name="TellerAtKeyboard" />
+    <Property Type="Guid" Name="TellerAssisting" />
+    <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Int32" Name="LocationId" Nullable="false" />
+    <Property Type="String" Name="LocationName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="LocationSortOrder" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="TellerAtKeyboardName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TellerAssistingName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int64" Name="RowVersionInt" />
+  </EntityType>
+  <EntityType Name="vElectionListInfo">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="Name" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="ListForPublic" />
+    <Property Type="DateTime" Name="ListedForPublicAsOf" />
+    <Property Type="String" Name="ElectionPasscode" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="vLocationInfo">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="LocationGuid" />
+      <PropertyRef Name="Name" />
+      <PropertyRef Name="SortOrder2" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="LocationGuid" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="ContactInfo" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Long" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="SortOrder" />
+    <Property Type="String" Name="ComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="BallotId" />
+    <Property Type="Int32" Name="Ballots" />
+    <Property Type="DateTime" Name="LastContact" />
+    <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int64" Name="SortOrder2" Nullable="false" />
+  </EntityType>
+  <EntityType Name="vResultInfo">
+    <Key>
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="Section" />
+      <PropertyRef Name="Rank" />
+      <PropertyRef Name="C_FakeRowId" />
+    </Key>
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Type="Int32" Name="Rank" Nullable="false" />
+    <Property Type="Int32" Name="RankInExtra" />
+    <Property Type="String" Name="PersonName" MaxLength="461" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="IsTied" />
+    <Property Type="Boolean" Name="IsTieResolved" />
+    <Property Type="String" Name="TieBreakGroup" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="TieBreakCount" />
+    <Property Type="Int32" Name="VoteCount" />
+    <Property Type="Int64" Name="C_FakeRowId" Nullable="false" />
+  </EntityType>
+  <EntityType Name="vVoteInfo">
+    <Key>
+      <PropertyRef Name="VoteId" />
+      <PropertyRef Name="VoteStatusCode" />
+      <PropertyRef Name="PositionOnBallot" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="BallotId" />
+      <PropertyRef Name="BallotStatusCode" />
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="ElectionGuid" />
+    </Key>
+    <Property Type="Int32" Name="VoteId" Nullable="false" />
+    <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="SingleNameElectionCount" />
+    <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
+    <Property Type="Guid" Name="VoteInvalidReasonGuid" />
+    <Property Type="Int32" Name="VoteInvalidReasonId" />
+    <Property Type="String" Name="VoteInvalidReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int64" Name="PersonRowVersionInVote" />
+    <Property Type="Int64" Name="PersonRowVersion" />
+    <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Guid" Name="PersonGuid" />
+    <Property Type="Int32" Name="PersonId" />
+    <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="CanReceiveVotes" />
+    <Property Type="Guid" Name="PersonIneligibleReasonGuid" />
+    <Property Type="Int32" Name="PersonIneligibleReasonId" />
+    <Property Type="String" Name="PersonIneligibleReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="ResultId" />
+    <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+    <Property Type="Int32" Name="BallotId" Nullable="false" />
+    <Property Type="String" Name="BallotStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="LocationId" Nullable="false" />
+    <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+  </EntityType>
+  <EntityType Name="JoinElectionUser">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Guid" Name="UserId" Nullable="false" />
+    <Property Type="String" Name="Role" MaxLength="10" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="User" Relationship="TallyJ2Model.FK_JoinElectionUser_Users" FromRole="JoinElectionUser" ToRole="User" />
+  </EntityType>
+  <Association Name="FK_JoinElectionUser_Users">
+    <End Type="TallyJ2Model.User" Role="User" Multiplicity="1" />
+    <End Type="TallyJ2Model.JoinElectionUser" Role="JoinElectionUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="JoinElectionUser">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

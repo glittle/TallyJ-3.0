@@ -186,6 +186,9 @@
     <Compile Include="EF\Computer.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\C_Log.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Election.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -195,9 +198,15 @@
     <Compile Include="EF\Location.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Message.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Person.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Reason.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Result.cs">
@@ -213,6 +222,9 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vBallotInfo.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\vElectionListInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vLocationInfo.cs">
@@ -249,9 +261,6 @@
     <Compile Include="EF\Partials\SerializableClasses.cs" />
     <Compile Include="Models\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
-    <Compile Include="EF\C_Log.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\DbContextGenerator.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -260,12 +269,6 @@
     <Compile Include="EF\DbContextGenerator.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Message.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Reason.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />

@@ -22,6 +22,7 @@ namespace TallyJ.EF
         public string OtherLastNames { get; set; }
         public string OtherNames { get; set; }
         public string OtherInfo { get; set; }
+        public string Area { get; set; }
         public string BahaiId { get; set; }
         public string CombinedInfo { get; set; }
         public string CombinedSoundCodes { get; set; }
@@ -36,6 +37,5 @@ namespace TallyJ.EF
         public Nullable<int> EnvNum { get; set; }
         public byte[] C_RowVersion { get; set; }
         public string C_FullName { get; set; }
-        public string Area { get; set; }
     }
 }

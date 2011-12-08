@@ -17,6 +17,7 @@ namespace TallyJ.EF
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
         public System.Guid PersonGuid { get; set; }
+        public Nullable<int> VoteCount { get; set; }
         public int Rank { get; set; }
         public string Section { get; set; }
         public Nullable<bool> CloseToPrev { get; set; }
@@ -27,6 +28,5 @@ namespace TallyJ.EF
         public Nullable<bool> IsTieResolved { get; set; }
         public Nullable<int> RankInExtra { get; set; }
         public Nullable<bool> ForceShowInOther { get; set; }
-        public Nullable<int> VoteCount { get; set; }
     }
 }

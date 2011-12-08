@@ -23,6 +23,7 @@ namespace TallyJ.EF
         public string VoteInvalidReasonDesc { get; set; }
         public Nullable<long> PersonRowVersionInVote { get; set; }
         public Nullable<long> PersonRowVersion { get; set; }
+        public byte[] PersonRowVersionRaw { get; set; }
         public Nullable<System.Guid> PersonGuid { get; set; }
         public Nullable<int> PersonId { get; set; }
         public string PersonFullName { get; set; }
@@ -38,6 +39,5 @@ namespace TallyJ.EF
         public int LocationId { get; set; }
         public string LocationTallyStatus { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public byte[] PersonRowVersionRaw { get; set; }
     }
 }

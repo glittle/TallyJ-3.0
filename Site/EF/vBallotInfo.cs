@@ -25,12 +25,12 @@ namespace TallyJ.EF
         public Nullable<System.Guid> TellerAssisting { get; set; }
         public byte[] C_RowVersion { get; set; }
         public System.Guid ElectionGuid { get; set; }
+        public int LocationId { get; set; }
         public string LocationName { get; set; }
+        public Nullable<int> LocationSortOrder { get; set; }
+        public string TallyStatus { get; set; }
         public string TellerAtKeyboardName { get; set; }
         public string TellerAssistingName { get; set; }
         public Nullable<long> RowVersionInt { get; set; }
-        public Nullable<int> LocationSortOrder { get; set; }
-        public string TallyStatus { get; set; }
-        public int LocationId { get; set; }
     }
 }

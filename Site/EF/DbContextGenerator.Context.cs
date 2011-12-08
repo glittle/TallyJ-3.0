@@ -27,24 +27,25 @@ namespace TallyJ.EF
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<C_Log> C_Log { get; set; }
-        public DbSet<Message> Messages { get; set; }
-        public DbSet<Reason> Reasons { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
-        public DbSet<Computer> Computers { get; set; }
-        public DbSet<Location> Locations { get; set; }
-        public DbSet<Teller> Tellers { get; set; }
-        public DbSet<Person> People { get; set; }
-        public DbSet<Result> Results { get; set; }
+        public DbSet<C_Log> C_Log { get; set; }
         public DbSet<Ballot> Ballots { get; set; }
-        public DbSet<vResultInfo> vResultInfoes { get; set; }
-        public DbSet<vLocationInfo> vLocationInfoes { get; set; }
-        public DbSet<Vote> Votes { get; set; }
-        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
-        public DbSet<vBallotInfo> vBallotInfoes { get; set; }
-        public DbSet<ResultSummary> ResultSummaries { get; set; }
+        public DbSet<Computer> Computers { get; set; }
         public DbSet<Election> Elections { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Person> People { get; set; }
+        public DbSet<Reason> Reasons { get; set; }
+        public DbSet<Result> Results { get; set; }
+        public DbSet<ResultSummary> ResultSummaries { get; set; }
+        public DbSet<Teller> Tellers { get; set; }
+        public DbSet<Vote> Votes { get; set; }
+        public DbSet<vBallotInfo> vBallotInfoes { get; set; }
+        public DbSet<vElectionListInfo> vElectionListInfoes { get; set; }
+        public DbSet<vLocationInfo> vLocationInfoes { get; set; }
+        public DbSet<vResultInfo> vResultInfoes { get; set; }
+        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
+        public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
     
         public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
         {
