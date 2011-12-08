@@ -32,7 +32,7 @@
                   <div>
                     <span>Active Elections:</span>
                     <select id="ddlElections" size="4">
-                      @Model.TestElections().Select(x => "<option value=\"{ElectionType}\">{Name}</option>".FilledWithObject(x)).JoinedAsString().AsRawHtml()
+                      @Model.VisibleElectionsOptions()
 @*
                       @(Model.PublicElections
          .Select(x => "<option value=\"{0}\">{1}</option>".FilledWith(x.Key, x.Value))

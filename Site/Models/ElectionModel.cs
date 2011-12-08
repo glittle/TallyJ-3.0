@@ -403,7 +403,7 @@ namespace TallyJ.Models
       }
     }
 
-    public IEnumerable<Election> VisibleElectionInfo()
+    public IEnumerable<Election> VisibleElections()
     {
       return Db.Elections
         .Where(e => !string.IsNullOrEmpty(e.ElectionPasscode))
