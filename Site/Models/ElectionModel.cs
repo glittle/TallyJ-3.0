@@ -406,6 +406,7 @@ namespace TallyJ.Models
     public IEnumerable<vElectionListInfo> VisibleElectionInfo()
     {
       return Db.vElectionListInfoes
+        .Where(e=>e.C_RowId > 0)
         .ToList()
         .Where(e => DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
