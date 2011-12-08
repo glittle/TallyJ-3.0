@@ -67,7 +67,7 @@ namespace TallyJ.Models
         return new List<Election> { currentElection };
       }
 
-      return null;
+      return new List<Election>();
     }
   }
 }
