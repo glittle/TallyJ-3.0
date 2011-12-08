@@ -11,9 +11,9 @@ namespace TallyJ.Models
     {
       var testElections = Db.Elections.ToList();
 
-      var other1 = new ElectionModel().VisibleElectionInfo1();
-
       var other2 = new ElectionModel().VisibleElectionInfo2();
+
+      var other1 = new ElectionModel().VisibleElectionInfo1();
 
       return testElections;
     }
