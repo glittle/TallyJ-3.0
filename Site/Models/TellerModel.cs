@@ -15,7 +15,7 @@ namespace TallyJ.Models
     {
       var model = new ElectionModel();
 
-      var desiredElection = model.VisibleElectionInfo1().SingleOrDefault(e => e.C_RowId == electionId
+      var desiredElection = model.VisibleElectionInfo().SingleOrDefault(e => e.C_RowId == electionId
                                                               && e.ElectionPasscode == secretCode);
 
       if (desiredElection == null)

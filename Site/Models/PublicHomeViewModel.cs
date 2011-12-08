@@ -11,9 +11,7 @@ namespace TallyJ.Models
     {
       var testElections = Db.Elections.ToList();
 
-      var other2 = new ElectionModel().VisibleElectionInfo2();
-
-      var other1 = new ElectionModel().VisibleElectionInfo1();
+      var other1 = new ElectionModel().VisibleElectionInfo();
 
       return testElections;
     }
@@ -32,7 +30,7 @@ namespace TallyJ.Models
       {
         var model = new ElectionModel();
 
-        var dictionary = model.VisibleElectionInfo1()
+        var dictionary = model.VisibleElectionInfo()
           .OrderBy(e => e.Name)
           .ToDictionary(e => e.C_RowId, e => e.Name);
 

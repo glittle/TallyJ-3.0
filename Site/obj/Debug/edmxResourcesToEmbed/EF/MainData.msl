@@ -332,17 +332,5 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="vElectionListInfoes">
-      <EntityTypeMapping TypeName="TallyJ2Model.vElectionListInfo">
-        <MappingFragment StoreEntitySet="vElectionListInfo">
-          <ScalarProperty Name="ElectionPasscode" ColumnName="ElectionPasscode" />
-          <ScalarProperty Name="ListedForPublicAsOf" ColumnName="ListedForPublicAsOf" />
-          <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
-          <ScalarProperty Name="Name" ColumnName="Name" />
-          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

@@ -209,9 +209,6 @@
     <Compile Include="EF\vBallotInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\vElectionListInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\vLocationInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>

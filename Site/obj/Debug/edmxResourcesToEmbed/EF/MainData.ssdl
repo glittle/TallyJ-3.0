@@ -37,16 +37,6 @@
       [vBallotInfo].[RowVersionInt] AS [RowVersionInt]
       FROM [tj].[vBallotInfo] AS [vBallotInfo]</DefiningQuery>
     </EntitySet>
-    <EntitySet Name="vElectionListInfo" EntityType="tallyj2dModel.Store.vElectionListInfo" store:Type="Views" store:Schema="tj" store:Name="vElectionListInfo">
-      <DefiningQuery>SELECT 
-      [vElectionListInfo].[_RowId] AS [_RowId], 
-      [vElectionListInfo].[ElectionGuid] AS [ElectionGuid], 
-      [vElectionListInfo].[Name] AS [Name], 
-      [vElectionListInfo].[ListForPublic] AS [ListForPublic], 
-      [vElectionListInfo].[ListedForPublicAsOf] AS [ListedForPublicAsOf], 
-      [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode]
-      FROM [tj].[vElectionListInfo] AS [vElectionListInfo]</DefiningQuery>
-    </EntitySet>
     <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
       <DefiningQuery>SELECT 
       [vLocationInfo].[_RowId] AS [_RowId], 
@@ -368,19 +358,6 @@
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
-  <EntityType Name="vElectionListInfo">
-    <Key>
-      <PropertyRef Name="_RowId" />
-      <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="Name" />
-    </Key>
-    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="150" />
-    <Property Name="ListForPublic" Type="bit" />
-    <Property Name="ListedForPublicAsOf" Type="datetime2" />
-    <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
-  </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
