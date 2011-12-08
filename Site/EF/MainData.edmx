@@ -245,6 +245,7 @@
           <Property Name="OtherLastNames" Type="nvarchar" MaxLength="100" />
           <Property Name="OtherNames" Type="nvarchar" MaxLength="100" />
           <Property Name="OtherInfo" Type="nvarchar" MaxLength="150" />
+          <Property Name="Area" Type="nvarchar" MaxLength="50" />
           <Property Name="BahaiId" Type="varchar" MaxLength="20" />
           <Property Name="CombinedInfo" Type="nvarchar(max)" />
           <Property Name="CombinedSoundCodes" Type="varchar(max)" />
@@ -667,6 +668,7 @@
           <Property Type="Int32" Name="EnvNum" />
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="String" Name="Area" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Result">
           <Key>
@@ -877,15 +879,15 @@
         <EntityType Name="vElectionListInfo">
           <Key>
             <PropertyRef Name="C_RowId" />
-            <PropertyRef Name="Name" />
             <PropertyRef Name="ElectionGuid" />
+            <PropertyRef Name="Name" />
           </Key>
           <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
           <Property Type="String" Name="Name" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="ListForPublic" />
           <Property Type="DateTime" Name="ListedForPublicAsOf" />
           <Property Type="String" Name="ElectionPasscode" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -994,6 +996,7 @@
           <EntitySetMapping Name="People">
             <EntityTypeMapping TypeName="TallyJ2Model.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="Area" ColumnName="Area" />
                 <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
                 <ScalarProperty Name="EnvNum" ColumnName="EnvNum" />
@@ -1214,11 +1217,11 @@
           <EntitySetMapping Name="vElectionListInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vElectionListInfo">
               <MappingFragment StoreEntitySet="vElectionListInfo">
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="ElectionPasscode" ColumnName="ElectionPasscode" />
                 <ScalarProperty Name="ListedForPublicAsOf" ColumnName="ListedForPublicAsOf" />
                 <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1267,7 +1270,7 @@
         <EntityTypeShape EntityType="TallyJ2Model.vBallotInfo" Width="1.5" PointX="10.75" PointY="11.75" Height="4.480205078125" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultSummary" Width="1.5" PointX="11.75" PointY="0.75" Height="3.1340950520833388" />
         <EntityTypeShape EntityType="TallyJ2Model.Election" Width="1.5" PointX="0.75" PointY="13.75" Height="5.2494108072916674" />
-        <EntityTypeShape EntityType="TallyJ2Model.vElectionListInfo" Width="1.5" PointX="3.375" PointY="13.75" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="TallyJ2Model.vElectionListInfo" Width="1.5" PointX="13.375" PointY="5.75" Height="2.1725878906250031" />
       </Diagram>
     </Diagrams>
   </Designer>

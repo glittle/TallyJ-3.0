@@ -170,6 +170,7 @@ footer
     background-color: #d3dce0;
     margin-left: 10px;
     margin-right: 3px;
+    border-radius: 3px;
     padding: 2px 3px;
     text-decoration: none;
 }

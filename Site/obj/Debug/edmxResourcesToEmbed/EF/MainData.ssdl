@@ -240,6 +240,7 @@
     <Property Name="OtherLastNames" Type="nvarchar" MaxLength="100" />
     <Property Name="OtherNames" Type="nvarchar" MaxLength="100" />
     <Property Name="OtherInfo" Type="nvarchar" MaxLength="150" />
+    <Property Name="Area" Type="nvarchar" MaxLength="50" />
     <Property Name="BahaiId" Type="varchar" MaxLength="20" />
     <Property Name="CombinedInfo" Type="nvarchar(max)" />
     <Property Name="CombinedSoundCodes" Type="varchar(max)" />

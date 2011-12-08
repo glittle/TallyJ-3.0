@@ -111,6 +111,7 @@ namespace TallyJ.Models
                  person.OtherInfo,
                  person.OtherLastNames,
                  person.OtherNames,
+                 person.Area
                };
     }
 
@@ -155,7 +156,8 @@ namespace TallyJ.Models
                                personFromInput.LastName,
                                personFromInput.OtherInfo,
                                personFromInput.OtherLastNames,
-                               personFromInput.OtherNames
+                               personFromInput.OtherNames,
+                               personFromInput.Area
                              }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       var changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields);

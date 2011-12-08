@@ -21,6 +21,12 @@
   background-color: #c1f1b4;
   border-color: #999;
 }
+#nameList i.First {
+    padding: 3px 0 3px 0; 
+    border-top: 3px double #ccc;
+    width: 100%;
+    display: block;
+}
 #action {
   width: 20px;
   height: 1em;

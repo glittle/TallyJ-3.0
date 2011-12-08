@@ -24,10 +24,13 @@ AS
 BEGIN
   set @AllTerms = '^' + @AllTerms + '^'
 
+  set @Term1 = '^' + @Term1
+  set @Term2 = '^' + @Term2
+
   if @CompleteMatch = 1
   begin
-    set @Term1 = '^' + @Term1 + '^'
-    set @Term2 = '^' + @Term2 + '^'
+    set @Term1 = @Term1 + '^'
+    set @Term2 = @Term2 + '^'
   end
 
   if @Term2 is null

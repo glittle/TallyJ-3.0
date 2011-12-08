@@ -15,10 +15,10 @@ namespace TallyJ.EF
     public partial class vElectionListInfo
     {
         public int C_RowId { get; set; }
+        public System.Guid ElectionGuid { get; set; }
         public string Name { get; set; }
         public Nullable<bool> ListForPublic { get; set; }
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
         public string ElectionPasscode { get; set; }
-        public System.Guid ElectionGuid { get; set; }
     }
 }

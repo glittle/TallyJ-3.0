@@ -25,7 +25,7 @@ namespace TallyJ.Models
 
     public JsonResult Search(string nameToFind, bool includeMatches)
     {
-      const int max = 9;
+      const int max = 19;
 
       var matched = InnerSearch(nameToFind, max, true).Take(max + 1).ToList();
       var toShow = matched.Select(x => x).Take(max).ToList();

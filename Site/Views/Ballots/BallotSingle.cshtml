@@ -8,8 +8,8 @@
     ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("peopleUrl", "ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("invalids", "ballotPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
-    ContextItems.AddJavascriptForPage("location", "ballotPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
     ContextItems.AddJavascriptForPage("ballot", "ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
+    ContextItems.AddJavascriptForPage("location", "ballotPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
     ContextItems.AddJavascriptForPage("ballotList", "ballotPage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }

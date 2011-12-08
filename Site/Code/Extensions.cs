@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -334,6 +335,12 @@ namespace TallyJ.Code
                         .CleanedForJavascriptStrings()
                         .Replace("\"", "\\\"")
         );
+    }
+
+    public static string CleanedForSearching(this string input)
+    {
+      if (input.HasNoContent()) return "";
+      return Regex.Replace(input, @"[^\w\.\'\- ]", "");
     }
 
     public static string CleanedForJavascriptStrings(this string input)

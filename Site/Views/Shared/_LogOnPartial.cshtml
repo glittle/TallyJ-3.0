@@ -2,6 +2,12 @@
 @if (Request.IsAuthenticated)
 {
     <p>
+        @Html.ActionLink("Setup", "Index", "Setup")
+        @Html.ActionLink("People", "People", "Setup")
+        @Html.ActionLink("Location", "ChooseElection", "Dashboard")
+        @Html.ActionLink("Ballots", "Index", "Ballots")
+        @Html.ActionLink("Monitor", "Monitor", "After")
+        @Html.ActionLink("Report", "Presenter", "After")
         @Html.ActionLink("Dashboard", "Index", "Dashboard")
         @if(UserSession.IsKnownTeller)
         {

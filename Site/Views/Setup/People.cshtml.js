@@ -25,7 +25,7 @@ var PeoplePage = function () {
         else {
             local.rowSelected = 0;
             if (info.MoreFound && local.lastSearch) {
-                local.nameList.append('<li>...more than 9 matched...</li>');
+                local.nameList.append('<li>...more matched...</li>');
             }
             $.each(local.People, function (i, item) {
                 if (item.BestMatch) {

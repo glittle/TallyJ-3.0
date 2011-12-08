@@ -1,78 +1,80 @@
 ﻿@using TallyJ.Code.Session
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     @RenderPage("Headers.cshtml")
     <title>TallyJ @ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="content-wrapper">
-            <div class="float-left">
-                @{if (Request.IsAuthenticated)
-                  {
-                    @Html.ActionLink(" ", "Index", "Dashboard", null, new
-     {
-         Class = "site-title",
-         title = "Go to Dashboard"
-     })  
-                  }
-                  else
-                  {
-                    @Html.ActionLink(" ", "Index", "Public", null, new
-    {
-        Class = "site-title",
-        title = "Go to Welcome Page"
-    })   }
-                }
-                <div class="Version">
-                    Version: By-Election Only (Beta)</div>
-            </div>
-            <div class="headerRight">
-                <section id="login">
-                    @Html.Partial("_LogOnPartial")
-                </section>
-                <section>
-                    @if (Request.IsAuthenticated)
-                    {
-                        <div class="CurrentElectionName">@(UserSession.CurrentElectionName + ", " + UserSession.CurrentComputerCode)</div>
-                        <div class="CurrentLocationAndCode">
-                            <span class="CurrentLocationName">@UserSession.CurrentLocationName </span>
-                        </div>
-                        <div class="Heartbeat">
-                            Connected</div>
-                    }
-                </section>
-            </div>
+      <div class="content-wrapper">
+        <div class="float-left">
+          @{
+            if (Request.IsAuthenticated)
+            {
+              @Html.ActionLink(" ", "Index", "Dashboard", null, new
+                                                                        {
+                                                                          Class = "site-title",
+                                                                          title = "Go to Dashboard"
+                                                                        })
+            }
+            else
+            {
+              @Html.ActionLink(" ", "Index", "Public", null, new
+                                                                     {
+                                                                       Class = "site-title",
+                                                                       title = "Go to Welcome Page"
+                                                                     })
+            }
+          }
+          <div class="Version">
+            Version: By-Election Only (Beta)</div>
         </div>
+        <div class="headerRight">
+          <section id="login">
+            @Html.Partial("_LogOnPartial")
+          </section>
+          <section>
+            @if (Request.IsAuthenticated)
+            {
+              <div class="CurrentElectionName">@(UserSession.CurrentElectionName + ", " + UserSession.CurrentComputerCode)</div>
+              <div class="CurrentLocationAndCode">
+                <span class="CurrentLocationName">@UserSession.CurrentLocationName </span>
+              </div>
+              <div class="Heartbeat">
+                Connected</div>
+            }
+          </section>
+        </div>
+      </div>
     </header>
     <div id="body">
-        @RenderSection("featured", false)
-        <section class="content-wrapper main-content clear-fix">
-            @RenderBody()
-        </section>
+      @RenderSection("featured", false)
+      <section class="content-wrapper main-content clear-fix">
+        @RenderBody()
+      </section>
     </div>
     <footer>
-        <div class="content-wrapper">
-            <div class="float-left">
-                <p>
-                    &copy; @DateTime.Now.Year - TallyJ</p>
-            </div>
-            <div class="float-right">
-                <ul id="social">
-                    <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
-                        class="facebook" title="Go to the TallyJ Support page">Facebook</a></li>
-                    <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
-                        title="View news from #TallyJ_Bahai">Twitter</a></li>
-                </ul>
-            </div>
+      <div class="content-wrapper">
+        <div class="float-left">
+          <p>
+            &copy; @DateTime.Now.Year - TallyJ</p>
         </div>
+        <div class="float-right">
+          <ul id="social">
+            <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
+                   class="facebook" title="Go to the TallyJ Support page">Facebook</a></li>
+            <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+                   title="View news from #TallyJ_Bahai">Twitter</a></li>
+          </ul>
+        </div>
+      </div>
     </footer>
     @{
-        ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
+      ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
     }
     @ContextItems.GetJavascriptForPage()
-</body>
+  </body>
 </html>

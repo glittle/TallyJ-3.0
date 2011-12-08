@@ -167,6 +167,7 @@
     <Property Type="Int32" Name="EnvNum" />
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="String" Name="Area" MaxLength="50" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="Result">
     <Key>
@@ -377,14 +378,14 @@
   <EntityType Name="vElectionListInfo">
     <Key>
       <PropertyRef Name="C_RowId" />
-      <PropertyRef Name="Name" />
       <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="Name" />
     </Key>
     <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
     <Property Type="String" Name="Name" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
     <Property Type="Boolean" Name="ListForPublic" />
     <Property Type="DateTime" Name="ListedForPublicAsOf" />
     <Property Type="String" Name="ElectionPasscode" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
   </EntityType>
 </Schema>

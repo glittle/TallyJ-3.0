@@ -84,7 +84,7 @@ namespace TallyJ.Models
 
     public string CurrentBallotJsonString()
     {
-      var ballotInfo = GetCurrentBallotInfo(false);
+      var ballotInfo = GetCurrentBallotInfo(true);
       if (ballotInfo == null)
       {
         return "null";
@@ -240,7 +240,7 @@ namespace TallyJ.Models
     {
 
       return Db.Reasons
-        .Where(r => r.ReasonGroup != ReasonGroupIneligible)
+        //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
         .OrderBy(r => r.ReasonGroup) // put Inelligible at the bottom
         .ThenBy(r => r.SortOrder)
         .Select(r => new
