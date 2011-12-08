@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.EF;
 
 namespace TallyJ.Models
 {
   public class PublicHomeViewModel : DataConnectedModel
   {
+    public List<Election> TestElections()
+    {
+      return Db.Elections.ToList();
+    }
+
     /// <summary>
     ///     Get elections listed for public access requests
     /// </summary>
