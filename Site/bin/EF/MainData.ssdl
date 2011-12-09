@@ -1,0 +1,495 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="tallyj2dModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="tallyj2dModelStoreContainer">
+    <EntitySet Name="Users" EntityType="tallyj2dModel.Store.Users" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="_Log" EntityType="tallyj2dModel.Store._Log" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Ballot" EntityType="tallyj2dModel.Store.Ballot" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Computer" EntityType="tallyj2dModel.Store.Computer" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Election" EntityType="tallyj2dModel.Store.Election" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="JoinElectionUser" EntityType="tallyj2dModel.Store.JoinElectionUser" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Location" EntityType="tallyj2dModel.Store.Location" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Message" EntityType="tallyj2dModel.Store.Message" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Person" EntityType="tallyj2dModel.Store.Person" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Reasons" EntityType="tallyj2dModel.Store.Reasons" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Result" EntityType="tallyj2dModel.Store.Result" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="ResultSummary" EntityType="tallyj2dModel.Store.ResultSummary" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Teller" EntityType="tallyj2dModel.Store.Teller" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="Vote" EntityType="tallyj2dModel.Store.Vote" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="vBallotInfo" EntityType="tallyj2dModel.Store.vBallotInfo" store:Type="Views" store:Schema="tj" store:Name="vBallotInfo">
+      <DefiningQuery>SELECT 
+      [vBallotInfo].[_RowId] AS [_RowId], 
+      [vBallotInfo].[LocationGuid] AS [LocationGuid], 
+      [vBallotInfo].[BallotGuid] AS [BallotGuid], 
+      [vBallotInfo].[StatusCode] AS [StatusCode], 
+      [vBallotInfo].[ComputerCode] AS [ComputerCode], 
+      [vBallotInfo].[BallotNumAtComputer] AS [BallotNumAtComputer], 
+      [vBallotInfo].[_BallotCode] AS [_BallotCode], 
+      [vBallotInfo].[TellerAtKeyboard] AS [TellerAtKeyboard], 
+      [vBallotInfo].[TellerAssisting] AS [TellerAssisting], 
+      [vBallotInfo].[_RowVersion] AS [_RowVersion], 
+      [vBallotInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vBallotInfo].[LocationId] AS [LocationId], 
+      [vBallotInfo].[LocationName] AS [LocationName], 
+      [vBallotInfo].[LocationSortOrder] AS [LocationSortOrder], 
+      [vBallotInfo].[TallyStatus] AS [TallyStatus], 
+      [vBallotInfo].[TellerAtKeyboardName] AS [TellerAtKeyboardName], 
+      [vBallotInfo].[TellerAssistingName] AS [TellerAssistingName], 
+      [vBallotInfo].[RowVersionInt] AS [RowVersionInt]
+      FROM [tj].[vBallotInfo] AS [vBallotInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vElectionListInfo" EntityType="tallyj2dModel.Store.vElectionListInfo" store:Type="Views" store:Schema="tj" store:Name="vElectionListInfo">
+      <DefiningQuery>SELECT 
+      [vElectionListInfo].[_RowId] AS [_RowId], 
+      [vElectionListInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vElectionListInfo].[Name] AS [Name], 
+      [vElectionListInfo].[ListForPublic] AS [ListForPublic], 
+      [vElectionListInfo].[ListedForPublicAsOf] AS [ListedForPublicAsOf], 
+      [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode]
+      FROM [tj].[vElectionListInfo] AS [vElectionListInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
+      <DefiningQuery>SELECT 
+      [vLocationInfo].[_RowId] AS [_RowId], 
+      [vLocationInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vLocationInfo].[LocationGuid] AS [LocationGuid], 
+      [vLocationInfo].[Name] AS [Name], 
+      [vLocationInfo].[ContactInfo] AS [ContactInfo], 
+      [vLocationInfo].[Long] AS [Long], 
+      [vLocationInfo].[Lat] AS [Lat], 
+      [vLocationInfo].[TallyStatus] AS [TallyStatus], 
+      [vLocationInfo].[SortOrder] AS [SortOrder], 
+      [vLocationInfo].[ComputerCode] AS [ComputerCode], 
+      [vLocationInfo].[BallotId] AS [BallotId], 
+      [vLocationInfo].[Ballots] AS [Ballots], 
+      [vLocationInfo].[LastContact] AS [LastContact], 
+      [vLocationInfo].[TellerName] AS [TellerName], 
+      [vLocationInfo].[SortOrder2] AS [SortOrder2]
+      FROM [tj].[vLocationInfo] AS [vLocationInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vResultInfo" EntityType="tallyj2dModel.Store.vResultInfo" store:Type="Views" store:Schema="tj" store:Name="vResultInfo">
+      <DefiningQuery>SELECT 
+      [vResultInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vResultInfo].[Section] AS [Section], 
+      [vResultInfo].[Rank] AS [Rank], 
+      [vResultInfo].[RankInExtra] AS [RankInExtra], 
+      [vResultInfo].[PersonName] AS [PersonName], 
+      [vResultInfo].[IsTied] AS [IsTied], 
+      [vResultInfo].[IsTieResolved] AS [IsTieResolved], 
+      [vResultInfo].[TieBreakGroup] AS [TieBreakGroup], 
+      [vResultInfo].[TieBreakCount] AS [TieBreakCount], 
+      [vResultInfo].[VoteCount] AS [VoteCount], 
+      [vResultInfo].[_FakeRowId] AS [_FakeRowId]
+      FROM [tj].[vResultInfo] AS [vResultInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" store:Schema="tj" store:Name="vVoteInfo">
+      <DefiningQuery>SELECT 
+      [vVoteInfo].[VoteId] AS [VoteId], 
+      [vVoteInfo].[VoteStatusCode] AS [VoteStatusCode], 
+      [vVoteInfo].[SingleNameElectionCount] AS [SingleNameElectionCount], 
+      [vVoteInfo].[PositionOnBallot] AS [PositionOnBallot], 
+      [vVoteInfo].[VoteInvalidReasonGuid] AS [VoteInvalidReasonGuid], 
+      [vVoteInfo].[VoteInvalidReasonId] AS [VoteInvalidReasonId], 
+      [vVoteInfo].[VoteInvalidReasonDesc] AS [VoteInvalidReasonDesc], 
+      [vVoteInfo].[PersonRowVersionInVote] AS [PersonRowVersionInVote], 
+      [vVoteInfo].[PersonRowVersion] AS [PersonRowVersion], 
+      [vVoteInfo].[PersonRowVersionRaw] AS [PersonRowVersionRaw], 
+      [vVoteInfo].[PersonGuid] AS [PersonGuid], 
+      [vVoteInfo].[PersonId] AS [PersonId], 
+      [vVoteInfo].[PersonFullName] AS [PersonFullName], 
+      [vVoteInfo].[CanReceiveVotes] AS [CanReceiveVotes], 
+      [vVoteInfo].[PersonIneligibleReasonGuid] AS [PersonIneligibleReasonGuid], 
+      [vVoteInfo].[PersonIneligibleReasonId] AS [PersonIneligibleReasonId], 
+      [vVoteInfo].[PersonIneligibleReasonDesc] AS [PersonIneligibleReasonDesc], 
+      [vVoteInfo].[ResultId] AS [ResultId], 
+      [vVoteInfo].[BallotGuid] AS [BallotGuid], 
+      [vVoteInfo].[BallotId] AS [BallotId], 
+      [vVoteInfo].[BallotStatusCode] AS [BallotStatusCode], 
+      [vVoteInfo].[_BallotCode] AS [_BallotCode], 
+      [vVoteInfo].[LocationId] AS [LocationId], 
+      [vVoteInfo].[LocationTallyStatus] AS [LocationTallyStatus], 
+      [vVoteInfo].[ElectionGuid] AS [ElectionGuid]
+      FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="FK_JoinElectionUser_Users" Association="tallyj2dModel.Store.FK_JoinElectionUser_Users">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="JoinElectionUser" EntitySet="JoinElectionUser" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="IsAnonymous" Type="bit" Nullable="false" />
+    <Property Name="LastActivityDate" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="_Log">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="AsOf" Type="datetime" Nullable="false" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" />
+    <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
+    <Property Name="Details" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="Ballot">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+    <Property Name="ComputerCode" Type="varchar" Nullable="false" MaxLength="2" />
+    <Property Name="BallotNumAtComputer" Type="int" Nullable="false" />
+    <Property Name="_BallotCode" Type="varchar" MaxLength="32" StoreGeneratedPattern="Computed" />
+    <Property Name="TellerAtKeyboard" Type="uniqueidentifier" />
+    <Property Name="TellerAssisting" Type="uniqueidentifier" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="Computer">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="LastContact" Type="datetime2" Precision="1" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" />
+    <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
+    <Property Name="ComputerInternalCode" Type="int" />
+    <Property Name="LastBallotNum" Type="int" />
+    <Property Name="Teller1" Type="uniqueidentifier" />
+    <Property Name="Teller2" Type="uniqueidentifier" />
+    <Property Name="ShadowElectionGuid" Type="uniqueidentifier" />
+    <Property Name="BrowserInfo" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="Election">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="150" />
+    <Property Name="Convenor" Type="nvarchar" MaxLength="150" />
+    <Property Name="DateOfElection" Type="datetime2" Precision="0" />
+    <Property Name="ElectionType" Type="varchar" MaxLength="5" />
+    <Property Name="ElectionMode" Type="varchar" MaxLength="1" />
+    <Property Name="NumberToElect" Type="int" />
+    <Property Name="NumberExtra" Type="int" />
+    <Property Name="CanVote" Type="varchar" MaxLength="1" />
+    <Property Name="CanReceive" Type="varchar" MaxLength="1" />
+    <Property Name="LastEnvNum" Type="int" />
+    <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="ShowFullReport" Type="bit" />
+    <Property Name="LinkedElectionGuid" Type="uniqueidentifier" />
+    <Property Name="LinkedElectionKind" Type="varchar" MaxLength="2" />
+    <Property Name="OwnerLoginId" Type="varchar" MaxLength="50" />
+    <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
+    <Property Name="ListedForPublicAsOf" Type="datetime2" />
+    <Property Name="IsSingleNameElection" Type="bit" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="ListForPublic" Type="bit" />
+  </EntityType>
+  <EntityType Name="JoinElectionUser">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Role" Type="varchar" MaxLength="10" />
+  </EntityType>
+  <EntityType Name="Location">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="ContactInfo" Type="nvarchar" MaxLength="250" />
+    <Property Name="Long" Type="varchar" MaxLength="50" />
+    <Property Name="Lat" Type="varchar" MaxLength="50" />
+    <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="SortOrder" Type="int" />
+  </EntityType>
+  <EntityType Name="Message">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="150" />
+    <Property Name="Details" Type="nvarchar(max)" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="AsOf" Type="datetime2" Nullable="false" Precision="0" />
+  </EntityType>
+  <EntityType Name="Person">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LastName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+    <Property Name="OtherLastNames" Type="nvarchar" MaxLength="100" />
+    <Property Name="OtherNames" Type="nvarchar" MaxLength="100" />
+    <Property Name="OtherInfo" Type="nvarchar" MaxLength="150" />
+    <Property Name="Area" Type="nvarchar" MaxLength="50" />
+    <Property Name="BahaiId" Type="varchar" MaxLength="20" />
+    <Property Name="CombinedInfo" Type="nvarchar(max)" />
+    <Property Name="CombinedSoundCodes" Type="varchar(max)" />
+    <Property Name="CombinedInfoAtStart" Type="nvarchar(max)" />
+    <Property Name="AgeGroup" Type="varchar" MaxLength="2" />
+    <Property Name="CanVote" Type="bit" />
+    <Property Name="CanReceiveVotes" Type="bit" />
+    <Property Name="IneligibleReasonGuid" Type="uniqueidentifier" />
+    <Property Name="RegistrationTime" Type="datetime2" Precision="0" />
+    <Property Name="VotingLocationGuid" Type="uniqueidentifier" />
+    <Property Name="VotingMethod" Type="varchar" MaxLength="1" />
+    <Property Name="EnvNum" Type="int" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="_FullName" Type="nvarchar" MaxLength="461" StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="Reasons">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ReasonGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="ReasonGroup" Type="nvarchar" Nullable="false" MaxLength="30" />
+    <Property Name="ReasonDescription" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="SortOrder" Type="int" />
+  </EntityType>
+  <EntityType Name="Result">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="VoteCount" Type="int" />
+    <Property Name="Rank" Type="int" Nullable="false" />
+    <Property Name="Section" Type="char" Nullable="false" MaxLength="1" />
+    <Property Name="CloseToPrev" Type="bit" />
+    <Property Name="CloseToNext" Type="bit" />
+    <Property Name="IsTied" Type="bit" />
+    <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+    <Property Name="TieBreakCount" Type="int" />
+    <Property Name="IsTieResolved" Type="bit" />
+    <Property Name="RankInExtra" Type="int" />
+    <Property Name="ForceShowInOther" Type="bit" />
+  </EntityType>
+  <EntityType Name="ResultSummary">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="ResultType" Type="char" Nullable="false" MaxLength="1" />
+    <Property Name="UseOnReports" Type="bit" />
+    <Property Name="NumVoters" Type="int" />
+    <Property Name="NumEligibleToVote" Type="int" />
+    <Property Name="MailedInBallots" Type="int" />
+    <Property Name="DroppedOffBallots" Type="int" />
+    <Property Name="InPersonBallots" Type="int" />
+    <Property Name="SpoiledBallots" Type="int" />
+    <Property Name="SpoiledVotes" Type="int" />
+    <Property Name="TotalVotes" Type="int" />
+    <Property Name="BallotsReceived" Type="int" />
+    <Property Name="BallotsNeedingReview" Type="int" />
+  </EntityType>
+  <EntityType Name="Teller">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TellerGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="UsingComputerCode" Type="varchar" MaxLength="2" />
+    <Property Name="IsHeadTeller" Type="bit" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <EntityType Name="Vote">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PositionOnBallot" Type="int" Nullable="false" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" />
+    <Property Name="PersonRowVersion" Type="binary" MaxLength="8" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+    <Property Name="InvalidReasonGuid" Type="uniqueidentifier" />
+    <Property Name="SingleNameElectionCount" Type="int" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vBallotInfo">
+    <Key>
+      <PropertyRef Name="_RowId" />
+      <PropertyRef Name="LocationGuid" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="StatusCode" />
+      <PropertyRef Name="ComputerCode" />
+      <PropertyRef Name="BallotNumAtComputer" />
+      <PropertyRef Name="_RowVersion" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="LocationName" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+    <Property Name="ComputerCode" Type="varchar" Nullable="false" MaxLength="2" />
+    <Property Name="BallotNumAtComputer" Type="int" Nullable="false" />
+    <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
+    <Property Name="TellerAtKeyboard" Type="uniqueidentifier" />
+    <Property Name="TellerAssisting" Type="uniqueidentifier" />
+    <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LocationId" Type="int" Nullable="false" />
+    <Property Name="LocationName" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="LocationSortOrder" Type="int" />
+    <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="TellerAtKeyboardName" Type="nvarchar" MaxLength="50" />
+    <Property Name="TellerAssistingName" Type="nvarchar" MaxLength="50" />
+    <Property Name="RowVersionInt" Type="bigint" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vElectionListInfo">
+    <Key>
+      <PropertyRef Name="_RowId" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="Name" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="150" />
+    <Property Name="ListForPublic" Type="bit" />
+    <Property Name="ListedForPublicAsOf" Type="datetime2" />
+    <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vLocationInfo">
+    <Key>
+      <PropertyRef Name="_RowId" />
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="LocationGuid" />
+      <PropertyRef Name="Name" />
+      <PropertyRef Name="SortOrder2" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="ContactInfo" Type="nvarchar" MaxLength="250" />
+    <Property Name="Long" Type="varchar" MaxLength="50" />
+    <Property Name="Lat" Type="varchar" MaxLength="50" />
+    <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="SortOrder" Type="int" />
+    <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
+    <Property Name="BallotId" Type="int" />
+    <Property Name="Ballots" Type="int" />
+    <Property Name="LastContact" Type="datetime2" Precision="1" />
+    <Property Name="TellerName" Type="nvarchar" MaxLength="50" />
+    <Property Name="SortOrder2" Type="bigint" Nullable="false" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vResultInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vResultInfo">
+    <Key>
+      <PropertyRef Name="ElectionGuid" />
+      <PropertyRef Name="Section" />
+      <PropertyRef Name="Rank" />
+      <PropertyRef Name="_FakeRowId" />
+    </Key>
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Section" Type="char" Nullable="false" MaxLength="1" />
+    <Property Name="Rank" Type="int" Nullable="false" />
+    <Property Name="RankInExtra" Type="int" />
+    <Property Name="PersonName" Type="nvarchar" MaxLength="461" />
+    <Property Name="IsTied" Type="bit" />
+    <Property Name="IsTieResolved" Type="bit" />
+    <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+    <Property Name="TieBreakCount" Type="int" />
+    <Property Name="VoteCount" Type="int" />
+    <Property Name="_FakeRowId" Type="bigint" Nullable="false" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vVoteInfo">
+    <Key>
+      <PropertyRef Name="VoteId" />
+      <PropertyRef Name="VoteStatusCode" />
+      <PropertyRef Name="PositionOnBallot" />
+      <PropertyRef Name="BallotGuid" />
+      <PropertyRef Name="BallotId" />
+      <PropertyRef Name="BallotStatusCode" />
+      <PropertyRef Name="LocationId" />
+      <PropertyRef Name="ElectionGuid" />
+    </Key>
+    <Property Name="VoteId" Type="int" Nullable="false" />
+    <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+    <Property Name="SingleNameElectionCount" Type="int" />
+    <Property Name="PositionOnBallot" Type="int" Nullable="false" />
+    <Property Name="VoteInvalidReasonGuid" Type="uniqueidentifier" />
+    <Property Name="VoteInvalidReasonId" Type="int" />
+    <Property Name="VoteInvalidReasonDesc" Type="nvarchar" MaxLength="50" />
+    <Property Name="PersonRowVersionInVote" Type="bigint" />
+    <Property Name="PersonRowVersion" Type="bigint" />
+    <Property Name="PersonRowVersionRaw" Type="timestamp" StoreGeneratedPattern="Computed" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" />
+    <Property Name="PersonId" Type="int" />
+    <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />
+    <Property Name="CanReceiveVotes" Type="bit" />
+    <Property Name="PersonIneligibleReasonGuid" Type="uniqueidentifier" />
+    <Property Name="PersonIneligibleReasonId" Type="int" />
+    <Property Name="PersonIneligibleReasonDesc" Type="nvarchar" MaxLength="50" />
+    <Property Name="ResultId" Type="int" />
+    <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BallotId" Type="int" Nullable="false" />
+    <Property Name="BallotStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+    <Property Name="_BallotCode" Type="varchar" MaxLength="32" />
+    <Property Name="LocationId" Type="int" Nullable="false" />
+    <Property Name="LocationTallyStatus" Type="varchar" MaxLength="15" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_JoinElectionUser_Users">
+    <End Role="Users" Type="tallyj2dModel.Store.Users" Multiplicity="1" />
+    <End Role="JoinElectionUser" Type="tallyj2dModel.Store.JoinElectionUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="JoinElectionUser">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="CloneElection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+    <Parameter Name="SourceElection" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="ByLoginId" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="HasMatch" ReturnType="bit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+    <Parameter Name="AllTerms" Type="varchar(max)" Mode="In" />
+    <Parameter Name="Term1" Type="varchar" Mode="In" />
+    <Parameter Name="Term2" Type="varchar" Mode="In" />
+    <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
+  </Function>
+</Schema>
