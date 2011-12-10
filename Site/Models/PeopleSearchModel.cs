@@ -6,6 +6,7 @@ using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using tallyj2dModel.Store;
 
 namespace TallyJ.Models
 {
