@@ -125,8 +125,7 @@ namespace TallyJ
       var logger = LogManager.GetCurrentClassLogger();
       var siteInfo = new SiteInfo();
       var mainMsg = mainException.GetAllMsgs("; ");
-      logger.Fatal("Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, mainMsg));
-
+      
       msgs.Add(mainMsg);
 
       var ex = mainException;
@@ -147,8 +146,10 @@ namespace TallyJ
         ex = ex.InnerException;
       }
 
+      logger.FatalException("Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
+
       var url = siteInfo.RootUrl;
-      Response.Write(String.Format("<!-- FATAL ERROR: {0} -->", msgs.JoinedAsString("\r\n")));
+      Response.Write(String.Format("<!-- FATAL ERROR: {0} -->\r\n", msgs.JoinedAsString("\r\n")));
       Response.Write(String.Format("<script>location.href='{0}'</script>", url));
       Response.End();
     }
