@@ -14,7 +14,7 @@ Note:
 
 */
 Function [tj].[HasMatch] (
-    @AllTerms varchar(max)
+    @AllTerms varchar(500)
   , @Term1 varchar(50)
   , @Term2 varchar(50)
   , @CompleteMatch bit

@@ -492,7 +492,7 @@
           <Parameter Name="ByLoginId" Type="varchar" Mode="In" />
         </Function>
         <Function Name="HasMatch" ReturnType="bit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
-          <Parameter Name="AllTerms" Type="varchar(max)" Mode="In" />
+          <Parameter Name="AllTerms" Type="varchar" Mode="In" />
           <Parameter Name="Term1" Type="varchar" Mode="In" />
           <Parameter Name="Term2" Type="varchar" Mode="In" />
           <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
