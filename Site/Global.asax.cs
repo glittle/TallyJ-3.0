@@ -150,7 +150,13 @@ namespace TallyJ
 
       var url = siteInfo.RootUrl;
       Response.Write(String.Format("<!-- FATAL ERROR: {0} -->\r\n", msgs.JoinedAsString("\r\n")));
-      Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+      if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
+      {
+        Response.Write("Error on site");
+      }else
+      {
+        Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+      }
       Response.End();
     }
 

@@ -501,7 +501,7 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TallyJ2Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="false">
+        <EntityContainer Name="TallyJ2Entities" annotation:LazyLoadingEnabled="true">
           <FunctionImport Name="CloneElection" ReturnType="Collection(TallyJ2Model.CloneElection_Result)">
             <Parameter Name="SourceElection" Mode="In" Type="Guid" />
             <Parameter Name="ByLoginId" Mode="In" Type="String" />
@@ -1246,7 +1246,7 @@
   <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
     <Connection>
       <DesignerInfoPropertySet>
-        <DesignerProperty Name="MetadataArtifactProcessing" Value="CopyToOutputDirectory" />
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
       </DesignerInfoPropertySet>
     </Connection>
     <Options>

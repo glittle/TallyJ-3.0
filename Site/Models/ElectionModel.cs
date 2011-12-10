@@ -406,7 +406,7 @@ namespace TallyJ.Models
     public IEnumerable<Election> VisibleElections()
     {
       return Db.Elections
-        .Where(e => !string.IsNullOrEmpty(e.ElectionPasscode))
+        //.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "")
         .ToList()
         .Where(e => e.ListForPublic.AsBool() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
@@ -433,7 +433,7 @@ namespace TallyJ.Models
         Db.SaveChanges();
       }
 
-      return new {Saved = true}.AsJsonResult();
+      return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
@@ -447,10 +447,10 @@ namespace TallyJ.Models
         election.ListedForPublicAsOf = DateTime.Now;
 
         Db.SaveChanges();
-        return new {Saved = true}.AsJsonResult();
+        return new { Saved = true }.AsJsonResult();
       }
 
-      return new {Saved = false}.AsJsonResult();
+      return new { Saved = false }.AsJsonResult();
     }
 
     public void ProcessPulse()
