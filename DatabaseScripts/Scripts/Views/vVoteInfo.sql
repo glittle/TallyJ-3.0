@@ -22,7 +22,7 @@ as
 	 , vr.ReasonDescription [VoteInvalidReasonDesc]
 	 , cast(v.PersonRowVersion as bigint) [PersonRowVersionInVote]
 	 , cast(p._RowVersion as bigint) [PersonRowVersion]
-	 , p._RowVersion [PersonRowVersionRaw]
+	 , coalesce(p._RowVersion, cast(0 as binary(6))) [PersonRowVersionRaw]
      , v.PersonGuid
 	 , p._RowId [PersonId]
 	 , p._FullName [PersonFullName]

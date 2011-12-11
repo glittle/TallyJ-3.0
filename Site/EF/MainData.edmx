@@ -875,7 +875,7 @@
           <Property Type="String" Name="VoteInvalidReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="PersonRowVersionInVote" />
           <Property Type="Int64" Name="PersonRowVersion" />
-          <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="Binary" Name="PersonRowVersionRaw" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" DefaultValue="0x1" />
           <Property Type="Guid" Name="PersonGuid" />
           <Property Type="Int32" Name="PersonId" />
           <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />

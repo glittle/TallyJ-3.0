@@ -143,6 +143,10 @@ var MonitorPage = function () {
                 //joinBtn.push('<span title="View" class="ui-icon ui-icon-zoomin" data-code="{0}"></span>'.filledWith(this.Code));
 
             }
+
+            if (this.BallotsCollected) {
+                this.Ballot1 = '<div>{BallotsCollected} ballots</div>'.filledWith(this);
+            }
         });
 
         if (last != null) {

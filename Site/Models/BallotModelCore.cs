@@ -128,21 +128,26 @@ namespace TallyJ.Models
 
       if (voteId != 0)
       {
-        var existingVoteInfo = Db.vVoteInfoes
-          .Join(Db.Votes, info => info.VoteId, vote => vote.C_RowId, (info, vote) => new { info, vote })
-          .SingleOrDefault(iv => iv.vote.C_RowId == voteId && iv.info.ElectionGuid == currentElectionGuid);
-        if (existingVoteInfo != null)
+        //var existingVoteInfo = Db.vVoteInfoes
+        //  .Join(Db.Votes, info => info.VoteId, vote => vote.C_RowId, (info, vote) => new { info, vote })
+        //  .SingleOrDefault(iv => iv.vote.C_RowId == voteId && iv.info.ElectionGuid == currentElectionGuid);
+
+        var voteInfo = Db.vVoteInfoes.SingleOrDefault(vi => vi.VoteId == voteId && vi.ElectionGuid == currentElectionGuid);
+
+        if (voteInfo != null)
         {
-          existingVoteInfo.vote.SingleNameElectionCount = count;
-          existingVoteInfo.vote.PersonRowVersion = existingVoteInfo.info.PersonRowVersionRaw;
+          var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
+          
+          vote.SingleNameElectionCount = count;
+          vote.PersonRowVersion = voteInfo.PersonRowVersionRaw;
 
           if (invalidReason != 0)
           {
             var invalidReasonGuid =
               Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
-            if (invalidReasonGuid != Guid.Empty && invalidReasonGuid != existingVoteInfo.vote.InvalidReasonGuid)
+            if (invalidReasonGuid != Guid.Empty && invalidReasonGuid != vote.InvalidReasonGuid)
             {
-              existingVoteInfo.vote.InvalidReasonGuid = invalidReasonGuid;
+              vote.InvalidReasonGuid = invalidReasonGuid;
             }
           }
 

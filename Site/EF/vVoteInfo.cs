@@ -14,6 +14,11 @@ namespace TallyJ.EF
     
     public partial class vVoteInfo
     {
+        public vVoteInfo()
+        {
+            this.PersonRowVersionRaw = new Byte[] {1};
+        }
+    
         public int VoteId { get; set; }
         public string VoteStatusCode { get; set; }
         public Nullable<int> SingleNameElectionCount { get; set; }

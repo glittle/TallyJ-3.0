@@ -29,6 +29,7 @@ namespace TallyJ.Models
                 .Select(li => new
                                 {
                                   li.Ballots,
+                                  li.BallotsCollected,
                                   li.ComputerCode,
                                   li.ContactInfo,
                                   li.Name,
