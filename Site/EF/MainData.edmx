@@ -336,7 +336,7 @@
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vBallotInfo">
           <Key>
@@ -371,7 +371,7 @@
           <Property Name="RowVersionInt" Type="bigint" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vElectionListInfo">
           <Key>
@@ -387,7 +387,7 @@
           <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vLocationInfo">
           <Key>
@@ -414,7 +414,7 @@
           <Property Name="SortOrder2" Type="bigint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vResultInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vResultInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vResultInfo">
           <Key>
@@ -436,7 +436,7 @@
           <Property Name="_FakeRowId" Type="bigint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'TallyJ2d.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vVoteInfo">
           <Key>
