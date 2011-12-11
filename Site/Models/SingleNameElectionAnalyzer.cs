@@ -22,9 +22,10 @@ namespace TallyJ.Models
 
     public override void GenerateResults()
     {
+      // for single name elections, # votes = # ballots
       ResultSummaryAuto.BallotsReceived
-        = ResultSummaryAuto.TotalVotes
         = ResultSummaryAuto.NumVoters
+        = ResultSummaryAuto.TotalVotes
         = VoteInfos.Sum(vi => vi.SingleNameElectionCount).AsInt();
 
       var invalidBallotGuids =

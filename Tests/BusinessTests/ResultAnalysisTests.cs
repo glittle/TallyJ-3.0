@@ -50,7 +50,7 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
@@ -91,7 +91,7 @@ namespace Tests.BusinessTests
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
@@ -138,7 +138,7 @@ namespace Tests.BusinessTests
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
@@ -188,7 +188,7 @@ namespace Tests.BusinessTests
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
@@ -250,7 +250,7 @@ namespace Tests.BusinessTests
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonRowVersion = vVoteInfo.PersonRowVersionInVote = 1;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
         vVoteInfo.BallotGuid = Guid.NewGuid();
@@ -259,7 +259,7 @@ namespace Tests.BusinessTests
       votes[3].VoteStatusCode = "Unreadable";
       votes[4].BallotStatusCode = "Incomplete";
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
-      votes[5].PersonRowVersion = 2;
+      votes[5].PersonCombinedInfo = "different";
 
       var fakes = new Fakes();
       var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,

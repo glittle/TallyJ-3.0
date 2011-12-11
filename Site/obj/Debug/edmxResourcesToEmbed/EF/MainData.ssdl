@@ -91,9 +91,8 @@
       [vVoteInfo].[VoteInvalidReasonGuid] AS [VoteInvalidReasonGuid], 
       [vVoteInfo].[VoteInvalidReasonId] AS [VoteInvalidReasonId], 
       [vVoteInfo].[VoteInvalidReasonDesc] AS [VoteInvalidReasonDesc], 
-      [vVoteInfo].[PersonRowVersionInVote] AS [PersonRowVersionInVote], 
-      [vVoteInfo].[PersonRowVersion] AS [PersonRowVersion], 
-      [vVoteInfo].[PersonRowVersionRaw] AS [PersonRowVersionRaw], 
+      [vVoteInfo].[PersonCombinedInfoInVote] AS [PersonCombinedInfoInVote], 
+      [vVoteInfo].[PersonCombinedInfo] AS [PersonCombinedInfo], 
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
       [vVoteInfo].[PersonId] AS [PersonId], 
       [vVoteInfo].[PersonFullName] AS [PersonFullName], 
@@ -326,11 +325,11 @@
     <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="PositionOnBallot" Type="int" Nullable="false" />
     <Property Name="PersonGuid" Type="uniqueidentifier" />
-    <Property Name="PersonRowVersion" Type="binary" MaxLength="8" />
     <Property Name="StatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="InvalidReasonGuid" Type="uniqueidentifier" />
     <Property Name="SingleNameElectionCount" Type="int" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
+    <Property Name="PersonCombinedInfo" Type="nvarchar(max)" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -454,9 +453,8 @@
     <Property Name="VoteInvalidReasonGuid" Type="uniqueidentifier" />
     <Property Name="VoteInvalidReasonId" Type="int" />
     <Property Name="VoteInvalidReasonDesc" Type="nvarchar" MaxLength="50" />
-    <Property Name="PersonRowVersionInVote" Type="bigint" />
-    <Property Name="PersonRowVersion" Type="bigint" />
-    <Property Name="PersonRowVersionRaw" Type="timestamp" StoreGeneratedPattern="Computed" />
+    <Property Name="PersonCombinedInfoInVote" Type="nvarchar(max)" />
+    <Property Name="PersonCombinedInfo" Type="nvarchar(max)" />
     <Property Name="PersonGuid" Type="uniqueidentifier" />
     <Property Name="PersonId" Type="int" />
     <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />

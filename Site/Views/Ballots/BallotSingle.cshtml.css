@@ -192,12 +192,13 @@ table.locationInfo td
     overflow: auto;
 }
 
-.Changedfalse .ChangedMessage
+.ChangedMessage
 {
     display: none;
 }
 .Changedtrue .ChangedMessage
 {
+    display: block;
     color: #e80c4d;
     margin-left: 70px;
     padding-bottom: 5px;

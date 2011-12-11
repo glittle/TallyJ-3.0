@@ -38,13 +38,13 @@ namespace TallyJ.EF
         public DbSet<Result> Results { get; set; }
         public DbSet<ResultSummary> ResultSummaries { get; set; }
         public DbSet<Teller> Tellers { get; set; }
-        public DbSet<Vote> Votes { get; set; }
         public DbSet<vBallotInfo> vBallotInfoes { get; set; }
         public DbSet<vElectionListInfo> vElectionListInfoes { get; set; }
         public DbSet<vLocationInfo> vLocationInfoes { get; set; }
         public DbSet<vResultInfo> vResultInfoes { get; set; }
-        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
         public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
+        public DbSet<Vote> Votes { get; set; }
+        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
     
         public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
         {

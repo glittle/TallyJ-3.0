@@ -23,9 +23,9 @@ namespace TallyJ.Models
       {
         var resultSummaryAuto = analyzer.ResultSummaryAuto;
 
+        // don't show any details if review is needed
         if (resultSummaryAuto.BallotsNeedingReview != 0)
         {
-          // don't show any details if review is needed
           var needReview = analyzer.VoteInfos.Where(ElectionAnalyzerCore.NeedReview)
             .Join(Db.Locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
             .Select(x => new
@@ -40,19 +40,22 @@ namespace TallyJ.Models
           return new
                    {
                      NeedReview = needReview,
+                     NumBallots = resultSummaryAuto.BallotsReceived,
                      resultSummaryAuto.TotalVotes,
-                     resultSummaryAuto.SpoiledVotes,
-                     resultSummaryAuto.SpoiledBallots
+                     TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
+                     TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,
                    }.AsJsonResult();
         }
 
         var vResultInfos =
           Db.vResultInfoes.Where(ri => ri.ElectionGuid == UserSession.CurrentElectionGuid).OrderBy(ri => ri.Rank);
 
-        var tallyStatus = UserSession.CurrentElection.TallyStatus;
+        //var tallyStatus = UserSession.CurrentElection.TallyStatus;
+
         return new
                  {
                    Votes = vResultInfos,
+                   NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
                    TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
                    TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,

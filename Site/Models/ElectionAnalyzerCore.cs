@@ -136,7 +136,7 @@ namespace TallyJ.Models
 
     public static bool NeedReview(vVoteInfo voteInfo)
     {
-      return voteInfo.PersonRowVersion != voteInfo.PersonRowVersionInVote
+      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote
              || voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Review;
     }
 
@@ -147,7 +147,7 @@ namespace TallyJ.Models
              && !voteInfo.PersonIneligibleReasonGuid.HasValue
              && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
              && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
-             && voteInfo.PersonRowVersion == voteInfo.PersonRowVersionInVote;
+             && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
     }
 
 

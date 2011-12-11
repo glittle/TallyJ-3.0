@@ -109,13 +109,14 @@ namespace TallyJ.Models
       var currentVotes = Db.vVoteInfoes
         .Where(v => v.BallotGuid == ballot.BallotGuid)
         .OrderBy(v => v.PositionOnBallot)
+        .ToList() //avoid LINQ issues
         .Select(v => new
                        {
                          vid = v.VoteId,
                          count = v.SingleNameElectionCount,
                          pid = v.PersonId,
                          name = v.PersonFullName,
-                         changed = v.PersonRowVersion.HasValue && v.PersonRowVersionInVote.HasValue && v.PersonRowVersion != v.PersonRowVersionInVote,
+                         changed = !Equals(v.PersonCombinedInfo, v.PersonCombinedInfoInVote),
                          invalid = v.VoteInvalidReasonId,
                          ineligible = v.PersonIneligibleReasonId
                        });
@@ -139,7 +140,7 @@ namespace TallyJ.Models
           var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
           
           vote.SingleNameElectionCount = count;
-          vote.PersonRowVersion = voteInfo.PersonRowVersionRaw;
+          vote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
 
           if (invalidReason != 0)
           {
@@ -202,7 +203,7 @@ namespace TallyJ.Models
             if (person != null)
             {
               vote.PersonGuid = person.PersonGuid;
-              vote.PersonRowVersion = person.C_RowVersion;
+              vote.PersonCombinedInfo = person.CombinedInfo;
             }
             if (invalidReasonGuid != Guid.Empty)
             {

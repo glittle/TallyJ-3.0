@@ -61,6 +61,7 @@ var AnalyzePage = function () {
         var invalidsTable = $('table#invalids');
         var table;
 
+        $('#InitialMsg').hide();
         ResetStatusDisplay();
 
         if (info.Votes) {
@@ -88,7 +89,7 @@ var AnalyzePage = function () {
 
         $('#totalCounts').find('span[data-name]').each(function () {
             var span = $(this);
-            var value = info[span.data('name')] || '';
+            var value = info[span.data('name')];
             span.text(value);
         });
 

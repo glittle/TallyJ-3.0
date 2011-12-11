@@ -57,3 +57,12 @@ td.Left {
 #btnRefesh {
     float: right;
 }
+#InitialMsg {
+    color: red;
+    font-size: 120%;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+#totalCounts tr td:first-child {
+    padding-right: 30px;
+}
