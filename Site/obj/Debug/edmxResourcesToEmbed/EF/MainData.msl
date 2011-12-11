@@ -344,5 +344,16 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
+          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="Eligible" ColumnName="Eligible" />
+          <ScalarProperty Name="SoundMatch" ColumnName="SoundMatch" />
+          <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
   </EntityContainerMapping>
 </Mapping>

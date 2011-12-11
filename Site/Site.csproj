@@ -215,6 +215,9 @@
     <Compile Include="EF\ResultSummary.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\SqlSearch_Result.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Teller.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>

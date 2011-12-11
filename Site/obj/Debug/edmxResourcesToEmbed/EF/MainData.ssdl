@@ -492,4 +492,14 @@
     <Parameter Name="Term2" Type="varchar" Mode="In" />
     <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
   </Function>
+  <Function Name="SqlSearch" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+    <Parameter Name="Election" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="Term1" Type="nvarchar" Mode="In" />
+    <Parameter Name="Term2" Type="nvarchar" Mode="In" />
+    <Parameter Name="Sound1" Type="nvarchar" Mode="In" />
+    <Parameter Name="Sound2" Type="nvarchar" Mode="In" />
+    <Parameter Name="MaxToReturn" Type="int" Mode="In" />
+    <Parameter Name="MoreExactMatchesFound" Type="bit" Mode="InOut" />
+    <Parameter Name="ShowDebugInfo" Type="int" Mode="In" />
+  </Function>
 </Schema>

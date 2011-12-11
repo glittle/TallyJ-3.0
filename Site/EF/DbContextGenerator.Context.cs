@@ -60,5 +60,40 @@ namespace TallyJ.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CloneElection_Result>("CloneElection", sourceElectionParameter, byLoginIdParameter);
         }
+    
+        public virtual ObjectResult<SqlSearch_Result> SqlSearch(Nullable<System.Guid> election, string term1, string term2, string sound1, string sound2, Nullable<int> maxToReturn, ObjectParameter moreExactMatchesFound, Nullable<int> showDebugInfo)
+        {
+            ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace.LoadFromAssembly(typeof(SqlSearch_Result).Assembly);
+    
+            var electionParameter = election.HasValue ?
+                new ObjectParameter("Election", election) :
+                new ObjectParameter("Election", typeof(System.Guid));
+    
+            var term1Parameter = term1 != null ?
+                new ObjectParameter("Term1", term1) :
+                new ObjectParameter("Term1", typeof(string));
+    
+            var term2Parameter = term2 != null ?
+                new ObjectParameter("Term2", term2) :
+                new ObjectParameter("Term2", typeof(string));
+    
+            var sound1Parameter = sound1 != null ?
+                new ObjectParameter("Sound1", sound1) :
+                new ObjectParameter("Sound1", typeof(string));
+    
+            var sound2Parameter = sound2 != null ?
+                new ObjectParameter("Sound2", sound2) :
+                new ObjectParameter("Sound2", typeof(string));
+    
+            var maxToReturnParameter = maxToReturn.HasValue ?
+                new ObjectParameter("MaxToReturn", maxToReturn) :
+                new ObjectParameter("MaxToReturn", typeof(int));
+    
+            var showDebugInfoParameter = showDebugInfo.HasValue ?
+                new ObjectParameter("ShowDebugInfo", showDebugInfo) :
+                new ObjectParameter("ShowDebugInfo", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
+        }
     }
 }

@@ -497,6 +497,16 @@
           <Parameter Name="Term2" Type="varchar" Mode="In" />
           <Parameter Name="CompleteMatch" Type="bit" Mode="In" />
         </Function>
+        <Function Name="SqlSearch" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+          <Parameter Name="Election" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Term1" Type="nvarchar" Mode="In" />
+          <Parameter Name="Term2" Type="nvarchar" Mode="In" />
+          <Parameter Name="Sound1" Type="nvarchar" Mode="In" />
+          <Parameter Name="Sound2" Type="nvarchar" Mode="In" />
+          <Parameter Name="MaxToReturn" Type="int" Mode="In" />
+          <Parameter Name="MoreExactMatchesFound" Type="bit" Mode="InOut" />
+          <Parameter Name="ShowDebugInfo" Type="int" Mode="In" />
+        </Function>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -529,6 +539,16 @@
             <End Role="User" EntitySet="Users" />
             <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
           </AssociationSet>
+          <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
+            <Parameter Name="Election" Mode="In" Type="Guid" />
+            <Parameter Name="Term1" Mode="In" Type="String" />
+            <Parameter Name="Term2" Mode="In" Type="String" />
+            <Parameter Name="Sound1" Mode="In" Type="String" />
+            <Parameter Name="Sound2" Mode="In" Type="String" />
+            <Parameter Name="MaxToReturn" Mode="In" Type="Int32" />
+            <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
+            <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -889,6 +909,13 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <ComplexType Name="SqlSearch_Result">
+          <Property Type="Int32" Name="PersonId" Nullable="true" />
+          <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
+          <Property Type="Int32" Name="Eligible" Nullable="false" />
+          <Property Type="Int32" Name="SoundMatch" Nullable="false" />
+          <Property Type="Int32" Name="BestMatch" Nullable="false" />
+        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1238,6 +1265,17 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Eligible" ColumnName="Eligible" />
+                <ScalarProperty Name="SoundMatch" ColumnName="SoundMatch" />
+                <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -28,6 +28,16 @@
       <End Role="User" EntitySet="Users" />
       <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
     </AssociationSet>
+    <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
+      <Parameter Name="Election" Mode="In" Type="Guid" />
+      <Parameter Name="Term1" Mode="In" Type="String" />
+      <Parameter Name="Term2" Mode="In" Type="String" />
+      <Parameter Name="Sound1" Mode="In" Type="String" />
+      <Parameter Name="Sound2" Mode="In" Type="String" />
+      <Parameter Name="MaxToReturn" Mode="In" Type="Int32" />
+      <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
+      <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
+    </FunctionImport>
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -388,4 +398,11 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <ComplexType Name="SqlSearch_Result">
+    <Property Type="Int32" Name="PersonId" Nullable="true" />
+    <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
+    <Property Type="Int32" Name="Eligible" Nullable="false" />
+    <Property Type="Int32" Name="SoundMatch" Nullable="false" />
+    <Property Type="Int32" Name="BestMatch" Nullable="false" />
+  </ComplexType>
 </Schema>

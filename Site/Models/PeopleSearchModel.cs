@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Objects;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -25,6 +26,46 @@ namespace TallyJ.Models
     }
 
     public JsonResult Search(string nameToFind, bool includeMatches)
+    {
+      const int max = 19;
+
+      var parts = nameToFind.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+      var term1 = parts[0];
+      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
+
+      string term2 = null;
+      string metaphone2 = null;
+      if (parts.Length > 1)
+      {
+        term2 = parts[1];
+        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
+      }
+
+      var moreExactMatchesFound = new ObjectParameter("MoreExactMatchesFound", typeof(bool));
+      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, metaphone1, term2, metaphone2, max,
+                                 moreExactMatchesFound, null);
+
+      var moreFound = moreExactMatchesFound.Value != null && (bool)moreExactMatchesFound.Value;
+
+      return new
+      {
+        People = results
+          .Select(p => new
+          {
+            Id = p.PersonId,
+            Name = p.FullName,
+            Inelligible = p.Eligible == 0,
+            BestMatch = p.BestMatch == 1,
+            SoundMatch = p.SoundMatch == 1
+          }),
+        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
+      }
+        .AsJsonResult();
+   
+    }
+
+    public JsonResult Search_Old(string nameToFind, bool includeMatches)
     {
       const int max = 19;
 

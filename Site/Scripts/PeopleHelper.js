@@ -35,17 +35,22 @@ var PeopleHelper = function (url) {
         });
         $.each(info.People, function (i, personInfo) {
             var foundHit = false;
-            $.each(searchParts, function (k, searchPart) {
-                personInfo.Name = personInfo.Name.replace(searchPart, function () {
-                    foundHit = true;
-                    return '<b>' + arguments[0] + '</b>';
-                });
-            });
-            if (!foundHit) {
-                // must be soundex
+            if (personInfo.SoundMatch) {
                 personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
                 foundFuzzy = true;
             }
+            else {
+                $.each(searchParts, function(k, searchPart) {
+                    personInfo.Name = personInfo.Name.replace(searchPart, function() {
+                        return '<b>' + arguments[0] + '</b>';
+                    });
+                });
+            }
+//            if (!foundHit) {
+//                // must be soundex
+//                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
+//                foundFuzzy = true;
+//            }
             if (personInfo.Inelligible) {
                 personInfo.Name = '<span class=Inelligible>' + personInfo.Name + '</span>';
             }
