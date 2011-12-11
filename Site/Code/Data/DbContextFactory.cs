@@ -9,7 +9,7 @@ namespace TallyJ.Code.Data
 {
   public class DbContextFactory : IDbContextFactory
   {
-    private TallyJ2Entities _db;
+    private TallyJ2Entities _tallyJ2Entities;
 
     #region IDbContextFactory Members
 
@@ -17,24 +17,26 @@ namespace TallyJ.Code.Data
     {
       get
       {
-        if (_db != null)
-          return _db;
+        if (_tallyJ2Entities != null)
+        {
+          return _tallyJ2Entities;
+        }
 
-        var cnString = ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString +
-                       ";MultipleActiveResultSets=True";
+        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
         //  metadata=res://*/EF.MainData.csdl|res://*/EF.MainData.ssdl|res://*/EF.MainData.msl;provider=System.Data.SqlClient;provider connection string="data source=.;initial catalog=tallyj2d;integrated security=True;multipleactiveresultsets=True;App=EntityFramework"
         //  metadata=res://*/
 
 
-        var cn = new SqlConnection(cnString);
-        var ws = new MetadataWorkspace(
+        var connection = new SqlConnection(cnString);
+        var workspace = new MetadataWorkspace(
           new[] { "res://*/" },
           new[] { Assembly.GetExecutingAssembly() }
           );
-        var ec = new EntityConnection(ws, cn);
 
-        return _db = new TallyJ2Entities(ec);
+        var entityConnection = new EntityConnection(workspace, connection);
+
+        return _tallyJ2Entities = new TallyJ2Entities(entityConnection);
       }
     }
 

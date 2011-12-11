@@ -51,7 +51,7 @@ namespace TallyJ.Code.Helpers
         return "";
       }
 
-      var words = self.Split(new[] {',', '-', '\'', '"', ' ', '.', '(', ')', '[', ']'},
+      var words = self.Split(new[] { ',', '-', '\'', '"', ' ', '.', '(', ')', '[', ']' },
                              StringSplitOptions.RemoveEmptyEntries);
       return words.Select(s => s.Trim())
         .Where(s => s.HasContent())
@@ -178,12 +178,12 @@ namespace TallyJ.Code.Helpers
 
               //germanic, greek, or otherwise 'ch' for 'kh' sound
               if ((StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH"))
-                  // 'architect but not 'arch', 'orchestra', 'orchid'
+                // 'architect but not 'arch', 'orchestra', 'orchid'
                   || StringAt(workingString, (current - 2), "ORCHES", "ARCHIT", "ORCHID") ||
                   StringAt(workingString, (current + 2), "T", "S")
                   ||
                   ((StringAt(workingString, (current - 1), "A", "O", "U", "E") || (current == 0))
-                   //e.g., 'wachtler', 'wechsler', but not 'tichner'
+                //e.g., 'wachtler', 'wechsler', but not 'tichner'
                    && StringAt(workingString, (current + 2), "L", "R", "N", "M", "B", "H", "F", "V", "W", " ")))
               {
                 metaphoneData.Add("K");
@@ -238,7 +238,7 @@ namespace TallyJ.Code.Helpers
                 {
                   metaphoneData.Add("KS");
                 }
-                  //'bacci', 'bertucci', other italian
+                //'bacci', 'bertucci', other italian
                 else
                 {
                   metaphoneData.Add("X");
@@ -843,9 +843,10 @@ namespace TallyJ.Code.Helpers
             }
 
             //Arnow should match Arnoff
-            if (((current == last) && IsVowel(workingString[current - 1])) ||
+            //-->Glen: original failed if only "W"
+            if (current > 0 && (((current == last) && IsVowel(workingString[current - 1])) ||
                 StringAt(workingString, (current - 1), "EWSKI", "EWSKY", "OWSKI", "OWSKY")
-                || StringAt(workingString, 0, "SCH"))
+                || StringAt(workingString, 0, "SCH")))
             {
               metaphoneData.Add("", "F");
               current += 1;
