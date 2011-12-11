@@ -31,3 +31,6 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Microsoft.Practices.Unity.Co
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Release\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Release\TallyJ.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Release\TallyJ.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\le_nlog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\NLog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\NLog.xml

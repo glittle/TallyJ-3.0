@@ -17,3 +17,6 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\Microsoft.Practices
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\Tests.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\le_nlog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\NLog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\NLog.xml

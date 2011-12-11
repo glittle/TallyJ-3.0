@@ -99,17 +99,17 @@ namespace TallyJ.EF
           new ObjectParameter("ShowDebugInfo", showDebugInfo) :
           new ObjectParameter("ShowDebugInfo", typeof(int));
 
+      // debugging code
       var defaultContainerName = ((IObjectContextAdapter)this).ObjectContext.DefaultContainerName;
-
-      var y = ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace;
-      var keyNames = y.GetItems(DataSpace.SSpace)
+      var metadataWorkspace = ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace;
+      var findFunction = metadataWorkspace.GetItems(DataSpace.SSpace)
                 .SelectMany(gi => gi.MetadataProperties)
                 .Where(m=> Equals(m.Value, "SqlSearch"))
-      .Select(m => "Found {0}".FilledWith(m.Value))
-      .JoinedAsString("\n");
+                .Select(m => "Found {0}".FilledWith(m.Value))
+                .FirstOrDefault();
 
       var logger = LogManager.GetCurrentClassLogger();
-      logger.Info(string.Format("Env: {0}\nContainer Name: {1}\nFound? {2}", new SiteInfo().CurrentEnvironment, defaultContainerName, keyNames));
+      logger.Info(string.Format("Env: {0}\nContainer Name: {1}\nFound? {2}", new SiteInfo().CurrentEnvironment, defaultContainerName, findFunction));
 
       var results = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("TallyJ2Entities.SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
       return results;
