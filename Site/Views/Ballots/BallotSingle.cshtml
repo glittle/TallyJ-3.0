@@ -40,10 +40,13 @@
             In this election, each paper ballot consists of a single name. Sort ballot slips
             into piles, one per person receiving a vote, including piles for spoiled votes.
         </p>
-      <p>
-        For each pile, select the person's name below then enter the number of votes they
-        received.</p>
-        <p>Update the Status input to indicate the status of your counting process, and the Contact Info in case </p>
+        <p>
+            For each pile, select the person's name below then enter the number of votes they
+            received.</p>
+        <p>
+            Update the Status input to indicate the status of your counting process, and the
+            Contact Info in case
+        </p>
     </div>
     <table class="locationInfo">
         <tr>
@@ -60,22 +63,23 @@
                     <option value="Done">Done - All ballots entered and checked</option>
                     <option value="NeedHelp">Need Help!</option>
                 </select>
+                Ballots Collected:
+                <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
         </tr>
-      <tr>
-        <td>
-          <span>Contact Info:</span>
-          <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
-        </td>
-      </tr>
-      <tr>
-        <td>Ballots Collected: 
-          <input id="txtNumCollected" type="number" data-name="BallotsCollected"/>
-          Entered: 
-          <span id="numEntered" data-name="BallotsEntered"></span>
-          <span id="collectedVsEntered"></span>
-          <button type="button" id="btnRefreshBallotCount">Refresh</button>
-        </td>
-      </tr>
+        <tr>
+            <td>
+                <span>Contact Info:</span>
+                <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Ballots Entered: <span id="numEntered" data-name="BallotsEntered">
+                </span> <span id="collectedVsEntered"></span>
+                <button type="button" id="btnRefreshBallotCount">
+                    Refresh</button>
+            </td>
+        </tr>
     </table>
     <button id="btnAddSpoiled" type="button" tabindex="1">
         Add line for spoiled vote(s)</button>

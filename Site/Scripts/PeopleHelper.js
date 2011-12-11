@@ -16,7 +16,7 @@ var PeopleHelper = function (url) {
 
     var onComplete = function (info, extra) {
         ResetStatusDisplay();
-        if (info.Error) {
+        if (info && info.Error) {
             ShowStatusFailed(info.Error);
             return;
         }
