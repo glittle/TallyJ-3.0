@@ -23,5 +23,6 @@ namespace TallyJ.EF
         public string Lat { get; set; }
         public string TallyStatus { get; set; }
         public Nullable<int> SortOrder { get; set; }
+        public Nullable<int> BallotsCollected { get; set; }
     }
 }

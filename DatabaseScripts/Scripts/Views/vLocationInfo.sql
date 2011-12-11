@@ -1,4 +1,5 @@
-﻿IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vLocationInfo')
+﻿
+IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vLocationInfo')
   BEGIN
     DROP  View tj.vLocationInfo
   END
@@ -8,6 +9,9 @@ create
 /*
   vLocationInfo
 
+  Line per location/computer.
+
+  Adds total votes, computer codes, etc. 
 */
 View [tj].[vLocationInfo]
 as

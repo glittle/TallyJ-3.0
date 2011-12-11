@@ -97,6 +97,7 @@
     <EntitySetMapping Name="Locations">
       <EntityTypeMapping TypeName="TallyJ2Model.Location">
         <MappingFragment StoreEntitySet="Location">
+          <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
           <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
           <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
           <ScalarProperty Name="Lat" ColumnName="Lat" />
@@ -268,6 +269,7 @@
     <EntitySetMapping Name="vLocationInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
         <MappingFragment StoreEntitySet="vLocationInfo">
+          <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
           <ScalarProperty Name="SortOrder2" ColumnName="SortOrder2" />
           <ScalarProperty Name="TellerName" ColumnName="TellerName" />
           <ScalarProperty Name="LastContact" ColumnName="LastContact" />

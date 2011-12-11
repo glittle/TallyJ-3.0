@@ -85,5 +85,9 @@ namespace TallyJ.Controllers
     {
       return new LocationModel().UpdateContactInfo(info);
     }
+    public JsonResult UpdateLocationCollected(int numCollected)
+    {
+      return new LocationModel().UpdateNumCollected(numCollected);
+    }
   }
 }

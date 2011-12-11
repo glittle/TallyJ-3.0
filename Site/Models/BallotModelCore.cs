@@ -41,7 +41,7 @@ namespace TallyJ.Models
             Ballot = BallotForJson(ballotInfo),
             Votes = CurrentVotes()
           },
-        Location = LocationModel.LocationInfoForJson(location)
+        Location = new LocationModel().LocationInfoForJson(location)
       }.AsJsonResult();
     }
 
@@ -148,7 +148,11 @@ namespace TallyJ.Models
 
           Db.SaveChanges();
 
-          return new { Updated = true }.AsJsonResult();
+          return new
+                   {
+                     Updated = true,
+                     Location = new LocationModel().CurrentBallotLocationInfo()
+                   }.AsJsonResult();
         }
 
         // problem... client has a vote number, but we didn't find...
@@ -202,7 +206,11 @@ namespace TallyJ.Models
             Db.Votes.Add(vote);
             Db.SaveChanges();
 
-            return new { Updated = true, VoteId = vote.C_RowId }.AsJsonResult();
+            return new { 
+              Updated = true, 
+              VoteId = vote.C_RowId,
+              Location = new LocationModel().CurrentBallotLocationInfo()
+            }.AsJsonResult();
           }
         }
         else
@@ -230,7 +238,8 @@ namespace TallyJ.Models
       return new
                {
                  Deleted = true,
-                 AllVotes = CurrentVotes()
+                 //AllVotes = CurrentVotes(),
+                 Location = new LocationModel().CurrentBallotLocationInfo()
                }.AsJsonResult();
     }
 

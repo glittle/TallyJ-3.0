@@ -43,6 +43,7 @@ namespace TallyJ.Models
       }
 
       var moreExactMatchesFound = new ObjectParameter("MoreExactMatchesFound", typeof(bool));
+     
       var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, metaphone1, term2, metaphone2, max,
                                  moreExactMatchesFound, null);
 

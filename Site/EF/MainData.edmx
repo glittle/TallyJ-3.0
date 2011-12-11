@@ -63,6 +63,7 @@
       [vLocationInfo].[Lat] AS [Lat], 
       [vLocationInfo].[TallyStatus] AS [TallyStatus], 
       [vLocationInfo].[SortOrder] AS [SortOrder], 
+      [vLocationInfo].[BallotsCollected] AS [BallotsCollected], 
       [vLocationInfo].[ComputerCode] AS [ComputerCode], 
       [vLocationInfo].[BallotId] AS [BallotId], 
       [vLocationInfo].[Ballots] AS [Ballots], 
@@ -221,6 +222,7 @@
           <Property Name="Lat" Type="varchar" MaxLength="50" />
           <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="SortOrder" Type="int" />
+          <Property Name="BallotsCollected" Type="int" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -336,7 +338,7 @@
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vBallotInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vBallotInfo">
           <Key>
@@ -371,7 +373,7 @@
           <Property Name="RowVersionInt" Type="bigint" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vElectionListInfo">
           <Key>
@@ -387,7 +389,7 @@
           <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vLocationInfo">
           <Key>
@@ -406,6 +408,7 @@
           <Property Name="Lat" Type="varchar" MaxLength="50" />
           <Property Name="TallyStatus" Type="varchar" MaxLength="15" />
           <Property Name="SortOrder" Type="int" />
+          <Property Name="BallotsCollected" Type="int" />
           <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
           <Property Name="BallotId" Type="int" />
           <Property Name="Ballots" Type="int" />
@@ -414,7 +417,7 @@
           <Property Name="SortOrder2" Type="bigint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vResultInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vResultInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vResultInfo">
           <Key>
@@ -436,7 +439,7 @@
           <Property Name="_FakeRowId" Type="bigint" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'dbd97b2636984849ddacee9f6c008edfc6.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'TallyJ2d.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vVoteInfo">
           <Key>
@@ -648,6 +651,7 @@
           <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="SortOrder" />
+          <Property Type="Int32" Name="BallotsCollected" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -830,6 +834,7 @@
           <Property Type="DateTime" Name="LastContact" />
           <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="SortOrder2" Nullable="false" />
+          <Property Type="Int32" Name="BallotsCollected" />
         </EntityType>
         <EntityType Name="vResultInfo">
           <Key>
@@ -1018,6 +1023,7 @@
           <EntitySetMapping Name="Locations">
             <EntityTypeMapping TypeName="TallyJ2Model.Location">
               <MappingFragment StoreEntitySet="Location">
+                <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
                 <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
                 <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
@@ -1189,6 +1195,7 @@
           <EntitySetMapping Name="vLocationInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
               <MappingFragment StoreEntitySet="vLocationInfo">
+                <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
                 <ScalarProperty Name="SortOrder2" ColumnName="SortOrder2" />
                 <ScalarProperty Name="TellerName" ColumnName="TellerName" />
                 <ScalarProperty Name="LastContact" ColumnName="LastContact" />
@@ -1303,7 +1310,7 @@
         <EntityTypeShape EntityType="TallyJ2Model.Ballot" Width="1.5" PointX="2.75" PointY="4.75" Height="2.9417936197916674" />
         <EntityTypeShape EntityType="TallyJ2Model.Computer" Width="1.5" PointX="4.75" PointY="4.75" Height="3.1340950520833246" />
         <EntityTypeShape EntityType="TallyJ2Model.Election" Width="1.5" PointX="6.75" PointY="4.75" Height="5.2494108072916674" />
-        <EntityTypeShape EntityType="TallyJ2Model.Location" Width="1.5" PointX="7.75" PointY="0.75" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="TallyJ2Model.Location" Width="1.5" PointX="7.75" PointY="0.75" Height="2.9417936197916665" />
         <EntityTypeShape EntityType="TallyJ2Model.Message" Width="1.5" PointX="0.75" PointY="8.75" Height="2.1725878906250102" />
         <EntityTypeShape EntityType="TallyJ2Model.Person" Width="1.5" PointX="2.75" PointY="8.75" Height="5.4417122395833246" />
         <EntityTypeShape EntityType="TallyJ2Model.Reason" Width="1.5" PointX="8.75" PointY="4.75" Height="1.9802864583333246" />
@@ -1313,7 +1320,7 @@
         <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="10.75" PointY="5.75" Height="2.7494921875000102" />
         <EntityTypeShape EntityType="TallyJ2Model.vBallotInfo" Width="1.5" PointX="10.75" PointY="9.75" Height="4.48020507812501" />
         <EntityTypeShape EntityType="TallyJ2Model.vElectionListInfo" Width="1.5" PointX="12.75" PointY="0.75" Height="2.1725878906250102" />
-        <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="12.75" PointY="3.75" Height="3.9033007812500102" />
+        <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="12.75" PointY="3.75" Height="4.0956022135416656" />
         <EntityTypeShape EntityType="TallyJ2Model.vResultInfo" Width="1.5" PointX="6.75" PointY="12.75" Height="3.1340950520833246" />
         <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="12.75" PointY="8.75" Height="5.8263151041666674" />
         <EntityTypeShape EntityType="TallyJ2Model.JoinElectionUser" Width="1.5" PointX="3.625" PointY="1" Height="1.9802864583333244" />

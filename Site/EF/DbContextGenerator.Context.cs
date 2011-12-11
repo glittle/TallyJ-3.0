@@ -92,8 +92,8 @@ namespace TallyJ.EF
             var showDebugInfoParameter = showDebugInfo.HasValue ?
                 new ObjectParameter("ShowDebugInfo", showDebugInfo) :
                 new ObjectParameter("ShowDebugInfo", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("TallyJ2Entities.SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
         }
     }
 }

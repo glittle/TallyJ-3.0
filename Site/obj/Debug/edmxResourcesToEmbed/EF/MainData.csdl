@@ -137,6 +137,7 @@
     <Property Type="String" Name="Lat" MaxLength="50" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="TallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Int32" Name="SortOrder" />
+    <Property Type="Int32" Name="BallotsCollected" />
   </EntityType>
   <EntityType Name="Message">
     <Key>
@@ -319,6 +320,7 @@
     <Property Type="DateTime" Name="LastContact" />
     <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Type="Int64" Name="SortOrder2" Nullable="false" />
+    <Property Type="Int32" Name="BallotsCollected" />
   </EntityType>
   <EntityType Name="vResultInfo">
     <Key>

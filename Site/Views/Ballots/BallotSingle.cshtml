@@ -47,7 +47,7 @@
     </div>
     <table class="locationInfo">
         <tr>
-            <th>
+            <th rowspan="3">
                 <span data-name="Name"></span>
             </th>
             <td>
@@ -61,14 +61,21 @@
                     <option value="NeedHelp">Need Help!</option>
                 </select>
         </tr>
-        <tr>
-            <td>
-            </td>
-            <td>
-                <span>Contact Info:</span>
-                <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
-            </td>
-        </tr>
+      <tr>
+        <td>
+          <span>Contact Info:</span>
+          <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+        </td>
+      </tr>
+      <tr>
+        <td>Ballots Collected: 
+          <input id="txtNumCollected" type="number" data-name="BallotsCollected"/>
+          Entered: 
+          <span id="numEntered" data-name="BallotsEntered"></span>
+          <span id="collectedVsEntered"></span>
+          <button type="button" id="btnRefreshBallotCount">Refresh</button>
+        </td>
+      </tr>
     </table>
     <button id="btnAddSpoiled" type="button" tabindex="1">
         Add line for spoiled vote(s)</button>

@@ -62,15 +62,35 @@ namespace TallyJ.Models
       return LocationInfoForJson(location);
     }
 
-    public static object LocationInfoForJson(Location location)
+    public object LocationInfoForJson(Location location)
     {
+      var ballots = Db.vLocationInfoes.Where(l => l.LocationGuid == location.LocationGuid).Sum(l => l.Ballots);
+
       return new
                {
                  Id = location.C_RowId,
                  location.TallyStatus,
                  location.ContactInfo,
-                 location.Name
+                 location.BallotsCollected,
+                 location.Name,
+                 BallotsEntered = ballots
                };
+    }
+
+    public JsonResult UpdateNumCollected(int numCollected)
+    {
+      var location = UserSession.CurrentLocation;
+      Db.Locations.Attach(location);
+
+      location.BallotsCollected = numCollected;
+
+      Db.SaveChanges();
+
+      return new
+      {
+        Saved = true,
+        Location = LocationInfoForJson(location)
+      }.AsJsonResult();
     }
 
 
@@ -108,7 +128,7 @@ namespace TallyJ.Models
 
     public JsonResult SortLocations(string idList)
     {
-      var ids = idList.Split(new[] {','}).AsInts().ToList();
+      var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
       var locations =
         Db.Locations.Where(l => ids.Contains(l.C_RowId) && l.ElectionGuid == UserSession.CurrentElectionGuid);

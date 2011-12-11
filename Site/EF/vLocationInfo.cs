@@ -29,5 +29,6 @@ namespace TallyJ.EF
         public Nullable<System.DateTime> LastContact { get; set; }
         public string TellerName { get; set; }
         public long SortOrder2 { get; set; }
+        public Nullable<int> BallotsCollected { get; set; }
     }
 }

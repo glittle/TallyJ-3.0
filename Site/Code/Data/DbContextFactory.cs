@@ -31,9 +31,10 @@ namespace TallyJ.Code.Data
         var connection = new SqlConnection(cnString);
         var workspace = new MetadataWorkspace(
           new[] { "res://*/" },
-          new[] { Assembly.GetExecutingAssembly() }
+          new[] { typeof(SqlSearch_Result).Assembly }
           );
 
+        
         var entityConnection = new EntityConnection(workspace, connection);
 
         return _tallyJ2Entities = new TallyJ2Entities(entityConnection);

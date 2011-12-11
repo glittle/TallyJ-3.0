@@ -303,7 +303,7 @@ function ShowStatusFailed(msg, keepTime) {
         if (msg.status === 200 || msg.status === 406) {
             text = msg.responseText;
         } else if (msg.status === 0 && msg.statusText == 'error') {
-            text = 'The browser is busy. Please try again is a second or two.';
+            text = 'The browser is busy. Please try again in a second or two.';
         } else if (msg.status === 503) {
             top.location.href = top.location.href;
             return '';

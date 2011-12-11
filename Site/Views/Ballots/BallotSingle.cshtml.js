@@ -42,9 +42,19 @@ var BallotPageFunc = function () {
 
         $('#tabs').tabs();
 
+        $('#btnRefreshBallotCount').on('click', changeLocationStatus);
+
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
+                ShowStatusDisplay('Updated', 0, 3000, false, true);
+            });
+        });
+        $('#txtNumCollected').on('change', function () {
+            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: +$(this).val() }, function (info) {
+                if (info.Location) {
+                    showLocation(info.Location);
+                }
                 ShowStatusDisplay('Updated', 0, 3000, false, true);
             });
         });
@@ -58,11 +68,11 @@ var BallotPageFunc = function () {
     var changeLocationStatus = function () {
         var form = {
             id: publicInterface.Location.Id,
-            status: $(this).val()
+            status: $('#ddlLocationStatus').val()
         };
         CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationStatus', form, function (info) {
             if (info.Location) {
-                showLocation(info.Location); // not critical
+                showLocation(info.Location);
                 $('span[data-location]').each(function () {
                     var span = $(this);
                     if (span.data('location') == info.Location.Id) {
@@ -115,6 +125,17 @@ var BallotPageFunc = function () {
                     break;
             }
         });
+        var remainingToEnter = (location.BallotsCollected || 0) - (location.BallotsEntered || 0);
+        var html = '';
+        if (remainingToEnter == 0) {
+            html = '<span class=countsGood>All ballots entered</span>';
+        } else if (remainingToEnter < 0) {
+            html = '<span class=countsBad>{0} too many ballot{1} entered!</span>'.filledWith(0 - remainingToEnter, remainingToEnter == -1 ? '' : 's');
+        }
+        else {
+            html = '<span class=countsNeutral>{0} more ballot{1} to enter</span>'.filledWith(remainingToEnter, remainingToEnter == 1 ? '' : 's');
+        }
+        $('#collectedVsEntered').html(html);
     };
 
     var showBallots = function (info) {
@@ -202,6 +223,10 @@ var BallotPageFunc = function () {
                 return;
             }
 
+            if (info.Location) {
+                showLocation(info.Location);
+            }
+
             if (form.vid == 0) {
                 if (info.VoteId) {
                     host.data('vote-id', info.VoteId);
@@ -229,8 +254,11 @@ var BallotPageFunc = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteSingleNameVote', form, function (info) {
             if (info.Deleted) {
                 ShowStatusDisplay('Deleted', 0, 3000, false, true);
-                //$('#votesList').html(site.templates.SingleVoteLine.filledWithEach(info.AllVotes));
                 host.remove();
+
+                if (info.Location) {
+                    showLocation(info.Location);
+                }
             }
             else {
                 ShowStatusFailed(info.Message);
