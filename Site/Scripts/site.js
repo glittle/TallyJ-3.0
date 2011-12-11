@@ -157,6 +157,10 @@ function SendHeartbeat() {
 }
 
 function ProcessPulseResult(info) {
+    ActivateHeartbeat(site.heartbeatActive);
+    if (!info) {
+        return;
+    }
     site.computerActive = info.Active;
     if (info.Active) {
         $('.Heartbeat').removeClass('Frozen').text('Connected').effect('highlight', 'slow');
@@ -170,7 +174,6 @@ function ProcessPulseResult(info) {
     if (info.PulseSeconds) {
         site.heartbeatSeconds = info.PulseSeconds;
     }
-    ActivateHeartbeat(site.heartbeatActive);
 }
 
 // function ShowQaPanel(url) {
