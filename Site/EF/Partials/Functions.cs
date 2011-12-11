@@ -11,5 +11,19 @@ namespace tallyj2dModel.Store
       throw new NotSupportedException("Direct calls not supported");
     }
   }
- 
+
+
+  //  // debugging code
+  //var defaultContainerName = ((IObjectContextAdapter)this).ObjectContext.DefaultContainerName;
+  //var metadataWorkspace = ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace;
+  //var findFunction = metadataWorkspace.GetItems(DataSpace.SSpace)
+  //          .SelectMany(gi => gi.MetadataProperties)
+  //          .Where(m=> Equals(m.Value, "SqlSearch"))
+  //          .Select(m => "Found {0}".FilledWith(m.Value))
+  //          .FirstOrDefault();
+
+  //var logger = LogManager.GetCurrentClassLogger();
+  //logger.Info(string.Format("Env: {0}\nContainer Name: {1}\nFound? {2}", new SiteInfo().CurrentEnvironment, defaultContainerName, findFunction));
+
+
 }
