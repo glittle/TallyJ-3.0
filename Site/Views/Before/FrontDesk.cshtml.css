@@ -1,14 +1,22 @@
-﻿#Main {
+﻿#Main
+{
     overflow: auto;
     margin-left: 60px;
 }
-.Voter {
+p
+{
+    margin-top: -25px;
+    margin-left: 60px;
 }
-.Voter:hover 
+.Voter
+{
+}
+.Voter:hover
 {
     background-color: #cfc;
 }
-.Btn {
+.Btn
+{
     display: inline-block;
     height: 20px;
     padding: 2px 8px;
@@ -19,18 +27,19 @@
     vertical-align: middle;
     cursor: pointer;
 }
-#Main u {
+#Main u
+{
     text-decoration: none;
     width: 90px;
-    display: inline-block;  
+    display: inline-block;
 }
-#Main i {
+#Main i
+{
     display: inline-block;
     float: right;
 }
 
-.Btn.true,
-.Btn.True 
+.Btn.true, .Btn.True
 {
     background-color: plum;
 }

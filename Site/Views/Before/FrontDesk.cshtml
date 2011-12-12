@@ -3,13 +3,13 @@
 @using TallyJ.Code.Session
 @{
     ViewBag.Title = "Front Desk";
-    ViewBag.Message = "Who is voting?";
+    ViewBag.Message = "Record who is voting...";
 
     ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
     TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
-    }
+}
+<p><b>@ViewBag.Title</b> - @ViewBag.Message</p>
 <div id="Main">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.PersonLines()).AsRawHtml()
-
 </div>
