@@ -37,5 +37,6 @@ namespace TallyJ.EF
         public Nullable<int> EnvNum { get; set; }
         public byte[] C_RowVersion { get; set; }
         public string C_FullName { get; set; }
+        public Nullable<long> C_RowVersionInt { get; set; }
     }
 }

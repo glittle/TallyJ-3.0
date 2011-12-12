@@ -95,5 +95,10 @@ namespace TallyJ.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
         }
+    
+        public virtual ObjectResult<Nullable<long>> CurrentRowVersion()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<long>>("CurrentRowVersion");
+        }
     }
 }

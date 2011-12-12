@@ -19,6 +19,7 @@ namespace TallyJ.Code.Resources
 			ElectionListItem,
 			LocationSelectItem,
 			SingleVoteLine,
+			FrontDeskLine,
 			EditPerson
 		}
 

@@ -75,7 +75,7 @@ var PresenterPage = function () {
 
         $('#totalCounts').find('span[data-name]').each(function () {
             var span = $(this);
-            var value = info[span.data('name')] || '';
+            var value = info[span.data('name')];
             span.text(value);
         });
 

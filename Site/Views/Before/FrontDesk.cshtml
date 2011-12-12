@@ -1,7 +1,15 @@
-﻿@model object
-
+﻿@model PeopleModel
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
 @{
-	ViewBag.Title = "title";
-}
+    ViewBag.Title = "Front Desk";
+    ViewBag.Message = "Who is voting?";
 
-<h2>Front Desk</h2>
+    ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
+    }
+<div id="Main">
+  @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.PersonLines()).AsRawHtml()
+
+</div>

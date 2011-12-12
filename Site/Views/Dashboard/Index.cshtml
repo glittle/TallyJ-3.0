@@ -53,18 +53,14 @@
                 Edit people's names.
             </p>
         </section></a>
-    @if (UserSession.IsKnownTeller)
-    {
-
         <a href="@Url.Action("FrontDesk", "Before")">
-            <section class="feature todo">
+            <section class="feature">
                 <h3>
                     Front Desk</h3>
                 <p>
                     Welcome voters to the election venue. Record who is participating in the election.
                 </p>
             </section></a>
-    }
     <a href="@Url.Action("Index", "Ballots")">
         <section class="feature">
             <h3>

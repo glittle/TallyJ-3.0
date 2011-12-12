@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -117,7 +118,7 @@ namespace TallyJ.Models
 
     public JsonResult SavePerson(Person personFromInput)
     {
-      Guid currentElectionGuid = UserSession.CurrentElectionGuid;
+      var currentElectionGuid = UserSession.CurrentElectionGuid;
 
       var savedPerson =
         Db.People.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == currentElectionGuid);
@@ -131,7 +132,7 @@ namespace TallyJ.Models
                      Status = "Unknown ID"
                    }.AsJsonResult();
         }
-        
+
         savedPerson = new Person
                         {
                           PersonGuid = Guid.NewGuid(),
@@ -174,6 +175,87 @@ namespace TallyJ.Models
                  Status = "Saved",
                  Person = PersonForEdit(savedPerson)
                }.AsJsonResult();
+    }
+
+    /// <Summary>Everyone</Summary>
+    public IEnumerable<object> PersonLines()
+    {
+      return PersonLines(PeopleInCurrentElection(true).ToList());
+    }
+
+    /// <Summary>Only those listed</Summary>
+    public IEnumerable<object> PersonLines(List<Person> people)
+    {
+      var locations =
+        Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(l => l.LocationGuid,
+                                                                                                l => l.Name);
+
+      return people
+        .OrderBy(p => p.Area)
+        .ThenBy(p => p.LastName)
+        .ThenBy(p => p.FirstName)
+        .Select(p => new
+                       {
+                         PersonId = p.C_RowId,
+                         FullName = p.C_FullName,
+                         p.Area,
+                         VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+                         InPerson = p.VotingMethod == "P",
+                         DroppedOff = p.VotingMethod == "D",
+                         MailedIn = p.VotingMethod == "M",
+                       });
+    }
+
+    public JsonResult RegisterVoteJson(int personId, string voteType, int lastRowVersion)
+    {
+      if (voteType != "P" && voteType != "D" && voteType != "M")
+      {
+        return new { Message = "Invalid type" }.AsJsonResult();
+      }
+
+      var person =
+        Db.People.SingleOrDefault(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowId == personId);
+      if (person == null)
+      {
+        return new { Message = "Unknown person" }.AsJsonResult();
+      }
+
+      if (person.VotingMethod == voteType)
+      {
+        // already set this way...turn if off
+        person.VotingMethod = null;
+        person.VotingLocationGuid = null;
+      }
+      else
+      {
+        person.VotingMethod = voteType;
+        person.VotingLocationGuid = UserSession.CurrentLocationGuid;
+      }
+
+      Db.SaveChanges();
+
+      if (lastRowVersion == 0)
+      {
+        return new
+                 {
+                   PersonLines = PersonLines(new List<Person> { person }),
+                   LastRowVersion
+                 }.AsJsonResult();
+      }
+
+      var people = Db.People
+          .Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
+          .ToList();
+      return new
+               {
+                 PersonLines = PersonLines(people),
+                 LastRowVersion 
+               }.AsJsonResult();
+    }
+
+    public long LastRowVersion
+    {
+      get { return Db.CurrentRowVersion().Single().Value; }
     }
   }
 }

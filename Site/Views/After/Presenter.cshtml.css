@@ -63,3 +63,10 @@ td.Left {
 #Status {
     font-weight: bold;
 }
+#Wait {
+    display: none;
+}
+
+#totalCounts tr td:first-child {
+    padding-right: 30px;
+}

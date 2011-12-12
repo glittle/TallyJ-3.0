@@ -125,6 +125,7 @@
     <EntitySetMapping Name="People">
       <EntityTypeMapping TypeName="TallyJ2Model.Person">
         <MappingFragment StoreEntitySet="Person">
+          <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
           <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
           <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           <ScalarProperty Name="EnvNum" ColumnName="EnvNum" />
@@ -356,5 +357,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="CurrentRowVersion" FunctionName="tallyj2dModel.Store.CurrentRowVersion" />
   </EntityContainerMapping>
 </Mapping>

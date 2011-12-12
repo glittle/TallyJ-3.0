@@ -1,0 +1,36 @@
+﻿#Main {
+    overflow: auto;
+    margin-left: 60px;
+}
+.Voter {
+}
+.Voter:hover 
+{
+    background-color: #cfc;
+}
+.Btn {
+    display: inline-block;
+    height: 20px;
+    padding: 2px 8px;
+    border: 1px solid #8dc63e;
+    border-radius: 3px;
+    margin: 2px 5px 2px 5px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+#Main u {
+    text-decoration: none;
+    width: 90px;
+    display: inline-block;  
+}
+#Main i {
+    display: inline-block;
+    float: right;
+}
+
+.Btn.true,
+.Btn.True 
+{
+    background-color: plum;
+}

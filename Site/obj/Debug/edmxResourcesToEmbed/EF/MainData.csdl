@@ -38,6 +38,7 @@
     </FunctionImport>
     <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
     <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
+    <FunctionImport Name="CurrentRowVersion" ReturnType="Collection(Int64)" />
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -177,6 +178,7 @@
     <Property Type="Int32" Name="EnvNum" />
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Int64" Name="C_RowVersionInt" annotation:StoreGeneratedPattern="Computed" />
   </EntityType>
   <EntityType Name="Reason">
     <Key>

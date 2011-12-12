@@ -12,8 +12,12 @@
 <button type="button" id="btnRefesh">
     Refresh</button>
 <div id="Wait">
-  Election Status: <br /> <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
-  <p>Results will be available when the head teller releases them. This page will automatically show them when they are available.</p>
+    Election Status:
+    <br />
+    <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
+    <p>
+        Results will be available when the head teller releases them. This page will automatically
+        show them when they are available.</p>
 </div>
 <div id="Results" class="Hidden">
     <div id="chart">
@@ -24,32 +28,20 @@
         <thead>
             <tr>
                 <th>
-                    Rank
-                </th>
-                <th>
-                    Person
+                    Elected
                 </th>
                 <th>
                     Votes
-                </th>
-                <th>
-                    Comments
                 </th>
             </tr>
         </thead>
         <tbody id="mainBody">
             <tr class="{ClassName}">
-                <td>
-                    {Rank}
-                </td>
                 <td class="Left">
                     {PersonName}
                 </td>
                 <td>
                     {VoteCount}
-                </td>
-                <td>
-                    {Comments}
                 </td>
             </tr>
         </tbody>
@@ -61,12 +53,6 @@
                 <td>
                     {VoteCount}
                 </td>
-                <td>
-                    {Rank}
-                </td>
-                <td>
-                    {Comments}
-                </td>
             </tr>
         </tfoot>
     </table>
@@ -75,10 +61,10 @@
             Total Counts</caption>
         <tr>
             <td>
-                Total Votes Recorded
+                Total Ballots Entered
             </td>
             <td>
-                <span data-name="TotalVotes"></span>
+                <span data-name="NumBallots"></span>
             </td>
         </tr>
         <tr>
@@ -86,7 +72,7 @@
                 Total Invalid Ballots
             </td>
             <td>
-                <span data-name="SpoiledBallots"></span>
+                <span data-name="TotalInvalidBallots"></span>
             </td>
         </tr>
         <tr>
@@ -94,7 +80,31 @@
                 Total Invalid Votes
             </td>
             <td>
-                <span data-name="SpoiledVotes"></span>
+                <span data-name="TotalInvalidVotes"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Adults Eligible to Vote
+            </td>
+            <td>
+                <span data-name="NumEligibleToVote"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Adults who Voted
+            </td>
+            <td>
+                <span data-name="NumVoters"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Particpation Rate
+            </td>
+            <td>
+                <span data-name="Participation"></span> %
             </td>
         </tr>
     </table>

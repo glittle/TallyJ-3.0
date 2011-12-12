@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -98,9 +99,13 @@ namespace TallyJ.Models
                  {
                    ReportVotes = reportVotes,
                    ChartVotes = chartVotes,
+                   NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
                    TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
                    TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,
+                   resultSummaryAuto.NumEligibleToVote,
+                   resultSummaryAuto.NumVoters,
+                   Participation = resultSummaryAuto.NumEligibleToVote.AsInt() == 0 ? 0 : Math.Round((resultSummaryAuto.NumVoters.AsInt() * 100D) / resultSummaryAuto.NumEligibleToVote.AsInt(), 0),
                    Status = tallyStatus,
                    StatusText = ElectionTallyStatusEnum.TextFor(tallyStatus)
                  }.AsJsonResult();
