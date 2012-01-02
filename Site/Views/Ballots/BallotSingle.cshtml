@@ -5,12 +5,12 @@
     ViewBag.Title = "Ballots";
     ViewBag.Message = "Tally the votes for a single position";
 
-    ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("peopleUrl", "ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("invalids", "ballotPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
-    ContextItems.AddJavascriptForPage("ballot", "ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
-    ContextItems.AddJavascriptForPage("location", "ballotPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
-    ContextItems.AddJavascriptForPage("ballotList", "ballotPage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
+    ContextItems.AddJavascriptForPage("pageUrl", "ballotSinglePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("peopleUrl", "ballotSinglePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("invalids", "ballotSinglePage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+    ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
+    ContextItems.AddJavascriptForPage("location", "ballotSinglePage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
+    ContextItems.AddJavascriptForPage("ballotList", "ballotSinglePage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -45,7 +45,7 @@
             received.</p>
         <p>
             Update the Status input to indicate the status of your counting process, and the
-            Contact Info in case
+            Contact Info if it is not correct.
         </p>
     </div>
     <table class="locationInfo">

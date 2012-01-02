@@ -1,9 +1,91 @@
-﻿@using TallyJ.Code.Session
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
 @model IBallotModel
 @{
     ViewBag.Title = "Ballots";
     ViewBag.Message = "Tally the votes";
 
-    ContextItems.AddJavascriptForPage("pageUrl", "ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("pageUrl", "ballotNormalPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("peopleUrl", "ballotNormalPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("invalids", "ballotNormalPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+    ContextItems.AddJavascriptForPage("ballot", "ballotNormalPage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
+    ContextItems.AddJavascriptForPage("location", "ballotNormalPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
+    ContextItems.AddJavascriptForPage("ballotList", "ballotNormalPage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.NormalVoteLine);
+
 }
-Normal Election
+<script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<div class="float-left div1">
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabNameSearch">Add name to this ballot</a></li>
+            <li><a href="#tabBallots">All ballots</a> </li>
+        </ul>
+        <div id="tabNameSearch">
+            <p>
+                Select a name by starting to type it here:</p>
+            <input id="txtSearch" tabindex="1" autocomplete="off"><span id="action"></span><span
+                id="more"> </span>
+            <ul id="nameList">
+            </ul>
+        </div>
+        <div id="tabBallots">
+            <ul id="ballotList">
+            </ul>
+        </div>
+    </div>
+    <div class="PullInstructions">
+        <p>
+            Each paper ballot needs to be recorded here. Duplicate names will be noticed and
+            marked...
+        </p>
+        <p>
+            Update the Status input to indicate the status of your counting process, and the
+            Contact Info in case
+        </p>
+    </div>
+    <table class="locationInfo">
+        <tr>
+            <th rowspan="3">
+                <span data-name="Name"></span>
+            </th>
+            <td>
+                <span>Status:</span>
+                <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2">
+                    <option value="">Please select...</option>
+                    <option value="NotStarted">Not started</option>
+                    <option value="Collecting">Collecting ballots</option>
+                    <option value="Counting">Counting and entering ballots</option>
+                    <option value="Done">Done - All ballots entered and checked</option>
+                    <option value="NeedHelp">Need Help!</option>
+                </select>
+                Ballots Collected:
+                <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
+        </tr>
+        <tr>
+            <td>
+                <span>Contact Info:</span>
+                <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Ballots Entered: <span id="numEntered" data-name="BallotsEntered"></span><span id="collectedVsEntered">
+                </span>
+                <button type="button" id="btnRefreshBallotCount">
+                    Refresh</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="votesPanel">
+    <button id="btnAddSpoiled" type="button" tabindex="1">
+        Add a line for a spoiled vote</button>
+    <div style="font-weight: bold;">
+        Ballot #<span id="ballotCode"></span>
+    </div>
+    <div class="titleDiv">
+        <span class="VoteNum">#</span> Names appearing on the ballot (in order)</div>
+    <div id="votesList">
+    </div>
+</div>

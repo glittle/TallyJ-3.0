@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -11,6 +10,8 @@ namespace TallyJ.Models
 {
   public abstract class BallotModelCore : DataConnectedModel, IBallotModel
   {
+    public const string ReasonGroupIneligible = "Ineligible";
+
     #region IBallotModel Members
 
     /// <Summary>Current Ballot... could be null</Summary>
@@ -35,14 +36,14 @@ namespace TallyJ.Models
       var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       return new
-      {
-        BallotInfo = new
-          {
-            Ballot = BallotForJson(ballotInfo),
-            Votes = CurrentVotes()
-          },
-        Location = new LocationModel().LocationInfoForJson(location)
-      }.AsJsonResult();
+               {
+                 BallotInfo = new
+                                {
+                                  Ballot = BallotForJson(ballotInfo),
+                                  Votes = CurrentVotes()
+                                },
+                 Location = new LocationModel().LocationInfoForJson(location)
+               }.AsJsonResult();
     }
 
     /// <Summary>Switch current ballot</Summary>
@@ -115,6 +116,7 @@ namespace TallyJ.Models
                          vid = v.VoteId,
                          count = v.SingleNameElectionCount,
                          pid = v.PersonId,
+                         pos = v.PositionOnBallot,
                          name = v.PersonFullName,
                          changed = !Equals(v.PersonCombinedInfo, v.PersonCombinedInfoInVote),
                          invalid = v.VoteInvalidReasonId,
@@ -133,12 +135,13 @@ namespace TallyJ.Models
         //  .Join(Db.Votes, info => info.VoteId, vote => vote.C_RowId, (info, vote) => new { info, vote })
         //  .SingleOrDefault(iv => iv.vote.C_RowId == voteId && iv.info.ElectionGuid == currentElectionGuid);
 
-        var voteInfo = Db.vVoteInfoes.SingleOrDefault(vi => vi.VoteId == voteId && vi.ElectionGuid == currentElectionGuid);
+        var voteInfo =
+          Db.vVoteInfoes.SingleOrDefault(vi => vi.VoteId == voteId && vi.ElectionGuid == currentElectionGuid);
 
         if (voteInfo != null)
         {
           var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
-          
+
           vote.SingleNameElectionCount = count;
           vote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
 
@@ -212,11 +215,13 @@ namespace TallyJ.Models
             Db.Votes.Add(vote);
             Db.SaveChanges();
 
-            return new { 
-              Updated = true, 
-              VoteId = vote.C_RowId,
-              Location = new LocationModel().CurrentBallotLocationInfo()
-            }.AsJsonResult();
+            return new
+                     {
+                       Updated = true,
+                       VoteId = vote.C_RowId,
+                       pos = vote.PositionOnBallot,
+                       Location = new LocationModel().CurrentBallotLocationInfo()
+                     }.AsJsonResult();
           }
         }
         else
@@ -225,7 +230,7 @@ namespace TallyJ.Models
         }
       }
 
-      return new { Updated = false }.AsJsonResult();
+      return new {Updated = false}.AsJsonResult();
     }
 
     public JsonResult DeleteVote(int vid)
@@ -234,26 +239,25 @@ namespace TallyJ.Models
         Db.vVoteInfoes.SingleOrDefault(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid && vi.VoteId == vid);
       if (voteInfo == null)
       {
-        return new { Message = "Not found" }.AsJsonResult();
+        return new {Message = "Not found"}.AsJsonResult();
       }
 
       var vote = Db.Votes.Single(v => v.C_RowId == vid);
       Db.Votes.Remove(vote);
       Db.SaveChanges();
 
+      UpdateVotePositions(voteInfo.BallotGuid);
+
       return new
                {
                  Deleted = true,
-                 //AllVotes = CurrentVotes(),
+                 Votes = CurrentVotes(),
                  Location = new LocationModel().CurrentBallotLocationInfo()
                }.AsJsonResult();
     }
 
-    public const string ReasonGroupIneligible = "Ineligible";
-
     public string InvalidReasonsJsonString()
     {
-
       return Db.Reasons
         //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
         .OrderBy(r => r.ReasonGroup) // put Inelligible at the bottom
@@ -276,6 +280,19 @@ namespace TallyJ.Models
     }
 
     #endregion
+
+    private void UpdateVotePositions(Guid ballotGuid)
+    {
+      var votes = Db.Votes
+        .Where(v => v.BallotGuid == ballotGuid)
+        .OrderBy(v => v.PositionOnBallot)
+        .ToList();
+
+      var position = 1;
+      votes.ForEach(v => v.PositionOnBallot = position++);
+
+      Db.SaveChanges();
+    }
 
     public vBallotInfo CreateBallot()
     {

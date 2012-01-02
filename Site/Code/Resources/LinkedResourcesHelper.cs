@@ -13,7 +13,7 @@ namespace TallyJ.Code.Resources
 		/// <example>Example with media tag:   print.css|print</example>
 		public string CreateStyleSheetLinkTag(string itemInfo, string rootPath)
 		{
-			var parts = itemInfo.SplitWithString("|", StringSplitOptions.RemoveEmptyEntries);
+			var parts = itemInfo.SplitWithString("|");
 			var name = parts[0];
 			var media = parts.Length == 1 ? string.Empty : parts[1];
 

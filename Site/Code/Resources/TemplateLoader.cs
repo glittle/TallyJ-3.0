@@ -20,7 +20,8 @@ namespace TallyJ.Code.Resources
 			LocationSelectItem,
 			SingleVoteLine,
 			FrontDeskLine,
-			EditPerson
+			EditPerson,
+      NormalVoteLine
 		}
 
 		#endregion

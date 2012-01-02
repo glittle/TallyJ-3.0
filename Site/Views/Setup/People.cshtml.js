@@ -198,7 +198,7 @@ var PeoplePage = function () {
     var nameClick = function (ev) {
         var el = ev.target;
         while (el.tagName != 'LI') {
-            el = el.parentNode();
+            el = el.parentNode;
             if (el == null) return;
         }
         edit(+el.id.substr(1));

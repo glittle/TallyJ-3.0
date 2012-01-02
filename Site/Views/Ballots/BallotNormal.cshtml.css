@@ -1,41 +1,242 @@
-﻿table
+﻿.div1
 {
-    border-collapse: separate;
-    border-spacing: 0px 0px;
+    width: 340px;
+}
+
+#bnHolder
+{
+    position: relative;
+    height: 300px;
+    width: 330px;
+}
+
+
+#nameList
+{
+    height: 300px;
+    width: 300px;
+    border: solid 1px #999;
+    padding: 4px;
+    font-size: 110%;
+    line-height: 1.5;
+    overflow: auto;
+}
+#nameList u
+{
+    text-decoration: none;
+}
+#nameList li
+{
+    border: 1px solid transparent;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+#nameList li:hover
+{
+    border-color: #ddd;
+}
+#nameList li.selected
+{
+    background-color: #c1f1b4;
+    border-color: #999;
+}
+#nameList i.First
+{
+    border-top: 3px double #ccc;
+    width: 100%;
+    display: block;
+}
+
+
+#ballotList
+{
+    overflow: auto;
+    padding: 2px;
+}
+#ballotList li
+{
+    border: 1px solid transparent;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+#ballotList li:hover
+{
+    border-color: #ddd;
+}
+#ballotList li.selected
+{
+    background-color: #c1f1b4;
+    border-color: #999;
+}
+
+
+
+#actionZZ
+{
+    width: 20px;
+    height: 1em;
+    display: inline-block;
+}
+span.delayingZZ
+{
+    background-color: #f8f541;
+}
+span.searchingZZ
+{
+    background-color: #f1c1b4;
+}
+input.delaying
+{
+    background-color: #fffebf;
+}
+input.searching
+{
+    background-color: #ffe8e2;
+}
+#votesPanel
+{
+    margin-left: 15px;
+}
+.ui-icon-trash
+{
+    display: inline-block;
+    margin-left: 15px;
+    cursor: pointer;
+    visibility: hidden;
+}
+.Inelligible
+{
+    text-decoration: line-through;
+}
+span.Vote
+{
+    width: 60px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 9px;
+}
+input.Vote
+{
+    width: 60px;
+    margin-right: 5px;
+    text-align: right;
+}
+.titleDiv
+{
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+}
+#btnAddSpoiled
+{
+    font-size: 90%;
+    float: right;
+}
+.Valid .Invalid
+{
+    display: none;
+}
+
+.VoteHost:hover .ui-icon-trash {
+    visibility: visible;
+}
+
+.VoteHost span.Name
+{
+    display: none;
+    font-size: 120%;
+}
+.VoteHost.Valid span.Name
+{
+    display: inline;
+}
+.Ineligible, span.Invalid
+{
+    color: #e80c4d;
+    font-weight: bold;
+}
+
+#txtContact
+{
+    width: 393px;
+}
+#votesPanel
+{
     float: left;
+    width: 605px;
 }
-thead th
+table.locationInfo
 {
-    border-bottom: 1px solid #000;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    width: 100%;
 }
-
-tr th:first-child
+table.locationInfo th
 {
+    vertical-align: top;
+    padding-right: 20px;
     text-align: left;
+    border-right: solid 1px #ccc;
 }
-
-td
+table.locationInfo td
 {
-    text-align: center;
-    min-width: 40px;
-    padding: 2px 7px;
-    border-left: 1px solid #e0e0e0;
+    vertical-align: middle;
 }
 
-tr.Odd {
-    background-color: #ddd;
+.ui-widget
+{
+    font-size: .85em;
 }
-tr.Odd td {
-    border-left: 1px solid #d0d0d0;
+.ui-helper-reset
+{
+    font-size: 12px;
+}
+#votesList
+{
+    max-height: 300px;
+    overflow: auto;
 }
 
-tr.Tied {
+.ChangedMessage
+{
+    display: none;
+}
+.Changedtrue .ChangedMessage
+{
+    display: block;
+    color: #e80c4d;
+    margin-left: 70px;
+    padding-bottom: 5px;
+}
+.Changedtrue
+{
+    border: 1px solid red;
+    background-color: #ffcccc;
+}
+#txtNumCollected
+{
+    width: 65px;
+    margin-right: 5px;
+    text-align: right;
+}
+.countsBad,
+.countsGood,
+.countsNeutral {
+    margin-left: 10px;
+}
+.countsBad {
     color: red;
 }
+.countsGood {
+    color: green;
+}
 
-#chart {
-    float: left;
-    width: 340px;
-    height: 500px;
-    margin-left: 10px;
+.VoteNum {
+    display: inline-block;
+    width: 20px;
+    text-align: right;
+    margin-right: 9px;
+    font-size: 80%;
+    color: #aaa;
 }

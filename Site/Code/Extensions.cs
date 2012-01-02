@@ -44,7 +44,7 @@ namespace TallyJ.Code
     /// <summary>
     ///   Split using a single separator
     /// </summary>
-    public static string[] SplitWithString(this string input, string separator, StringSplitOptions stringSplitOptions)
+    public static string[] SplitWithString(this string input, string separator, StringSplitOptions stringSplitOptions = StringSplitOptions.RemoveEmptyEntries)
     {
       return input == null
                ? null

@@ -23,7 +23,15 @@ namespace TallyJ.Models
 
     protected override object BallotForJson(vBallotInfo b)
     {
-      throw new System.NotImplementedException();
+      return new
+      {
+        Id = b.C_RowId,
+        Code = b.C_BallotCode,
+        Location = b.LocationName,
+        LocationSort = b.LocationSortOrder,
+        b.LocationId,
+        b.TallyStatus
+      };
     }
   }
 }

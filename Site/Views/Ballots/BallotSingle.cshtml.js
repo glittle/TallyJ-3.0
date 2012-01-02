@@ -3,7 +3,7 @@
 /// <reference path="../../Scripts/jquery-ui-1.8.16.js" />
 /// <reference path="../../Scripts/PeopleHelper.js" />
 
-var BallotPageFunc = function () {
+var BallotSinglePageFunc = function () {
     var local = {
         People: [],
         peopleHelper: null,
@@ -21,6 +21,7 @@ var BallotPageFunc = function () {
         searchResultTemplate: '<li id=P{Id}>{Name}</li>',
         ballotListTemplate: '<li id=B{Id}>{Location} (<span data-location={LocationId}>{TallyStatus}</span>) - {Code}</li>'
     };
+
     var preparePage = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
@@ -83,6 +84,7 @@ var BallotPageFunc = function () {
             ShowStatusDisplay('Updated', 0, 3000, false, true);
         });
     };
+
     var loadExisting = function (info) {
 
         if (info.BallotsList) {
@@ -126,7 +128,7 @@ var BallotPageFunc = function () {
             }
         });
         var remainingToEnter = (location.BallotsCollected || 0) - (location.BallotsEntered || 0);
-        var html = '';
+        var html;
         if (remainingToEnter == 0) {
             html = '<span class=countsGood>All ballots entered</span>';
         } else if (remainingToEnter < 0) {
@@ -210,7 +212,7 @@ var BallotPageFunc = function () {
         ShowStatusDisplay('Saving...');
         input.focus();
 
-        CallAjaxHandler(publicInterface.controllerUrl + '/SaveSingleNameVote', form, function (info) {
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
             if (info.Updated) {
                 ShowStatusDisplay('Saved', 0, 3000, false, true);
                 // assume any error was removed
@@ -251,7 +253,7 @@ var BallotPageFunc = function () {
         }
 
         ShowStatusDisplay('Deleting...');
-        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteSingleNameVote', form, function (info) {
+        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteVote', form, function (info) {
             if (info.Deleted) {
                 ShowStatusDisplay('Deleted', 0, 3000, false, true);
                 host.remove();
@@ -293,6 +295,7 @@ var BallotPageFunc = function () {
         local.nameList.children().removeClass('selected');
         local.nameList.children().eq(local.rowSelected).addClass('selected');
     };
+
     var moveSelected = function (delta) {
         var children = local.nameList.children();
         var numChildren = children.length;
@@ -494,8 +497,8 @@ var BallotPageFunc = function () {
     return publicInterface;
 };
 
-var ballotPage = BallotPageFunc();
+var ballotSinglePage = BallotSinglePageFunc();
 
 $(function () {
-    ballotPage.PreparePage();
+    ballotSinglePage.PreparePage();
 });

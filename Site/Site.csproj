@@ -366,6 +366,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
+    <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\FrontDeskLine.html" />
     <Content Include="JsTemplates\EditPerson.html" />
     <Content Include="JsTemplates\SingleVoteLine.html" />

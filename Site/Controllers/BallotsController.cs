@@ -62,12 +62,12 @@ namespace TallyJ.Controllers
       return isSingle ? View("BallotSingle", ballotModel) : View("BallotNormal", ballotModel);
     }
 
-    public JsonResult SaveSingleNameVote(int pid, int vid, int count, int invalid = 0)
+    public JsonResult SaveVote(int pid, int vid, int count, int invalid = 0)
     {
       return BallotModelFactory.GetForCurrentElection().SaveVote(pid, vid, count, invalid);
     }
 
-    public JsonResult DeleteSingleNameVote(int vid)
+    public JsonResult DeleteVote(int vid)
     {
       return BallotModelFactory.GetForCurrentElection().DeleteVote(vid);
     }
