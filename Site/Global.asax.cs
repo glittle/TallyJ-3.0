@@ -155,7 +155,8 @@ namespace TallyJ
         Response.Write("Error on site");
       }else
       {
-        Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+        //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+        Response.Write("Error on site");
       }
       Response.End();
     }

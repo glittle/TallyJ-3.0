@@ -11,6 +11,14 @@ namespace Tests.BusinessTests
   [TestClass]
   public class ResultAnalysisTests
   {
+    private ResultAnalysisTests.Fakes _fakes;
+
+    [TestInitialize]
+    public void Init()
+    {
+      _fakes = new ResultAnalysisTests.Fakes();
+    }
+
     private List<Person> SamplePeople
     {
       get
@@ -55,9 +63,8 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
-      var fakes = new Fakes();
-      var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
+                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -96,9 +103,8 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
-      var fakes = new Fakes();
-      var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
+                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -143,9 +149,8 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
-      var fakes = new Fakes();
-      var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
+                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -193,9 +198,8 @@ namespace Tests.BusinessTests
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
-      var fakes = new Fakes();
-      var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
+                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 
@@ -261,9 +265,8 @@ namespace Tests.BusinessTests
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
       votes[5].PersonCombinedInfo = "different";
 
-      var fakes = new Fakes();
-      var model = new SingleNameElectionAnalyzer(election, new ResultSummary(), new List<Result>(), votes,
-                                                 fakes.RemoveResult, fakes.AddResult, fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
+                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
 
       model.GenerateResults();
 

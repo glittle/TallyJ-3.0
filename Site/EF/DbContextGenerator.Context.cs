@@ -61,6 +61,11 @@ namespace TallyJ.EF
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CloneElection_Result>("CloneElection", sourceElectionParameter, byLoginIdParameter);
         }
     
+        public virtual ObjectResult<Nullable<long>> CurrentRowVersion()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<long>>("CurrentRowVersion");
+        }
+    
         public virtual ObjectResult<SqlSearch_Result> SqlSearch(Nullable<System.Guid> election, string term1, string term2, string sound1, string sound2, Nullable<int> maxToReturn, ObjectParameter moreExactMatchesFound, Nullable<int> showDebugInfo)
         {
             ((IObjectContextAdapter)this).ObjectContext.MetadataWorkspace.LoadFromAssembly(typeof(SqlSearch_Result).Assembly);
@@ -94,11 +99,6 @@ namespace TallyJ.EF
                 new ObjectParameter("ShowDebugInfo", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<long>> CurrentRowVersion()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<long>>("CurrentRowVersion");
         }
     }
 }

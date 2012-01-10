@@ -6,13 +6,13 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class SingleNameElectionAnalyzer : ElectionAnalyzerCore
+  public class ElectionAnalyzerSingleName : ElectionAnalyzerCore
   {
-    public SingleNameElectionAnalyzer()
+    public ElectionAnalyzerSingleName()
     {
     }
 
-    public SingleNameElectionAnalyzer(Election election, ResultSummary resultSummary, List<Result> results,
+    public ElectionAnalyzerSingleName(Election election, ResultSummary resultSummary, List<Result> results,
                                       List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult,
                                       Func<Result, Result> addResult
                                       , Func<int> saveChanges, List<Person> people)

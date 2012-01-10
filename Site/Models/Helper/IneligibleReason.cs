@@ -5,7 +5,7 @@ namespace TallyJ.Models.Helper
   /// <summary>
   /// Only a few reasons are needed by code
   /// </summary>
-  public class InelligibleReason
+  public class IneligibleReason
   {
 
     /// <remarks>Matches guid in database</remarks>

@@ -242,18 +242,19 @@
     <Compile Include="EF\vVoteInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\BallotAnalyzerCore.cs" />
     <Compile Include="Models\BallotHelper.cs" />
     <Compile Include="Models\BallotModelCore.cs" />
     <Compile Include="Models\BallotModelFactory.cs" />
     <Compile Include="Models\BallotNormalModel.cs" />
     <Compile Include="Models\BallotSingleModel.cs" />
     <Compile Include="Models\ComputerModel.cs" />
-    <Compile Include="Models\ElectionAnalyzer.cs" />
+    <Compile Include="Models\ElectionAnalyzerNormal.cs" />
     <Compile Include="Models\ElectionAnalyzerCore.cs" />
     <Compile Include="Models\ElectionRules.cs" />
     <Compile Include="Models\Helpers.cs" />
     <Compile Include="Models\Helper\AgeGroup.cs" />
-    <Compile Include="Models\Helper\InelligibleReason.cs" />
+    <Compile Include="Models\Helper\IneligibleReason.cs" />
     <Compile Include="Models\IBallotModel.cs" />
     <Compile Include="Models\IElectionAnalyzer.cs" />
     <Compile Include="Models\ImportExportModel.cs" />
@@ -303,7 +304,7 @@
     <Compile Include="Models\PulseModel.cs" />
     <Compile Include="Models\ResultsModel.cs" />
     <Compile Include="Models\SetupModel.cs" />
-    <Compile Include="Models\SingleNameElectionAnalyzer.cs" />
+    <Compile Include="Models\ElectionAnalyzerSingleName.cs" />
     <Compile Include="Models\TellerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

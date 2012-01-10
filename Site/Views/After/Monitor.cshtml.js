@@ -125,7 +125,7 @@ var MonitorPage = function () {
         $.each(info.Locations, function () {
             rows++;
 
-            this.Btn = '<a class=ZoomIn title=View href="../Ballots?l={LocationId}&b={BallotId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
+            this.Btn = '<a class=ZoomIn title=View href="../Ballots?l={LocationId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
 
             if (this.Name != lastName) {
                 if (last != null) {
@@ -145,7 +145,10 @@ var MonitorPage = function () {
             }
 
             if (this.BallotsCollected) {
-                this.Ballot1 = '<div>{BallotsCollected} ballots</div>'.filledWith(this);
+                this.BallotsCollected = '<br>({0} to enter)'.filledWith(this.BallotsCollected - this.Ballots); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
+            }
+            else {
+                this.BallotsCollected = ''; // ' entered';
             }
         });
 

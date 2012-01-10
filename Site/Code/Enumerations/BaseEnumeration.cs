@@ -67,6 +67,11 @@ namespace TallyJ.Code.Enumerations
       get { return false; }
     }
 
+    public static int Count
+    {
+      get { return BaseItems.Count; }
+    }
+
     public static TSelf Default
     {
       get { return _defaultItem; }
@@ -139,6 +144,7 @@ namespace TallyJ.Code.Enumerations
     protected static void Add(TSelf item)
     {
       BaseItems.Add(item);
+      if(_defaultItem==null) _defaultItem = item;
     }
 
     protected static void AddAsDefault(TSelf item)

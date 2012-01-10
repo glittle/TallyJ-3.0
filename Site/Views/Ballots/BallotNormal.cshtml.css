@@ -3,17 +3,15 @@
     width: 340px;
 }
 
-#bnHolder
-{
-    position: relative;
-    height: 300px;
-    width: 330px;
+.tabs {
+    min-height: 300px;
 }
 
-
-#nameList
+.nameList
 {
-    height: 300px;
+    margin: 0 0 10px 0;
+    min-height: 150px;
+    height: 150px;
     width: 300px;
     border: solid 1px #999;
     padding: 4px;
@@ -21,27 +19,27 @@
     line-height: 1.5;
     overflow: auto;
 }
-#nameList u
+.nameList u
 {
     text-decoration: none;
 }
-#nameList li
+.nameList li
 {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-#nameList li:hover
+.nameList li:hover
 {
     border-color: #ddd;
 }
-#nameList li.selected
+.nameList li.selected
 {
     background-color: #c1f1b4;
     border-color: #999;
 }
-#nameList i.First
+.nameList i.First
 {
     border-top: 3px double #ccc;
     width: 100%;
@@ -49,23 +47,23 @@
 }
 
 
-#ballotList
+.ballotList
 {
     overflow: auto;
     padding: 2px;
 }
-#ballotList li
+.ballotList li
 {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-#ballotList li:hover
+.ballotList li:hover
 {
     border-color: #ddd;
 }
-#ballotList li.selected
+.ballotList li.selected
 {
     background-color: #c1f1b4;
     border-color: #999;
@@ -73,31 +71,32 @@
 
 
 
-#actionZZ
+.action
 {
-    width: 20px;
-    height: 1em;
-    display: inline-block;
+    font-size: 11px;
+    margin-top: 10px;
 }
-span.delayingZZ
+span.ZZdelaying
 {
     background-color: #f8f541;
 }
-span.searchingZZ
+span.ZZsearching
 {
     background-color: #f1c1b4;
 }
-input.delaying
+input.ZZdelaying
 {
     background-color: #fffebf;
 }
-input.searching
+input.ZZsearching
 {
     background-color: #ffe8e2;
 }
-#votesPanel
+.votesPanel
 {
     margin-left: 15px;
+    float: left;
+    width: 605px;
 }
 .ui-icon-trash
 {
@@ -106,7 +105,7 @@ input.searching
     cursor: pointer;
     visibility: hidden;
 }
-.Inelligible
+.InvalidName
 {
     text-decoration: line-through;
 }
@@ -128,16 +127,21 @@ input.Vote
     font-weight: bold;
     border-bottom: 1px solid #ccc;
 }
-#btnAddSpoiled
+.smallButton
 {
-    font-size: 90%;
-    float: right;
+    font-size: 12px;
+}
+.spoiledBtn
+{
+    margin-top: 20px;
 }
 .Valid .Invalid
 {
     display: none;
 }
-
+select.Invalid {
+    vertical-align: top;
+}
 .VoteHost:hover .ui-icon-trash {
     visibility: visible;
 }
@@ -145,45 +149,32 @@ input.Vote
 .VoteHost span.Name
 {
     display: none;
-    font-size: 120%;
+    font-size: 16px;
+    padding: 0 9px 0 2px;
 }
 .VoteHost.Valid span.Name
 {
     display: inline;
 }
-.Ineligible, span.Invalid
+.InvalidBallot, .Ineligible, span.Invalid
 {
     color: #e80c4d;
     font-weight: bold;
 }
 
-#txtContact
+.txtContact
 {
-    width: 393px;
+    width: 260px;
 }
-#votesPanel
+.locationInfo > div
 {
-    float: left;
-    width: 605px;
+    margin-left: 15px;
 }
-table.locationInfo
-{
-    border-collapse: collapse;
-    margin-bottom: 15px;
-    width: 100%;
+.locationInfo > div.heading {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-left: 0;
 }
-table.locationInfo th
-{
-    vertical-align: top;
-    padding-right: 20px;
-    text-align: left;
-    border-right: solid 1px #ccc;
-}
-table.locationInfo td
-{
-    vertical-align: middle;
-}
-
 .ui-widget
 {
     font-size: .85em;
@@ -191,11 +182,6 @@ table.locationInfo td
 .ui-helper-reset
 {
     font-size: 12px;
-}
-#votesList
-{
-    max-height: 300px;
-    overflow: auto;
 }
 
 .ChangedMessage
@@ -214,16 +200,15 @@ table.locationInfo td
     border: 1px solid red;
     background-color: #ffcccc;
 }
-#txtNumCollected
+.txtNumCollected
 {
     width: 65px;
-    margin-right: 5px;
     text-align: right;
 }
 .countsBad,
 .countsGood,
 .countsNeutral {
-    margin-left: 10px;
+    margin: 4px 0 3px 0;
 }
 .countsBad {
     color: red;
@@ -239,4 +224,33 @@ table.locationInfo td
     margin-right: 9px;
     font-size: 80%;
     color: #aaa;
+}
+.InUse {
+    color: #f99;
+}
+.tip1 {
+    float: right;
+    color: #aaa;
+    font-size: 10px;
+    margin-top: -15px;
+}
+.titleDiv .ballotStatus {
+    padding-right: 20px;
+}
+.duplicateVote .Name 
+{
+    background-color: #f6941e;
+}
+
+.VoteHost {
+    background-color: #eeffd6;
+    line-height: 1.5;
+}
+.ExtraVote {
+    border-top: 1px solid black;
+    margin-top: 5px;
+}
+.ExtraVote, .ExtraVotes {
+    background-color: #ffe3c2;
+    line-height: 1.2;
 }

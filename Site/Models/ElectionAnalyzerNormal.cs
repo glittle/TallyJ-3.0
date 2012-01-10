@@ -2,7 +2,7 @@ using TallyJ.Code;
 
 namespace TallyJ.Models
 {
-  public class ElectionAnalyzer : ElectionAnalyzerCore
+  public class ElectionAnalyzerNormal : ElectionAnalyzerCore
   {
     public override void GenerateResults()
     {

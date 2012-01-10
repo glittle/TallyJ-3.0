@@ -35,12 +35,15 @@ namespace TallyJ.Models
       var ballotInfo = GetCurrentBallotInfo(false);
       var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
+      SessionKey.CurrentLocation.SetInSession(location);
+
       return new
                {
                  BallotInfo = new
                                 {
                                   Ballot = BallotForJson(ballotInfo),
-                                  Votes = CurrentVotes()
+                                  Votes = CurrentVotes(),
+                                  NumNeeded = UserSession.CurrentElection.NumberToElect
                                 },
                  Location = new LocationModel().LocationInfoForJson(location)
                }.AsJsonResult();
@@ -94,7 +97,8 @@ namespace TallyJ.Models
       return new
                {
                  Ballot = BallotForJson(ballotInfo),
-                 Votes = CurrentVotes()
+                 Votes = CurrentVotes(),
+                 NumNeeded = UserSession.CurrentElection.NumberToElect
                }.SerializedAsJsonString();
     }
 
@@ -107,8 +111,9 @@ namespace TallyJ.Models
         return new List<object>();
       }
 
-      var currentVotes = Db.vVoteInfoes
-        .Where(v => v.BallotGuid == ballot.BallotGuid)
+      var vVoteInfos = Db.vVoteInfoes.Where(v => v.BallotGuid == ballot.BallotGuid);
+
+      var currentVotes = vVoteInfos
         .OrderBy(v => v.PositionOnBallot)
         .ToList() //avoid LINQ issues
         .Select(v => new
@@ -131,106 +136,112 @@ namespace TallyJ.Models
 
       if (voteId != 0)
       {
-        //var existingVoteInfo = Db.vVoteInfoes
-        //  .Join(Db.Votes, info => info.VoteId, vote => vote.C_RowId, (info, vote) => new { info, vote })
-        //  .SingleOrDefault(iv => iv.vote.C_RowId == voteId && iv.info.ElectionGuid == currentElectionGuid);
+        // update existing record
 
         var voteInfo =
           Db.vVoteInfoes.SingleOrDefault(vi => vi.VoteId == voteId && vi.ElectionGuid == currentElectionGuid);
 
-        if (voteInfo != null)
+        if (voteInfo == null)
         {
-          var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
-
-          vote.SingleNameElectionCount = count;
-          vote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
-
-          if (invalidReason != 0)
-          {
-            var invalidReasonGuid =
-              Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
-            if (invalidReasonGuid != Guid.Empty && invalidReasonGuid != vote.InvalidReasonGuid)
-            {
-              vote.InvalidReasonGuid = invalidReasonGuid;
-            }
-          }
-
-          Db.SaveChanges();
-
-          return new
-                   {
-                     Updated = true,
-                     Location = new LocationModel().CurrentBallotLocationInfo()
-                   }.AsJsonResult();
+          return new { Updated = false, Error = "Invalid vote id" }.AsJsonResult();
         }
 
         // problem... client has a vote number, but we didn't find...
         // TODO : deal with this?
+        var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
+
+        vote.SingleNameElectionCount = count;
+        vote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
+
+        DetermineInvalidReasonGuid(invalidReason, vote);
+
+        Db.SaveChanges();
+
+        return new
+                 {
+                   Updated = true,
+                   //Location = new LocationModel().CurrentBallotLocationInfo()
+                 }.AsJsonResult();
       }
-      else
+
+      var ballot = GetCurrentBallotInfo(true);
+      if (ballot == null)
       {
-        var ballot = GetCurrentBallotInfo(true);
-        if (ballot != null)
-        {
-          // make a new Vote record
-          var ok = false;
-          var invalidReasonGuid = Guid.Empty;
-          Person person = null;
-
-          if (invalidReason != 0)
-          {
-            invalidReasonGuid =
-              Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
-            ok = invalidReasonGuid != Guid.Empty;
-          }
-          else
-          {
-            person = Db.People.SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == currentElectionGuid);
-            ok = person != null;
-          }
-          if (ok)
-          {
-            var nextVoteNum = 1 + Db.Votes.Where(v => v.BallotGuid == ballot.BallotGuid)
-                                    .OrderByDescending(v => v.PositionOnBallot)
-                                    .Take(1)
-                                    .Select(b => b.PositionOnBallot)
-                                    .SingleOrDefault();
-
-            var vote = new Vote
-                         {
-                           BallotGuid = ballot.BallotGuid,
-                           PositionOnBallot = nextVoteNum,
-                           StatusCode = BallotHelper.VoteStatusCode.Ok,
-                           SingleNameElectionCount = count
-                         };
-            if (person != null)
-            {
-              vote.PersonGuid = person.PersonGuid;
-              vote.PersonCombinedInfo = person.CombinedInfo;
-            }
-            if (invalidReasonGuid != Guid.Empty)
-            {
-              vote.InvalidReasonGuid = invalidReasonGuid.AsNullableGuid();
-            }
-            Db.Votes.Add(vote);
-            Db.SaveChanges();
-
-            return new
-                     {
-                       Updated = true,
-                       VoteId = vote.C_RowId,
-                       pos = vote.PositionOnBallot,
-                       Location = new LocationModel().CurrentBallotLocationInfo()
-                     }.AsJsonResult();
-          }
-        }
-        else
-        {
-          // don't recognize person id
-        }
+        return new { Updated = false, Error = "Invalid ballot" }.AsJsonResult();
       }
 
-      return new {Updated = false}.AsJsonResult();
+      // don't have an active Ballot!
+      // make a new Vote record
+
+      var invalidReasonGuid = DetermineInvalidReasonGuid(invalidReason);
+
+      var person = Db.People.SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == currentElectionGuid);
+
+      var ok = person != null || invalidReasonGuid != Guid.Empty; 
+
+      if (ok)
+      {
+        var nextVoteNum = 1 + Db.Votes.Where(v => v.BallotGuid == ballot.BallotGuid)
+                                .OrderByDescending(v => v.PositionOnBallot)
+                                .Take(1)
+                                .Select(b => b.PositionOnBallot)
+                                .SingleOrDefault();
+
+        var vote = new Vote
+                     {
+                       BallotGuid = ballot.BallotGuid,
+                       PositionOnBallot = nextVoteNum,
+                       StatusCode = BallotHelper.VoteStatusCode.Ok,
+                       SingleNameElectionCount = count
+                     };
+        if (person != null)
+        {
+          vote.PersonGuid = person.PersonGuid;
+          vote.PersonCombinedInfo = person.CombinedInfo;
+        }
+        if (invalidReasonGuid != Guid.Empty)
+        {
+          vote.InvalidReasonGuid = invalidReasonGuid.AsNullableGuid();
+        }
+        Db.Votes.Add(vote);
+        Db.SaveChanges();
+
+        return new
+                 {
+                   Updated = true,
+                   VoteId = vote.C_RowId,
+                   pos = vote.PositionOnBallot,
+                   // Location = new LocationModel().CurrentBallotLocationInfo()
+                 }.AsJsonResult();
+      }
+
+      // don't recognize person id
+      return new { Updated = false, Error = "Invalid person" }.AsJsonResult();
+    }
+
+    /// <Summary>Convert int to Guid for InvalidReason. If vote is given, assign if different</Summary>
+    private Guid DetermineInvalidReasonGuid(int invalidReason, Vote vote = null)
+    {
+      if (invalidReason == 0)
+      {
+        return Guid.Empty;
+      }
+
+      var invalidReasonGuid = Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
+      if (invalidReasonGuid == Guid.Empty)
+      {
+        // didn't get a valid reason - use the last Ineligible reason... should be "Other"
+        invalidReasonGuid =
+          Db.Reasons.Where(r => r.ReasonGroup == "Ineligible").OrderByDescending(r => r.SortOrder).Select(
+            r => r.ReasonGuid).First();
+      }
+
+      if (vote != null && vote.InvalidReasonGuid != invalidReasonGuid)
+      {
+        vote.InvalidReasonGuid = invalidReasonGuid.AsNullableGuid();
+      }
+
+      return invalidReasonGuid;
     }
 
     public JsonResult DeleteVote(int vid)
@@ -239,7 +250,7 @@ namespace TallyJ.Models
         Db.vVoteInfoes.SingleOrDefault(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid && vi.VoteId == vid);
       if (voteInfo == null)
       {
-        return new {Message = "Not found"}.AsJsonResult();
+        return new { Message = "Not found" }.AsJsonResult();
       }
 
       var vote = Db.Votes.Single(v => v.C_RowId == vid);
@@ -252,7 +263,7 @@ namespace TallyJ.Models
                {
                  Deleted = true,
                  Votes = CurrentVotes(),
-                 Location = new LocationModel().CurrentBallotLocationInfo()
+                 NumNeeded = UserSession.CurrentElection.NumberToElect
                }.AsJsonResult();
     }
 
@@ -260,12 +271,12 @@ namespace TallyJ.Models
     {
       return Db.Reasons
         //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
-        .OrderBy(r => r.ReasonGroup) // put Inelligible at the bottom
+        .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
         .ThenBy(r => r.SortOrder)
         .Select(r => new
                        {
                          Id = r.C_RowId,
-                         Group = r.ReasonGroup,
+                         Group = r.ReasonGroup + (r.ReasonGroup==ReasonGroupIneligible ? " (and not in list)" : ""),
                          Desc = r.ReasonDescription
                        })
         .SerializedAsJsonString();
@@ -274,7 +285,9 @@ namespace TallyJ.Models
     public string CurrentBallotsJsonString()
     {
       var ballots = Db.vBallotInfoes
-        .Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid);
+        .Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid)
+        .OrderBy(b => b.ComputerCode)
+        .ThenBy(b => b.BallotNumAtComputer);
 
       return BallotsList(ballots);
     }
@@ -305,7 +318,7 @@ namespace TallyJ.Models
                        LocationGuid = currentLocationGuid,
                        ComputerCode = computerCode,
                        BallotNumAtComputer = NextBallotNumAtComputer(),
-                       StatusCode = BallotHelper.BallotStatusCode.Ok,
+                       StatusCode = BallotHelper.BallotStatusCode.InEdit,
                        TellerAtKeyboard = UserSession.CurrentTellerAtKeyboard,
                        TellerAssisting = UserSession.CurrentTellerAssisting
                      };

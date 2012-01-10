@@ -18,11 +18,11 @@ namespace TallyJ.Models
     private List<Result> _results;
     private List<vVoteInfo> _voteinfos;
 
-    public ElectionAnalyzerCore()
+    protected ElectionAnalyzerCore()
     {
     }
 
-    public ElectionAnalyzerCore(Election election, ResultSummary resultSummary, List<Result> results,
+    protected ElectionAnalyzerCore(Election election, ResultSummary resultSummary, List<Result> results,
                                 List<Person> people, List<vVoteInfo> voteinfos, Func<Result, Result> deleteResult,
                                 Func<Result, Result> addResult, Func<int> saveChanges)
     {

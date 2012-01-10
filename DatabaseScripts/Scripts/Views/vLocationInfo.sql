@@ -15,22 +15,27 @@ create
 */
 View [tj].[vLocationInfo]
 as
-  with bv as (
-    select b.BallotId, b.LocationGuid, b.ComputerCode, sum(v.SingleNameElectionCount) SingleNameElectionCounts, COUNT(v._RowId) NormalCounts
-	from
-	  (
-	    select LocationGuid, ComputerCode, BallotGuid, _RowId [BallotId] from tj.Ballot
-	    union
-		select LocationGuid, ComputerCode, null, null from tj.Computer
-	  ) b
-	  left join tj.Vote v on v.BallotGuid = b.BallotGuid
-	group by b.BallotId, b.LocationGuid, b.ComputerCode
+  with v as (
+    select BallotGuid
+         , SUM(SingleNameElectionCount) SingleNameBallots
+    from tj.Vote
+    group by BallotGuid
+  ),
+  bv as (
+  select b.LocationGuid
+       , b.ComputerCode
+       , COUNT(b.BallotGuid) Ballots
+       , sum(v.SingleNameBallots) SingleNameBallots
+	from tj.Ballot b
+	  left join v on v.BallotGuid = b.BallotGuid
+	group by b.LocationGuid, b.ComputerCode
   )
   select l.*
 	   , bv.ComputerCode ComputerCode
-	   , bv.BallotId
-	   , case when e.IsSingleNameElection = 1 then bv.SingleNameElectionCounts
-	          else bv.NormalCounts end [Ballots]
+	   -- , bv.BallotId
+	   , e.IsSingleNameElection
+	   , case when e.IsSingleNameElection = 1 then bv.SingleNameBallots
+	          else bv.Ballots end [Ballots]
 	   , c.LastContact
 	   , t.Name [TellerName]
 	   , isnull(ROW_NUMBER() over (order by sortorder, bv.computercode, l._RowId),0) SortOrder2
@@ -39,6 +44,7 @@ as
 	left join bv on bv.LocationGuid = l.LocationGuid
 	left join tj.Computer c on c.LocationGuid = l.LocationGuid and c.ComputerCode = bv.ComputerCode
 	left join tj.Teller t on t.TellerGuid = c.Teller1
+  
 GO
 
 

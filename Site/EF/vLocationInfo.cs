@@ -24,11 +24,11 @@ namespace TallyJ.EF
         public string TallyStatus { get; set; }
         public Nullable<int> SortOrder { get; set; }
         public string ComputerCode { get; set; }
-        public Nullable<int> BallotId { get; set; }
         public Nullable<int> Ballots { get; set; }
         public Nullable<System.DateTime> LastContact { get; set; }
         public string TellerName { get; set; }
         public long SortOrder2 { get; set; }
         public Nullable<int> BallotsCollected { get; set; }
+        public Nullable<bool> IsSingleNameElection { get; set; }
     }
 }

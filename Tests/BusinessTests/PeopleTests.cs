@@ -31,13 +31,13 @@ namespace Tests.BusinessTests
       _model = new PeopleSearchModel(_testGroup.AsQueryable());
     }
 
-    [TestMethod]
-    public void SearchTest_FirstName()
-    {
-      var result = _model.InnerSearch("b", 5, false);
-      result.Count.ShouldEqual(2);
-      result[0].FirstName.ShouldEqual("Bb");
-    }
+    //[TestMethod]
+    //public void SearchTest_FirstName()
+    //{
+    //  var result = _model.InnerSearch("b", 5, false);
+    //  result.Count.ShouldEqual(2);
+    //  result[0].FirstName.ShouldEqual("Bb");
+    //}
 
 
     //  TODO:

@@ -255,12 +255,12 @@
     <EntitySetMapping Name="vLocationInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
         <MappingFragment StoreEntitySet="vLocationInfo">
+          <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
           <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
           <ScalarProperty Name="SortOrder2" ColumnName="SortOrder2" />
           <ScalarProperty Name="TellerName" ColumnName="TellerName" />
           <ScalarProperty Name="LastContact" ColumnName="LastContact" />
           <ScalarProperty Name="Ballots" ColumnName="Ballots" />
-          <ScalarProperty Name="BallotId" ColumnName="BallotId" />
           <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />
           <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
           <ScalarProperty Name="TallyStatus" ColumnName="TallyStatus" />
@@ -301,17 +301,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
-      <ResultMapping>
-        <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
-          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-          <ScalarProperty Name="FullName" ColumnName="FullName" />
-          <ScalarProperty Name="Eligible" ColumnName="Eligible" />
-          <ScalarProperty Name="SoundMatch" ColumnName="SoundMatch" />
-          <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
-        </ComplexTypeMapping>
-      </ResultMapping>
-    </FunctionImportMapping>
     <EntitySetMapping Name="Votes">
       <EntityTypeMapping TypeName="TallyJ2Model.Vote">
         <MappingFragment StoreEntitySet="Vote">
@@ -358,5 +347,16 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <FunctionImportMapping FunctionImportName="CurrentRowVersion" FunctionName="tallyj2dModel.Store.CurrentRowVersion" />
+    <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
+          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
+          <ScalarProperty Name="SoundMatch" ColumnName="SoundMatch" />
+          <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
   </EntityContainerMapping>
 </Mapping>

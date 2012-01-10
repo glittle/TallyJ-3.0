@@ -14,8 +14,8 @@ namespace TallyJ.Models
     public ResultsModel()
     {
       analyzer = UserSession.CurrentElection.IsSingleNameElection.AsBool()
-                   ? (IElectionAnalyzer)new SingleNameElectionAnalyzer()
-                   : new ElectionAnalyzer();
+                   ? new ElectionAnalyzerSingleName() as IElectionAnalyzer
+                   : new ElectionAnalyzerNormal();
     }
 
     public JsonResult CurrentResults

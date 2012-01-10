@@ -36,8 +36,7 @@ namespace TallyJ.Models
                                   li.TallyStatus,
                                   li.TellerName,
                                   MinutesOld = li.LastContact.HasValue ? ((now - li.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
-                                  LocationId = li.C_RowId,
-                                  li.BallotId
+                                  LocationId = li.C_RowId
                                 })
             };
       }

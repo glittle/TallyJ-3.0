@@ -16,22 +16,63 @@
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="float-left div1">
-    <div id="tabs">
+    <div id="tabs" class="tabs">
         <ul>
-            <li><a href="#tabNameSearch">Add name to this ballot</a></li>
-            <li><a href="#tabBallots">All ballots</a> </li>
+            <li><a href="#tabNameSearch">This ballot - #<span class="ballotCode"></span></a></li>
+            <li><a href="#tabLocation">Location</a> </li>
+            <li><a href="#tabBallots">Ballots</a> </li>
         </ul>
         <div id="tabNameSearch">
-            <p>
-                Select a name by starting to type it here:</p>
-            <input id="txtSearch" tabindex="1" autocomplete="off"><span id="action"></span><span
-                id="more"> </span>
-            <ul id="nameList">
+            <span>Find a <u>n</u>ame in the list by typing...</span>
+            <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
+            <div class="action">
+                <span id="action"></span><span id="more"></span>
+            </div>
+            <div class="tip1">
+                &uarr; &darr; Enter</div>
+            <ul id="nameList" class="nameList">
             </ul>
+            <button type="button" id="btnDeleteBallot" class="smallButton">
+                Delete this Ballot</button>
         </div>
         <div id="tabBallots">
-            <ul id="ballotList">
+            <ul id="ballotList" class="ballotList">
             </ul>
+        </div>
+        <div id="tabLocation" class="locationInfo">
+            <div class="heading">
+                Ballots at Location: <span data-name="Name"></span>
+            </div>
+            <div>
+                Collected and counted:
+                <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
+            </div>
+            <div>
+                <button type="button" id="btnRefreshBallotCount" class="float-right">
+                    Refresh</button>
+                Entered so far: <span id="numEntered" data-name="BallotsEntered"></span>
+                <div id="collectedVsEntered">
+                </div>
+            </div>
+            <div class="heading">
+                Location Status
+            </div>
+            <div>
+                <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2" size="6">
+                    <option value="Not Started">Not started</option>
+                    <option value="Receiving">Receiving ballots</option>
+                    <option value="Sorting">Sorting and opening ballots</option>
+                    <option value="Entering">Entering ballots into TallyJ</option>
+                    <option value="Done">Done - All ballots entered and checked</option>
+                    <option value="NeedHelp">Need Help!</option>
+                </select>
+            </div>
+            <div class="heading">
+                Contact Info:
+            </div>
+            <div>
+                <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2" />
+            </div>
         </div>
     </div>
     <div class="PullInstructions">
@@ -44,48 +85,15 @@
             Contact Info in case
         </p>
     </div>
-    <table class="locationInfo">
-        <tr>
-            <th rowspan="3">
-                <span data-name="Name"></span>
-            </th>
-            <td>
-                <span>Status:</span>
-                <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2">
-                    <option value="">Please select...</option>
-                    <option value="NotStarted">Not started</option>
-                    <option value="Collecting">Collecting ballots</option>
-                    <option value="Counting">Counting and entering ballots</option>
-                    <option value="Done">Done - All ballots entered and checked</option>
-                    <option value="NeedHelp">Need Help!</option>
-                </select>
-                Ballots Collected:
-                <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
-        </tr>
-        <tr>
-            <td>
-                <span>Contact Info:</span>
-                <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Ballots Entered: <span id="numEntered" data-name="BallotsEntered"></span><span id="collectedVsEntered">
-                </span>
-                <button type="button" id="btnRefreshBallotCount">
-                    Refresh</button>
-            </td>
-        </tr>
-    </table>
 </div>
-<div id="votesPanel">
-    <button id="btnAddSpoiled" type="button" tabindex="1">
-        Add a line for a spoiled vote</button>
-    <div style="font-weight: bold;">
-        Ballot #<span id="ballotCode"></span>
-    </div>
+<div id="votesPanel" class="votesPanel">
     <div class="titleDiv">
+        <div class="float-right">
+            <span class="ballotStatus"></span>Ballot #<span class="ballotCode"></span>
+        </div>
         <span class="VoteNum">#</span> Names appearing on the ballot (in order)</div>
     <div id="votesList">
     </div>
+    <button id="btnAddSpoiled" type="button" tabindex="1" class="smallButton spoiledBtn">
+        Add a line for a spoiled vote</button>
 </div>

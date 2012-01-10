@@ -11,12 +11,12 @@ namespace TallyJ.Models
 {
   public class PeopleModel : DataConnectedModel
   {
-    public IQueryable<Person> PeopleInCurrentElection(bool includeInelligible)
+    public IQueryable<Person> PeopleInCurrentElection(bool includeIneligible)
     {
       {
         return Db.People
           .Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid)
-          .Where(p => includeInelligible || p.IneligibleReasonGuid == null);
+          .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
       }
     }
 
@@ -66,7 +66,7 @@ namespace TallyJ.Models
     {
       var canVote = person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
 
-      person.IneligibleReasonGuid = canVote ? null : InelligibleReason.NotAdult;
+      person.IneligibleReasonGuid = canVote ? null : IneligibleReason.NotAdult;
 
       var whoCanVote = UserSession.CurrentElection.CanVote;
       var whoCanReceiveVotes = UserSession.CurrentElection.CanReceive;

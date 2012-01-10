@@ -3,15 +3,16 @@
 
 var PeopleHelper = function (url) {
     var local = {
-        url: url
+        url: url,
+        lastInfo: null
     };
-    var startGettingPeople = function (search, onNamesReady, includeMatches) {
+    var startGettingPeople = function (search, onNamesReady, includeMatches, usedPersonIds) {
         ShowStatusDisplay('searching...', 500);
         CallAjaxHandler(local.url + '/GetPeople', {
             search: search,
-            includeInelligible: true,
+            includeIneligible: true,
             includeMatches: includeMatches
-        }, onComplete, { callback: onNamesReady, search: search }, onFail);
+        }, onComplete, { callback: onNamesReady, search: search, usedIds: usedPersonIds }, onFail);
     };
 
     var onComplete = function (info, extra) {
@@ -20,21 +21,32 @@ var PeopleHelper = function (url) {
             ShowStatusFailed(info.Error);
             return;
         }
-        extra.callback(markUp(info, extra.search));
+        local.lastInfo = $.extend(true, {}, info);
+        extra.callback(markUp(info, extra.search, extra.usedIds));
     };
 
-    var markUp = function (info, search) {
+    var refreshListing = function (search, onNamesReady, usedPersonIds) {
+        var info = $.extend(true, {}, local.lastInfo);
+        onNamesReady(markUp(info, search, usedPersonIds), true);
+    };
+
+    var markUp = function (info, searchPhrases, usedIds) {
         var results = [];
         var searchParts = [];
-        var parts = search.split(' ');
+        var parts = searchPhrases.split(' ');
         var foundFuzzy = false;
         $.each(parts, function (i, part) {
             if (part) {
-                searchParts.push(new RegExp(part, "ig"));
+                try {
+                    searchParts.push(new RegExp(part, "ig"));
+                } catch (e) {
+                    // typed input may include \ or other invalid characters
+                }
             }
         });
         $.each(info && info.People, function (i, personInfo) {
             var foundHit = false;
+            var classes = [];
             if (personInfo.SoundMatch) {
                 personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
                 foundFuzzy = true;
@@ -51,8 +63,16 @@ var PeopleHelper = function (url) {
             //                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
             //                foundFuzzy = true;
             //            }
-            if (personInfo.Inelligible) {
-                personInfo.Name = '<span class=Inelligible>' + personInfo.Name + '</span>';
+
+            if (usedIds && $.inArray(personInfo.Id, usedIds) != -1) {
+                classes.push('InUse');
+            }
+            if (personInfo.Ineligible) {
+                classes.push('InvalidName');
+                personInfo.IneligibleData = ' data-ineligible="{0}"'.filledWith(personInfo.Ineligible);
+            }
+            if (classes.length != 0) {
+                personInfo.Name = '<span class="{0}">{1}</span>'.filledWith(classes.join(' '), personInfo.Name);
             }
             results.push(personInfo);
         });
@@ -76,8 +96,11 @@ var PeopleHelper = function (url) {
     var publicInterface = {
         Prepare: function () {
         },
-        SearchNames: function (searchText, onNamesReady, includeMatches) {
-            startGettingPeople(searchText, onNamesReady, includeMatches);
+        SearchNames: function (searchText, onNamesReady, includeMatches, usedPersonIds) {
+            startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds);
+        },
+        RefreshListing: function (searchText, onNamesReady, usedPersonIds) {
+            refreshListing(searchText, onNamesReady, usedPersonIds);
         }
     };
 

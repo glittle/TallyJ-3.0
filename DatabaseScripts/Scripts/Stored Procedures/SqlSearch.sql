@@ -140,15 +140,16 @@ AS
      begin
 		select RowId [PersonId]
 			 , _FullName [FullName]
-			 , case when AgeGroup = 'A' and IneligibleReasonGuid is null then 1 else 0 end [Eligible]
+             , r1._RowId [Ineligible]
 			 , case when Score = 301 then 1 
 					else 0 end SoundMatch
 			 , case when ROW_NUMBER() over (order by Votes desc) = 1 
 						 and Score = 300
 						 and Votes > 0 
 						 then 1 else 0 end [BestMatch]
-		from @results
-		where SortOrder <= @MaxToReturn
+		from @results res
+		  left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
+		where res.SortOrder <= @MaxToReturn
 		order by Score, _FullName
 	 end
   else
@@ -167,7 +168,7 @@ GO
 -- Testing code
 -- / *
 declare @more bit
-exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'g', null, 'kn', '', 15, @more out
+exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'mov', null, '', '', 15, @more out
 select @more [MoreFound], 1
 exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'gle', null, 'kn', '', 15, @more out
 select @more [MoreFound], 2
@@ -177,6 +178,7 @@ exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', '', '', 'kn', 'ltl', 1
 select @more [MoreFound], 4
 exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'glen', 'little', 'kn', 'ltl', 15, @more out
 select @more [MoreFound], 5
+exec tj.SqlSearch 'B8153DD7-F6CF-4080-9D7B-30E77033C787', 'mov', null, '', '', 15, @more out
 
 SET FMTONLY ON;
 exec tj.SqlSearch null, null, null, null, null, null, @more out

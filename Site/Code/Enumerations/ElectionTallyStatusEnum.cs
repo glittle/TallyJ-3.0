@@ -19,7 +19,7 @@ namespace TallyJ.Code.Enumerations
 
     static ElectionTallyStatusEnum()
     {
-      Add(NotStarted);
+      AddAsDefault(NotStarted);
       Add(Tallying);
       Add(Reviewing);
       Add(Report);
