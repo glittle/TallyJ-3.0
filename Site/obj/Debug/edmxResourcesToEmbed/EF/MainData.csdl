@@ -245,7 +245,6 @@
       <PropertyRef Name="C_RowId" />
       <PropertyRef Name="LocationGuid" />
       <PropertyRef Name="BallotGuid" />
-      <PropertyRef Name="StatusCode" />
       <PropertyRef Name="ComputerCode" />
       <PropertyRef Name="BallotNumAtComputer" />
       <PropertyRef Name="C_RowVersion" />

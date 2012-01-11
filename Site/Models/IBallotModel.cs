@@ -15,11 +15,11 @@ namespace TallyJ.Models
 
     int NextBallotNumAtComputer();
     string CurrentBallotJsonString();
-    IEnumerable<object> CurrentVotes();
+    IEnumerable<object> CurrentVotesForJson();
     JsonResult SaveVote(int personId, int voteId, int count, int invalid);
     JsonResult DeleteVote(int vid);
     string InvalidReasonsJsonString();
-    string CurrentBallotsJsonString();
+    object CurrentBallotsInfoList();
     JsonResult SwitchToBallotJson(int ballotId);
   }
 }

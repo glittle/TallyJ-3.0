@@ -10,7 +10,7 @@
     ContextItems.AddJavascriptForPage("invalids", "ballotNormalPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
     ContextItems.AddJavascriptForPage("ballot", "ballotNormalPage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
     ContextItems.AddJavascriptForPage("location", "ballotNormalPage.Location={0};".FilledWith(new LocationModel().CurrentBallotLocationJsonString()));
-    ContextItems.AddJavascriptForPage("ballotList", "ballotNormalPage.BallotsList={0};".FilledWith(Model.CurrentBallotsJsonString()));
+    ContextItems.AddJavascriptForPage("ballotList", "ballotNormalPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.NormalVoteLine);
 
 }
@@ -19,12 +19,14 @@
     <div id="tabs" class="tabs">
         <ul>
             <li><a href="#tabNameSearch">This ballot - #<span class="ballotCode"></span></a></li>
-            <li><a href="#tabLocation">Location</a> </li>
-            <li><a href="#tabBallots">Ballots</a> </li>
+            <li><a href="#tabBallots">Ballots <span id="collectedVsEnteredTitle"></span></a> </li>
+            <li><a href="#tabLocation">Location Status</a> </li>
         </ul>
         <div id="tabNameSearch">
-            <span>Find a <u>n</u>ame in the list by typing...</span>
-            <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
+            <div>
+                Find a <u>n</u>ame in the list by typing...</div>
+          <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
+          <button id="btnNewBallot" class="smallButton float-right" accesskey="N">Start <u>N</u>ew Ballot</button>
             <div class="action">
                 <span id="action"></span><span id="more"></span>
             </div>
@@ -32,14 +34,12 @@
                 &uarr; &darr; Enter</div>
             <ul id="nameList" class="nameList">
             </ul>
-            <button type="button" id="btnDeleteBallot" class="smallButton">
+            <button type="button" id="btnDeleteBallot" class="smallButton float-right">
                 Delete this Ballot</button>
+            <div class="Clear5">
+            </div>
         </div>
-        <div id="tabBallots">
-            <ul id="ballotList" class="ballotList">
-            </ul>
-        </div>
-        <div id="tabLocation" class="locationInfo">
+        <div id="tabBallots" class="locationInfo">
             <div class="heading">
                 Ballots at Location: <span data-name="Name"></span>
             </div>
@@ -47,13 +47,11 @@
                 Collected and counted:
                 <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
             </div>
-            <div>
-                <button type="button" id="btnRefreshBallotCount" class="float-right">
-                    Refresh</button>
-                Entered so far: <span id="numEntered" data-name="BallotsEntered"></span>
-                <div id="collectedVsEntered">
-                </div>
-            </div>
+            <ul id="ballotList" class="ballotList">
+            </ul>
+            <button type="button" id="btnRefreshBallotList" class="float-right">Refresh</button>
+        </div>
+        <div id="tabLocation" class="locationInfo">
             <div class="heading">
                 Location Status
             </div>
@@ -71,7 +69,8 @@
                 Contact Info:
             </div>
             <div>
-                <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2" />
+                <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo"
+                    tabindex="2" />
             </div>
         </div>
     </div>

@@ -7,11 +7,10 @@ namespace TallyJ.Models
     public static class BallotStatusCode
     {
       public const string Ok = "Ok";
-      public const string InEdit = "InEdit";
       public const string Review = "Review";
       public const string TooFew = "TooFew";
       public const string TooMany = "TooMany";
-      public const string HasDup = "HasDup";
+      public const string Dup = "Dup";
     }
 
     #endregion

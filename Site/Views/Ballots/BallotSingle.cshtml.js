@@ -87,8 +87,8 @@ var BallotSinglePageFunc = function () {
 
     var loadExisting = function (info) {
 
-        if (info.BallotsList) {
-            showBallots(info.BallotsList);
+        if (info.Ballots) {
+            showBallots(info.Ballots);
         }
 
         var ballotInfo = info.BallotInfo;
@@ -489,7 +489,7 @@ var BallotSinglePageFunc = function () {
         controllerUrl: '',
         invalidReasons: [],
         BallotInfo: null,
-        BallotsList: null,
+        Ballots: null,
         Location: null,
         PreparePage: preparePage
     };

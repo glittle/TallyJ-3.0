@@ -27,10 +27,11 @@ namespace TallyJ.Models
       {
         Id = b.C_RowId,
         Code = b.C_BallotCode,
-        Location = b.LocationName,
-        LocationSort = b.LocationSortOrder,
-        b.LocationId,
-        b.TallyStatus
+        //Location = b.LocationName,
+        //LocationSort = b.LocationSortOrder,
+        //b.LocationId,
+        b.StatusCode,
+        //b.TallyStatus
       };
     }
   }

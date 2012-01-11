@@ -145,7 +145,7 @@ var MonitorPage = function () {
             }
 
             if (this.BallotsCollected) {
-                this.BallotsCollected = '<br>({0} to enter)'.filledWith(this.BallotsCollected - this.Ballots); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
+                this.BallotsCollected = '<br>({0} more to input)'.filledWith(this.BallotsCollected - this.Ballots); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
             }
             else {
                 this.BallotsCollected = ''; // ' entered';

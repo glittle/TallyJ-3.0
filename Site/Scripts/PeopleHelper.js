@@ -44,39 +44,42 @@ var PeopleHelper = function (url) {
                 }
             }
         });
-        $.each(info && info.People, function (i, personInfo) {
-            var foundHit = false;
-            var classes = [];
-            if (personInfo.SoundMatch) {
-                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
-                foundFuzzy = true;
-            }
-            else {
-                $.each(searchParts, function (k, searchPart) {
-                    personInfo.Name = personInfo.Name.replace(searchPart, function () {
-                        return '<b>' + arguments[0] + '</b>';
+        
+        if (info && typeof info.People != 'undefined') {
+            $.each(info.People, function (i, personInfo) {
+                var foundHit = false;
+                var classes = [];
+                if (personInfo.SoundMatch) {
+                    personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
+                    foundFuzzy = true;
+                }
+                else {
+                    $.each(searchParts, function (k, searchPart) {
+                        personInfo.Name = personInfo.Name.replace(searchPart, function () {
+                            return '<b>' + arguments[0] + '</b>';
+                        });
                     });
-                });
-            }
-            //            if (!foundHit) {
-            //                // must be soundex
-            //                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
-            //                foundFuzzy = true;
-            //            }
+                }
+                //            if (!foundHit) {
+                //                // must be soundex
+                //                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
+                //                foundFuzzy = true;
+                //            }
 
-            if (usedIds && $.inArray(personInfo.Id, usedIds) != -1) {
-                classes.push('InUse');
-            }
-            if (personInfo.Ineligible) {
-                classes.push('InvalidName');
-                personInfo.IneligibleData = ' data-ineligible="{0}"'.filledWith(personInfo.Ineligible);
-            }
-            if (classes.length != 0) {
-                personInfo.Name = '<span class="{0}">{1}</span>'.filledWith(classes.join(' '), personInfo.Name);
-            }
-            results.push(personInfo);
-        });
-        info.People = results;
+                if (usedIds && $.inArray(personInfo.Id, usedIds) != -1) {
+                    classes.push('InUse');
+                }
+                if (personInfo.Ineligible) {
+                    classes.push('InvalidName');
+                    personInfo.IneligibleData = ' data-ineligible="{0}"'.filledWith(personInfo.Ineligible);
+                }
+                if (classes.length != 0) {
+                    personInfo.Name = '<span class="{0}">{1}</span>'.filledWith(classes.join(' '), personInfo.Name);
+                }
+                results.push(personInfo);
+            });
+            info.People = results;
+        }
         return info;
     };
 

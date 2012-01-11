@@ -242,7 +242,7 @@
     <Compile Include="EF\vVoteInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\BallotAnalyzerCore.cs" />
+    <Compile Include="Models\BallotAnalyzer.cs" />
     <Compile Include="Models\BallotHelper.cs" />
     <Compile Include="Models\BallotModelCore.cs" />
     <Compile Include="Models\BallotModelFactory.cs" />

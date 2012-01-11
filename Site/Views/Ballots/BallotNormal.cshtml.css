@@ -1,6 +1,6 @@
 ﻿.div1
 {
-    width: 340px;
+    width: 420px;
 }
 
 .tabs {
@@ -12,7 +12,7 @@
     margin: 0 0 10px 0;
     min-height: 150px;
     height: 150px;
-    width: 300px;
+    width: 380px;
     border: solid 1px #999;
     padding: 4px;
     font-size: 110%;
@@ -59,6 +59,9 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 }
+.ballotList li span {
+    color: #666;
+}
 .ballotList li:hover
 {
     border-color: #ddd;
@@ -96,7 +99,7 @@ input.ZZsearching
 {
     margin-left: 15px;
     float: left;
-    width: 605px;
+    width: 520px;
 }
 .ui-icon-trash
 {
@@ -159,6 +162,9 @@ select.Invalid {
 .InvalidBallot, .Ineligible, span.Invalid
 {
     color: #e80c4d;
+    font-weight: bold;
+}
+.Confirmed {
     font-weight: bold;
 }
 

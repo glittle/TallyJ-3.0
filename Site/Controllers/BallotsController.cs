@@ -81,13 +81,30 @@ namespace TallyJ.Controllers
     {
       return new LocationModel().UpdateStatus(id, status);
     }
+
+    //public JsonResult UpdateBallotStatus(string status)
+    //{
+    //  return new
+    //           {
+    //             Status = status,
+    //             Updated = false
+    //           }.AsJsonResult();
+    //  //return BallotModelFactory.GetForCurrentElection().UpdateBallotStatus(status);
+    //}
+    
     public JsonResult UpdateLocationInfo(string info)
     {
       return new LocationModel().UpdateContactInfo(info);
     }
+    
     public JsonResult UpdateLocationCollected(int numCollected)
     {
       return new LocationModel().UpdateNumCollected(numCollected);
+    }
+
+    public JsonResult RefreshBallotsList()
+    {
+      return BallotModelFactory.GetForCurrentElection().CurrentBallotsInfoList().AsJsonResult();
     }
   }
 }

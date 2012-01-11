@@ -36,8 +36,6 @@ namespace Tests.BusinessTests
     [TestMethod]
     public void CorrectNumberOfVotes_Test()
     {
-      var election = new Election { NumberToElect = 3 };
-      var ballot = new vBallotInfo {StatusCode = null};
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
@@ -45,18 +43,17 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(3);
 
-      model.Analyze(ballot, votes);
+      string newStatus;
+      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
 
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.Ok);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Ok);
     }
 
     [TestMethod]
     public void TooManyNumberOfVotes_Test()
     {
-      var election = new Election { NumberToElect = 3 };
-      var ballot = new vBallotInfo {StatusCode = null};
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
@@ -65,46 +62,45 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(3);
 
-      model.Analyze(ballot, votes);
+      string newStatus;
+      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
 
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.TooMany);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.TooMany);
     }
 
     [TestMethod]
     public void TooFewNumberOfVotes_Test()
     {
-      var election = new Election { NumberToElect = 3 };
-      var ballot = new vBallotInfo {StatusCode = null};
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(3);
 
-      model.Analyze(ballot, votes);
+      string newStatus;
+      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
 
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.TooFew);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.TooFew);
     }
 
 
     [TestMethod]
     public void KeepReviewStatus_Test()
     {
-      var election = new Election { NumberToElect = 3 };
-      var ballot = new vBallotInfo {StatusCode = BallotHelper.BallotStatusCode.Review};
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(3);
 
-      model.Analyze(ballot, votes);
+      string newStatus;
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Review, votes, out newStatus).ShouldEqual(false);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Review);
 
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.Review);
 
       votes = new List<vVoteInfo>
                     {
@@ -113,22 +109,13 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      model.Analyze(ballot, votes);
-
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.Review);
-
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Review, votes, out newStatus).ShouldEqual(false);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Review);
     }
 
     [TestMethod]
     public void HasDuplicates_Test()
     {
-      var election = new Election
-      {
-        NumberToElect = 5,
-      };
-
-      var ballot = new vBallotInfo {StatusCode = BallotHelper.BallotStatusCode.Ok};
-
       var dupPersonGuid = Guid.NewGuid();
 
       var votes = new List<vVoteInfo>
@@ -140,71 +127,54 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = dupPersonGuid},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(5);
 
-      model.Analyze(ballot, votes);
+      string newStatus;
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Ok, votes, out newStatus).ShouldEqual(true);
 
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.HasDup);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Dup);
     }
 
     [TestMethod]
-    public void HasDuplicates1_DupOverrulesInEdit_Test()
+    public void AllSpoiled_Test()
     {
-      var election = new Election
-      {
-        NumberToElect = 3,
-      };
-
-      var ballot = new vBallotInfo();
-
       var dupPersonGuid = Guid.NewGuid();
 
       var votes = new List<vVoteInfo>
                     {
-                      new vVoteInfo {PersonGuid = dupPersonGuid},
-                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {PersonGuid = dupPersonGuid},
+                      new vVoteInfo {VoteInvalidReasonGuid = Guid.NewGuid()},
+                      new vVoteInfo {VoteInvalidReasonGuid = Guid.NewGuid()},
+                      new vVoteInfo {VoteInvalidReasonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
+      var model = new BallotAnalyzer(3);
 
+      string newStatus;
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Ok, votes, out newStatus).ShouldEqual(false);
 
-      ballot.StatusCode = BallotHelper.BallotStatusCode.InEdit;
-      model.Analyze(ballot, votes);
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.HasDup);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Ok);
     }
 
     [TestMethod]
     public void HasDuplicates2_KeepStatusCode_Test()
     {
-      var election = new Election
-      {
-        NumberToElect = 3,
-      };
-
-      var ballot = new vBallotInfo();
-
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzerNormal(election, SamplePeople, _fakes.SaveChanges);
 
-      // keep InEdit
-      ballot.StatusCode = BallotHelper.BallotStatusCode.InEdit;
-      model.Analyze(ballot, votes);
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.InEdit);
+      var model = new BallotAnalyzer(3);
+
+      string newStatus;
 
       // keep Review
-      ballot.StatusCode = BallotHelper.BallotStatusCode.Review;
-      model.Analyze(ballot, votes);
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.Review);
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Review, votes, out newStatus).ShouldEqual(false);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.Review);
 
       // override OK
-      ballot.StatusCode = BallotHelper.BallotStatusCode.Ok;
-      model.Analyze(ballot, votes);
-      ballot.StatusCode.ShouldEqual(BallotHelper.BallotStatusCode.TooFew);
+      model.DetermineStatus(BallotHelper.BallotStatusCode.Ok, votes, out newStatus).ShouldEqual(true);
+      newStatus.ShouldEqual(BallotHelper.BallotStatusCode.TooFew);
     }
 
   }
