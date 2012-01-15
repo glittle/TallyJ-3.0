@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Models;
+using System.Linq;
 
 namespace TallyJ.Controllers
 {
@@ -44,14 +46,14 @@ namespace TallyJ.Controllers
       }
 
       var isSingle = UserSession.CurrentElection.IsSingleNameElection.AsBool();
-      var ballotModel = BallotModelFactory.GetForCurrentElection();
+      var ballotModel = CurrentBallotModel;
 
       var ballotId = Request.QueryString["b"].AsInt();
       if (ballotId == 0)
       {
         if (isSingle)
         {
-          ballotModel.GetCurrentBallotInfo(false);
+          ballotModel.GetCurrentBallotInfo();
         }
       }
       else
@@ -64,17 +66,17 @@ namespace TallyJ.Controllers
 
     public JsonResult SaveVote(int pid, int vid, int count, int invalid = 0)
     {
-      return BallotModelFactory.GetForCurrentElection().SaveVote(pid, vid, count, invalid);
+      return CurrentBallotModel.SaveVote(pid, vid, count, invalid);
     }
 
     public JsonResult DeleteVote(int vid)
     {
-      return BallotModelFactory.GetForCurrentElection().DeleteVote(vid);
+      return CurrentBallotModel.DeleteVote(vid);
     }
 
     public JsonResult SwitchToBallot(int ballotId)
     {
-      return BallotModelFactory.GetForCurrentElection().SwitchToBallotJson(ballotId);
+      return CurrentBallotModel.SwitchToBallotJson(ballotId);
     }
 
     public JsonResult UpdateLocationStatus(int id, string status)
@@ -89,7 +91,7 @@ namespace TallyJ.Controllers
     //             Status = status,
     //             Updated = false
     //           }.AsJsonResult();
-    //  //return BallotModelFactory.GetForCurrentElection().UpdateBallotStatus(status);
+    //  //return CurrentBallotModel.UpdateBallotStatus(status);
     //}
     
     public JsonResult UpdateLocationInfo(string info)
@@ -104,7 +106,23 @@ namespace TallyJ.Controllers
 
     public JsonResult RefreshBallotsList()
     {
-      return BallotModelFactory.GetForCurrentElection().CurrentBallotsInfoList().AsJsonResult();
+      return CurrentBallotModel.CurrentBallotsInfoList().AsJsonResult();
+    }
+
+    public JsonResult SortVotes(string idList)
+    {
+      var ids = idList.Split(new[] {','}).Select(s => s.AsInt()).ToList();
+      return CurrentBallotModel.SortVotes(ids).AsJsonResult();
+    }
+
+    public JsonResult NewBallot()
+    {
+      return CurrentBallotModel.StartNewBallotJson();
+    }
+
+    private static IBallotModel CurrentBallotModel
+    {
+      get { return BallotModelFactory.GetForCurrentElection(); }
     }
   }
 }

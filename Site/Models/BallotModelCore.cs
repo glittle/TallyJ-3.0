@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -31,16 +32,10 @@ namespace TallyJ.Models
     #region IBallotModel Members
 
     /// <Summary>Current Ballot... could be null</Summary>
-    public vBallotInfo GetCurrentBallotInfo(bool createIfNeeded)
+    public vBallotInfo GetCurrentBallotInfo()
     {
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
       var ballot = Db.vBallotInfoes.SingleOrDefault(b => b.C_RowId == currentBallotId);
-
-      if (ballot == null && createIfNeeded)
-      {
-        return CreateBallot();
-      }
-
       return ballot;
     }
 
@@ -48,7 +43,7 @@ namespace TallyJ.Models
     {
       SetAsCurrentBallot(ballotId);
 
-      var ballotInfo = GetCurrentBallotInfo(false);
+      var ballotInfo = GetCurrentBallotInfo();
       var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       SessionKey.CurrentLocation.SetInSession(location);
@@ -62,6 +57,39 @@ namespace TallyJ.Models
                                   NumNeeded = UserSession.CurrentElection.NumberToElect
                                 },
                  Location = new LocationModel().LocationInfoForJson(location)
+               }.AsJsonResult();
+    }
+
+    public bool SortVotes(List<int> ids)
+    {
+      var ballotGuid = CurrentBallot().BallotGuid;
+      var votes = Db.Votes
+        .Where(v => v.BallotGuid == ballotGuid)
+        .ToList();
+
+      var position = 1;
+      foreach (var vote in ids.Select(id => votes.Single(v => v.C_RowId == id)))
+      {
+        vote.PositionOnBallot = position;
+        position++;
+      }
+      Db.SaveChanges();
+      return true;
+    }
+
+    public JsonResult StartNewBallotJson()
+    {
+      var ballotInfo = CreateBallot();
+
+      return new
+               {
+                 BallotInfo = new
+                 {
+                   Ballot = BallotForJson(ballotInfo),
+                   Votes = CurrentVotesForJson(),
+                   NumNeeded = UserSession.CurrentElection.NumberToElect
+                 },
+                 Ballots = CurrentBallotsInfoList()
                }.AsJsonResult();
     }
 
@@ -104,7 +132,7 @@ namespace TallyJ.Models
 
     public string CurrentBallotJsonString()
     {
-      var ballotInfo = GetCurrentBallotInfo(true);
+      var ballotInfo = GetCurrentBallotInfo();
       if (ballotInfo == null)
       {
         return "null";
@@ -120,7 +148,7 @@ namespace TallyJ.Models
 
     public List<vVoteInfo> CurrentVotes()
     {
-      var ballot = GetCurrentBallotInfo(false);
+      var ballot = GetCurrentBallotInfo();
 
       if (ballot == null)
       {
@@ -159,7 +187,7 @@ namespace TallyJ.Models
 
         if (voteInfo == null)
         {
-          return new {Updated = false, Error = "Invalid vote id"}.AsJsonResult();
+          return new { Updated = false, Error = "Invalid vote id" }.AsJsonResult();
         }
 
         // problem... client has a vote number, but we didn't find...
@@ -183,10 +211,10 @@ namespace TallyJ.Models
                  }.AsJsonResult();
       }
 
-      var ballot = GetCurrentBallotInfo(true);
+      var ballot = GetCurrentBallotInfo();
       if (ballot == null)
       {
-        return new {Updated = false, Error = "Invalid ballot"}.AsJsonResult();
+        return new { Updated = false, Error = "Invalid ballot" }.AsJsonResult();
       }
 
       // don't have an active Ballot!
@@ -237,7 +265,7 @@ namespace TallyJ.Models
       }
 
       // don't recognize person id
-      return new {Updated = false, Error = "Invalid person"}.AsJsonResult();
+      return new { Updated = false, Error = "Invalid person" }.AsJsonResult();
     }
 
     public JsonResult DeleteVote(int vid)
@@ -246,7 +274,7 @@ namespace TallyJ.Models
         Db.vVoteInfoes.SingleOrDefault(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid && vi.VoteId == vid);
       if (voteInfo == null)
       {
-        return new {Message = "Not found"}.AsJsonResult();
+        return new { Message = "Not found" }.AsJsonResult();
       }
 
       var vote = Db.Votes.Single(v => v.C_RowId == vid);
@@ -354,7 +382,7 @@ namespace TallyJ.Models
                        LocationGuid = currentLocationGuid,
                        ComputerCode = computerCode,
                        BallotNumAtComputer = NextBallotNumAtComputer(),
-                       StatusCode = BallotHelper.BallotStatusCode.TooFew,
+                       StatusCode = BallotStatusEnum.TooFew,
                        TellerAtKeyboard = UserSession.CurrentTellerAtKeyboard,
                        TellerAssisting = UserSession.CurrentTellerAssisting
                      };

@@ -50,7 +50,7 @@ namespace TallyJ.Code.Resources
 									GetFileContent(templateName).QuotedForJavascript()
 						))
 			  .JoinedAsString(";")
-			  .SurroundWith(";", ";");
+			  .SurroundWith("", ";");
 		}
 
 	  public static string GetFileContent(File templateName)

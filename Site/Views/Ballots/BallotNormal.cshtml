@@ -18,20 +18,27 @@
 <div class="float-left div1">
     <div id="tabs" class="tabs">
         <ul>
-            <li><a href="#tabNameSearch">This ballot - #<span class="ballotCode"></span></a></li>
-            <li><a href="#tabBallots">Ballots <span id="collectedVsEnteredTitle"></span></a> </li>
-            <li><a href="#tabLocation">Location Status</a> </li>
+            <li><a href="#tabNameSearch">Ballot #<span class="ballotCode"></span></a></li>
+            <li><a href="#tabBallots">Ballots <span id="collectedVsEnteredTitle"></span></a>
+            </li>
+            <li><a href="#tabLocation">This Location</a> </li>
         </ul>
         <div id="tabNameSearch">
+            <div class="heading">
+                Add names to this ballot.
+            </div>
             <div>
                 Find a <u>n</u>ame in the list by typing...</div>
-          <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
-          <button id="btnNewBallot" class="smallButton float-right" accesskey="N">Start <u>N</u>ew Ballot</button>
-            <div class="action">
-                <span id="action"></span><span id="more"></span>
+            <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
+            <button id="btnNewBallot" class="smallButton float-right" accesskey="B">
+                Start New <u>B</u>allot</button>
+            <div class="actionHolder">
+                <div class="action">
+                    <span id="action"></span><span id="more"></span>
+                </div>
+                <div class="tip1">
+                    &uarr; &darr; Enter</div>
             </div>
-            <div class="tip1">
-                &uarr; &darr; Enter</div>
             <ul id="nameList" class="nameList">
             </ul>
             <button type="button" id="btnDeleteBallot" class="smallButton float-right">
@@ -43,13 +50,16 @@
             <div class="heading">
                 Ballots at Location: <span data-name="Name"></span>
             </div>
+            <button id="btnNewBallot2" class="smallButton float-right" accesskey="B">
+                Start New <u>B</u>allot</button>
             <div>
                 Collected and counted:
                 <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
             </div>
             <ul id="ballotList" class="ballotList">
             </ul>
-            <button type="button" id="btnRefreshBallotList" class="float-right">Refresh</button>
+            <button type="button" id="btnRefreshBallotList" class="float-right">
+                Refresh</button>
         </div>
         <div id="tabLocation" class="locationInfo">
             <div class="heading">

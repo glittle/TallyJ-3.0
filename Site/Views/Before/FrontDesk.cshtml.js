@@ -36,7 +36,7 @@ var FrontDeskPage = function () {
                     var selector = '#P' + this.PersonId;
                     $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
                     if (this.PersonId != pid) {
-                        $(selector).effect('highlight', { }, 2000);
+                        $(selector).effect('highlight', {}, 2000);
                     }
                 });
             }

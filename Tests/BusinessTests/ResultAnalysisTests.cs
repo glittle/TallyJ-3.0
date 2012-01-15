@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using TallyJ.Models;
 using Tests.Support;
@@ -59,7 +60,7 @@ namespace Tests.BusinessTests
         vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
@@ -99,7 +100,7 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
@@ -145,7 +146,7 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
@@ -194,7 +195,7 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
       }
 
@@ -255,7 +256,7 @@ namespace Tests.BusinessTests
       {
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotHelper.BallotStatusCode.Ok;
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
         vVoteInfo.BallotGuid = Guid.NewGuid();
         vVoteInfo.PersonGuid = Guid.NewGuid();

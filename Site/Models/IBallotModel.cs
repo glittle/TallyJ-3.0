@@ -9,7 +9,7 @@ namespace TallyJ.Models
     /// <param name="b"></param>
     /// <param name="createIfNeeded"></param>
     /// <Summary>Current Ballot... could be null</Summary>
-    vBallotInfo GetCurrentBallotInfo(bool createIfNeeded);
+    vBallotInfo GetCurrentBallotInfo();
 
     void SetAsCurrentBallot(int ballotId);
 
@@ -21,5 +21,7 @@ namespace TallyJ.Models
     string InvalidReasonsJsonString();
     object CurrentBallotsInfoList();
     JsonResult SwitchToBallotJson(int ballotId);
+    bool SortVotes(List<int> ids);
+    JsonResult StartNewBallotJson();
   }
 }

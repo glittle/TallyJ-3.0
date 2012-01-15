@@ -18,6 +18,7 @@
     font-size: 110%;
     line-height: 1.5;
     overflow: auto;
+    position: relative;
 }
 .nameList u
 {
@@ -78,6 +79,18 @@
 {
     font-size: 11px;
     margin-top: 10px;
+    min-width: 100px;
+    display: inline-block;
+}
+.actionHolder {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.tip1 {
+    color: #aaa;
+    font-size: 10px;
+    display: inline-block;
 }
 span.ZZdelaying
 {
@@ -172,14 +185,9 @@ select.Invalid {
 {
     width: 260px;
 }
-.locationInfo > div
-{
-    margin-left: 15px;
-}
-.locationInfo > div.heading {
+div.heading {
     font-weight: bold;
-    margin-top: 15px;
-    margin-left: 0;
+    margin: 0 0 4px 0;
 }
 .ui-widget
 {
@@ -222,7 +230,9 @@ select.Invalid {
 .countsGood {
     color: green;
 }
-
+#votesList {
+    padding-top: 5px;
+}
 .VoteNum {
     display: inline-block;
     width: 20px;
@@ -230,18 +240,17 @@ select.Invalid {
     margin-right: 9px;
     font-size: 80%;
     color: #aaa;
+    cursor: ns-resize;
 }
 .InUse {
-    color: #f99;
-}
-.tip1 {
-    float: right;
-    color: #aaa;
-    font-size: 10px;
-    margin-top: -15px;
+    color: #f6941e;
 }
 .titleDiv .ballotStatus {
     padding-right: 20px;
+    vertical-align: top;
+}
+.titleDiv .ballotCode {
+    padding-left: 3px;
 }
 .duplicateVote .Name 
 {

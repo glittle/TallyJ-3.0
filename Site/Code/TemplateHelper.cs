@@ -39,7 +39,7 @@ namespace TallyJ.Code
                                                               if (properties.ContainsKey(key))
                                                               {
                                                                 var value = properties[key];
-                                                                return value.ToString();
+                                                                return value == null ? "" : value.ToString();
                                                               }
                                                               return token;
                                                             });

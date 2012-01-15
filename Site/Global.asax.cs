@@ -149,14 +149,14 @@ namespace TallyJ
       logger.FatalException("Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
 
       var url = siteInfo.RootUrl;
-      Response.Write(String.Format("<!-- FATAL ERROR: {0} -->\r\n", msgs.JoinedAsString("\r\n")));
+      Response.Write(String.Format("Server Error: {0}", msgs.JoinedAsString("\r\n")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
       {
-        Response.Write("Error on site");
+        //Response.Write("Error on site");
       }else
       {
         //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
-        Response.Write("Error on site");
+        //Response.Write("Error on site");
       }
       Response.End();
     }

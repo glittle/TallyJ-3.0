@@ -1,5 +1,6 @@
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -30,7 +31,7 @@ namespace TallyJ.Models
         //Location = b.LocationName,
         //LocationSort = b.LocationSortOrder,
         //b.LocationId,
-        b.StatusCode,
+        StatusCode = BallotStatusEnum.TextFor(b.StatusCode),
         //b.TallyStatus
       };
     }

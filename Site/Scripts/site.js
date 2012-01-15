@@ -117,6 +117,10 @@ function HasErrors(data) {
         ShowStatusFailed('Server Error.');
         return true;
     }
+    if (/Server Error/.test(data)) {
+        ShowStatusFailed(data);
+        return true;
+    }
     if (/Error\:/.test(data)) {
         ShowStatusFailed('An error occurred on the server. The Technical Support Team has been provided with the error details.');
         return true;

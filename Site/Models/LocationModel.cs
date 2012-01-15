@@ -52,14 +52,15 @@ namespace TallyJ.Models
 
     public object CurrentBallotLocationInfo()
     {
-      var ballotInfo = BallotModelFactory.GetForCurrentElection().GetCurrentBallotInfo(false);
-      if (ballotInfo == null)
-      {
-        return null;
-      }
-      var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
-      return LocationInfoForJson(location);
+      //var ballotInfo = BallotModelFactory.GetForCurrentElection().GetCurrentBallotInfo();
+      //if (ballotInfo == null)
+      //{
+      //  return null;
+      //}
+      //var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+
+      return LocationInfoForJson(UserSession.CurrentLocation);
     }
 
     public object LocationInfoForJson(Location location)

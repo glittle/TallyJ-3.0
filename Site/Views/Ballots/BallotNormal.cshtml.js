@@ -19,6 +19,8 @@ var BallotNormalPageFunc = function () {
         ballotStatus: '',
         ballotId: 0,
         votes: [],
+        votesList: null,
+        tabList: null,
         invalidReasonsHtml: null,
         rowSelected: 0,
         lastBallotRowVersion: 0,
@@ -35,21 +37,33 @@ var BallotNormalPageFunc = function () {
         local.nameList = $('#nameList');
         local.searchPanel = $('#nameSearch');
         local.ballotsPanel = $('#ballots');
+        local.votesList = $('#votesList');
 
-        $('#nameList').on('click', 'li', nameClick);
+        local.nameList.on('click', 'li', nameClick);
         $('#ballotList').on('click', 'li', ballotClick);
 
         $('#btnAddSpoiled').on('click', addSpoiled);
 
-        $('#votesList').on('click', '.ui-icon-trash', deleteVote);
-        $('#votesList').on('click', '.btnClearChangeError', resaveVote);
-        $('#votesList').on('change', 'select', invalidReasonChanged);
+        local.votesList.on('click', '.ui-icon-trash', deleteVote);
+        local.votesList.on('click', '.btnClearChangeError', resaveVote);
+        local.votesList.on('change', 'select', invalidReasonChanged);
 
-        $('#tabs').tabs();
+        local.votesList.sortable({
+            handle: '.VoteNum',
+            axis: 'y',
+            containment: 'parent',
+            tolerance: 'pointer',
+            stop: orderChanged
+        });
+
+        local.tabList = $('#tabs');
+        local.tabList.tabs();
 
         $('#btnRefreshBallotCount').on('click', changeLocationStatus);
         $('#btnRefreshBallotList').on('click', startToRefreshBallotList);
         $('#btnDeleteBallot').on('click', deleteBallot);
+        $('#btnNewBallot').on('click', newBallot);
+        $('#btnNewBallot2').on('click', newBallot2);
 
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
@@ -69,7 +83,54 @@ var BallotNormalPageFunc = function () {
 
         local.invalidReasonsHtml = prepareReasons();
 
+
         showBallot(publicInterface);
+    };
+
+    var orderChanged = function (ev, ui) {
+        var ids = [];
+        var pos = 1;
+        var toUpdate = [];
+
+        local.votesList.children().each(function () {
+            var voteHost = $(this);
+            var id = +voteHost.data('vote-id');
+            if (id < 1) {
+                // an item not saved yet!?
+            }
+            ids.push(id);
+
+            toUpdate.push(voteHost.find('.VoteNum'));
+
+            pos++;
+        });
+        var form = {
+            idList: ids
+        };
+        LogMessage(ids);
+        ShowStatusDisplay("Saving...");
+        CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
+            // no need to update client with new order
+            ShowStatusDisplay("Saved", 0, 3000, false, true);
+            // update to reflect changes
+            $.each(toUpdate, function (i, o) {
+                o.text(i + 1);
+            });
+            showExtraVotes();
+        });
+
+    };
+
+    var newBallot = function () {
+        CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
+            showBallot(info);
+        });
+    };
+
+    var newBallot2 = function () {
+        newBallot();
+        local.tabList.tabs('select', 0);
+        local.inputField.focus();
     };
 
     var focusOnTextInput = function () {
@@ -124,6 +185,11 @@ var BallotNormalPageFunc = function () {
             setBallotStatus(ballotInfo.Ballot.StatusCode, true);
 
             highlightBallotInList();
+        } else {
+            if (info.controllerUrl) {
+                // must be first load, without a ballot
+                local.tabList.tabs('select', 1);
+            }
         }
 
         if (info.Location) {
@@ -134,21 +200,20 @@ var BallotNormalPageFunc = function () {
     };
 
     var showVotes = function () {
-        var list = $('#votesList');
-
         var votes = extendVotes(local.votes);
 
-        list.html(site.templates.NormalVoteLine.filledWithEach(votes));
-        list.find('select:visible').each(function () {
+        local.votesList.html(site.templates.NormalVoteLine.filledWithEach(votes));
+        local.votesList.find('select:visible').each(function () {
             var select = $(this);
             select.val(select.data('invalid'));
         });
 
         showTempBallotStatusAndDups();
+        showExtraVotes();
     };
 
     var showTempBallotStatusAndDups = function () {
-        var votes = $('#votesList .VoteHost');
+        var votes = local.votesList.find('.VoteHost');
         var votesDiff = local.votesNeeded - votes.length;
         var newStatus = 'Ok';
 
@@ -339,9 +404,9 @@ var BallotNormalPageFunc = function () {
                         host.attr('id', 'V' + info.VoteId);
                         host.find('.VoteNum').text(info.pos);
 
-                        for (var i = 0; i < local.votes; i++) {
+                        for (var i = 0; i < local.votes.length; i++) {
                             var vote = local.votes[i];
-                            if (vote.id == 0) {
+                            if (vote.vid == 0) {
                                 vote.vid = info.VoteId;
                                 vote.pos = info.pos;
                             }
@@ -467,14 +532,37 @@ var BallotNormalPageFunc = function () {
 
         var rowNum = local.rowSelected;
         rowNum = rowNum + delta;
-        if (rowNum < 0) { rowNum = numChildren - 1; }
-        if (rowNum >= numChildren) { rowNum = 0; }
+        var wraparound = false;
+        if (wraparound) {
+            if (rowNum < 0) { rowNum = numChildren - 1; }
+            if (rowNum >= numChildren) { rowNum = 0; }
+        }
+        else {
+            if (rowNum < 0) { rowNum = 0; }
+            if (rowNum >= numChildren) { rowNum = numChildren - 1; }
+        }
         setSelected(children, rowNum);
     };
+
     var setSelected = function (children, rowNum) {
         children.removeClass('selected');
-        children.eq(local.rowSelected = rowNum).addClass('selected');
+        var newSelected = children.eq(local.rowSelected = rowNum);
+        newSelected.addClass('selected');
+        scrollIntoView(newSelected[0], local.nameList);
     };
+
+    var scrollIntoView = function (element, container) {
+        var containerTop = $(container).scrollTop();
+        var containerBottom = containerTop + $(container).height();
+        var elemTop = element.offsetTop;
+        var elemBottom = elemTop + $(element).height();
+        if (elemTop < containerTop) {
+            $(container).scrollTop(Math.max(0, elemTop - 10));
+        } else if (elemBottom > containerBottom) {
+            $(container).scrollTop(elemBottom - $(container).height() + 10);
+        }
+    };
+
     var edit = function (selectedPersonLi) {
         local.nameList.children().removeClass('selected');
         selectedPersonLi.addClass('selected');
@@ -509,7 +597,7 @@ var BallotNormalPageFunc = function () {
 
         showVotes();
 
-        var newHost = $('#votesList .VoteHost').last();
+        var newHost = local.votesList.find('.VoteHost').last();
 
         startSavingVote(newHost);
     };
@@ -528,7 +616,7 @@ var BallotNormalPageFunc = function () {
 
         showVotes(false);
 
-        var newHost = $('#votesList .VoteHost').last();
+        var newHost = local.votesList.find('.VoteHost').last();
         var input = newHost.find('select');
 
         // vote not saved until a reason is chosen
@@ -558,16 +646,26 @@ var BallotNormalPageFunc = function () {
                 this.Display = this.name;
             }
             num++;
-            this.ExtraClass = null;
-
-            if (num == local.votesNeeded + 1) {
-                this.ExtraClass = 'ExtraVote';
-            }
-            else if (num > local.votesNeeded + 1) {
-                this.ExtraClass = 'ExtraVotes';
-            }
         });
         return votes;
+    };
+
+    var showExtraVotes = function () {
+        var votes = local.votesList.find('.VoteHost');
+        var num = 0;
+        var extra = local.votesNeeded + 1;
+        votes.each(function (i, o) {
+            var host = $(o);
+            num++;
+            host.removeClass('ExtraVote');
+            host.removeClass('ExtraVotes');
+            if (num == extra) {
+                host.addClass('ExtraVote');
+            }
+            else if (num > extra) {
+                host.addClass('ExtraVotes');
+            }
+        });
     };
 
     var prepareReasons = function () {
@@ -595,8 +693,18 @@ var BallotNormalPageFunc = function () {
                 ev.preventDefault();
                 return true;
 
+            case 33: // page up
+                moveSelected(-6);
+                ev.preventDefault();
+                return true;
+
             case 40: // down
                 moveSelected(1);
+                ev.preventDefault();
+                return true;
+
+            case 34: // page down
+                moveSelected(6);
                 ev.preventDefault();
                 return true;
 
@@ -611,6 +719,8 @@ var BallotNormalPageFunc = function () {
                 return true;
 
             default:
+                LogMessage(ev.which);
+                break;
         }
         return false;
     };

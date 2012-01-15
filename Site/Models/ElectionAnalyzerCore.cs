@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -137,7 +138,7 @@ namespace TallyJ.Models
     public static bool NeedReview(vVoteInfo voteInfo)
     {
       return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote
-             || voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Review;
+             || voteInfo.BallotStatusCode == BallotStatusEnum.Review;
     }
 
     /// <Summary>Is this Vote valid?</Summary>
@@ -145,7 +146,7 @@ namespace TallyJ.Models
     {
       return !voteInfo.VoteInvalidReasonGuid.HasValue
              && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             && voteInfo.BallotStatusCode == BallotHelper.BallotStatusCode.Ok
+             && voteInfo.BallotStatusCode == BallotStatusEnum.Ok
              && voteInfo.VoteStatusCode == BallotHelper.VoteStatusCode.Ok
              && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
     }

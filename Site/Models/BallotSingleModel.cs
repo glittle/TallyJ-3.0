@@ -1,3 +1,4 @@
+using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 
 namespace TallyJ.Models
@@ -16,10 +17,11 @@ namespace TallyJ.Models
                {
                  Id = b.C_RowId,
                  Code = b.C_BallotCode,
+                 Status = BallotStatusEnum.TextFor(b.StatusCode),
                  Location = b.LocationName,
                  LocationSort = b.LocationSortOrder,
                  b.LocationId,
-                 b.TallyStatus
+                 TallyStatus = ElectionTallyStatusEnum.TextFor(b.TallyStatus)
                };
     }
   }

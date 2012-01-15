@@ -443,13 +443,6 @@
         <EntityType Name="vVoteInfo">
           <Key>
             <PropertyRef Name="VoteId" />
-            <PropertyRef Name="VoteStatusCode" />
-            <PropertyRef Name="PositionOnBallot" />
-            <PropertyRef Name="BallotGuid" />
-            <PropertyRef Name="BallotId" />
-            <PropertyRef Name="BallotStatusCode" />
-            <PropertyRef Name="LocationId" />
-            <PropertyRef Name="ElectionGuid" />
           </Key>
           <Property Name="VoteId" Type="int" Nullable="false" />
           <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
@@ -880,13 +873,6 @@
         <EntityType Name="vVoteInfo">
           <Key>
             <PropertyRef Name="VoteId" />
-            <PropertyRef Name="VoteStatusCode" />
-            <PropertyRef Name="PositionOnBallot" />
-            <PropertyRef Name="BallotGuid" />
-            <PropertyRef Name="BallotId" />
-            <PropertyRef Name="BallotStatusCode" />
-            <PropertyRef Name="LocationId" />
-            <PropertyRef Name="ElectionGuid" />
           </Key>
           <Property Type="Int32" Name="VoteId" Nullable="false" />
           <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
