@@ -120,6 +120,11 @@ namespace TallyJ.Controllers
       return CurrentBallotModel.StartNewBallotJson();
     }
 
+    public JsonResult DeleteBallot()
+    {
+      return CurrentBallotModel.DeleteBallotJson();
+    }
+
     private static IBallotModel CurrentBallotModel
     {
       get { return BallotModelFactory.GetForCurrentElection(); }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Models;
 using System.Linq;
@@ -20,11 +21,25 @@ namespace Tests.BusinessTests
     [TestMethod]
     public void DetermineNextFreeComputerCode2_Test()
     {
-      var list = new[] {"A", "B", "C", "F", "G"};
+      var list = new List<string> {"B", "C", "F", "G"};
 
       var sut = new ComputerModel();
 
-      sut.DetermineNextFreeComputerCode(list).ShouldEqual("D");
+      sut.DetermineNextFreeComputerCode(list).ShouldEqual("A"); // fill hole
+
+      list.AddRange(new[] { "A" });
+      list.Sort();
+      sut.DetermineNextFreeComputerCode(list).ShouldEqual("D"); // fill hole
+
+      list.AddRange(new [] {"D", "E", "H"});
+      list.Sort();
+      sut.DetermineNextFreeComputerCode(list).ShouldEqual("J"); // skip I
+
+      list.AddRange(new[]{"J","K"});
+      sut.DetermineNextFreeComputerCode(list).ShouldEqual("M"); // skip L
+    
+      list.AddRange(new[]{"M","N"});
+      sut.DetermineNextFreeComputerCode(list).ShouldEqual("P"); // skip O
     }
 
     [TestMethod]
@@ -53,7 +68,7 @@ namespace Tests.BusinessTests
     {
       var list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray().Select(c=>c.ToString()).ToList();
       list.Add("AA");
-      list.Add("AB");
+      list.Add("AB"); 
       list.Add("AC");
       list.Add("AE");
 

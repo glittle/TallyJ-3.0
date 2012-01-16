@@ -23,5 +23,6 @@ namespace TallyJ.Models
     JsonResult SwitchToBallotJson(int ballotId);
     bool SortVotes(List<int> ids);
     JsonResult StartNewBallotJson();
+    JsonResult DeleteBallotJson();
   }
 }

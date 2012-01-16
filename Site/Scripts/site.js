@@ -40,7 +40,7 @@ function Onload() {
 
 function ActivatePullInstructions() {
     var pi = $('.PullInstructions');
-    pi.before($('<div class=PullInstructionsHandle>Show Instructions</div>'));
+    pi.before($('<div class=PullInstructionsHandle>Instructions</div>'));
 
     var toggleIt = function (handle, fast) {
         var next = handle.next();

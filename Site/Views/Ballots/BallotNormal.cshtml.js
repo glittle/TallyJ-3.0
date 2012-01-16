@@ -15,6 +15,7 @@ var BallotNormalPageFunc = function () {
         nameList: null,
         searchPanel: null,
         ballotsPanel: null,
+        btnDeleteBallot: null,
         votesNeeded: 0,
         ballotStatus: '',
         ballotId: 0,
@@ -26,6 +27,11 @@ var BallotNormalPageFunc = function () {
         lastBallotRowVersion: 0,
         searchResultTemplate: '<li id=P{Id}{IneligibleData}>{Name}</li>',
         ballotListTemplate: '<li id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></li>'
+    };
+    var tabNum = {
+        ballot: 2,
+        ballots: 1,
+        location: 0
     };
 
     var preparePage = function () {
@@ -57,13 +63,24 @@ var BallotNormalPageFunc = function () {
         });
 
         local.tabList = $('#tabs');
-        local.tabList.tabs();
+        local.tabList.tabs({
+            show: function (event, ui) {
+                switch (ui.index) {
+                    case tabNum.ballot:
+                        local.inputField.focus().select();
+                        break;
+                }
+            }
+        });
+
+        local.btnDeleteBallot = $('#btnDeleteBallot');
+        local.btnDeleteBallot.on('click', deleteBallot);
 
         $('#btnRefreshBallotCount').on('click', changeLocationStatus);
         $('#btnRefreshBallotList').on('click', startToRefreshBallotList);
-        $('#btnDeleteBallot').on('click', deleteBallot);
+
         $('#btnNewBallot').on('click', newBallot);
-        $('#btnNewBallot2').on('click', newBallot2);
+        $('#btnNewBallot2').on('click', newBallot);
 
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
@@ -122,15 +139,15 @@ var BallotNormalPageFunc = function () {
     };
 
     var newBallot = function () {
+        // disable on click...
+        $('.NewBallotBtns').prop('disabled', true);
+
         CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
             showBallot(info);
+            local.tabList.tabs('select', tabNum.ballot);
+            local.inputField.focus();
+            $('.NewBallotBtns').prop('disabled', false);
         });
-    };
-
-    var newBallot2 = function () {
-        newBallot();
-        local.tabList.tabs('select', 0);
-        local.inputField.focus();
     };
 
     var focusOnTextInput = function () {
@@ -172,6 +189,9 @@ var BallotNormalPageFunc = function () {
 
         var ballotInfo = info.BallotInfo;
         if (ballotInfo) {
+            local.tabList.tabs('enable', tabNum.ballot);
+            $('#votesPanel').css('visibility', 'visible');
+
             $('.ballotCode').text(ballotInfo.Ballot.Code);
             $('#ballotStatus').text(ballotInfo.Ballot.StatusCode);
 
@@ -185,11 +205,14 @@ var BallotNormalPageFunc = function () {
             setBallotStatus(ballotInfo.Ballot.StatusCode, true);
 
             highlightBallotInList();
+
         } else {
-            if (info.controllerUrl) {
-                // must be first load, without a ballot
-                local.tabList.tabs('select', 1);
-            }
+            $('.ballotCode').text('');
+
+            $('#votesPanel').css('visibility', 'hidden');
+            local.tabList.tabs('select', tabNum.ballots);
+            local.tabList.tabs('disable', tabNum.ballot);
+            local.btnDeleteBallot.prop('disabled', true);
         }
 
         if (info.Location) {
@@ -210,6 +233,8 @@ var BallotNormalPageFunc = function () {
 
         showTempBallotStatusAndDups();
         showExtraVotes();
+
+        local.btnDeleteBallot.prop('disabled', votes.length > 0);
     };
 
     var showTempBallotStatusAndDups = function () {
@@ -240,7 +265,7 @@ var BallotNormalPageFunc = function () {
             vote = $(this);
             vote.removeClass('duplicateVote');
             var thisPerson = vote.data('person-id');
-            if (dups[thisPerson]) {
+            if (thisPerson && dups[thisPerson]) {
                 dups[thisPerson].push(vote);
 
                 if ($.inArray(thisPerson, list) == -1) {
@@ -311,7 +336,7 @@ var BallotNormalPageFunc = function () {
         var html, title;
         if (remainingToEnter == 0) {
             //html = '<span class=countsGood>All ballots entered</span>';
-            title = ' - Done';
+            title = ' - All entered';
         } else if (remainingToEnter < 0) {
             //html = '<span class=countsBad>{0} too many ballot{1} entered!</span>'.filledWith(0 - remainingToEnter, remainingToEnter == -1 ? '' : 's');
             title = ' - {0} too many'.filledWith(0 - remainingToEnter);
@@ -323,16 +348,17 @@ var BallotNormalPageFunc = function () {
         //$('#collectedVsEntered').html(html);
 
         $('#collectedVsEnteredTitle').text(title);
+        $('#lblNumEntered').text(location.BallotsEntered || 0);
     };
 
     var showBallots = function (info) {
         var list = info.Ballots;
-        list.sort(function (a, b) {
-            if (a.LocationSort == b.LocationSort) {
-                return a.Code > b.Code;
-            }
-            return a.LocationSort > b.LocationSort;
-        });
+        //        list.sort(function (a, b) {
+        //            if (a.LocationSort == b.LocationSort) {
+        //                return a.Code > b.Code;
+        //            }
+        //            return a.LocationSort > b.LocationSort;
+        //        });
 
         $('#ballotList')
             .html(local.ballotListTemplate.filledWithEach(list));
@@ -366,12 +392,25 @@ var BallotNormalPageFunc = function () {
     var startSavingVote = function (host) {
         var input = host.find('input');
         var invalids = host.find('select:visible');
+        var invalidId = +invalids.val() || 0;
+        var voteId = +host.data('vote-id') || 0;
+
         var form = {
             pid: host.data('person-id') || 0,
-            vid: host.data('vote-id') || 0,
-            invalid: invalids.val() || 0,
+            vid: voteId,
+            invalid: invalidId,
             count: input.val() || 0
         };
+
+        if (invalidId != 0) {
+            invalids.data('invalid', invalidId);
+            for (var i = 0; i < local.votes.length; i++) {
+                var vote = local.votes[i];
+                if (vote.vid == voteId) {
+                    vote.invalid = invalidId;
+                }
+            }
+        }
 
         if (isNaN(form.count) || +form.count < 0) {
             alert('Invalid number. Please correct.');
@@ -471,17 +510,13 @@ var BallotNormalPageFunc = function () {
     };
 
     var deleteBallot = function () {
-        if (!confirm('Are you sure you want to delete this ballot?')) {
-            return;
-        }
         ShowStatusDisplay('Deleting...');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteBallot', null, function (info) {
             if (info.Deleted) {
                 ShowStatusDisplay('Deleted', 0, 3000, false, true);
 
-                $('.ballotCode').text('___');
+                showBallot(info);
 
-                //TODO: show new list of ballots
                 if (info.Location) {
                     showLocation(info.Location);
                 }

@@ -89,6 +89,25 @@ namespace Tests.BusinessTests
 
 
     [TestMethod]
+    public void TooFewNumberOfVotesWithBlank_Test()
+    {
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo {VoteInvalidReasonGuid = BallotHelper.IneligibleReason.BlankVote},
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    };
+
+      var model = new BallotAnalyzer(3);
+
+      string newStatus;
+      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
+
+      newStatus.ShouldEqual(BallotStatusEnum.TooFew);
+    }
+
+
+    [TestMethod]
     public void KeepReviewStatus_Test()
     {
       var votes = new List<vVoteInfo>

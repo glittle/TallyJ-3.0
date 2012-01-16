@@ -12,12 +12,12 @@ namespace Tests.BusinessTests
   [TestClass]
   public class ResultAnalysisTests
   {
-    private ResultAnalysisTests.Fakes _fakes;
+    private Fakes _fakes;
 
     [TestInitialize]
     public void Init()
     {
-      _fakes = new ResultAnalysisTests.Fakes();
+      _fakes = new Fakes();
     }
 
     private List<Person> SamplePeople
@@ -261,7 +261,7 @@ namespace Tests.BusinessTests
         vVoteInfo.BallotGuid = Guid.NewGuid();
         vVoteInfo.PersonGuid = Guid.NewGuid();
       }
-      votes[3].VoteStatusCode = "Unreadable";
+      votes[3].VoteStatusCode = BallotHelper.VoteStatusCode.Changed;
       votes[4].BallotStatusCode = "Incomplete";
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
       votes[5].PersonCombinedInfo = "different";

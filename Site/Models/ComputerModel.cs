@@ -61,10 +61,11 @@ namespace TallyJ.Models
         Db.Computers
           .Where(c => c.ElectionGuid == electionGuid)
           .Select(c => c.ComputerCode)
-          .Union(Db.vBallotInfoes
-                   .Where(b => b.ElectionGuid == electionGuid)
-                   .Select(b => b.ComputerCode)
-          )
+          //--> 
+          //.Union(Db.vBallotInfoes
+          //         .Where(b => b.ElectionGuid == electionGuid)
+          //         .Select(b => b.ComputerCode)
+          //)
           .Distinct()
           .OrderBy(s => s)
           .ToList());
@@ -116,7 +117,7 @@ namespace TallyJ.Models
 
     public string DetermineNextFreeComputerCode(IEnumerable<string> existingCodesSortedAsc)
     {
-      var code = 'A';
+      var codeToUse = 'A';
       var twoDigit = false;
       var firstDigit = (char) ('A' - 1);
 
@@ -133,27 +134,31 @@ namespace TallyJ.Models
         {
           testChar = computerCode[0];
         }
-        if (testChar == code)
+        if (testChar == codeToUse)
         {
           // push the answer to the next one
-          code = (char) (code + 1);
-          if (code > 'Z')
+          codeToUse = (char) (codeToUse + 1);
+          if (codeToUse == 'I' || codeToUse == 'L' || codeToUse == 'O')
+          {
+            codeToUse++;
+          }
+          if (codeToUse > 'Z')
           {
             twoDigit = true;
-            code = 'A';
+            codeToUse = 'A';
             firstDigit = (char) (firstDigit + 1);
           }
         }
       }
-      if (code > 'Z')
+      if (codeToUse > 'Z')
       {
-        return "" + firstDigit + (char) ('A' - 1 + code - 'Z');
+        return "" + firstDigit + (char) ('A' - 1 + codeToUse - 'Z');
       }
       if (twoDigit)
       {
-        return "" + firstDigit + code;
+        return "" + firstDigit + codeToUse;
       }
-      return "" + code;
+      return "" + codeToUse;
     }
 
     public bool ProcessPulse()

@@ -10,7 +10,7 @@ namespace TallyJ.Code.Enumerations
     public static readonly BallotStatusEnum Review = new BallotStatusEnum("Review", "Needs Review");
     public static readonly BallotStatusEnum TooMany = new BallotStatusEnum("TooMany", "Too Many");
     public static readonly BallotStatusEnum TooFew = new BallotStatusEnum("TooFew", "Too Few");
-    public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicates");
+    public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicate names");
 
     static BallotStatusEnum()
     {

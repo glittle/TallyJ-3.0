@@ -14,19 +14,10 @@ namespace TallyJ.Models
     public const string ReasonGroupIneligible = "Ineligible";
 
     private BallotAnalyzer _analyzer;
+
     protected BallotAnalyzer Analyzer
     {
-      get
-      {
-        return _analyzer ?? (_analyzer = new BallotAnalyzer());
-      }
-    }
-
-    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
-    public Ballot CurrentBallot()
-    {
-      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
-      return Db.Ballots.Single(b => b.C_RowId == ballotId);
+      get { return _analyzer ?? (_analyzer = new BallotAnalyzer()); }
     }
 
     #region IBallotModel Members
@@ -84,12 +75,40 @@ namespace TallyJ.Models
       return new
                {
                  BallotInfo = new
-                 {
-                   Ballot = BallotForJson(ballotInfo),
-                   Votes = CurrentVotesForJson(),
-                   NumNeeded = UserSession.CurrentElection.NumberToElect
-                 },
+                                {
+                                  Ballot = BallotForJson(ballotInfo),
+                                  Votes = CurrentVotesForJson(),
+                                  NumNeeded = UserSession.CurrentElection.NumberToElect
+                                },
                  Ballots = CurrentBallotsInfoList()
+               }.AsJsonResult();
+    }
+
+    /// <Summary>Delete a ballot, but only if already empty</Summary>
+    public JsonResult DeleteBallotJson()
+    {
+      var ballot = CurrentBallot();
+      var ballotGuid = ballot.BallotGuid;
+
+      var hasVotes = Db.Votes.Any(v => v.BallotGuid == ballotGuid);
+
+      if (hasVotes)
+      {
+        return new
+                 {
+                   Deleted = false,
+                   Message = "Can only delete a ballot when it has no votes."
+                 }.AsJsonResult();
+      }
+
+      Db.Ballots.Remove(ballot);
+      Db.SaveChanges();
+
+      return new
+               {
+                 Deleted = true,
+                 Ballots = CurrentBallotsInfoList(),
+                 Location = new LocationModel().LocationInfoForJson(UserSession.CurrentLocation)
                }.AsJsonResult();
     }
 
@@ -146,17 +165,6 @@ namespace TallyJ.Models
                }.SerializedAsJsonString();
     }
 
-    public List<vVoteInfo> CurrentVotes()
-    {
-      var ballot = GetCurrentBallotInfo();
-
-      if (ballot == null)
-      {
-        return new List<vVoteInfo>();
-      }
-      return Db.vVoteInfoes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
-    }
-
     public IEnumerable<object> CurrentVotesForJson()
     {
       return CurrentVotes()
@@ -187,7 +195,7 @@ namespace TallyJ.Models
 
         if (voteInfo == null)
         {
-          return new { Updated = false, Error = "Invalid vote id" }.AsJsonResult();
+          return new {Updated = false, Error = "Invalid vote id"}.AsJsonResult();
         }
 
         // problem... client has a vote number, but we didn't find...
@@ -214,7 +222,7 @@ namespace TallyJ.Models
       var ballot = GetCurrentBallotInfo();
       if (ballot == null)
       {
-        return new { Updated = false, Error = "Invalid ballot" }.AsJsonResult();
+        return new {Updated = false, Error = "Invalid ballot"}.AsJsonResult();
       }
 
       // don't have an active Ballot!
@@ -265,7 +273,7 @@ namespace TallyJ.Models
       }
 
       // don't recognize person id
-      return new { Updated = false, Error = "Invalid person" }.AsJsonResult();
+      return new {Updated = false, Error = "Invalid person"}.AsJsonResult();
     }
 
     public JsonResult DeleteVote(int vid)
@@ -274,7 +282,7 @@ namespace TallyJ.Models
         Db.vVoteInfoes.SingleOrDefault(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid && vi.VoteId == vid);
       if (voteInfo == null)
       {
-        return new { Message = "Not found" }.AsJsonResult();
+        return new {Message = "Not found"}.AsJsonResult();
       }
 
       var vote = Db.Votes.Single(v => v.C_RowId == vid);
@@ -291,18 +299,6 @@ namespace TallyJ.Models
                  Votes = CurrentVotesForJson(),
                  BallotStatus = ballotStatus
                }.AsJsonResult();
-    }
-
-    private string GetAndUpdateBallotStatus()
-    {
-      string ballotStatus;
-      var ballot = CurrentBallot();
-      if (Analyzer.DetermineStatus(ballot.StatusCode, CurrentVotes(), out ballotStatus))
-      {
-        ballot.StatusCode = ballotStatus;
-        Db.SaveChanges();
-      }
-      return ballotStatus;
     }
 
     public string InvalidReasonsJsonString()
@@ -323,7 +319,8 @@ namespace TallyJ.Models
     public object CurrentBallotsInfoList()
     {
       var ballots = Db.vBallotInfoes
-        .Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid && b.LocationGuid == UserSession.CurrentLocationGuid)
+        .Where(
+          b => b.ElectionGuid == UserSession.CurrentElectionGuid && b.LocationGuid == UserSession.CurrentLocationGuid)
         .OrderBy(b => b.ComputerCode)
         .ThenBy(b => b.BallotNumAtComputer);
 
@@ -331,6 +328,36 @@ namespace TallyJ.Models
     }
 
     #endregion
+
+    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
+    public Ballot CurrentBallot()
+    {
+      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
+      return Db.Ballots.Single(b => b.C_RowId == ballotId);
+    }
+
+    public List<vVoteInfo> CurrentVotes()
+    {
+      var ballot = GetCurrentBallotInfo();
+
+      if (ballot == null)
+      {
+        return new List<vVoteInfo>();
+      }
+      return Db.vVoteInfoes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
+    }
+
+    private string GetAndUpdateBallotStatus()
+    {
+      string ballotStatus;
+      var ballot = CurrentBallot();
+      if (Analyzer.DetermineStatus(ballot.StatusCode, CurrentVotes(), out ballotStatus))
+      {
+        ballot.StatusCode = ballotStatus;
+        Db.SaveChanges();
+      }
+      return ballotStatus;
+    }
 
     /// <Summary>Convert int to Guid for InvalidReason. If vote is given, assign if different</Summary>
     private Guid DetermineInvalidReasonGuid(int invalidReason, Vote vote = null)

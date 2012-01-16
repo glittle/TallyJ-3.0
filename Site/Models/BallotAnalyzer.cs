@@ -38,7 +38,7 @@ namespace TallyJ.Models
       }
 
       // check counts
-      var numVotes = votes.Count;
+      var numVotes = votes.Count(v => v.VoteInvalidReasonGuid != BallotHelper.IneligibleReason.BlankVote);
 
       if (numVotes < VotesNeededOnBallot)
       {

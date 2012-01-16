@@ -18,10 +18,10 @@
 <div class="float-left div1">
     <div id="tabs" class="tabs">
         <ul>
-            <li><a href="#tabNameSearch">Ballot #<span class="ballotCode"></span></a></li>
+            <li><a href="#tabLocation">This Location</a> </li>
             <li><a href="#tabBallots">Ballots <span id="collectedVsEnteredTitle"></span></a>
             </li>
-            <li><a href="#tabLocation">This Location</a> </li>
+            <li><a href="#tabNameSearch">Ballot #<span class="ballotCode"></span></a></li>
         </ul>
         <div id="tabNameSearch">
             <div class="heading">
@@ -30,7 +30,7 @@
             <div>
                 Find a <u>n</u>ame in the list by typing...</div>
             <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
-            <button id="btnNewBallot" class="smallButton float-right" accesskey="B">
+            <button id="btnNewBallot" class="NewBallotBtns smallButton float-right" accesskey="B">
                 Start New <u>B</u>allot</button>
             <div class="actionHolder">
                 <div class="action">
@@ -41,8 +41,6 @@
             </div>
             <ul id="nameList" class="nameList">
             </ul>
-            <button type="button" id="btnDeleteBallot" class="smallButton float-right">
-                Delete this Ballot</button>
             <div class="Clear5">
             </div>
         </div>
@@ -50,11 +48,12 @@
             <div class="heading">
                 Ballots at Location: <span data-name="Name"></span>
             </div>
-            <button id="btnNewBallot2" class="smallButton float-right" accesskey="B">
+            <button id="btnNewBallot2" class="NewBallotBtns smallButton float-right" accesskey="B">
                 Start New <u>B</u>allot</button>
             <div>
-                Collected and counted:
+                Received:
                 <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
+                Entered: <span id="lblNumEntered" class="lblNumEntered"></span>
             </div>
             <ul id="ballotList" class="ballotList">
             </ul>
@@ -85,14 +84,14 @@
         </div>
     </div>
     <div class="PullInstructions">
-        <p>
-            Each paper ballot needs to be recorded here. Duplicate names will be noticed and
-            marked...
-        </p>
-        <p>
-            Update the Status input to indicate the status of your counting process, and the
-            Contact Info in case
-        </p>
+        <ol>
+            <li>Each paper ballot needs to be recorded here.</li>
+            <li>The ballot is automatically saved as names are added to it.</li>
+            <li>Duplicate names will be noticed and marked.</li>
+            <li>If using multiple locations, update the Location Status to indicate the status of
+                your counting process, and the Contact Info in case the head teller needs to contact
+                you. </li>
+        </ol>
     </div>
 </div>
 <div id="votesPanel" class="votesPanel">
@@ -100,9 +99,12 @@
         <div class="float-right">
             <span class="ballotStatus"></span>Ballot #<span class="ballotCode"></span>
         </div>
-        <span class="VoteNum">#</span> Names appearing on the ballot (in order)</div>
+        <span class="VoteNum">#</span> Names on the ballot (in order)</div>
     <div id="votesList">
     </div>
     <button id="btnAddSpoiled" type="button" tabindex="1" class="smallButton spoiledBtn">
-        Add a line for a spoiled vote</button>
+        Add a line for a spoiled vote</button><br/>
+    <button type="button" id="btnDeleteBallot" disabled class="smallButton"
+        title="Delete after all votes have been deleted">
+        Delete this empty ballot</button>
 </div>
