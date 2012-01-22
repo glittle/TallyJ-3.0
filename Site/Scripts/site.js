@@ -301,7 +301,7 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
 function ShowStatusFailed(msg, keepTime) {
     ResetStatusDisplay();
 
-    if (typeof keepTime == 'undefined') keepTime = 15000;
+    if (typeof keepTime == 'undefined') keepTime = 600 * 1000; // 10 minutes
 
     var text;
     if (typeof msg === 'string') {

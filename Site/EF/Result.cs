@@ -28,5 +28,6 @@ namespace TallyJ.EF
         public Nullable<bool> IsTieResolved { get; set; }
         public Nullable<int> RankInExtra { get; set; }
         public Nullable<bool> ForceShowInOther { get; set; }
+        public Nullable<bool> TieBreakRequired { get; set; }
     }
 }

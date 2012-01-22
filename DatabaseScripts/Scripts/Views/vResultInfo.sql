@@ -12,17 +12,8 @@ create
 View [tj].[vResultInfo]
 as
   select 
-      r.ElectionGuid
-	, r.Section
-	, r.Rank
-	, r.RankInExtra
+      r.*
 	, p._FullName [PersonName]
-	, r.IsTied
-	, r.IsTieResolved
-	, r.TieBreakGroup
-	, r.TieBreakCount
-	, r.VoteCount
-	, ISNULL(ROW_NUMBER() over (order by r.Rank), 0) _FakeRowId
   from tj.Result r
      join tj.Person p on p.PersonGuid = r.PersonGuid
 

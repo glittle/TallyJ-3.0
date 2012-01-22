@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
@@ -11,12 +11,12 @@ namespace Tests.BusinessTests
   [TestClass]
   public class BallotAnalysisTests
   {
-    private ResultAnalysisTests.Fakes _fakes;
+    private Fakes _fakes;
 
     [TestInitialize]
     public void Init()
     {
-      _fakes = new ResultAnalysisTests.Fakes();
+      _fakes = new Fakes();
     }
 
     private List<Person> SamplePeople
@@ -44,10 +44,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(null, votes, out newStatus).ShouldEqual(true);
 
       newStatus.ShouldEqual(BallotStatusEnum.Ok);
     }
@@ -63,10 +63,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(null, votes, out newStatus).ShouldEqual(true);
 
       newStatus.ShouldEqual(BallotStatusEnum.TooMany);
     }
@@ -79,10 +79,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(null, votes, out newStatus).ShouldEqual(true);
 
       newStatus.ShouldEqual(BallotStatusEnum.TooFew);
     }
@@ -93,15 +93,15 @@ namespace Tests.BusinessTests
     {
       var votes = new List<vVoteInfo>
                     {
-                      new vVoteInfo {VoteInvalidReasonGuid = BallotHelper.IneligibleReason.BlankVote},
+                      new vVoteInfo {VoteInvalidReasonGuid = VoteHelper.IneligibleReason.BlankVote},
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(null, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(null, votes, out newStatus).ShouldEqual(true);
 
       newStatus.ShouldEqual(BallotStatusEnum.TooFew);
     }
@@ -115,10 +115,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
       newStatus.ShouldEqual(BallotStatusEnum.Review);
 
 
@@ -129,7 +129,7 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = Guid.NewGuid()},
                     };
 
-      model.DetermineStatus(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
       newStatus.ShouldEqual(BallotStatusEnum.Review);
     }
 
@@ -147,10 +147,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {PersonGuid = dupPersonGuid},
                     };
 
-      var model = new BallotAnalyzer(5);
+      var model = new BallotAnalyzer(5, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(true);
 
       newStatus.ShouldEqual(BallotStatusEnum.Dup);
     }
@@ -167,10 +167,10 @@ namespace Tests.BusinessTests
                       new vVoteInfo {VoteInvalidReasonGuid = Guid.NewGuid()},
                     };
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
-      model.DetermineStatus(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(false);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(false);
 
       newStatus.ShouldEqual(BallotStatusEnum.Ok);
     }
@@ -184,17 +184,35 @@ namespace Tests.BusinessTests
                     };
 
 
-      var model = new BallotAnalyzer(3);
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
 
       string newStatus;
 
       // keep Review
-      model.DetermineStatus(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Review, votes, out newStatus).ShouldEqual(false);
       newStatus.ShouldEqual(BallotStatusEnum.Review);
 
       // override OK
-      model.DetermineStatus(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(true);
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Ok, votes, out newStatus).ShouldEqual(true);
       newStatus.ShouldEqual(BallotStatusEnum.TooFew);
+    }
+
+    internal class Fakes
+    {
+      private int _saveChanges;
+
+      public int CountOfCallsToSaveChanges
+      {
+        get { return _saveChanges; }
+        set { _saveChanges = value; }
+      }
+
+      public int SaveChanges()
+      {
+        _saveChanges++;
+
+        return 0;
+      }
     }
 
   }

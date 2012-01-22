@@ -10,15 +10,9 @@ using Tests.Support;
 namespace Tests.BusinessTests
 {
   [TestClass]
-  public class ResultAnalysisTests
+  public class AnalyzerSingleNameTests
   {
-    private Fakes _fakes;
-
-    [TestInitialize]
-    public void Init()
-    {
-      _fakes = new Fakes();
-    }
+    private AnalyzerFakes _fakes;
 
     private List<Person> SamplePeople
     {
@@ -26,13 +20,19 @@ namespace Tests.BusinessTests
       {
         return new List<Person>
                  {
-                   new Person{ PersonGuid=Guid.NewGuid()},
-                   new Person{ PersonGuid=Guid.NewGuid()},
-                   new Person{ PersonGuid=Guid.NewGuid()},
-                   new Person{ PersonGuid=Guid.NewGuid()},
-                   new Person{ PersonGuid=Guid.NewGuid()},
+                   new Person {PersonGuid = Guid.NewGuid()},
+                   new Person {PersonGuid = Guid.NewGuid()},
+                   new Person {PersonGuid = Guid.NewGuid()},
+                   new Person {PersonGuid = Guid.NewGuid()},
+                   new Person {PersonGuid = Guid.NewGuid()},
                  };
       }
+    }
+
+    [TestInitialize]
+    public void Init()
+    {
+      _fakes = new AnalyzerFakes();
     }
 
 
@@ -46,8 +46,18 @@ namespace Tests.BusinessTests
                          NumberToElect = 1,
                          NumberExtra = 0
                        };
-
+      var location = new Location
+                       {
+                         LocationGuid = Guid.NewGuid(),
+                         ElectionGuid = electionGuid
+                       };
       var personGuid = Guid.NewGuid();
+      var ballotGuid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
+                      };
 
       var votes = new List<vVoteInfo>
                     {
@@ -57,15 +67,15 @@ namespace Tests.BusinessTests
                     };
       foreach (var vVoteInfo in votes)
       {
+        vVoteInfo.BallotGuid = ballotGuid;
         vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
-      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
-                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -76,7 +86,17 @@ namespace Tests.BusinessTests
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33 + 5 + 2);
       result1.Rank.ShouldEqual(1);
-      result1.Section.ShouldEqual(Section.Top);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
+
+      result1.CloseToNext.ShouldEqual(false);
+      result1.CloseToPrev.ShouldEqual(false);
+      result1.ForceShowInOther.ShouldEqual(false);
+      result1.IsTieResolved.ShouldEqual(null);
+      result1.IsTied.ShouldEqual(false);
+      result1.RankInExtra.ShouldEqual(null);
+      result1.TieBreakCount.ShouldEqual(null);
+      result1.TieBreakGroup.ShouldEqual(null);
+      result1.TieBreakRequired.ShouldEqual(null);
     }
 
     [TestMethod]
@@ -89,7 +109,18 @@ namespace Tests.BusinessTests
                          NumberToElect = 1,
                          NumberExtra = 0
                        };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
 
+      var ballotGuid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
+                      };
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {SingleNameElectionCount = 33, PersonGuid = Guid.NewGuid()},
@@ -98,14 +129,14 @@ namespace Tests.BusinessTests
                     };
       foreach (var vVoteInfo in votes)
       {
+        vVoteInfo.BallotGuid = ballotGuid;
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
-      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
-                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -116,13 +147,13 @@ namespace Tests.BusinessTests
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);
       result1.Rank.ShouldEqual(1);
-      result1.Section.ShouldEqual(Section.Top);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(5);
       result2.Rank.ShouldEqual(2);
-      result2.Section.ShouldEqual(Section.Other);
-      result2.IsTied.ShouldEqual(null);
+      result2.Section.ShouldEqual(ResultHelper.Section.Other);
+      result2.IsTied.ShouldEqual(false);
     }
 
     [TestMethod]
@@ -135,7 +166,18 @@ namespace Tests.BusinessTests
                          NumberToElect = 1,
                          NumberExtra = 0
                        };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
 
+      var ballotGuid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
+                      };
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
@@ -144,14 +186,14 @@ namespace Tests.BusinessTests
                     };
       foreach (var vVoteInfo in votes)
       {
+        vVoteInfo.BallotGuid = ballotGuid;
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
-      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
-                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -162,14 +204,14 @@ namespace Tests.BusinessTests
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(10);
       result1.Rank.ShouldEqual(1);
-      result1.Section.ShouldEqual(Section.Top);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
       result1.TieBreakGroup.ShouldEqual("A");
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(10);
-      result2.Rank.ShouldEqual(1);
-      result2.Section.ShouldEqual(Section.Top);
+      result2.Rank.ShouldEqual(2);
+      result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
       result2.TieBreakGroup.ShouldEqual("A");
     }
@@ -184,7 +226,17 @@ namespace Tests.BusinessTests
                          NumberToElect = 1,
                          NumberExtra = 0
                        };
-
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
+      var ballotGuid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
+                      };
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
@@ -193,14 +245,14 @@ namespace Tests.BusinessTests
                     };
       foreach (var vVoteInfo in votes)
       {
+        vVoteInfo.BallotGuid = ballotGuid;
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
-      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
-                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -211,21 +263,21 @@ namespace Tests.BusinessTests
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(10);
       result1.Rank.ShouldEqual(1);
-      result1.Section.ShouldEqual(Section.Top);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
       result1.TieBreakGroup.ShouldEqual("A");
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(10);
-      result2.Rank.ShouldEqual(1);
-      result2.Section.ShouldEqual(Section.Top);
+      result2.Rank.ShouldEqual(2);
+      result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
       result2.TieBreakGroup.ShouldEqual("A");
 
       var result3 = results[2];
       result3.VoteCount.ShouldEqual(10);
-      result3.Rank.ShouldEqual(1);
-      result3.Section.ShouldEqual(Section.Top);
+      result3.Rank.ShouldEqual(3);
+      result3.Section.ShouldEqual(ResultHelper.Section.Other);
       result3.IsTied.ShouldEqual(true);
       result3.TieBreakGroup.ShouldEqual("A");
     }
@@ -241,7 +293,18 @@ namespace Tests.BusinessTests
                          NumberToElect = 1,
                          NumberExtra = 0
                        };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
 
+      var ballotGuid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
+                      };
       var votes = new List<vVoteInfo>
                     {
                       new vVoteInfo {SingleNameElectionCount = 33},
@@ -254,20 +317,20 @@ namespace Tests.BusinessTests
                     };
       foreach (var vVoteInfo in votes)
       {
+        vVoteInfo.BallotGuid = ballotGuid;
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = BallotHelper.VoteStatusCode.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
         vVoteInfo.BallotGuid = Guid.NewGuid();
         vVoteInfo.PersonGuid = Guid.NewGuid();
       }
-      votes[3].VoteStatusCode = BallotHelper.VoteStatusCode.Changed;
-      votes[4].BallotStatusCode = "Incomplete";
+      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
+      votes[4].BallotStatusCode = "Incomplete"; // will be reset to Okay
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
       votes[5].PersonCombinedInfo = "different";
 
-      var model = new ElectionAnalyzerSingleName(election, new ResultSummary(), new List<Result>(), votes,
-                                                 _fakes.RemoveResult, _fakes.AddResult, _fakes.SaveChanges, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -278,44 +341,20 @@ namespace Tests.BusinessTests
       var summary = model.ResultSummaryAuto;
       summary.TotalVotes.ShouldEqual(125);
       summary.SpoiledBallots.ShouldEqual(1);
-      summary.SpoiledVotes.ShouldEqual(58);
+      summary.SpoiledVotes.ShouldEqual(85);
       summary.BallotsNeedingReview.ShouldEqual(1);
 
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);
       result1.Rank.ShouldEqual(1);
-      result1.Section.ShouldEqual(Section.Top);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(5);
       result2.Rank.ShouldEqual(2);
-      result2.Section.ShouldEqual(Section.Other);
-      result2.IsTied.ShouldEqual(null);
+      result2.Section.ShouldEqual(ResultHelper.Section.Other);
+      result2.IsTied.ShouldEqual(false);
     }
 
-    #region Nested type: Fakes
-
-    internal class Fakes
-    {
-      private int _count;
-
-      public Result RemoveResult(Result input)
-      {
-        throw new ApplicationException("Should not be called in tests!");
-      }
-
-      public Result AddResult(Result arg)
-      {
-        arg.C_RowId = ++_count;
-        return arg;
-      }
-
-      public int SaveChanges()
-      {
-        return 0;
-      }
-    }
-
-    #endregion
   }
 }

@@ -145,10 +145,13 @@ var MonitorPage = function () {
             }
 
             if (this.BallotsCollected) {
-                this.BallotsCollected = '<br>({0} more to input)'.filledWith(this.BallotsCollected - this.Ballots); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
-            }
-            else {
-                this.BallotsCollected = ''; // ' entered';
+                var pct = Math.floor(this.BallotsAtLocation / this.BallotsCollected * 100);
+                this.BallotsReport = '<br>{0} of {1} ({2}%)'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
+                if (pct > 100) {
+                    this.BallotsReport = '<span class=error>{0}</span>'.filledWith(this.BallotsReport);
+                }
+            } else {
+                this.BallotsReport = '<br>{0} entered'.filledWith(this.BallotsAtLocation); // ' entered';
             }
         });
 

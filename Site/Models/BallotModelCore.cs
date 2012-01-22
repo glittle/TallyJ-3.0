@@ -209,7 +209,8 @@ namespace TallyJ.Models
 
         Db.SaveChanges();
 
-        var ballotStatus = GetAndUpdateBallotStatus();
+        var ballotAnalyzer = new BallotAnalyzer();
+        var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
         return new
                  {
@@ -246,7 +247,7 @@ namespace TallyJ.Models
                      {
                        BallotGuid = ballot.BallotGuid,
                        PositionOnBallot = nextVoteNum,
-                       StatusCode = BallotHelper.VoteStatusCode.Ok,
+                       StatusCode = VoteHelper.VoteStatusCode.Ok,
                        SingleNameElectionCount = count
                      };
         if (person != null)
@@ -261,7 +262,8 @@ namespace TallyJ.Models
         Db.Votes.Add(vote);
         Db.SaveChanges();
 
-        var ballotStatus = GetAndUpdateBallotStatus();
+        var ballotAnalyzer = new BallotAnalyzer();
+        var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
         return new
                  {
@@ -291,7 +293,8 @@ namespace TallyJ.Models
 
       UpdateVotePositions(voteInfo.BallotGuid);
 
-      var ballotStatus = GetAndUpdateBallotStatus();
+      var ballotAnalyzer = new BallotAnalyzer();
+      var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
       return new
                {
@@ -345,18 +348,6 @@ namespace TallyJ.Models
         return new List<vVoteInfo>();
       }
       return Db.vVoteInfoes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
-    }
-
-    private string GetAndUpdateBallotStatus()
-    {
-      string ballotStatus;
-      var ballot = CurrentBallot();
-      if (Analyzer.DetermineStatus(ballot.StatusCode, CurrentVotes(), out ballotStatus))
-      {
-        ballot.StatusCode = ballotStatus;
-        Db.SaveChanges();
-      }
-      return ballotStatus;
     }
 
     /// <Summary>Convert int to Guid for InvalidReason. If vote is given, assign if different</Summary>

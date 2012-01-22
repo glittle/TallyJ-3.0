@@ -7,20 +7,18 @@
 
     ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 
-    //todo: don't run analysis until after page loads framework...
-    //ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.CurrentResults.SerializedAsJson()));
+    ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
 }
 <script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
 <script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
-<button type="button" id="btnRefesh">
-    Refresh Analysis</button>
+<button type="button" id="btnRefresh">
+    Re-run Analysis</button>
 <div style="padding-bottom: 15px;">
-    Election Status:
-  <select id="ddlElectionStatus">
-    <option value="">Please select...</option>
+    Election Status:<br/>
+  <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
     @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
   </select>
-  <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")> <label for="chkShowAll">Present "full report" with all votes?</label>
+  <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")> <label for="chkShowAll">Show "full report" with all votes on report screens?</label>
 </div>
 <div id="chart">
 </div>
@@ -42,7 +40,7 @@
                 Votes
             </th>
             <th>
-                Comments
+                Tie-Vote?
             </th>
         </tr>
     </thead>
@@ -58,7 +56,7 @@
                 {VoteCount}
             </td>
             <td>
-                {Comments}
+                {TieVote}
             </td>
         </tr>
     </tbody>
@@ -74,7 +72,7 @@
                 {Rank}
             </td>
             <td>
-                {Comments}
+                {TieVote}
             </td>
         </tr>
     </tfoot>

@@ -17,12 +17,9 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult Analyze()
     {
-      //var resultsModel = new ResultsModel();
+      var resultsModel = new ResultsModel();
 
-      //resultsModel.GenerateResults();
-
-      //return View(resultsModel);
-      return View();
+      return View(resultsModel);
     }
 
     [ForAuthenticatedTeller]
@@ -53,7 +50,7 @@ namespace TallyJ.Controllers
 
       resultsModel.GenerateResults();
 
-      return resultsModel.CurrentResults;
+      return resultsModel.GetCurrentResults().AsJsonResult();
     }
 
     public JsonResult GetReport()

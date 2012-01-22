@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Objects.DataClasses;
 
-namespace tallyj2dModel.Store
+namespace tallyj2dModel.Store // namespace must be:  tallyj2dModel.Store
 {
   public class SqlFunc
   {

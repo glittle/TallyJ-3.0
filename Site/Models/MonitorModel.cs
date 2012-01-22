@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 
 namespace TallyJ.Models
@@ -28,12 +29,13 @@ namespace TallyJ.Models
                 .ToList()
                 .Select(li => new
                                 {
-                                  li.Ballots,
+                                  li.BallotsAtComputer,
+                                  li.BallotsAtLocation,
                                   li.BallotsCollected,
                                   li.ComputerCode,
                                   li.ContactInfo,
                                   li.Name,
-                                  li.TallyStatus,
+                                  TallyStatus = LocationStatusEnum.TextFor(li.TallyStatus),
                                   li.TellerName,
                                   MinutesOld = li.LastContact.HasValue ? ((now - li.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
                                   LocationId = li.C_RowId

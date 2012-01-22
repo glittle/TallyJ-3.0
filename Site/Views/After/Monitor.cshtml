@@ -25,9 +25,6 @@
         # Ballots
       </th>
       <th>
-        View
-      </th>
-      <th>
         Minutes Ago
       </th>
       <th>
@@ -39,19 +36,17 @@
     <tr>
       <th rowspan="{rows}">
         {Name}
+        {Btn}
       </th>
       <td rowspan="{rows}">
         {TallyStatus}
-              {BallotsCollected}
+        {BallotsReport}
       </td>
       <td>
         {ComputerCode}
       </td>
       <td>
-        {Ballots}
-      </td>
-      <td>
-        {Btn}
+        {BallotsAtComputer}
       </td>
       <td>
         <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
@@ -65,10 +60,7 @@
         {ComputerCode}
       </td>
       <td>
-        {Ballots}
-      </td>
-      <td>
-        {Btn}
+        {BallotsAtComputer}
       </td>
       <td>
         <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
@@ -93,8 +85,8 @@
         <option value="60">minute</option>
         <option value="120">2 minutes</option>
     </select>
-    <button type="button" id="btnRefesh">
-        Refresh Now</button>
+    <button type="button" id="btnRefesh" accesskey="R">
+      <u>R</u>efresh Now</button>
     Last Refresh at <span id="lastRefresh"></span>
 </div>
   <div>

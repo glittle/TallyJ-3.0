@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 using TallyJ.Models.Helper;
@@ -200,15 +201,15 @@ namespace TallyJ.Models
                          FullName = p.C_FullName,
                          p.Area,
                          VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
-                         InPerson = p.VotingMethod == "P",
-                         DroppedOff = p.VotingMethod == "D",
-                         MailedIn = p.VotingMethod == "M",
+                         InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
+                         DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
+                         MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
                        });
     }
 
     public JsonResult RegisterVoteJson(int personId, string voteType, int lastRowVersion)
     {
-      if (voteType != "P" && voteType != "D" && voteType != "M")
+      if (!VotingMethodEnum.Exists(voteType))
       {
         return new { Message = "Invalid type" }.AsJsonResult();
       }

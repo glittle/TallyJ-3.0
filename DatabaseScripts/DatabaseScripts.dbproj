@@ -170,5 +170,11 @@
     <NotInBuild Include="Scripts\Stored Procedures\CurrentRowVersion.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
+    <NotInBuild Include="Scripts\Triggers\Ballot_ClearResultSummary.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
+    <NotInBuild Include="Scripts\Triggers\Vote_ClearResultSummary.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
   </ItemGroup>
 </Project>

@@ -24,6 +24,11 @@ namespace TallyJ.EF
         public string TieBreakGroup { get; set; }
         public Nullable<int> TieBreakCount { get; set; }
         public Nullable<int> VoteCount { get; set; }
-        public long C_FakeRowId { get; set; }
+        public int C_RowId { get; set; }
+        public System.Guid PersonGuid { get; set; }
+        public Nullable<bool> CloseToPrev { get; set; }
+        public Nullable<bool> CloseToNext { get; set; }
+        public Nullable<bool> TieBreakRequired { get; set; }
+        public Nullable<bool> ForceShowInOther { get; set; }
     }
 }

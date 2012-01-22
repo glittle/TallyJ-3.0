@@ -18,21 +18,36 @@ thead th
     border-left: 1px solid #e0e0e0;
 }
 
-tr.Odd {
+tr.xxOdd {
     background-color: #ddd;
 }
 tr.Odd td {
     border-left: 1px solid #d0d0d0;
 }
 
-tr.Tied {
+tr.SectionT.Tied {
     color: red;
+    font-weight: bold;
+}
+tr.SectionE {
+    background-color: #d9d9d9;
+}
+tr.SectionE.Tied {
+    color: red;
+    font-weight: bold;
+}
+tr.SectionO {
+    background-color: #aaa;
+}
+tr.SectionO.Tied.Force {
+    color: red;
+    font-weight: bold;
 }
 
 #chart {
     float: right;
     width: 340px;
-    height: 500px;
+    height: 200px;
     margin-left: 10px;
 }
 table.Main, table#invalids, table#totalCounts {
@@ -54,7 +69,7 @@ table caption {
 td.Left {
     text-align: left;
 }
-#btnRefesh {
+#btnRefresh {
     float: right;
 }
 #InitialMsg {

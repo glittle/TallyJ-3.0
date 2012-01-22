@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Resources
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @model IBallotModel
 @{
@@ -30,7 +31,7 @@
             <div>
                 Find a <u>n</u>ame in the list by typing...</div>
             <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
-            <button id="btnNewBallot" class="NewBallotBtns smallButton float-right" accesskey="B">
+            <button id="btnNewBallot" class="NewBallotBtns smallButton float-right" accesskey="B" tabindex="2" >
                 Start New <u>B</u>allot</button>
             <div class="actionHolder">
                 <div class="action">
@@ -65,21 +66,15 @@
                 Location Status
             </div>
             <div>
-                <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2" size="6">
-                    <option value="Not Started">Not started</option>
-                    <option value="Receiving">Receiving ballots</option>
-                    <option value="Sorting">Sorting and opening ballots</option>
-                    <option value="Entering">Entering ballots into TallyJ</option>
-                    <option value="Done">Done - All ballots entered and checked</option>
-                    <option value="NeedHelp">Need Help!</option>
+                <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
+                  @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
                 </select>
             </div>
             <div class="heading">
                 Contact Info:
             </div>
             <div>
-                <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo"
-                    tabindex="2" />
+                <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" />
             </div>
         </div>
     </div>
@@ -102,7 +97,7 @@
         <span class="VoteNum">#</span> Names on the ballot (in order)</div>
     <div id="votesList">
     </div>
-    <button id="btnAddSpoiled" type="button" tabindex="1" class="smallButton spoiledBtn">
+    <button id="btnAddSpoiled" type="button" tabindex="3" class="smallButton spoiledBtn">
         Add a line for a spoiled vote</button><br/>
     <button type="button" id="btnDeleteBallot" disabled class="smallButton"
         title="Delete after all votes have been deleted">

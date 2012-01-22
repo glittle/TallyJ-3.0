@@ -5,7 +5,7 @@ namespace TallyJ.Models
 {
   public interface IElectionAnalyzer
   {
-    void GenerateResults();
+    ResultSummary GenerateResults();
 
     /// <Summary>Current Results records</Summary>
     List<Result> Results { get; }
@@ -15,5 +15,8 @@ namespace TallyJ.Models
 
     /// <Summary>Current VoteInfo records</Summary>
     List<vVoteInfo> VoteInfos { get; }
+
+    /// <Summary>Indicate if the results are available, or need to be generated</Summary>
+    bool IsResultAvailable { get; }
   }
 }

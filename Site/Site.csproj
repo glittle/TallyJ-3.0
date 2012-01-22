@@ -55,6 +55,9 @@
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>..\packages\CsvReader\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
     <Reference Include="MemcachedProviders">
       <HintPath>..\packages\Other\MemcachedProviders.dll</HintPath>
     </Reference>
@@ -136,11 +139,14 @@
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
+    <Compile Include="Code\Enumerations\VotingMethodEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionModeEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionTallyStatusEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionTypeEnum.cs" />
     <Compile Include="Code\Enumerations\EnumerationExt.cs" />
     <Compile Include="Code\Enumerations\IEnumeration.cs" />
+    <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
+    <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
@@ -202,6 +208,7 @@
     <Compile Include="EF\Message.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Partials\BallotRelated.cs" />
     <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Person.cs">
@@ -214,6 +221,9 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultSummary.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ResultTie.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\SqlSearch_Result.cs">
@@ -244,7 +254,9 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
-    <Compile Include="Models\BallotHelper.cs" />
+    <Compile Include="Models\ResultHelper.cs" />
+    <Compile Include="Models\VoteAnalyzer.cs" />
+    <Compile Include="Models\VoteHelper.cs" />
     <Compile Include="Models\BallotModelCore.cs" />
     <Compile Include="Models\BallotModelFactory.cs" />
     <Compile Include="Models\BallotNormalModel.cs" />

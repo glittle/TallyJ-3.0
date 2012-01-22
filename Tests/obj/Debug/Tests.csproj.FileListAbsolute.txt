@@ -19,13 +19,17 @@ C:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\EntityFramework.xml
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Tests.dll.config
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Tests.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\le_nlog.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\TallyJ.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\FluentSecurity.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\EntityFramework.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.Unity.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.ServiceLocation.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Unity.Mvc3.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.Unity.Configuration.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\TallyJ.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.xml
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\EntityFramework.xml
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.Unity.xml
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
@@ -34,7 +38,3 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Microsoft.Practices.U
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.pdb
-D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\FluentSecurity.dll
-D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\le_nlog.dll
-D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.dll
-D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\NLog.xml

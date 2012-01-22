@@ -72,6 +72,7 @@ var BallotNormalPageFunc = function () {
                 }
             }
         });
+        local.tabList.tabs('select', tabNum.ballots);
 
         local.btnDeleteBallot = $('#btnDeleteBallot');
         local.btnDeleteBallot.on('click', deleteBallot);
@@ -203,6 +204,12 @@ var BallotNormalPageFunc = function () {
             showVotes();
 
             setBallotStatus(ballotInfo.Ballot.StatusCode, true);
+
+            //            if (ballotInfo.Ballot.StatusCode == 'Ok') {
+            //                local.tabList.tabs('select', tabNum.ballots);
+            //            } else {
+            //                local.tabList.tabs('select', tabNum.ballot);
+            //            }
 
             highlightBallotInList();
 

@@ -273,3 +273,7 @@ div.heading {
     background-color: #ffe3c2;
     line-height: 1.2;
 }
+.ballotList li:hover
+{
+    background-color: #cfc;
+}

@@ -2,7 +2,7 @@ using System;
 
 namespace TallyJ.Models
 {
-  public class BallotHelper
+  public class VoteHelper
   {
     public static class IneligibleReason
     {

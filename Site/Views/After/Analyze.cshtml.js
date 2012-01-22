@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../Scripts/site.js" />
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
-/// <reference path="../../Scripts/highcharts.js" />
+/// <reference path="../../Scripts/highcharts/highcharts.js" />
 
 var AnalyzePage = function () {
     var settings = {
@@ -12,7 +12,7 @@ var AnalyzePage = function () {
 
     var preparePage = function () {
 
-        $('#btnRefesh').click(function () {
+        $('#btnRefresh').click(function () {
             runAnalysis(false);
         });
         $('#chkShowAll').on('click change', function () {
@@ -45,9 +45,14 @@ var AnalyzePage = function () {
         settings.invalidsRowTemplate = invalidsBody.html();
         invalidsBody.html('');
 
-        setTimeout(function () {
-            runAnalysis(true);
-        }, 0);
+        if (publicInterface.results) {
+            showInfo(publicInterface.results, true);
+        }
+        else {
+            setTimeout(function () {
+                runAnalysis(true);
+            }, 0);
+        }
     };
 
     var runAnalysis = function (firstLoad) {
@@ -117,7 +122,7 @@ var AnalyzePage = function () {
 
         var getNames = function () {
             return $.map(info.slice(0, maxToShow), function (item, i) {
-                return i + 1;
+                return item.Rank;
             });
         };
 
@@ -125,7 +130,7 @@ var AnalyzePage = function () {
         settings.chart = new Highcharts.Chart({
             chart: {
                 renderTo: 'chart',
-                type: 'bar'
+                type: 'column'
             },
             title: {
                 text: 'Votes'
@@ -144,7 +149,14 @@ var AnalyzePage = function () {
             series: [{
                 name: 'Votes',
                 data: getVoteCounts()
-            }]
+            }],
+            tooltip: {
+                formatter: function () {
+                    var s = 'Rank {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
+
+                    return s;
+                }
+            }
         });
     };
 
@@ -158,16 +170,20 @@ var AnalyzePage = function () {
 
     var expand = function (results) {
         $.each(results, function (i) {
-            this.ClassName = (i % 2 == 0 ? 'Even' : 'Odd')
-                + (this.IsTied ? ' Tied' : '');
-            this.Comments = this.IsTied ? 'Tied' : '';
+            this.ClassName = 'Section{0} {1} {2} {3}'.filledWith(
+                this.Section,
+                this.Section=='O' && this.ForceShowInOther ? 'Force' : '',
+                (i % 2 == 0 ? 'Even' : 'Odd'),
+                (this.IsTied && this.TieBreakRequired && !this.IsTieResolved ? 'Tied' : ''));
+            this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : '(Tie Okay)') : '';
         });
         return results;
     };
 
     var publicInterface = {
         controllerUrl: '',
-        PreparePage: preparePage
+        PreparePage: preparePage,
+        results: null
     };
 
     return publicInterface;

@@ -13,6 +13,7 @@
     <EntitySet Name="Reasons" EntityType="tallyj2dModel.Store.Reasons" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Result" EntityType="tallyj2dModel.Store.Result" store:Type="Tables" Schema="tj" />
     <EntitySet Name="ResultSummary" EntityType="tallyj2dModel.Store.ResultSummary" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="ResultTie" EntityType="tallyj2dModel.Store.ResultTie" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Teller" EntityType="tallyj2dModel.Store.Teller" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Vote" EntityType="tallyj2dModel.Store.Vote" store:Type="Tables" Schema="tj" />
     <EntitySet Name="vBallotInfo" EntityType="tallyj2dModel.Store.vBallotInfo" store:Type="Views" store:Schema="tj" store:Name="vBallotInfo">
@@ -61,7 +62,8 @@
       [vLocationInfo].[BallotsCollected] AS [BallotsCollected], 
       [vLocationInfo].[ComputerCode] AS [ComputerCode], 
       [vLocationInfo].[IsSingleNameElection] AS [IsSingleNameElection], 
-      [vLocationInfo].[Ballots] AS [Ballots], 
+      [vLocationInfo].[BallotsAtComputer] AS [BallotsAtComputer], 
+      [vLocationInfo].[BallotsAtLocation] AS [BallotsAtLocation], 
       [vLocationInfo].[LastContact] AS [LastContact], 
       [vLocationInfo].[TellerName] AS [TellerName], 
       [vLocationInfo].[SortOrder2] AS [SortOrder2]
@@ -69,17 +71,22 @@
     </EntitySet>
     <EntitySet Name="vResultInfo" EntityType="tallyj2dModel.Store.vResultInfo" store:Type="Views" store:Schema="tj" store:Name="vResultInfo">
       <DefiningQuery>SELECT 
+      [vResultInfo].[_RowId] AS [_RowId], 
       [vResultInfo].[ElectionGuid] AS [ElectionGuid], 
-      [vResultInfo].[Section] AS [Section], 
-      [vResultInfo].[Rank] AS [Rank], 
-      [vResultInfo].[RankInExtra] AS [RankInExtra], 
-      [vResultInfo].[PersonName] AS [PersonName], 
-      [vResultInfo].[IsTied] AS [IsTied], 
-      [vResultInfo].[IsTieResolved] AS [IsTieResolved], 
-      [vResultInfo].[TieBreakGroup] AS [TieBreakGroup], 
-      [vResultInfo].[TieBreakCount] AS [TieBreakCount], 
+      [vResultInfo].[PersonGuid] AS [PersonGuid], 
       [vResultInfo].[VoteCount] AS [VoteCount], 
-      [vResultInfo].[_FakeRowId] AS [_FakeRowId]
+      [vResultInfo].[Rank] AS [Rank], 
+      [vResultInfo].[Section] AS [Section], 
+      [vResultInfo].[CloseToPrev] AS [CloseToPrev], 
+      [vResultInfo].[CloseToNext] AS [CloseToNext], 
+      [vResultInfo].[IsTied] AS [IsTied], 
+      [vResultInfo].[TieBreakGroup] AS [TieBreakGroup], 
+      [vResultInfo].[TieBreakRequired] AS [TieBreakRequired], 
+      [vResultInfo].[TieBreakCount] AS [TieBreakCount], 
+      [vResultInfo].[IsTieResolved] AS [IsTieResolved], 
+      [vResultInfo].[RankInExtra] AS [RankInExtra], 
+      [vResultInfo].[ForceShowInOther] AS [ForceShowInOther], 
+      [vResultInfo].[PersonName] AS [PersonName]
       FROM [tj].[vResultInfo] AS [vResultInfo]</DefiningQuery>
     </EntitySet>
     <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" store:Schema="tj" store:Name="vVoteInfo">
@@ -282,6 +289,7 @@
     <Property Name="CloseToNext" Type="bit" />
     <Property Name="IsTied" Type="bit" />
     <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+    <Property Name="TieBreakRequired" Type="bit" />
     <Property Name="TieBreakCount" Type="int" />
     <Property Name="IsTieResolved" Type="bit" />
     <Property Name="RankInExtra" Type="int" />
@@ -305,6 +313,17 @@
     <Property Name="TotalVotes" Type="int" />
     <Property Name="BallotsReceived" Type="int" />
     <Property Name="BallotsNeedingReview" Type="int" />
+  </EntityType>
+  <EntityType Name="ResultTie">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TieBreakGroup" Type="varchar" Nullable="false" MaxLength="1" />
+    <Property Name="NumToElect" Type="int" Nullable="false" />
+    <Property Name="NumInTie" Type="int" Nullable="false" />
+    <Property Name="Comments" Type="varchar" MaxLength="50" />
   </EntityType>
   <EntityType Name="Teller">
     <Key>
@@ -338,14 +357,6 @@
   <EntityType Name="vBallotInfo">
     <Key>
       <PropertyRef Name="_RowId" />
-      <PropertyRef Name="LocationGuid" />
-      <PropertyRef Name="BallotGuid" />
-      <PropertyRef Name="ComputerCode" />
-      <PropertyRef Name="BallotNumAtComputer" />
-      <PropertyRef Name="_RowVersion" />
-      <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="LocationId" />
-      <PropertyRef Name="LocationName" />
     </Key>
     <Property Name="_RowId" Type="int" Nullable="false" />
     <Property Name="LocationGuid" Type="uniqueidentifier" Nullable="false" />
@@ -405,7 +416,8 @@
     <Property Name="BallotsCollected" Type="int" />
     <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
     <Property Name="IsSingleNameElection" Type="bit" />
-    <Property Name="Ballots" Type="int" />
+    <Property Name="BallotsAtComputer" Type="int" />
+    <Property Name="BallotsAtLocation" Type="int" />
     <Property Name="LastContact" Type="datetime2" Precision="1" />
     <Property Name="TellerName" Type="nvarchar" MaxLength="50" />
     <Property Name="SortOrder2" Type="bigint" Nullable="false" />
@@ -415,22 +427,28 @@
       -->
   <EntityType Name="vResultInfo">
     <Key>
+      <PropertyRef Name="_RowId" />
       <PropertyRef Name="ElectionGuid" />
-      <PropertyRef Name="Section" />
+      <PropertyRef Name="PersonGuid" />
       <PropertyRef Name="Rank" />
-      <PropertyRef Name="_FakeRowId" />
+      <PropertyRef Name="Section" />
     </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" />
     <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-    <Property Name="Section" Type="char" Nullable="false" MaxLength="1" />
-    <Property Name="Rank" Type="int" Nullable="false" />
-    <Property Name="RankInExtra" Type="int" />
-    <Property Name="PersonName" Type="nvarchar" MaxLength="461" />
-    <Property Name="IsTied" Type="bit" />
-    <Property Name="IsTieResolved" Type="bit" />
-    <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
-    <Property Name="TieBreakCount" Type="int" />
+    <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="VoteCount" Type="int" />
-    <Property Name="_FakeRowId" Type="bigint" Nullable="false" />
+    <Property Name="Rank" Type="int" Nullable="false" />
+    <Property Name="Section" Type="char" Nullable="false" MaxLength="1" />
+    <Property Name="CloseToPrev" Type="bit" />
+    <Property Name="CloseToNext" Type="bit" />
+    <Property Name="IsTied" Type="bit" />
+    <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+    <Property Name="TieBreakRequired" Type="bit" />
+    <Property Name="TieBreakCount" Type="int" />
+    <Property Name="IsTieResolved" Type="bit" />
+    <Property Name="RankInExtra" Type="int" />
+    <Property Name="ForceShowInOther" Type="bit" />
+    <Property Name="PersonName" Type="nvarchar" MaxLength="461" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vVoteInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.

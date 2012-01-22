@@ -4,6 +4,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -38,6 +39,8 @@ namespace TallyJ.Models
 
       Db.SaveChanges();
 
+      SessionKey.CurrentLocation.SetInSession(location);
+
       return new
                {
                  Saved = true,
@@ -65,12 +68,13 @@ namespace TallyJ.Models
 
     public object LocationInfoForJson(Location location)
     {
-      var ballots = Db.vLocationInfoes.Where(l => l.LocationGuid == location.LocationGuid).Sum(l => l.Ballots);
+      var ballots = Db.vLocationInfoes.Where(l => l.LocationGuid == location.LocationGuid).Sum(l => l.BallotsAtComputer);
 
       return new
                {
                  Id = location.C_RowId,
-                 location.TallyStatus,
+                 TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
+                 TallyStatusCode = location.TallyStatus,
                  location.ContactInfo,
                  location.BallotsCollected,
                  location.Name,
