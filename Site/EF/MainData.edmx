@@ -11,6 +11,7 @@
           <EntitySet Name="Ballot" EntityType="tallyj2dModel.Store.Ballot" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Computer" EntityType="tallyj2dModel.Store.Computer" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Election" EntityType="tallyj2dModel.Store.Election" store:Type="Tables" Schema="tj" />
+          <EntitySet Name="ImportFile" EntityType="tallyj2dModel.Store.ImportFile" store:Type="Tables" Schema="tj" />
           <EntitySet Name="JoinElectionUser" EntityType="tallyj2dModel.Store.JoinElectionUser" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Location" EntityType="tallyj2dModel.Store.Location" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Message" EntityType="tallyj2dModel.Store.Message" store:Type="Tables" Schema="tj" />
@@ -52,6 +53,22 @@
       [vElectionListInfo].[ListedForPublicAsOf] AS [ListedForPublicAsOf], 
       [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode]
       FROM [tj].[vElectionListInfo] AS [vElectionListInfo]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vImportFileInfo" EntityType="tallyj2dModel.Store.vImportFileInfo" store:Type="Views" store:Schema="tj" store:Name="vImportFileInfo">
+            <DefiningQuery>SELECT 
+      [vImportFileInfo].[_RowId] AS [_RowId], 
+      [vImportFileInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vImportFileInfo].[UploadTime] AS [UploadTime], 
+      [vImportFileInfo].[ImportTime] AS [ImportTime], 
+      [vImportFileInfo].[FileSize] AS [FileSize], 
+      [vImportFileInfo].[HasContent] AS [HasContent], 
+      [vImportFileInfo].[FirstDataRow] AS [FirstDataRow], 
+      [vImportFileInfo].[ColumnsToRead] AS [ColumnsToRead], 
+      [vImportFileInfo].[OriginalFileName] AS [OriginalFileName], 
+      [vImportFileInfo].[ProcessingStatus] AS [ProcessingStatus], 
+      [vImportFileInfo].[FileType] AS [FileType], 
+      [vImportFileInfo].[Messages] AS [Messages]
+      FROM [tj].[vImportFileInfo] AS [vImportFileInfo]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
             <DefiningQuery>SELECT 
@@ -205,6 +222,24 @@
           <Property Name="IsSingleNameElection" Type="bit" />
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
           <Property Name="ListForPublic" Type="bit" />
+        </EntityType>
+        <EntityType Name="ImportFile">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UploadTime" Type="datetime2" Precision="2" />
+          <Property Name="ImportTime" Type="datetime2" Precision="2" />
+          <Property Name="FileSize" Type="int" StoreGeneratedPattern="Computed" />
+          <Property Name="HasContent" Type="bit" StoreGeneratedPattern="Computed" />
+          <Property Name="FirstDataRow" Type="int" />
+          <Property Name="ColumnsToRead" Type="varchar(max)" />
+          <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
+          <Property Name="FileType" Type="varchar" MaxLength="10" />
+          <Property Name="Messages" Type="varchar(max)" />
+          <Property Name="Contents" Type="image" />
         </EntityType>
         <EntityType Name="JoinElectionUser">
           <Key>
@@ -408,6 +443,26 @@
           <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vImportFileInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="vImportFileInfo">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UploadTime" Type="datetime2" Precision="2" />
+          <Property Name="ImportTime" Type="datetime2" Precision="2" />
+          <Property Name="FileSize" Type="int" />
+          <Property Name="HasContent" Type="bit" />
+          <Property Name="FirstDataRow" Type="int" />
+          <Property Name="ColumnsToRead" Type="varchar(max)" />
+          <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
+          <Property Name="FileType" Type="varchar" MaxLength="10" />
+          <Property Name="Messages" Type="varchar(max)" />
+        </EntityType>
+        <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="vLocationInfo">
@@ -580,6 +635,8 @@
           </FunctionImport>
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
           <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+          <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
+          <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
           </EntityContainer>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -951,6 +1008,41 @@
           <Property Type="Int32" Name="NumToElect" Nullable="false" />
           <Property Type="Int32" Name="NumInTie" Nullable="false" />
           <Property Type="String" Name="Comments" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ImportFile">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="DateTime" Name="UploadTime" />
+          <Property Type="DateTime" Name="ImportTime" />
+          <Property Type="Int32" Name="FileSize" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="Boolean" Name="HasContent" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="Int32" Name="FirstDataRow" />
+          <Property Type="String" Name="ColumnsToRead" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="OriginalFileName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Binary" Name="Contents" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="vImportFileInfo">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="DateTime" Name="UploadTime" />
+          <Property Type="DateTime" Name="ImportTime" />
+          <Property Type="Int32" Name="FileSize" />
+          <Property Type="Boolean" Name="HasContent" />
+          <Property Type="Int32" Name="FirstDataRow" />
+          <Property Type="String" Name="ColumnsToRead" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="OriginalFileName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1334,6 +1426,43 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ImportFiles">
+            <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
+              <MappingFragment StoreEntitySet="ImportFile">
+                <ScalarProperty Name="Contents" ColumnName="Contents" />
+                <ScalarProperty Name="Messages" ColumnName="Messages" />
+                <ScalarProperty Name="FileType" ColumnName="FileType" />
+                <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
+                <ScalarProperty Name="OriginalFileName" ColumnName="OriginalFileName" />
+                <ScalarProperty Name="ColumnsToRead" ColumnName="ColumnsToRead" />
+                <ScalarProperty Name="FirstDataRow" ColumnName="FirstDataRow" />
+                <ScalarProperty Name="HasContent" ColumnName="HasContent" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="ImportTime" ColumnName="ImportTime" />
+                <ScalarProperty Name="UploadTime" ColumnName="UploadTime" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vImportFileInfoes">
+            <EntityTypeMapping TypeName="TallyJ2Model.vImportFileInfo">
+              <MappingFragment StoreEntitySet="vImportFileInfo">
+                <ScalarProperty Name="Messages" ColumnName="Messages" />
+                <ScalarProperty Name="FileType" ColumnName="FileType" />
+                <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
+                <ScalarProperty Name="OriginalFileName" ColumnName="OriginalFileName" />
+                <ScalarProperty Name="ColumnsToRead" ColumnName="ColumnsToRead" />
+                <ScalarProperty Name="FirstDataRow" ColumnName="FirstDataRow" />
+                <ScalarProperty Name="HasContent" ColumnName="HasContent" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="ImportTime" ColumnName="ImportTime" />
+                <ScalarProperty Name="UploadTime" ColumnName="UploadTime" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1380,6 +1509,8 @@
         <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="12.75" PointY="8.75" Height="5.6340136718750067" />
         <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="3.375" PointY="13.75" Height="4.2879036458333317" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="5.375" PointY="13.75" Height="2.1725878906250031" />
+        <EntityTypeShape EntityType="TallyJ2Model.ImportFile" Width="1.5" PointX="7.375" PointY="13.75" Height="3.5186979166666674" />
+        <EntityTypeShape EntityType="TallyJ2Model.vImportFileInfo" Width="1.5" PointX="9.375" PointY="13.75" Height="3.3263964843750102" />
       </Diagram>
     </Diagrams>
   </Designer>

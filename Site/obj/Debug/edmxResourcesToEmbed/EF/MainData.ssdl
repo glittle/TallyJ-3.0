@@ -6,6 +6,7 @@
     <EntitySet Name="Ballot" EntityType="tallyj2dModel.Store.Ballot" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Computer" EntityType="tallyj2dModel.Store.Computer" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Election" EntityType="tallyj2dModel.Store.Election" store:Type="Tables" Schema="tj" />
+    <EntitySet Name="ImportFile" EntityType="tallyj2dModel.Store.ImportFile" store:Type="Tables" Schema="tj" />
     <EntitySet Name="JoinElectionUser" EntityType="tallyj2dModel.Store.JoinElectionUser" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Location" EntityType="tallyj2dModel.Store.Location" store:Type="Tables" Schema="tj" />
     <EntitySet Name="Message" EntityType="tallyj2dModel.Store.Message" store:Type="Tables" Schema="tj" />
@@ -47,6 +48,22 @@
       [vElectionListInfo].[ListedForPublicAsOf] AS [ListedForPublicAsOf], 
       [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode]
       FROM [tj].[vElectionListInfo] AS [vElectionListInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vImportFileInfo" EntityType="tallyj2dModel.Store.vImportFileInfo" store:Type="Views" store:Schema="tj" store:Name="vImportFileInfo">
+      <DefiningQuery>SELECT 
+      [vImportFileInfo].[_RowId] AS [_RowId], 
+      [vImportFileInfo].[ElectionGuid] AS [ElectionGuid], 
+      [vImportFileInfo].[UploadTime] AS [UploadTime], 
+      [vImportFileInfo].[ImportTime] AS [ImportTime], 
+      [vImportFileInfo].[FileSize] AS [FileSize], 
+      [vImportFileInfo].[HasContent] AS [HasContent], 
+      [vImportFileInfo].[FirstDataRow] AS [FirstDataRow], 
+      [vImportFileInfo].[ColumnsToRead] AS [ColumnsToRead], 
+      [vImportFileInfo].[OriginalFileName] AS [OriginalFileName], 
+      [vImportFileInfo].[ProcessingStatus] AS [ProcessingStatus], 
+      [vImportFileInfo].[FileType] AS [FileType], 
+      [vImportFileInfo].[Messages] AS [Messages]
+      FROM [tj].[vImportFileInfo] AS [vImportFileInfo]</DefiningQuery>
     </EntitySet>
     <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
       <DefiningQuery>SELECT 
@@ -200,6 +217,24 @@
     <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
     <Property Name="ListForPublic" Type="bit" />
+  </EntityType>
+  <EntityType Name="ImportFile">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UploadTime" Type="datetime2" Precision="2" />
+    <Property Name="ImportTime" Type="datetime2" Precision="2" />
+    <Property Name="FileSize" Type="int" StoreGeneratedPattern="Computed" />
+    <Property Name="HasContent" Type="bit" StoreGeneratedPattern="Computed" />
+    <Property Name="FirstDataRow" Type="int" />
+    <Property Name="ColumnsToRead" Type="varchar(max)" />
+    <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
+    <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
+    <Property Name="FileType" Type="varchar" MaxLength="10" />
+    <Property Name="Messages" Type="varchar(max)" />
+    <Property Name="Contents" Type="image" />
   </EntityType>
   <EntityType Name="JoinElectionUser">
     <Key>
@@ -392,6 +427,26 @@
     <Property Name="ListForPublic" Type="bit" />
     <Property Name="ListedForPublicAsOf" Type="datetime2" />
     <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <!--Errors Found During Generation:
+      warning 6002: The table/view 'TallyJ2d.tj.vImportFileInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+  <EntityType Name="vImportFileInfo">
+    <Key>
+      <PropertyRef Name="_RowId" />
+    </Key>
+    <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UploadTime" Type="datetime2" Precision="2" />
+    <Property Name="ImportTime" Type="datetime2" Precision="2" />
+    <Property Name="FileSize" Type="int" />
+    <Property Name="HasContent" Type="bit" />
+    <Property Name="FirstDataRow" Type="int" />
+    <Property Name="ColumnsToRead" Type="varchar(max)" />
+    <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
+    <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
+    <Property Name="FileType" Type="varchar" MaxLength="10" />
+    <Property Name="Messages" Type="varchar(max)" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.

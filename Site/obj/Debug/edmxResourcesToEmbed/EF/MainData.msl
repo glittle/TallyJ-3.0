@@ -377,5 +377,42 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="ImportFiles">
+      <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
+        <MappingFragment StoreEntitySet="ImportFile">
+          <ScalarProperty Name="Contents" ColumnName="Contents" />
+          <ScalarProperty Name="Messages" ColumnName="Messages" />
+          <ScalarProperty Name="FileType" ColumnName="FileType" />
+          <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
+          <ScalarProperty Name="OriginalFileName" ColumnName="OriginalFileName" />
+          <ScalarProperty Name="ColumnsToRead" ColumnName="ColumnsToRead" />
+          <ScalarProperty Name="FirstDataRow" ColumnName="FirstDataRow" />
+          <ScalarProperty Name="HasContent" ColumnName="HasContent" />
+          <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+          <ScalarProperty Name="ImportTime" ColumnName="ImportTime" />
+          <ScalarProperty Name="UploadTime" ColumnName="UploadTime" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vImportFileInfoes">
+      <EntityTypeMapping TypeName="TallyJ2Model.vImportFileInfo">
+        <MappingFragment StoreEntitySet="vImportFileInfo">
+          <ScalarProperty Name="Messages" ColumnName="Messages" />
+          <ScalarProperty Name="FileType" ColumnName="FileType" />
+          <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
+          <ScalarProperty Name="OriginalFileName" ColumnName="OriginalFileName" />
+          <ScalarProperty Name="ColumnsToRead" ColumnName="ColumnsToRead" />
+          <ScalarProperty Name="FirstDataRow" ColumnName="FirstDataRow" />
+          <ScalarProperty Name="HasContent" ColumnName="HasContent" />
+          <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+          <ScalarProperty Name="ImportTime" ColumnName="ImportTime" />
+          <ScalarProperty Name="UploadTime" ColumnName="UploadTime" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

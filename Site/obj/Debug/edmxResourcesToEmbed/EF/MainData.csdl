@@ -40,6 +40,8 @@
     </FunctionImport>
     <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
     <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+    <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
+    <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -411,5 +413,40 @@
     <Property Type="Int32" Name="NumToElect" Nullable="false" />
     <Property Type="Int32" Name="NumInTie" Nullable="false" />
     <Property Type="String" Name="Comments" MaxLength="50" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="ImportFile">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="DateTime" Name="UploadTime" />
+    <Property Type="DateTime" Name="ImportTime" />
+    <Property Type="Int32" Name="FileSize" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Boolean" Name="HasContent" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Int32" Name="FirstDataRow" />
+    <Property Type="String" Name="ColumnsToRead" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="OriginalFileName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Type="Binary" Name="Contents" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="vImportFileInfo">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="DateTime" Name="UploadTime" />
+    <Property Type="DateTime" Name="ImportTime" />
+    <Property Type="Int32" Name="FileSize" />
+    <Property Type="Boolean" Name="HasContent" />
+    <Property Type="Int32" Name="FirstDataRow" />
+    <Property Type="String" Name="ColumnsToRead" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="OriginalFileName" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
   </EntityType>
 </Schema>

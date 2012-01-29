@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Mvc;
+//using Krystalware.SlickUpload;
+//using Krystalware.SlickUpload.Storage.Streams;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -32,9 +35,60 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public ActionResult ImportExport()
+    public ActionResult ImportExport(ImportExportModel importExportModel)
     {
-      return View(new ImportExportModel());
+      if (importExportModel == null)
+      {
+        importExportModel = new ImportExportModel();
+      }
+
+      return View(importExportModel);
+    }
+
+
+    [ForAuthenticatedTeller]
+    public string Upload()
+    {
+      var model = new ImportExportModel();
+      
+      model.ProcessUpload();
+
+      return "{success:true}";
+    }
+
+    //[ForAuthenticatedTeller]
+    //public ActionResult UploadResult(ImportExportModel model, UploadSession session)
+    //{
+    //  model.UploadSession = session;
+
+    //  return View("ImportExport", model);
+    //}
+
+    [ForAuthenticatedTeller]
+    public ActionResult Download(int id)
+    {
+      var fullFile = Db.ImportFiles.SingleOrDefault(f => f.ElectionGuid == UserSession.CurrentElectionGuid && f.C_RowId == id);
+
+      if (fullFile != null)
+      {
+        return File(fullFile.Contents, "application/octet-stream", fullFile.OriginalFileName);
+      }
+      return null;
+    }
+
+    [ForAuthenticatedTeller]
+    public ActionResult DeleteFile(int id)
+    {
+      var importExportModel = new ImportExportModel();
+      
+      return importExportModel.DeleteFile(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public ActionResult GetUploadlist()
+    {
+      var importExportModel = new ImportExportModel();
+      return importExportModel.GetUploadList();
     }
 
     public JsonResult SavePerson(Person person)
@@ -60,5 +114,5 @@ namespace TallyJ.Controllers
       new PeopleModel().CleanAllPersonRecordsBeforeStarting();
       return "Done".AsJsonResult();
     }
-  }
+ }
 }

@@ -46,6 +46,9 @@
     <Reference Include="FluentSecurity">
       <HintPath>..\packages\FluentSecurity.1.3.0\lib\FluentSecurity.dll</HintPath>
     </Reference>
+    <Reference Include="Krystalware.SlickUpload">
+      <HintPath>..\packages\Other\Krystalware.SlickUpload.dll</HintPath>
+    </Reference>
     <Reference Include="le_nlog">
       <HintPath>..\packages\le_nlog.1.4\lib\4.0\le_nlog.dll</HintPath>
     </Reference>
@@ -199,6 +202,9 @@
     <Compile Include="EF\Election.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\ImportFile.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\JoinElectionUser.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -241,6 +247,9 @@
     <Compile Include="EF\vElectionListInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\vImportFileInfo.cs">
+      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\vLocationInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -255,6 +264,7 @@
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
     <Compile Include="Models\ResultHelper.cs" />
+    <Compile Include="Models\UploadProvider.cs" />
     <Compile Include="Models\VoteAnalyzer.cs" />
     <Compile Include="Models\VoteHelper.cs" />
     <Compile Include="Models\BallotModelCore.cs" />
@@ -388,6 +398,7 @@
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Scripts\fileuploader.js" />
     <Content Include="Scripts\highcharts\highcharts.js" />
     <Content Include="Scripts\highcharts\themes\dark-blue.js" />
     <Content Include="Scripts\highcharts\themes\dark-green.js" />
@@ -449,6 +460,7 @@
     <Content Include="Views\Setup\ImportExport.cshtml.js">
       <DependentUpon>ImportExport.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\loading.gif" />
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml</DependentUpon>
     </Content>

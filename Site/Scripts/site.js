@@ -310,7 +310,7 @@ function ShowStatusFailed(msg, keepTime) {
         if (msg.status === 200 || msg.status === 406) {
             text = msg.responseText;
         } else if (msg.status === 0 && msg.statusText == 'error') {
-            text = 'The browser is busy. Please try again in a second or two.';
+            text = 'A process is delayed. Please wait a few seconds...';
         } else if (msg.status === 503) {
             top.location.href = top.location.href;
             return '';
@@ -543,9 +543,12 @@ function GetValue(sNum) {
     return nNum;
 }
 
-function FormatDate(date, format, forDisplayOnly) {
+function FormatDate(date, format, forDisplayOnly, includeHrMin) {
     // MMM = JAN
     // MMMM = JANUARY
+    if (('' + date).substring(0, 5) == '/Date') {
+        date = date.parseJsonDate();
+    }
     if (date == null || isNaN(date) || date == 'NaN' || date === '01/01/0001' || date === '') {
         return '';
     }
@@ -564,33 +567,61 @@ function FormatDate(date, format, forDisplayOnly) {
     var dayValue = mydate.getDate();
     var monthValue = mydate.getMonth();
     var yearValue = mydate.getFullYear();
-
+    var hourValue = mydate.getHours();
+    var minuteValue = mydate.getMinutes();
+    var result = '';
+    
     switch (format) {
         case 'MMM D, YYYY':
-            return months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
+            result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
+            break;
+
         case 'D MMM YYYY':
             var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
             if (site.languageCode == 'FR' && forDisplayOnly && +dayValue == 1) {
                 returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
             }
-            return returnVal;
+            result = returnVal;
+            break;
+
         case 'DDD, D MMM YYYY':
-            return days[mydate.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+            result = days[mydate.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+            break;
+
         case 'YYYY-MM-DD':
             var monthNum = monthValue + 1;
-            return yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
+            result = yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
+            break;
+
         case 'MMM YYYY':
-            return months[monthValue].substring(0, 3) + ' ' + yearValue;
+            result = months[monthValue].substring(0, 3) + ' ' + yearValue;
+            break;
+
         case 'MMMM YYYY':
-            return months[monthValue] + ' ' + yearValue;
+            result = months[monthValue] + ' ' + yearValue;
+            break;
+
         case 'MM/DD/YYYY':
             var monthval = monthValue + 1;
             var monthStr = ('0' + monthval).slice(-2);
             var dayStr = ('0' + dayValue).slice(-2);
-            return monthStr + '/' + dayStr + '/' + yearValue;
+            result = monthStr + '/' + dayStr + '/' + yearValue;
+            break;
+
+        default:
+            result = date;
+            break;
     }
 
-    return date;
+    if (includeHrMin) {
+        result += ' {0}:{1}'.filledWith(hourValue.as2digitString(), minuteValue.as2digitString());
+    }
+
+    return result;
+}
+
+Number.prototype.as2digitString = function () {
+    return ('00' + this).substr(-2);
 }
 
 String.prototype.filledWith = function () {
