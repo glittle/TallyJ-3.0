@@ -29,11 +29,16 @@ namespace TallyJ.Models
     {
       foreach (var person in Db.People)
       {
-        ResetCombinedInfos(person);
-        ClearVotingInfo(person);
-        ClearEligibilityRestrictions(person);
+        ResetAllInfo(person);
       }
       Db.SaveChanges();
+    }
+
+    public void ResetAllInfo(Person person)
+    {
+      ResetCombinedInfos(person);
+      ClearVotingInfo(person);
+      ClearEligibilityRestrictions(person);
     }
 
     /// <Summary>Only to be done before an election</Summary>

@@ -8,6 +8,7 @@ using LumenWorks.Framework.IO.Csv;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using TallyJ.Models.Helper;
 
 namespace TallyJ.Models
 {
@@ -265,6 +266,7 @@ namespace TallyJ.Models
       }
 
       var currentPeople = Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
+      var personModel = new PeopleModel();
 
       var rowsProcessed = 0;
       var rowsSkipped = 0;
@@ -331,6 +333,8 @@ namespace TallyJ.Models
           //get ready for DB
           person.ElectionGuid = UserSession.CurrentElectionGuid;
           person.PersonGuid = Guid.NewGuid();
+
+          personModel.ResetAllInfo(person);
 
           Db.People.Add(person);
 

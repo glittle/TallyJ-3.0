@@ -1,6 +1,11 @@
 _ReSharper.Site/
 Site.csproj.dotsettings.user
-bin/
+Site/bin/*/*
+Site/bin/*
+Site/obj/*/*
+Site/obj/*
 *.user
 Site.sui
 *.vsmdi
+Tests/bin/*
+Tests/obj/*
