@@ -64,7 +64,7 @@
       <PropertyRef Name="C_RowId" />
     </Key>
     <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="DateTime" Name="AsOf" Nullable="false" />
+    <Property Type="DateTime" Name="AsOf" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
     <Property Type="Guid" Name="LocationGuid" />
     <Property Type="String" Name="ComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
@@ -431,6 +431,7 @@
     <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
     <Property Type="Binary" Name="Contents" MaxLength="Max" FixedLength="false" />
+    <Property Type="Int32" Name="CodePage" />
   </EntityType>
   <EntityType Name="vImportFileInfo">
     <Key>
@@ -448,5 +449,6 @@
     <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
     <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Type="Int32" Name="CodePage" />
   </EntityType>
 </Schema>

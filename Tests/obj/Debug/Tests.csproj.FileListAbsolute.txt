@@ -39,3 +39,5 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\ResolveAssemblyRefere
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Debug\Tests.pdb
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\Krystalware.SlickUpload.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\LumenWorks.Framework.IO.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Debug\LumenWorks.Framework.IO.xml

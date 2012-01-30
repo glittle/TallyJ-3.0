@@ -68,3 +68,9 @@ tr.electionDetailB TD
     display: inline-block;
     cursor: pointer;
 }
+
+.More.Misc {
+    padding: 10px 10px 20px 20px;
+    margin-left: 110px;
+    width: 272px;
+}

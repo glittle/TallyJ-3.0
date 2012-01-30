@@ -47,13 +47,17 @@ namespace TallyJ.Controllers
 
 
     [ForAuthenticatedTeller]
-    public string Upload()
+    public JsonResult Upload()
     {
       var model = new ImportExportModel();
-      
-      model.ProcessUpload();
+      int rowId;
+      var messages = model.ProcessUpload(out rowId);
 
-      return "{success:true}";
+      return new { 
+        success = messages.HasNoContent(),
+        rowId, 
+        messages
+      }.AsJsonResult();
     }
 
     //[ForAuthenticatedTeller]
@@ -114,5 +118,34 @@ namespace TallyJ.Controllers
       new PeopleModel().CleanAllPersonRecordsBeforeStarting();
       return "Done".AsJsonResult();
     }
- }
+
+    [ForAuthenticatedTeller]
+    public JsonResult ReadFields(int id)
+    {
+      return new ImportExportModel().ReadFields(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult CopyMap(int from, int to)
+    {
+      return new ImportExportModel().CopyMap(from, to);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult Import(int id)
+    {
+      return new ImportExportModel().Import(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult SaveMapping(int id, string mapping)
+    {
+      return new ImportExportModel().SaveMapping(id, mapping);
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult FileCodePage(int id, int cp)
+    {
+      return new ImportExportModel().SaveCodePage(id, cp);
+    }
+  }
 }

@@ -380,6 +380,7 @@
     <EntitySetMapping Name="ImportFiles">
       <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
         <MappingFragment StoreEntitySet="ImportFile">
+          <ScalarProperty Name="CodePage" ColumnName="CodePage" />
           <ScalarProperty Name="Contents" ColumnName="Contents" />
           <ScalarProperty Name="Messages" ColumnName="Messages" />
           <ScalarProperty Name="FileType" ColumnName="FileType" />
@@ -399,6 +400,7 @@
     <EntitySetMapping Name="vImportFileInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vImportFileInfo">
         <MappingFragment StoreEntitySet="vImportFileInfo">
+          <ScalarProperty Name="CodePage" ColumnName="CodePage" />
           <ScalarProperty Name="Messages" ColumnName="Messages" />
           <ScalarProperty Name="FileType" ColumnName="FileType" />
           <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />

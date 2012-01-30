@@ -51,15 +51,16 @@
             Variation
         </th>
         <td>
-          <select id="ddlMode" data-name="ElectionMode">
-          @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
+            <select id="ddlMode" data-name="ElectionMode">
+                @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
                                             {
                                               {"B"," id=modeB"}
                                             })
-@*                <option value="N">Normal Election</option>
+                @*                <option value="N">Normal Election</option>
                 <option value="T">Tie-Break</option>
                 <option value="B" id="modeB">By-election</option>
-*@            </select>
+*@
+            </select>
         </td>
     </tr>
     <tr class="electionDetailT">
@@ -100,27 +101,31 @@
             </select>
         </td>
     </tr>
-  <tr class="electionDetailB">
-    <th>
-    </th>
-    <td>
-      <button id="btnResetPeople" type="button">Update all Person records</button>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      <label for="chkList">Show on TallyJ welcome screen</label>
-    </th>
-    <td>
-        <input type="checkbox" id="chkList" data-name="ListForPublic" />
-    </td>
-  </tr>
-  <tr>
-    <th>"Secret Code" for Teller access</th>
-    <td>
-        <input type="text" data-name="ElectionPasscode" maxlength="50" />
-    </td>
-  </tr>
+    <tr class="electionDetailB">
+        <th>
+        </th>
+        <td>
+            <button id="btnResetPeople" type="button">
+                Update all Person records</button>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <label for="chkList">
+                Show on TallyJ welcome screen</label>
+        </th>
+        <td>
+            <input type="checkbox" id="chkList" data-name="ListForPublic" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            "Secret Code" for Teller access
+        </th>
+        <td>
+            <input type="text" data-name="ElectionPasscode" maxlength="50" />
+        </td>
+    </tr>
 </table>
 <div class="More">
     <button type="button" id="btnSave">
@@ -129,7 +134,16 @@
 <div class="More Locations">
     <h3>
         Locations</h3>
-  <div id="locationList">
-  </div>
-  <button type="button" id="btnAddLocation">Add Location</button>
+    <div id="locationList">
+    </div>
+    <button type="button" id="btnAddLocation">
+        Add Location</button>
+</div>
+<div class="More Misc">
+    <p>
+        To re-clean the data before this election, removing voting information (who can
+        vote, where they voted, who is ineligible):
+        <button type="button" id="btnResetList">
+            Reset voting information</button>
+    </p>
 </div>

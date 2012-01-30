@@ -67,7 +67,8 @@
       [vImportFileInfo].[OriginalFileName] AS [OriginalFileName], 
       [vImportFileInfo].[ProcessingStatus] AS [ProcessingStatus], 
       [vImportFileInfo].[FileType] AS [FileType], 
-      [vImportFileInfo].[Messages] AS [Messages]
+      [vImportFileInfo].[Messages] AS [Messages], 
+      [vImportFileInfo].[CodePage] AS [CodePage]
       FROM [tj].[vImportFileInfo] AS [vImportFileInfo]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
@@ -159,7 +160,7 @@
             <PropertyRef Name="_RowId" />
           </Key>
           <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="AsOf" Type="datetime" Nullable="false" />
+          <Property Name="AsOf" Type="datetime2" Nullable="false" Precision="2" StoreGeneratedPattern="Computed" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
           <Property Name="LocationGuid" Type="uniqueidentifier" />
           <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
@@ -234,10 +235,11 @@
           <Property Name="FileSize" Type="int" StoreGeneratedPattern="Computed" />
           <Property Name="HasContent" Type="bit" StoreGeneratedPattern="Computed" />
           <Property Name="FirstDataRow" Type="int" />
-          <Property Name="ColumnsToRead" Type="varchar(max)" />
+          <Property Name="ColumnsToRead" Type="nvarchar(max)" />
           <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
           <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
           <Property Name="FileType" Type="varchar" MaxLength="10" />
+          <Property Name="CodePage" Type="int" />
           <Property Name="Messages" Type="varchar(max)" />
           <Property Name="Contents" Type="image" />
         </EntityType>
@@ -448,6 +450,7 @@
         <EntityType Name="vImportFileInfo">
           <Key>
             <PropertyRef Name="_RowId" />
+            
           </Key>
           <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
@@ -456,11 +459,12 @@
           <Property Name="FileSize" Type="int" />
           <Property Name="HasContent" Type="bit" />
           <Property Name="FirstDataRow" Type="int" />
-          <Property Name="ColumnsToRead" Type="varchar(max)" />
+          <Property Name="ColumnsToRead" Type="nvarchar(max)" />
           <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
           <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
           <Property Name="FileType" Type="varchar" MaxLength="10" />
           <Property Name="Messages" Type="varchar(max)" />
+          <Property Name="CodePage" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -659,7 +663,7 @@
             <PropertyRef Name="C_RowId" />
           </Key>
           <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="DateTime" Name="AsOf" Nullable="false" />
+          <Property Type="DateTime" Name="AsOf" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
           <Property Type="Guid" Name="LocationGuid" />
           <Property Type="String" Name="ComputerCode" MaxLength="2" FixedLength="false" Unicode="false" />
@@ -1026,6 +1030,7 @@
           <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="Binary" Name="Contents" MaxLength="Max" FixedLength="false" />
+          <Property Type="Int32" Name="CodePage" />
         </EntityType>
         <EntityType Name="vImportFileInfo">
           <Key>
@@ -1043,6 +1048,7 @@
           <Property Type="String" Name="ProcessingStatus" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="FileType" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="CodePage" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1429,6 +1435,7 @@
           <EntitySetMapping Name="ImportFiles">
             <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
               <MappingFragment StoreEntitySet="ImportFile">
+                <ScalarProperty Name="CodePage" ColumnName="CodePage" />
                 <ScalarProperty Name="Contents" ColumnName="Contents" />
                 <ScalarProperty Name="Messages" ColumnName="Messages" />
                 <ScalarProperty Name="FileType" ColumnName="FileType" />
@@ -1448,6 +1455,7 @@
           <EntitySetMapping Name="vImportFileInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vImportFileInfo">
               <MappingFragment StoreEntitySet="vImportFileInfo">
+                <ScalarProperty Name="CodePage" ColumnName="CodePage" />
                 <ScalarProperty Name="Messages" ColumnName="Messages" />
                 <ScalarProperty Name="FileType" ColumnName="FileType" />
                 <ScalarProperty Name="ProcessingStatus" ColumnName="ProcessingStatus" />
@@ -1484,7 +1492,7 @@
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram Name="MainData" ZoomLevel="100">
+      <Diagram Name="MainData" ZoomLevel="114">
         <EntityTypeShape EntityType="TallyJ2Model.User" Width="1.5" PointX="0.75" PointY="1.125" Height="2.1725878906250005" />
         <EntityTypeShape EntityType="TallyJ2Model.C_Log" Width="1.5" PointX="0.75" PointY="4.75" Height="2.1725878906250031" />
         <EntityTypeShape EntityType="TallyJ2Model.Ballot" Width="1.5" PointX="2.75" PointY="4.75" Height="2.9417936197916674" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
@@ -328,6 +329,14 @@ namespace TallyJ.Code
       return input == 0 ? defaultValue : input;
     }
 
+    /// <summary>
+    ///   If input is 0, use <paramref name = "defaultValue" />
+    /// </summary>
+    public static int DefaultTo(this int? input, int defaultValue)
+    {
+      return (input.HasValue && input.Value == 0) ? input.Value : defaultValue;
+    }
+
 
     public static string QuotedForJavascript(this string input)
     {
@@ -402,5 +411,68 @@ namespace TallyJ.Code
                    };
       return list.JoinedAsString(sep, true);
     }
+
+    public static string AsString(this byte[] input)
+    {
+      return AsString(input, Encoding.Default);
+    }
+
+    /// <Summary>Copy byte array using this codepage.</Summary>
+    /// <remarks>See http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx for values</remarks>
+    public static string AsString(this byte[] input, int codePage)
+    {
+      return Encoding.GetEncoding(codePage).GetString(input);
+    }
+    public static string AsString(this byte[] input, int? codePage)
+    {
+      return Encoding.GetEncoding(codePage.DefaultTo(1252)).GetString(input);
+    }
+
+    public static string AsString(this byte[] input, Encoding encoding)
+    {
+      return encoding.GetString(input);
+    }
+
+    /// <summary>
+    ///   Returns <paramref name = "pluralOrZero" /> if input is not 1, empty string if it is.
+    /// </summary>
+    /// <param name = "input"></param>
+    /// <param name = "pluralOrZero"></param>
+    public static string Plural(this int input, string pluralOrZero = "s")
+    {
+      return Plural(input, pluralOrZero, string.Empty);
+    }
+
+    /// <summary>
+    ///   Returns <paramref name = "pluralOrZero" /> if input is not 1, <param name = "single" /> if it is.
+    /// </summary>
+    /// <param name = "input"></param>
+    /// <param name = "pluralOrZero"></param>
+    /// <param name="single"></param>
+    public static string Plural(this int input, string pluralOrZero, string single)
+    {
+      return Plural(input, pluralOrZero, single, pluralOrZero);
+    }
+
+    /// <summary>
+    ///   Returns <paramref name = "plural" /> if input is > 1, <paramref name = "single" /> if it is 1, <paramref name = "zero" /> if it is 0.
+    /// </summary>
+    /// <param name = "input"></param>
+    /// <param name = "plural"></param>
+    /// <param name = "single"></param>
+    /// <param name = "zero"></param>
+    public static string Plural(this int input, string plural, string single, string zero)
+    {
+      switch (input)
+      {
+        case 0:
+          return zero;
+        case 1:
+          return single;
+        default:
+          return plural;
+      }
+    }
+
   }
 }

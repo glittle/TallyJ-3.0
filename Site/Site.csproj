@@ -151,6 +151,7 @@
     <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
     <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
+    <Compile Include="Code\LogHelper.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
     <Compile Include="Code\RequireLocationPolicy.cs" />

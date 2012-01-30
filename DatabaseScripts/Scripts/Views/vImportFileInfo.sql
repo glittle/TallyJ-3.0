@@ -25,6 +25,7 @@ SELECT [_RowId]
       ,[ProcessingStatus]
       ,[FileType]
       ,[Messages]
+      ,[CodePage]
       --,[Contents]
   FROM ImportFile
 

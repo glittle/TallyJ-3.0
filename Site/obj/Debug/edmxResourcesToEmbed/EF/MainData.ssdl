@@ -62,7 +62,8 @@
       [vImportFileInfo].[OriginalFileName] AS [OriginalFileName], 
       [vImportFileInfo].[ProcessingStatus] AS [ProcessingStatus], 
       [vImportFileInfo].[FileType] AS [FileType], 
-      [vImportFileInfo].[Messages] AS [Messages]
+      [vImportFileInfo].[Messages] AS [Messages], 
+      [vImportFileInfo].[CodePage] AS [CodePage]
       FROM [tj].[vImportFileInfo] AS [vImportFileInfo]</DefiningQuery>
     </EntitySet>
     <EntitySet Name="vLocationInfo" EntityType="tallyj2dModel.Store.vLocationInfo" store:Type="Views" store:Schema="tj" store:Name="vLocationInfo">
@@ -154,7 +155,7 @@
       <PropertyRef Name="_RowId" />
     </Key>
     <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-    <Property Name="AsOf" Type="datetime" Nullable="false" />
+    <Property Name="AsOf" Type="datetime2" Nullable="false" Precision="2" StoreGeneratedPattern="Computed" />
     <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="LocationGuid" Type="uniqueidentifier" />
     <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
@@ -229,10 +230,11 @@
     <Property Name="FileSize" Type="int" StoreGeneratedPattern="Computed" />
     <Property Name="HasContent" Type="bit" StoreGeneratedPattern="Computed" />
     <Property Name="FirstDataRow" Type="int" />
-    <Property Name="ColumnsToRead" Type="varchar(max)" />
+    <Property Name="ColumnsToRead" Type="nvarchar(max)" />
     <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
     <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
     <Property Name="FileType" Type="varchar" MaxLength="10" />
+    <Property Name="CodePage" Type="int" />
     <Property Name="Messages" Type="varchar(max)" />
     <Property Name="Contents" Type="image" />
   </EntityType>
@@ -442,11 +444,12 @@
     <Property Name="FileSize" Type="int" />
     <Property Name="HasContent" Type="bit" />
     <Property Name="FirstDataRow" Type="int" />
-    <Property Name="ColumnsToRead" Type="varchar(max)" />
+    <Property Name="ColumnsToRead" Type="nvarchar(max)" />
     <Property Name="OriginalFileName" Type="nvarchar" MaxLength="50" />
     <Property Name="ProcessingStatus" Type="varchar" MaxLength="20" />
     <Property Name="FileType" Type="varchar" MaxLength="10" />
     <Property Name="Messages" Type="varchar(max)" />
+    <Property Name="CodePage" Type="int" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vLocationInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.

@@ -24,6 +24,14 @@ var SetupIndexPage = function () {
             dateFormat: 'd MM yy'
         });
 
+
+        $('#btnResetList').click(function () {
+            ShowStatusDisplay('Resetting...');
+            CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null, function (info) {
+                ResetStatusDisplay();
+            });
+        });
+        
         applyValues(publicInterface.Election);
         showLocations(publicInterface.Locations);
 

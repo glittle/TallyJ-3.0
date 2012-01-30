@@ -300,7 +300,9 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
 
 function ShowStatusFailed(msg, keepTime) {
     ResetStatusDisplay();
-
+    var delayBeforeShow = 0;
+    var msgShown = false;
+    
     if (typeof keepTime == 'undefined') keepTime = 600 * 1000; // 10 minutes
 
     var text;
@@ -310,7 +312,9 @@ function ShowStatusFailed(msg, keepTime) {
         if (msg.status === 200 || msg.status === 406) {
             text = msg.responseText;
         } else if (msg.status === 0 && msg.statusText == 'error') {
-            text = 'A process is delayed. Please wait a few seconds...';
+            text = 'Please wait...';
+            ShowStatusDisplay(text, 1000, keepTime, false, false);
+            msgShown = true;
         } else if (msg.status === 503) {
             top.location.href = top.location.href;
             return '';
@@ -328,8 +332,10 @@ function ShowStatusFailed(msg, keepTime) {
         text = 'Error';
     }
 
-    ShowStatusDisplay(text, 0, keepTime, true);
-
+    if (!msgShown) {
+        ShowStatusDisplay(text, delayBeforeShow, keepTime, true);
+    }
+    
     return text;
 }
 
@@ -803,3 +809,14 @@ var adjustElection = function (election) {
     return election;
 };
 
+function ExpandName(s) {
+    var result = [];
+    for (var i = 0, len = s.length; i < len; i++) {
+        var ch = s[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            result.push(' ');
+        }
+        result.push(ch);
+    }
+    return result.join('');
+}
