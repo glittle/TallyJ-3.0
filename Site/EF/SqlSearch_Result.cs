@@ -16,7 +16,7 @@ namespace TallyJ.EF
         public Nullable<int> PersonId { get; set; }
         public string FullName { get; set; }
         public Nullable<int> Ineligible { get; set; }
-        public int SoundMatch { get; set; }
+        public Nullable<int> MatchType { get; set; }
         public int BestMatch { get; set; }
     }
 }

@@ -16,6 +16,7 @@ as
        v._RowId [VoteId]
 	 , v.StatusCode [VoteStatusCode]
 	 , v.SingleNameElectionCount
+	 , e.IsSingleNameElection
 	 , v.PositionOnBallot
 	 , v.InvalidReasonGuid [VoteInvalidReasonGuid]
 	 , vr._RowId [VoteInvalidReasonId]
@@ -40,6 +41,7 @@ as
   from tj.Vote v
 	join tj.Ballot b on b.BallotGuid = v.BallotGuid
 	join tj.Location l on l.LocationGuid = b.LocationGuid
+	join tj.Election e on e.ElectionGuid = l.ElectionGuid
     left join tj.Person p on p.PersonGuid = v.PersonGuid
 	left join tj.Result r on r.PersonGuid = p.PersonGuid and r.ElectionGuid = l.ElectionGuid
 	left join tj.Reasons pr on pr.ReasonGuid = p.IneligibleReasonGuid

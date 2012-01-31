@@ -112,6 +112,7 @@
       [vVoteInfo].[VoteId] AS [VoteId], 
       [vVoteInfo].[VoteStatusCode] AS [VoteStatusCode], 
       [vVoteInfo].[SingleNameElectionCount] AS [SingleNameElectionCount], 
+      [vVoteInfo].[IsSingleNameElection] AS [IsSingleNameElection], 
       [vVoteInfo].[PositionOnBallot] AS [PositionOnBallot], 
       [vVoteInfo].[VoteInvalidReasonGuid] AS [VoteInvalidReasonGuid], 
       [vVoteInfo].[VoteInvalidReasonId] AS [VoteInvalidReasonId], 
@@ -518,6 +519,7 @@
     <Property Name="VoteId" Type="int" Nullable="false" />
     <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="SingleNameElectionCount" Type="int" />
+    <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="PositionOnBallot" Type="int" Nullable="false" />
     <Property Name="VoteInvalidReasonGuid" Type="uniqueidentifier" />
     <Property Name="VoteInvalidReasonId" Type="int" />

@@ -10,8 +10,7 @@
 .nameList
 {
     margin: 0 0 10px 0;
-    min-height: 150px;
-    height: 150px;
+    height: 400px;
     width: 380px;
     border: solid 1px #999;
     padding: 4px;
@@ -40,8 +39,10 @@
     background-color: #c1f1b4;
     border-color: #999;
 }
-.nameList i.First
-{
+.nameList .InvalidName { text-decoration: line-through; }
+.nameList .Fuzzy{ font-style: italic; }
+.nameList .First {
+    padding: 3px 0 3px 0; 
     border-top: 3px double #ccc;
     width: 100%;
     display: block;
@@ -52,22 +53,23 @@
 {
     overflow: auto;
     padding: 2px;
+    height: 250px;
 }
-.ballotList li
+.ballotList div
 {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-.ballotList li span {
+.ballotList div span {
     color: #666;
 }
-.ballotList li:hover
+.ballotList div:hover
 {
     border-color: #ddd;
 }
-.ballotList li.selected
+.ballotList div.selected
 {
     background-color: #c1f1b4;
     border-color: #999;
@@ -276,4 +278,7 @@ div.heading {
 .ballotList li:hover
 {
     background-color: #cfc;
+}
+#tabBallots {
+    background-color: #efeeef;
 }

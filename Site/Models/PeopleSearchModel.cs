@@ -27,7 +27,7 @@ namespace TallyJ.Models
 
     public JsonResult Search(string nameToFind, bool includeMatches)
     {
-      const int max = 19;
+      const int max = 45;
 
       var parts = nameToFind.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
@@ -43,8 +43,8 @@ namespace TallyJ.Models
       }
 
       var moreExactMatchesFound = new ObjectParameter("MoreExactMatchesFound", typeof(bool));
-     
-      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, metaphone1, term2, metaphone2, max,
+
+      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
                                  moreExactMatchesFound, null);
 
       var moreFound = moreExactMatchesFound.Value != null && (bool)moreExactMatchesFound.Value;
@@ -58,7 +58,7 @@ namespace TallyJ.Models
             Name = p.FullName,
             p.Ineligible,
             BestMatch = p.BestMatch == 1,
-            SoundMatch = p.SoundMatch == 1
+            p.MatchType
           }),
         MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
       }

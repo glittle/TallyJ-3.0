@@ -34,7 +34,6 @@ var PeopleHelper = function (url) {
         var results = [];
         var searchParts = [];
         var parts = searchPhrases.split(' ');
-        var foundFuzzy = false;
         $.each(parts, function (i, part) {
             if (part) {
                 try {
@@ -44,27 +43,26 @@ var PeopleHelper = function (url) {
                 }
             }
         });
-        
+
         if (info && typeof info.People != 'undefined') {
+            var matchType = 0;
             $.each(info.People, function (i, personInfo) {
                 var foundHit = false;
+                if (matchType == 0) matchType = personInfo.MatchType;
                 var classes = [];
-                if (personInfo.SoundMatch) {
-                    personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
-                    foundFuzzy = true;
+                if (personInfo.MatchType != matchType) {
+                    matchType = personInfo.MatchType;
+                    classes.push('First');
                 }
-                else {
+                if (personInfo.MatchType == 2) {
+                    classes.push('Fuzzy');
+                } else {
                     $.each(searchParts, function (k, searchPart) {
                         personInfo.Name = personInfo.Name.replace(searchPart, function () {
                             return '<b>' + arguments[0] + '</b>';
                         });
                     });
                 }
-                //            if (!foundHit) {
-                //                // must be soundex
-                //                personInfo.Name = '<i{0}>'.filledWith(foundFuzzy ? '' : ' class=First') + personInfo.Name + '</i>';
-                //                foundFuzzy = true;
-                //            }
 
                 if (usedIds && $.inArray(personInfo.Id, usedIds) != -1) {
                     classes.push('InUse');

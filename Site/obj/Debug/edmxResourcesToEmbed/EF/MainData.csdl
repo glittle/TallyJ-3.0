@@ -28,6 +28,10 @@
     <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
     <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
     <FunctionImport Name="CurrentRowVersion" ReturnType="Collection(Int64)" />
+    <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
+    <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+    <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
+    <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
     <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
       <Parameter Name="Election" Mode="In" Type="Guid" />
       <Parameter Name="Term1" Mode="In" Type="String" />
@@ -38,10 +42,6 @@
       <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
       <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
     </FunctionImport>
-    <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
-    <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
-    <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
-    <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -369,14 +369,8 @@
     <Property Type="Int32" Name="LocationId" Nullable="false" />
     <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="Boolean" Name="IsSingleNameElection" />
   </EntityType>
-  <ComplexType Name="SqlSearch_Result">
-    <Property Type="Int32" Name="PersonId" Nullable="true" />
-    <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
-    <Property Type="Int32" Name="Ineligible" Nullable="true" />
-    <Property Type="Int32" Name="SoundMatch" Nullable="false" />
-    <Property Type="Int32" Name="BestMatch" Nullable="false" />
-  </ComplexType>
   <EntityType Name="vLocationInfo">
     <Key>
       <PropertyRef Name="C_RowId" />
@@ -451,4 +445,11 @@
     <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
     <Property Type="Int32" Name="CodePage" />
   </EntityType>
+  <ComplexType Name="SqlSearch_Result">
+    <Property Type="Int32" Name="PersonId" Nullable="true" />
+    <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
+    <Property Type="Int32" Name="Ineligible" Nullable="true" />
+    <Property Type="Int32" Name="MatchType" Nullable="true" />
+    <Property Type="Int32" Name="BestMatch" Nullable="false" />
+  </ComplexType>
 </Schema>

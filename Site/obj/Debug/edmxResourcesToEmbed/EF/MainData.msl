@@ -303,6 +303,7 @@
     <EntitySetMapping Name="vVoteInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
         <MappingFragment StoreEntitySet="vVoteInfo">
+          <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
           <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
           <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
           <ScalarProperty Name="LocationId" ColumnName="LocationId" />
@@ -331,17 +332,6 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <FunctionImportMapping FunctionImportName="CurrentRowVersion" FunctionName="tallyj2dModel.Store.CurrentRowVersion" />
-    <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
-      <ResultMapping>
-        <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
-          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-          <ScalarProperty Name="FullName" ColumnName="FullName" />
-          <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
-          <ScalarProperty Name="SoundMatch" ColumnName="SoundMatch" />
-          <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
-        </ComplexTypeMapping>
-      </ResultMapping>
-    </FunctionImportMapping>
     <EntitySetMapping Name="vLocationInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
         <MappingFragment StoreEntitySet="vLocationInfo">
@@ -416,5 +406,16 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
+          <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
+          <ScalarProperty Name="MatchType" ColumnName="MatchType" />
+          <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
   </EntityContainerMapping>
 </Mapping>

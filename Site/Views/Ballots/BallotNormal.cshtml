@@ -19,26 +19,24 @@
 <div class="float-left div1">
     <div id="tabs" class="tabs">
         <ul>
-            <li><a href="#tabLocation">This Location</a> </li>
-            <li><a href="#tabBallots">Ballots <span id="collectedVsEnteredTitle"></span></a>
+            <li><a href="#tabLocation" accesskey="1">This Location</a> </li>
+            <li><a href="#tabBallots" accesskey="2">Ballots <span id="collectedVsEnteredTitle"></span></a>
             </li>
-            <li><a href="#tabNameSearch">Ballot #<span class="ballotCode"></span></a></li>
+            <li><a href="#tabNameSearch" accesskey="3">Add Votes</a></li>
         </ul>
         <div id="tabNameSearch">
             <div class="heading">
-                Add names to this ballot.
+                Add votes to Ballot: <span class="ballotCode"></span>.
             </div>
             <div>
-                Find a <u>n</u>ame in the list by typing...</div>
-            <input id="txtSearch" accesskey="N" tabindex="1" autocomplete="off">
-            <button id="btnNewBallot" class="NewBallotBtns smallButton float-right" accesskey="B" tabindex="2" >
-                Start New <u>B</u>allot</button>
+                Find a <u>p</u>erson by typing here...</div>
+            <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off">
             <div class="actionHolder">
                 <div class="action">
                     <span id="action"></span><span id="more"></span>
                 </div>
                 <div class="tip1">
-                    &uarr; &darr; Enter</div>
+                    Press Enter when found. Use &uarr; &darr; to move in the list.</div>
             </div>
             <ul id="nameList" class="nameList">
             </ul>
@@ -56,8 +54,8 @@
                 <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
                 Entered: <span id="lblNumEntered" class="lblNumEntered"></span>
             </div>
-            <ul id="ballotList" class="ballotList">
-            </ul>
+            <div id="ballotList" class="ballotList">
+            </div>
             <button type="button" id="btnRefreshBallotList" class="float-right">
                 Refresh</button>
         </div>
@@ -67,7 +65,7 @@
             </div>
             <div>
                 <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
-                  @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
+                    @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
                 </select>
             </div>
             <div class="heading">
@@ -98,8 +96,10 @@
     <div id="votesList">
     </div>
     <button id="btnAddSpoiled" type="button" tabindex="3" class="smallButton spoiledBtn">
-        Add a line for a spoiled vote</button><br/>
-    <button type="button" id="btnDeleteBallot" disabled class="smallButton"
-        title="Delete after all votes have been deleted">
+        Add a line for a spoiled vote</button><br />
+    <button type="button" id="btnDeleteBallot" disabled class="smallButton" title="Delete after all votes have been deleted">
         Delete this empty ballot</button>
+    <button id="btnNewBallot" class="NewBallotBtns smallButton float-right" accesskey="B"
+        tabindex="2">
+        Start New <u>B</u>allot</button>
 </div>

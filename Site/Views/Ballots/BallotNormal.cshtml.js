@@ -26,7 +26,7 @@ var BallotNormalPageFunc = function () {
         rowSelected: 0,
         lastBallotRowVersion: 0,
         searchResultTemplate: '<li id=P{Id}{IneligibleData}>{Name}</li>',
-        ballotListTemplate: '<li id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></li>'
+        ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>'
     };
     var tabNum = {
         ballot: 2,
@@ -46,7 +46,7 @@ var BallotNormalPageFunc = function () {
         local.votesList = $('#votesList');
 
         local.nameList.on('click', 'li', nameClick);
-        $('#ballotList').on('click', 'li', ballotClick);
+        $('#ballotList').on('click', 'div', ballotClick);
 
         $('#btnAddSpoiled').on('click', addSpoiled);
 
@@ -72,7 +72,7 @@ var BallotNormalPageFunc = function () {
                 }
             }
         });
-        local.tabList.tabs('select', tabNum.ballots);
+        // local.tabList.tabs('select', tabNum.ballots);
 
         local.btnDeleteBallot = $('#btnDeleteBallot');
         local.btnDeleteBallot.on('click', deleteBallot);
@@ -146,7 +146,7 @@ var BallotNormalPageFunc = function () {
         CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
             showBallot(info);
             local.tabList.tabs('select', tabNum.ballot);
-            local.inputField.focus();
+            local.inputField.focus().val('').change();
             $('.NewBallotBtns').prop('disabled', false);
         });
     };
@@ -204,12 +204,12 @@ var BallotNormalPageFunc = function () {
             showVotes();
 
             setBallotStatus(ballotInfo.Ballot.StatusCode, true);
-
-            //            if (ballotInfo.Ballot.StatusCode == 'Ok') {
-            //                local.tabList.tabs('select', tabNum.ballots);
-            //            } else {
-            //                local.tabList.tabs('select', tabNum.ballot);
-            //            }
+            LogMessage(ballotInfo.Ballot.StatusCode);
+            if (ballotInfo.Ballot.StatusCode == 'Too Few') {
+                local.tabList.tabs('select', tabNum.ballot);
+            } else {
+                local.tabList.tabs('select', tabNum.ballots);
+            }
 
             highlightBallotInList();
 
@@ -466,6 +466,11 @@ var BallotNormalPageFunc = function () {
                 setBallotStatus(info.BallotStatus, true);
 
                 local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
+
+                if (info.BallotStatus == 'Ok') {
+                    local.tabList.tabs('select', tabNum.ballots);
+                }
+
                 focusOnTextInput();
             }
             else {
@@ -504,6 +509,10 @@ var BallotNormalPageFunc = function () {
                 }
 
                 setBallotStatus(info.BallotStatus, true);
+
+                if (info.BallotStatus == 'Ok') {
+                    local.tabList.tabs('select', tabNum.ballots);
+                }
 
                 if (info.Location) {
                     showLocation(info.Location);
@@ -559,7 +568,7 @@ var BallotNormalPageFunc = function () {
             }
         }
         local.actionTag.removeClass('searching');
-        local.actionTag.text('Matches:');
+        local.actionTag.text('');
         local.inputField.removeClass('searching');
 
         // single:
@@ -708,6 +717,15 @@ var BallotNormalPageFunc = function () {
                 host.addClass('ExtraVotes');
             }
         });
+
+        var missing = local.votesNeeded - votes.length;
+        if (missing) {
+            var emptyVote = { pos: '-', Fake: 'Fake' };
+            for (var i = 0; i < missing; i++) {
+                local.votesList.append(site.templates.NormalVoteLine.filledWith(emptyVote));
+            }
+        }
+
     };
 
     var prepareReasons = function () {
@@ -811,11 +829,10 @@ var BallotNormalPageFunc = function () {
     };
     var ballotClick = function (ev) {
         var el = ev.target;
-        while (el.tagName != 'LI') {
+        while (el.tagName != 'DIV') {
             el = el.parentNode;
             if (el == null) return;
         }
-
         loadBallot(el.id);
     };
 
