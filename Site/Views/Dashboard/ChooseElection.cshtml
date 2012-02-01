@@ -6,17 +6,20 @@
     ViewBag.Message = "Select or create an election";
 
     ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJsonString()));
+    var electionsInfo = Model.MyElectionsInfo.ToList();
+    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>@ViewBag.Message</h2>
+  <h1>@ViewBag.Title.</h1>
+  <h2>@ViewBag.Message</h2>
 </hgroup>
-<h3>
-    Your elections: (@Model.MyElectionsInfo.Count())</h3>
-<div id="ElectionList">
+@if (@electionsInfo.Count() > 0)
+{
+    <h3>
+        Your elections: (@electionsInfo.Count())</h3>
+}<div id="ElectionList">
 </div>
 <div class="Election">
     <button type="button" id="btnCreate">

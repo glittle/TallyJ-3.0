@@ -25,7 +25,7 @@ namespace TallyJ.Code.Enumerations
     public static string TextFor(string value)
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == value);
-      return item == null ? "" : item.DisplayText;
+      return item == null ? value : item.DisplayText;
     }
 
     public override IList<VotingMethodEnum> Items

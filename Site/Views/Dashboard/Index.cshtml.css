@@ -1,9 +1,6 @@
-﻿section.features
-{
-  cursor: pointer;
-}
-section.features a {
+﻿section.features a {
   text-decoration: none;
+  cursor: pointer;
 }
 section.features a section {
   border: 2px solid transparent;
@@ -29,4 +26,20 @@ section.todo h3,
 section.todo
  {
     color: #ccc;
+}
+section.features
+{
+    border: 1px solid #d7d7d7;
+    border-right: none;
+    border-bottom: none;
+    padding-left: 40px;
+    margin-bottom: 15px;
+}
+.featuresTitle
+{
+    margin: -5px 0 -5px -37px;
+    color: #bbb;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 23px;
 }

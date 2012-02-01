@@ -1,0 +1,20 @@
+﻿@model RoleCallModel
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+    ContextItems.AddJavascriptForPage("url", "roleCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.RoleCallLine);
+}
+<div class="Main">
+    <div class="TopLine">
+        Now Voting:</div>
+    <div class="NowVoting">
+    </div>
+    <div class="Nav">
+      <button id="btnReturn" type="button">
+        Return to Dashboard</button>
+        <div>Press F11 for full-screen!</div>
+        <div>Press Up,Down to move names.</div>
+    </div>
+    @TemplateLoader.File.RoleCallLine.FilledWithEach(Model.Voters(2, 6, false)).AsRawHtml()
+</div>

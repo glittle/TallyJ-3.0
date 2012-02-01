@@ -21,7 +21,8 @@ namespace TallyJ.Code.Resources
 			SingleVoteLine,
 			FrontDeskLine,
 			EditPerson,
-      NormalVoteLine
+      NormalVoteLine,
+      RoleCallLine
 		}
 
 		#endregion

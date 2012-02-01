@@ -30,7 +30,8 @@ p
 #Main u
 {
     text-decoration: none;
-    width: 90px;
+    width: 150px;
+    overflow: hidden;
     display: inline-block;
 }
 #Main i

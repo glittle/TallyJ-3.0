@@ -1,6 +1,6 @@
 ﻿.div1
 {
-    width: 420px;
+    width: 375px;
 }
 
 .tabs {
@@ -11,7 +11,7 @@
 {
     margin: 0 0 10px 0;
     height: 400px;
-    width: 380px;
+    width: 325px;
     border: solid 1px #999;
     padding: 4px;
     font-size: 110%;
@@ -114,7 +114,7 @@ input.ZZsearching
 {
     margin-left: 15px;
     float: left;
-    width: 520px;
+    width: 555px;
 }
 .ui-icon-trash
 {
@@ -143,7 +143,12 @@ input.Vote
 .titleDiv
 {
     font-weight: bold;
+    font-size: 12pt;
     border-bottom: 1px solid #ccc;
+    padding-right: 4px;
+}
+.titleDiv div {
+    margin: -7px 0 0 0;
 }
 .smallButton
 {
@@ -167,7 +172,7 @@ select.Invalid {
 .VoteHost span.Name
 {
     display: none;
-    font-size: 16px;
+    font-size: 16pt;
     padding: 0 9px 0 2px;
 }
 .VoteHost.Valid span.Name
@@ -254,9 +259,11 @@ div.heading {
 .titleDiv .ballotStatus {
     padding-right: 20px;
     vertical-align: top;
+    font-size: 16pt;
 }
 .titleDiv .ballotCode {
     padding-left: 3px;
+    font-size: 16pt;
 }
 .duplicateVote .Name 
 {
@@ -281,4 +288,7 @@ div.heading {
 }
 #tabBallots {
     background-color: #efeeef;
+}
+#btnRefreshBallotList {
+    margin: 14px 0 -3px 0;
 }

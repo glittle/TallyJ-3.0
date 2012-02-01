@@ -142,10 +142,17 @@ namespace TallyJ.Controllers
     {
       return new ImportExportModel().SaveMapping(id, mapping);
     }
+
     [ForAuthenticatedTeller]
     public JsonResult FileCodePage(int id, int cp)
     {
       return new ImportExportModel().SaveCodePage(id, cp);
+    }
+    
+    [ForAuthenticatedTeller]
+    public JsonResult DeleteAllPeople()
+    {
+      return new PeopleModel().DeleteAllPeople();
     }
   }
 }

@@ -1,0 +1,87 @@
+﻿header,
+footer {
+    display: none;
+}
+.main-content {
+    background-image: none;
+    padding: 0;
+}
+.Main
+{
+    overflow: hidden;
+}
+.TopLine
+{
+    background-position: 30px 2px;
+    background-image: url(../../Images/LogoTopSmall.png);
+    font-size: 30pt;
+    color: #013d7a;
+    padding: 3pt 0 5pt 0;
+    width: 100%;
+    height: 50pt;
+    z-index: 3;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    left: 0;
+    background-color: #efeeef;
+    background-repeat: no-repeat;
+}
+
+.NowVoting
+{
+    height: 130pt;
+    width: 100%;
+    background-color: #fff;
+    z-index: 0;
+    position: fixed;
+    top: 50pt;
+    left: 0;
+}
+
+.Voter
+{
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    height: 120pt;
+    overflow: hidden;
+    font-weight: bold;
+    font-family: Perpetua, 'Lucida Calligraphy', Times New Roman, Times, serif;
+}
+.Voter div 
+{
+    margin-top: 15pt;
+    font-size: 60pt; /* 50 for most, 60 for Petpetua */
+}
+.Voter span {
+    font-size: 20pt;
+    color: #999;
+    margin-top: -5pt;
+    display: block;
+}
+
+
+.Main:-webkit-full-screen{
+  width: 100% !important;
+}
+.Main:-moz-full-screen {
+  width: 100% !important;
+}
+:-webkit-full-screen .tohide {
+  display: none; /* While in fullscreen, hide any children with class 'tohide' */
+}
+:-moz-full-screen .tohide {
+  display: none; /* While in fullscreen, hide any children with class 'tohide' */
+}
+
+.Nav {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    z-index: 10;
+    opacity: 0.1;
+}
+.Nav:hover {
+    opacity: 1;
+}

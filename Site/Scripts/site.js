@@ -132,7 +132,7 @@ function LogMessage(msg) {
     /// <summary>Log the message to the console, if the browser supports it
     /// </summary>
     if (typeof console != 'undefined' && console) {
-        console.log(msg.toString());
+        console.log((''+msg).toString());
     } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
         window.console.log(msg);
     }
@@ -628,8 +628,7 @@ function FormatDate(date, format, forDisplayOnly, includeHrMin) {
 
 Number.prototype.as2digitString = function () {
     return ('00' + this).substr(-2);
-}
-
+};
 String.prototype.filledWith = function () {
     /// <summary>Similar to C# String.Format...  in two modes:
     /// 1) Replaces {0},{1},{2}... in the string with values from the list of arguments. 
@@ -654,18 +653,19 @@ String.prototype.filledWith = function () {
         return input.replace(extractTokens, function () {
             var token = arguments[1];
             var value = undefined;
-            try {
-                value = values[token];
-                if (testForFunc.test(token)) {
-                    //LogMessage(token);
-                    value = eval(token.substring(1));
+            if (values) {
+                try {
+                    value = values[token];
+                    if (testForFunc.test(token)) {
+                        //LogMessage(token);
+                        value = eval(token.substring(1));
+                    }
+                } catch(err) {
+                    LogMessage('src data');
+                    LogMessage(values);
+                    LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
+                    throw 'Error in Filled With';
                 }
-            }
-            catch (err) {
-                LogMessage('src data');
-                LogMessage(values);
-                LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
-                throw 'Error in Filled With';
             }
             return typeof value == 'undefined' || value == null ? '' : ('' + value);
         });

@@ -129,9 +129,13 @@
 </div>
 <h2>
     Step 3: Import people</h2>
+<p>All the records in the file will be processed and added to the names already in the database. Any that match exactly will not be added again.
+If you need to erase all the currently loaded names before ballots are entered, use the "Delete all People Records" below before importing again.</p>
 <div>
     <button type="button" id="btnImport">
         Import now</button>
+    <button type="button" id="btnClearAll" class="float-right">
+        Delete all People Records</button>
     <div id="importResults">
     </div>
 </div>

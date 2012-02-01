@@ -1,36 +1,55 @@
 ﻿@using TallyJ.Code.Session
 @if (Request.IsAuthenticated)
 {
-    <p>
-        @Html.ActionLink("Setup", "Index", "Setup")
-        @Html.ActionLink("People", "People", "Setup")
-        @Html.ActionLink("Location", "ChooseElection", "Dashboard")
-        @Html.ActionLink("Front Desk", "FrontDesk", "Before")
-        @Html.ActionLink("Ballots", "Index", "Ballots")
-        @Html.ActionLink("Monitor", "Monitor", "After")
-        @Html.ActionLink("Review", "Analyze", "After")
-        @Html.ActionLink("Report", "Presenter", "After")
-        @Html.ActionLink("Dashboard", "Index", "Dashboard")
-        @if(UserSession.IsKnownTeller)
+    if (ActionName != "RoleCall")
+    {
+    <div class="MiniDash">
+        @if (ControllerName != "Dashboard")
         {
-            @Html.ActionLink(User.Identity.Name, "ChangePassword", "Account");
+            <div>
+                @ActionLink2("Dashboard", "Index", "Dashboard")
+            </div>
+            <div>
+                @ActionLink2("Setup Election", "Index", "Setup")
+                @ActionLink2("Import Names", "ImportExport", "Setup")
+            </div>
+            <div>
+                @ActionLink2("Front Desk", "FrontDesk", "Before")
+                @ActionLink2("Manage People", "People", "Setup")
+                @ActionLink2("Role Call", "RoleCall", "Before")
+            </div>
+            <div>
+                @ActionLink2("Enter Ballots", "Index", "Ballots")
+                @ActionLink2("Monitor Progress", "Monitor", "After")
+                @ActionLink2("Analyze Results", "Analyze", "After")
+            </div>
+            <div>
+                @ActionLink2("Present Results", "Presenter", "After")
+                @ActionLink2("Generate Reports", "Reports", "After")
+            </div>
         }
-        @Html.ActionLink("Log Off", "LogOff", "Account")
-    </p>
+        <div>
+            @Html.ActionLink("Log Off", "LogOff", "Account")
+            @if (UserSession.IsKnownTeller)
+            {
+                @ActionLink2("Switch Elections", "ChooseElection", "Dashboard")
+                @ActionLink2(User.Identity.Name, "ChangePassword", "Account")
+            }
+        </div>
+    </div>
+    }
 }
 else
 {
     <ul>
-        <li>@Html.ActionLink("Home", "Index", "Public")</li>
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new
-   {
-     id = "registerLink",
-     data_dialog_title = "Registration"
-   })</li>
-        <li>@Html.ActionLink("Log on", "LogOn", "Account", routeValues: null, htmlAttributes: new
+        <li>@ActionLink2("Home", "Index", "Public")</li>
+        <li>@ActionLink2("Register", "Register", "Account")</li>
+        <li>@ActionLink2("Log on", "LogOn", "Account")</li>
+        @*  
+      , routeValues: null, htmlAttributes: new
    {
      id = "logonLink",
      data_dialog_title = "Identification"
-   })</li>
+   }*@
     </ul>
 }

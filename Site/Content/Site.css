@@ -17,7 +17,6 @@ html
 body
 {
     background-color: #fff;
-    border-top: solid 10px #000;
     color: #333;
     font-size: .85em;
     font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
@@ -111,12 +110,11 @@ h5, h6
     max-width: 960px;
     position: relative;
 }
-
 .headerRight
 {
     position: absolute;
     right: 0;
-    top: 20px;
+    top: 0;
     text-align: right;
     padding-right: 3px;
 }
@@ -149,11 +147,40 @@ footer
 .site-title
 {
     display: block;
+    margin: 0 0 9px 3px;
+    background-image: url('../Images/LogoS.png');
+    width: 55px;
+    height: 59px;
+}
+.Version
+{
+    display: none;
+}
+.TopInfo
+{
+    position: absolute;
+    top: 0;
+    left: 190px;
+}
+.Public .site-title, .Dashboard .site-title
+{
+    display: block;
     color: #c8c8c8;
-    margin: 20px 0;
+    margin: 5px 0 20px 0;
     background-image: url('../Images/LogoSideM.png');
     width: 400px;
     height: 106px;
+}
+.Public .TopInfo, .Dashboard .TopInfo
+{
+    left: 615px;
+    top: 5px;
+}
+.Public .Version, .Dashboard .Version
+{
+    color: #ade65e;
+    text-align: right;
+    margin-top: -35px;
 }
 
 /* login  
@@ -168,11 +195,17 @@ footer
 #login a
 {
     background-color: #d3dce0;
-    margin-left: 10px;
-    margin-right: 3px;
+    display: block;
+    text-wrap: none;
+    text-align: center;
+    margin: 2px 5px 1px 3px;
     border-radius: 3px;
-    padding: 2px 3px;
+    padding: 1px 3px;
     text-decoration: none;
+}
+
+#login .MiniDash a.Active {
+    background-color: #a3acb0;
 }
 
 #login a.username
@@ -180,6 +213,15 @@ footer
     background: none;
     margin-left: 0px;
     text-decoration: underline;
+}
+.MiniDash
+{
+}
+
+.MiniDash div
+{
+    float: left;
+    width: 110px;
 }
 
 #login ul
@@ -233,7 +275,6 @@ ul#menu li a:hover
 {
     background-color: #fff;
 }
-
 .featured .content-wrapper
 {
     background-color: #7ac0da;
@@ -278,7 +319,7 @@ section.feature
     float: left;
     width: 200px;
     height: 133px;
-    margin: 5px;
+    margin: 2px 5px 2px 5px;
     background-image: url('../Images/Blank.png');
     background-repeat: no-repeat;
     text-align: center;
@@ -607,16 +648,14 @@ a.twitter
 
 .CurrentElectionName
 {
-    text-align: right;
     color: #013d7a;
     font-weight: bold;
 }
 .CurrentLocationName
 {
-    
 }
-.CurrentLocationAndCode {
-    text-align: right;
+.CurrentLocationAndCode
+{
     color: #013d7a;
 }
 
@@ -624,43 +663,41 @@ a.twitter
 {
     color: #8dc63e;
     display: inline-block;
-    padding: 0 0px 0 10px;
-    text-align: right;
 }
 .Heartbeat.Frozen
 {
-    padding: 0 10px 0 10px;
     color: #e80c4d;
     background-color: #ffcccc;
 }
-.Version
+
+
+.PullInstructions
 {
-    color: #ddd;
-    text-align: right;
-    margin-top: -35px;
-}
-.PullInstructions {
     border: 1px solid #8dc63e;
     border-radius: 3px;
     font-size: 95%;
     padding: 0 5px 0 15px;
     margin-bottom: 5px;
 }
-.PullInstructionsHandle {
+.PullInstructionsHandle
+{
     font-size: 80%;
     color: #aaa;
     cursor: pointer;
 }
-.PullInstructionsHandle.Closed {
+.PullInstructionsHandle.Closed
+{
     color: #8dc63e;
     font-size: 90%;
     margin-bottom: 10px;
     font-style: italic;
 }
-.Clear {
+.Clear
+{
     clear: both;
 }
-.Clear5 {
+.Clear5
+{
     clear: both;
     margin-top: 5px;
 }

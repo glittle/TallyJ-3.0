@@ -21,13 +21,8 @@
 }
 *@
 <section class="features">
-    <a href="@Url.Action("ChooseElection", "Dashboard")">
-        <section class="feature">
-            <h3>
-                Choose Election/Location</h3>
-            <p>
-                Switch to a different election or location. Or start another election.</p>
-        </section></a>
+    <h2 class="featuresTitle">
+        Preparing Before the Election</h2>
     @if (UserSession.IsKnownTeller)
     {
         <a href="@Url.Action("Index", "Setup")">
@@ -35,32 +30,57 @@
                 <h3>
                     Setup Election</h3>
                 <p>
-                    Edit election details.</p>
+                    Select type of election and other details.</p>
             </section></a>
         <a href="@Url.Action("ImportExport", "Setup")">
             <section class="feature">
                 <h3>
-                    Import/Export People</h3>
+                    Load Names</h3>
                 <p>
-                    Import/edit people.</p>
+                    Upload and import names of people from CSV files.</p>
             </section></a>
-    }
-    <a href="@Url.Action("People", "Setup")">
-        <section class="feature">
-            <h3>
-                Manage People</h3>
-            <p>
-                Edit people's names.
-            </p>
-        </section></a>
-        <a href="@Url.Action("FrontDesk", "Before")">
+        <a href="@Url.Action("Learning", "Public")">
             <section class="feature">
                 <h3>
-                    Front Desk</h3>
+                    Reference Materials</h3>
                 <p>
-                    Welcome voters to the election venue. Record who is participating in the election.
-                </p>
+                    Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
             </section></a>
+    }
+    <div class="Clear">
+    </div>
+</section>
+<section class="features">
+    <h2 class="featuresTitle">
+        Welcoming Voters</h2>
+    <a href="@Url.Action("FrontDesk", "Before")">
+        <section class="feature">
+            <h3>
+                Front Desk</h3>
+            <p>
+                Welcome voters to the election venue. Record who is participating in the election.
+            </p>
+        </section></a> <a href="@Url.Action("People", "Setup")">
+            <section class="feature">
+                <h3>
+                    Manage People</h3>
+                <p>
+                    Edit people's names.
+                </p>
+            </section></a> <a href="@Url.Action("RoleCall", "Before")">
+                <section class="feature">
+                    <h3>
+                        Role Call</h3>
+                    <p>
+                        Display the names of those who are voting. (After starting, press F11.)
+                    </p>
+                </section></a>
+    <div class="Clear">
+    </div>
+</section>
+<section class="features">
+    <h2 class="featuresTitle">
+        Processing Ballots</h2>
     <a href="@Url.Action("Index", "Ballots")">
         <section class="feature">
             <h3>
@@ -71,7 +91,7 @@
         </section></a> <a href="@Url.Action("Monitor", "After")">
             <section class="feature">
                 <h3>
-                    Monitor</h3>
+                    Monitor Process</h3>
                 <p>
                     Centrally monitor progress of tellers.</p>
             </section></a>
@@ -85,6 +105,23 @@
                     Review results, checking for ties.
                 </p>
             </section></a>
+    }
+    <div class="Clear">
+    </div>
+</section>
+<section class="features">
+    <h2 class="featuresTitle">
+        Sharing the News</h2>
+    <a href="@Url.Action("Presenter", "After")">
+        <section class="feature">
+            <h3>
+                Present Results</h3>
+            <p>
+                Display results of the election.
+            </p>
+        </section></a>
+    @if (UserSession.IsKnownTeller)
+    {
         <a href="@Url.Action("Reports", "After")">
             <section class="feature todo">
                 <h3>
@@ -94,18 +131,6 @@
                 </p>
             </section></a>
     }
-    <a href="@Url.Action("Presenter", "After")">
-        <section class="feature">
-            <h3>
-                Present Results</h3>
-            <p>
-                Display results of the election.
-            </p>
-        </section></a> <a href="@Url.Action("Learning", "Public")">
-            <section class="feature">
-                <h3>
-                    Reference Materials</h3>
-                <p>
-                    Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
-            </section></a>
+    <div class="Clear">
+    </div>
 </section>

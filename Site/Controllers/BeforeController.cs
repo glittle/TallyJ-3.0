@@ -6,15 +6,19 @@ namespace TallyJ.Controllers
 {
 	public class BeforeController : BaseController
 	{
-		//
-		public ActionResult Index()
-		{
-			return View("Before");
-		}
+    public ActionResult Index()
+    {
+      return null;
+    }
 
-		public ActionResult FrontDesk()
+    public ActionResult FrontDesk()
 		{
 			return View(new PeopleModel());
+		}
+
+    public ActionResult RoleCall()
+		{
+			return View(new RoleCallModel());
 		}
 
     public JsonResult RegisterVote(int id, string type, int last)

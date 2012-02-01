@@ -19,6 +19,9 @@ section.features a:active section
 {
     border: 2px solid #8dc63e;
 }
+section.LoginPanel a {
+    text-decoration: underline;
+}
 
 section.featureBig
 {

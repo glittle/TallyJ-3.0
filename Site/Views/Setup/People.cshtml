@@ -11,12 +11,21 @@
     ContextItems.AddJavascriptForPage("rules", "peoplePage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<div class="PullInstructions">
+    <ol>
+        <li>To edit the information for a person, use this page.</li>
+        <li>Search for any person by typing a part of their name in the input box below, then
+            press Enter when their name is highlighed. Use the Up and Down keys to move through
+            the list of matched names.</li>
+    </ol>
+</div>
 <div class="float-left">
     <input id="txtSearch" autocomplete="off"><span id="action"></span> <span id="more">
     </span>
     <ul id="nameList">
     </ul>
-    <button id="txtAddNew" type="button" accesskey="N">Add <u>N</u>ew Person</button>
+    <button id="txtAddNew" type="button" accesskey="N">
+        Add <u>N</u>ew Person</button>
 </div>
 <div id="editPanel">
     <input type="hidden" data-name="C_RowId" />
@@ -121,7 +130,7 @@
             </td>
             <td>
                 <button type="button" id="btnSave" accesskey="S">
-                  <u>S</u>ave Changes</button>
+                    <u>S</u>ave Changes</button>
             </td>
         </tr>
     </table>

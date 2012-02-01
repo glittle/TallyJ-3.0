@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -262,6 +263,23 @@ namespace TallyJ.Models
     public long LastRowVersion
     {
       get { return Db.CurrentRowVersion().Single().Value; }
+    }
+
+    public JsonResult DeleteAllPeople()
+    {
+      int rows;
+      try
+      {
+        rows = Db.Database.ExecuteSqlCommand("Delete from tj.Person where ElectionGuid={0}", UserSession.CurrentElectionGuid);
+      }
+      catch (SqlException e)
+      {
+        return
+          new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.
+            AsJsonResult();
+      }
+
+      return new {Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people","person"))}.AsJsonResult();
     }
   }
 }

@@ -27,36 +27,36 @@ namespace TallyJ.Controllers
 		//
 		// POST: /Account/JsonLogOn
 
-		[AllowAnonymous]
-		[HttpPost]
-		public JsonResult JsonLogOn(LogOnModel model, string returnUrl)
-		{
-			if (ModelState.IsValid)
-			{
-				if (Membership.ValidateUser(model.UserName, model.Password))
-				{
-					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-				  UserSession.ProcessLogin();
-				  UserSession.IsKnownTeller = true;
+    //[AllowAnonymous]
+    //[HttpPost]
+    //public JsonResult JsonLogOn(LogOnModel model, string returnUrl)
+    //{
+    //  if (ModelState.IsValid)
+    //  {
+    //    if (Membership.ValidateUser(model.UserName, model.Password))
+    //    {
+    //      FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+    //      UserSession.ProcessLogin();
+    //      UserSession.IsKnownTeller = true;
 
-					return Json(new
-					{
-						success = true,
-						redirect = returnUrl
-					});
-				}
-				else
-				{
-					ModelState.AddModelError("", "The user name or password provided is incorrect.");
-				}
-			}
+    //      return Json(new
+    //      {
+    //        success = true,
+    //        redirect = returnUrl
+    //      });
+    //    }
+    //    else
+    //    {
+    //      ModelState.AddModelError("", "The user name or password provided is incorrect.");
+    //    }
+    //  }
 
-			// If we got this far, something failed
-			return Json(new
-			{
-				errors = GetErrorsFromModelState()
-			});
-		}
+    //  // If we got this far, something failed
+    //  return Json(new
+    //  {
+    //    errors = GetErrorsFromModelState()
+    //  });
+    //}
 
 		//
 		// POST: /Account/LogOn
@@ -114,36 +114,36 @@ namespace TallyJ.Controllers
 		//
 		// POST: /Account/JsonRegister
 
-		[AllowAnonymous]
-		[HttpPost]
-		public ActionResult JsonRegister(RegisterModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				// Attempt to register the user
-				MembershipCreateStatus createStatus;
-				Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null, out createStatus);
+    //[AllowAnonymous]
+    //[HttpPost]
+    //public ActionResult JsonRegister(RegisterModel model)
+    //{
+    //  if (ModelState.IsValid)
+    //  {
+    //    // Attempt to register the user
+    //    MembershipCreateStatus createStatus;
+    //    Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null, out createStatus);
 
-				if (createStatus == MembershipCreateStatus.Success)
-				{
-					FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
-					return Json(new
-					{
-						success = true
-					});
-				}
-				else
-				{
-					ModelState.AddModelError("", ErrorCodeToString(createStatus));
-				}
-			}
+    //    if (createStatus == MembershipCreateStatus.Success)
+    //    {
+    //      FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
+    //      return Json(new
+    //      {
+    //        success = true
+    //      });
+    //    }
+    //    else
+    //    {
+    //      ModelState.AddModelError("", ErrorCodeToString(createStatus));
+    //    }
+    //  }
 
-			// If we got this far, something failed
-			return Json(new
-			{
-				errors = GetErrorsFromModelState()
-			});
-		}
+    //  // If we got this far, something failed
+    //  return Json(new
+    //  {
+    //    errors = GetErrorsFromModelState()
+    //  });
+    //}
 
 		//
 		// POST: /Account/Register
@@ -161,6 +161,8 @@ namespace TallyJ.Controllers
 				if (createStatus == MembershipCreateStatus.Success)
 				{
 					FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
+          UserSession.ProcessLogin();
+          UserSession.IsKnownTeller = true;
 
 					return RedirectToAction("Index", "Dashboard");
 				}

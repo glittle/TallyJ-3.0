@@ -279,6 +279,7 @@ namespace TallyJ.Models
         rowsProcessed++;
 
         var valuesSet = false;
+        var namesFoundInRow = false;
 
         var query = currentPeople.AsQueryable();
 
@@ -296,9 +297,11 @@ namespace TallyJ.Models
           {
             case "LastName":
               query = query.Where(p => p.LastName == value);
+              namesFoundInRow = namesFoundInRow || value.HasContent();
               break;
             case "FirstName":
               query = query.Where(p => p.FirstName == value);
+              namesFoundInRow = namesFoundInRow || value.HasContent();
               break;
             case "OtherLastNames":
               query = query.Where(p => p.OtherLastNames == value);
@@ -320,7 +323,7 @@ namespace TallyJ.Models
           }
         }
 
-        if (!valuesSet)
+        if (!valuesSet || !namesFoundInRow)
         {
           rowsSkipped++;
         }
