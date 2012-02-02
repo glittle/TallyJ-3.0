@@ -265,7 +265,7 @@
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
     <Compile Include="Models\ResultHelper.cs" />
-    <Compile Include="Models\RoleCallModel.cs" />
+    <Compile Include="Models\RollCallModel.cs" />
     <Compile Include="Models\UploadProvider.cs" />
     <Compile Include="Models\VoteAnalyzer.cs" />
     <Compile Include="Models\VoteHelper.cs" />
@@ -393,7 +393,7 @@
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
     <Content Include="Images\LogoTopSmall.png" />
-    <Content Include="JsTemplates\RoleCallLine.html" />
+    <Content Include="JsTemplates\RollCallLine.html" />
     <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\FrontDeskLine.html" />
     <Content Include="JsTemplates\EditPerson.html" />
@@ -438,8 +438,8 @@
     <Content Include="Views\Ballots\BallotNormal.cshtml.js" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.js" />
-    <Content Include="Views\Before\RoleCall.cshtml.css" />
-    <Content Include="Views\Before\RoleCall.cshtml.js" />
+    <Content Include="Views\Before\RollCall.cshtml.css" />
+    <Content Include="Views\Before\RollCall.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css" />
     <Content Include="Views\Before\FrontDesk.cshtml.js" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
@@ -572,7 +572,7 @@
     <Content Include="Views\Dashboard\ChooseElection.cshtml" />
     <Content Include="Views\Setup\ImportExport.cshtml" />
     <Content Include="Views\Ballots\BallotSingle.cshtml" />
-    <Content Include="Views\Before\RoleCall.cshtml" />
+    <Content Include="Views\Before\RollCall.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

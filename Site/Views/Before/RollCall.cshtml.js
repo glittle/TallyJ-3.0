@@ -2,7 +2,7 @@
 /// <reference path="../../Scripts/PeopleHelper.js" />
 /// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
 
-var RoleCallPage = function () {
+var RollCallPage = function () {
     var local = {
         currentNameNum: 0,
         nameDivs: []
@@ -95,8 +95,8 @@ var RoleCallPage = function () {
     return publicInterface;
 };
 
-var roleCallPage = RoleCallPage();
+var rollCallPage = RollCallPage();
 
 $(function () {
-    roleCallPage.PreparePage();
+    rollCallPage.PreparePage();
 });

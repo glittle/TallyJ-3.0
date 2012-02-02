@@ -1,7 +1,7 @@
 ﻿@using TallyJ.Code.Session
 @if (Request.IsAuthenticated)
 {
-    if (ActionName != "RoleCall")
+    if (ActionName != "RollCall")
     {
     <div class="MiniDash">
         @if (ControllerName != "Dashboard")
@@ -16,7 +16,7 @@
             <div>
                 @ActionLink2("Front Desk", "FrontDesk", "Before")
                 @ActionLink2("Manage People", "People", "Setup")
-                @ActionLink2("Role Call", "RoleCall", "Before")
+                @ActionLink2("Roll Call", "RollCall", "Before")
             </div>
             <div>
                 @ActionLink2("Enter Ballots", "Index", "Ballots")

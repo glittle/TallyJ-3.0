@@ -16,9 +16,9 @@ namespace TallyJ.Controllers
 			return View(new PeopleModel());
 		}
 
-    public ActionResult RoleCall()
+    public ActionResult RollCall()
 		{
-			return View(new RoleCallModel());
+			return View(new RollCallModel());
 		}
 
     public JsonResult RegisterVote(int id, string type, int last)

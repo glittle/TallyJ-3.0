@@ -7,7 +7,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Models
 {
-  public class RoleCallModel : DataConnectedModel
+  public class RollCallModel : DataConnectedModel
   {
     public IQueryable<Person> PeopleInCurrentElection(bool includeAbsentees)
     {

@@ -1,9 +1,9 @@
-﻿@model RoleCallModel
+﻿@model RollCallModel
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
-    ContextItems.AddJavascriptForPage("url", "roleCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-    TemplateLoader.RequireTemplates(TemplateLoader.File.RoleCallLine);
+    ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
     <div class="TopLine">
@@ -16,5 +16,5 @@
         <div>Press F11 for full-screen!</div>
         <div>Press Up,Down to move names.</div>
     </div>
-    @TemplateLoader.File.RoleCallLine.FilledWithEach(Model.Voters(2, 6, false)).AsRawHtml()
+    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters(2, 6, false)).AsRawHtml()
 </div>
