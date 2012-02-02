@@ -14,7 +14,8 @@
                 <h2>@ViewBag.Message</h2>
             </hgroup>
             <p>
-                Allah'u'abh&aacute;! Welcome to the online home of TallyJ! Have a look around!</p>
+                Allah'u'abh&aacute;! Welcome to TallyJ! This online tool is specifically designed
+                to assist tellers during Bah&aacute;'&iacute; elections. </p>
         </div>
     </section>
 }
@@ -29,28 +30,29 @@
                 <p>
                     Select an active election or enter the election code:</p>
                 <div class="table">
-                  <div>
-                    <span>Active Elections:</span>
-                    <select id="ddlElections" size="4">
-                      @Model.VisibleElectionsOptions()
-@*
+                    <div>
+                        <span>Active Elections:</span>
+                        <select id="ddlElections" size="4">
+                            @Model.VisibleElectionsOptions()
+                            @*
                       @(Model.PublicElections
          .Select(x => "<option value=\"{0}\">{1}</option>".FilledWith(x.Key, x.Value))
          .JoinedAsString()
          .AsRawHtml())
-                      *@               </select>
-                  </div>
-                  <div class="or">
+                      *@
+                        </select>
+                    </div>
+                    <div class="or">
                         or</div>
-                  <div>
-                    <span>Code:</span>
-                    <input id="txtCode" maxlength="15" />
-                  </div>
+                    <div>
+                        <span>Code:</span>
+                        <input id="txtCode" maxlength="15" />
+                    </div>
                 </div>
             </li>
             <li>
                 <p>
-                    Enter your secret code for this election:</p>
+                    Enter the secret code for this election:</p>
                 <div>
                     <input id="txtPasscode" type="password" maxlength="50" />
                 </div>
@@ -71,7 +73,7 @@
         <p style="float: left" id="startJoin" class="StartJoin">
             Join an Election as a Teller</p>
         <p style="float: right" id="startLogin" class="StartJoin">
-            Log in to your Account</p>
+            Manage your Elections</p>
     </section>
     <section class="featureBig LoginPanel">
         <div class="top">

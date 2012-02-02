@@ -6,6 +6,7 @@
     @RenderPage("Headers.cshtml")
     <title>TallyJ @ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
+    <link rel="publisher" href="https://plus.google.com/109176504285792009711">
 </head>
 <body class="@ControllerActionNames">
     <header>
@@ -43,7 +44,7 @@
             {
                 <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
                 <div class="CurrentLocationAndCode">
-                    <span class="CurrentLocationName">@UserSession.CurrentLocationName  @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
+                    <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
                 </div>
                 <div class="Heartbeat">
                     Connected</div>
@@ -68,6 +69,8 @@
                         class="facebook" title="Go to the TallyJ Support page">Facebook</a></li>
                     <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
                         title="View news from #TallyJ_Bahai">Twitter</a></li>
+                    <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+" href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;">
+                        Google+</a></li>
                 </ul>
             </div>
         </div>

@@ -179,5 +179,8 @@
     <NotInBuild Include="Scripts\Views\vImportFileInfo.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
+    <NotInBuild Include="Scripts\Views\_vUserElectionList.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
   </ItemGroup>
 </Project>
