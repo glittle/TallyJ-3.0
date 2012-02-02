@@ -60,6 +60,7 @@ namespace TallyJ.Code.Session
     public static Election CurrentElection
     {
       get { return SessionKey.CurrentElection.FromSession<Election>(null); }
+      set { SessionKey.CurrentElection.SetInSession(value); }
     }
 
     /// <summary>

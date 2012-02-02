@@ -154,10 +154,6 @@ footer
     width: 55px;
     height: 59px;
 }
-.Version
-{
-    display: none;
-}
 .TopInfo
 {
     position: absolute;
@@ -178,8 +174,13 @@ footer
     left: 615px;
     top: 5px;
 }
+.Version
+{
+    display: none;
+}
 .Public .Version, .Dashboard .Version
 {
+    display: block;
     color: #ade65e;
     text-align: right;
     margin-top: -35px;

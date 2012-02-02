@@ -210,6 +210,7 @@ namespace TallyJ.Models
                          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
                          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
+                         EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson ? null : p.EnvNum
                        });
     }
 
@@ -227,6 +228,7 @@ namespace TallyJ.Models
         return new { Message = "Unknown person" }.AsJsonResult();
       }
 
+
       if (person.VotingMethod == voteType)
       {
         // already set this way...turn if off
@@ -237,6 +239,23 @@ namespace TallyJ.Models
       {
         person.VotingMethod = voteType;
         person.VotingLocationGuid = UserSession.CurrentLocationGuid;
+
+        if (voteType != VotingMethodEnum.InPerson)
+        {
+          if (person.EnvNum == null)
+          {
+            // create a new env number
+
+            // get election from DB, not session, as we may need to update it now
+            var election = Db.Elections.Single(e => e.ElectionGuid == UserSession.CurrentElectionGuid);
+            var nextNum = election.LastEnvNum.AsInt() + 1;
+
+            person.EnvNum = nextNum;
+            election.LastEnvNum = nextNum;
+
+            UserSession.CurrentElection = election;
+          }
+        }
       }
 
       Db.SaveChanges();
@@ -256,7 +275,7 @@ namespace TallyJ.Models
       return new
                {
                  PersonLines = PersonLines(people),
-                 LastRowVersion 
+                 LastRowVersion
                }.AsJsonResult();
     }
 
@@ -275,11 +294,11 @@ namespace TallyJ.Models
       catch (SqlException e)
       {
         return
-          new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.
+          new { Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people" }.
             AsJsonResult();
       }
 
-      return new {Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people","person"))}.AsJsonResult();
+      return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }
   }
 }

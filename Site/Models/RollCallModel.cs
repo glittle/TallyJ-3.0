@@ -57,7 +57,8 @@ namespace TallyJ.Models
                            PersonId = p.C_RowId,
                            FullName = p.FirstName + " " + p.LastName,
                            VotingMethod = includeAbsentees ? VotingMethodEnum.TextFor(p.VotingMethod) : "",
-                           Pos = ++i
+                           Pos = ++i,
+                           EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson ? null : p.EnvNum
                          });
     }
   }

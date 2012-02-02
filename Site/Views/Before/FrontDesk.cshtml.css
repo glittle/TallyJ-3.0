@@ -27,6 +27,12 @@ p
     vertical-align: middle;
     cursor: pointer;
 }
+.Env {
+    width: 16px;
+    display: inline-block;
+    text-align: center;
+    font-size: 90%;
+}
 #Main u
 {
     text-decoration: none;

@@ -226,7 +226,7 @@ namespace TallyJ.Models
         if (changed)
         {
           Db.SaveChanges();
-          SessionKey.CurrentElection.SetInSession(election);
+          UserSession.CurrentElection = election;
         }
 
         return new
@@ -252,7 +252,7 @@ namespace TallyJ.Models
         return false;
       }
 
-      SessionKey.CurrentElection.SetInSession(election);
+      UserSession.CurrentElection = election;
 
       new ComputerModel().AddCurrentComputerIntoElection(election.ElectionGuid);
 
@@ -307,7 +307,7 @@ namespace TallyJ.Models
                    Message = "New election not found"
                  }.AsJsonResult();
       }
-      SessionKey.CurrentElection.SetInSession(election);
+      UserSession.CurrentElection = election;
       return new
                {
                  Success = true,
@@ -373,7 +373,7 @@ namespace TallyJ.Models
       Db.Locations.Add(mailedInLocation);
       Db.SaveChanges();
 
-      SessionKey.CurrentElection.SetInSession(election);
+      UserSession.CurrentElection = election;
 
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);

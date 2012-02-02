@@ -10,11 +10,13 @@
         Now Voting:</div>
     <div class="NowVoting">
     </div>
+    <div class="NextUp">
+        Next up...</div>
     <div class="Nav">
       <button id="btnReturn" type="button">
         Return to Dashboard</button>
         <div>Press F11 for full-screen!</div>
         <div>Press Up,Down to move names.</div>
     </div>
-    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters(2, 6, false)).AsRawHtml()
+    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters(2, 6, true)).AsRawHtml()
 </div>
