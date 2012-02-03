@@ -10,47 +10,57 @@
 </head>
 <body class="@ControllerActionNames">
     <header>
-        <div class="content-wrapper">
-            <div class="float-left">
-                @{
-                    if (Request.IsAuthenticated)
-                    {
-                    @Html.ActionLink(" ", "Index", "Dashboard", null, new
-                                                                        {
-                                                                            Class = "site-title",
-                                                                            title = "Go to Dashboard"
-                                                                        })
-                    }
-                    else
-                    {
-                    @Html.ActionLink(" ", "Index", "Public", null, new
-                                                                     {
-                                                                         Class = "site-title",
-                                                                         title = "Go to Welcome Page"
-                                                                     })
-                    }
-                }
-                <div class="Version">
-                    Version: 2.00</div>
-            </div>
-            <div class="headerRight">
-                <section id="login">
-                    @Html.Partial("_LogOnPartial")
-                </section>
-            </div>
-        </div>
-        <section class="TopInfo">
-            @if (Request.IsAuthenticated)
-            {
-                <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
-                <div class="CurrentLocationAndCode">
-                    <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
-                </div>
-                <div class="Heartbeat">
-                    Connected</div>
-            }
-        </section>
-    </header>
+      @if (ControllerActionNames == "Public Index")
+      {
+          <div class="beta1">
+              @*path must be relative to root*@
+              <img src="Images/beta.gif" alt="beta" />
+              TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen" href="mailto:glen.little@gmail.com">
+                  Glen Little</a> and refer to <a title="View document" href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
+                      target="gdoc">this document</a> for status updates!
+          </div> 
+      }
+      <div class="content-wrapper">
+          <div class="float-left">
+              @{
+                  if (Request.IsAuthenticated)
+                  {
+                  @Html.ActionLink(" ", "Index", "Dashboard", null, new
+         {
+             Class = "site-title",
+             title = "Go to Dashboard"
+         })
+                  }
+                  else
+                  {
+                  @Html.ActionLink(" ", "Index", "Public", null, new
+         {
+             Class = "site-title",
+             title = "Go to Welcome Page"
+         })
+                  }
+              }
+              <div class="Version">
+                  Version: 2.00</div>
+          </div>
+          <div class="headerRight">
+              <section id="login">
+                  @Html.Partial("_LogOnPartial")
+              </section>
+          </div>
+      </div>
+      <section class="TopInfo">
+          @if (Request.IsAuthenticated)
+          {
+              <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+              <div class="CurrentLocationAndCode">
+                  <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
+              </div>
+              <div class="Heartbeat">
+                  Connected</div>
+          }
+      </section>
+    </h>
     <div id="body">
         @RenderSection("featured", false)
         <section class="content-wrapper main-content clear-fix">
@@ -61,7 +71,7 @@
         <div class="content-wrapper">
             <div class="float-left">
                 <p>
-                    &copy; @DateTime.Now.Year - TallyJ</p>
+                    &copy; @DateTime.Now.Year Glen Little</p>
             </div>
             <div class="float-right">
                 <ul id="social">
@@ -69,7 +79,8 @@
                         class="facebook" title="Go to the TallyJ Support page">Facebook</a></li>
                     <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
                         title="View news from #TallyJ_Bahai">Twitter</a></li>
-                    <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+" href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;">
+                    <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
+                        href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;">
                         Google+</a></li>
                 </ul>
             </div>

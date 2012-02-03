@@ -19,7 +19,8 @@ section.features a:active section
 {
     border: 2px solid #8dc63e;
 }
-section.LoginPanel a {
+section.LoginPanel a
+{
     text-decoration: underline;
 }
 
@@ -55,7 +56,8 @@ section.featureBig div.top
 {
     text-align: left;
 }
-.featureBig.LoginPanel ol {
+.featureBig.LoginPanel ol
+{
     text-align: center;
 }
 .featureBig li p
@@ -98,7 +100,8 @@ div.or
 {
     color: #999;
 }
-#joinStatus.error {
+#joinStatus.error
+{
     color: red;
 }
 
@@ -129,7 +132,8 @@ section.CenterPanel
 {
     display: none;
 }
-.StartJoin {
+.StartJoin
+{
     padding: 0 20px 0 20px;
     font-size: 20px;
     width: 150px;
@@ -145,4 +149,25 @@ fieldset input[type="text"], fieldset input[type="password"]
     padding: 5px;
     width: 150px;
     text-align: center;
+}
+.beta1
+{
+    display: block;
+    position: absolute;
+    top: 2px;
+    width: 280px;
+    left: 620px;
+    color: #8dc63e;
+}
+.beta1 a {
+    color: #f6941e;
+   
+}
+.beta1 img
+{
+    float: left;
+    width: 114px;
+    height: 115px;
+    vertical-align: top;
+    margin: 0 5px 5px 0;
 }

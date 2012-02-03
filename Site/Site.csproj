@@ -302,6 +302,7 @@
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
     <Content Include="Images\ajax-loader.gif" />
+    <Content Include="Images\beta.gif" />
     <Content Include="Images\BlankBig.png" />
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />

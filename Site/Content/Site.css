@@ -709,3 +709,6 @@ a.twitter
     clear: both;
     margin-top: 5px;
 }
+.beta1 {
+    display: none;
+}
