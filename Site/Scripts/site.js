@@ -36,6 +36,8 @@ function Onload() {
 
     // UpdateActiveInfo();
     ActivatePullInstructions();
+
+    //ShowStatusDisplay('long test message...', 0, 10000);
 }
 
 function ActivatePullInstructions() {
@@ -132,7 +134,7 @@ function LogMessage(msg) {
     /// <summary>Log the message to the console, if the browser supports it
     /// </summary>
     if (typeof console != 'undefined' && console) {
-        console.log((''+msg).toString());
+        console.log(('' + msg).toString());
     } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
         window.console.log(msg);
     }
@@ -263,12 +265,20 @@ var statusDisplay = {
 };
 
 function PrepareStatusDisplay() {
+    //if ($('body').hasClass('Public Index')) {
+    var target = $('body').hasClass('Public Index') ? 'body' : '#body';
+
     $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">'
-    + '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>'
-    + '</div></div></div>');
+            + '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>'
+            + '</div></div></div>');
+    //} else {
+    //    $('#body').prepend('<div class="StatusOuter2 content-wrapper"><span id="statusDisplay2" class="StatusActive" style="display: none;"></span></div>');
+    //}
 }
 
 function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError, showStatic) {
+    LogMessage(minDisplayTimeBeforeStatusReset);
+
     statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset =
          (typeof minDisplayTimeBeforeStatusReset === 'number') ? minDisplayTimeBeforeStatusReset : 15 * 1000;
 
@@ -282,7 +292,7 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
         }, dontShowUntilAfter);
         return;
     }
-    var target = $('#statusDisplay');
+    var target = $('#statusDisplay2, #statusDisplay');
     if (target.length === 0) {
         // ??? on a page without a Status display
     }
@@ -302,7 +312,7 @@ function ShowStatusFailed(msg, keepTime) {
     ResetStatusDisplay();
     var delayBeforeShow = 0;
     var msgShown = false;
-    
+
     if (typeof keepTime == 'undefined') keepTime = 600 * 1000; // 10 minutes
 
     var text;
@@ -335,7 +345,7 @@ function ShowStatusFailed(msg, keepTime) {
     if (!msgShown) {
         ShowStatusDisplay(text, delayBeforeShow, keepTime, true);
     }
-    
+
     return text;
 }
 
@@ -353,11 +363,11 @@ function ResetStatusDisplay() {
         return;
     }
 
-    $('#statusDisplay').hide();
+    HideStatusDisplay();
 }
 
 function HideStatusDisplay() {
-    $('#statusDisplay').hide();
+    $('#statusDisplay2, #statusDisplay').hide();
 }
 
 
@@ -576,7 +586,7 @@ function FormatDate(date, format, forDisplayOnly, includeHrMin) {
     var hourValue = mydate.getHours();
     var minuteValue = mydate.getMinutes();
     var result = '';
-    
+
     switch (format) {
         case 'MMM D, YYYY':
             result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
@@ -660,7 +670,7 @@ String.prototype.filledWith = function () {
                         //LogMessage(token);
                         value = eval(token.substring(1));
                     }
-                } catch(err) {
+                } catch (err) {
                     LogMessage('src data');
                     LogMessage(values);
                     LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);

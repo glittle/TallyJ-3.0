@@ -1,10 +1,10 @@
 ﻿@using TallyJ.Code.Session
 @if (Request.IsAuthenticated)
 {
-    if (ActionName != "RollCall")
+    if (ScreenMode != "Full")
     {
     <div class="MiniDash">
-        @if (ControllerName != "Dashboard")
+        @if (ScreenMode == "Mini")
         {
             <div>
                 @ActionLink2("Dashboard", "Index", "Dashboard")

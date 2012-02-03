@@ -8,59 +8,59 @@
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
     <link rel="publisher" href="https://plus.google.com/109176504285792009711">
 </head>
-<body class="@ControllerActionNames">
+<body class="@ControllerActionNames @(ScreenMode + "Mode")">
     <header>
-      @if (ControllerActionNames == "Public Index")
-      {
-          <div class="beta1">
-              @*path must be relative to root*@
-              <img src="Images/beta.gif" alt="beta" />
-              TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen" href="mailto:glen.little@gmail.com">
-                  Glen Little</a> and refer to <a title="View document" href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
-                      target="gdoc">this document</a> for status updates!
-          </div> 
-      }
-      <div class="content-wrapper">
-          <div class="float-left">
-              @{
-                  if (Request.IsAuthenticated)
-                  {
-                  @Html.ActionLink(" ", "Index", "Dashboard", null, new
-         {
-             Class = "site-title",
-             title = "Go to Dashboard"
-         })
-                  }
-                  else
-                  {
-                  @Html.ActionLink(" ", "Index", "Public", null, new
-         {
-             Class = "site-title",
-             title = "Go to Welcome Page"
-         })
-                  }
-              }
-              <div class="Version">
-                  Version: 2.00</div>
-          </div>
-          <div class="headerRight">
-              <section id="login">
-                  @Html.Partial("_LogOnPartial")
-              </section>
-          </div>
-      </div>
-      <section class="TopInfo">
-          @if (Request.IsAuthenticated)
-          {
-              <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
-              <div class="CurrentLocationAndCode">
-                  <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
-              </div>
-              <div class="Heartbeat">
-                  Connected</div>
-          }
-      </section>
-    </h>
+        @if (ScreenMode == "Normal")
+        {
+            <div class="beta1">
+                <div class="betaImg"></div>
+                TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen"
+                    href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
+                        href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
+                        target="gdoc">this document</a> for status updates!
+            </div> 
+        }
+        <div class="content-wrapper">
+            <div class="float-left">
+                @{
+                    if (Request.IsAuthenticated)
+                    {
+                    @Html.ActionLink(" ", "Index", "Dashboard", null, new
+                                                                        {
+                                                                            Class = "site-title",
+                                                                            title = "Go to Dashboard"
+                                                                        })
+                    }
+                    else
+                    {
+                    @Html.ActionLink(" ", "Index", "Public", null, new
+                                                                     {
+                                                                         Class = "site-title",
+                                                                         title = "Go to Welcome Page"
+                                                                     })
+                    }
+                }
+                <div class="Version">
+                    Version: 2.00</div>
+            </div>
+            <div class="float-left TopInfo">
+                @if (Request.IsAuthenticated)
+                {
+                    <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+                    <div class="CurrentLocationAndCode">
+                        <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
+                    </div>
+                    <div class="Heartbeat">
+                        Connected</div>
+                }
+            </div>
+            <div class="headerRight">
+                <section id="login">
+                    @Html.Partial("_LogOnPartial")
+                </section>
+            </div>
+        </div>
+    </header>
     <div id="body">
         @RenderSection("featured", false)
         <section class="content-wrapper main-content clear-fix">

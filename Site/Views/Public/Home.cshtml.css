@@ -150,24 +150,3 @@ fieldset input[type="text"], fieldset input[type="password"]
     width: 150px;
     text-align: center;
 }
-.beta1
-{
-    display: block;
-    position: absolute;
-    top: 2px;
-    width: 280px;
-    left: 620px;
-    color: #8dc63e;
-}
-.beta1 a {
-    color: #f6941e;
-   
-}
-.beta1 img
-{
-    float: left;
-    width: 114px;
-    height: 115px;
-    vertical-align: top;
-    margin: 0 5px 5px 0;
-}

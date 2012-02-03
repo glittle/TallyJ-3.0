@@ -9,7 +9,6 @@
     ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
     TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
 }
-<p><b>@ViewBag.Title</b> - @ViewBag.Message</p>
 <div id="Main">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.PersonLines()).AsRawHtml()
 </div>

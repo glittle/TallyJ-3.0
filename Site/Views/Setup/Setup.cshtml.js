@@ -157,7 +157,7 @@ var SetupIndexPage = function () {
                 applyValues(info.Election);
             }
             ResetStatusDisplay();
-            ShowStatusDisplay(info.Status, 0, null, false, true);
+            ShowStatusDisplay(info.Status, 0, 3000, false, true);
         });
     };
 

@@ -70,5 +70,27 @@ namespace TallyJ.Code
     {
       return Html.ActionLink(linkText, actionName, controllerName, null, controllerName==ControllerName && actionName==ActionName ? new { Class = "Active" } : null );
     }
+
+    /// <Summary>Either Normal (large logo), Mini (work pages), or Full (presentation)</Summary>
+    public string ScreenMode
+    {
+      get
+      {
+        var mode = "Mini";
+        switch (ControllerName)
+        {
+          case "Public":
+          case "Account":
+          case "Dashboard":
+            mode = "Normal";
+            break;
+
+          case "RollCall":
+            mode = "Full";
+            break;
+        }
+        return mode;
+      }
+    }
   }
 }

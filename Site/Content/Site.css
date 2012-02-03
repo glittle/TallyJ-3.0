@@ -52,7 +52,8 @@ header, footer, hgroup nav, section
 {
     text-align: right;
 }
-.bold {
+.bold
+{
     font-weight: bold;
 }
 .highlight
@@ -109,16 +110,14 @@ h5, h6
 .content-wrapper
 {
     margin: 0 auto;
-    max-width: 960px;
+    width: 960px;
     position: relative;
 }
 .headerRight
 {
-    position: absolute;
-    right: 0;
-    top: 0;
-    text-align: right;
-    padding-right: 3px;
+    position: relative;
+    float: right;
+    top: 8px;
 }
 
 #body
@@ -154,13 +153,13 @@ footer
     width: 55px;
     height: 59px;
 }
-.TopInfo
+.NormalMode .TopInfo
 {
-    position: absolute;
-    top: 0;
-    left: 190px;
+    bottom: 0;
+    position: relative;
+    margin: 40px 0 0 90px;
 }
-.Public .site-title, .Dashboard .site-title
+.NormalMode .site-title
 {
     display: block;
     color: #c8c8c8;
@@ -169,7 +168,7 @@ footer
     width: 400px;
     height: 106px;
 }
-.Public .TopInfo, .Dashboard .TopInfo
+.NormalMode .TopInfo
 {
     left: 615px;
     top: 5px;
@@ -178,7 +177,7 @@ footer
 {
     display: none;
 }
-.Public .Version, .Dashboard .Version
+.NormalMode .Version
 {
     display: block;
     color: #ade65e;
@@ -207,7 +206,8 @@ footer
     text-decoration: none;
 }
 
-#login .MiniDash a.Active {
+#login .MiniDash a.Active
+{
     background-color: #a3acb0;
 }
 
@@ -223,7 +223,8 @@ footer
 
 .MiniDash div
 {
-    float: left;
+    display: table-cell;
+    vertical-align: bottom;
     width: 110px;
 }
 
@@ -604,10 +605,10 @@ a.twitter
 
 /* Statuses */
 
-#statusDisplay
+#statusDisplay, #statusDisplay2
 {
     color: #000;
-    background-color: #C1F1B4;
+    background-color: #ccffbe;
     border: 1px solid #AAA;
     border-top: none;
     padding: 2px 7px 5px 7px;
@@ -617,12 +618,27 @@ a.twitter
     border-bottom-left-radius: 6px;
 }
 
-#statusDisplay.error
+.StatusOuter2
+{
+    text-align: center;
+}
+#statusDisplay2
+{
+    padding-bottom: 2px;
+    position: absolute;
+}
+
+#statusDisplay.error, #statusDisplay2.error
 {
     background-color: yellow;
 }
 
-#statusDisplay span.ui-icon-alert
+#statusDisplay2 .ajaxIcon, #statusDisplay .ajaxIcon
+{
+    margin: 2px 5px 0 0;
+    float: left;
+}
+#statusDisplay2 span.ui-icon-alert, #statusDisplay span.ui-icon-alert
 {
     display: inline-block;
     margin: 0 10px 0 0;
@@ -709,6 +725,29 @@ a.twitter
     clear: both;
     margin-top: 5px;
 }
-.beta1 {
+.beta1
+{
     display: none;
+}
+.NormalMode .beta1
+{
+    display: block;
+    position: absolute;
+    top: 2px;
+    width: 280px;
+    left: 620px;
+    color: #8dc63e;
+}
+.beta1 a
+{
+    color: #f6941e;
+}
+.betaImg
+{
+    float: left;
+    width: 114px;
+    height: 115px;
+    background-image: url(../Images/beta.gif);
+    vertical-align: top;
+    margin: 0 5px 5px 0;
 }
