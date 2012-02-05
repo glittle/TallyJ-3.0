@@ -631,7 +631,6 @@
           <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
           <FunctionImport Name="CurrentRowVersion" ReturnType="Collection(Int64)" />
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
-          <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
           <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
           <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
           <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
@@ -644,6 +643,7 @@
             <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
             <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
           </EntityContainer>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -999,18 +999,6 @@
           <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="SortOrder2" Nullable="false" />
         </EntityType>
-        <EntityType Name="ResultTie">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-          <Property Type="String" Name="TieBreakGroup" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="NumToElect" Nullable="false" />
-          <Property Type="Int32" Name="NumInTie" Nullable="false" />
-          <Property Type="Boolean" Name="TieBreakRequired" />
-          <Property Type="Boolean" Name="IsResolved" />
-        </EntityType>
         <EntityType Name="ImportFile">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -1055,6 +1043,18 @@
           <Property Type="Int32" Name="MatchType" Nullable="true" />
           <Property Type="Int32" Name="BestMatch" Nullable="false" />
         </ComplexType>
+        <EntityType Name="ResultTie">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="String" Name="TieBreakGroup" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Type="Boolean" Name="TieBreakRequired" />
+          <Property Type="Int32" Name="NumToElect" Nullable="false" />
+          <Property Type="Int32" Name="NumInTie" Nullable="false" />
+          <Property Type="Boolean" Name="IsResolved" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1415,19 +1415,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ResultTies">
-            <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
-              <MappingFragment StoreEntitySet="ResultTie">
-                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
-                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
-                <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
-                <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
-                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ImportFiles">
             <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
               <MappingFragment StoreEntitySet="ImportFile">
@@ -1478,6 +1465,19 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="ResultTies">
+            <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
+              <MappingFragment StoreEntitySet="ResultTie">
+                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
+                <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
+                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
+                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1523,9 +1523,9 @@
         <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="12.75" PointY="4.75" Height="2.7494921875000031" />
         <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="12.75" PointY="8.75" Height="5.6340136718750067" />
         <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="3.375" PointY="13.75" Height="4.2879036458333317" />
-        <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="5.375" PointY="13.75" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="TallyJ2Model.ImportFile" Width="1.5" PointX="7.375" PointY="13.75" Height="3.5186979166666674" />
         <EntityTypeShape EntityType="TallyJ2Model.vImportFileInfo" Width="1.5" PointX="9.375" PointY="13.75" Height="3.3263964843750102" />
+        <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="0.75" PointY="15.75" Height="2.3648893229166674" />
       </Diagram>
     </Diagrams>
   </Designer>
