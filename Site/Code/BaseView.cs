@@ -66,9 +66,10 @@ namespace TallyJ.Code
       get { return Url.RequestContext.RouteData.Values["action"].ToString(); }
     }
 
-    public MvcHtmlString ActionLink2(string linkText, string actionName, string controllerName)
+    public MvcHtmlString ActionLink2(string linkText, string actionName, string controllerName, bool show = true)
     {
-      return Html.ActionLink(linkText, actionName, controllerName, null, controllerName==ControllerName && actionName==ActionName ? new { Class = "Active" } : null );
+      if (!show) return null;
+      return Html.ActionLink(linkText, actionName, controllerName, null, controllerName == ControllerName && actionName == ActionName ? new { Class = "Active" } : null);
     }
 
     /// <Summary>Either Normal (large logo), Mini (work pages), or Full (presentation)</Summary>
@@ -77,15 +78,27 @@ namespace TallyJ.Code
       get
       {
         var mode = "Mini";
+
         switch (ControllerName)
         {
           case "Public":
           case "Account":
-          case "Dashboard":
             mode = "Normal";
             break;
 
+          //case "Dashboard":
+          //  switch (ActionName)
+          //  {
+          //    case "ChooseElection":
+          //      break;
+          //    default:
+          //      mode = "Normal";
+          //      break;
+          //  }
+          //  break;
+
           case "RollCall":
+          case "Presenter":
             mode = "Full";
             break;
         }

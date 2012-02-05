@@ -22,7 +22,7 @@
 *@
 <section class="features">
     <h2 class="featuresTitle">
-        Preparing Before the Election</h2>
+        Preparing for the Election</h2>
     @if (UserSession.IsKnownTeller)
     {
         <a href="@Url.Action("Index", "Setup")">
@@ -35,24 +35,31 @@
         <a href="@Url.Action("ImportExport", "Setup")">
             <section class="feature">
                 <h3>
-                    Load Names</h3>
+                    Import Names</h3>
                 <p>
                     Upload and import names of people from CSV files.</p>
             </section></a>
-        <a href="@Url.Action("Learning", "Public")">
+    }
+    <a href="@Url.Action("People", "Setup")">
+        <section class="feature">
+            <h3>
+                Manage People</h3>
+            <p>
+                Edit people's names.
+            </p>
+        </section></a><a href="@Url.Action("Learning", "Public")">
             <section class="feature">
                 <h3>
                     Reference Materials</h3>
                 <p>
                     Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
             </section></a>
-    }
     <div class="Clear">
     </div>
 </section>
 <section class="features">
     <h2 class="featuresTitle">
-        Welcoming Voters</h2>
+        Before the Voting</h2>
     <a href="@Url.Action("FrontDesk", "Before")">
         <section class="feature">
             <h3>
@@ -60,21 +67,14 @@
             <p>
                 Welcome voters to the election venue. Record who is participating in the election.
             </p>
-        </section></a> <a href="@Url.Action("People", "Setup")">
+        </section></a> <a href="@Url.Action("RollCall", "Before")">
             <section class="feature">
                 <h3>
-                    Manage People</h3>
+                    Roll Call</h3>
                 <p>
-                    Edit people's names.
+                    Display the names of those who are voting. (After starting, press F11.)
                 </p>
-            </section></a> <a href="@Url.Action("RollCall", "Before")">
-                <section class="feature">
-                    <h3>
-                        Roll Call</h3>
-                    <p>
-                        Display the names of those who are voting. (After starting, press F11.)
-                    </p>
-                </section></a>
+            </section></a>
     <div class="Clear">
     </div>
 </section>
@@ -88,15 +88,16 @@
             <p>
                 Type in the names found on ballots.
             </p>
-        </section></a> <a href="@Url.Action("Monitor", "After")">
+        </section></a>
+    @if (UserSession.IsKnownTeller)
+    {
+        <a href="@Url.Action("Monitor", "After")">
             <section class="feature">
                 <h3>
                     Monitor Process</h3>
                 <p>
                     Centrally monitor progress of tellers.</p>
             </section></a>
-    @if (UserSession.IsKnownTeller)
-    {
         <a href="@Url.Action("Analyze", "After")">
             <section class="feature">
                 <h3>
@@ -123,7 +124,7 @@
     @if (UserSession.IsKnownTeller)
     {
         <a href="@Url.Action("Reports", "After")">
-            <section class="feature todo">
+            <section class="feature">
                 <h3>
                     Generate Reports</h3>
                 <p>

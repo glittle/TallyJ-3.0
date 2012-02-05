@@ -1,0 +1,85 @@
+﻿.chooser
+{
+    width: 200px;
+    float: left;
+    background-color: cornsilk;
+}
+.chooser ul {
+    list-style: decimal;
+}
+.chooser ul li a {
+    text-decoration: none;
+}
+.chooser ul li:hover a {
+    color: blue;
+}
+.chooser ul li {
+}
+.chooser h1 {
+    font-size: 12pt;
+    margin: 0;
+}
+.status {
+    color: red;
+    font-size: 110%;
+    font-weight: bold;
+}
+#report
+{
+    border: outset 3px gainsboro;
+    float: left;
+    width: 735px;
+    padding: 0 3pt 6pt 3pt;
+    margin-left: 5px;
+    font-size: 13pt;
+    padding: 5px;
+    height: 100%;
+}
+
+#report h1 {
+    margin: 0 0 4pt 0;
+    padding: 0;
+    font-size: 120%;
+}
+#report p.Comment {
+    font-size: 80%;
+    color: #999;
+}
+
+#report > div.row
+{
+    display: table-row;
+}
+#report > div.row > div
+{
+    display: table-cell;
+    padding: 3px 5px 3px 8px;
+}
+
+#report .Col2
+{
+    width: 49%;
+    float: left;
+    display: inline-block;
+}
+.small1 {
+    font-size: 80%;
+}
+#Status {
+    margin: 12px;
+    font-size: 120%;
+    color: red;
+    float: left;
+}
+
+@media print
+{
+    header, .chooser, footer
+    {
+        display: none;
+    }
+    #report
+    {
+        border: none;
+    }
+}

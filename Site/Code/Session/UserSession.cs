@@ -94,7 +94,7 @@ namespace TallyJ.Code.Session
       get
       {
         var current = CurrentLocation;
-        return current==null?"[No location selected]" : current.Name;
+        return current == null ? "[No location selected]" : current.Name;
       }
     }
 
@@ -178,6 +178,14 @@ namespace TallyJ.Code.Session
         {
           IsGuestTeller = false;
         }
+      }
+    }
+
+    public static string WebProtocol
+    {
+      get
+      {
+        return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http";
       }
     }
   }

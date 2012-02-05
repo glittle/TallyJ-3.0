@@ -8,14 +8,21 @@ var PresenterPage = function () {
         footTemplate: '',
         invalidsRowTemplate: '',
         refreshTimeout: null,
-        chart: null
+        chart: null,
+        reportHidden: true
     };
 
     var preparePage = function () {
 
         $('#btnRefesh').click(function () {
-            getReportData(false);
+            getReportData();
         });
+        $('#btnReturn').click(function () {
+            location.href = site.rootUrl + 'Dashboard';
+            return false;
+        });
+
+        $(window).on('keypress', keyPressed);
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
@@ -26,34 +33,36 @@ var PresenterPage = function () {
         tFoot.html('');
 
         setTimeout(function () {
-            getReportData(true);
+            getReportData();
         }, 0);
     };
 
-    var getReportData = function (firstLoad) {
+    var getReportData = function () {
         ShowStatusDisplay('Getting results...', 0);
         clearTimeout(settings.refreshTimeout);
-        CallAjaxHandler(publicInterface.controllerUrl + '/GetReport', null, showInfo, firstLoad);
+        CallAjaxHandler(publicInterface.controllerUrl + '/GetReport', null, showInfo);
     };
 
-    var showInfo = function (info, firstLoad) {
+    var showInfo = function (info) {
         var votesTable = $('table.Main');
 
         ResetStatusDisplay();
-
-        // refresh again...
-        settings.refreshTimeout = setTimeout(function () {
-            getReportData();
-        }, 1000 * 60);
 
         if (info.Status != 'Report') {
             $('#Results').hide();
             $('#Wait').show();
             $('#Status').text(info.StatusText);
 
+            settings.refreshTimeout = setTimeout(function () {
+                getReportData();
+            }, 30000);
+
             return;
         }
 
+        settings.reportHidden = true;
+
+        $('.Holder').hide();
         $('#Results').show();
         $('#Wait').hide();
 
@@ -61,14 +70,13 @@ var PresenterPage = function () {
 
             votesTable.show();
 
-            $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.ReportVotes)));
+            $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info)));
 
-            //TODO: add foot info
 
-            setTimeout(function () {
-                $('#chart').show();
-                showChart(info.ChartVotes);
-            }, 100);
+            //            setTimeout(function () {
+            //                $('#chart').show();
+            //                showChart(info.ChartVotes);
+            //            }, 100);
         }
         else {
         }
@@ -79,6 +87,31 @@ var PresenterPage = function () {
             span.text(value);
         });
 
+    };
+
+    var keyPressed = function (ev) {
+        //LogMessage(ev.which);
+        switch (ev.which) {
+            case 66: // B
+            case 98: // b
+            case 27: // esc
+                if (!settings.reportHidden) {
+                    $('.Holder').fadeOut();
+                    settings.reportHidden = true;
+                }
+                break;
+
+            case 32: // space
+                if (settings.reportHidden) {
+                    $('.Ready').fadeOut(500, null, function () {
+                        $('.Holder').fadeIn(3000);
+                    });
+                    settings.reportHidden = false;
+                }
+                break;
+
+            default:
+        }
     };
 
     var showChart = function (info) {
@@ -131,11 +164,16 @@ var PresenterPage = function () {
         return needReview;
     };
 
-    var expand = function (results) {
+    var expand = function (info) {
+        var results = info.ReportVotes;
+        var foundExtra = false;
+
         $.each(results, function (i) {
-            this.ClassName = (i % 2 == 0 ? 'Even' : 'Odd')
-                + (this.IsTied ? ' Tied' : '');
-            this.Comments = this.IsTied ? 'Tied' : '';
+            this.ClassName = this.Section == 'E' ? (foundExtra ? 'Extra' : ' FirstExtra') : '';
+            this.VoteDisplay = this.VoteCount + (this.TieBreakCount ? ', ' + this.TieBreakCount : '');
+            if (this.Section == 'E') {
+                foundExtra = true;
+            }
         });
         return results;
     };

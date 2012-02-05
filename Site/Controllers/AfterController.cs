@@ -57,7 +57,7 @@ namespace TallyJ.Controllers
     {
       var resultsModel = new ResultsModel();
 
-      return resultsModel.FinalResults;
+      return resultsModel.FinalResultsJson;
     }
 
     [ForAuthenticatedTeller]
@@ -74,6 +74,16 @@ namespace TallyJ.Controllers
     public JsonResult UpdateListing(bool listOnPage)
     {
       return new ElectionModel().UpdateListOnPageJson(listOnPage);
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult GetReportData(string code)
+    {
+      return new ResultsModel().GetReportData(code);
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult SaveTieCounts(string counts)
+    {
+      return new ResultsModel().SaveTieCounts(counts);
     }
   }
 

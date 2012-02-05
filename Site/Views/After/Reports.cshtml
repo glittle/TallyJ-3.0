@@ -1,2 +1,23 @@
-﻿@model object
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model ResultsModel
+@{
+    ViewBag.Title = "Reports";
+    ViewBag.Message = "Report the results";
 
+    TemplateLoader.RequireTemplates(TemplateLoader.File.ReportTemplates);
+    ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+}
+<div class="chooser">
+  <h1>Reports</h1>
+  <ul id="chooser">
+    
+  </ul>
+  <button type="button" onclick="window.print()">Print (Ctrl+P)</button>
+</div>
+<div id="Status">
+  Select a report...
+</div>
+<div id="report">
+</div>

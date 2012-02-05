@@ -32,13 +32,13 @@ section.features
     border: 1px solid #d7d7d7;
     border-right: none;
     border-bottom: none;
-    padding-left: 30px;
+    padding-left: 20px;
     margin-bottom: 15px;
-    margin-left: 50px;
+    margin-left: 0px;
 }
 .featuresTitle
 {
-    margin: -5px 0 0px -27px;
+    margin: -5px 0 0px -17px;
     color: #bbb;
     font-weight: normal;
     font-style: italic;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -406,7 +407,7 @@ namespace TallyJ.Models
     public IEnumerable<Election> VisibleElections()
     {
       return Db.Elections
-        //.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "")
+        .Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "")
         .ToList()
         .Where(e => e.ListForPublic.AsBool() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
@@ -466,5 +467,6 @@ namespace TallyJ.Models
         Db.SaveChanges();
       }
     }
+
   }
 }

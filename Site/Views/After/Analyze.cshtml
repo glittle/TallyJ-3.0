@@ -13,106 +13,138 @@
 <script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
 <button type="button" id="btnRefresh">
     Re-run Analysis</button>
-<div style="padding-bottom: 15px;">
-    Election Status:<br/>
-  <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
-    @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
-  </select>
-  <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")> <label for="chkShowAll">Show "full report" with all votes on report screens?</label>
-</div>
-<div id="chart">
-</div>
 <div id="InitialMsg">
-  Analyzing all ballots...
+    Analyzing all ballots...
 </div>
-<table class="Main">
-    <caption>
-        Full Voting Results</caption>
-    <thead>
-        <tr>
-            <th>
-                Rank
-            </th>
-            <th>
-                Person
-            </th>
-            <th>
-                Votes
-            </th>
-            <th>
-                Tie-Vote?
-            </th>
-        </tr>
-    </thead>
-    <tbody id="mainBody">
-        <tr class="{ClassName}">
-            <td>
-                {Rank}
-            </td>
-            <td class="Left">
-                {PersonName}
-            </td>
-            <td>
-                {VoteCount}
-            </td>
-            <td>
-                {TieVote}
-            </td>
-        </tr>
-    </tbody>
-    <tfoot id="mainFoot">
-        <tr class="{ClassName}">
-            <th>
-                {PersonName}
-            </th>
-            <td>
-                {VoteCount}
-            </td>
-            <td>
-                {Rank}
-            </td>
-            <td>
-                {TieVote}
-            </td>
-        </tr>
-    </tfoot>
-</table>
-<table id="invalids">
-    <caption>
-        Ballots Requiring Review</caption>
-    <tbody id="invalidsBody">
+<div class="LeftHalf">
+    <div class="float-left">
+        <b>Election Status</b> (set by head teller)<br />
+        <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
+            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
+        </select>
+        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")>
+    <label for="chkShowAll">
+        Show "full report" with all votes on report screens?</label>*@
+    </div>
+    <table id="totalCounts" class="float-left">
+        <caption>
+            Total Counts</caption>
         <tr>
             <td>
-                {Ballot}
+                Total Voters
+            </td>
+            <td>
+                <span data-name="NumVoted"></span>
             </td>
         </tr>
-    </tbody>
-</table>
-<table id="totalCounts">
-    <caption>
-        Total Counts</caption>
-    <tr>
-        <td>
-            Total Ballots Entered
-        </td>
-        <td>
-            <span data-name="NumBallots"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Total Invalid Ballots
-        </td>
-        <td>
-            <span data-name="TotalInvalidBallots"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Total Invalid Votes
-        </td>
-        <td>
-            <span data-name="TotalInvalidVotes"></span>
-        </td>
-    </tr>
-</table>
+        <tr>
+            <td>
+                Total Ballots Entered
+            </td>
+            <td>
+                <span data-name="NumBallots"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Total Invalid Ballots
+            </td>
+            <td>
+                <span data-name="TotalInvalidBallots"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Total Invalid Votes
+            </td>
+            <td>
+                <span data-name="TotalInvalidVotes"></span>
+            </td>
+        </tr>
+    </table>
+    <div class="Clear">
+    </div>
+    <table class="Main">
+        <caption>
+            Full Voting Results</caption>
+        <thead>
+            <tr>
+                <th>
+                    Rank
+                </th>
+                <th>
+                    Person
+                </th>
+                <th>
+                    Votes
+                </th>
+                <th>
+                    Close?
+                </th>
+                <th>
+                    Tied?
+                </th>
+            </tr>
+        </thead>
+        <tbody id="mainBody">
+            <tr class="{ClassName}">
+                <td>
+                    {Rank}
+                </td>
+                <td class="Left">
+                    {PersonName}
+                </td>
+                <td>
+                    {VoteDisplay}
+                </td>
+                <td>
+                    {CloseUpDown}
+                </td>
+                <td>
+                    {TieVote}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="invalids">
+        <caption>
+            Ballots Requiring Review</caption>
+        <tbody id="invalidsBody">
+            <tr>
+                <td>
+                    {Ballot}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="RightHalf">
+    <table id="HasCloseVote">
+        <caption>
+            Review Needed</caption>
+        <tr>
+            <td>
+                Some results are very close to a <span>tie</span><span class="HasTie">, or are actually
+                    tied</span>. A careful review is recommended to ensure that each of the ballots
+                has been entered correctly. If there are still tied votes after a review, then a
+                tie-break vote may be required, as described below.
+            </td>
+        </tr>
+    </table>
+    <table id="tieResults">
+        <caption>
+            Tied Votes Analysis</caption>
+        <tbody id="tieResultsBody">
+            <tr class="{rowClass}">
+                <td class="TieBreakGroup">
+                    {TieBreakGroup}
+                </td>
+                <td>
+                    {Conclusion} {People} {Buttons}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="chart">
+    </div>
+</div>

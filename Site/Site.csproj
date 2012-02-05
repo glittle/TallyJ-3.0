@@ -303,6 +303,7 @@
     <Compile Include="EF\TallyJ2Entities.cs" />
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\beta.gif" />
+    <Content Include="Images\beta2.gif" />
     <Content Include="Images\BlankBig.png" />
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />
@@ -394,6 +395,7 @@
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
     <Content Include="Images\LogoTopSmall.png" />
+    <Content Include="JsTemplates\ReportTemplates.html" />
     <Content Include="JsTemplates\RollCallLine.html" />
     <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\FrontDeskLine.html" />
@@ -427,6 +429,8 @@
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Unity.Mvc3.README.txt" />
+    <Content Include="Views\After\Reports.cshtml.css" />
+    <Content Include="Views\After\Reports.cshtml.js" />
     <Content Include="Views\After\Monitor.cshtml.css">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
@@ -548,7 +552,6 @@
     <Content Include="Views\After\Analyze.cshtml.js">
       <DependentUpon>Analyze.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\After\Presenter.cshtml" />
     <Content Include="Views\After\Monitor.cshtml" />
     <Content Include="App.Config" />
@@ -574,6 +577,7 @@
     <Content Include="Views\Setup\ImportExport.cshtml" />
     <Content Include="Views\Ballots\BallotSingle.cshtml" />
     <Content Include="Views\Before\RollCall.cshtml" />
+    <Content Include="Views\After\Reports.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

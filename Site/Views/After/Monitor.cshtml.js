@@ -108,7 +108,10 @@ var MonitorPage = function () {
         var form = {
             listOnPage: chk.prop('checked')
         };
-        CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing', form);
+        ShowStatusDisplay('Saving...');
+        CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing', form, function () {
+            ShowStatusDisplay('Saved', 0, 3000, false, true);
+        });
     };
 
     var refresh = function () {
@@ -151,7 +154,9 @@ var MonitorPage = function () {
                     this.BallotsReport = '<span class=error>{0}</span>'.filledWith(this.BallotsReport);
                 }
             } else {
-                this.BallotsReport = '<br>{0} entered'.filledWith(this.BallotsAtLocation); // ' entered';
+                if (this.BallotsAtLocation) {
+                    this.BallotsReport = '{0} entered'.filledWith(this.BallotsAtLocation); // ' entered';
+                }
             }
         });
 

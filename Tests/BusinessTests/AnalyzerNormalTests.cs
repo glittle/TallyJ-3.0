@@ -213,6 +213,12 @@ namespace Tests.BusinessTests
       model.GenerateResults();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
 
       results.Count.ShouldEqual(3);
 
@@ -241,6 +247,100 @@ namespace Tests.BusinessTests
       result3.TieBreakGroup.ShouldEqual("A");
       result3.ForceShowInOther.ShouldEqual(true);
       result3.TieBreakRequired.ShouldEqual(true);
+    }
+
+    [TestMethod]
+    public void Election_3_people_with_Tie_Not_Required()
+    {
+      var electionGuid = Guid.NewGuid();
+      var election = new Election
+                       {
+                         ElectionGuid = electionGuid,
+                         NumberToElect = 3,
+                         NumberExtra = 0
+                       };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
+
+      var ballot1Guid = Guid.NewGuid();
+      var ballot2Guid = Guid.NewGuid();
+      var ballot3Guid = Guid.NewGuid();
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+                      };
+
+      var person1Guid = Guid.NewGuid();
+      var person2Guid = Guid.NewGuid();
+      var person3Guid = Guid.NewGuid();
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot1Guid},
+                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot2Guid},
+                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot3Guid},
+                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot1Guid},
+                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot2Guid},
+                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot3Guid},
+                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot1Guid},
+                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot2Guid},
+                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot3Guid},
+                    };
+      foreach (var vVoteInfo in votes)
+      {
+        vVoteInfo.ElectionGuid = electionGuid;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+      }
+
+      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+
+      model.GenerateResults();
+
+      var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(0);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(false);
+
+      results.Count.ShouldEqual(3);
+
+      var result1 = results[0];
+      result1.VoteCount.ShouldEqual(3);
+      result1.Rank.ShouldEqual(1);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
+      result1.IsTied.ShouldEqual(true);
+      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakRequired.ShouldEqual(false);
+      result1.ForceShowInOther.ShouldEqual(false);
+
+      var result2 = results[1];
+      result2.VoteCount.ShouldEqual(3);
+      result2.Rank.ShouldEqual(2);
+      result2.Section.ShouldEqual(ResultHelper.Section.Top);
+      result2.IsTied.ShouldEqual(true);
+      result2.TieBreakGroup.ShouldEqual("A");
+      result2.ForceShowInOther.ShouldEqual(false);
+      result2.TieBreakRequired.ShouldEqual(false);
+
+      var result3 = results[2];
+      result3.VoteCount.ShouldEqual(3);
+      result3.Rank.ShouldEqual(3);
+      result3.Section.ShouldEqual(ResultHelper.Section.Top);
+      result3.IsTied.ShouldEqual(true);
+      result3.TieBreakGroup.ShouldEqual("A");
+      result3.ForceShowInOther.ShouldEqual(false);
+      result3.TieBreakRequired.ShouldEqual(false);
     }
 
     [TestMethod]
@@ -290,6 +390,13 @@ namespace Tests.BusinessTests
       model.GenerateResults();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
 
       results.Count.ShouldEqual(3);
 
@@ -450,6 +557,12 @@ namespace Tests.BusinessTests
       model.GenerateResults();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
 
       results.Count.ShouldEqual(3);
 
@@ -558,9 +671,17 @@ namespace Tests.BusinessTests
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
       var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
-      
-      results.Count.ShouldEqual(6);
+
       resultTies.Count.ShouldEqual(2);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(2);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
+
+      resultTies[1].NumToElect.ShouldEqual(1);
+      resultTies[1].NumInTie.ShouldEqual(3);
+      resultTies[1].TieBreakRequired.ShouldEqual(true);
+
+      results.Count.ShouldEqual(6);
 
       results[0].IsTied.ShouldEqual(false);
       results[0].CloseToPrev.ShouldEqual(false);
@@ -611,11 +732,6 @@ namespace Tests.BusinessTests
       results[5].TieBreakRequired = true;
       results[5].ForceShowInOther = true;
 
-      resultTies[0].NumToElect.ShouldEqual(1);
-      resultTies[0].NumInTie.ShouldEqual(2);
-
-      resultTies[1].NumToElect.ShouldEqual(1);
-      resultTies[1].NumInTie.ShouldEqual(3);
     }
 
   }

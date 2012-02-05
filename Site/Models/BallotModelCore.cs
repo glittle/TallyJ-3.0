@@ -112,6 +112,31 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
+    public JsonResult SetNeedsReview(bool needsReview)
+    {
+      var ballot = CurrentBallot();
+
+      if (needsReview)
+      {
+        ballot.StatusCode = BallotStatusEnum.Review;
+      }
+      else
+      {
+        ballot.StatusCode = BallotStatusEnum.Ok;
+
+        var ballotAnalyzer = new BallotAnalyzer();
+        ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVotes());
+      }
+
+      Db.SaveChanges();
+      
+      return new
+               {
+                 ballot.StatusCode,
+                 StatusCodeText = BallotStatusEnum.TextFor(ballot.StatusCode),
+               }.AsJsonResult();
+    }
+
     /// <Summary>Switch current ballot</Summary>
     public void SetAsCurrentBallot(int ballotId)
     {
@@ -167,7 +192,7 @@ namespace TallyJ.Models
 
     public IEnumerable<object> CurrentVotesForJson()
     {
-      return CurrentVotes()
+      return CurrentVoteInfoes()
         .OrderBy(v => v.PositionOnBallot)
         .Select(v => new
                        {
@@ -190,16 +215,16 @@ namespace TallyJ.Models
       {
         // update existing record
 
+        // find info about the existing Vote
         var voteInfo =
           Db.vVoteInfoes.SingleOrDefault(vi => vi.VoteId == voteId && vi.ElectionGuid == currentElectionGuid);
 
         if (voteInfo == null)
         {
-          return new {Updated = false, Error = "Invalid vote id"}.AsJsonResult();
+          // problem... client has a vote number, but we didn't find...
+          return new { Updated = false, Error = "Invalid vote id" }.AsJsonResult();
         }
 
-        // problem... client has a vote number, but we didn't find...
-        // TODO : deal with this?
         var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
 
         vote.SingleNameElectionCount = count;
@@ -215,8 +240,8 @@ namespace TallyJ.Models
         return new
                  {
                    Updated = true,
-                   BallotStatus = ballotStatus
-                   //Location = new LocationModel().CurrentBallotLocationInfo()
+                   BallotStatus = ballotStatus,
+                   BallotStatusText = BallotStatusEnum.TextFor(ballotStatus)
                  }.AsJsonResult();
       }
 
@@ -270,7 +295,8 @@ namespace TallyJ.Models
                    Updated = true,
                    VoteId = vote.C_RowId,
                    pos = vote.PositionOnBallot,
-                   BallotStatus = ballotStatus
+                   BallotStatus = ballotStatus,
+                   BallotStatusText =  BallotStatusEnum.TextFor(ballotStatus)
                  }.AsJsonResult();
       }
 
@@ -300,7 +326,8 @@ namespace TallyJ.Models
                {
                  Deleted = true,
                  Votes = CurrentVotesForJson(),
-                 BallotStatus = ballotStatus
+                 BallotStatus = ballotStatus,
+                 BallotStatusText = BallotStatusEnum.TextFor(ballotStatus)
                }.AsJsonResult();
     }
 
@@ -339,7 +366,18 @@ namespace TallyJ.Models
       return Db.Ballots.Single(b => b.C_RowId == ballotId);
     }
 
-    public List<vVoteInfo> CurrentVotes()
+    public List<Vote> CurrentVotes()
+    {
+      var ballot = GetCurrentBallotInfo();
+
+      if (ballot == null)
+      {
+        return new List<Vote>();
+      }
+      return Db.Votes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
+    }
+
+    public List<vVoteInfo> CurrentVoteInfoes()
     {
       var ballot = GetCurrentBallotInfo();
 

@@ -19,6 +19,7 @@ namespace TallyJ.EF
         public string TieBreakGroup { get; set; }
         public int NumToElect { get; set; }
         public int NumInTie { get; set; }
-        public string Comments { get; set; }
+        public Nullable<bool> TieBreakRequired { get; set; }
+        public Nullable<bool> IsResolved { get; set; }
     }
 }

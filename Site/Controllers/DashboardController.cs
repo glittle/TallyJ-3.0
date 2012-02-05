@@ -14,7 +14,8 @@ namespace TallyJ.Controllers
     {
       if (UserSession.CurrentElection == null || UserSession.CurrentLocation == null)
       {
-        return View("ChooseElection", new ElectionsListViewModel());
+        RedirectToAction("ChooseElection");
+        // return View("ChooseElection", new ElectionsListViewModel());
       }
 
       return View(new ElectionsListViewModel());

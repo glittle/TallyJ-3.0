@@ -10,16 +10,6 @@
 </head>
 <body class="@ControllerActionNames @(ScreenMode + "Mode")">
     <header>
-        @if (ScreenMode == "Normal")
-        {
-            <div class="beta1">
-                <div class="betaImg"></div>
-                TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen"
-                    href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
-                        href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
-                        target="gdoc">this document</a> for status updates!
-            </div> 
-        }
         <div class="content-wrapper">
             <div class="float-left">
                 @{
@@ -43,6 +33,16 @@
                 <div class="Version">
                     Version: 2.00</div>
             </div>
+        @if (ScreenMode == "Normal")
+        {
+            <div class="beta1">
+                <div class="betaImg"></div>
+                TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen"
+                    href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
+                        href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
+                        target="gdoc">this document</a> for status updates!
+            </div> 
+        }
             <div class="float-left TopInfo">
                 @if (Request.IsAuthenticated)
                 {

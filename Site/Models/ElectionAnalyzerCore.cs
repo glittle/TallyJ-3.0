@@ -22,27 +22,28 @@ namespace TallyJ.Models
 
   public abstract class ElectionAnalyzerCore : DataConnectedModel, IElectionAnalyzer
   {
-    const int ThresholdForCloseVote = 3;
+    private const int ThresholdForCloseVote = 3;
 
     private readonly Func<Result, Result> _addResult;
+    private readonly Func<ResultTie, ResultTie> _addResultTie;
     private readonly Func<Result, Result> _deleteResult;
+    private readonly Func<ResultTie, ResultTie> _deleteResultTie;
     private readonly Func<int> _saveChanges;
     private BallotAnalyzer _ballotAnalyzer;
+    private List<Ballot> _ballots;
     private Election _election;
     private List<Person> _people;
     private ResultSummary _resultSummary;
+    private List<ResultTie> _resultTies;
     private List<Result> _results;
     private List<vVoteInfo> _voteinfos;
-    private List<Ballot> _ballots;
-    private List<ResultTie> _resultTies;
-    private Func<ResultTie, ResultTie> _deleteResultTie;
-    private Func<ResultTie, ResultTie> _addResultTie;
 
     protected ElectionAnalyzerCore()
     {
     }
 
-    protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people, List<Ballot> ballots, List<vVoteInfo> voteinfos)
+    protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people, List<Ballot> ballots,
+                                   List<vVoteInfo> voteinfos)
     {
       _election = election;
       _resultSummary = fakes.ResultSummary;
@@ -110,14 +111,27 @@ namespace TallyJ.Models
       get
       {
         return _resultTies ?? (_resultTies = Db.ResultTies
-                                       .Where(p => p.ElectionGuid == CurrentElection.ElectionGuid)
-                                       .ToList());
+                                               .Where(p => p.ElectionGuid == CurrentElection.ElectionGuid)
+                                               .ToList());
       }
     }
 
     internal Election CurrentElection
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
+    }
+
+    public List<Ballot> Ballots
+    {
+      get
+      {
+        return _ballots ?? (_ballots = Db.Ballots
+                                         .Where(
+                                           b =>
+                                           Db.Locations.Where(l => l.ElectionGuid == CurrentElection.ElectionGuid).
+                                             Select(l => l.LocationGuid).Contains(b.LocationGuid))
+                                         .ToList());
+      }
     }
 
     #region IElectionAnalyzer Members
@@ -187,16 +201,6 @@ namespace TallyJ.Models
       }
     }
 
-    public List<Ballot> Ballots
-    {
-      get
-      {
-        return _ballots ?? (_ballots = Db.Ballots
-                                                 .Where(b => Db.Locations.Where(l => l.ElectionGuid == CurrentElection.ElectionGuid).Select(l => l.LocationGuid).Contains(b.LocationGuid))
-                                                 .ToList());
-      }
-    }
-
     /// <Summary>In the Core, do some common results generation</Summary>
     public virtual ResultSummary GenerateResults()
     {
@@ -218,17 +222,16 @@ namespace TallyJ.Models
     protected void DoFinalAnalysis()
     {
       // remove any results no longer needed
-      Results.Where(r=>r.VoteCount.AsInt()==0).ToList().ForEach(r=>RemoveResult(r));
-      
+      Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => RemoveResult(r));
+
       // remove any existing Tie info
-      ResultTies.ForEach(rt=>RemoveResultTie(rt));
+      ResultTies.ForEach(rt => RemoveResultTie(rt));
 
       DetermineOrderAndSections();
 
       AnalyzeForTies();
 
       SaveChanges();
-
     }
 
     /// <Summary>Assign an ordinal rank number to all results. Ties are NOT reflected in rank number. If there is a tie, they are sorted "randomly".</Summary>
@@ -240,7 +243,9 @@ namespace TallyJ.Models
       var ordinalRankInExtra = 0;
 
       // use RowId after VoteCount to ensure results are consistent when there is a tie in the VoteCount
-      foreach (var result in Results.OrderByDescending(r => r.VoteCount).ThenBy(r => r.TieBreakCount).ThenBy(r => r.C_RowId))
+      foreach (
+        var result in
+          Results.OrderByDescending(r => r.VoteCount).ThenByDescending(r => r.TieBreakCount).ThenBy(r => r.C_RowId))
       {
         ordinalRank++;
         result.Rank = ordinalRank;
@@ -318,7 +323,6 @@ namespace TallyJ.Models
 
         AnalyzeTieGroup(resultTie, Results.Where(r => r.TieBreakGroup == code).OrderBy(r => r.Rank).ToList());
       }
-
     }
 
     private void AnalyzeTieGroup(ResultTie resultTie, List<Result> results)
@@ -326,8 +330,9 @@ namespace TallyJ.Models
       AssertAtRuntime.That(results.Count != 0);
 
       resultTie.NumInTie = results.Count;
+
       resultTie.NumToElect = 0;
-      resultTie.Comments = "Tie-break not needed";
+      resultTie.TieBreakRequired = false;
 
       var groupInTop = false;
       var groupInExtra = false;
@@ -349,10 +354,15 @@ namespace TallyJ.Models
         }
       }
       var groupOnlyInTop = groupInTop && !(groupInExtra || groupInOther);
-      var groupOnlyInExtra = groupInExtra && !(groupInTop || groupInOther);
       var groupOnlyInOther = groupInOther && !(groupInTop || groupInExtra);
 
-      results.ForEach(r => r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop));
+      results.ForEach(delegate(Result r)
+                        {
+                          r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
+                          r.IsTieResolved = r.TieBreakCount.AsInt() > 0
+                                            && !results.Any(r2 => r2.C_RowId != r.C_RowId
+                                                                  && r2.TieBreakCount == r.TieBreakCount);
+                        });
 
       if (groupInOther && (groupInTop || groupInExtra))
       {
@@ -364,7 +374,11 @@ namespace TallyJ.Models
         if (!groupOnlyInTop)
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Top);
-          resultTie.Comments = "Tie-break required";
+          resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
+        }
+        else
+        {
+          // default... tie-break not needed
         }
       }
       if (groupInExtra)
@@ -372,14 +386,37 @@ namespace TallyJ.Models
         if (groupInTop && groupInOther || !groupInTop)
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
-          resultTie.Comments = "Tie-break required";
+          resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
         }
       }
 
-      // conclusions
-      if (resultTie.NumToElect == 0)
+      var foundBeforeDup = 0;
+      if (resultTie.NumToElect > 0)
       {
+        //results are in descending order already, so starting at 0 is starting at the "top"
+        for (int i = 0, max = results.Count; i < max; i++)
+        {
+          var result = results[i];
+          if (!result.IsTieResolved.AsBool()) break;
+          foundBeforeDup += result.TieBreakCount > 0 ? 1 : 0;
+        }
       }
+
+      if (foundBeforeDup < resultTie.NumToElect)
+      {
+        resultTie.IsResolved = false;
+        results.ForEach(r => r.IsTieResolved = false);
+      }
+      else
+      {
+        resultTie.IsResolved = true;
+        results.ForEach(r => r.IsTieResolved = true);
+      }
+
+      // conclusions
+      //resultTie.Comments = resultTie.TieBreakRequired.AsBool() 
+      //  ? "Tie-break required" 
+      //  : "Tie-break not needed";
     }
 
     private static void DetermineSection(Result result, Election election, int rank)
@@ -436,5 +473,4 @@ namespace TallyJ.Models
       summary.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
     }
   }
-
 }

@@ -50,7 +50,7 @@ namespace TallyJ.Models
     /// <param name="ballot">The Ballot or vBallotInfo to check and update.</param>
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
     /// <returns>Returns the updated status code</returns>
-    public string UpdateBallotStatus(IBallotBase ballot, List<vVoteInfo> currentVotes)
+    public string UpdateBallotStatus(IBallotBase ballot, List<Vote> currentVotes)
     {
       if (IsSingleNameElection)
       {
@@ -80,7 +80,7 @@ namespace TallyJ.Models
     /// <param name="votes"> All the votes on this ballot </param>
     /// <param name="statusCode"> The new status code </param>
     /// <returns> True if the new status code is different from the current status code </returns>
-    public bool DetermineStatusFromVotesList(string currentStatusCode, List<vVoteInfo> votes, out string statusCode)
+    public bool DetermineStatusFromVotesList(string currentStatusCode, List<Vote> votes, out string statusCode)
     {
       // if under review, don't change that status
       if (currentStatusCode == BallotStatusEnum.Review)
@@ -95,7 +95,7 @@ namespace TallyJ.Models
       }
 
       // check counts
-      var numVotes = votes.Count(v => v.VoteInvalidReasonGuid != VoteHelper.IneligibleReason.BlankVote);
+      var numVotes = votes.Count(v => v.InvalidReasonGuid != VoteHelper.IneligibleReason.BlankVote);
 
       if (numVotes < VotesNeededOnBallot)
       {
@@ -129,7 +129,7 @@ namespace TallyJ.Models
     /// <param name="voteInfos">All the Votes that are on all these Ballots.</param>
     public void UpdateAllBallotStatuses(List<Ballot> ballotInfos, List<vVoteInfo> voteInfos)
     {
-      ballotInfos.ForEach(bi => UpdateBallotStatus(bi, voteInfos.Where(vi=>vi.BallotGuid==bi.BallotGuid).ToList()));
+      ballotInfos.ForEach(bi => UpdateBallotStatus(bi, voteInfos.Where(vi=>vi.BallotGuid==bi.BallotGuid).AsVotes().ToList()));
     }
 
     public bool BallotNeedsReview(Ballot ballotInfo)

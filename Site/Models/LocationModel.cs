@@ -115,19 +115,59 @@ namespace TallyJ.Models
     {
       var location =
         Db.Locations.SingleOrDefault(l => l.C_RowId == id && l.ElectionGuid == UserSession.CurrentElectionGuid);
+
       if (location == null)
       {
         location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
         Db.Locations.Add(location);
       }
 
-      location.Name = text;
+      int locationId;
+      string locationText;
+      string status;
 
-      Db.SaveChanges();
+      if (text.HasNoContent() && location.C_RowId != 0)
+      {
+        // delete existing if we can
+        var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
+        if (!used)
+        {
+          Db.Locations.Remove(location);
+          Db.SaveChanges();
+
+          status = "Deleted";
+          locationId = 0;
+          locationText = "";
+        }
+        else
+        {
+          status = "Cannot deleted this location because it has Ballots recorded in it";
+          locationId = location.C_RowId;
+          locationText = location.Name;
+        }
+      }
+      else if (text.HasContent())
+      {
+        location.Name = text;
+        Db.SaveChanges();
+
+        status = "Saved";
+        locationId = location.C_RowId;
+        locationText = location.Name;
+      }
+      else
+      {
+        status= "Nothing to save";
+        locationId = 0;
+        locationText = "";
+      }
 
       return new
                {
-                 Id = location.C_RowId
+                 // returns 0 if deleted or not created
+                 Id = locationId,
+                 Text = locationText,
+                 Status = status
                }.AsJsonResult();
     }
 

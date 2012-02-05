@@ -31,7 +31,7 @@ var SetupIndexPage = function () {
                 ResetStatusDisplay();
             });
         });
-        
+
         applyValues(publicInterface.Election);
         showLocations(publicInterface.Locations);
 
@@ -64,10 +64,15 @@ var SetupIndexPage = function () {
         };
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
-            ShowStatusDisplay("Saved", 0, 3000, false, true);
+            ShowStatusDisplay(info.Status, 0, 3000, false, true);
 
-            if (info.Id != form.id) {
-                input.data('id', info.Id);
+            if (info.Id == 0) {
+                input.parent().remove();
+            } else {
+                input.val(info.Text);
+                if (info.Id != form.id) {
+                    input.data('id', info.Id);
+                }
             }
         });
     };
@@ -115,15 +120,15 @@ var SetupIndexPage = function () {
             var input = $(this);
             var value = election[input.data('name')] || '';
             switch (input.attr('type')) {
-            case 'date':
-                input.datepicker('setDate', ('' + value).parseJsonDate());
-                break;
-            case 'checkbox':
-                input.prop('checked', value);
-                break;
-            default:
-                input.val(value);
-                break;
+                case 'date':
+                    input.datepicker('setDate', ('' + value).parseJsonDate());
+                    break;
+                case 'checkbox':
+                    input.prop('checked', value);
+                    break;
+                default:
+                    input.val(value);
+                    break;
             }
         });
 
@@ -192,10 +197,17 @@ var SetupIndexPage = function () {
     };
 
     function applyRules(info, combined) {
-        $('#txtNames').prop('disabled', info.NumLocked).val(info.Num);
-        $('#txtExtras').prop('disabled', info.ExtraLocked).val(info.Extra);
-        $('#ddlCanVote').prop('disabled', info.CanVoteLocked).val(info.CanVote);
-        $('#ddlCanReceive').prop('disabled', info.CanReceiveLocked).val(info.CanReceive);
+        var setRule = function (target, locked, value) {
+            target.prop('disabled', locked);
+            if (locked) {
+                target.val(value);
+            }
+        };
+
+        setRule($('#txtNames'), info.NumLocked, info.Num);
+        setRule($('#txtExtras'), info.ExtraLocked, info.Extra);
+        setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
+        setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
         cachedRules[combined] = info;
     }

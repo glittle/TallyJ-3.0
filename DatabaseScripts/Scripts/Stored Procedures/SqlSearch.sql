@@ -209,7 +209,7 @@ GO
 -- Testing code
 -- / *
 declare @more bit
-exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'mari', 'w', 'mr', '', 15, @more out, 55
+exec tj.SqlSearch 'BBA4B2AA-C5A6-4A2F-8B5E-BCC7CEF1C029', 'glen', '', '', '', 15, @more out, 55
 select @more [MoreFound], 1
 /*exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'gle', null, 'kn', '', 15, @more out
 select @more [MoreFound], 2
@@ -226,5 +226,6 @@ SET FMTONLY ON;
 exec tj.SqlSearch null, null, null, null, null, null, @more out
 SET FMTONLY OFF;
 
+select * from tj.Election
 -- select * from tj.Person where electionguid = '3936024A-7709-4FAA-9D24-24F7FF933AEE'
 -- */

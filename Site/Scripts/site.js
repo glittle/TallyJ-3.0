@@ -277,8 +277,6 @@ function PrepareStatusDisplay() {
 }
 
 function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError, showStatic) {
-    LogMessage(minDisplayTimeBeforeStatusReset);
-
     statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset =
          (typeof minDisplayTimeBeforeStatusReset === 'number') ? minDisplayTimeBeforeStatusReset : 15 * 1000;
 

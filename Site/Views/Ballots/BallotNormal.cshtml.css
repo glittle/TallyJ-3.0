@@ -1,6 +1,6 @@
 ﻿.div1
 {
-    width: 375px;
+    width: 400px;
 }
 
 .tabs {
@@ -11,7 +11,7 @@
 {
     margin: 0 0 10px 0;
     height: 400px;
-    width: 325px;
+    width: 350px;
     border: solid 1px #999;
     padding: 4px;
     font-size: 110%;
@@ -114,7 +114,7 @@ input.ZZsearching
 {
     margin-left: 15px;
     float: left;
-    width: 555px;
+    width: 530px;
 }
 .ui-icon-trash
 {
@@ -154,10 +154,6 @@ input.Vote
 {
     font-size: 12px;
 }
-.spoiledBtn
-{
-    margin-top: 20px;
-}
 .Valid .Invalid
 {
     display: none;
@@ -184,8 +180,14 @@ select.Invalid {
     color: #e80c4d;
     font-weight: bold;
 }
+.Ok {
+    color: #0ce84d;
+}
 .Confirmed {
     font-weight: bold;
+}
+.NotConfirmed {
+    opacity: .5;
 }
 
 .txtContact
@@ -243,6 +245,7 @@ div.heading {
 }
 #votesList {
     padding-top: 5px;
+    margin-bottom: 20px;
 }
 .VoteNum {
     display: inline-block;

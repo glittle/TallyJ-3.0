@@ -364,9 +364,10 @@
           <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
           <Property Name="TieBreakGroup" Type="varchar" Nullable="false" MaxLength="1" />
+          <Property Name="TieBreakRequired" Type="bit" />
           <Property Name="NumToElect" Type="int" Nullable="false" />
           <Property Name="NumInTie" Type="int" Nullable="false" />
-          <Property Name="Comments" Type="varchar" MaxLength="50" />
+          <Property Name="IsResolved" Type="bit" />
         </EntityType>
         <EntityType Name="Teller">
           <Key>
@@ -1007,7 +1008,8 @@
           <Property Type="String" Name="TieBreakGroup" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="NumToElect" Nullable="false" />
           <Property Type="Int32" Name="NumInTie" Nullable="false" />
-          <Property Type="String" Name="Comments" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Boolean" Name="TieBreakRequired" />
+          <Property Type="Boolean" Name="IsResolved" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -1416,7 +1418,8 @@
           <EntitySetMapping Name="ResultTies">
             <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
               <MappingFragment StoreEntitySet="ResultTie">
-                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
                 <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
                 <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
                 <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
@@ -1506,7 +1509,7 @@
         <EntityTypeShape EntityType="TallyJ2Model.Message" Width="1.5" PointX="8.75" PointY="0.75" Height="2.1725878906250102" />
         <EntityTypeShape EntityType="TallyJ2Model.Person" Width="1.5" PointX="0.75" PointY="8.75" Height="5.4417122395833246" />
         <EntityTypeShape EntityType="TallyJ2Model.Reason" Width="1.5" PointX="2.75" PointY="8.75" Height="1.9802864583333246" />
-        <EntityTypeShape EntityType="TallyJ2Model.Result" Width="1.5" PointX="8.75" PointY="3.75" Height="3.7109993489583251" />
+        <EntityTypeShape EntityType="TallyJ2Model.Result" Width="1.5" PointX="8.75" PointY="3.75" Height="3.9033007812499996" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultSummary" Width="1.5" PointX="8.75" PointY="8.75" Height="3.7109993489583246" />
         <EntityTypeShape EntityType="TallyJ2Model.Teller" Width="1.5" PointX="10.75" PointY="0.75" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="TallyJ2Model.vBallotInfo" Width="1.5" PointX="10.75" PointY="4.75" Height="4.48020507812501" />
@@ -1520,7 +1523,7 @@
         <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="12.75" PointY="4.75" Height="2.7494921875000031" />
         <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="12.75" PointY="8.75" Height="5.6340136718750067" />
         <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="3.375" PointY="13.75" Height="4.2879036458333317" />
-        <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="5.375" PointY="13.75" Height="2.1725878906250031" />
+        <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="5.375" PointY="13.75" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="TallyJ2Model.ImportFile" Width="1.5" PointX="7.375" PointY="13.75" Height="3.5186979166666674" />
         <EntityTypeShape EntityType="TallyJ2Model.vImportFileInfo" Width="1.5" PointX="9.375" PointY="13.75" Height="3.3263964843750102" />
       </Diagram>

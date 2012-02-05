@@ -24,5 +24,6 @@ namespace TallyJ.Models
     bool SortVotes(List<int> ids);
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
+    JsonResult SetNeedsReview(bool needsReview);
   }
 }

@@ -1,72 +1,150 @@
-﻿table
+﻿html {
+    background-color: #EFEEEF;
+}
+.content-wrapper {
+    width: 90%;
+}
+header, footer
+{
+    display: none;
+}
+.main-content
+{
+    background-image: none;
+    padding: 0;
+}
+h1
+{
+    text-align: center;
+    font-size: 24pt;
+    color: #013d7a;
+    padding: 13pt 0 0pt 0;
+    width: 100%;
+    height: 50pt;
+}
+#Results
+{
+    width: 100%;
+    margin: 5pt auto;
+    text-align: center;
+    font-size: 24pt; /* smaller for most, larger for Petpetua */
+}
+
+table
 {
     border-collapse: separate;
     border-spacing: 0px 0px;
-    float: left;
-    margin-bottom: 30px;
 }
 thead th
 {
     border-bottom: 1px solid #000;
 }
-
+th {
+    padding: 2px 7px;
+}
+#totalCounts td,
 .Main td
 {
     text-align: center;
     min-width: 40px;
     padding: 2px 7px;
-    border-left: 1px solid #e0e0e0;
+}
+td:first-child {
+    border-right: 1px solid #d0d0d0;
+    
 }
 
-tr.Odd {
+tr.Odd
+{
     background-color: #ddd;
 }
-tr.Odd td {
+tr.Odd td
+{
     border-left: 1px solid #d0d0d0;
 }
 
-tr.Tied {
-    color: red;
+th:first-child {
+    text-align: left;
 }
-
-#chart {
+tr.FirstExtra td
+{
+    border-top: double 3px #999;
+    background-color: #ddd;
+}
+tr.Extra
+{
+    background-color: #ddd;
+}
+#chart
+{
+    display: none;
     float: right;
     width: 340px;
     height: 500px;
     margin-left: 10px;
 }
-table.Main, table#invalids, table#totalCounts {
-    float: left;
-    clear: left;
+.Ready {
+     text-align: center;
+    font-size: 16pt;
+    color: #aaa;
+    padding: 25pt 0 0pt 0;
+    width: 100%;
 }
-table.Main, table#invalids {
+.Holder
+{
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 40px;
+}
+table.Main
+{
     display: none;
 }
-table caption {
+table caption
+{
     font-weight: bold;
     font-size: 120%;
     white-space: nowrap;
     text-align: left;
 }
-#invalids caption {
-    color: red;
-}
-td.Left {
+.Main td.Left,
+#totalCounts td.Left
+{
     text-align: left;
 }
-#btnRefesh {
+#zzbtnRefesh
+{
     float: right;
 }
-.Hidden {
+.Hidden
+{
     display: none;
 }
-#Status {
+#Status
+{
     font-weight: bold;
+    color: red;
 }
-#Wait {
+#Wait
+{
     display: none;
+    text-align: center;
+    font-size: 16pt;
+    color: #bbb;
+    width: 62%;
+    padding-top: 60px;
+    margin: 0 auto;
 }
 
-#totalCounts tr td:first-child {
-    padding-right: 30px;
+.Nav
+{
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    z-index: 10;
+    opacity: 0.1;
+}
+.Nav:hover
+{
+    opacity: 1;
 }

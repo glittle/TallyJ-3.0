@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using TallyJ.EF;
 
 namespace TallyJ.Code
 {
@@ -474,5 +475,23 @@ namespace TallyJ.Code
       }
     }
 
+    public static IEnumerable<Vote> AsVotes(this IEnumerable<vVoteInfo> inputs)
+    {
+      foreach (var vVoteInfo in inputs)
+      {
+        yield return new Vote
+                       {
+                         C_RowId = vVoteInfo.VoteId,
+                         BallotGuid = vVoteInfo.BallotGuid,
+                         C_RowVersion = null,
+                         InvalidReasonGuid = vVoteInfo.VoteInvalidReasonGuid,
+                         PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
+                         PersonGuid = vVoteInfo.PersonGuid,
+                         PositionOnBallot = vVoteInfo.PositionOnBallot,
+                         SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
+                         StatusCode = vVoteInfo.VoteStatusCode
+                       };
+      }
+    }
   }
 }

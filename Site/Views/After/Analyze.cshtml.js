@@ -7,7 +7,10 @@ var AnalyzePage = function () {
         rowTemplate: '',
         footTemplate: '',
         invalidsRowTemplate: '',
-        chart: null
+        tieResultRowTemplate: '',
+        chart: null,
+        hasCloseVote: false,
+        hasTie: false
     };
 
     var preparePage = function () {
@@ -15,16 +18,16 @@ var AnalyzePage = function () {
         $('#btnRefresh').click(function () {
             runAnalysis(false);
         });
-        $('#chkShowAll').on('click change', function () {
-            ShowStatusDisplay('Updating...', 0);
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionShowAll', {
-                showAll: $(this).prop('checked')
-            }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
-            });
-        });
+        //        $('#chkShowAll').on('click change', function () {
+        //            ShowStatusDisplay('Updating...', 0);
+        //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionShowAll', {
+        //                showAll: $(this).prop('checked')
+        //            }, function () {
+        //                ShowStatusDisplay('Updated', 0, 3000, false, true);
+        //            });
+        //        });
 
-        $('#ddlElectionStatus').on('change', function () {
+        $('#body').on('change', '#ddlElectionStatus', function () {
             ShowStatusDisplay('Updating...', 0);
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
                 status: $(this).val()
@@ -32,6 +35,8 @@ var AnalyzePage = function () {
                 ShowStatusDisplay('Updated', 0, 3000, false, true);
             });
         });
+
+        $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
@@ -45,6 +50,11 @@ var AnalyzePage = function () {
         settings.invalidsRowTemplate = invalidsBody.html();
         invalidsBody.html('');
 
+
+        var tieResultsRowTemplate = $('#tieResultsBody');
+        settings.tieResultRowTemplate = tieResultsRowTemplate.html();
+        tieResultsRowTemplate.html('');
+
         if (publicInterface.results) {
             showInfo(publicInterface.results, true);
         }
@@ -57,6 +67,7 @@ var AnalyzePage = function () {
 
     var runAnalysis = function (firstLoad) {
         ShowStatusDisplay('Analyzing ballots...', 0);
+        $('.LeftHalf, .RightHalf').fadeOut();
 
         CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
     };
@@ -67,16 +78,22 @@ var AnalyzePage = function () {
         var table;
 
         $('#InitialMsg').hide();
+        $('#tieResults').hide();
+        $('#HasCloseVote').hide();
+
         ResetStatusDisplay();
 
         if (info.Votes) {
+            table = votesTable;
             votesTable.show();
             invalidsTable.hide();
-            table = votesTable;
 
             $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.Votes)));
+            showTies(info);
 
-            //TODO: add foot info
+            $('#HasCloseVote').toggle(settings.hasCloseVote);
+            $('.HasTie').toggle(settings.hasTie);
+            LogMessage(settings.hasTie);
 
             setTimeout(function () {
                 $('#chart').show();
@@ -86,8 +103,8 @@ var AnalyzePage = function () {
         else {
             table = invalidsTable;
             votesTable.hide();
-            $('#chart').hide();
             invalidsTable.show();
+            $('#chart').hide();
 
             $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
         }
@@ -98,30 +115,26 @@ var AnalyzePage = function () {
             span.text(value);
         });
 
-        if (!firstLoad) {
-            table.animate({
-                opacity: 0.5
-            }, 100, function () {
-                table.animate({
-                    opacity: 1
-                }, 500);
-            });
-        }
-
+        table.show();
+        $('.LeftHalf, .RightHalf').fadeIn();
 
     };
 
-    var showChart = function (info) {
-        var maxToShow = 10; //TODO what is good limit?
+    var showChart = function (votes) {
+        var maxToShow = 0;
+        for (var i = 0, max = votes.length; i < max; i++) {
+            if (votes[i].Section != 'O') maxToShow++;
+        }
+        maxToShow = maxToShow * 2;
 
         var getVoteCounts = function () {
-            return $.map(info.slice(0, maxToShow), function (item, i) {
+            return $.map(votes.slice(0, maxToShow), function (item, i) {
                 return item.VoteCount;
             });
         };
 
         var getNames = function () {
-            return $.map(info.slice(0, maxToShow), function (item, i) {
+            return $.map(votes.slice(0, maxToShow), function (item, i) {
                 return item.Rank;
             });
         };
@@ -169,15 +182,128 @@ var AnalyzePage = function () {
     };
 
     var expand = function (results) {
+        settings.hasCloseVote = false;
         $.each(results, function (i) {
             this.ClassName = 'Section{0} {1} {2} {3}'.filledWith(
                 this.Section,
-                this.Section=='O' && this.ForceShowInOther ? 'Force' : '',
+                this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
                 (i % 2 == 0 ? 'Even' : 'Odd'),
-                (this.IsTied && this.TieBreakRequired && !this.IsTieResolved ? 'Tied' : ''));
-            this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : '(Tie Okay)') : '';
+                (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
+            this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : '(Tie ' + this.TieBreakGroup + ' Okay)') : '';
+            if (this.CloseToNext) {
+                this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
+            } else if (this.CloseToPrev) {
+                this.CloseUpDown = '&#8593;';
+            }
+            if ((this.Section == 'T' || this.Section == 'E')
+                && (this.CloseToNext || this.CloseToPrev)) {
+                settings.hasCloseVote = true;
+            }
+            this.VoteDisplay = this.VoteCount + (this.TieBreakCount ? ', ' + this.TieBreakCount : '');
         });
         return results;
+    };
+
+    var showTies = function (info) {
+        var votes = info.Votes;
+        var groups = info.Ties;
+
+        var addConclusions = function (items) {
+            $.each(items, function () {
+                var tie = this;
+                if (!tie.TieBreakRequired) {
+                    tie.Conclusion = 'This tie does not need to be resolved, as it has no impact on the results of the election.';
+                }
+                else {
+                    var firstPara;
+                    if (tie.IsResolved) {
+                        firstPara = '<p>This tie has been resolved.</p>';
+                    }
+                    else {
+                        tie.rowClass = 'TieBreakNeeded';
+                        firstPara = '<p>A tie-break election is required to break this tie.</p>';
+                    }
+                    tie.Conclusion = firstPara
+                        + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. If the tie-break vote has been completed, enter the number of votes recieved by each person below.</p>'
+                            .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie);
+                    var list = $.map(votes, function (v) {
+                        return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
+                    });
+                    tie.People = '<div><input data-rid="{rid}" class=TieBreakCount type=number value="{TieBreakCount}">{PersonName}</div>'.filledWithEach(list.sort(function (a, b) {
+                        if (a.PersonName < b.PersonName) return -1;
+                        if (a.PersonName > b.PersonName) return 1;
+                        return 0;
+                    }));
+                    tie.Buttons = '<button type=button class=btnSaveTieCounts>Save Counts & Re-run Analysis</button>';
+                }
+            });
+            return items;
+        };
+
+        if (groups.length == 0) {
+            $('#tieResults').hide();
+            settings.hasTie = false;
+        } else {
+            $('#tieResults').show();
+            var tbody = $('#tieResultsBody');
+            tbody.html(settings.tieResultRowTemplate.filledWithEach(addConclusions(groups)));
+            settings.hasTie = true;
+        }
+
+    };
+
+    var saveTieCounts = function () {
+        var btn = $(this);
+        var counts = btn.parent().find('input');
+        var needed = +btn.parent().find('.Needed').text();
+        var dups = [];
+        var foundDup = false;
+        var foundOkay = 0;
+        var foundNegative = false;
+
+        var values = $.map(counts, function (item) {
+            var $item = $(item);
+            var value = +$item.val();
+            if (value > 0) {
+                if (dups[value]) {
+                    foundDup = true;
+                }
+                else {
+                    foundOkay++;
+                }
+                dups[value] = (dups[value] ? dups[value] : 0) + 1;
+            }
+            if (value < 0) {
+                foundNegative = true;
+            }
+            return $item.data('rid') + '_' + value;
+        });
+        if (foundNegative) {
+            alert('All vote counts must be a positive number.');
+            return;
+        }
+        if (foundDup) {
+            var foundBeforeDup = 0;
+            for (var i = dups.length - 1; i >= 0; i--) {
+                var dup = dups[i];
+                if (dup > 1) break;
+                foundBeforeDup = foundBeforeDup + dup; // will be 1 or 0
+            }
+            if (foundBeforeDup < needed) {
+                alert('A tie has been entered within the top {0} vote counts.\n\nWhen the tie-breaking vote is done, tied results cannot be accepted. Please resolve those tied votes.'.filledWith(needed));
+            }
+        }
+        if (foundOkay < needed) {
+            alert('Please ensure that {0} or more votes are entered.'.filledWith(needed));
+        }
+        var form = {
+            counts: values
+        };
+        ShowStatusDisplay("Saving...", 0);
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveTieCounts', form, function (info) {
+            ShowStatusDisplay("Saved", 0, 3000, false, true);
+            runAnalysis(false);
+        });
     };
 
     var publicInterface = {

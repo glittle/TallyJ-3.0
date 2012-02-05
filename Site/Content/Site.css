@@ -170,8 +170,8 @@ footer
 }
 .NormalMode .TopInfo
 {
-    left: 615px;
-    top: 5px;
+    margin-left: -50px;
+    top: 15px;
 }
 .Version
 {
@@ -219,6 +219,7 @@ footer
 }
 .MiniDash
 {
+    min-height: 58px;
 }
 
 .MiniDash div
@@ -323,7 +324,7 @@ section.feature
     float: left;
     width: 200px;
     height: 133px;
-    margin: 2px 5px 2px 5px;
+    margin: 2px 3px 2px 2px;
     background-image: url('../Images/Blank.png');
     background-repeat: no-repeat;
     text-align: center;
@@ -708,6 +709,13 @@ a.twitter
     font-size: 80%;
     color: #aaa;
     cursor: pointer;
+    content: before(Hide )
+}
+.PullInstructionsHandle:before {
+    content: "Hide "
+}
+.PullInstructionsHandle.Closed:before {
+    content: "Show "
 }
 .PullInstructionsHandle.Closed
 {
@@ -732,11 +740,14 @@ a.twitter
 .NormalMode .beta1
 {
     display: block;
-    position: absolute;
     top: 2px;
-    width: 280px;
-    left: 620px;
-    color: #8dc63e;
+    width: 350px;
+    overflow: visible;
+    margin-left: -150px;
+    float: left;
+    color: #8DC63E;
+    z-index: 1;
+    font-size: 10pt;
 }
 .beta1 a
 {
@@ -745,9 +756,9 @@ a.twitter
 .betaImg
 {
     float: left;
-    width: 114px;
-    height: 115px;
-    background-image: url(../Images/beta.gif);
+    width: 57px;
+    height: 59px;
+    background-image: url(../Images/beta2.gif);
     vertical-align: top;
     margin: 0 5px 5px 0;
 }

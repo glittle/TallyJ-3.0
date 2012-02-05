@@ -74,6 +74,11 @@ namespace TallyJ.Controllers
       return CurrentBallotModel.DeleteVote(vid);
     }
 
+    public JsonResult NeedsReview(bool needs)
+    {
+      return CurrentBallotModel.SetNeedsReview(needs);
+    }
+
     public JsonResult SwitchToBallot(int ballotId)
     {
       return CurrentBallotModel.SwitchToBallotJson(ballotId);

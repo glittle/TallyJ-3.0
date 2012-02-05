@@ -83,6 +83,8 @@ var BallotNormalPageFunc = function () {
         $('#btnNewBallot').on('click', newBallot);
         $('#btnNewBallot2').on('click', newBallot);
 
+        $('#cbReview').on('click, change', cbReviewChanged);
+
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
@@ -147,6 +149,7 @@ var BallotNormalPageFunc = function () {
             showBallot(info);
             local.tabList.tabs('select', tabNum.ballot);
             local.inputField.focus().val('').change();
+            local.nameList.html('');
             $('.NewBallotBtns').prop('disabled', false);
         });
     };
@@ -193,19 +196,20 @@ var BallotNormalPageFunc = function () {
             local.tabList.tabs('enable', tabNum.ballot);
             $('#votesPanel').css('visibility', 'visible');
 
-            $('.ballotCode').text(ballotInfo.Ballot.Code);
-            $('#ballotStatus').text(ballotInfo.Ballot.StatusCode);
+            var ballot = ballotInfo.Ballot;
+            $('.ballotCode').text(ballot.Code);
+            $('#ballotStatus').text(ballot.StatusCode);
 
             local.votesNeeded = ballotInfo.NumNeeded;
-            local.ballotStatus = ballotInfo.Ballot.StatusCode;
+            local.ballotStatus = ballot.StatusCode;
             local.votes = ballotInfo.Votes;
-            local.ballotId = ballotInfo.Ballot.Id;
+            local.ballotId = ballot.Id;
 
             showVotes();
 
-            setBallotStatus(ballotInfo.Ballot.StatusCode, true);
-            LogMessage(ballotInfo.Ballot.StatusCode);
-            if (ballotInfo.Ballot.StatusCode == 'Too Few') {
+            setBallotStatus(ballot.StatusCode, ballot.StatusCodeText, true);
+            LogMessage(ballot.StatusCode);
+            if (ballot.StatusCode == 'Too Few') {
                 local.tabList.tabs('select', tabNum.ballot);
             } else {
                 local.tabList.tabs('select', tabNum.ballots);
@@ -261,7 +265,7 @@ var BallotNormalPageFunc = function () {
             newStatus = 'TooFew';
         }
 
-        setBallotStatus(newStatus, false);
+        setBallotStatus(newStatus, null, false);
     };
 
     var findAndMarkDups = function (votes) {
@@ -297,15 +301,27 @@ var BallotNormalPageFunc = function () {
         return found;
     };
 
-    var setBallotStatus = function (status, fromServer) {
+    var setBallotStatus = function (status, display, fromServer) {
         local.ballotStatus = status;
-        var display = status;
-        switch (status) {
-            case 'TooFew': display = 'Too Few'; break;
-            case 'TooMany': display = 'Too Many'; break;
-            case 'Dup': display = 'Duplicate Names'; break;
+        if (!display) {
+            switch (status) {
+                case 'TooFew':
+                    display = 'Too Few';
+                    break;
+                case 'TooMany':
+                    display = 'Too Many';
+                    break;
+                case 'Dup':
+                    display = 'Duplicate Names';
+                    break;
+                default:
+                    display = status;
+                    break;
+            }
         }
-
+        if (fromServer) {
+            $('#cbReview').attr('checked', status == 'Review');
+        }
         $('#BallotStatus' + local.ballotId).text(display);
 
         var statusDisplay = $('.ballotStatus');
@@ -313,14 +329,34 @@ var BallotNormalPageFunc = function () {
 
         if (status == 'Ok') {
             statusDisplay.removeClass('InvalidBallot');
+            statusDisplay.addClass('Ok');
         } else {
+            statusDisplay.removeClass('Ok');
             statusDisplay.addClass('InvalidBallot');
         }
         if (fromServer) {
             statusDisplay.addClass('Confirmed');
+            statusDisplay.removeClass('NotConfirmed');
         }
         else {
             statusDisplay.removeClass('Confirmed');
+            statusDisplay.addClass('NotConfirmed');
+        }
+    };
+
+    var cbReviewChanged = function () {
+        var checked = $('#cbReview').prop('checked');
+        var isReview = local.ballotStatus == 'Review';
+
+        if (checked != isReview) {
+            ShowStatusDisplay('Saving', 0);
+
+            CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
+                debugger;
+                setBallotStatus(info.StatusCode, info.StatusCodeText, true);
+                ShowStatusDisplay('Saved', 0, 3000, false, true);
+            });
+
         }
     };
 
@@ -463,7 +499,7 @@ var BallotNormalPageFunc = function () {
                     }
                 }
 
-                setBallotStatus(info.BallotStatus, true);
+                setBallotStatus(info.BallotStatus, info.BallotStatusText, true);
 
                 local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
 
@@ -508,7 +544,7 @@ var BallotNormalPageFunc = function () {
                     showVotes();
                 }
 
-                setBallotStatus(info.BallotStatus, true);
+                setBallotStatus(info.BallotStatus, info.BallotStatusText, true);
 
                 if (info.BallotStatus == 'Ok') {
                     local.tabList.tabs('select', tabNum.ballots);

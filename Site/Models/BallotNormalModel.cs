@@ -28,11 +28,8 @@ namespace TallyJ.Models
       {
         Id = b.C_RowId,
         Code = b.C_BallotCode,
-        //Location = b.LocationName,
-        //LocationSort = b.LocationSortOrder,
-        //b.LocationId,
-        StatusCode = BallotStatusEnum.TextFor(b.StatusCode),
-        //b.TallyStatus
+        b.StatusCode,
+        StatusCodeText = BallotStatusEnum.TextFor(b.StatusCode),
       };
     }
   }
