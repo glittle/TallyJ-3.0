@@ -15,7 +15,8 @@ namespace TallyJ.Models
         var peopleInCurrentElection =
           Db.People.Where(
             p =>
-            p.ElectionGuid == UserSession.CurrentElectionGuid && p.VotingLocationGuid == UserSession.CurrentLocationGuid);
+            p.ElectionGuid == UserSession.CurrentElectionGuid);
+        // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
         peopleInCurrentElection = includeAbsentees
                                     ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod))
