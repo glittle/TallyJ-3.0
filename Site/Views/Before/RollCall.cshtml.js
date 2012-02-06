@@ -5,6 +5,7 @@
 var RollCallPage = function () {
     var local = {
         currentNameNum: 0,
+        currentVoterDiv: null,
         nameDivs: []
     };
     var preparePage = function () {
@@ -12,7 +13,7 @@ var RollCallPage = function () {
         var main = $('.Main');
         local.nameDivs = main.children('div.Voter');
 
-        scrollToMe(local.nameDivs[0]);
+        scrollToMe(local.nameDivs[1]);
 
         $(document).keydown(keyPressed);
 
@@ -48,6 +49,9 @@ var RollCallPage = function () {
                 delta = 1;
                 ev.preventDefault();
                 break;
+            case 36: // home
+                delta = 1 - local.currentNameNum;
+                break;
 
             case 34: // page down
                 delta = 4;
@@ -71,12 +75,28 @@ var RollCallPage = function () {
     };
 
     var scrollToMe = function (nameDiv) {
-        var top = $(nameDiv).offset().top;
-        var fudge = 84;
+        var voter = $(nameDiv);
+
+        var top = voter.offset().top;
+        var fudge = -83;
+        var time = 800;
+
         $('html,body').animate({
             scrollTop: top + fudge
-        }, 800);
+        }, time);
+
+        voter.animate({
+            backgroundColor: '#fff'
+        }, time);
+
+        if (local.currentVoterDiv) {
+            local.currentVoterDiv.animate({
+                backgroundColor: '#efeeef'
+            }, time);
+        }
+        local.currentVoterDiv = voter;
     };
+
 
     //    var goFullScreen = function (div) {
     //        if (div.webkitRequestFullScreen) {

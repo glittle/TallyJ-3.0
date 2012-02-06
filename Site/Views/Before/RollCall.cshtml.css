@@ -1,4 +1,7 @@
-﻿header,
+﻿.content-wrapper {
+    width: 100%;
+}
+header,
 footer {
     display: none;
 }
@@ -32,7 +35,7 @@ footer {
 {
     height: 130pt;
     width: 100%;
-    background-color: #fff;
+    xbackground-color: #fff;
     z-index: 0;
     position: fixed;
     top: 50pt;
@@ -42,10 +45,10 @@ footer {
 {
     height: 50pt;
     font-size: 20pt;
-    z-index: 0;
+    z-index: 10;
     color: #013d7a;
     position: fixed;
-    top: 177pt;
+    top: 183pt;
     left: 20pt;
 }
 
@@ -53,36 +56,22 @@ footer {
 {
     position: relative;
     z-index: 2;
+    background-color: #efeeef;
     text-align: center;
-    height: 120pt;
-    overflow: hidden;
+    min-height: 120pt;
     font-weight: bold;
     font-family: Perpetua, 'Lucida Calligraphy', Times New Roman, Times, serif;
 }
 .Voter div 
 {
-    margin-top: 15pt;
-    font-size: 60pt; /* 50 for most, 60 for Petpetua */
+    padding-top: 15pt;
+    font-size: 50pt; /* 50 for most, 60 for Petpetua */
 }
 .Voter span {
     font-size: 20pt;
     color: #999;
     margin-top: -5pt;
     display: block;
-}
-
-
-.Main:-webkit-full-screen{
-  width: 100% !important;
-}
-.Main:-moz-full-screen {
-  width: 100% !important;
-}
-:-webkit-full-screen .tohide {
-  display: none; /* While in fullscreen, hide any children with class 'tohide' */
-}
-:-moz-full-screen .tohide {
-  display: none; /* While in fullscreen, hide any children with class 'tohide' */
 }
 
 .Nav {

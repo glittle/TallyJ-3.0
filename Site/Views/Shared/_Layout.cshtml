@@ -7,6 +7,19 @@
     <title>TallyJ - @ViewBag.Title</title>
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
     <link rel="publisher" href="https://plus.google.com/109176504285792009711">
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-1312528-6']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
 </head>
 <body class="@ControllerActionNames @(ScreenMode + "Mode")">
     <header>
@@ -33,16 +46,17 @@
                 <div class="Version">
                     Version: 2.00</div>
             </div>
-        @if (ScreenMode == "Normal")
-        {
-            <div class="beta1">
-                <div class="betaImg"></div>
-                TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen"
-                    href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
-                        href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
-                        target="gdoc">this document</a> for status updates!
-            </div> 
-        }
+            @if (ScreenMode == "Normal")
+            {
+                <div class="beta1">
+                    <div class="betaImg">
+                    </div>
+                    TallyJ is in final test mode. Please send feedback to <a title="Send email to Glen"
+                        href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
+                            href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
+                            target="gdoc">this document</a> for status updates!
+                </div> 
+            }
             <div class="float-left TopInfo">
                 @if (Request.IsAuthenticated)
                 {

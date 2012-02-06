@@ -144,7 +144,7 @@ namespace TallyJ.Models
 
         return new
                  {
-                   ReportVotes = reportVotes.Select(r => new { r.PersonName, r.VoteCount, r.Section }),
+                   ReportVotes = reportVotes.Select(r => new { r.PersonName, r.VoteCount, r.TieBreakCount, r.Section }),
                    //ChartVotes = chartVotes,
                    NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
