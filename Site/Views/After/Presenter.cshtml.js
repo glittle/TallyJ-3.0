@@ -22,7 +22,7 @@ var PresenterPage = function () {
             return false;
         });
 
-        $(window).on('keypress', keyPressed);
+        $(window).on('keydown', keyDown);
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
@@ -89,8 +89,7 @@ var PresenterPage = function () {
 
     };
 
-    var keyPressed = function (ev) {
-        //LogMessage(ev.which);
+    var keyDown = function (ev) {
         switch (ev.which) {
             case 66: // B
             case 98: // b
@@ -111,6 +110,8 @@ var PresenterPage = function () {
                 break;
 
             default:
+                LogMessage(ev.which);
+                break;
         }
     };
 

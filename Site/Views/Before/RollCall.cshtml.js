@@ -15,7 +15,7 @@ var RollCallPage = function () {
 
         scrollToMe(local.nameDivs[1]);
 
-        $(document).keydown(keyPressed);
+        $(document).keydown(keyDown);
 
         //        main.animate({
         //            marginTop: '0%'
@@ -29,7 +29,7 @@ var RollCallPage = function () {
         });
     };
 
-    var keyPressed = function (ev) {
+    var keyDown = function (ev) {
         var delta = 1;
         switch (ev.which) {
             case 75: // k
