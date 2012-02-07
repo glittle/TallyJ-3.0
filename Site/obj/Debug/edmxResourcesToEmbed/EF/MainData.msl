@@ -355,18 +355,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="ResultTies">
-      <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
-        <MappingFragment StoreEntitySet="ResultTie">
-          <ScalarProperty Name="Comments" ColumnName="Comments" />
-          <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
-          <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
-          <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
-          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="ImportFiles">
       <EntityTypeMapping TypeName="TallyJ2Model.ImportFile">
         <MappingFragment StoreEntitySet="ImportFile">
@@ -417,5 +405,18 @@
         </ComplexTypeMapping>
       </ResultMapping>
     </FunctionImportMapping>
+    <EntitySetMapping Name="ResultTies">
+      <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
+        <MappingFragment StoreEntitySet="ResultTie">
+          <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+          <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
+          <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
+          <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
+          <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+          <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+          <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

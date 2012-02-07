@@ -20,3 +20,6 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\Tests.pdb
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\le_nlog.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\NLog.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\NLog.xml
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\Krystalware.SlickUpload.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\LumenWorks.Framework.IO.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\LumenWorks.Framework.IO.xml

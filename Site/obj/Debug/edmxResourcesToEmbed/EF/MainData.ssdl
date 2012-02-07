@@ -359,9 +359,10 @@
     <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
     <Property Name="TieBreakGroup" Type="varchar" Nullable="false" MaxLength="1" />
+    <Property Name="TieBreakRequired" Type="bit" />
     <Property Name="NumToElect" Type="int" Nullable="false" />
     <Property Name="NumInTie" Type="int" Nullable="false" />
-    <Property Name="Comments" Type="varchar" MaxLength="50" />
+    <Property Name="IsResolved" Type="bit" />
   </EntityType>
   <EntityType Name="Teller">
     <Key>

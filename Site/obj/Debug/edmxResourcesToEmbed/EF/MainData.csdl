@@ -29,7 +29,6 @@
     <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
     <FunctionImport Name="CurrentRowVersion" ReturnType="Collection(Int64)" />
     <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
-    <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
     <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
     <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
     <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
@@ -42,6 +41,7 @@
       <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
       <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
     </FunctionImport>
+    <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -397,17 +397,6 @@
     <Property Type="String" Name="TellerName" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Type="Int64" Name="SortOrder2" Nullable="false" />
   </EntityType>
-  <EntityType Name="ResultTie">
-    <Key>
-      <PropertyRef Name="C_RowId" />
-    </Key>
-    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-    <Property Type="String" Name="TieBreakGroup" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
-    <Property Type="Int32" Name="NumToElect" Nullable="false" />
-    <Property Type="Int32" Name="NumInTie" Nullable="false" />
-    <Property Type="String" Name="Comments" MaxLength="50" FixedLength="false" Unicode="false" />
-  </EntityType>
   <EntityType Name="ImportFile">
     <Key>
       <PropertyRef Name="C_RowId" />
@@ -452,4 +441,16 @@
     <Property Type="Int32" Name="MatchType" Nullable="true" />
     <Property Type="Int32" Name="BestMatch" Nullable="false" />
   </ComplexType>
+  <EntityType Name="ResultTie">
+    <Key>
+      <PropertyRef Name="C_RowId" />
+    </Key>
+    <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+    <Property Type="String" Name="TieBreakGroup" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Type="Boolean" Name="TieBreakRequired" />
+    <Property Type="Int32" Name="NumToElect" Nullable="false" />
+    <Property Type="Int32" Name="NumInTie" Nullable="false" />
+    <Property Type="Boolean" Name="IsResolved" />
+  </EntityType>
 </Schema>
