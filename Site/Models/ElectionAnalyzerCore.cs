@@ -225,7 +225,7 @@ namespace TallyJ.Models
       Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => RemoveResult(r));
 
       // remove any existing Tie info
-      ResultTies.ForEach(rt => RemoveResultTie(rt));
+      ResultTies.ToList().ForEach(rt => RemoveResultTie(rt));
 
       DetermineOrderAndSections();
 
