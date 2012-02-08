@@ -317,6 +317,16 @@ namespace TallyJ.Code
     /// <summary>
     ///   If input is empty, use <paramref name = "defaultValue" />
     /// </summary>
+    public static string DefaultTo(this object input, object defaultValue)
+    {
+      if (input == null) return defaultValue.ToString();
+
+      return input.ToString().HasNoContent() ? defaultValue.ToString() : input.ToString();
+    }
+
+    /// <summary>
+    ///   If input is empty, use <paramref name = "defaultValue" />
+    /// </summary>
     public static string DefaultTo(this string input, string defaultValue)
     {
       return input.HasNoContent() ? defaultValue : input;

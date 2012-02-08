@@ -1,5 +1,5 @@
 ﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
+/// <reference path="../../Scripts/jquery-1.7.1.js" />
 
 var HomeIndexPage = function () {
     var localSettings = {
@@ -23,7 +23,9 @@ var HomeIndexPage = function () {
             if (this.Locations) {
                 this.Locations = site.templates.LocationSelectItem.filledWithEach(this.Locations);
             }
+            this.TestClass = this.IsTest ? ' TestElection' : '';
         });
+
         $('#ElectionList').html(site.templates.ElectionListItem.filledWithEach(info));
 
         if (publicInterface.isGuest) {

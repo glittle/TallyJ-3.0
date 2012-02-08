@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
+/// <reference path="../../Scripts/jquery.qtip.js" />
+/// <reference path="../../Scripts/jquery-1.7.1.js" />
 
 var HomeIndexPage = function () {
     var localSettings = {
@@ -16,6 +17,27 @@ var HomeIndexPage = function () {
         });
 
         $('.CenterPanel').on('click', '.StartJoin', startJoinClick);
+
+        $('#startLogin').qtip({
+            position: {
+                my: 'top right',
+                at: 'bottom center',
+                adjust: { y: 5 }
+            },
+            style: {
+                classes: 'ui-tooltip-blue ui-tooltip-shadow'
+            }
+        });
+        $('#startJoin').qtip({
+            position: {
+                my: 'top left',
+                at: 'bottom center',
+                adjust: { y: 5 }
+            },
+            style: {
+                classes: 'ui-tooltip-blue ui-tooltip-shadow'
+            }
+        });
     };
 
     var startJoinClick = function () {
@@ -72,5 +94,5 @@ var HomeIndexPage = function () {
 var homeIndexPage = HomeIndexPage();
 
 $(function () {
-  homeIndexPage.PreparePage();
+    homeIndexPage.PreparePage();
 });

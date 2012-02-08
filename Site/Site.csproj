@@ -405,17 +405,20 @@
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="robots.txt" />
     <Content Include="Scripts\fileuploader.js" />
     <Content Include="Scripts\highcharts\highcharts.js" />
     <Content Include="Scripts\highcharts\themes\dark-blue.js" />
     <Content Include="Scripts\highcharts\themes\dark-green.js" />
     <Content Include="Scripts\highcharts\themes\gray.js" />
     <Content Include="Scripts\highcharts\themes\grid.js" />
-    <Content Include="Scripts\jquery-1.7-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.7.js" />
-    <Content Include="Scripts\jquery-1.7.min.js" />
+    <Content Include="Scripts\jquery-1.7.1.js" />
+    <Content Include="Scripts\jquery-1.7.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.16.js" />
     <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
+    <Content Include="Scripts\jquery.qtip.css" />
+    <Content Include="Scripts\jquery.qtip.js" />
+    <Content Include="Scripts\jquery.qtip.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate-vsdoc.js" />

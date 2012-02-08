@@ -28,7 +28,8 @@ namespace TallyJ.Models
                              e.ElectionGuid,
                              e.DateOfElection,
                              e.ElectionType,
-                             e.ElectionMode
+                             e.ElectionMode,
+                             e.ShowAsTest
                            })
             .Select(info =>
                       {
@@ -41,7 +42,8 @@ namespace TallyJ.Models
                                       IsCurrent = isCurrent,
                                       Locations = isCurrent ? locations : null,
                                       Type = ElectionTypeEnum.TextFor(info.ElectionType),
-                                      Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (",")")
+                                      Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (",")"),
+                                      IsTest = info.ShowAsTest.AsBool()
                                     };
                       });
       }

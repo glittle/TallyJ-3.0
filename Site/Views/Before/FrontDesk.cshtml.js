@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../Scripts/site.js" />
 /// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7-vsdoc.js" />
+/// <reference path="../../Scripts/jquery-1.7.1.js" />
 
 var FrontDeskPage = function () {
     var local = {

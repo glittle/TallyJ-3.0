@@ -127,6 +127,7 @@
     <Property Type="Boolean" Name="IsSingleNameElection" />
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Boolean" Name="ListForPublic" />
+    <Property Type="Boolean" Name="ShowAsTest" />
   </EntityType>
   <EntityType Name="Location">
     <Key>

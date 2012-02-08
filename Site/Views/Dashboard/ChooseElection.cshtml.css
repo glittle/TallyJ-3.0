@@ -36,3 +36,13 @@
 .MakeNew {
     margin-top: 25px;
 }
+.TestElection {
+    color: #888;
+}
+.Test {
+    display: none;
+}
+.TestElection .Test {
+    display: inline-block;
+    color: #333;
+}

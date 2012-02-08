@@ -219,6 +219,7 @@
     <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
     <Property Name="ListForPublic" Type="bit" />
+    <Property Name="ShowAsTest" Type="bit" />
   </EntityType>
   <EntityType Name="ImportFile">
     <Key>

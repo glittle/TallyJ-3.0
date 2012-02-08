@@ -1,5 +1,5 @@
 ﻿// Sunwapta Solutions Inc.
-/// <reference path="jquery-1.7-vsdoc.js" />
+/// <reference path="jquery-1.7.1.js" />
 
 var site = {
     onload: [],

@@ -224,6 +224,7 @@
           <Property Name="IsSingleNameElection" Type="bit" />
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
           <Property Name="ListForPublic" Type="bit" />
+          <Property Name="ShowAsTest" Type="bit" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -729,6 +730,7 @@
           <Property Type="Boolean" Name="IsSingleNameElection" />
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="Boolean" Name="ListForPublic" />
+          <Property Type="Boolean" Name="ShowAsTest" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -1129,6 +1131,7 @@
           <EntitySetMapping Name="Elections">
             <EntityTypeMapping TypeName="TallyJ2Model.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="ShowAsTest" ColumnName="ShowAsTest" />
                 <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
                 <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />

@@ -105,5 +105,6 @@ namespace TallyJ.Code
         return mode;
       }
     }
+
   }
 }

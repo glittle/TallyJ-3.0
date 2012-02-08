@@ -69,6 +69,7 @@
     <EntitySetMapping Name="Elections">
       <EntityTypeMapping TypeName="TallyJ2Model.Election">
         <MappingFragment StoreEntitySet="Election">
+          <ScalarProperty Name="ShowAsTest" ColumnName="ShowAsTest" />
           <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
           <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
           <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />

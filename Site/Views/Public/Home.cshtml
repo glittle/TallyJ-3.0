@@ -2,6 +2,7 @@
 @model PublicHomeViewModel
 @{
     ViewBag.Title = "TallyJ";
+    ViewBag.Caption = "Welcome";
     ViewBag.Message = "The election system for Bahá’í tellers";
 
     ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
@@ -71,9 +72,9 @@
         </div>
         <h1>
             Ready to get started?</h1>
-        <p style="float: left" id="startJoin" class="StartJoin">
+        <p style="float: left" id="startJoin" class="StartJoin" title="If you are here to be a teller in an active election, click here!">
             Join an Election as a Teller</p>
-        <p style="float: right" id="startLogin" class="StartJoin">
+        <p style="float: right" id="startLogin" class="StartJoin" title="Click here to log in. If you do not have an account yet, here is where you can make one.">
             Manage your Elections</p>
     </section>
     <section class="featureBig LoginPanel">
@@ -120,3 +121,5 @@
                         For if you will not have access to the Internet when and where you will need to
                         use TallyJ.</p>
                 </section></a></section>
+<div class="Summary">
+    TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections</div>

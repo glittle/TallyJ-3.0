@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     @RenderPage("Headers.cshtml")
-    <title>TallyJ - @ViewBag.Title</title>
+    <title>TallyJ - @(ViewBag.Caption ?? ViewBag.Title)</title>
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
     <link rel="publisher" href="https://plus.google.com/109176504285792009711">
     <script type="text/javascript">
@@ -29,18 +29,18 @@
                     if (Request.IsAuthenticated)
                     {
                     @Html.ActionLink(" ", "Index", "Dashboard", null, new
-                                                                        {
-                                                                            Class = "site-title",
-                                                                            title = "Go to Dashboard"
-                                                                        })
+               {
+                   Class = "site-title",
+                   title = "Go to Dashboard"
+               })
                     }
                     else
                     {
                     @Html.ActionLink(" ", "Index", "Public", null, new
-                                                                     {
-                                                                         Class = "site-title",
-                                                                         title = "Go to Welcome Page"
-                                                                     })
+               {
+                   Class = "site-title",
+                   title = "Go to Welcome Page"
+               })
                     }
                 }
                 <div class="Version">

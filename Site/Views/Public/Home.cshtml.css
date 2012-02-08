@@ -150,3 +150,10 @@ fieldset input[type="text"], fieldset input[type="password"]
     width: 150px;
     text-align: center;
 }
+.Summary {
+    height: 0px;
+    width: 0px;
+    position: absolute;
+    text-align: 999px;
+    overflow: hidden;
+}
