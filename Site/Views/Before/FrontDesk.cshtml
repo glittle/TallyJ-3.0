@@ -9,6 +9,15 @@
     ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
     TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
 }
+<div class="PullInstructions">
+  <ol>
+    <li>As people arrive at the election venue, mark them as "In Person" if they intend to cast their own ballot.</li>
+    <li>Any "Dropped Off" ballots can be collected and marked here.</li>
+    <li>To quickly scroll the page, begin to type the last name of the person you are looking for.</li>
+    <li>Use the mouse to correctly mark each person.</li>
+  </ol>
+</div>
+<div id="search"></div>
 <div id="Main">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.PersonLines()).AsRawHtml()
 </div>

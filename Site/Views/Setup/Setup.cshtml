@@ -36,6 +36,15 @@
     </tr>
     <tr>
         <th>
+            Testing?
+        </th>
+        <td>
+          <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
+          <label for="cbShowAsTest">Show this as a Test election in my list of elections.</label>
+        </td>
+    </tr>
+    <tr>
+        <th>
             Convenor
         </th>
         <td>
@@ -154,10 +163,11 @@
         Add Location</button>
 </div>
 <div class="More Misc">
-    <p>
-        To re-clean the data before this election, removing voting information (who can
-        vote, where they voted, who is ineligible):
-        <button type="button" id="btnResetList">
-            Reset voting information</button>
-    </p>
+  <p>
+    To re-clean the data before this election, removing voting information (who can
+    vote, where they voted, who is ineligible):
+    <button type="button" id="btnResetList">
+      Reset voting information</button>
+  </p>
+  <p class="techInfo" title="Technical information">Internal code: <span data-name="ElectionGuid"></span></p>
 </div>

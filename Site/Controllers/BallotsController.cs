@@ -9,29 +9,6 @@ namespace TallyJ.Controllers
 {
   public class BallotsController : BaseController
   {
-    ///// <Summary>switch to location l, show ballot b</Summary>
-    //public ActionResult Index(int l, int b)
-    //{
-    //  if (UserSession.CurrentLocation == null || l != UserSession.CurrentLocation.C_RowId)
-    //  {
-    //    // switch to location, if allowed
-    //    var switched = new ComputerModel().AddCurrentComputerIntoLocation(l);
-    //    if (!switched)
-    //    {
-    //      return RedirectToAction("ChooseElection", "Dashboard");
-    //    }
-    //  }
-
-    //  return Index(b);
-    //}
-
-    ///// <Summary>Show the desired ballot</Summary>
-    //public ActionResult Index(int b)
-    //{
-    //  SessionKey.CurrentBallotId.SetInSession(b);
-    //  return Index();
-    //}
-
     public ActionResult Index()
     {
       var locationId = Request.QueryString["l"].AsInt();
@@ -62,6 +39,19 @@ namespace TallyJ.Controllers
       }
 
       return isSingle ? View("BallotSingle", ballotModel) : View("BallotNormal", ballotModel);
+    }
+
+    public ActionResult Reconcile()
+    {
+      return View(new PeopleModel());
+    }
+
+    public JsonResult BallotsForLocation(int id)
+    {
+      return new
+               {
+                 Ballots = new PeopleModel().BallotSources(id)
+               }.AsJsonResult();
     }
 
     public JsonResult SaveVote(int pid, int vid, int count, int invalid = 0)

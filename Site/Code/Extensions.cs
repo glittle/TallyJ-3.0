@@ -42,6 +42,16 @@ namespace TallyJ.Code
       return new HtmlString(input);
     }
 
+    /// <summary>
+    /// Format for display in an MVC page.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static MvcHtmlString AsRawMvcHtml(this string input)
+    {
+      return new MvcHtmlString(input);
+    }
+
 
     /// <summary>
     ///   Split using a single separator

@@ -24,6 +24,7 @@ body
     padding: 0;
 }
 
+/*
 a:link, a:visited, a:active, a:hover
 {
     color: #333;
@@ -32,7 +33,7 @@ a:link, a:visited, a:active, a:hover
     padding-right: 3px;
     text-decoration: underline;
 }
-
+*/
 
 header, footer, hgroup nav, section
 {
@@ -117,6 +118,7 @@ h5, h6
 {
     position: relative;
     float: right;
+    text-align: right;
     top: 8px;
 }
 
@@ -126,7 +128,13 @@ h5, h6
     clear: both;
     padding-bottom: 35px;
 }
-
+.PageTitle {
+    position: absolute;
+    left: 68px;
+    top: 0;
+    color: #8dc63e;
+    font-size: 110%;
+}
 .main-content
 {
     background: url("../images/accent.png") no-repeat;
@@ -153,11 +161,17 @@ footer
     width: 55px;
     height: 59px;
 }
+.TopInfo {
+    margin-left: 4px;
+}
 .NormalMode .TopInfo
 {
+    display: none;/*
     bottom: 0;
     position: relative;
     margin: 40px 0 0 90px;
+    margin-left: -50px;
+    top: 15px;*/
 }
 .NormalMode .site-title
 {
@@ -168,10 +182,10 @@ footer
     width: 400px;
     height: 106px;
 }
-.NormalMode .TopInfo
-{
-    margin-left: -50px;
-    top: 15px;
+.NormalMode .PageTitle,
+.Presenter .PageTitle
+ {
+    display: none;
 }
 .Version
 {
@@ -186,7 +200,7 @@ footer
 }
 
 /* login  
-----------------------------------------------------------*/
+----------------------------------------------------------* /
 #login
 {
     display: block;
@@ -211,6 +225,19 @@ footer
     background-color: #a3acb0;
 }
 
+#login ul
+{
+    padding: 0;
+    margin-left: -20px;
+}
+#login li
+{
+    display: inline;
+    list-style: none;
+}
+
+
+*/
 #login a.username
 {
     background: none;
@@ -228,18 +255,6 @@ footer
     vertical-align: bottom;
     width: 110px;
 }
-
-#login ul
-{
-    padding: 0;
-    margin-left: -20px;
-}
-#login li
-{
-    display: inline;
-    list-style: none;
-}
-
 
 /* menu  
 ----------------------------------------------------------*/
@@ -709,13 +724,15 @@ a.twitter
     font-size: 80%;
     color: #aaa;
     cursor: pointer;
-    content: before(Hide )
+    content: before(Hide );
 }
-.PullInstructionsHandle:before {
-    content: "Hide "
+.PullInstructionsHandle:before
+{
+    content: "Hide ";
 }
-.PullInstructionsHandle.Closed:before {
-    content: "Show "
+.PullInstructionsHandle.Closed:before
+{
+    content: "Show ";
 }
 .PullInstructionsHandle.Closed
 {
@@ -743,7 +760,7 @@ a.twitter
     top: 2px;
     width: 350px;
     overflow: visible;
-    margin-left: -150px;
+    margin-left: 100px;
     float: left;
     color: #8DC63E;
     z-index: 1;
@@ -762,3 +779,6 @@ a.twitter
     vertical-align: top;
     margin: 0 5px 5px 0;
 }
+
+
+

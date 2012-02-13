@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Web;
+using System.Web.Caching;
+using System.Web.Hosting;
 using System.Web.SessionState;
 
 namespace TallyJ.Code.Session
@@ -19,5 +21,10 @@ namespace TallyJ.Code.Session
 		{
 			get { return HttpContext.Current.Session; }
 		}
+
+	  public static Cache Cache
+    {
+      get { return HostingEnvironment.Cache; }
+    }
 	}
 }

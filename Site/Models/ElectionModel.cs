@@ -211,6 +211,7 @@ namespace TallyJ.Models
                                  election.CanVote,
                                  election.CanReceive,
                                  election.ListForPublic,
+                                 election.ShowAsTest,
                                  election.ElectionPasscode
                                }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
@@ -255,7 +256,12 @@ namespace TallyJ.Models
 
       UserSession.CurrentElection = election;
 
-      new ComputerModel().AddCurrentComputerIntoElection(election.ElectionGuid);
+      var computerModel = new ComputerModel();
+      computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
+
+      var firstLocation = Db.Locations.OrderBy(l=>l.SortOrder).First(l => l.ElectionGuid == election.ElectionGuid);
+      // default to top location
+      computerModel.AddCurrentComputerIntoLocation(firstLocation.C_RowId);
 
       return true;
     }
@@ -364,14 +370,6 @@ namespace TallyJ.Models
                            };
       Db.Locations.Add(mainLocation);
 
-      var mailedInLocation = new Location
-                               {
-                                 Name = "Mailed In Ballots",
-                                 LocationGuid = Guid.NewGuid(),
-                                 ElectionGuid = election.ElectionGuid,
-                                 SortOrder = 99
-                               };
-      Db.Locations.Add(mailedInLocation);
       Db.SaveChanges();
 
       UserSession.CurrentElection = election;

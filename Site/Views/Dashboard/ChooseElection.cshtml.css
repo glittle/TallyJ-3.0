@@ -37,12 +37,13 @@
     margin-top: 25px;
 }
 .TestElection {
-    color: #888;
+    color: #777;
 }
 .Test {
     display: none;
 }
 .TestElection .Test {
     display: inline-block;
-    color: #333;
+    color: #f33;
+    font-weight: bold;
 }

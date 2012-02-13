@@ -1,0 +1,61 @@
+﻿.Names > div > span:first-child {
+    width: 15em;
+    display: inline-block;
+}
+.EnvNum
+{
+    width: 3em;
+    float: right;
+    text-align: right;
+}
+.When {
+    width: 4em;
+    float: right;
+    text-align: right;
+}
+#lists {
+    clear: left;
+}
+#lists > div
+{
+    float: left;
+    margin-right: 20px;
+}
+.Count
+{
+    margin: 2px 0 15px 0;
+    font-size: 110%;
+}
+.Totals
+{
+    float: left;
+}
+
+.Totals table
+{
+    border-collapse: collapse;
+}
+.Totals td {
+    text-align: right;
+    width: 25px;
+}
+.Totals tr td:first-child {
+    font-weight: bold;
+    text-align: left;
+    width: 100px;
+}
+tr.SubTotal td {
+    border-top: solid #000 1px;
+    padding-bottom: 20px;
+}
+tr.Total td {
+    border-top: double #000 3px;
+    padding-bottom: 20px;
+}
+#btnShowNames {
+    float: left;
+    margin: 25px 0 0 50px;
+}
+.Names {
+    display: none;
+}

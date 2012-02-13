@@ -18,7 +18,7 @@ var BallotSinglePageFunc = function () {
         invalidReasonsHtml: null,
         rowSelected: 0,
         lastBallotRowVersion: 0,
-        searchResultTemplate: '<li id=P{Id}>{Name}</li>',
+        searchResultTemplate: '<li id=P{Id}>{^Name}</li>',
         ballotListTemplate: '<li id=B{Id}>{Location} (<span data-location={LocationId}>{TallyStatus}</span>) - {Code}</li>'
     };
 

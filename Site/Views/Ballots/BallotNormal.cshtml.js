@@ -25,7 +25,7 @@ var BallotNormalPageFunc = function () {
         invalidReasonsHtml: null,
         rowSelected: 0,
         lastBallotRowVersion: 0,
-        searchResultTemplate: '<li id=P{Id}{IneligibleData}>{Name}</li>',
+        searchResultTemplate: '<li id=P{Id}{IneligibleData}>{^Name}</li>',
         ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>'
     };
     var tabNum = {

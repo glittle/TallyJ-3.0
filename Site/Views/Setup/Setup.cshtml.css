@@ -71,6 +71,10 @@ tr.electionDetailB TD
 
 .More.Misc {
     padding: 10px 10px 20px 20px;
-    margin-left: 110px;
+    margin-left: 35px;
     width: 272px;
+}
+.techInfo {
+    font-size: 75%;
+    color: #ccc;
 }

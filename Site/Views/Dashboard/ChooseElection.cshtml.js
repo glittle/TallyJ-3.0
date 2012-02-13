@@ -8,7 +8,7 @@ var HomeIndexPage = function () {
     var preparePage = function () {
         $(document).on('click', '.btnSelectElection', null, selectElection);
         $(document).on('click', '.btnCopyElection', null, copyElection);
-        $(document).on('click', '.btnSelectLocation', null, selectLocation);
+        //$(document).on('click', '.btnSelectLocation', null, selectLocation);
         $(document).on('click', '#btnCreate', null, createElection);
         showElections(publicInterface.elections);
 
@@ -33,6 +33,14 @@ var HomeIndexPage = function () {
                 $(this).prop('disabled', true);
             });
         }
+
+        /* - old template:
+            <div class="SelectLocation">
+        Select the location you are at...</div>
+    <div class="Locations">
+        {Locations}
+    </div>
+        */
     };
 
     var selectElection = function () {
@@ -57,43 +65,47 @@ var HomeIndexPage = function () {
         ResetStatusDisplay();
 
         if (info.Selected) {
-            $('.Election.true').removeClass('true');
-            row.addClass('true');
 
-            $('.CurrentElectionName').text(info.ElectionName);
-            $('.CurrentLocationName').text('[No location selected]');
-
-            showLocations(info.Locations, row);
-
-            site.heartbeatActive = true;
-            ActivateHeartbeat(true);
-        }
-
-    };
-
-    var showLocations = function (list, row) {
-        var host = row.find('.Locations');
-        host.html(site.templates.LocationSelectItem.filledWithEach(list));
-    };
-
-    var selectLocation = function () {
-        var btn = $(this);
-        var form =
-        {
-            id: btn.data('id')
-        };
-
-        ShowStatusDisplay('Selecting location...');
-
-        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
-    };
-
-    var afterSelectLocation = function (info) {
-        if (info.Selected) {
             location.href = site.rootUrl + 'Dashboard';
-            return;
+
+//            $('.Election.true').removeClass('true');
+//            row.addClass('true');
+
+//            $('.CurrentElectionName').text(info.ElectionName);
+//            $('.CurrentLocationName').text('[No location selected]');
+
+//            showLocations(info.Locations, row);
+
+
+//            site.heartbeatActive = true;
+//            ActivateHeartbeat(true);
         }
+
     };
+
+//    var showLocations = function (list, row) {
+//        var host = row.find('.Locations');
+//        host.html(site.templates.LocationSelectItem.filledWithEach(list));
+//    };
+
+//    var selectLocation = function () {
+//        var btn = $(this);
+//        var form =
+//        {
+//            id: btn.data('id')
+//        };
+
+//        ShowStatusDisplay('Selecting location...');
+
+//        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
+//    };
+
+//    var afterSelectLocation = function (info) {
+//        if (info.Selected) {
+//            location.href = site.rootUrl + 'Dashboard';
+//            return;
+//        }
+//    };
 
     var createElection = function () {
         if (publicInterface.isGuest) return;

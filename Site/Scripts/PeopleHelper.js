@@ -72,7 +72,7 @@ var PeopleHelper = function (url) {
                     personInfo.IneligibleData = ' data-ineligible="{0}"'.filledWith(personInfo.Ineligible);
                 }
                 if (classes.length != 0) {
-                    personInfo.Name = '<span class="{0}">{1}</span>'.filledWith(classes.join(' '), personInfo.Name);
+                    personInfo.Name = '<span class="{0}">{^1}</span>'.filledWith(classes.join(' '), personInfo.Name);
                 }
                 results.push(personInfo);
             });

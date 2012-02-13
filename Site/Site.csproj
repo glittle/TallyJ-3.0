@@ -157,8 +157,10 @@
     <Compile Include="Code\RequireLocationPolicy.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
+    <Compile Include="Code\Resources\MenuHelper.cs" />
     <Compile Include="Code\Resources\TemplateLoader.cs" />
     <Compile Include="Code\RequireElectionPolicy.cs" />
+    <Compile Include="Code\Resources\XmlHelper.cs" />
     <Compile Include="Code\Session\CurrentContext.cs" />
     <Compile Include="Code\Session\ContextItems.cs" />
     <Compile Include="Code\Session\ItemKey.cs" />
@@ -282,7 +284,7 @@
     <Compile Include="Models\Helper\IneligibleReason.cs" />
     <Compile Include="Models\IBallotModel.cs" />
     <Compile Include="Models\IElectionAnalyzer.cs" />
-    <Compile Include="Models\ImportExportModel.cs" />
+    <Compile Include="Models\ImportCsvModel.cs" />
     <Compile Include="Models\LocationModel.cs" />
     <Compile Include="Models\MonitorModel.cs" />
     <Compile Include="Models\PeopleModel.cs" />
@@ -302,6 +304,7 @@
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
     <Content Include="Images\ajax-loader.gif" />
+    <Content Include="Images\arrows-ffffff.png" />
     <Content Include="Images\beta.gif" />
     <Content Include="Images\beta2.gif" />
     <Content Include="Images\BlankBig.png" />
@@ -395,6 +398,8 @@
     <Content Include="Global.asax" />
     <Content Include="Images\Blank.png" />
     <Content Include="Images\LogoTopSmall.png" />
+    <Content Include="Images\shadow.png" />
+    <Content Include="Images\SlideProjector.gif" />
     <Content Include="JsTemplates\ReportTemplates.html" />
     <Content Include="JsTemplates\RollCallLine.html" />
     <Content Include="JsTemplates\NormalVoteLine.html" />
@@ -431,7 +436,8 @@
     <Content Include="Scripts\modernizr-2.0.6-development-only.js" />
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
-    <Content Include="Unity.Mvc3.README.txt" />
+    <Content Include="Scripts\superfish.css" />
+    <Content Include="Scripts\superfish.js" />
     <Content Include="Views\After\Reports.cshtml.css" />
     <Content Include="Views\After\Reports.cshtml.js" />
     <Content Include="Views\After\Monitor.cshtml.css">
@@ -446,6 +452,8 @@
     <Content Include="Views\Ballots\BallotNormal.cshtml.js" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
     <Content Include="Views\Ballots\BallotSingle.cshtml.js" />
+    <Content Include="Views\Ballots\Reconcile.cshtml.css" />
+    <Content Include="Views\Ballots\Reconcile.cshtml.js" />
     <Content Include="Views\Before\RollCall.cshtml.css" />
     <Content Include="Views\Before\RollCall.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css" />
@@ -456,6 +464,7 @@
     <Content Include="Views\Dashboard\ChooseElection.cshtml.js">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\menu.xml" />
     <Content Include="Views\Public\About.cshtml.css">
       <DependentUpon>About.cshtml</DependentUpon>
     </Content>
@@ -468,12 +477,8 @@
     <Content Include="Views\Public\Home.cshtml.js">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\ImportExport.cshtml.css">
-      <DependentUpon>ImportExport.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Setup\ImportExport.cshtml.js">
-      <DependentUpon>ImportExport.cshtml</DependentUpon>
-    </Content>
+    <Content Include="Views\Setup\ImportCsv.cshtml.css" />
+    <Content Include="Views\Setup\ImportCsv.cshtml.js" />
     <Content Include="Views\Setup\loading.gif" />
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml</DependentUpon>
@@ -577,10 +582,14 @@
     <Content Include="Views\Public\Home.cshtml" />
     <Content Include="Views\Public\Install.cshtml" />
     <Content Include="Views\Dashboard\ChooseElection.cshtml" />
-    <Content Include="Views\Setup\ImportExport.cshtml" />
+    <Content Include="Views\Setup\ImportCsv.cshtml" />
     <Content Include="Views\Ballots\BallotSingle.cshtml" />
     <Content Include="Views\Before\RollCall.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
+    <Content Include="Views\Ballots\Reconcile.cshtml" />
+    <None Include="Views\menu.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -374,7 +374,8 @@ namespace TallyJ.Models
         if (!groupOnlyInTop)
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Top);
-          resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
+          resultTie.TieBreakRequired = true;
+          //resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
         }
         else
         {
@@ -386,7 +387,8 @@ namespace TallyJ.Models
         if (groupInTop && groupInOther || !groupInTop)
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
-          resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
+          resultTie.TieBreakRequired = true;
+          //resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
         }
       }
 
@@ -411,6 +413,11 @@ namespace TallyJ.Models
       {
         resultTie.IsResolved = true;
         results.ForEach(r => r.IsTieResolved = true);
+      }
+
+      if (resultTie.NumInTie == resultTie.NumToElect)
+      {
+        resultTie.NumToElect--;
       }
 
       // conclusions

@@ -1,42 +1,7 @@
-﻿@using TallyJ.Code.Session
-@if (Request.IsAuthenticated)
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@*@if (Request.IsAuthenticated)
 {
-    if (ScreenMode != "Full")
-    {
-    <div class="MiniDash">
-        @if (ScreenMode == "Mini")
-        {
-            <div>
-                @ActionLink2("Dashboard", "Index", "Dashboard")
-                @ActionLink2("Setup Election", "Index", "Setup", UserSession.IsKnownTeller)
-            </div>
-            <div>
-                @ActionLink2("Import Names", "ImportExport", "Setup", UserSession.IsKnownTeller)
-                @ActionLink2("Manage People", "People", "Setup")
-            </div>
-            <div>
-                <br />
-                @ActionLink2("Front Desk", "FrontDesk", "Before")
-                @ActionLink2("Roll Call", "RollCall", "Before")
-            </div>
-            <div>
-                @ActionLink2("Enter Ballots", "Index", "Ballots")
-                @ActionLink2("Monitor Progress", "Monitor", "After", UserSession.IsKnownTeller)
-                @ActionLink2("Analyze Results", "Analyze", "After", UserSession.IsKnownTeller)
-            </div>
-            <div>
-                @ActionLink2("Present Results", "Presenter", "After")
-                @ActionLink2("Generate Reports", "Reports", "After", UserSession.IsKnownTeller)
-            </div>
-        }
-        <div>
-            @Html.ActionLink("Log Off", "LogOff", "Account")
-            @ActionLink2("Switch Elections", "ChooseElection", "Dashboard", UserSession.IsKnownTeller && ScreenMode=="Mini")
-            @ActionLink2(User.Identity.Name, "ChangePassword", "Account", UserSession.IsKnownTeller)
-            @ActionLink2("Dashboard", "Index", "Dashboard", ScreenMode != "Mini")
-        </div>
-    </div>
-    }
 }
 else
 {
@@ -49,6 +14,7 @@ else
    {
      id = "logonLink",
      data_dialog_title = "Identification"
-   }*@
+   }
     </ul>
 }
+*@

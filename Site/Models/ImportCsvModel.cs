@@ -12,7 +12,7 @@ using TallyJ.Models.Helper;
 
 namespace TallyJ.Models
 {
-  public class ImportExportModel : DataConnectedModel
+  public class ImportCsvModel : DataConnectedModel
   {
     //public HttpPostedFileBase File { get; set; }
     //public Exception Exception { get; set; }

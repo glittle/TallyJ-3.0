@@ -131,6 +131,12 @@ var SetupIndexPage = function () {
                     break;
             }
         });
+        $('span[data-name]').each(function () {
+            LogMessage(this.tagName);
+            var input = $(this);
+            var value = election[input.data('name')] || '';
+            input.html(value);
+        });
 
         $('.CurrentElectionName').text(election.Name);
 

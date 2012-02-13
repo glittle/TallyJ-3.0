@@ -179,7 +179,8 @@ namespace TallyJ.Controllers
 		//
 		// GET: /Account/ChangePassword
 
-		public ActionResult ChangePassword()
+    [AllowAnonymous]
+    public ActionResult ChangePassword()
 		{
 			return View();
 		}

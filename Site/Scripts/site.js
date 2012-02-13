@@ -15,6 +15,8 @@ var site = {
     heartbeatActive: true,
     heartbeatSeconds: 60, // default seconds
     heartbeatTimeout: null,
+    serverTime: null,
+    timeOffset: 0,
     rootUrl: ''
 };
 var storageKey = {
@@ -32,12 +34,40 @@ function Onload() {
     }
     PrepareStatusDisplay();
 
+    site.timeOffset = site.serverTime.parseJsonDate() - new Date();
+
     SendHeartbeat();
 
     // UpdateActiveInfo();
     ActivatePullInstructions();
 
+    PrepareMainMenu();
+    
     //ShowStatusDisplay('long test message...', 0, 10000);
+}
+
+function PrepareMainMenu() {
+//    $("#jMenu").jMenu({
+//        openClick: false,
+//        effects: {
+//            effectSpeedOpen: 100,
+//            effectSpeedClose: 300,
+//            effectTypeOpen: 'show',
+//            effectTypeClose: 'fade',
+//            effectOpen: 'linear',
+//            effectClose: 'linear'
+//        },
+//        TimeBeforeOpening: 100,
+//        TimeBeforeClosing: 400,
+//        animatedText: false
+//    });
+
+    $("ul.sf-menu").supersubs({
+        minWidth: 12,   // minimum width of sub-menus in em units 
+        maxWidth: 27,   // maximum width of sub-menus in em units 
+        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
+        // due to slight rounding differences and font-family 
+    }).superfish();  
 }
 
 function ActivatePullInstructions() {
@@ -557,15 +587,27 @@ function GetValue(sNum) {
     return nNum;
 }
 
-function FormatDate(date, format, forDisplayOnly, includeHrMin) {
+function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustForServerTimeOffset) {
     // MMM = JAN
     // MMMM = JANUARY
-    if (('' + date).substring(0, 5) == '/Date') {
-        date = date.parseJsonDate();
+    if (('' + dateObj).substring(0, 5) == '/Date') {
+        dateObj = dateObj.parseJsonDate();
     }
-    if (date == null || isNaN(date) || date == 'NaN' || date === '01/01/0001' || date === '') {
+    if (dateObj == null || isNaN(dateObj) || dateObj == 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
         return '';
     }
+    
+    var date = new Date(dateObj);
+    if (isNaN(date)) {
+        return '[Invalid Date]';
+    }
+    if (!doNotAdjustForServerTimeOffset) {
+        LogMessage('time offset {0}'.filledWith(site.timeOffset));
+        LogMessage('  - original: {0}'.filledWith(date.toString()));
+        date = new Date(date.getTime() + site.timeOffset);
+        LogMessage('  - after   : {0}'.filledWith(date.toString()));
+    }
+
     if (!format) {
         format = 'YYYY-MM-DD';
     }
@@ -573,16 +615,11 @@ function FormatDate(date, format, forDisplayOnly, includeHrMin) {
     var months = 'January February March April May June July August September October November December'.split(' ');
     var days = 'Sun Mon Tue Wed Thu Fri Sat'.split(' ');
 
-    var mydate = new Date(date);
-    if (isNaN(mydate)) {
-        return '[Invalid Date]';
-    }
-
-    var dayValue = mydate.getDate();
-    var monthValue = mydate.getMonth();
-    var yearValue = mydate.getFullYear();
-    var hourValue = mydate.getHours();
-    var minuteValue = mydate.getMinutes();
+    var dayValue = date.getDate();
+    var monthValue = date.getMonth();
+    var yearValue = date.getFullYear();
+    var hourValue = date.getHours();
+    var minuteValue = date.getMinutes();
     var result = '';
 
     switch (format) {
@@ -599,7 +636,7 @@ function FormatDate(date, format, forDisplayOnly, includeHrMin) {
             break;
 
         case 'DDD, D MMM YYYY':
-            result = days[mydate.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+            result = days[date.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
             break;
 
         case 'YYYY-MM-DD':
@@ -623,7 +660,7 @@ function FormatDate(date, format, forDisplayOnly, includeHrMin) {
             break;
 
         default:
-            result = date;
+            result = '';
             break;
     }
 
@@ -653,22 +690,29 @@ String.prototype.filledWith = function () {
     }
 
     //return this.replace(/{(.+)}/g, function () {
+  //var t = startTimer();
 
-
-    var testForFunc = /#\w+/; // simple test for "#function"
+  var testForFunc = /\#/; // simple test for "#"
+  var testForNoEscape = /\^/; // simple test for "^"
     var extractTokens = /{([^{]+?)}/g; // greedy
+
     var replaceTokens = function (input) {
-        return input.replace(extractTokens, function () {
+        return input.replace(extractTokens, function() {
             var token = arguments[1];
             var value = undefined;
             if (values) {
                 try {
-                    value = values[token];
-                    if (testForFunc.test(token)) {
-                        //LogMessage(token);
+                    if (values === null) {
+                        value = '';
+                    } else if (testForFunc.test(token)) {
                         value = eval(token.substring(1));
+                    } else if (testForNoEscape.test(token)) {
+                        value = values[token.substring(1)];
+                    } else {
+                        var toEscape = values[token];
+                        value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace( /&/g , '&amp;').replace( /</g , '&lt;').replace( />/g , '&gt;').replace( /"/g , '&quot;');
                     }
-                } catch (err) {
+                } catch(err) {
                     LogMessage('src data');
                     LogMessage(values);
                     LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);

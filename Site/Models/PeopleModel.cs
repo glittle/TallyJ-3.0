@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -13,6 +14,13 @@ namespace TallyJ.Models
 {
   public class PeopleModel : DataConnectedModel
   {
+    private List<Location> _locations;
+
+    public long LastRowVersion
+    {
+      get { return Db.CurrentRowVersion().Single().Value; }
+    }
+
     public IQueryable<Person> PeopleInCurrentElection(bool includeIneligible)
     {
       {
@@ -68,7 +76,7 @@ namespace TallyJ.Models
     /// <summary>
     ///     Use age group to determine eligibility.
     /// </summary>
-    /// <param name="person"></param>
+    /// <param name="person"> </param>
     public void ClearEligibilityRestrictions(Person person)
     {
       var canVote = person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
@@ -184,33 +192,80 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
+    public enum FrontDeskSortEnum
+    {
+      ByArea,
+      ByName
+    }
+
     /// <Summary>Everyone</Summary>
-    public IEnumerable<object> PersonLines()
+    public IEnumerable<object> PersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       return PersonLines(PeopleInCurrentElection(true).ToList());
     }
 
-    /// <Summary>Only those listed</Summary>
-    public IEnumerable<object> PersonLines(List<Person> people)
+    public IEnumerable<object> BallotSources(int forLocationId = -1)
     {
-      var locations =
-        Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(l => l.LocationGuid,
-                                                                                                l => l.Name);
+      var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
+      var forLocationGuid = forLocationId == -1
+                              ? Guid.Empty
+                              : Locations.Where(l => l.C_RowId == forLocationId).Select(l => l.LocationGuid).Single();
+
+      return PeopleInCurrentElection(false)
+        .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
+        .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
+        .ToList()
+        .OrderBy(p => p.VotingMethod).ThenBy(p => p.RegistrationTime)
+        .Select(p => new
+                       {
+                         PersonId = p.C_RowId,
+                         p.C_FullName,
+                         VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+                         When = p.RegistrationTime,
+                         p.VotingMethod,
+                         p.EnvNum
+                       });
+    }
+
+    private IEnumerable<Location> Locations
+    {
+      get
+      {
+        return _locations ?? (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
+      }
+    }
+
+    public HtmlString GetLocationOptions()
+    {
+      return Locations
+        .OrderBy(l => l.SortOrder)
+        .Select(l => "<option value={C_RowId}>{Name}</option>".FilledWith(l))
+        .JoinedAsString()
+        .AsRawHtml();
+    }
+
+    /// <Summary>Only those listed</Summary>
+    public IEnumerable<object> PersonLines(List<Person> people, FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
+    {
+      var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
 
       return people
-        .OrderBy(p => p.Area)
+        .OrderBy(p => sortType==FrontDeskSortEnum.ByArea ? p.Area : "")
         .ThenBy(p => p.LastName)
         .ThenBy(p => p.FirstName)
         .Select(p => new
                        {
                          PersonId = p.C_RowId,
                          FullName = p.C_FullName,
+                         NameLower = p.C_FullName.ToLower(),
                          p.Area,
                          VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
                          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
                          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
-                         EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson ? null : p.EnvNum
+                         EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson
+                         ? null
+                         : p.EnvNum
                        });
     }
 
@@ -234,11 +289,13 @@ namespace TallyJ.Models
         // already set this way...turn if off
         person.VotingMethod = null;
         person.VotingLocationGuid = null;
+        person.RegistrationTime = null;
       }
       else
       {
         person.VotingMethod = voteType;
         person.VotingLocationGuid = UserSession.CurrentLocationGuid;
+        person.RegistrationTime = DateTime.Now;
 
         if (voteType != VotingMethodEnum.InPerson)
         {
@@ -270,8 +327,8 @@ namespace TallyJ.Models
       }
 
       var people = Db.People
-          .Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
-          .ToList();
+        .Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
+        .ToList();
       return new
                {
                  PersonLines = PersonLines(people),
@@ -279,17 +336,13 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public long LastRowVersion
-    {
-      get { return Db.CurrentRowVersion().Single().Value; }
-    }
-
     public JsonResult DeleteAllPeople()
     {
       int rows;
       try
       {
-        rows = Db.Database.ExecuteSqlCommand("Delete from tj.Person where ElectionGuid={0}", UserSession.CurrentElectionGuid);
+        rows = Db.Database.ExecuteSqlCommand("Delete from tj.Person where ElectionGuid={0}",
+                                             UserSession.CurrentElectionGuid);
       }
       catch (SqlException e)
       {

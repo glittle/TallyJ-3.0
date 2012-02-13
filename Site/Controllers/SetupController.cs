@@ -35,21 +35,21 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public ActionResult ImportExport(ImportExportModel importExportModel)
+    public ActionResult ImportCsv(ImportCsvModel importCsvModel)
     {
-      if (importExportModel == null)
+      if (importCsvModel == null)
       {
-        importExportModel = new ImportExportModel();
+        importCsvModel = new ImportCsvModel();
       }
 
-      return View(importExportModel);
+      return View(importCsvModel);
     }
 
 
     [ForAuthenticatedTeller]
     public JsonResult Upload()
     {
-      var model = new ImportExportModel();
+      var model = new ImportCsvModel();
       int rowId;
       var messages = model.ProcessUpload(out rowId);
 
@@ -60,13 +60,6 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
-    //[ForAuthenticatedTeller]
-    //public ActionResult UploadResult(ImportExportModel model, UploadSession session)
-    //{
-    //  model.UploadSession = session;
-
-    //  return View("ImportExport", model);
-    //}
 
     [ForAuthenticatedTeller]
     public ActionResult Download(int id)
@@ -83,16 +76,16 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult DeleteFile(int id)
     {
-      var importExportModel = new ImportExportModel();
+      var importCsvModel = new ImportCsvModel();
       
-      return importExportModel.DeleteFile(id);
+      return importCsvModel.DeleteFile(id);
     }
 
     [ForAuthenticatedTeller]
     public ActionResult GetUploadlist()
     {
-      var importExportModel = new ImportExportModel();
-      return importExportModel.GetUploadList();
+      var importCsvModel = new ImportCsvModel();
+      return importCsvModel.GetUploadList();
     }
 
     public JsonResult SavePerson(Person person)
@@ -122,31 +115,31 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult ReadFields(int id)
     {
-      return new ImportExportModel().ReadFields(id);
+      return new ImportCsvModel().ReadFields(id);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult CopyMap(int from, int to)
     {
-      return new ImportExportModel().CopyMap(from, to);
+      return new ImportCsvModel().CopyMap(from, to);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult Import(int id)
     {
-      return new ImportExportModel().Import(id);
+      return new ImportCsvModel().Import(id);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveMapping(int id, string mapping)
     {
-      return new ImportExportModel().SaveMapping(id, mapping);
+      return new ImportCsvModel().SaveMapping(id, mapping);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult FileCodePage(int id, int cp)
     {
-      return new ImportExportModel().SaveCodePage(id, cp);
+      return new ImportCsvModel().SaveCodePage(id, cp);
     }
     
     [ForAuthenticatedTeller]

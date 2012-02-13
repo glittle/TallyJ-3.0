@@ -1,4 +1,10 @@
-﻿@using TallyJ.Code.Session
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+    ContextItems.AddJavascriptForPage("time", "site.serverTime={0};".FilledWith(DateTime.Now.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
+    var currentMenu = new MenuHelper(this);
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,16 +74,23 @@
                         Connected</div>
                 }
             </div>
-            <div class="headerRight">
-                <section id="login">
-                    @Html.Partial("_LogOnPartial")
-                </section>
-            </div>
+            @if (ScreenMode != "Full")
+            {
+                if (ScreenMode == "Mini")
+                {
+                <div class="headerRight">
+                </div>
+                <ul class="sf-menu">
+                    @currentMenu.InsertMenu()
+                </ul>
+                }
+            }
         </div>
     </header>
     <div id="body">
         @RenderSection("featured", false)
         <section class="content-wrapper main-content clear-fix">
+            <div class="PageTitle">@currentMenu.CurrentMenuTitle</div>
             @RenderBody()
         </section>
     </div>
@@ -100,9 +113,6 @@
             </div>
         </div>
     </footer>
-    @{
-        ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
-    }
     @ContextItems.GetJavascriptForPage()
 </body>
 </html>

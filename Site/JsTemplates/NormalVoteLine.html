@@ -1,8 +1,8 @@
 ﻿<div class="VoteHost{Fake} Changed{changed} Valid{invalid} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
     <span class="VoteNum">{pos}</span><span class="Name">{Display}</span>
     <span class="Invalid">Spoiled: </span>
-    <select class="Invalid" data-invalid="{invalid}" tabindex="1" size="{#{invalid} ? 1 : 20}">
-        {InvalidReasons}
+    <select class="Invalid" data-invalid="{invalid}" tabindex="1" size="{#'{invalid}'=='' ? 1 : 20}">
+        {^InvalidReasons}
     </select>
     <span class="ui-icon ui-icon-trash" title="Delete this vote line"></span>
     <div class="ChangedMessage">This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!

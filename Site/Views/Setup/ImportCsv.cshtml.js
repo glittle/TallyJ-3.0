@@ -3,7 +3,7 @@
 /// <reference path="../../Scripts/jquery-1.7.1.js" />
 /// <reference path="../../Scripts/fileuploader.js" />
 
-var ImportExportPage = function () {
+var ImportCsvPage = function () {
     var local = {
         uploadListBody: null,
         uploadListTemplate: '',
@@ -190,7 +190,7 @@ var ImportExportPage = function () {
     var showFields = function (info) {
         var host = $('#fieldSelector').html('');
         var options = '<option value="{0}">{#ExpandName("{0}")}</option>'.filledWithEach(info.possible);
-        var template1 = '<div><h3>{field}</h3><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select><div>{sampleDivs}</div></div>';
+        var template1 = '<div><h3>{field}</h3><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select><div>{^sampleDivs}</div></div>';
         var count = 1;
         $.each(info.csvFields, function () {
             this.sampleDivs = '<div>{0}&nbsp;</div>'.filledWithEach(this.sample);
@@ -203,8 +203,7 @@ var ImportExportPage = function () {
     var showUploads = function (info) {
         var list;
         if (typeof info !== 'undefined') {
-            var timeOffset = info.serverTime.parseJsonDate() - new Date();
-            list = extendUploadList(info.previousFiles, timeOffset);
+            list = extendUploadList(info.previousFiles);
             local.uploadList = list;
         } else {
             list = local.uploadList;
@@ -217,11 +216,9 @@ var ImportExportPage = function () {
         });
         showActiveFileName();
     };
-    var extendUploadList = function (list, timeOffset) {
+    var extendUploadList = function (list) {
         $.each(list, function () {
-            var serverTime = this.UploadTime.parseJsonDate();
-            var clientTime = new Date(serverTime.getTime() + timeOffset);
-            this.UploadTimeExt = FormatDate(clientTime, null, null, true);
+            this.UploadTimeExt = FormatDate(this.UploadTime, null, null, true);
             this.RowClass = this.C_RowId == local.activeFileRowId ? 'Active' : 'NotActive';
             this.ProcessingStatusAndSteps = this.ProcessingStatus;
         });
@@ -272,10 +269,10 @@ var ImportExportPage = function () {
     return publicInterface;
 };
 
-var importExportPage = ImportExportPage();
+var importCsvPage = ImportCsvPage();
 
 $(function () {
-    importExportPage.PreparePage();
+    importCsvPage.PreparePage();
 });
 
 

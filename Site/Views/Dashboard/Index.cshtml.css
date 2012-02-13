@@ -1,30 +1,34 @@
-﻿section.features a {
-  text-decoration: none;
-  cursor: pointer;
-}
-section.features a section {
-  border: 2px solid transparent;
-}
-section.features a:hover section {
-  border: 2px solid #ddd;
-}
-
-section.features a:active section {
-  border: 2px solid #8dc63e;
-}
-
-hgroup.title a 
+﻿section.features a
 {
-  float: right;
-  color: #013d7a;
-  text-decoration: none;
+    text-decoration: none;
+    cursor: pointer;
 }
-hgroup.title a:hover {
-  text-decoration: underline;
+section.features a section
+{
+    border: 2px solid transparent;
 }
-section.todo h3,
-section.todo
- {
+section.features a:hover section
+{
+    border: 2px solid #ddd;
+}
+
+section.features a:active section
+{
+    border: 2px solid #8dc63e;
+}
+
+hgroup.title a
+{
+    float: right;
+    color: #013d7a;
+    text-decoration: none;
+}
+hgroup.title a:hover
+{
+    text-decoration: underline;
+}
+section.todo h3, section.todo
+{
     color: #ccc;
 }
 section.features
@@ -43,4 +47,10 @@ section.features
     font-weight: normal;
     font-style: italic;
     font-size: 23px;
+}
+.Projector h3
+{
+    background-position: right 4px;
+    background-image: url('../../Images/SlideProjector.gif');
+    background-repeat: no-repeat;
 }

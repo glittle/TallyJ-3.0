@@ -72,8 +72,9 @@ namespace TallyJ
             configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
             configuration.For<SetupController>(x=>x.Upload()).AddPolicy(new RequireElectionPolicy());
 
-            configuration.For<AccountController>().DenyAuthenticatedAccess();
+            configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
             configuration.For<AccountController>(x => x.LogOff()).DenyAnonymousAccess();
+            configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
           });
 
 

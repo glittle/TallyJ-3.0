@@ -8,7 +8,7 @@ using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.Code.Resources
 {
-	public class ViewResourcesHelper : IViewResourcesHelper
+  public class ViewResourcesHelper : IViewResourcesHelper
 	{
 		readonly List<string> _list;
 

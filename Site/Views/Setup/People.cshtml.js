@@ -13,7 +13,7 @@ var PeoplePage = function () {
         inputField: null,
         nameList: null,
         rowSelected: 0,
-        template: '<li id=P{Id}>{Name}</li>'
+        template: '<li id=P{Id}>{^Name}</li>'
     };
     var onNamesReady = function (info) {
         local.People = info.People;
