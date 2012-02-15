@@ -14,9 +14,7 @@ namespace TallyJ.Models
 {
   public class ImportCsvModel : DataConnectedModel
   {
-    //public HttpPostedFileBase File { get; set; }
-    //public Exception Exception { get; set; }
-    //public UploadSession UploadSession { get; set; }
+    const string FileTypeCsv = "CSV";
 
     private IEnumerable<string> DbFieldsList
     {
@@ -74,6 +72,7 @@ namespace TallyJ.Models
                        FileSize = fileSize,
                        OriginalFileName = name,
                        UploadTime = DateTime.Now,
+                       FileType = FileTypeCsv,
                        ProcessingStatus = "Uploaded"
                      };
 
@@ -87,7 +86,7 @@ namespace TallyJ.Models
       Db.SaveChanges();
 
       rowId = record.C_RowId;
-      
+
       LogHelper.Add("Uploaded file #" + record.C_RowId);
 
       return "";
@@ -97,6 +96,7 @@ namespace TallyJ.Models
     {
       return Db.vImportFileInfoes
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
+        .Where(vi => vi.FileType == FileTypeCsv)
         .OrderByDescending(vi => vi.UploadTime)
         .Select(vi => new
                         {
@@ -134,13 +134,13 @@ namespace TallyJ.Models
     }
     public JsonResult CopyMap(int from, int to)
     {
-      var files = Db.ImportFiles.Where(fi => fi.ElectionGuid == UserSession.CurrentElectionGuid 
-                      && (fi.C_RowId == from || fi.C_RowId==to)).ToList();
+      var files = Db.ImportFiles.Where(fi => fi.ElectionGuid == UserSession.CurrentElectionGuid
+                      && (fi.C_RowId == from || fi.C_RowId == to)).ToList();
       if (files.Count != 2)
       {
         throw new ApplicationException("File(s) not found");
       }
-      
+
       var importFile = files.Single(fi => fi.C_RowId == to);
 
       importFile.ColumnsToRead = files.Single(fi => fi.C_RowId == from).ColumnsToRead;
@@ -260,7 +260,7 @@ namespace TallyJ.Models
       var dbFields = DbFieldsList.ToList();
       var validMappings = currentMappings.Where(mapping => dbFields.Contains(mapping[1])).ToList();
 
-      if (validMappings.Count==0)
+      if (validMappings.Count == 0)
       {
         throw new ApplicationException("Mapping not defined");
       }

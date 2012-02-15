@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -57,6 +58,7 @@
     <Compile Include="BusinessTests\BallotAnalysisTests.cs" />
     <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="BusinessTests\AnalyzerNormalTests.cs" />
+    <Compile Include="BusinessTests\ImportV1CommunityTests.cs" />
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />

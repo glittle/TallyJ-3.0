@@ -45,11 +45,36 @@ namespace TallyJ.Controllers
       return View(importCsvModel);
     }
 
+    [ForAuthenticatedTeller]
+    public ActionResult ImportV1(ImportV1Model importV1Model)
+    {
+      if (importV1Model == null)
+      {
+        importV1Model = new ImportV1Model();
+      }
+
+      return View(importV1Model);
+    }
+
 
     [ForAuthenticatedTeller]
     public JsonResult Upload()
     {
       var model = new ImportCsvModel();
+      int rowId;
+      var messages = model.ProcessUpload(out rowId);
+
+      return new { 
+        success = messages.HasNoContent(),
+        rowId, 
+        messages
+      }.AsJsonResult();
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult UploadXml()
+    {
+      var model = new ImportV1Model();
       int rowId;
       var messages = model.ProcessUpload(out rowId);
 
@@ -86,6 +111,13 @@ namespace TallyJ.Controllers
     {
       var importCsvModel = new ImportCsvModel();
       return importCsvModel.GetUploadList();
+    }
+
+    [ForAuthenticatedTeller]
+    public ActionResult GetUploadlistXml()
+    {
+      var importV1Model = new ImportV1Model();
+      return importV1Model.GetUploadList();
     }
 
     public JsonResult SavePerson(Person person)
@@ -128,6 +160,12 @@ namespace TallyJ.Controllers
     public JsonResult Import(int id)
     {
       return new ImportCsvModel().Import(id);
+    }
+  
+    [ForAuthenticatedTeller]
+    public JsonResult ImportXml(int id)
+    {
+      return new ImportV1Model().Import(id);
     }
 
     [ForAuthenticatedTeller]

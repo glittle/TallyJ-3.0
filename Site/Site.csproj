@@ -266,6 +266,10 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
+    <Compile Include="Models\ImportV1Base.cs" />
+    <Compile Include="Models\ImportV1Community.cs" />
+    <Compile Include="Models\ImportV1Election.cs" />
+    <Compile Include="Models\ImportV1Model.cs" />
     <Compile Include="Models\ResultHelper.cs" />
     <Compile Include="Models\RollCallModel.cs" />
     <Compile Include="Models\UploadProvider.cs" />
@@ -477,6 +481,8 @@
     <Content Include="Views\Public\Home.cshtml.js">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\ImportV1.cshtml.css" />
+    <Content Include="Views\Setup\ImportV1.cshtml.js" />
     <Content Include="Views\Setup\ImportCsv.cshtml.css" />
     <Content Include="Views\Setup\ImportCsv.cshtml.js" />
     <Content Include="Views\Setup\loading.gif" />
@@ -590,6 +596,7 @@
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Views\Setup\ImportV1.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
