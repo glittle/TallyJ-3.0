@@ -87,7 +87,7 @@ namespace TallyJ.Models
 
       rowId = record.C_RowId;
 
-      LogHelper.Add("Uploaded file #" + record.C_RowId);
+      new LogHelper().Add("Uploaded file #" + record.C_RowId);
 
       return "";
     }
@@ -119,7 +119,7 @@ namespace TallyJ.Models
       Db.ImportFiles.Remove(targetFile);
       Db.SaveChanges();
 
-      LogHelper.Add("Deleted file #" + id);
+      new LogHelper().Add("Deleted file #" + id);
 
       return GetUploadList();
     }
@@ -368,7 +368,7 @@ namespace TallyJ.Models
         result += " {0} row{1} skipped.".FilledWith(rowsSkipped, rowsSkipped.Plural());
       }
 
-      LogHelper.Add("Imported file #" + rowId + ": " + result);
+      new LogHelper().Add("Imported file #" + rowId + ": " + result);
 
       return new
                {

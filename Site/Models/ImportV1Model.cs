@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
@@ -29,7 +28,7 @@ namespace TallyJ.Models
       }
 
       var name = HttpUtility.UrlDecode(httpRequest.Headers["X-File-Name"].DefaultTo("unknown name"));
-      var fileSize = (int)inputStream.Length;
+      var fileSize = (int) inputStream.Length;
 
       var importFile = new ImportFile
                          {
@@ -79,7 +78,7 @@ namespace TallyJ.Models
 
       rowId = importFile.C_RowId;
 
-      LogHelper.Add("Uploaded file #" + importFile.C_RowId);
+      new LogHelper().Add("Uploaded file #" + importFile.C_RowId);
 
       return "";
     }
@@ -106,12 +105,12 @@ namespace TallyJ.Models
 
     public ActionResult DeleteFile(int id)
     {
-      var targetFile = new ImportFile { C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid };
+      var targetFile = new ImportFile {C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid};
       Db.ImportFiles.Attach(targetFile);
       Db.ImportFiles.Remove(targetFile);
       Db.SaveChanges();
 
-      LogHelper.Add("Deleted file #" + id);
+      new LogHelper().Add("Deleted file #" + id);
 
       return GetUploadList();
     }
@@ -145,6 +144,7 @@ namespace TallyJ.Models
         throw new ApplicationException("Invalid Xml file");
       }
 
+      var logHelper = new LogHelper();
 
       ImportV1Base importer;
       var currentPeople = Db.People.Where(p => p.ElectionGuid == currentElectionGuid).ToList();
@@ -154,20 +154,45 @@ namespace TallyJ.Models
       switch (xml.DocumentElement.Name)
       {
         case "Community":
-          importer = new ImportV1Community(Db, file, xml, currentPeople, delegate(Person person)
-                                                                           {
-                                                                             personModel.ResetAllInfo(person);
-                                                                             person.ElectionGuid = currentElectionGuid;
-                                                                             Db.People.Add(person);
-                                                                           });
+          importer = new ImportV1Community(Db, file, xml
+                                           , currentPeople
+                                           , delegate(Person person)
+                                               {
+                                                 personModel.ResetAllInfo(person);
+                                                 person.ElectionGuid = currentElectionGuid;
+                                                 Db.People.Add(person);
+                                               }
+                                           , logHelper);
           break;
         case "Election":
-          importer = new ImportV1Election(Db, file, xml, currentPeople, delegate(Person person)
-                                                                          {
-                                                                            personModel.ResetAllInfo(person);
-                                                                            person.ElectionGuid = currentElectionGuid;
-                                                                            Db.People.Add(person);
-                                                                          });
+
+          var currentElection = UserSession.CurrentElection;
+          var currentLocation = UserSession.CurrentLocation;
+          if (currentLocation == null)
+          {
+            currentLocation = Db.Locations.OrderBy(l=>l.SortOrder).FirstOrDefault(l => l.ElectionGuid == currentElection.ElectionGuid);
+            if (currentLocation == null)
+            {
+              throw  new ApplicationException("An election must have a Location before importing.");
+            }
+          }
+
+          EraseElectionContents(currentElection);
+
+          importer = new ImportV1Election(Db, file, xml
+                                          , currentElection
+                                          , currentLocation
+                                          , ballot => Db.Ballots.Add(ballot)
+                                          , vote => Db.Votes.Add(vote)
+                                          , currentPeople
+                                          , person =>
+                                              {
+                                                personModel.ResetAllInfo(person);
+                                                Db.People.Add(person);
+                                              }
+                                          , summary => Db.ResultSummaries.Add(summary)
+                                          , logHelper
+            );
           break;
         default:
           throw new ApplicationException("Unexpected Xml file");
@@ -175,7 +200,13 @@ namespace TallyJ.Models
 
       importer.Process();
 
-      return importer.Finalize();
+      return importer.SendSummary();
+    }
+
+    /// <Summary>Totally erase all tally information</Summary>
+    private void EraseElectionContents(Election election)
+    {
+      Db.EraseElectionContents(election.ElectionGuid, true, UserSession.LoginId);
     }
 
     private static XmlDocument GetXmlDoc(ImportFile file)

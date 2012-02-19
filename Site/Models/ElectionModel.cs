@@ -259,9 +259,12 @@ namespace TallyJ.Models
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
 
-      var firstLocation = Db.Locations.OrderBy(l=>l.SortOrder).First(l => l.ElectionGuid == election.ElectionGuid);
+      var firstLocation = Db.Locations.OrderBy(l=>l.SortOrder).FirstOrDefault(l => l.ElectionGuid == election.ElectionGuid);
       // default to top location
-      computerModel.AddCurrentComputerIntoLocation(firstLocation.C_RowId);
+      if (firstLocation != null)
+      {
+        computerModel.AddCurrentComputerIntoLocation(firstLocation.C_RowId);
+      }
 
       return true;
     }

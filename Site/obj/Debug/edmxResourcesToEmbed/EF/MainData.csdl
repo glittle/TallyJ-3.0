@@ -42,6 +42,11 @@
       <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
     </FunctionImport>
     <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+    <FunctionImport Name="EraseElectionContents">
+      <Parameter Name="ElectionGuidToClear" Mode="In" Type="Guid" />
+      <Parameter Name="EraseTallyContent" Mode="In" Type="Boolean" />
+      <Parameter Name="ByLoginId" Mode="In" Type="String" />
+    </FunctionImport>
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />

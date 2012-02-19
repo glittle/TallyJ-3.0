@@ -583,6 +583,11 @@
           <Parameter Name="ByLoginId" Type="varchar" Mode="In" />
         </Function>
         <Function Name="CurrentRowVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj" />
+        <Function Name="EraseElectionContents" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+          <Parameter Name="ElectionGuidToClear" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="EraseTallyContent" Type="bit" Mode="In" />
+          <Parameter Name="ByLoginId" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="HasMatch" ReturnType="bit" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
           <Parameter Name="AllTerms" Type="varchar" Mode="In" />
           <Parameter Name="Term1" Type="varchar" Mode="In" />
@@ -645,6 +650,11 @@
             <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+          <FunctionImport Name="EraseElectionContents">
+            <Parameter Name="ElectionGuidToClear" Mode="In" Type="Guid" />
+            <Parameter Name="EraseTallyContent" Mode="In" Type="Boolean" />
+            <Parameter Name="ByLoginId" Mode="In" Type="String" />
+          </FunctionImport>
           </EntityContainer>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -1481,6 +1491,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="EraseElectionContents" FunctionName="tallyj2dModel.Store.EraseElectionContents" />
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

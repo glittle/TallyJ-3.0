@@ -58,7 +58,9 @@
     <Compile Include="BusinessTests\BallotAnalysisTests.cs" />
     <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="BusinessTests\AnalyzerNormalTests.cs" />
+    <Compile Include="BusinessTests\ImportFakes.cs" />
     <Compile Include="BusinessTests\ImportV1CommunityTests.cs" />
+    <Compile Include="BusinessTests\ImportV1ElectionTest.cs" />
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
@@ -75,6 +77,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Support\SampleElection.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

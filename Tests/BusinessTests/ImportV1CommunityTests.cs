@@ -14,38 +14,40 @@ namespace Tests.BusinessTests
     public void ImportBasic()
     {
       var fakeImportFile = new ImportFile();
-      var people = new List<Person>();
+      var fakes = new ImportFakes();
       var xmlDoc = new XmlDocument();
       var fakeDataContext = new FakeDataContext();
 
       xmlDoc.LoadXml("<?xml version='1.0' encoding='UTF-16'?><Community><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person></Community>");
-      var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, people, Fakes.ResetPerson);
+      var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, fakes.People, fakes.AddPersonToDb, fakes.LogHelper);
 
       model.Process();
 
-      people.Count.ShouldEqual(1);
-      people[0].LastName.ShouldEqual("Accorti");
-      people[0].FirstName.ShouldEqual("Pónt");
-      people[0].OtherNames.ShouldEqual("Paul");
+      fakes.People.Count.ShouldEqual(1);
+      var people = fakes.People[0];
+      people.LastName.ShouldEqual("Accorti");
+      people.FirstName.ShouldEqual("Pónt");
+      people.OtherNames.ShouldEqual("Paul");
     }
 
     [TestMethod]
     public void SkipDuplicates()
     {
       var fakeImportFile = new ImportFile();
-      var people = new List<Person>();
+      var fakes = new ImportFakes();
       var xmlDoc = new XmlDocument();
       var fakeDataContext = new FakeDataContext();
 
       xmlDoc.LoadXml("<Community><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person></Community>");
-      var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, people, Fakes.ResetPerson);
+      var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, fakes.People, fakes.AddPersonToDb, fakes.LogHelper);
 
       model.Process();
 
-      people.Count.ShouldEqual(1);
-      people[0].LastName.ShouldEqual("Accorti");
-      people[0].FirstName.ShouldEqual("Pónt");
-      people[0].OtherNames.ShouldEqual("Paul");
+      fakes.People.Count.ShouldEqual(1);
+      var people = fakes.People[0];
+      people.LastName.ShouldEqual("Accorti");
+      people.FirstName.ShouldEqual("Pónt");
+      people.OtherNames.ShouldEqual("Paul");
     }
   }
 
@@ -55,14 +57,6 @@ namespace Tests.BusinessTests
     {
       // okay
       return 0;
-    }
-  }
-
-  public static class Fakes
-  {
-    public static void ResetPerson(Person toReset)
-    {
-      // pretent to remove
     }
   }
 }

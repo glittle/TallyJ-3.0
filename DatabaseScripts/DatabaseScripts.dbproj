@@ -185,5 +185,8 @@
     <NotInBuild Include="Scripts\Triggers\Election_ClearResultSummary.sql">
       <SubType>NotInBuild</SubType>
     </NotInBuild>
+    <NotInBuild Include="Scripts\Stored Procedures\EraseElectionContents.sql">
+      <SubType>NotInBuild</SubType>
+    </NotInBuild>
   </ItemGroup>
 </Project>

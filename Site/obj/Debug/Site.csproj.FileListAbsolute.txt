@@ -35,6 +35,7 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\TallyJ.pdb
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\EntityFramework.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Enyim.Caching.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\FluentSecurity.dll
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Krystalware.SlickUpload.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\le_nlog.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\LinqKit.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\log4net.dll
@@ -67,4 +68,3 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\NLog.xml
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\obj\Debug\TallyJ.pdb
-D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Site\bin\Krystalware.SlickUpload.dll

@@ -6,35 +6,20 @@
 }
 <script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
 <div class="PullInstructions">
-    <ol>
-        <li>When using TallyJ, the list of adults in the community who are eligible to vote,
-            or be voted for, can be loaded using this page.</li>
-        <li>To load the list of names, you must first prepare a comma-separated value (XML file)
-            with all the people's names in it.<ul>
-                <li>The first line of the file must be a "headers row" with the names of each column. The headers should not include any accented words, such Bah&aacute;'&iacute;...</li>
-                <li>The file should be saved as a normal Windows text/XML file, or using UTF-8 or UTF-16
-                    encoding.</li>
-            </ul>
-        </li>
-        <li>This file must only contain the names of eligible adults. If it includes children
-            and youth, or people no longer in the community or not eligible to vote, you should
-            fix the XML file before uploading it.
-            <ul>
-                <li>If the file is exported from a database or other tool, see if you can export it
-                    again, with only the eligible adults included.</li>
-                <li>You can also open the XML file with a spreadsheet program, like Microsoft Excel,
-                    and edit it there.</li>
-            </ul>
-        </li>
-        <li>Once the XML is ready to upload and process, proceed to Step 1 below to upload the
-            file.</li>
-        <li>In TallyJ, each person has a First and Last name. They also have other optional
-            fields for more information, such as a maiden name or nickname. These fields are
-            listed below. For each of the columns from the XML file, select which TallyJ field
-            it should be put into, if any. </li>
-        <li>If you find that accented characters are not being processed correctly, you may
-            need to change the Content Encoding and try Importing again. </li>
-    </ol>
+  <ol>
+    <li>This page is only of interest to those who have used TallyJ version 1, and wish to import those files into version 2.</li>
+    <li>Version 1 of TallyJ required the use of two XML data files: a Community file with
+      the names of all voters, and an Election file with the ballots and votes cast.</li>
+    <li>In Version 2 of TallyJ, which you are using now, all of this information is contained
+      in one "Election". Both of the version 1 XML data files can be loaded into the current
+      Election via this page.</li>
+    <li>If you are beginning an election, only the Community file would need to be loaded.
+      The details of this election can be entered on the "Setup the Election" page.</li>
+    <li>If you are loading the version 1 files for archival or testing purposes, it is best
+      to load both files. However, the Election file can be loaded on its own, and the
+      complete election results can be viewed. (The only information missing would be
+      the information about who voted, and the participation percentage.)</li>
+  </ol>
 </div>
 <h2>
     Step 1: Upload the XML file</h2>
@@ -60,6 +45,9 @@
                     Name
                 </th>
                 <th>
+                    File Type
+                </th>
+                <th>
                     Upload Time
                 </th>
                 <th>
@@ -73,15 +61,20 @@
         <tbody id="uploadListBody">
             <tr data-rowid="{C_RowId}" class="{ProcessingStatus} {RowClass}">
                 <td class="Actions">
-                    <div class="MakeActive" title="Select this file for mapping columns and importing people">Select</div>
-                  <div class="CopyMap" title="Copy the column mapping information from this file to the selected one">Copy Mapping</div>
-                  <span>(selected)</span>
+                    <div class="MakeActive" title="Select this file for mapping columns and importing people">
+                        Select</div>
+                    <div class="CopyMap" title="Copy the column mapping information from this file to the selected one">
+                        Copy Mapping</div>
+                    <span>(selected)</span>
                 </td>
                 <td>
                     {ProcessingStatusAndSteps}
                 </td>
                 <td>
                     {OriginalFileName}
+                </td>
+                <td>
+                    {TypeDisplay}
                 </td>
                 <td>
                     {UploadTimeExt}
@@ -102,14 +95,19 @@
     </table>
 </div>
 <h2>
-    Step 2: Import people</h2>
-<p>All the people in the file will be processed and added to the names already in the database. Any that match will not be added again.
-If you need to erase all the currently loaded names (before ballots are entered), use the "Delete all People Records" below before importing again.</p>
+    Step 2: Import data</h2>
+<p>
+    All the information in the file will be processed and added to the current election.
+    Any names that match will not be added again.
+</p>
+<p>
+    Before ballots are entered, you may erase all the currently loaded names by clicking
+    "Delete all People Records" below.</p>
 <div>
     <button type="button" id="btnImport">
-        Import now</button>
+        Import Data</button>
     <button type="button" id="btnClearAll" class="float-right">
         Delete all People Records</button>
-    <div id="importResults">
-    </div>
+</div>
+<div id="importResults">
 </div>

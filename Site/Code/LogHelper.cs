@@ -5,9 +5,14 @@ using TallyJ.EF;
 
 namespace TallyJ.Code
 {
-  public static class LogHelper
+  public interface ILogHelper
   {
-    public static void Add(string message)
+    void Add(string message);
+  }
+
+  public class LogHelper : ILogHelper
+  {
+    public void Add(string message)
     {
       AddToLog(new C_Log
                  {
@@ -18,7 +23,7 @@ namespace TallyJ.Code
                  });
     }
 
-    private static void AddToLog(C_Log logItem)
+    private void AddToLog(C_Log logItem)
     {
       var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
       db.C_Log.Add(logItem);

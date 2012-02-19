@@ -12,9 +12,12 @@ namespace TallyJ.Models
 {
   public class ImportV1Community : ImportV1Base
   {
+    int _peopleAdded = 0;
+    int _nonAdults = 0;
+    int _alreadyLoaded = 0;
 
-    public ImportV1Community(IDbContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> registerPerson)
-      : base(db, file, xml, people, registerPerson)
+    public ImportV1Community(IDbContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+      : base(db, file, xml, people, addPerson, logHelper)
     {
     }
 
@@ -29,7 +32,7 @@ namespace TallyJ.Models
         var ageGroup = personXml.GetAttribute("AgeGroup");
         if (ageGroup.DefaultTo("Adult") != "Adult")
         {
-          nonAdults++;
+          _nonAdults++;
           continue;
         }
 
@@ -42,11 +45,11 @@ namespace TallyJ.Models
           _people.Any(p => p.LastName.DefaultTo("") == lastName && p.FirstName.DefaultTo("") == firstName && p.OtherNames.DefaultTo("") == akaName);
         if (matchedExisting)
         {
-          alreadyLoaded++;
+          _alreadyLoaded++;
           continue;
         }
 
-        peopleAdded++;
+        _peopleAdded++;
 
         var newPerson = new Person
                           {
@@ -55,7 +58,7 @@ namespace TallyJ.Models
                             FirstName = firstName
                           };
 
-        _registerPerson(newPerson);
+        AddPerson(newPerson);
         _people.Add(newPerson);
 
 
@@ -96,10 +99,30 @@ namespace TallyJ.Models
 
 
       }
+
+
+      _file.ProcessingStatus = "Imported";
+
+      _db.SaveChanges();
+
+      ImportSummaryMessage = "Imported {0} {1}.".FilledWith(_peopleAdded, _peopleAdded.Plural("people", "person"));
+      if (_alreadyLoaded > 0)
+      {
+        ImportSummaryMessage += " Skipped {0} {1} matching existing.".FilledWith(_alreadyLoaded, _alreadyLoaded.Plural("people", "person"));
+      }
+      if (_nonAdults > 0)
+      {
+        ImportSummaryMessage += " Skipped {0} non-adult{1}.".FilledWith(_nonAdults, _nonAdults.Plural());
+      }
+
+      _logHelper.Add("Imported v1 community file #" + _file.C_RowId + ": " + ImportSummaryMessage);
+
     }
 
     private Guid GetReasonGuid(string reason)
     {
+      //TODO: map old reasons to new Guids
+
       return Guid.NewGuid();
       //SpoiledTypeIneligible|Not Eligible //1.80
       //SpoiledTypeIneligible1|Moved elsewhere recently //1.80

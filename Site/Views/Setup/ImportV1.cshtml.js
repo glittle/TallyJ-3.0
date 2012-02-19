@@ -29,19 +29,6 @@ var ImportV1Page = function () {
             setActiveUploadRowId(rowId, true);
         });
 
-        $('.CopyMap').live('click', function () {
-            if (!local.activeFileRowId) {
-                alert('Please select a file from the list first.');
-            }
-            var rowId = +$(this).parents('tr').data('rowid');
-
-            ShowStatusDisplay('Saving...');
-            CallAjaxHandler(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId }, function (info) {
-                ShowStatusDisplay('Saved', 0, 2000, false, true);
-                showFields(info);
-            });
-
-        });
         $('#btnClearAll').live('click', function () {
             if (!confirm('Are you sure you want to permanently delete all the People records in this election?')) {
                 return;
@@ -73,6 +60,7 @@ var ImportV1Page = function () {
                 ShowStatusDisplay('Deleted', 0, 2000, false, true);
             });
         });
+
         $('#uploadListBody select').live('change', function () {
             var select = $(this);
             ShowStatusDisplay('Saving...');
@@ -95,8 +83,9 @@ var ImportV1Page = function () {
             $('#importResults').html('');
 
             CallAjaxHandler(publicInterface.controllerUrl + '/ImportXml', { id: local.activeFileRowId }, function (info) {
-                if (info.result) {
-                    $('#importResults').html(info.result);
+                if (info.importReport) {
+                    $('#importResults').html(info.importReport);
+                    ShowStatusDisplay(info.importReport, 0, null, false, true);
                 }
                 ResetStatusDisplay();
             });
@@ -225,6 +214,15 @@ var ImportV1Page = function () {
             this.UploadTimeExt = FormatDate(this.UploadTime, null, null, true);
             this.RowClass = this.C_RowId == local.activeFileRowId ? 'Active' : 'NotActive';
             this.ProcessingStatusAndSteps = this.ProcessingStatus;
+            switch (this.FileType) {
+                case 'V1_Comm':
+                    this.TypeDisplay = 'Community';
+                    break;
+                case 'V1_Elect':
+                    this.TypeDisplay = 'Election';
+                    break;
+                default:
+            }
         });
         return list;
     };

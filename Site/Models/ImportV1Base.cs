@@ -12,43 +12,28 @@ namespace TallyJ.Models
     protected readonly IDbContext _db;
     protected readonly ImportFile _file;
     protected readonly XmlDocument _xmlDoc;
-    protected int peopleAdded = 0;
-    protected int nonAdults = 0;
-    protected int alreadyLoaded = 0;
 
     protected readonly List<Person> _people;
-    protected readonly Action<Person> _registerPerson;
+    protected readonly Action<Person> AddPerson;
+    protected readonly ILogHelper _logHelper;
 
-    protected ImportV1Base(IDbContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> registerPerson)
+    protected ImportV1Base(IDbContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
     {
       _db = db;
       _file = file;
       _xmlDoc = xmlDoc;
       _people = people;
-      _registerPerson = registerPerson;
+      AddPerson = addPerson;
+      _logHelper = logHelper;
     }
 
-    public JsonResult Finalize()
+    protected string ImportSummaryMessage;
+
+    public JsonResult SendSummary()
     {
-      _file.ProcessingStatus = "Imported";
-
-      _db.SaveChanges();
-
-      var result = "Imported {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person"));
-      if (alreadyLoaded > 0)
-      {
-        result += " Skipped {0} {1} matching existing.".FilledWith(alreadyLoaded, alreadyLoaded.Plural("people", "person"));
-      }
-      if (nonAdults > 0)
-      {
-        result += " Skipped {0} non-adult{1}.".FilledWith(nonAdults, nonAdults.Plural());
-      }
-
-      LogHelper.Add("Imported Xml v1 file #" + _file.C_RowId + ": " + result);
-
       return new
                {
-                 result
+                 importReport = ImportSummaryMessage
                }.AsJsonResult();
 
     }

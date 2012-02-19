@@ -419,5 +419,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="EraseElectionContents" FunctionName="tallyj2dModel.Store.EraseElectionContents" />
   </EntityContainerMapping>
 </Mapping>

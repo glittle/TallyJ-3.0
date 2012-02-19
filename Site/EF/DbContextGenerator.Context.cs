@@ -103,5 +103,22 @@ namespace TallyJ.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
         }
+    
+        public virtual int EraseElectionContents(Nullable<System.Guid> electionGuidToClear, Nullable<bool> eraseTallyContent, string byLoginId)
+        {
+            var electionGuidToClearParameter = electionGuidToClear.HasValue ?
+                new ObjectParameter("ElectionGuidToClear", electionGuidToClear) :
+                new ObjectParameter("ElectionGuidToClear", typeof(System.Guid));
+    
+            var eraseTallyContentParameter = eraseTallyContent.HasValue ?
+                new ObjectParameter("EraseTallyContent", eraseTallyContent) :
+                new ObjectParameter("EraseTallyContent", typeof(bool));
+    
+            var byLoginIdParameter = byLoginId != null ?
+                new ObjectParameter("ByLoginId", byLoginId) :
+                new ObjectParameter("ByLoginId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("EraseElectionContents", electionGuidToClearParameter, eraseTallyContentParameter, byLoginIdParameter);
+        }
     }
 }
