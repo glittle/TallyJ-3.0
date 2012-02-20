@@ -187,18 +187,19 @@ namespace TallyJ.Models
       switch (code)
       {
         case "Ballots":
-          var ballots = Db.vBallotInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid);
-          var votes = Db.vVoteInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid);
+          var ballots = Db.vBallotInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid).ToList();
+          var votes = Db.vVoteInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid).ToList();
           data = ballots
             .Select(b => new
                            {
                              b.C_BallotCode,
                              b.StatusCode,
                              Rows2 = votes
-                           .Where(v => v.BallotGuid == b.BallotGuid).OrderBy(v => v.PositionOnBallot).ToList()
+                           .Where(v => v.BallotGuid == b.BallotGuid).OrderBy(v => v.PositionOnBallot)
                            .Select(v => new
                                           {
                                             v.PersonFullName,
+                                            Status = v.VoteStatusCode==VoteHelper.VoteStatusCode.Ok ? "" : v.VoteStatusCode,
                                             VoteInvalidReasonDesc = v.VoteInvalidReasonDesc.SurroundContentWith("[","]")
                                           })
                            });
