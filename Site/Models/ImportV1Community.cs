@@ -5,7 +5,6 @@ using System.Xml;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
-using System.Web.WebPages;
 using TallyJ.Code;
 
 namespace TallyJ.Models
@@ -75,8 +74,11 @@ namespace TallyJ.Models
 
         var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBool();
         newPerson.CanReceiveVotes = ineligible;
-
-        var ineligibleReason = personXml.GetAttribute("ReasonToNotReceive").AsBool();
+        if (ineligible)
+        {
+          newPerson.IneligibleReasonGuid = MapIneligible("Ineligible", personXml.GetAttribute("ReasonToNotReceive"));
+        }
+        //TODO:
 
         var voteMethod = personXml.GetAttribute("Voted");
         switch (voteMethod)
@@ -116,32 +118,6 @@ namespace TallyJ.Models
       }
 
       _logHelper.Add("Imported v1 community file #" + _file.C_RowId + ": " + ImportSummaryMessage);
-
-    }
-
-    private Guid GetReasonGuid(string reason)
-    {
-      //TODO: map old reasons to new Guids
-
-      return Guid.NewGuid();
-      //SpoiledTypeIneligible|Not Eligible //1.80
-      //SpoiledTypeIneligible1|Moved elsewhere recently //1.80
-      //SpoiledTypeIneligible2|Resides elsewhere //1.80
-      //SpoiledTypeIneligible3|On other Institution //1.80
-      //SpoiledTypeIneligible4|Rights removed //1.80
-      //SpoiledTypeIneligible5|Non-Bahá'í //1.80
-      //SpoiledTypeIneligible6|Deceased //1.80
-      //SpoiledTypeIneligible7|Other //1.80
-
-      //SpoiledTypeUnidentifiable|Not Identifiable //1.80
-      //SpoiledTypeUnidentifiable1|Unknown person //1.80
-      //SpoiledTypeUnidentifiable2|Multiple people with same name  //1.80
-
-      //SpoiledTypeUnreadable|Not Legible //1.80
-      //SpoiledTypeUnreadable1|Writing unreadable //1.80
-      //SpoiledTypeUnreadable2|In unknown language //1.80
-
-      //SpoiledOther|Other // 1.80
 
     }
   }

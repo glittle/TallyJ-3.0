@@ -30,12 +30,12 @@ var ImportV1Page = function () {
         });
 
         $('#btnClearAll').live('click', function () {
-            if (!confirm('Are you sure you want to permanently delete all the People records in this election?')) {
+            if (!confirm('Are you sure you want to permanently delete all the people and ballots in this election?')) {
                 return;
             }
             ShowStatusDisplay('Deleting...');
 
-            CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
+            CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeopleAndBallots', null, function (info) {
                 ShowStatusDisplay('Deleted', 0, 2000, false, true);
                 $('#importResults').html(info.Results);
             });

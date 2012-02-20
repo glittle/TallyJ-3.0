@@ -194,5 +194,25 @@ namespace Tests.FrameworkTests
       item = null;
       item.AsGuid().ShouldEqual(Guid.Empty);
     }
+
+    [TestMethod]
+    public void AsBool_String_Test()
+    {
+      "true".AsBool().ShouldEqual(true);
+      "True".AsBool().ShouldEqual(true);
+      
+      "false".AsBool().ShouldEqual(false);
+      "False".AsBool().ShouldEqual(false);
+
+      "1".AsBool().ShouldEqual(true);
+      "0".AsBool().ShouldEqual(false);
+
+      "".AsBool().ShouldEqual(false);
+      "hello".AsBool().ShouldEqual(false);
+
+      string nullstring = null;
+      nullstring.AsBool().ShouldEqual(false);
+    }
+
   }
 }

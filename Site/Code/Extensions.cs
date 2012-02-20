@@ -121,6 +121,25 @@ namespace TallyJ.Code
       return input.HasValue && input.Value;
     }
 
+    public static bool AsBool(this string input)
+    {
+      if (input.HasNoContent()) return false;
+
+      switch (input)
+      {
+        case "1":
+        case "true":
+        case "True":
+          return true;
+
+        case "0":
+        case "false":
+        case "False":
+        default:
+          return false;
+      }
+    }
+
     public static Guid AsGuid(this Guid? input)
     {
       return input.HasValue ? input.Value : Guid.Empty;

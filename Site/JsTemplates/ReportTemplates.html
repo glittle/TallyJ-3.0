@@ -1,4 +1,24 @@
 ﻿<div>
+    <div id="Ballots" data-name="All Ballots">
+        <div class="body">
+            <h1>
+                All Ballots Cast</h1>
+            <div class="list">
+                {^rows}
+            </div>
+        </div>
+        <div class="row">
+            <div class="Ballot Status{StatusCode}">
+                <div>
+                    {C_BallotCode} ({StatusCode})</div>
+                <div>
+                    {^rows2}</div>
+            </div>
+        </div>
+        <div class="row2">
+            <span class="Vote"><span class="Person">{PersonFullName}</span><span class="Invalid">{VoteInvalidReasonDesc}</span></span>
+        </div>
+    </div>
     <div id="AllReceivingVotesByVote" data-name="Full Tellers' Report (all who were voted for)">
         <div class="body">
             <h1>

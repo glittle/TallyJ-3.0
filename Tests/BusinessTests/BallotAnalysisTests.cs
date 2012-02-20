@@ -4,7 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using TallyJ.Models;
-using Tests.Support;
+ using TallyJ.Models.Helper;
+ using Tests.Support;
 
 namespace Tests.BusinessTests
 {
@@ -79,7 +80,7 @@ namespace Tests.BusinessTests
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
-                      new Vote {InvalidReasonGuid = VoteHelper.IneligibleReason.BlankVote},
+                      new Vote {InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank},
                     };
 
       var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -130,7 +131,7 @@ namespace Tests.BusinessTests
     {
       var votes = new List<Vote>
                     {
-                      new Vote {InvalidReasonGuid = VoteHelper.IneligibleReason.BlankVote},
+                      new Vote {InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank},
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
                     };

@@ -72,6 +72,31 @@
     float: left;
 }
 
+.Ballot {
+    font-size: 10pt;
+}
+.Ballot > div {
+    margin-left: 7em;
+}
+.Ballot > div:first-child {
+    float: left;
+    margin-left: 0;
+}
+.Ballot {
+    margin-top: 3px;
+}
+.Vote .Person 
+{
+    text-decoration: underline;
+}
+.Vote .Invalid {
+    text-decoration: underline;
+    color: red;
+}
+.Vote {
+    margin-right: 9px;
+}
+
 @media print
 {
     header, .chooser, footer

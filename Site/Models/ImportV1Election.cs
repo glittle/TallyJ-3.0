@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.EF;
-using TallyJ.Code;
 using TallyJ.Models.Helper;
-using System.Linq;
 
 namespace TallyJ.Models
 {
@@ -20,13 +20,13 @@ namespace TallyJ.Models
     private int _ballotsLoaded;
 
     public ImportV1Election(IDbContext db, ImportFile file, XmlDocument xml,
-      Election election,
-      Location location,
-      Action<Ballot> storeBallot,
-      Action<Vote> storeVote,
-      List<Person> people, Action<Person> addPerson,
-      Action<ResultSummary> storeResultSummary,
-      ILogHelper logHelper
+                            Election election,
+                            Location location,
+                            Action<Ballot> storeBallot,
+                            Action<Vote> storeVote,
+                            List<Person> people, Action<Person> addPerson,
+                            Action<ResultSummary> storeResultSummary,
+                            ILogHelper logHelper
       )
       : base(db, file, xml, people, addPerson, logHelper)
     {
@@ -58,18 +58,9 @@ namespace TallyJ.Models
 
       _db.SaveChanges();
 
-
-      var resultsModel = new ResultsModel();
-
-      resultsModel.GenerateResults();
-
-
       ImportSummaryMessage = "Imported {0} ballot{1}.".FilledWith(_ballotsLoaded, _ballotsLoaded.Plural());
 
-
       _logHelper.Add("Imported v1 election file #" + _file.C_RowId + ": " + ImportSummaryMessage);
-
-
     }
 
     private void ImportCommunityInfo()
@@ -196,8 +187,6 @@ namespace TallyJ.Models
 
       //* TellersAtThisComputer
       //-->not imported
-
-
     }
 
     private void ImportManualSummary()
@@ -217,16 +206,16 @@ namespace TallyJ.Models
       // * VotedInPerson="84"
 
       var results = new ResultSummary
-                                {
-                                  ElectionGuid = _election.ElectionGuid,
-                                  ResultType = ResultType.Manual,
-                                  NumEligibleToVote = manualCountsXml.GetAttribute("AdultsInCommunity").AsInt(),
-                                  MailedInBallots = manualCountsXml.GetAttribute("MailedInBallots").AsInt(),
-                                  DroppedOffBallots = manualCountsXml.GetAttribute("DroppedOffBallots").AsInt(),
-                                  InPersonBallots = manualCountsXml.GetAttribute("VotedInPerson").AsInt()
-                                };
+                      {
+                        ElectionGuid = _election.ElectionGuid,
+                        ResultType = ResultType.Manual,
+                        NumEligibleToVote = manualCountsXml.GetAttribute("AdultsInCommunity").AsInt(),
+                        MailedInBallots = manualCountsXml.GetAttribute("MailedInBallots").AsInt(),
+                        DroppedOffBallots = manualCountsXml.GetAttribute("DroppedOffBallots").AsInt(),
+                        InPersonBallots = manualCountsXml.GetAttribute("VotedInPerson").AsInt()
+                      };
 
-      
+
       _storeResultSummary(results);
     }
 
@@ -257,7 +246,7 @@ namespace TallyJ.Models
                        };
 
         // ignore automatic Ballot status, let this program determine actual status
-        
+
         //var status = ballotXml.GetAttribute("BallotStatus");
         var overrideStatus = ballotXml.GetAttribute("OverrideStatus");
         switch (overrideStatus)
@@ -281,29 +270,142 @@ namespace TallyJ.Models
 
         ImportVotes(ballot, ballotXml.SelectNodes("Vote"));
       }
-
     }
 
     private void ImportVotes(Ballot ballot, XmlNodeList votesXml)
     {
+      var voteNum = 0;
       foreach (XmlElement voteXml in votesXml)
       {
         var voteStatus = voteXml.GetAttribute("VoteStatus");
         switch (voteStatus)
         {
-          case "Spoiled":
+          case "Spoiled": // 1.80
+          case "Ineligible": // 1.71
+          case "UnReadable": // 1.71
 
+            var spoiledGroup = voteXml.GetAttribute("SpoiledGroup").DefaultTo(voteStatus);
+            var spoiledDetail = voteXml.GetAttribute("SpoiledDetail");
+            
+            var ineligibleReasonGuid = MapIneligible(spoiledGroup, spoiledDetail);
+
+             var vote = new Vote
+                   {
+                     BallotGuid = ballot.BallotGuid,
+                     PositionOnBallot=voteNum,
+                     InvalidReasonGuid = ineligibleReasonGuid,
+                     StatusCode= VoteHelper.VoteStatusCode.Ok
+                   };
+
+            _storeVote(vote);
+    
             break;
-         
+
           case "Ok":
           case "AddToList":
           case "New":
           default:
-
+            ImportVotePerson(ballot, voteXml, ++voteNum);
             break;
-
         }
       }
+    }
+
+    /// <Summary>Vote is not spoiled, so determine who this is...</Summary>
+    private void ImportVotePerson(Ballot ballot, XmlElement voteXml, int voteNum)
+    {
+      var personXml = voteXml.SelectSingleNode("Person") as XmlElement;
+      if (personXml == null)
+      {
+        // can't happen if XML is okay
+        return;
+      }
+
+      Vote vote;
+
+      var lastName = personXml.GetAttribute("LName");
+      var firstName = personXml.GetAttribute("FName");
+      var akaName = personXml.GetAttribute("AKAName");
+
+      // check for matches
+      Person person;
+      var matchedPeople = _people.Where(p => p.LastName.DefaultTo("") == lastName
+                                             && p.FirstName.DefaultTo("") == firstName
+                                             && p.OtherNames.DefaultTo("") == akaName).ToList();
+      var numMatched = matchedPeople.Count;
+      switch (numMatched)
+      {
+        case 1:
+          person = matchedPeople[0];
+          break;
+
+        case 0:
+          // vote is valid, but person not found!
+          // is okay if we are loading without a community file
+
+          if (lastName.HasNoContent() && firstName.HasNoContent())
+          {
+
+            vote = new Vote
+            {
+              BallotGuid = ballot.BallotGuid,
+              PositionOnBallot = voteNum,
+              InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank,
+              StatusCode = VoteHelper.VoteStatusCode.Ok
+            };
+
+            _storeVote(vote);
+            return;
+
+          }
+          else
+          {
+            person = new Person
+                       {
+                         PersonGuid = Guid.NewGuid(),
+                         ElectionGuid = _election.ElectionGuid,
+                         LastName = lastName,
+                         FirstName = firstName
+                       };
+
+            AddPerson(person);
+            _people.Add(person);
+
+            if (akaName.HasContent())
+            {
+              person.OtherNames = akaName;
+            }
+
+            var bahaiId = personXml.GetAttribute("BahaiId");
+            if (bahaiId.HasContent())
+            {
+              person.BahaiId = bahaiId;
+            }
+
+            var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBool();
+            person.CanReceiveVotes = ineligible;
+
+            var ineligibleReason = personXml.GetAttribute("ReasonToNotReceive").AsBool();
+            //TODO...
+          }
+
+          break;
+
+        default:
+          throw new ApplicationException("Name in Vote matches {0} {1}".FilledWith(numMatched, numMatched.Plural("person", "people")));
+      }
+
+      // got the person
+      vote = new Vote
+               {
+                 BallotGuid = ballot.BallotGuid,
+                 PositionOnBallot=voteNum,
+                 PersonCombinedInfo=person.CombinedInfo,
+                 PersonGuid = person.PersonGuid,
+                 StatusCode= VoteHelper.VoteStatusCode.Ok
+               };
+
+      _storeVote(vote);
     }
   }
 }

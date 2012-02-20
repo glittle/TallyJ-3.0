@@ -200,11 +200,14 @@ namespace TallyJ.Models
 
       importer.Process();
 
+      var resultsModel = new ResultsModel();
+      resultsModel.GenerateResults();
+
       return importer.SendSummary();
     }
 
     /// <Summary>Totally erase all tally information</Summary>
-    private void EraseElectionContents(Election election)
+    public void EraseElectionContents(Election election)
     {
       Db.EraseElectionContents(election.ElectionGuid, true, UserSession.LoginId);
     }

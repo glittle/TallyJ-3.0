@@ -6,6 +6,7 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using TallyJ.Models.Helper;
 
 namespace TallyJ.Models
 {
@@ -95,7 +96,7 @@ namespace TallyJ.Models
       }
 
       // check counts
-      var numVotes = votes.Count(v => v.InvalidReasonGuid != VoteHelper.IneligibleReason.BlankVote);
+      var numVotes = votes.Count(v => v.InvalidReasonGuid != IneligibleReason.Unreadable_Vote_is_blank);
 
       if (numVotes < VotesNeededOnBallot)
       {

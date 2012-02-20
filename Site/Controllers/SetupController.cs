@@ -183,6 +183,18 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult DeleteAllPeople()
     {
+      new LogHelper().Add("Deleted all people");
+
+      return new PeopleModel().DeleteAllPeople();
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult DeleteAllPeopleAndBallots()
+    {
+      new LogHelper().Add("Deleted all ballots and people");
+
+      new ImportV1Model().EraseElectionContents(UserSession.CurrentElection);
+
       return new PeopleModel().DeleteAllPeople();
     }
   }

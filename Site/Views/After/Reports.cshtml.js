@@ -5,6 +5,7 @@
 var ReportsPage = function () {
     var local = {
         refreshTimeout: null,
+        reportInfo: null,
         templatesRaw: null,
         reportHolder: null
     };
@@ -37,6 +38,8 @@ var ReportsPage = function () {
 
     var showInfo = function (info, code) {
         ResetStatusDisplay();
+        
+        local.reportInfo = info;
 
         if (info.Status != 'ok') {
             $('#Status').text(info.Status).show();
@@ -47,11 +50,14 @@ var ReportsPage = function () {
         $('#Status').hide();
 
         var reportDef = local.templatesRaw.find('#' + code);
-
+        
+        var rows = expandRows(info, reportDef.find('.row2').html());
+        
         var data = {
             info: info,
-            rows: reportDef.find('.row').html().filledWithEach(info.Rows)
+            rows: reportDef.find('.row').html().filledWithEach(rows)
         };
+        
         var body = reportDef.find('.body').html().filledWith(data);
 
         local.reportHolder.removeClass().addClass('Report' + code).fadeIn().html(body);
@@ -61,8 +67,18 @@ var ReportsPage = function () {
         }
     };
 
+    var expandRows = function (info, row2Template) {
+        $.each(info.Rows, function () {
+            if (row2Template) {
+                this.rows2 = row2Template.filledWithEach(this.Rows2);
+            }
+        });
+        return info.Rows;
+    };
+
     var publicInterface = {
         controllerUrl: '',
+        reportInfo: local.reportInfo,
         PreparePage: preparePage
     };
 

@@ -5,7 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using TallyJ.Models;
+using TallyJ.Models.Helper;
 using Tests.Support;
+using System.Linq;
 
 namespace Tests.BusinessTests
 {
@@ -26,8 +28,6 @@ namespace Tests.BusinessTests
       var electionGuid = Guid.NewGuid();
       var election = new Election { ElectionGuid = electionGuid };
       var location = new Location {LocationGuid = Guid.NewGuid() };
-      var ballots = new List<vBallotInfo>();
-      var votes = new List<vVoteInfo>();
 
       var model = new ImportV1Election(fakeDataContext, fakeImportFile, xmlDoc, election, location,
         fakes.AddBallotToDb, fakes.AddVoteToDb, 
@@ -53,6 +53,30 @@ namespace Tests.BusinessTests
       resultSummary.NumEligibleToVote.ShouldEqual(51);
 
       fakes.Ballots.Count.ShouldEqual(28);
+      var ballot1 = fakes.Ballots[0];
+      ballot1.StatusCode.ShouldEqual(BallotStatusEnum.Ok);
+
+      var votes1 = fakes.Votes.Where(v => v.BallotGuid == ballot1.BallotGuid).ToList();
+      votes1.Count.ShouldEqual(9);
+
+      var vote1 = votes1[0];
+      vote1.StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Ok);
+
+      var matchingPerson = fakes.People.Where(p => p.PersonGuid == vote1.PersonGuid).ToList();
+      matchingPerson.Count.ShouldEqual(1);
+      vote1.PersonCombinedInfo.ShouldEqual(matchingPerson[0].CombinedInfo);
+
+
+      var ballot4 = fakes.Ballots[3];
+      ballot4.ComputerCode.ShouldEqual("A");
+      ballot4.BallotNumAtComputer.ShouldEqual(4);
+
+      var votes4 = fakes.Votes.Where(v => v.BallotGuid == ballot4.BallotGuid).ToList();
+      votes4.Count.ShouldEqual(9);
+
+      var vote4_9 = votes4[8];
+      vote4_9.StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Ok);
+      vote4_9.InvalidReasonGuid.ShouldEqual(IneligibleReason.Unreadable_Writing_illegible);
 
     }
 

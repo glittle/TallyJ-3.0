@@ -81,7 +81,7 @@ namespace TallyJ.Models
     {
       var canVote = person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
 
-      person.IneligibleReasonGuid = canVote ? null : IneligibleReason.NotAdult;
+      person.IneligibleReasonGuid = canVote ? null : IneligibleReason.Ineligible_Not_Adult;
 
       var whoCanVote = UserSession.CurrentElection.CanVote;
       var whoCanReceiveVotes = UserSession.CurrentElection.CanReceive;
