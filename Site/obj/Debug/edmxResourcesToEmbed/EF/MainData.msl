@@ -126,6 +126,7 @@
     <EntitySetMapping Name="People">
       <EntityTypeMapping TypeName="TallyJ2Model.Person">
         <MappingFragment StoreEntitySet="Person">
+          <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
           <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
           <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
           <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
@@ -304,6 +305,7 @@
     <EntitySetMapping Name="vVoteInfoes">
       <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
         <MappingFragment StoreEntitySet="vVoteInfo">
+          <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
           <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
           <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
           <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />

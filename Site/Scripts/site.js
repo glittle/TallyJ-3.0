@@ -735,15 +735,16 @@ String.prototype.filledWith = function () {
 };
 
 //String.addMethod('filledWithEach', function (arr) {
-String.prototype.filledWithEach = function (arr) {
+String.prototype.filledWithEach = function (arr, sep) {
     /// <summary>Silimar to 'filledWith', but repeats the fill for each item in the array. Returns a single string with the results.
     /// </summary>
     if (arr === undefined || arr === null) return '';
+    if (sep === undefined) sep = '';
     var result = [];
     for (var i = 0, max = arr.length; i < max; i++) {
         result[result.length] = this.filledWith(arr[i]);
     }
-    return result.join('');
+    return result.join(sep);
 };
 
 /// Turn { a:1, b:2 } into   a=1&b=2

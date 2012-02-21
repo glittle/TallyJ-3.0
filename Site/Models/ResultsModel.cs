@@ -198,7 +198,7 @@ namespace TallyJ.Models
                            .Where(v => v.BallotGuid == b.BallotGuid).OrderBy(v => v.PositionOnBallot)
                            .Select(v => new
                                           {
-                                            v.PersonFullName,
+                                            v.PersonFullNameFL,
                                             Status = v.VoteStatusCode==VoteHelper.VoteStatusCode.Ok ? "" : v.VoteStatusCode,
                                             VoteInvalidReasonDesc = v.VoteInvalidReasonDesc.SurroundContentWith("[","]")
                                           })

@@ -122,6 +122,7 @@
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
       [vVoteInfo].[PersonId] AS [PersonId], 
       [vVoteInfo].[PersonFullName] AS [PersonFullName], 
+      [vVoteInfo].[PersonFullNameFL] AS [PersonFullNameFL], 
       [vVoteInfo].[CanReceiveVotes] AS [CanReceiveVotes], 
       [vVoteInfo].[PersonIneligibleReasonGuid] AS [PersonIneligibleReasonGuid], 
       [vVoteInfo].[PersonIneligibleReasonId] AS [PersonIneligibleReasonId], 
@@ -303,6 +304,7 @@
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
     <Property Name="_FullName" Type="nvarchar" MaxLength="461" StoreGeneratedPattern="Computed" />
     <Property Name="_RowVersionInt" Type="bigint" StoreGeneratedPattern="Computed" />
+    <Property Name="_FullNameFL" Type="nvarchar" MaxLength="460" StoreGeneratedPattern="Computed" />
   </EntityType>
   <EntityType Name="Reasons">
     <Key>
@@ -531,6 +533,7 @@
     <Property Name="PersonGuid" Type="uniqueidentifier" />
     <Property Name="PersonId" Type="int" />
     <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />
+    <Property Name="PersonFullNameFL" Type="nvarchar" MaxLength="460" />
     <Property Name="CanReceiveVotes" Type="bit" />
     <Property Name="PersonIneligibleReasonGuid" Type="uniqueidentifier" />
     <Property Name="PersonIneligibleReasonId" Type="int" />

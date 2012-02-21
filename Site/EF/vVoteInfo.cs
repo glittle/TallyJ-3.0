@@ -39,5 +39,6 @@ namespace TallyJ.EF
         public string LocationTallyStatus { get; set; }
         public System.Guid ElectionGuid { get; set; }
         public Nullable<bool> IsSingleNameElection { get; set; }
+        public string PersonFullNameFL { get; set; }
     }
 }

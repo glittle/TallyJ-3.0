@@ -127,6 +127,7 @@
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
       [vVoteInfo].[PersonId] AS [PersonId], 
       [vVoteInfo].[PersonFullName] AS [PersonFullName], 
+      [vVoteInfo].[PersonFullNameFL] AS [PersonFullNameFL], 
       [vVoteInfo].[CanReceiveVotes] AS [CanReceiveVotes], 
       [vVoteInfo].[PersonIneligibleReasonGuid] AS [PersonIneligibleReasonGuid], 
       [vVoteInfo].[PersonIneligibleReasonId] AS [PersonIneligibleReasonId], 
@@ -308,6 +309,7 @@
           <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
           <Property Name="_FullName" Type="nvarchar" MaxLength="461" StoreGeneratedPattern="Computed" />
           <Property Name="_RowVersionInt" Type="bigint" StoreGeneratedPattern="Computed" />
+          <Property Name="_FullNameFL" Type="nvarchar" MaxLength="460" StoreGeneratedPattern="Computed" />
         </EntityType>
         <EntityType Name="Reasons">
           <Key>
@@ -553,6 +555,7 @@
           <Property Name="PersonGuid" Type="uniqueidentifier" />
           <Property Name="PersonId" Type="int" />
           <Property Name="PersonFullName" Type="nvarchar" MaxLength="461" />
+          <Property Name="PersonFullNameFL" Type="nvarchar" MaxLength="460" />
           <Property Name="CanReceiveVotes" Type="bit" />
           <Property Name="PersonIneligibleReasonGuid" Type="uniqueidentifier" />
           <Property Name="PersonIneligibleReasonId" Type="int" />
@@ -796,6 +799,7 @@
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="Int64" Name="C_RowVersionInt" annotation:StoreGeneratedPattern="Computed" />
+          <Property Type="String" Name="C_FullNameFL" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
         </EntityType>
         <EntityType Name="Reason">
           <Key>
@@ -984,6 +988,7 @@
           <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
           <Property Type="Boolean" Name="IsSingleNameElection" />
+          <Property Type="String" Name="PersonFullNameFL" MaxLength="460" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="vLocationInfo">
           <Key>
@@ -1198,6 +1203,7 @@
           <EntitySetMapping Name="People">
             <EntityTypeMapping TypeName="TallyJ2Model.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
                 <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
                 <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
@@ -1376,6 +1382,7 @@
           <EntitySetMapping Name="vVoteInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
               <MappingFragment StoreEntitySet="vVoteInfo">
+                <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
                 <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />

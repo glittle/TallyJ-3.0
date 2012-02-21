@@ -26,6 +26,7 @@ as
      , v.PersonGuid
 	 , p._RowId [PersonId]
 	 , p._FullName [PersonFullName]
+	 , p._FullNameFL [PersonFullNameFL]
 	 , p.CanReceiveVotes
 	 , p.IneligibleReasonGuid [PersonIneligibleReasonGuid]
 	 , pr._RowId [PersonIneligibleReasonId]

@@ -286,19 +286,19 @@ namespace TallyJ.Models
 
             var spoiledGroup = voteXml.GetAttribute("SpoiledGroup").DefaultTo(voteStatus);
             var spoiledDetail = voteXml.GetAttribute("SpoiledDetail");
-            
+
             var ineligibleReasonGuid = MapIneligible(spoiledGroup, spoiledDetail);
 
-             var vote = new Vote
-                   {
-                     BallotGuid = ballot.BallotGuid,
-                     PositionOnBallot=voteNum,
-                     InvalidReasonGuid = ineligibleReasonGuid,
-                     StatusCode= VoteHelper.VoteStatusCode.Ok
-                   };
+            var vote = new Vote
+                  {
+                    BallotGuid = ballot.BallotGuid,
+                    PositionOnBallot = ++voteNum,
+                    InvalidReasonGuid = ineligibleReasonGuid,
+                    StatusCode = VoteHelper.VoteStatusCode.Ok
+                  };
 
             _storeVote(vote);
-    
+
             break;
 
           case "Ok":
@@ -307,6 +307,27 @@ namespace TallyJ.Models
           default:
             ImportVotePerson(ballot, voteXml, ++voteNum);
             break;
+        }
+      }
+
+      if (ballot.StatusCode == BallotStatusEnum.TooMany)
+      {
+        if (voteNum <= _election.NumberToElect)
+        {
+          // TallyJ v1 allowed user to choose "TooMany" and not enter too many votes...
+          // TallyJ v2 want to see "too many" votes, so on import, add more to ensure status will be calculated as "TooMany"
+          for (var i = _election.NumberToElect.AsInt() - voteNum; i >= 0; i--)
+          {
+            var vote = new Vote
+            {
+              BallotGuid = ballot.BallotGuid,
+              PositionOnBallot = ++voteNum,
+              InvalidReasonGuid = IneligibleReason.Ineligible_Other,
+              StatusCode = VoteHelper.VoteStatusCode.Ok
+            };
+
+            _storeVote(vote);
+          }
         }
       }
     }
@@ -399,10 +420,10 @@ namespace TallyJ.Models
       vote = new Vote
                {
                  BallotGuid = ballot.BallotGuid,
-                 PositionOnBallot=voteNum,
-                 PersonCombinedInfo=person.CombinedInfo,
+                 PositionOnBallot = voteNum,
+                 PersonCombinedInfo = person.CombinedInfo,
                  PersonGuid = person.PersonGuid,
-                 StatusCode= VoteHelper.VoteStatusCode.Ok
+                 StatusCode = VoteHelper.VoteStatusCode.Ok
                };
 
       _storeVote(vote);

@@ -78,6 +78,13 @@ namespace Tests.BusinessTests
       vote4_9.StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Ok);
       vote4_9.InvalidReasonGuid.ShouldEqual(IneligibleReason.Unreadable_Writing_illegible);
 
+
+      var ballot11 = fakes.Ballots[10];
+      ballot11.ComputerCode.ShouldEqual("A");
+      ballot11.BallotNumAtComputer.ShouldEqual(11);
+      ballot11.StatusCode.ShouldEqual(BallotStatusEnum.TooMany);
+      var votes11 = fakes.Votes.Where(v => v.BallotGuid == ballot11.BallotGuid).ToList();
+      votes11.Count.ShouldEqual(10);
     }
 
   }

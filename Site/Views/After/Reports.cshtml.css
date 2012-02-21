@@ -35,7 +35,6 @@
     padding: 5px;
     height: 100%;
 }
-
 #report h1 {
     margin: 0 0 4pt 0;
     padding: 0;
@@ -74,28 +73,38 @@
 
 .Ballot {
     font-size: 10pt;
+    margin-top: 3px;
+    color: red;
+    text-decoration: line-through;
+}
+.Ballot.StatusOk {
+    text-decoration: none;
+    color: #000;
 }
 .Ballot > div {
-    margin-left: 7em;
+    margin-left: 100px;
+    text-decoration: inherit;
 }
 .Ballot > div:first-child {
     float: left;
     margin-left: 0;
+    width: 95px;
+    text-decoration: none;
 }
-.Ballot {
-    margin-top: 3px;
+.Ballot .Vote {
+    display: inline-block;
+    white-space: normal;
+    text-decoration: inherit;
 }
-.Vote .Person 
+.Ballot .Vote .Person 
 {
-    text-decoration: underline;
+    white-space: inherit;
 }
-.Vote .Invalid {
-    text-decoration: underline;
+.Ballot .Vote .Invalid {
     color: red;
+    text-decoration: underline;
 }
-.Vote {
-    margin-right: 9px;
-}
+
 
 @media print
 {
@@ -106,5 +115,8 @@
     #report
     {
         border: none;
+        width: 100%;
+        padding: 0;
+        margin: 0;
     }
 }

@@ -188,6 +188,7 @@
     <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Int64" Name="C_RowVersionInt" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="String" Name="C_FullNameFL" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
   </EntityType>
   <EntityType Name="Reason">
     <Key>
@@ -376,6 +377,7 @@
     <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
     <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
     <Property Type="Boolean" Name="IsSingleNameElection" />
+    <Property Type="String" Name="PersonFullNameFL" MaxLength="460" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="vLocationInfo">
     <Key>
