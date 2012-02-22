@@ -23,7 +23,7 @@ namespace Tests.BusinessTests
       var xmlDoc = new XmlDocument();
       var fakeDataContext = new FakeDataContext();
 
-      xmlDoc.Load(@"..\..\Support\SampleElection.xml");
+      xmlDoc.Load(@"Support\SampleElection.xml");
 
       var electionGuid = Guid.NewGuid();
       var election = new Election { ElectionGuid = electionGuid };

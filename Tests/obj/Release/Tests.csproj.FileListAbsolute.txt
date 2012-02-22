@@ -23,3 +23,4 @@ D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\LumenWorks.Framewor
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\ResolveAssemblyReference.cache
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\Tests.dll
 D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\obj\Release\Tests.pdb
+D:\Users\Glen\Bahai\TallyJ\V2d\Server\Site\Tests\bin\Release\Support\SampleElection.xml
