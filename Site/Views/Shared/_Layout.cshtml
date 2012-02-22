@@ -4,6 +4,8 @@
     ContextItems.AddJavascriptForPage("time", "site.serverTime={0};".FilledWith(DateTime.Now.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
     var currentMenu = new MenuHelper(this);
+    var locationHelper = new LocationHelper();
+    var tellerHelper = new TellerHelper();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -35,18 +37,18 @@
                     if (Request.IsAuthenticated)
                     {
                     @Html.ActionLink(" ", "Index", "Dashboard", null, new
-               {
-                   Class = "site-title",
-                   title = "Go to Dashboard"
-               })
+                                                                        {
+                                                                            Class = "site-title",
+                                                                            title = "Go to Dashboard"
+                                                                        })
                     }
                     else
                     {
                     @Html.ActionLink(" ", "Index", "Public", null, new
-               {
-                   Class = "site-title",
-                   title = "Go to Welcome Page"
-               })
+                                                                     {
+                                                                         Class = "site-title",
+                                                                         title = "Go to Welcome Page"
+                                                                     })
                     }
                 }
                 <div class="Version">
@@ -67,9 +69,6 @@
                 @if (Request.IsAuthenticated)
                 {
                     <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
-                    <div class="CurrentLocationAndCode">
-                        <span class="CurrentLocationName">@UserSession.CurrentLocationName @UserSession.CurrentComputerCode.SurroundContentWith("- Computer ", "")</span>
-                    </div>
                     <div class="Heartbeat">
                         Connected</div>
                 }
@@ -78,11 +77,42 @@
             {
                 if (ScreenMode == "Mini")
                 {
-                <div class="headerRight">
-                </div>
                 <ul class="sf-menu">
                     @currentMenu.InsertMenu()
                 </ul>
+                    if (currentMenu.ShowLocationSelection || currentMenu.ShowTellerSelector)
+                    {
+                <div class="CurrentInfo">
+                    @if (currentMenu.ShowLocationSelection)
+                    {
+                        <label for="ddlTopLocation">
+                            Location:
+                        </label>
+                        <select id="ddlTopLocation" class="TopLocation" @locationHelper.ShowDisabled>
+                            @locationHelper.GetLocationOptions()
+                        </select>
+                        <label>
+                            Computer:</label>
+                        <select disabled>
+                            <option>@UserSession.CurrentComputerCode</option>
+                        </select>
+                        <br />
+                    }
+                    @if (currentMenu.ShowTellerSelector)
+                    {
+                        <label for="ddlTopTeller1">
+                            Teller at keyboard:</label>
+                        <select id="ddlTopTeller1" class="TopTeller">
+                            @tellerHelper.GetTellerOptions(1).AsRawHtml()
+                        </select>
+                        <label for="ddlTopTeller2">
+                            Assisting:</label>
+                        <select id="ddlTopTeller2" class="TopTeller">
+                            @tellerHelper.GetTellerOptions(2).AsRawHtml()
+                        </select>
+                    }
+                </div>
+                    }
                 }
             }
         </div>

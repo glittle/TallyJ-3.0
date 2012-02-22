@@ -72,7 +72,7 @@ namespace TallyJ.Models
           newPerson.BahaiId = bahaiId;
         }
 
-        var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBool();
+        var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBoolean();
         newPerson.CanReceiveVotes = ineligible;
         if (ineligible)
         {

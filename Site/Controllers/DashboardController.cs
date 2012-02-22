@@ -25,5 +25,23 @@ namespace TallyJ.Controllers
     {
       return View(new ElectionsListViewModel());
     }
+
+    public JsonResult ChooseLocation(int id)
+    {
+      return new { Selected = new ComputerModel().AddCurrentComputerIntoLocation(id) }.AsJsonResult();
+    }
+
+
+
+    public JsonResult ChooseTeller(int num, int teller, string newName = "")
+    {
+      return new TellerModel().ChooseTeller(num, teller, newName).AsJsonResult();
+    }
+
+    public JsonResult DeleteTeller(int id)
+    {
+      return new TellerModel().DeleteTeller(id).AsJsonResult();
+    }
+
   }
 }

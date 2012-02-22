@@ -11,33 +11,24 @@ namespace TallyJ.Code.Resources
   public class MenuHelper
   {
     private readonly WebViewPage _webViewPage;
-    private string _currentMenuTitle;
     private XmlElement _root;
+    private XmlElement _currentNode;
 
     public MenuHelper(WebViewPage webViewPage)
     {
       _webViewPage = webViewPage;
     }
 
-    /// <Summary>Available after the menu has been scanned.</Summary>
+    /// <Summary>Title of current menu item, if there is one. Empty string if not.</Summary>
     public string CurrentMenuTitle
     {
       get
       {
-        var nodes = MainRootXml().SelectNodes("//*");
-        if (nodes == null) return "";
-
-        var routeData = _webViewPage.Url.RequestContext.RouteData;
-        var currentNode = nodes
-          .Cast<XmlNode>()
-          .Where(n => n.NodeType == XmlNodeType.Element)
-          .Cast<XmlElement>()
-          .Single(item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
-                          && routeData.Values["action"].ToString() == item.GetAttribute("action"));
+        var currentNode = CurrentNode;
 
         var title = currentNode.GetAttribute("title");
         var parentGroup = ((XmlElement)currentNode.ParentNode);
-        var showParentTitle = parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
+        var showParentTitle = parentGroup != null && parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
         if (showParentTitle)
         {
           var parentTitle = parentGroup.GetAttribute("title");
@@ -46,6 +37,39 @@ namespace TallyJ.Code.Resources
 
         return title;
       }
+    }
+
+    /// <Summary>Current menu node. If none, returns an empty element.</Summary>
+    public XmlElement CurrentNode
+    {
+      get
+      {
+        if (_currentNode != null) return _currentNode;
+
+        var nodes = MainRootXml().SelectNodes("//*");
+        if (nodes == null) return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
+
+        var routeData = _webViewPage.Url.RequestContext.RouteData;
+
+        _currentNode = nodes
+          .Cast<XmlNode>()
+          .Where(n => n.NodeType == XmlNodeType.Element)
+          .Cast<XmlElement>()
+          .Single(item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
+                          && routeData.Values["action"].ToString() == item.GetAttribute("action"));
+
+        return _currentNode;
+      }
+    }
+
+    public bool ShowLocationSelection
+    {
+      get { return CurrentNode.GetAttribute("showLocationSelector").AsBoolean(); }
+    }
+
+    public bool ShowTellerSelector
+    {
+      get { return CurrentNode.GetAttribute("showTellerSelector").AsBoolean(); }
     }
 
     public XmlElement TrimmedMenu(string menuId = "main")
@@ -125,7 +149,7 @@ namespace TallyJ.Code.Resources
         .Cast<XmlElement>()
         .Where(Allowed)
         .DefaultIfEmpty()
-        .CheckForCurrentMenu(_webViewPage, out _currentMenuTitle)
+        .CheckForCurrentMenu(_webViewPage)
         .Select(i => i == null
                        ? ""
                        : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
@@ -159,23 +183,19 @@ namespace TallyJ.Code.Resources
   public static class ExtForMenu
   {
     public static IEnumerable<XmlElement> CheckForCurrentMenu(this IEnumerable<XmlElement> inputs,
-                                                              WebViewPage webViewPage, out string currentMenuTitle)
+                                                              WebViewPage webViewPage)
     {
       // want to have out param, so can't use iterator
       var list = new List<XmlElement>();
 
 
       var routeData = webViewPage.Url.RequestContext.RouteData;
-      currentMenuTitle = "";
-      foreach (var item in inputs)
+      foreach (var item in inputs.Where(item => item != null))
       {
-        if (item == null) continue;
-
         if (routeData.Values["controller"].ToString() == item.GetAttribute("controller")
             && routeData.Values["action"].ToString() == item.GetAttribute("action"))
         {
           item.SetAttribute("class", item.GetAttribute("class").SurroundContentWith("", " ") + "active");
-          currentMenuTitle = item.GetAttribute("title");
         }
 
         list.Add(item);

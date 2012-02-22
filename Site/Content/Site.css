@@ -128,7 +128,8 @@ h5, h6
     clear: both;
     padding-bottom: 35px;
 }
-.PageTitle {
+.PageTitle
+{
     position: absolute;
     left: 68px;
     top: 0;
@@ -161,17 +162,13 @@ footer
     width: 55px;
     height: 59px;
 }
-.TopInfo {
+.TopInfo
+{
     margin-left: 4px;
 }
 .NormalMode .TopInfo
 {
-    display: none;/*
-    bottom: 0;
-    position: relative;
-    margin: 40px 0 0 90px;
-    margin-left: -50px;
-    top: 15px;*/
+    display: none; /*     bottom: 0;     position: relative;     margin: 40px 0 0 90px;     margin-left: -50px;     top: 15px;*/
 }
 .NormalMode .site-title
 {
@@ -182,9 +179,8 @@ footer
     width: 400px;
     height: 106px;
 }
-.NormalMode .PageTitle,
-.Presenter .PageTitle
- {
+.NormalMode .PageTitle, .Presenter .PageTitle
+{
     display: none;
 }
 .Version
@@ -781,4 +777,23 @@ a.twitter
 }
 
 
-
+.CurrentInfo
+{
+    background: #c4dca4;
+    font-size: 9pt;
+    position: absolute;
+    right: 0;
+    top: 15px;
+    padding-left: 5px;
+    width: 367px;
+    border: solid #c4dca4 5px;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.CurrentInfo .TopLocation {
+    width: 200px;
+}
+.CurrentInfo .TopTeller {
+    width: 100px;
+}

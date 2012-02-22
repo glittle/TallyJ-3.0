@@ -174,13 +174,13 @@ namespace Tests.FrameworkTests
     public void AsBool_Test()
     {
       bool? item = null;
-      item.AsBool().ShouldEqual(false);
+      item.AsBoolean().ShouldEqual(false);
 
       item = true;
-      item.AsBool().ShouldEqual(true);
+      item.AsBoolean().ShouldEqual(true);
 
       item = false;
-      item.AsBool().ShouldEqual(false);
+      item.AsBoolean().ShouldEqual(false);
     }
 
     [TestMethod]
@@ -198,20 +198,20 @@ namespace Tests.FrameworkTests
     [TestMethod]
     public void AsBool_String_Test()
     {
-      "true".AsBool().ShouldEqual(true);
-      "True".AsBool().ShouldEqual(true);
+      "true".AsBoolean().ShouldEqual(true);
+      "True".AsBoolean().ShouldEqual(true);
       
-      "false".AsBool().ShouldEqual(false);
-      "False".AsBool().ShouldEqual(false);
+      "false".AsBoolean().ShouldEqual(false);
+      "False".AsBoolean().ShouldEqual(false);
 
-      "1".AsBool().ShouldEqual(true);
-      "0".AsBool().ShouldEqual(false);
+      "1".AsBoolean().ShouldEqual(true);
+      "0".AsBoolean().ShouldEqual(false);
 
-      "".AsBool().ShouldEqual(false);
-      "hello".AsBool().ShouldEqual(false);
+      "".AsBoolean().ShouldEqual(false);
+      "hello".AsBoolean().ShouldEqual(false);
 
       string nullstring = null;
-      nullstring.AsBool().ShouldEqual(false);
+      nullstring.AsBoolean().ShouldEqual(false);
     }
 
   }

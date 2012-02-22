@@ -8,12 +8,12 @@
         </group>
         <group title="Voting" longtitle="Registration and voting">
             <page title="Manage People's Names" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
-            <page title="Front Desk Registration" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election."></page>
+            <page title="Front Desk Registration" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election."></page>
             <page title="Roll Call" class="Projector" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting."></page>
         </group>
         <group title="Tallying" longtitle="Processing the ballots">
             <page title="Reconcile Ballot Counts" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source."></page>
-            <page title="Enter Ballots" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
+            <page title="Enter Ballots" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
             <page title="Monitor Progress" controller="After" action="Monitor" requireElection="true" role="known" desc="Centrally monitor progress of tellers."></page>
         </group>
         <group title="Review and Report" longtitle="Review then share the news!">

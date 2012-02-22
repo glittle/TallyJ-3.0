@@ -403,10 +403,10 @@ namespace TallyJ.Models
               person.BahaiId = bahaiId;
             }
 
-            var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBool();
+            var ineligible = personXml.GetAttribute("IneligibleToReceiveVotes").AsBoolean();
             person.CanReceiveVotes = ineligible;
 
-            var ineligibleReason = personXml.GetAttribute("ReasonToNotReceive").AsBool();
+            var ineligibleReason = personXml.GetAttribute("ReasonToNotReceive").AsBoolean();
             //TODO...
           }
 

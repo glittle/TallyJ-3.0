@@ -47,6 +47,10 @@
       <Parameter Name="EraseTallyContent" Mode="In" Type="Boolean" />
       <Parameter Name="ByLoginId" Mode="In" Type="String" />
     </FunctionImport>
+    <AssociationSet Name="FK_Person_Person" Association="TallyJ2Model.FK_Person_Person">
+      <End Role="Person" EntitySet="People" />
+      <End Role="Person1" EntitySet="People" />
+    </AssociationSet>
   </EntityContainer>
   <ComplexType Name="CloneElection_Result">
     <Property Type="Boolean" Name="Success" Nullable="true" />
@@ -189,6 +193,10 @@
     <Property Type="String" Name="C_FullName" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="Int64" Name="C_RowVersionInt" annotation:StoreGeneratedPattern="Computed" />
     <Property Type="String" Name="C_FullNameFL" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+    <Property Type="Guid" Name="TellerAtKeyboard" />
+    <Property Type="Guid" Name="TellerAssisting" />
+    <NavigationProperty Name="Person1" Relationship="TallyJ2Model.FK_Person_Person" FromRole="Person" ToRole="Person1" />
+    <NavigationProperty Name="Person2" Relationship="TallyJ2Model.FK_Person_Person" FromRole="Person1" ToRole="Person" />
   </EntityType>
   <EntityType Name="Reason">
     <Key>
@@ -461,4 +469,16 @@
     <Property Type="Int32" Name="NumInTie" Nullable="false" />
     <Property Type="Boolean" Name="IsResolved" />
   </EntityType>
+  <Association Name="FK_Person_Person">
+    <End Type="TallyJ2Model.Person" Role="Person" Multiplicity="1" />
+    <End Type="TallyJ2Model.Person" Role="Person1" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="C_RowId" />
+      </Principal>
+      <Dependent Role="Person1">
+        <PropertyRef Name="C_RowId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

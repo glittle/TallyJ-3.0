@@ -300,7 +300,7 @@ namespace TallyJ.Models
                    Message = "Unable to copy"
                  }.AsJsonResult();
       }
-      if (!result.Success.AsBool())
+      if (!result.Success.AsBoolean())
       {
         return new
                  {
@@ -410,7 +410,7 @@ namespace TallyJ.Models
       return Db.Elections
         .Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "")
         .ToList()
-        .Where(e => e.ListForPublic.AsBool() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+        .Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
 
     public JsonResult SetTallyStatusJson(string status)
@@ -461,7 +461,7 @@ namespace TallyJ.Models
 
       if (election == null) return;
 
-      if (election.ListForPublic.AsBool() && UserSession.IsKnownTeller)
+      if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
         Db.Elections.Attach(election);
         election.ListedForPublicAsOf = DateTime.Now;

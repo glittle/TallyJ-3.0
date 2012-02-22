@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Web;
 using TallyJ.Code;
+using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -62,6 +63,24 @@ namespace TallyJ.Models
                    mode = currentElection.ElectionMode,
                    rules = rules.SerializedAsJsonString()
                  };
+      }
+    }
+
+    public object TellersJson
+    {
+      get
+      {
+        var tellerHelper = new TellerHelper();
+        return tellerHelper.Tellers
+          .OrderBy(l => l.Name)
+          .ThenBy(l => l.C_RowId)
+          .Select(l => new
+          {
+            l.Name,
+            l.C_RowId
+          })
+          .SerializedAsJsonString();
+
       }
     }
 

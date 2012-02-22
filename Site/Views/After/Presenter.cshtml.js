@@ -110,7 +110,7 @@ var PresenterPage = function () {
                 break;
 
             default:
-                LogMessage(ev.which);
+                //LogMessage(ev.which);
                 break;
         }
     };

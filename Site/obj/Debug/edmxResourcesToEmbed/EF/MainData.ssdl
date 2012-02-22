@@ -141,6 +141,10 @@
       <End Role="Users" EntitySet="Users" />
       <End Role="JoinElectionUser" EntitySet="JoinElectionUser" />
     </AssociationSet>
+    <AssociationSet Name="FK_Person_Person" Association="tallyj2dModel.Store.FK_Person_Person">
+      <End Role="Person" EntitySet="Person" />
+      <End Role="Person1" EntitySet="Person" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="Users">
     <Key>
@@ -305,6 +309,8 @@
     <Property Name="_FullName" Type="nvarchar" MaxLength="461" StoreGeneratedPattern="Computed" />
     <Property Name="_RowVersionInt" Type="bigint" StoreGeneratedPattern="Computed" />
     <Property Name="_FullNameFL" Type="nvarchar" MaxLength="460" StoreGeneratedPattern="Computed" />
+    <Property Name="TellerAtKeyboard" Type="uniqueidentifier" />
+    <Property Name="TellerAssisting" Type="uniqueidentifier" />
   </EntityType>
   <EntityType Name="Reasons">
     <Key>
@@ -556,6 +562,18 @@
       </Principal>
       <Dependent Role="JoinElectionUser">
         <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Person_Person">
+    <End Role="Person" Type="tallyj2dModel.Store.Person" Multiplicity="1" />
+    <End Role="Person1" Type="tallyj2dModel.Store.Person" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Person">
+        <PropertyRef Name="_RowId" />
+      </Principal>
+      <Dependent Role="Person1">
+        <PropertyRef Name="_RowId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

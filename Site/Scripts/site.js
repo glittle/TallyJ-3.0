@@ -38,36 +38,82 @@ function Onload() {
 
     SendHeartbeat();
 
-    // UpdateActiveInfo();
     ActivatePullInstructions();
 
     PrepareMainMenu();
-    
-    //ShowStatusDisplay('long test message...', 0, 10000);
+
+    PrepareTopLocationAndTellers();
+}
+
+function PrepareTopLocationAndTellers() {
+    $('#ddlTopLocation').change(function () {
+        ShowStatusDisplay('Saving...');
+        var form = {
+            id: $(this).val()
+        };
+        CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
+            ShowStatusDisplay('Saved', 0, 2000, false, true);
+        });
+    });
+    $('.TopTeller').change(function (ev) {
+        ShowStatusDisplay('Saving...');
+        var ddl = $(this);
+        var choice = +ddl.val();
+        var form = {
+            num: this.id.substr(-1),
+            teller: choice
+        };
+        if (choice == -1) {
+            form.newName = prompt('Please type name to add:');
+            if (!form.newName) {
+                ddl.val(ddl.data('current'));
+                ResetStatusDisplay();
+                return;
+            }
+        }
+
+        CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller', form, function (info) {
+            ShowStatusDisplay('Saved', 0, 2000, false, true);
+
+            ddl.data('current', ddl.val());
+
+            if (info.TellerList) {
+                ddl.html(info.TellerList);
+
+                var otherDll = $('.TopTeller').not(ddl);
+                var otherValue = otherDll.val();
+                otherDll.html(info.TellerList);
+                otherDll.val(otherValue);
+            }
+        });
+    }).each(function () {
+        var ddl = $(this);
+        ddl.data('current', ddl.val());
+    });
 }
 
 function PrepareMainMenu() {
-//    $("#jMenu").jMenu({
-//        openClick: false,
-//        effects: {
-//            effectSpeedOpen: 100,
-//            effectSpeedClose: 300,
-//            effectTypeOpen: 'show',
-//            effectTypeClose: 'fade',
-//            effectOpen: 'linear',
-//            effectClose: 'linear'
-//        },
-//        TimeBeforeOpening: 100,
-//        TimeBeforeClosing: 400,
-//        animatedText: false
-//    });
+    //    $("#jMenu").jMenu({
+    //        openClick: false,
+    //        effects: {
+    //            effectSpeedOpen: 100,
+    //            effectSpeedClose: 300,
+    //            effectTypeOpen: 'show',
+    //            effectTypeClose: 'fade',
+    //            effectOpen: 'linear',
+    //            effectClose: 'linear'
+    //        },
+    //        TimeBeforeOpening: 100,
+    //        TimeBeforeClosing: 400,
+    //        animatedText: false
+    //    });
 
     $("ul.sf-menu").supersubs({
         minWidth: 12,   // minimum width of sub-menus in em units 
         maxWidth: 27,   // maximum width of sub-menus in em units 
         extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
         // due to slight rounding differences and font-family 
-    }).superfish();  
+    }).superfish();
 }
 
 function ActivatePullInstructions() {
@@ -596,7 +642,7 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
     if (dateObj == null || isNaN(dateObj) || dateObj == 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
         return '';
     }
-    
+
     var date = new Date(dateObj);
     if (isNaN(date)) {
         return '[Invalid Date]';
@@ -690,14 +736,14 @@ String.prototype.filledWith = function () {
     }
 
     //return this.replace(/{(.+)}/g, function () {
-  //var t = startTimer();
+    //var t = startTimer();
 
-  var testForFunc = /\#/; // simple test for "#"
-  var testForNoEscape = /\^/; // simple test for "^"
+    var testForFunc = /\#/; // simple test for "#"
+    var testForNoEscape = /\^/; // simple test for "^"
     var extractTokens = /{([^{]+?)}/g; // greedy
 
     var replaceTokens = function (input) {
-        return input.replace(extractTokens, function() {
+        return input.replace(extractTokens, function () {
             var token = arguments[1];
             var value = undefined;
             if (values) {
@@ -710,9 +756,9 @@ String.prototype.filledWith = function () {
                         value = values[token.substring(1)];
                     } else {
                         var toEscape = values[token];
-                        value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace( /&/g , '&amp;').replace( /</g , '&lt;').replace( />/g , '&gt;').replace( /"/g , '&quot;');
+                        value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                     }
-                } catch(err) {
+                } catch (err) {
                     LogMessage('src data');
                     LogMessage(values);
                     LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);

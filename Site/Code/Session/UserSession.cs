@@ -138,14 +138,15 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static Guid? CurrentTellerAtKeyboard
+    public static Guid? GetCurrentTeller(int num)
     {
-      get { return null; }
+      var stored = HttpContext.Current.Session[SessionKey.CurrentTeller + num];
+      return stored == null ? null : (Guid?) stored;
     }
 
-    public static Guid? CurrentTellerAssisting
+    public static void SetCurrentTeller(int num, Guid? tellerGuid)
     {
-      get { return null; }
+      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = tellerGuid;
     }
 
     public static void ProcessLogin()

@@ -43,7 +43,7 @@ namespace TallyJ.Models
                                       Locations = isCurrent ? locations : null,
                                       Type = ElectionTypeEnum.TextFor(info.ElectionType),
                                       Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (",")"),
-                                      IsTest = info.ShowAsTest.AsBool()
+                                      IsTest = info.ShowAsTest.AsBoolean()
                                     };
                       });
       }

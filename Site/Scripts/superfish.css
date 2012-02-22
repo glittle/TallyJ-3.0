@@ -61,8 +61,8 @@ ul.sf-menu li li li:hover ul, ul.sf-menu li li li.sfHover ul
 .sf-menu
 {
     position: absolute;
-    top: 39px;
-    left: 300px;
+    top: 40px;
+    left: 55px;
     border: solid #BDD2FF 5px;
     border-bottom: none;
     border-top-left-radius: 10px;

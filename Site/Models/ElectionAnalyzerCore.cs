@@ -399,7 +399,7 @@ namespace TallyJ.Models
         for (int i = 0, max = results.Count; i < max; i++)
         {
           var result = results[i];
-          if (!result.IsTieResolved.AsBool()) break;
+          if (!result.IsTieResolved.AsBoolean()) break;
           foundBeforeDup += result.TieBreakCount > 0 ? 1 : 0;
         }
       }
@@ -472,7 +472,7 @@ namespace TallyJ.Models
 
     protected void UpdateSummaryFromPeopleRecords(ResultSummary summary)
     {
-      summary.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBool());
+      summary.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBoolean());
       summary.NumVoters = People.Count(p => p.VotingMethod.HasContent());
 
       summary.InPersonBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);

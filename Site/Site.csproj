@@ -157,7 +157,9 @@
     <Compile Include="Code\RequireLocationPolicy.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
     <Compile Include="Code\Data\DbContextFactory.cs" />
+    <Compile Include="Code\Resources\LocationHelper.cs" />
     <Compile Include="Code\Resources\MenuHelper.cs" />
+    <Compile Include="Code\Resources\TellerHelper.cs" />
     <Compile Include="Code\Resources\TemplateLoader.cs" />
     <Compile Include="Code\RequireElectionPolicy.cs" />
     <Compile Include="Code\Resources\XmlHelper.cs" />

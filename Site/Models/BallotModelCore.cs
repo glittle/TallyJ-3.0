@@ -439,8 +439,8 @@ namespace TallyJ.Models
                        ComputerCode = computerCode,
                        BallotNumAtComputer = NextBallotNumAtComputer(),
                        StatusCode = BallotStatusEnum.TooFew,
-                       TellerAtKeyboard = UserSession.CurrentTellerAtKeyboard,
-                       TellerAssisting = UserSession.CurrentTellerAssisting
+                       TellerAtKeyboard = UserSession.GetCurrentTeller(1),
+                       TellerAssisting = UserSession.GetCurrentTeller(2)
                      };
       Db.Ballots.Add(ballot);
       Db.SaveChanges();

@@ -248,9 +248,10 @@ namespace TallyJ.Models
     public IEnumerable<object> PersonLines(List<Person> people, FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
+      var tellers = Db.Tellers.Where(t => t.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(t => t.TellerGuid, t => t.Name);
 
       return people
-        .OrderBy(p => sortType==FrontDeskSortEnum.ByArea ? p.Area : "")
+        .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
         .ThenBy(p => p.LastName)
         .ThenBy(p => p.FirstName)
         .Select(p => new
@@ -259,7 +260,12 @@ namespace TallyJ.Models
                          FullName = p.C_FullName,
                          NameLower = p.C_FullName.ToLower(),
                          p.Area,
-                         VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+                         VotedAt = p.VotingLocationGuid.HasValue ? (locations[p.VotingLocationGuid.Value]
+                         + (p.TellerAtKeyboard.HasValue ? " (" + tellers[p.TellerAtKeyboard.Value]
+                         + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "") + ")"
+                         : "")
+                         + (p.RegistrationTime.HasValue ? " " + p.RegistrationTime.Value.ToString("h:mm") : "")
+                         ) : "",
                          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
                          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
@@ -314,6 +320,9 @@ namespace TallyJ.Models
           }
         }
       }
+
+      person.TellerAtKeyboard = UserSession.GetCurrentTeller(1);
+      person.TellerAssisting = UserSession.GetCurrentTeller(2);
 
       Db.SaveChanges();
 

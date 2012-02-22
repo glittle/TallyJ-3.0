@@ -46,7 +46,7 @@ namespace TallyJ.Models
       summary.SpoiledVotes = VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi)).Sum(
           vi => vi.SingleNameElectionCount).AsInt();
 
-      summary.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBool());
+      summary.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBoolean());
 
       summary.BallotsNeedingReview = VoteInfos.Count(VoteAnalyzer.VoteNeedReview);
 

@@ -116,12 +116,12 @@ namespace TallyJ.Code
       return new TemplateHelper(input).FillByArray(values);
     }
 
-    public static bool AsBool(this bool? input)
+    public static bool AsBoolean(this bool? input)
     {
       return input.HasValue && input.Value;
     }
 
-    public static bool AsBool(this string input)
+    public static bool AsBoolean(this string input)
     {
       if (input.HasNoContent()) return false;
 

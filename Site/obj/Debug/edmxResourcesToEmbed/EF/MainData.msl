@@ -126,6 +126,8 @@
     <EntitySetMapping Name="People">
       <EntityTypeMapping TypeName="TallyJ2Model.Person">
         <MappingFragment StoreEntitySet="Person">
+          <ScalarProperty Name="TellerAssisting" ColumnName="TellerAssisting" />
+          <ScalarProperty Name="TellerAtKeyboard" ColumnName="TellerAtKeyboard" />
           <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
           <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
           <ScalarProperty Name="C_FullName" ColumnName="_FullName" />

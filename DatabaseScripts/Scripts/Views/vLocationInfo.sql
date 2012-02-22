@@ -47,14 +47,15 @@ as
 	   , case when e.IsSingleNameElection = 1 then total.SingleNameBallots
 	          else total.Ballots end [BallotsAtLocation]
 	   , c.LastContact
-	   , t.Name [TellerName]
+	   , coalesce(t1.Name + coalesce(', ' + t2.Name, '') ,'') [TellerName]
 	   , isnull(ROW_NUMBER() over (order by sortorder, bv.computercode, l._RowId),0) SortOrder2
   from tj.Location l
     join tj.Election e on e.ElectionGuid = l.ElectionGuid
 	left join bv on bv.LocationGuid = l.LocationGuid
 	left join total on total.LocationGuid = l.LocationGuid
 	left join tj.Computer c on c.LocationGuid = l.LocationGuid and c.ComputerCode = bv.ComputerCode
-	left join tj.Teller t on t.TellerGuid = c.Teller1
+	left join tj.Teller t1 on t1.TellerGuid = c.Teller1
+	left join tj.Teller t2 on t2.TellerGuid = c.Teller2
   
 GO
 

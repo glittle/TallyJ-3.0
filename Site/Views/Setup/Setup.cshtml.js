@@ -6,7 +6,8 @@ var SetupIndexPage = function () {
         // temporary cache of rules, for the life of this page
     };
     var settings = {
-        locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span></div>'
+        locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span></div>',
+        tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller"></span></div>'
     };
     var preparePage = function () {
 
@@ -19,6 +20,8 @@ var SetupIndexPage = function () {
         $('#btnAddLocation').live('click', addLocation);
 
         $('#locationList').live('change', 'input', locationChanged);
+
+        $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
         $("#txtDate").datepicker({
             dateFormat: 'd MM yy'
@@ -34,6 +37,7 @@ var SetupIndexPage = function () {
 
         applyValues(publicInterface.Election);
         showLocations(publicInterface.Locations);
+        showTellers(publicInterface.Tellers);
 
         $('#txtName').focus();
     };
@@ -54,6 +58,31 @@ var SetupIndexPage = function () {
         $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
 
         setupLocationSortable();
+    };
+
+    var showTellers = function (tellers) {
+        if (tellers == null) {
+            $('#tellersList').html('[None]');
+            return;
+        }
+
+        $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
+    };
+
+    var deleteTeller = function (ev) {
+        ShowStatusDisplay('Deleting...');
+        var icon = $(ev.target);
+        var targetDiv = $(icon.parent());
+        var target = targetDiv.data('id');
+        var form = { id: target };
+        CallAjaxHandler(GetRootUrl() + 'Dashboard/DeleteTeller', form, function (info) {
+            if (info.Deleted) {
+                targetDiv.remove();
+            }
+            else {
+                ShowStatusFailed(info.Error);
+            }
+        });
     };
 
     var locationChanged = function (ev) {
