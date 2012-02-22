@@ -42,7 +42,7 @@
 .Totals tr td:first-child {
     font-weight: bold;
     text-align: left;
-    width: 100px;
+    width: 130px;
 }
 tr.SubTotal td {
     border-top: solid #000 1px;

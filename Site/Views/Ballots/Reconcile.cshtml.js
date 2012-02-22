@@ -83,7 +83,7 @@ var ReconcilePageFunc = function () {
 
         var subTotal = methodInfos['M'].count + methodInfos['D'].count;
 
-        html.push(template.filledWith({ className: 'SubTotal', name: 'Sub-Total', count: subTotal }));
+        html.push(template.filledWith({ className: 'SubTotal', name: 'Absentee Ballots', count: subTotal }));
 
         html.push(template.filledWith(methodInfos['P']));
 
