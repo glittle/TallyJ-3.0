@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Mime;
+using System.Reflection;
+using System.Threading;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
@@ -23,14 +27,14 @@ namespace Tests.BusinessTests
       var xmlDoc = new XmlDocument();
       var fakeDataContext = new FakeDataContext();
 
-      xmlDoc.Load(@"Support\SampleElection.xml");
-
+      xmlDoc.LoadXml(Properties.Resources.SampleElection);
+      
       var electionGuid = Guid.NewGuid();
       var election = new Election { ElectionGuid = electionGuid };
-      var location = new Location {LocationGuid = Guid.NewGuid() };
+      var location = new Location { LocationGuid = Guid.NewGuid() };
 
       var model = new ImportV1Election(fakeDataContext, fakeImportFile, xmlDoc, election, location,
-        fakes.AddBallotToDb, fakes.AddVoteToDb, 
+        fakes.AddBallotToDb, fakes.AddVoteToDb,
         fakes.People, fakes.AddPersonToDb, fakes.AddResultSummaryToDb, fakes.LogHelper);
 
       model.Process();

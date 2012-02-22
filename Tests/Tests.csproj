@@ -64,6 +64,11 @@
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Support\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BusinessTests\PeopleTests.cs" />
@@ -79,9 +84,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Support\SampleElection.xml">
+    <Resource Include="Support\SampleElection.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
