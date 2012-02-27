@@ -113,24 +113,24 @@ AS
 					, @passGroup
 					, 0
 					, left(m.Search, 2000)
-					, CHARINDEX(@Search1, m.Search, 0) [FirstMatch]
+					, CHARINDEX(@Search1, m.Search collate Latin1_General_CI_AI, 0) [FirstMatch]
 					, 0
 					, @search1 -- for debugging
 					, @search2
 				from sourceList m
-				where CHARINDEX(@Search1, Search, 0) > 0
+				where CHARINDEX(@Search1, Search collate Latin1_General_CI_AI, 0) > 0
 
 
 				if LEN(replace(@search2,'^','')) > 0
 				begin
 				
 					update @hits
-					    set EndFirstMatch = CHARINDEX(@sep, Source, FirstMatch)
+					    set EndFirstMatch = CHARINDEX(@sep, Source collate Latin1_General_CI_AI, FirstMatch)
 					where PassNum = @passNum
 				
 					update @hits
 						set BothMatched = 1
-					where CHARINDEX(@Search2, Source, EndFirstMatch) > 0
+					where CHARINDEX(@Search2, Source collate Latin1_General_CI_AI, EndFirstMatch) > 0
 						and PassNum = @passNum
 				
 				end
