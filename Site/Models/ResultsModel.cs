@@ -165,6 +165,8 @@ namespace TallyJ.Models
                  Ties = ties,
                  NumBallots = resultSummaryAuto.BallotsReceived,
                  NumVoted = resultSummaryAuto.NumVoters,
+                 NumToElect = _election.NumberToElect,
+                 NumExtra = _election.NumberExtra,
                  resultSummaryAuto.TotalVotes,
                  TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
                  TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,

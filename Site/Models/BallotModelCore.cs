@@ -59,7 +59,7 @@ namespace TallyJ.Models
         .ToList();
 
       var position = 1;
-      foreach (var vote in ids.Select(id => votes.Single(v => v.C_RowId == id)))
+      foreach (var vote in ids.Select(id => votes.SingleOrDefault(v => v.C_RowId == id)).Where(vote => vote != null))
       {
         vote.PositionOnBallot = position;
         position++;

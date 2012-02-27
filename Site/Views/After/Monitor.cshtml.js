@@ -143,20 +143,21 @@ var MonitorPage = function () {
             } else {
                 this.Extra = true;
                 this.ClassName = last.ClassName;
-                //joinBtn.push('<span title="View" class="ui-icon ui-icon-zoomin" data-code="{0}"></span>'.filledWith(this.Code));
-
             }
 
             if (this.BallotsCollected) {
                 var pct = Math.floor(this.BallotsAtLocation / this.BallotsCollected * 100);
                 this.BallotsReport = '<br>{0} of {1} ({2}%)'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
                 if (pct > 100) {
-                    this.BallotsReport = '<span class=error>{0}</span>'.filledWith(this.BallotsReport);
+                    this.BallotsReport = '<span class=error>{^0}</span>'.filledWith(this.BallotsReport);
                 }
             } else {
                 if (this.BallotsAtLocation) {
                     this.BallotsReport = '{0} entered'.filledWith(this.BallotsAtLocation); // ' entered';
                 }
+            }
+            if (!this.TallyStatus) {
+                this.TallyStatus = '(status not set)';
             }
         });
 

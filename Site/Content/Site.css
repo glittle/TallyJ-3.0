@@ -717,10 +717,10 @@ a.twitter
 }
 .PullInstructionsHandle
 {
-    font-size: 80%;
-    color: #aaa;
+    color: #8dc63e;
     cursor: pointer;
-    content: before(Hide );
+    font-size: 90%;
+    font-style: italic;
 }
 .PullInstructionsHandle:before
 {
@@ -732,10 +732,7 @@ a.twitter
 }
 .PullInstructionsHandle.Closed
 {
-    color: #8dc63e;
-    font-size: 90%;
     margin-bottom: 10px;
-    font-style: italic;
 }
 .Clear
 {
@@ -796,4 +793,12 @@ a.twitter
 }
 .CurrentInfo .TopTeller {
     width: 100px;
+}
+
+body .ifAuthKnownLI {
+    display: none;
+}
+body.AuthKnown .ifAuthKnownLI
+{
+    display: list-item;
 }

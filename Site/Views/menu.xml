@@ -4,7 +4,7 @@
         <group title="Preparing" longtitle="Preparing for the election before the big day">
             <page title="Setup the Election" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
             <page title="Import Names" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
-            <page title="Import Version 1 Files" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.x"></page>
+            <page title="Import Version 1" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>
         </group>
         <group title="Voting" longtitle="Registration and voting">
             <page title="Manage People's Names" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>

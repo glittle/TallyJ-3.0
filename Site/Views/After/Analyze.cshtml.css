@@ -56,9 +56,9 @@ tr.SectionO.Tied.Force {
     float: left;
 }
 #chart {
-    width: 340px;
-    height: 200px;
-    margin-left: 10px;
+    width: 380px;
+    height: 540px;
+    margin-left: 4px;
 }
 table#totalCounts 
 {
@@ -119,4 +119,15 @@ input.TieBreakCount {
     margin-right: 15px;
     display: inline-block;
     text-align: right;
+}
+.ChartLine {
+    height: 3px;
+    background-color: #1aee1a;
+    width: 5%;
+}
+.SectionE .ChartLine {
+    background-color: rgb(255, 229, 0);
+}
+.SectionO .ChartLine {
+    background-color: #ccc;
 }

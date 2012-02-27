@@ -5,6 +5,7 @@
 var AnalyzePage = function () {
     var settings = {
         rowTemplate: '',
+        info: {},
         footTemplate: '',
         invalidsRowTemplate: '',
         tieResultRowTemplate: '',
@@ -77,6 +78,8 @@ var AnalyzePage = function () {
         var invalidsTable = $('table#invalids');
         var table;
 
+        settings.info = info;
+
         $('#InitialMsg').hide();
         $('#tieResults').hide();
         $('#HasCloseVote').hide();
@@ -93,12 +96,24 @@ var AnalyzePage = function () {
 
             $('#HasCloseVote').toggle(settings.hasCloseVote);
             $('.HasTie').toggle(settings.hasTie);
-            LogMessage(settings.hasTie);
+            //LogMessage(settings.hasTie);
 
-            setTimeout(function () {
-                $('#chart').show();
-                showChart(info.Votes);
-            }, 100);
+            var max = info.Votes[0].VoteCount;
+
+            $('.ChartLine').each(function () {
+                var item = $(this);
+                item.animate({
+                    width: (item.data('value') / max * 100) + '%'
+                }, {
+                    duration: 2000
+                });
+            });
+
+
+            //            setTimeout(function () {
+            //                $('#chart').show();
+            //                showChart(info.Votes);
+            //            }, 100);
         }
         else {
             table = invalidsTable;
@@ -121,15 +136,35 @@ var AnalyzePage = function () {
     };
 
     var showChart = function (votes) {
-        var maxToShow = 0;
-        for (var i = 0, max = votes.length; i < max; i++) {
-            if (votes[i].Section != 'O') maxToShow++;
-        }
-        maxToShow = maxToShow * 2;
+        var numToElect = settings.info.NumToElect;
+        var numExtra = settings.info.NumExtra;
+
+        var maxToShow = (numToElect + numExtra) * 1.5;
 
         var getVoteCounts = function () {
+            var determineColor = function (item, i) {
+                //                if (item.TieBreakRequired) {
+                //                    return '#F' + item.TieBreakGroup + item.TieBreakGroup; // works for groups A-F
+                //                }
+                //                else 
+                if (i < numToElect) {
+                    return 'green';
+                }
+                else if (i < numToElect + numExtra) {
+                    return 'orange';
+                }
+                else {
+                    return '#ccc';
+                }
+            };
+
+
             return $.map(votes.slice(0, maxToShow), function (item, i) {
-                return item.VoteCount;
+                return {
+                    name: (i + 1), //TODO: name not showing?
+                    color: determineColor(item, i),
+                    y: item.VoteCount
+                };
             });
         };
 
@@ -143,10 +178,10 @@ var AnalyzePage = function () {
         settings.chart = new Highcharts.Chart({
             chart: {
                 renderTo: 'chart',
-                type: 'column'
+                type: 'bar'
             },
             title: {
-                text: 'Votes'
+                text: 'Votes Received'
             },
             legend: {
                 enabled: false
@@ -165,8 +200,7 @@ var AnalyzePage = function () {
             }],
             tooltip: {
                 formatter: function () {
-                    var s = 'Rank {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
-
+                    var s = 'Position {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
                     return s;
                 }
             }

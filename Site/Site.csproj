@@ -317,6 +317,7 @@
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />
     <Content Include="Images\favicon.ico" />
+    <Content Include="Images\keys.png" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />
     <Content Include="Images\LogoM.png" />

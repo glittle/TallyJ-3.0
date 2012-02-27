@@ -9,18 +9,14 @@
   //ContextItems.AddJavascriptForPage("homeIndexUrl", "homeIndexPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
   //ContextItems.AddJavascriptForPage("homeIndexPage", "homeIndexPage.elections={0};".FilledWith(Model.MyElectionsInfo.SerializedAsJson()));
 }
-@*@section featured {
-  <section class="featured">
-    <div class="content-wrapper">
-      <hgroup class="title"><h1>@ViewBag.Title.</h1>
-        <h2>@ViewBag.Message</h2>
-      </hgroup>
-      <p>Select from the modules below. To get started, setup your Election. To learn more,
-        please read more in the @Html.ActionLink("Reference Materials", "Learning", "Public"). </p>
-    </div>
-  </section>
-}
-*@
+<div class="PullInstructions">
+  <ol>
+    <li>Shown here are the main sections and pages of TallyJ.</li>
+    <li class="ifAuthKnownLI">Pages with <span class="TipKnown"></span> are available only to you and tellers who have their own login account.</li>
+    <li>Pages with <span class="TipProjector"></span> are designed to be used with a projector for display at the front of the room.</li>
+    <li>After reading these instructions at the top of the page, you can click on "Hide Instruction" just above, to hide them.</li>
+  </ol>
+</div>
 @foreach (XmlElement item in new MenuHelper(this).TrimmedMenu().ChildNodes)
 {
   <section class="features">
@@ -32,7 +28,7 @@
                             .Where(c=>c.GetAttribute("showOnDashboard").DefaultTo("true")=="true"))
     {
         <a href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))">
-            <section class="feature @child.GetAttribute("class")">
+            <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">
                 <h3>
                     @child.GetAttribute("title")</h3>
                 <p>

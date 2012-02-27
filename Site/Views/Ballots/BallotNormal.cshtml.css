@@ -254,6 +254,8 @@ div.heading {
     margin-right: 9px;
     font-size: 80%;
     color: #aaa;
+}
+.VoteHost .VoteNum {
     cursor: ns-resize;
 }
 .InUse {

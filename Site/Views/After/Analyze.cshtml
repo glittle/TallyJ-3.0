@@ -89,10 +89,11 @@
         <tbody id="mainBody">
             <tr class="{ClassName}">
                 <td>
-                    {Rank}
+                  {Rank}
                 </td>
                 <td class="Left">
                     {PersonName}
+                  <div class="ChartLine" data-value="{VoteCount}" data-tieValue="{TieBreakCount}"></div>
                 </td>
                 <td>
                     {VoteDisplay}
@@ -133,7 +134,7 @@
     </table>
     <table id="tieResults">
         <caption>
-            Tied Votes Analysis</caption>
+            Tie Analysis</caption>
         <tbody id="tieResultsBody">
             <tr class="{rowClass}">
                 <td class="TieBreakGroup">

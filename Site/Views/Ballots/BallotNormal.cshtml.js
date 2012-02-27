@@ -56,6 +56,7 @@ var BallotNormalPageFunc = function () {
 
         local.votesList.sortable({
             handle: '.VoteNum',
+            items: '.VoteHost',
             axis: 'y',
             containment: 'parent',
             tolerance: 'pointer',
@@ -115,13 +116,10 @@ var BallotNormalPageFunc = function () {
         local.votesList.children().each(function () {
             var voteHost = $(this);
             var id = +voteHost.data('vote-id');
-            if (id < 1) {
-                // an item not saved yet!?
+            if (id > 0) {
+                ids.push(id);
+                toUpdate.push(voteHost.find('.VoteNum'));
             }
-            ids.push(id);
-
-            toUpdate.push(voteHost.find('.VoteNum'));
-
             pos++;
         });
         var form = {
@@ -420,8 +418,6 @@ var BallotNormalPageFunc = function () {
             return;  // don't save with no reason
         }
 
-        //TODO: SELECT size gets big again when another Invalid is added
-
         select.attr('size', 1);
         var parent = select.parent();
         startSavingVote(parent);
@@ -639,6 +635,7 @@ var BallotNormalPageFunc = function () {
     };
 
     var scrollIntoView = function (element, container) {
+        if (!element) return;
         var containerTop = $(container).scrollTop();
         var containerBottom = containerTop + $(container).height();
         var elemTop = element.offsetTop;
@@ -690,7 +687,7 @@ var BallotNormalPageFunc = function () {
     };
 
     var addSpoiled = function () {
-
+        LogMessage('spoiled');
         local.votes.push({
             vid: 0,
             count: 0,
@@ -699,12 +696,11 @@ var BallotNormalPageFunc = function () {
             InvalidReasons: local.invalidReasonsHtml
         });
 
-        //var newHost = $(site.templates.NormalVoteLine.filledWith(info)).appendTo(votesList);
-
         showVotes(false);
 
         var newHost = local.votesList.find('.VoteHost').last();
         var input = newHost.find('select');
+        input.attr('size', input[0].options.length + input.children().length - 1);
 
         // vote not saved until a reason is chosen
         input.focus();
@@ -738,7 +734,7 @@ var BallotNormalPageFunc = function () {
     };
 
     var showExtraVotes = function () {
-        var votes = local.votesList.find('.VoteHost');
+        var votes = local.votesList.find('.VoteHost, .VoteHostFake');
         var num = 0;
         var extra = local.votesNeeded + 1;
         votes.each(function (i, o) {
