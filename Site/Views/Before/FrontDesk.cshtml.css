@@ -9,6 +9,7 @@ p
 }
 .Voter
 {
+    clear: both;
 }
 .Voter:hover
 {
@@ -51,8 +52,8 @@ p
 }
 #search {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 2px;
+    left: 2px;
     min-height: 1em;
     min-width: 4em;
     padding: 3px 2em 3px 4px;

@@ -12,28 +12,42 @@ var FrontDeskPage = function () {
     var preparePage = function () {
         $('#Main').on('click', '.Btn', voteBtnClicked);
 
-        $(document).keydown(keyDown);
+        $(document).keydown(processKey);
 
         setTimeout(function () {
             $('html, body').animate({ scrollTop: 0 }, 0);
         }, 100);
     };
-    var keyDown = function (ev) {
-        var key = ev.which;
-        var letter = String.fromCharCode(key);
+    var processKey = function (ev) {
+        var letter, key = ev.which;
+        switch (key) {
+            case 222:
+                letter = "'";
+                break;
+            default:
+                letter = String.fromCharCode(key);
+                break;
+        }
         var doSearch = false;
 
-        if (/[A-Z]/.test(letter)) {
+        if (/[\w\'\-]/.test(letter)) {
             local.currentSearch = local.currentSearch + letter.toLowerCase();
             doSearch = true;
             clearTimeout(local.timer);
         }
-
+        debugger;
         switch (key) {
             case 27: // esc
                 local.currentSearch = '';
                 ev.preventDefault();
                 break;
+
+            case 8: //backspace
+                local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
+                doSearch = true;
+                ev.preventDefault();
+                break;
+
             default:
                 //LogMessage(key);
                 break;
@@ -41,7 +55,7 @@ var FrontDeskPage = function () {
         if (doSearch) {
             //LogMessage(local.currentSearch);
             applyFilter();
-            local.timer = setTimeout(resetSearch, 1200);
+            local.timer = setTimeout(resetSearch, 2000);
         }
     };
     var resetSearch = function () {

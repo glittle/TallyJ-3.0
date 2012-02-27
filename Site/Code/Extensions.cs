@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -392,6 +393,7 @@ namespace TallyJ.Code
       return Regex.Replace(input, @"[^\w\.\'\- ]", "");
     }
 
+    /// <Summary>Prepare to be embedded into a javascript string</Summary>
     public static string CleanedForJavascriptStrings(this string input)
     {
       if (input.HasNoContent())
@@ -516,21 +518,35 @@ namespace TallyJ.Code
 
     public static IEnumerable<Vote> AsVotes(this IEnumerable<vVoteInfo> inputs)
     {
-      foreach (var vVoteInfo in inputs)
+      return inputs.Select(vVoteInfo => new Vote
+                                          {
+                                            C_RowId = vVoteInfo.VoteId,
+                                            BallotGuid = vVoteInfo.BallotGuid,
+                                            C_RowVersion = null,
+                                            InvalidReasonGuid = vVoteInfo.VoteInvalidReasonGuid,
+                                            PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
+                                            PersonGuid = vVoteInfo.PersonGuid,
+                                            PositionOnBallot = vVoteInfo.PositionOnBallot,
+                                            SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
+                                            StatusCode = vVoteInfo.VoteStatusCode
+                                          });
+    }
+
+    /// <Summary>Return the string without accents.</Summary>
+    /// <remarks>Adapted from http://blogs.msdn.com/b/michkap/archive/2007/05/14/2629747.aspx </remarks>
+    public static string WithoutDiacritics(this string input, bool toLower = false)
+    {
+      var normalized = input.Normalize(NormalizationForm.FormD);
+      var sb = new StringBuilder();
+
+      foreach (var ch in from n in normalized let uc = CharUnicodeInfo.GetUnicodeCategory(n) where uc != UnicodeCategory.NonSpacingMark select n)
       {
-        yield return new Vote
-                       {
-                         C_RowId = vVoteInfo.VoteId,
-                         BallotGuid = vVoteInfo.BallotGuid,
-                         C_RowVersion = null,
-                         InvalidReasonGuid = vVoteInfo.VoteInvalidReasonGuid,
-                         PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
-                         PersonGuid = vVoteInfo.PersonGuid,
-                         PositionOnBallot = vVoteInfo.PositionOnBallot,
-                         SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
-                         StatusCode = vVoteInfo.VoteStatusCode
-                       };
+        sb.Append(ch);
       }
+
+      var withoutDiacritics = sb.ToString().Normalize(NormalizationForm.FormC);
+
+      return toLower ? withoutDiacritics.ToLowerInvariant() : withoutDiacritics;
     }
   }
 }

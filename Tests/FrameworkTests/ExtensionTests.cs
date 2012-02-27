@@ -214,5 +214,15 @@ namespace Tests.FrameworkTests
       nullstring.AsBoolean().ShouldEqual(false);
     }
 
+    [TestMethod]
+    public void Accents_Test()
+    {
+      "Bahá'í".WithoutDiacritics().ShouldEqual("Baha'i");
+      "Bahá'í".WithoutDiacritics(true).ShouldEqual("baha'i");
+      "Üzbek, tienne".WithoutDiacritics().ShouldEqual("Uzbek, tienne");
+      "Üzbek, tienne".WithoutDiacritics(true).ShouldEqual("uzbek, tienne");
+    }
+
+
   }
 }

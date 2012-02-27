@@ -258,7 +258,7 @@ namespace TallyJ.Models
                        {
                          PersonId = p.C_RowId,
                          FullName = p.C_FullName,
-                         NameLower = p.C_FullName.ToLower(),
+                         NameLower = p.C_FullName.WithoutDiacritics(true).Replace("\"", "\\\""),
                          p.Area,
                          VotedAt = p.VotingLocationGuid.HasValue ? (locations[p.VotingLocationGuid.Value]
                          + (p.TellerAtKeyboard.HasValue ? " (" + tellers[p.TellerAtKeyboard.Value]

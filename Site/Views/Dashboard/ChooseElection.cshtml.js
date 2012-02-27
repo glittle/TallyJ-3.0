@@ -53,7 +53,7 @@ var HomeIndexPage = function () {
             guid: row.data('guid')
         };
 
-        ShowStatusDisplay("Selecting election and getting locations...");
+        ShowStatusDisplay("Selecting election...");
 
         CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection, row);
     };
