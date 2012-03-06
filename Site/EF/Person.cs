@@ -41,8 +41,5 @@ namespace TallyJ.EF
         public string C_FullNameFL { get; set; }
         public Nullable<System.Guid> TellerAtKeyboard { get; set; }
         public Nullable<System.Guid> TellerAssisting { get; set; }
-    
-        public virtual Person Person1 { get; set; }
-        public virtual Person Person2 { get; set; }
     }
 }
