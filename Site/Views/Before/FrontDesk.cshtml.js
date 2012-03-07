@@ -35,7 +35,6 @@ var FrontDeskPage = function () {
             doSearch = true;
             clearTimeout(local.timer);
         }
-        debugger;
         switch (key) {
             case 27: // esc
                 local.currentSearch = '';

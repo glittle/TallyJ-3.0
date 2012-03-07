@@ -350,7 +350,6 @@ var BallotNormalPageFunc = function () {
             ShowStatusDisplay('Saving', 0);
 
             CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
-                debugger;
                 setBallotStatus(info.StatusCode, info.StatusCodeText, true);
                 ShowStatusDisplay('Saved', 0, 3000, false, true);
             });
