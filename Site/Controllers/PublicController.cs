@@ -52,9 +52,9 @@ namespace TallyJ.Controllers
     public JsonResult GetTimeOffset(long now, string tz)
     {
       // adjust client time by .5 seconds to allow for network and server time
-      var fudgeFactor = .5 * 1000;
+      const double fudgeFactor = .5 * 1000;
       var clientTimeNow = new DateTime(1970, 1, 1).AddMilliseconds(now + fudgeFactor);
-      var serverTime = DateTime.Now;
+      var serverTime = DateTime.Now.ToUniversalTime();
       var diff = (serverTime - clientTimeNow).TotalMilliseconds;
       UserSession.TimeOffset = diff.AsInt();
       UserSession.TimeOffsetKnown = true;

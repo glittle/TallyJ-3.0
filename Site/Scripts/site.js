@@ -52,7 +52,7 @@ function CheckTimeOffset() {
     if (site.timeOffsetKnown) return;
     var now = new Date();
     var form = {
-         now: now.getTime() - now.getTimezoneOffset() * 60 * 1000
+         now: now.getTime() // - now.getTimezoneOffset() * 60 * 1000
      };
     CallAjaxHandler(GetRootUrl() + 'Public/GetTimeOffset', form, function (info) {
         site.timeOffset = info.timeOffset;
