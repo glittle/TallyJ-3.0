@@ -14,11 +14,30 @@ namespace TallyJ.Models
 {
   public class PeopleModel : DataConnectedModel
   {
+    #region FrontDeskSortEnum enum
+
+    public enum FrontDeskSortEnum
+    {
+      ByArea,
+      ByName
+    }
+
+    #endregion
+
     private List<Location> _locations;
 
     public long LastRowVersion
     {
       get { return Db.CurrentRowVersion().Single().Value; }
+    }
+
+    private IEnumerable<Location> Locations
+    {
+      get
+      {
+        return _locations ??
+               (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
+      }
     }
 
     public IQueryable<Person> PeopleInCurrentElection(bool includeIneligible)
@@ -192,12 +211,6 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public enum FrontDeskSortEnum
-    {
-      ByArea,
-      ByName
-    }
-
     /// <Summary>Everyone</Summary>
     public IEnumerable<object> PersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
@@ -227,14 +240,6 @@ namespace TallyJ.Models
                        });
     }
 
-    private IEnumerable<Location> Locations
-    {
-      get
-      {
-        return _locations ?? (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
-      }
-    }
-
     public HtmlString GetLocationOptions()
     {
       return Locations
@@ -248,7 +253,11 @@ namespace TallyJ.Models
     public IEnumerable<object> PersonLines(List<Person> people, FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
-      var tellers = Db.Tellers.Where(t => t.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(t => t.TellerGuid, t => t.Name);
+      var showLocations = locations.Count > 1;
+      var tellers =
+        Db.Tellers.Where(t => t.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
+                                                                                              t => t.Name);
+      var timeOffset = UserSession.TimeOffset;
 
       return people
         .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
@@ -260,18 +269,26 @@ namespace TallyJ.Models
                          FullName = p.C_FullName,
                          NameLower = p.C_FullName.WithoutDiacritics(true).Replace("\"", "\\\""),
                          p.Area,
-                         VotedAt = p.VotingLocationGuid.HasValue ? (locations[p.VotingLocationGuid.Value]
-                         + (p.TellerAtKeyboard.HasValue ? " (" + tellers[p.TellerAtKeyboard.Value]
-                         + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "") + ")"
-                         : "")
-                         + (p.RegistrationTime.HasValue ? " " + p.RegistrationTime.Value.ToString("h:mm") : "")
-                         ) : "",
+                         VotedAt = new[]
+                                     {
+                                       showLocations && p.VotingLocationGuid.HasValue
+                                         ? locations[p.VotingLocationGuid.Value]
+                                         : "",
+                                       p.TellerAtKeyboard.HasValue
+                                         ? " (" + tellers[p.TellerAtKeyboard.Value]
+                                           + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "") 
+                                           + ")"
+                                         : "",
+                                       p.RegistrationTime.HasValue
+                                         ? p.RegistrationTime.Value.AddMilliseconds(timeOffset).ToString("h:mm")
+                                         : ""
+                                     }.JoinedAsString(" ", true),
                          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
                          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
                          EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson
-                         ? null
-                         : p.EnvNum
+                                    ? null
+                                    : p.EnvNum
                        });
     }
 
@@ -279,14 +296,14 @@ namespace TallyJ.Models
     {
       if (!VotingMethodEnum.Exists(voteType))
       {
-        return new { Message = "Invalid type" }.AsJsonResult();
+        return new {Message = "Invalid type"}.AsJsonResult();
       }
 
       var person =
         Db.People.SingleOrDefault(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowId == personId);
       if (person == null)
       {
-        return new { Message = "Unknown person" }.AsJsonResult();
+        return new {Message = "Unknown person"}.AsJsonResult();
       }
 
 
@@ -330,7 +347,7 @@ namespace TallyJ.Models
       {
         return new
                  {
-                   PersonLines = PersonLines(new List<Person> { person }),
+                   PersonLines = PersonLines(new List<Person> {person}),
                    LastRowVersion
                  }.AsJsonResult();
       }
@@ -356,11 +373,11 @@ namespace TallyJ.Models
       catch (SqlException e)
       {
         return
-          new { Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people" }.
+          new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.
             AsJsonResult();
       }
 
-      return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
+      return new {Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person"))}.AsJsonResult();
     }
   }
 }

@@ -48,5 +48,20 @@ namespace TallyJ.Controllers
     {
       return new TellerModel().GrantAccessToGuestTeller(election, pc);
     }
+
+    public JsonResult GetTimeOffset(long now, string tz)
+    {
+      // adjust client time by .5 seconds to allow for network and server time
+      var fudgeFactor = .5 * 1000;
+      var clientTimeNow = new DateTime(1970, 1, 1).AddMilliseconds(now + fudgeFactor);
+      var serverTime = DateTime.Now;
+      var diff = (serverTime - clientTimeNow).TotalMilliseconds;
+      UserSession.TimeOffset = diff.AsInt();
+      UserSession.TimeOffsetKnown = true;
+      return new
+               {
+                 timeOffset = diff
+               }.AsJsonResult();
+    }
   }
 }

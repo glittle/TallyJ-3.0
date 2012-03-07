@@ -15,7 +15,8 @@ var site = {
     heartbeatActive: true,
     heartbeatSeconds: 60, // default seconds
     heartbeatTimeout: null,
-    serverTime: null,
+    timeOffsetKnown: false,
+    //serverTime: null,
     timeOffset: 0,
     rootUrl: ''
 };
@@ -34,15 +35,29 @@ function Onload() {
     }
     PrepareStatusDisplay();
 
-    site.timeOffset = site.serverTime.parseJsonDate() - new Date();
+    // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
     SendHeartbeat();
+
+    CheckTimeOffset();
 
     ActivatePullInstructions();
 
     PrepareMainMenu();
 
     PrepareTopLocationAndTellers();
+}
+
+function CheckTimeOffset() {
+    if (site.timeOffsetKnown) return;
+    var now = new Date();
+    var form = {
+         now: now.getTime() - now.getTimezoneOffset() * 60 * 1000
+     };
+    CallAjaxHandler(GetRootUrl() + 'Public/GetTimeOffset', form, function (info) {
+        site.timeOffset = info.timeOffset;
+        site.timeOffsetKnown = true;
+    });
 }
 
 function PrepareTopLocationAndTellers() {

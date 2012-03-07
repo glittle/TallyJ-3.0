@@ -189,5 +189,19 @@ namespace TallyJ.Code.Session
         return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http";
       }
     }
+
+    /// <Summary>Has the client/server time difference been figured out?</Summary>
+    public static bool TimeOffsetKnown
+    {
+      get { return SessionKey.TimeOffsetKnown.FromSession(false); }
+      set { SessionKey.TimeOffsetKnown.SetInSession(value); }
+    }
+    
+    /// <Summary>Has the client/server time difference been figured out?</Summary>
+    public static int TimeOffset
+    {
+      get { return SessionKey.TimeOffset.FromSession(0); }
+      set { SessionKey.TimeOffset.SetInSession(value); }
+    }
   }
 }

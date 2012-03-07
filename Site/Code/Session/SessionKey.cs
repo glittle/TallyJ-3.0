@@ -16,5 +16,8 @@ namespace TallyJ.Code.Session
 	  public const string LastVersionNum = "LastVersionNum";
 	  public const string UserGuidRetrieved = "UserGuidRetrieved";
 	  public const string WantedAction = "WantedAction";
+    public const string TimeOffsetKnown = "ServerTimeKnown";
+    public const string TimeOffset = "ClientServerTimeOffset";
+
 	}
 }
