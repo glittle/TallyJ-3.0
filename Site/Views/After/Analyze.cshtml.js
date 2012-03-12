@@ -98,17 +98,18 @@ var AnalyzePage = function () {
             $('.HasTie').toggle(settings.hasTie);
             //LogMessage(settings.hasTie);
 
-            var max = info.Votes[0].VoteCount;
+            if (info.Votes.length != 0) {
+                var max = info.Votes[0].VoteCount;
 
-            $('.ChartLine').each(function () {
-                var item = $(this);
-                item.animate({
-                    width: (item.data('value') / max * 100) + '%'
-                }, {
-                    duration: 2000
+                $('.ChartLine').each(function() {
+                    var item = $(this);
+                    item.animate({
+                            width: (item.data('value') / max * 100) + '%'
+                        }, {
+                            duration: 2000
+                        });
                 });
-            });
-
+            }
 
             //            setTimeout(function () {
             //                $('#chart').show();
