@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Models;
 
@@ -81,7 +82,7 @@ namespace TallyJ.Controllers
       return new ResultsModel().GetReportData(code);
     }
     [ForAuthenticatedTeller]
-    public JsonResult SaveTieCounts(string counts)
+    public JsonResult SaveTieCounts(List<string> counts)
     {
       return new ResultsModel().SaveTieCounts(counts);
     }

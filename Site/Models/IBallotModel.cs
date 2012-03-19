@@ -9,7 +9,7 @@ namespace TallyJ.Models
     /// <param name="b"></param>
     /// <param name="createIfNeeded"></param>
     /// <Summary>Current Ballot... could be null</Summary>
-    vBallotInfo GetCurrentBallotInfo();
+    vBallotInfo GetCurrentBallotInfo(bool createIfNeeded = false);
 
     void SetAsCurrentBallot(int ballotId);
 

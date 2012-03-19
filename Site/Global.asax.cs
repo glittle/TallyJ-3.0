@@ -74,6 +74,7 @@ namespace TallyJ
 
             configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
             configuration.For<AccountController>(x => x.LogOff()).DenyAnonymousAccess();
+            configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
             configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
           });
 

@@ -128,13 +128,15 @@ var BallotNormalPageFunc = function () {
         LogMessage(ids);
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
-            // no need to update client with new order
-            ShowStatusDisplay("Saved", 0, 3000, false, true);
-            // update to reflect changes
-            $.each(toUpdate, function (i, o) {
-                o.text(i + 1);
-            });
-            showExtraVotes();
+            if (info) {
+                // no need to update client with new order
+                ShowStatusDisplay("Saved", 0, 3000, false, true);
+                // update to reflect changes
+                $.each(toUpdate, function(i, o) {
+                    o.text(i + 1);
+                });
+                showExtraVotes();
+            }
         });
 
     };

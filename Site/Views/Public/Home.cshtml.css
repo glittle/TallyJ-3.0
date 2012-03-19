@@ -113,7 +113,7 @@ div.or
 {
     font-size: 100%;
 }
-.featureBig fieldset label, .featureBig fieldset input
+.featureBig fieldset label, .XfeatureBig fieldset input
 {
     font-size: 100%;
     font-weight: normal;
@@ -138,6 +138,7 @@ section.CenterPanel
     font-size: 20px;
     width: 150px;
     cursor: pointer;
+    z-index: 2;
 }
 
 

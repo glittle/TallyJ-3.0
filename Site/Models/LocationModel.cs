@@ -171,15 +171,15 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public JsonResult SortLocations(string idList)
+    public JsonResult SortLocations(List<int> idList)
     {
-      var ids = idList.Split(new[] { ',' }).AsInts().ToList();
+      //var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
       var locations =
-        Db.Locations.Where(l => ids.Contains(l.C_RowId) && l.ElectionGuid == UserSession.CurrentElectionGuid);
+        Db.Locations.Where(l => idList.Contains(l.C_RowId) && l.ElectionGuid == UserSession.CurrentElectionGuid);
 
       var sortOrder = 1;
-      foreach (var id in ids)
+      foreach (var id in idList)
       {
         var location = locations.SingleOrDefault(l => l.C_RowId == id);
         if (location != null)

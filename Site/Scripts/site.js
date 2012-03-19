@@ -285,6 +285,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
     var options = {
         type: 'POST',
         url: handlerUrl,
+        traditional: true,
         success: function (data) {
             if (HasErrors(data)) return;
 
@@ -304,7 +305,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
     };
 
     if (form) {
-        options.data = JoinProperties(form);
+        options.data = form; //  JoinProperties(form);
     }
     if (waitForResponse) {
         options.async = false;
@@ -739,63 +740,55 @@ String.prototype.filledWith = function () {
     /// <summary>Similar to C# String.Format...  in two modes:
     /// 1) Replaces {0},{1},{2}... in the string with values from the list of arguments. 
     /// 2) If the first and only parameter is an object, replaces {xyz}... (only names allowed) in the string with the properties of that object. 
-    /// Notes: the { } symbols cannot be escaped and should only be used for replacement target tokens;  only a single pass is done. 
     /// </summary>
     var values = typeof arguments[0] === 'object' && arguments.length === 1 ? arguments[0] : arguments;
     if (arguments.length == 0 && arguments[0].length) {
         // use values in array, substituting {0}, {1}, etc.
-        values = {};
-        $.each(arguments[0], function (i, value) {
+        values = { };
+        $.each(arguments[0], function(i, value) {
             values[i] = value;
         });
     }
 
-    //return this.replace(/{(.+)}/g, function () {
-    //var t = startTimer();
+    var testForFunc = /^#/ ; // simple test for "#"
+    var testForNoEscape = /^\^/ ; // simple test for "^"
+    var extractTokens = /{([^{]+?)}/g ; // greedy
 
-    var testForFunc = /\#/; // simple test for "#"
-    var testForNoEscape = /\^/; // simple test for "^"
-    var extractTokens = /{([^{]+?)}/g; // greedy
-
-    var replaceTokens = function (input) {
-        return input.replace(extractTokens, function () {
+    var replaceTokens = function(input) {
+        return input.replace(extractTokens, function() {
             var token = arguments[1];
             var value = undefined;
-            if (values) {
-                try {
-                    if (values === null) {
-                        value = '';
-                    } else if (testForFunc.test(token)) {
-                        value = eval(token.substring(1));
-                    } else if (testForNoEscape.test(token)) {
-                        value = values[token.substring(1)];
-                    } else {
-                        var toEscape = values[token];
-                        value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-                    }
-                } catch (err) {
-                    LogMessage('src data');
-                    LogMessage(values);
-                    LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
-                    throw 'Error in Filled With';
+            try {
+                if (values === null) {
+                    value = '';
+                } else if (testForFunc.test(token)) {
+                    value = eval(token.substring(1));
+                } else if (testForNoEscape.test(token)) {
+                    value = values[token.substring(1)];
+                } else {
+                    var toEscape = values[token];
+                    value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace( /&/g , '&amp;').replace( /</g , '&lt;').replace( />/g , '&gt;').replace( /"/g , '&quot;').replace( /{/g , '&#123;');
                 }
+            } catch(err) {
+                LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
+                LogMessage(values);
+                throw 'Error in filledWith';
             }
-            return typeof value == 'undefined' || value == null ? '' : ('' + value);
+            return (typeof value == 'undefined' || value == null ? '' : ('' + value));
         });
     };
 
     var result = replaceTokens(this);
 
     var lastResult = '';
-    while (lastResult != result && (extractTokens.test(result) || testForFunc.test(result))) {
+    while (lastResult != result) {
         lastResult = result;
         result = replaceTokens(result);
     }
 
-    return result;
+    return result.replace( /&#123;/g , '{');
 };
 
-//String.addMethod('filledWithEach', function (arr) {
 String.prototype.filledWithEach = function (arr, sep) {
     /// <summary>Silimar to 'filledWith', but repeats the fill for each item in the array. Returns a single string with the results.
     /// </summary>
@@ -810,30 +803,30 @@ String.prototype.filledWithEach = function (arr, sep) {
 
 /// Turn { a:1, b:2 } into   a=1&b=2
 
-function JoinProperties(obj, sep1, sep2, sepInner1, sepInner2) {
-    var toJoin = [];
-    sep1 = sep1 || '=';
-    sep2 = sep2 || '&';
-    sepInner1 = sepInner1 || ('\\' + sep1);
-    sepInner2 = sepInner2 || ('\\' + sep2);
-    for (var i in obj) {
-        var prop = obj[i];
-        if (typeof prop !== 'function' && obj.hasOwnProperty(i)) {
-            if (prop === null) {
-                toJoin.push(i + sep1);
-            } else if (typeof prop === 'object' && prop.jquery) {
-                toJoin.push(i + sep1 + escape(prop.val()));
-            } else if ($.isArray(prop)) {
-                toJoin.push(i + sep1 + escape(prop.join()));
-            } else if (typeof prop === 'object') {
-                toJoin.push(i + sep1 + JoinProperties(prop.jquery ? escape(prop.val()) : prop, sepInner1, sepInner2));
-            } else {
-                toJoin.push(i + sep1 + escape(prop));
-            }
-        }
-    }
-    return toJoin.join(sep2);
-}
+//function JoinProperties(obj, sep1, sep2, sepInner1, sepInner2) {
+//    var toJoin = [];
+//    sep1 = sep1 || '=';
+//    sep2 = sep2 || '&';
+//    sepInner1 = sepInner1 || ('\\' + sep1);
+//    sepInner2 = sepInner2 || ('\\' + sep2);
+//    for (var i in obj) {
+//        var prop = obj[i];
+//        if (typeof prop !== 'function' && obj.hasOwnProperty(i)) {
+//            if (prop === null) {
+//                toJoin.push(i + sep1);
+//            } else if (typeof prop === 'object' && prop.jquery) {
+//                toJoin.push(i + sep1 + escape(prop.val()));
+//            } else if ($.isArray(prop)) {
+//                toJoin.push(i + sep1 + escape(prop.join()));
+//            } else if (typeof prop === 'object') {
+//                toJoin.push(i + sep1 + JoinProperties(prop.jquery ? escape(prop.val()) : prop, sepInner1, sepInner2));
+//            } else {
+//                toJoin.push(i + sep1 + escape(prop));
+//            }
+//        }
+//    }
+//    return toJoin.join(sep2);
+//}
 
 
 function StringifyObject(obj) {

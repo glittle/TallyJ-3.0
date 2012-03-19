@@ -23,10 +23,16 @@ namespace TallyJ.Models
     #region IBallotModel Members
 
     /// <Summary>Current Ballot... could be null</Summary>
-    public vBallotInfo GetCurrentBallotInfo()
+    public vBallotInfo GetCurrentBallotInfo(bool createIfNeeded = false)
     {
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
       var ballot = Db.vBallotInfoes.SingleOrDefault(b => b.C_RowId == currentBallotId);
+
+      if (createIfNeeded)
+      {
+        return CreateBallot();
+      }
+
       return ballot;
     }
 
@@ -245,7 +251,8 @@ namespace TallyJ.Models
                  }.AsJsonResult();
       }
 
-      var ballot = GetCurrentBallotInfo();
+      var shouldCreateBallotIfNeeded = UserSession.CurrentElection.IsSingleNameElection.AsBoolean();
+      var ballot = GetCurrentBallotInfo(shouldCreateBallotIfNeeded);
       if (ballot == null)
       {
         return new {Updated = false, Error = "Invalid ballot"}.AsJsonResult();

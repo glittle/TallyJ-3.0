@@ -11,7 +11,7 @@ using TallyJ.Code;
 namespace TallyJ.Controllers
 {
 
-	[Authorize]
+	//[Authorize]
 	public class AccountController : Controller
 	{
 
@@ -229,6 +229,7 @@ namespace TallyJ.Controllers
 			return View();
 		}
 
+    [AllowAnonymous]
 		private ActionResult ContextDependentView(string overrideActionName = "")
 		{
 			string actionName = overrideActionName.DefaultTo(ControllerContext.RouteData.GetRequiredString("action"));

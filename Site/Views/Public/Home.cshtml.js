@@ -16,7 +16,7 @@ var HomeIndexPage = function () {
             $('#txtCode').val('');
         });
 
-        $('.CenterPanel').on('click', '.StartJoin', startJoinClick);
+        $('.CenterPanel').on('click', 'p.StartJoin', startJoinClick);
 
         $('#startLogin').qtip({
             position: {
@@ -43,6 +43,9 @@ var HomeIndexPage = function () {
     var startJoinClick = function () {
         var src = $(this);
         $('.CenterPanel').css({ 'float': 'left', margin: 5 });
+
+        $('#introTitle').html('');
+
         if (src.attr('id') == 'startJoin') {
             $('.JoinPanel').fadeIn();
             $('.LoginPanel').hide();
@@ -59,12 +62,13 @@ var HomeIndexPage = function () {
         var electionCode = $('#txtCode').val() || $('#ddlElections').val();
         if (!electionCode) {
             statusSpan.addClass('error').html('Choose election first.');
-            return;
+            return false;
         }
         var passCode = $('#txtPasscode').val();
         if (!passCode) {
             statusSpan.addClass('error').html('Secret Code?');
-            return;
+            return false;
+
         }
         statusSpan.addClass('error').text('Attempting to join...');
 
@@ -81,6 +85,7 @@ var HomeIndexPage = function () {
 
             statusSpan.addClass('error').html(info.Error);
         });
+        return false;
     };
 
     var publicInterface = {

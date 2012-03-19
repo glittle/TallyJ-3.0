@@ -26,11 +26,11 @@
         <div class="top">
         </div>
         <h3>
-            If you are a teller invited to join an election...</h3>
+            To join an election as a teller</h3>
         <ol>
             <li>
                 <p>
-                    Select an active election or enter the election code:</p>
+                    Select the election from this list, or enter the election code</p>
                 <div class="table">
                     <div>
                         <span>Active Elections:</span>
@@ -60,28 +60,33 @@
                 </div>
             </li>
             <li>
-                <p>
-                    Join the election:</p>
-                <button type="button" id="btnJoin">
-                    Join Now</button>
-                <span id="joinStatus" class="idle">Not requested</span> </li>
+              <p>
+                Join the election:</p>
+                <input id="btnJoin" type="submit" value="Join Now" title="Join Now" />
+                @*<button type="button" id="btnJoin">
+                    Join Now</button>*@
+                <span id="joinStatus" class="idle"></span></li>
         </ol>
     </section>
     <section class="featureBig CenterPanel">
         <div class="top">
         </div>
-        <h1>
-            Ready to get started?</h1>
-        <p style="float: left" id="startJoin" class="StartJoin" title="If you are here to be a teller in an active election, click here!">
-            Join an Election as a Teller</p>
-        <p style="float: right" id="startLogin" class="StartJoin" title="Click here to log in. If you do not have an account yet, here is where you can make one.">
-            Manage your Elections</p>
+        <h1 id="introTitle">
+            Start here!</h1>
+        <div style="position: relative">
+            <p style="position: absolute; " id="startJoin" class="StartJoin" title="If you are here to be a teller in an active election, click here!">
+                Join an Election as a Teller</p>
+            <p style="position: absolute; width: 100%; text-align: center; top: 25px; z-index: 1">
+                or</p>
+            <p style="position: absolute; right: 0" id="startLogin" class="StartJoin" title="Click here to log in and enter the site. If you do not have an account yet, here is where you can make one.">
+                Set up an Election</p>
+        </div>
     </section>
     <section class="featureBig LoginPanel">
         <div class="top">
         </div>
         <h3>
-            If you need to open or create an election...</h3>
+            To set up an election or manage your elections</h3>
         @if (Request.IsAuthenticated)
         {
             <p>

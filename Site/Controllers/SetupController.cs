@@ -132,7 +132,7 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SortLocations(string ids)
+    public JsonResult SortLocations(List<int> ids)
     {
       return new LocationModel().SortLocations(ids);
     }

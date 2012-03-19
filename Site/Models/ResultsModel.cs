@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -242,10 +243,10 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public JsonResult SaveTieCounts(string counts)
+    public JsonResult SaveTieCounts(List<string> counts)
     {
       // input like:   2_3,5_3,235_0
-      var countItems = counts.Split(new[] {','}).Select(delegate(string s)
+      var countItems = counts.Select(delegate(string s)
                                                           {
                                                             var parts = s.SplitWithString("_", StringSplitOptions.None);
                                                             return new
