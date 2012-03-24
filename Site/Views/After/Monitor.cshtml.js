@@ -18,11 +18,14 @@ var MonitorPage = function () {
         var desiredTime = GetFromStorage(storageKey.MonitorRefresh, 60);
 
         $('#ddlElectionStatus').on('change', function () {
-            ShowStatusDisplay('Updating...', 0);
+            //ShowStatusDisplay('Updating...');
+            var ddl = $(this);
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-                status: $(this).val()
+                status: ddl.val()
             }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
+                //ShowStatusDisplay('Updated', 0, 1000, false, true);
+                ResetStatusDisplay();
+                $('.ElectionState').text(ddl.find(':selected').text());
             });
         });
 

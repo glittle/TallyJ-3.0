@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Resources
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
     ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
@@ -70,7 +71,8 @@
             <div class="float-left TopInfo">
                 @if (Request.IsAuthenticated)
                 {
-                    <div class="CurrentElectionName">@UserSession.CurrentElectionName</div>
+                  <div class="CurrentElectionName">@UserSession.CurrentElectionName <span class="ElectionState">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span></div>
+                    
                     <div class="Heartbeat">
                         Connected</div>
                 }

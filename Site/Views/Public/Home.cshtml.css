@@ -158,3 +158,8 @@ fieldset input[type="text"], fieldset input[type="password"]
     text-align: 999px;
     overflow: hidden;
 }
+.AlreadyIn {
+    width: 60%;
+    text-align: center;
+    margin: 3em auto 0 auto;
+}

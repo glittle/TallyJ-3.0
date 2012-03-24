@@ -686,6 +686,11 @@ a.twitter
     color: #013d7a;
     font-weight: bold;
 }
+.ElectionState {
+    display: inline-block;
+    margin-left: 30px;
+    color: #8dc63e;
+}
 .CurrentLocationName
 {
 }
