@@ -190,7 +190,7 @@ var ImportCsvPage = function () {
     var showFields = function (info) {
         var host = $('#fieldSelector').html('');
         var options = '<option value="{0}">{#ExpandName("{0}")}</option>'.filledWithEach(info.possible);
-        var template1 = '<div><h3>{field}</h3><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select><div>{^sampleDivs}</div></div>';
+        var template1 = '<div><h3>{field}</h3><div>{^sampleDivs}</div><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select></div>';
         var count = 1;
         $.each(info.csvFields, function () {
             this.sampleDivs = '<div>{0}&nbsp;</div>'.filledWithEach(this.sample);
@@ -214,6 +214,10 @@ var ImportCsvPage = function () {
             var select = $(this);
             select.val(select.data('value'));
         });
+
+        if (list.length == 1) {
+            setActiveUploadRowId(list[0].C_RowId, true);
+        }
         showActiveFileName();
     };
     var extendUploadList = function (list) {

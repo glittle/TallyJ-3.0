@@ -175,7 +175,7 @@ namespace TallyJ.Models
         importFile.ColumnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString("->"));
       var dbFields = DbFieldsList;
 
-      const int numSampleLinesWanted = 9;
+      const int numSampleLinesWanted = 5;
       var numSampleLinesFound = numSampleLinesWanted;
       var sampleValues = new Dictionary<string, List<string>>();
 
@@ -217,7 +217,7 @@ namespace TallyJ.Models
                }.AsJsonResult();
     }
 
-    public JsonResult SaveMapping(int id, string mapping)
+    public JsonResult SaveMapping(int id, List<string> mapping)
     {
       var fileInfo = Db.ImportFiles.SingleOrDefault(
         fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == id);
@@ -226,9 +226,9 @@ namespace TallyJ.Models
         throw new ApplicationException("File not found");
       }
 
-      fileInfo.ColumnsToRead = mapping;
+      fileInfo.ColumnsToRead = mapping.JoinedAsString(",");
 
-      fileInfo.ProcessingStatus = mapping.HasContent() ? "Mapped" : "Uploaded";
+      fileInfo.ProcessingStatus = mapping.Count != 0 ? "Mapped" : "Uploaded";
 
       Db.SaveChanges();
 

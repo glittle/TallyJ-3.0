@@ -7,9 +7,13 @@ section.features a section
 {
     border: 2px solid transparent;
 }
-section.features a:hover section
+section.features a:hover.Featured section
 {
     border: 2px solid #ddd;
+}
+section.features a:hover.NotFeatured section
+{
+    border: 1px solid #ddd;
 }
 
 section.features a:active section
@@ -33,10 +37,8 @@ section.todo h3, section.todo
 }
 section.features
 {
-    border: 1px solid #d7d7d7;
-    border-right: none;
-    border-bottom: none;
     padding-left: 20px;
+    padding-right: 10px;
     margin-bottom: 15px;
     margin-left: 0px;
 }
@@ -74,3 +76,36 @@ section.features
     width: 16px;
     height: 16px;    
 }
+.Featured section.feature {
+}
+.NotFeatured:hover h3 {
+    color: #000;
+}
+.NotFeatured section.feature {
+    background-image: none;
+    height: 45px;
+    padding: 10px 15px 20px 10px;
+    border: solid #ccc thin;
+}
+.NotFeatured h3 
+{
+    color: #666;
+}
+.NotFeatured p {
+    display: none;
+}
+.NotFeatured h3 {
+}
+/*
+.NotFeatured:hover p {
+    display: block;
+}
+.NotFeatured:hover section.feature {
+    background-image: url('../../Images/Blank.png');
+    height: 133px;
+    padding: 10px 15px 10px 10px;
+}
+.NotFeatured:hover h3 {
+    xfont-weight: bold;
+}
+*/

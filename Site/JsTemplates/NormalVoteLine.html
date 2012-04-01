@@ -1,10 +1,13 @@
-﻿<div class="VoteHost{Fake} Changed{changed} Valid{invalid} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
-    <span class="VoteNum">{pos}</span><span class="Name">{Display}</span>
+﻿<div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <span class="VoteNum">{pos}</span>
     <span class="Invalid">Spoiled: </span>
-    <select class="Invalid" data-invalid="{invalid}" tabindex="1" size="1">
+    <span class="Name">{^Display}</span>
+    <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
         {^InvalidReasons}
     </select>
-    <span class="ui-icon ui-icon-trash" title="Delete this vote line"></span>
+    <span class="Invalid InvalidPerson">{InvalidDescription}</span>
+    <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
+    <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
     <div class="ChangedMessage">This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!
     <button type="button" class="btnClearChangeError">Verified correct</button>
     </div>

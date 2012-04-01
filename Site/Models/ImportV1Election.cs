@@ -322,7 +322,7 @@ namespace TallyJ.Models
             {
               BallotGuid = ballot.BallotGuid,
               PositionOnBallot = ++voteNum,
-              InvalidReasonGuid = IneligibleReason.Ineligible_Other,
+              InvalidReasonGuid = IneligibleReasonEnum.Ineligible_Other,
               StatusCode = VoteHelper.VoteStatusCode.Ok
             };
 
@@ -371,7 +371,7 @@ namespace TallyJ.Models
             {
               BallotGuid = ballot.BallotGuid,
               PositionOnBallot = voteNum,
-              InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank,
+              InvalidReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank,
               StatusCode = VoteHelper.VoteStatusCode.Ok
             };
 

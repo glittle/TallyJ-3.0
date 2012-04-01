@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../Scripts/site.js" />
 /// <reference path="../../Scripts/PeopleHelper.js" />
 /// <reference path="../../Scripts/jquery-1.7.1.js" />
+/// <reference path="EditPerson.cshtml.js" />
 
 var PeoplePage = function () {
     var local = {
@@ -87,59 +88,39 @@ var PeoplePage = function () {
             return;
         };
 
-        panel.find(':input[data-name]').each(function () {
-            var input = $(this);
-            var value = person[input.data('name')] || '';
-            switch (input.attr('type')) {
-                case 'checkbox':
-                    input.prop('checked', value);
-                    break;
-                default:
-                    input.val(value);
-                    break;
-            }
-        });
-
-        //TODO...
-        //        if (publicInterface.defaultRules.CanVoteLocked) {
-        //            $('[data-name="CanVote"]').prop('enabled', false).propertyIsEnumerable('checked', publicInterface.defaultRules.CanVote=='A');
-        //        }
-        //        if (publicInterface.defaultRules.CanReceiveLocked) {
-        //            $('[data-name="CanReceiveVote"]').prop('enabled', false).propertyIsEnumerable('checked', publicInterface.defaultRules.CanReceive=='A');
-        //        }
+        editPersonPage.applyValues(panel, person);
 
         panel.fadeIn();
-        panel.find('[data-name="FirstName"]').focus();
     };
 
-    var saveChanges = function () {
-        var form = {};
-        $(':input[data-name]').each(function () {
-            var input = $(this);
-            var value;
-            switch (input.attr('type')) {
-                case 'checkbox':
-                    value = input.prop('checked');
-                    break;
-                default:
-                    value = input.val();
-                    break;
-            }
-            form[input.data('name')] = value;
-        });
+    //    var saveChanges = function () {
+    //        var form = {};
+    //        $(':input[data-name]').each(function () {
+    //            var input = $(this);
+    //            var value;
+    //            switch (input.attr('type')) {
+    //                case 'checkbox':
+    //                    value = input.prop('checked');
+    //                    break;
+    //                default:
+    //                    value = input.val();
+    //                    break;
+    //            }
+    //            form[input.data('name')] = value;
+    //        });
 
-        ShowStatusDisplay("Saving...");
-        CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
-            if (info.Person) {
-                applyValues(info.Person);
-                var searchText = $('#txtSearch').val();
-                if (searchText) {
-                    local.peopleHelper.SearchNames(searchText, onNamesReady, false);
-                }
-            }
-            ShowStatusDisplay(info.Status, 0, null, false, true);
-        });
-    };
+    //        ShowStatusDisplay("Saving...");
+    //        CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
+    //            if (info.Person) {
+    //                applyValues(info.Person);
+    //                var searchText = $('#txtSearch').val();
+    //                if (searchText) {
+    //                    local.peopleHelper.SearchNames(searchText, onNamesReady, false);
+    //                }
+    //            }
+    //            ShowStatusDisplay(info.Status, 0, null, false, true);
+    //        });
+    //    };
 
 
     var navigating = function (ev) {
@@ -155,25 +136,32 @@ var PeoplePage = function () {
                 return true;
 
             case 13: // enter
-                var id = +local.nameList.children().eq(local.rowSelected).attr('id').substr(1);
+                var selected = local.nameList.children().eq(local.rowSelected).attr('id');
+                if (selected) {
+                    var id = +selected.substr(1);
+                    edit(id);
+                    ev.preventDefault();
+                    return true;
+                }
                 ev.preventDefault();
-                edit(id);
-                return true;
+                return false;
 
             default:
         }
         return false;
     };
+
     var runSearch = function (ev) {
         clearTimeout(local.keyTimer);
         var input = $(this);
         var text = input.val();
         if (navigating(ev)) {
-            return false;
+            return;
         }
         if (local.lastSearch === text.trim()) return;
         if (text == '') {
             resetSearch();
+            local.lastSearch = '';
             return;
         }
         local.actionTag.addClass('delaying');
@@ -211,14 +199,38 @@ var PeoplePage = function () {
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
         $('#nameList li').live('click', nameClick).focus();
-        $('#btnSave').live('click', saveChanges);
         $('#txtAddNew').live('click', addNewPerson);
+
+        site.onbroadcast(site.broadcastCode.personSaved, function () {
+            var searchText = $('#txtSearch').val();
+            if (searchText) {
+                local.peopleHelper.SearchNames(searchText, onNamesReady, false);
+            }
+        });
+
         resetSearch();
     };
 
+    //    var prepareReasons = function () {
+    //        var html = ['<option value="">Select a reason if ineligible...</option>'];
+    //        var group = '';
+    //        $.each(publicInterface.invalidReasons, function () {
+    //            var reasonGroup = this.Group;
+    //            if (reasonGroup != group) {
+    //                if (group) {
+    //                    html.push('</optgroup>');
+    //                }
+    //                html.push('<optgroup label="{0}">'.filledWith(reasonGroup));
+    //                group = reasonGroup;
+    //            }
+    //            html.push('<option value="{Guid}">{Desc}</option>'.filledWith(this));
+    //        });
+    //        html.push('</optgroup>');
+    //        return html.join('\n');
+    //    };
+
     var publicInterface = {
         peopleUrl: '',
-        defaultRules: null,
         namesOnFile: 0,
         PreparePage: preparePage
     };

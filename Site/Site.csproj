@@ -142,6 +142,7 @@
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
+    <Compile Include="Code\Enumerations\IneligibleReasonEnum.cs" />
     <Compile Include="Code\Enumerations\VotingMethodEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionModeEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionTallyStatusEnum.cs" />
@@ -309,6 +310,7 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
+    <Content Include="Content\themes\base\images\ui-icons_8dc63e_256x240.png" />
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\arrows-ffffff.png" />
     <Content Include="Images\beta.gif" />
@@ -445,26 +447,54 @@
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\superfish.css" />
     <Content Include="Scripts\superfish.js" />
-    <Content Include="Views\After\Reports.cshtml.css" />
-    <Content Include="Views\After\Reports.cshtml.js" />
+    <Content Include="Views\After\Reports.cshtml.css">
+      <DependentUpon>Reports.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Reports.cshtml.js">
+      <DependentUpon>Reports.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\After\Monitor.cshtml.css">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\After\Presenter.cshtml.css" />
-    <Content Include="Views\After\Presenter.cshtml.js" />
-    <Content Include="Views\Ballots\BallotNormal.cshtml.css" />
-    <Content Include="Views\Ballots\BallotNormal.cshtml.js" />
-    <Content Include="Views\Ballots\BallotSingle.cshtml.css" />
-    <Content Include="Views\Ballots\BallotSingle.cshtml.js" />
-    <Content Include="Views\Ballots\Reconcile.cshtml.css" />
-    <Content Include="Views\Ballots\Reconcile.cshtml.js" />
-    <Content Include="Views\Before\RollCall.cshtml.css" />
-    <Content Include="Views\Before\RollCall.cshtml.js" />
-    <Content Include="Views\Before\FrontDesk.cshtml.css" />
-    <Content Include="Views\Before\FrontDesk.cshtml.js" />
+    <Content Include="Views\After\Presenter.cshtml.css">
+      <DependentUpon>Presenter.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Presenter.cshtml.js">
+      <DependentUpon>Presenter.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotNormal.cshtml.css">
+      <DependentUpon>BallotNormal.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotNormal.cshtml.js">
+      <DependentUpon>BallotNormal.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.css">
+      <DependentUpon>BallotSingle.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.js">
+      <DependentUpon>BallotSingle.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\Reconcile.cshtml.css">
+      <DependentUpon>Reconcile.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\Reconcile.cshtml.js">
+      <DependentUpon>Reconcile.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\RollCall.cshtml.css">
+      <DependentUpon>RollCall.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\RollCall.cshtml.js">
+      <DependentUpon>RollCall.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\FrontDesk.cshtml.css">
+      <DependentUpon>FrontDesk.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\FrontDesk.cshtml.js">
+      <DependentUpon>FrontDesk.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
@@ -484,10 +514,24 @@
     <Content Include="Views\Public\Home.cshtml.js">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\ImportV1.cshtml.css" />
-    <Content Include="Views\Setup\ImportV1.cshtml.js" />
-    <Content Include="Views\Setup\ImportCsv.cshtml.css" />
-    <Content Include="Views\Setup\ImportCsv.cshtml.js" />
+    <Content Include="Views\Setup\EditPerson.cshtml.css">
+      <DependentUpon>EditPerson.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\EditPerson.cshtml.js">
+      <DependentUpon>EditPerson.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportV1.cshtml.css">
+      <DependentUpon>ImportV1.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportV1.cshtml.js">
+      <DependentUpon>ImportV1.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportCsv.cshtml.css">
+      <DependentUpon>ImportCsv.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportCsv.cshtml.js">
+      <DependentUpon>ImportCsv.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\loading.gif" />
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml</DependentUpon>
@@ -601,6 +645,7 @@
     </None>
     <Content Include="Views\Setup\ImportV1.cshtml" />
     <Content Include="Views\Shared\Version.cshtml" />
+    <Content Include="Views\Setup\EditPerson.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

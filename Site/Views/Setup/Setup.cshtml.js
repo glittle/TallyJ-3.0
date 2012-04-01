@@ -167,8 +167,6 @@ var SetupIndexPage = function () {
             input.html(value);
         });
 
-        $('.CurrentElectionName').text(election.Name);
-
         startToAdjustByType();
     };
 
@@ -195,6 +193,7 @@ var SetupIndexPage = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
             if (info.Election) {
                 applyValues(info.Election);
+                $('.CurrentElectionName').text(info.Election.Name);
             }
             ResetStatusDisplay();
             ShowStatusDisplay(info.Status, 0, 3000, false, true);

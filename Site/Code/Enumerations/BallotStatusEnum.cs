@@ -11,14 +11,16 @@ namespace TallyJ.Code.Enumerations
     public static readonly BallotStatusEnum TooMany = new BallotStatusEnum("TooMany", "Too Many");
     public static readonly BallotStatusEnum TooFew = new BallotStatusEnum("TooFew", "Too Few");
     public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicate names");
+    public static readonly BallotStatusEnum Empty = new BallotStatusEnum("Empty", "Empty");
 
     static BallotStatusEnum()
     {
       Add(Ok);
       Add(Review);
       Add(TooMany);
-      AddAsDefault(TooFew);
+      Add(TooFew);
       Add(Dup);
+      AddAsDefault(Empty);
     }
 
     public BallotStatusEnum(string key, string display)
@@ -30,11 +32,6 @@ namespace TallyJ.Code.Enumerations
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == value);
       return item == null ? "" : item.DisplayText;
-    }
-
-    public override IList<BallotStatusEnum> Items
-    {
-      get { return BaseItems; }
     }
 
     public static HtmlString ForHtmlSelect(string selected = "")

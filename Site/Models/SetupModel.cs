@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Web;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -75,23 +76,35 @@ namespace TallyJ.Models
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
-          {
-            l.Name,
-            l.C_RowId
-          })
+                         {
+                           l.Name,
+                           l.C_RowId
+                         })
           .SerializedAsJsonString();
-
       }
     }
 
-    public HtmlString IneligibleReasonsForSelect()
+    public string InvalidReasonsJsonString()
     {
-      var reasons = Db.Reasons.Where(r => r.ReasonGroup == BallotModelCore.ReasonGroupIneligible).OrderBy(r => r.SortOrder).ToList();
-      reasons.Insert(0, new Reason {ReasonGuid = Guid.Empty, ReasonDescription = "-"});
-
-      return reasons
-        .Select(r => "<option value='{0}'>{1}</option>".FilledWith(r.ReasonGuid, r.ReasonDescription))
-        .JoinedAsString().AsRawHtml();
+      return IneligibleReasonEnum.Items
+        .Select(r => new
+                       {
+                         Guid = r.Value,
+                         r.Group,
+                         Desc = r.Description
+                       }).SerializedAsJsonString();
     }
+
+    //public HtmlString IneligibleReasonsForSelect()
+    //{
+    //  var reasons = IneligibleReasonEnum.Items.ToList();
+
+    //  //var reasons = Db.Reasons.Where(r => r.ReasonGroup == BallotModelCore.ReasonGroupIneligible).OrderBy(r => r.SortOrder).ToList();
+    //  reasons.Insert(0, new IneligibleReasonEnum(Guid.Empty, "", "-"));
+
+    //  return reasons
+    //    .Select(r => "<option value='{0}'>{1}</option>".FilledWith(r.Value, r.Description))
+    //    .JoinedAsString().AsRawHtml();
+    //}
   }
 }

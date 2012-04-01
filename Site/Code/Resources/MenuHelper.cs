@@ -10,13 +10,18 @@ namespace TallyJ.Code.Resources
 {
   public class MenuHelper
   {
-    private readonly WebViewPage _webViewPage;
-    private XmlElement _root;
+    private readonly UrlHelper _urlHelper;
     private XmlElement _currentNode;
+    private XmlElement _root;
 
-    public MenuHelper(WebViewPage webViewPage)
+    public MenuHelper(WebViewPage viewPage)
     {
-      _webViewPage = webViewPage;
+      _urlHelper = viewPage.Url;
+    }
+
+    public MenuHelper(Controller controller)
+    {
+      _urlHelper = new UrlHelper(controller.ControllerContext.RequestContext);
     }
 
     /// <Summary>Title of current menu item, if there is one. Empty string if not.</Summary>
@@ -28,11 +33,12 @@ namespace TallyJ.Code.Resources
 
         var title = currentNode.GetAttribute("title");
         var parentGroup = ((XmlElement)currentNode.ParentNode);
-        var showParentTitle = parentGroup != null && parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
+        var showParentTitle = parentGroup != null &&
+                              parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
         if (showParentTitle)
         {
           var parentTitle = parentGroup.GetAttribute("title");
-          return "{0}... {1}".FilledWith(parentTitle, title);
+          return "{0} - {1}".FilledWith(parentTitle, title);
         }
 
         return title;
@@ -49,7 +55,7 @@ namespace TallyJ.Code.Resources
         var nodes = MainRootXml().SelectNodes("//*");
         if (nodes == null) return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
 
-        var routeData = _webViewPage.Url.RequestContext.RouteData;
+        var routeData = _urlHelper.RequestContext.RouteData;
 
         _currentNode = nodes
           .Cast<XmlNode>()
@@ -87,8 +93,8 @@ namespace TallyJ.Code.Resources
       var topLevelItems = node.ChildNodes;
 
       var result = topLevelItems
-          .Cast<XmlNode>()
-          .Where(n => n.NodeType == XmlNodeType.Element)
+        .Cast<XmlNode>()
+        .Where(n => n.NodeType == XmlNodeType.Element)
         .Cast<XmlElement>()
         .Where(Allowed)
         .Select(topLevelNode =>
@@ -118,20 +124,20 @@ namespace TallyJ.Code.Resources
       var root = (XmlElement)doc.DocumentElement.CloneNode(true);
       var nodes = root.SelectNodes("//*");
       foreach (var node in nodes
-                  .Cast<XmlNode>()
-                  .Where(n => n.NodeType == XmlNodeType.Element)
-                  .Cast<XmlElement>()
-                  .Where(node => !Allowed(node)))
+        .Cast<XmlNode>()
+        .Where(n => n.NodeType == XmlNodeType.Element)
+        .Cast<XmlElement>()
+        .Where(node => !Allowed(node)))
       {
         node.ParentNode.RemoveChild(node);
       }
 
       // trim empty groups
       foreach (var node in nodes
-                  .Cast<XmlNode>()
-                  .Where(n => n.NodeType == XmlNodeType.Element)
-                  .Cast<XmlElement>()
-                  .Where(node => node.Name == "group" && node.ChildNodes.Count == 0))
+        .Cast<XmlNode>()
+        .Where(n => n.NodeType == XmlNodeType.Element)
+        .Cast<XmlElement>()
+        .Where(node => node.Name == "group" && node.ChildNodes.Count == 0))
       {
         node.ParentNode.RemoveChild(node);
       }
@@ -144,16 +150,16 @@ namespace TallyJ.Code.Resources
     private string GetChildren(XmlNode parent)
     {
       return parent.ChildNodes
-          .Cast<XmlNode>()
-          .Where(n => n.NodeType == XmlNodeType.Element)
+        .Cast<XmlNode>()
+        .Where(n => n.NodeType == XmlNodeType.Element)
         .Cast<XmlElement>()
         .Where(Allowed)
         .DefaultIfEmpty()
-        .CheckForCurrentMenu(_webViewPage)
+        .CheckForCurrentMenu(_urlHelper)
         .Select(i => i == null
                        ? ""
                        : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
-                         _webViewPage.Url.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
+                         _urlHelper.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
                          , i.GetAttribute("title")
                          , i.GetAttribute("desc")
                          , i.GetAttribute("class").SurroundContentWith(" class='", "'")))
@@ -178,18 +184,38 @@ namespace TallyJ.Code.Resources
 
       return false;
     }
+
+    public IEnumerable<string> QuickLinks()
+    {
+      return TrimmedMenu().ChildNodes
+        .Cast<XmlElement>()
+        .SelectMany(item => item.ChildNodes
+                              .Cast<XmlNode>()
+                              .Where(n => n.NodeType == XmlNodeType.Element)
+                              .Cast<XmlElement>()
+                              .Where(c => UserSession.IsFeatured(c.GetAttribute("featureWhen"))))
+        .Select(item => "<li><a href='{Link}' class='{Class} Role-{Role}'>{Title}</a></li>".FilledWithObject(
+          new
+            {
+              Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
+              Class = item.GetAttribute("class"),
+              Role = item.GetAttribute("role"),
+              Title = item.GetAttribute("title"),
+            }
+          ));
+    }
   }
 
   public static class ExtForMenu
   {
     public static IEnumerable<XmlElement> CheckForCurrentMenu(this IEnumerable<XmlElement> inputs,
-                                                              WebViewPage webViewPage)
+                                                              UrlHelper urlHelper)
     {
       // want to have out param, so can't use iterator
       var list = new List<XmlElement>();
 
 
-      var routeData = webViewPage.Url.RequestContext.RouteData;
+      var routeData = urlHelper.RequestContext.RouteData;
       foreach (var item in inputs.Where(item => item != null))
       {
         if (routeData.Values["controller"].ToString() == item.GetAttribute("controller")

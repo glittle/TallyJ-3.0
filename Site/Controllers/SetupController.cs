@@ -169,7 +169,7 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SaveMapping(int id, string mapping)
+    public JsonResult SaveMapping(int id, List<string> mapping)
     {
       return new ImportCsvModel().SaveMapping(id, mapping);
     }

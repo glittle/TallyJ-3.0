@@ -62,11 +62,6 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult UpdateElectionStatus(string status)
-    {
-      return new ElectionModel().SetTallyStatusJson(status);
-    }
-    [ForAuthenticatedTeller]
     public JsonResult UpdateElectionShowAll(bool showAll)
     {
       return new ElectionModel().UpdateElectionShowAllJson(showAll);

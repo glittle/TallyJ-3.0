@@ -48,7 +48,6 @@
     display: block;
 }
 
-
 .ballotList
 {
     overflow: auto;
@@ -116,10 +115,16 @@ input.ZZsearching
     float: left;
     width: 530px;
 }
+.ui-icon-arrow-2-n-s {
+    display: inline-block;
+    margin-left: 15px;
+    cursor: ns-resize;
+    visibility: hidden;
+}
 .ui-icon-trash
 {
     display: inline-block;
-    margin-left: 15px;
+    margin-left: 7px;
     cursor: pointer;
     visibility: hidden;
 }
@@ -150,18 +155,24 @@ input.Vote
 .titleDiv div {
     margin: -7px 0 0 0;
 }
-.smallButton
+button.smallButton
 {
     font-size: 12px;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
 }
 .Valid .Invalid
 {
     display: none;
 }
+.InvalidP .InvalidCustom,
+.InvalidC .InvalidPerson {
+    display: none;
+}
+
 select.Invalid {
     vertical-align: top;
 }
-.VoteHost:hover .ui-icon-trash {
+.VoteHost:hover .ui-icon {
     visibility: visible;
 }
 
@@ -170,6 +181,11 @@ select.Invalid {
     display: none;
     font-size: 16pt;
     padding: 0 9px 0 2px;
+}
+.VoteHost.InvalidP span.Name {
+    display: inline;
+    font-size: 90%;
+    text-decoration: line-through;
 }
 .VoteHost.Valid span.Name
 {
@@ -255,9 +271,6 @@ div.heading {
     font-size: 80%;
     color: #aaa;
 }
-.VoteHost .VoteNum {
-    cursor: ns-resize;
-}
 .InUse {
     color: #f6941e;
 }
@@ -296,4 +309,7 @@ div.heading {
 }
 #btnRefreshBallotList {
     margin: 14px 0 -3px 0;
+}
+#btnAddMissing {
+    float: right;
 }

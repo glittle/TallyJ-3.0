@@ -19,7 +19,7 @@ body
     background-color: #fff;
     color: #333;
     font-size: .85em;
-    font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
 }
@@ -133,7 +133,7 @@ h5, h6
     position: absolute;
     left: 68px;
     top: 0;
-    color: #8dc63e;
+    color: #13a;
     font-size: 110%;
 }
 .main-content
@@ -164,7 +164,7 @@ footer
 }
 .TopInfo
 {
-    margin-left: 4px;
+    margin-left: 34px;
 }
 .NormalMode .TopInfo
 {
@@ -489,13 +489,17 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus
     border: 1px solid #7ac0da;
 }
 
-input[type="submit"]
+input[type="submit"],
+input[type="file"],
+button.Primary
 {
-    background-color: #d3dce0;
-    border: solid 1px #787878;
+    background-color: #ccffbe;
+    border: solid 1px #4e6d22;
+    color: #4e6d22;
     cursor: pointer;
-    font-size: 1.2em;
-    padding: 7px;
+    font-family: 'Segoe UI Semibold', Verdana, Helvetica, Sans-Serif;
+    font-size: 1.1em;
+    padding: .2em .5em;
 }
 
 /* ajax login/registration dialog */
@@ -688,8 +692,24 @@ a.twitter
 }
 .ElectionState {
     display: inline-block;
-    margin-left: 30px;
+    margin-left: 0px;
     color: #8dc63e;
+}
+.ElectionState span {
+    color: #013d7a;
+}
+.ChangeElectionState {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    left: 50px;
+    padding: 8px;
+    border: outset 3px #ccc;
+    border-top-style: solid;
+    background-color: #BDD2FF;
+}
+.ChangeElectionState p {
+    margin: 0 .5em .5em 0;
 }
 .CurrentLocationName
 {
@@ -726,13 +746,17 @@ a.twitter
     font-size: 90%;
     font-style: italic;
 }
-.PullInstructionsHandle:before
-{
-    content: "Hide ";
+.PullInstructionsHandle .IfClosed {
+    display: none;
 }
-.PullInstructionsHandle.Closed:before
-{
-    content: "Show ";
+.PullInstructionsHandle.Closed .IfClosed {
+    display: inline-block;
+}
+.PullInstructionsHandle .IfOpen {
+    display: inline-block;
+}
+.PullInstructionsHandle.Closed .IfOpen {
+    display: none;
 }
 .PullInstructionsHandle.Closed
 {
@@ -799,10 +823,59 @@ a.twitter
     width: 100px;
 }
 
+body .ifAuthKnownInline,
+.AllowChangeElectionState,
 body .ifAuthKnownLI {
     display: none;
 }
 body.AuthKnown .ifAuthKnownLI
 {
     display: list-item;
+}
+body.AuthKnown .ifAuthKnownInline
+{
+    display: inline-block;
+}
+body.AuthKnown .AllowChangeElectionState {
+    display: inline-block;
+    margin-left: 3px;
+}
+body.AuthKnown .CurrentElectionName {
+    cursor: pointer;
+}
+.QuickLinks 
+{
+    margin: 5px 0 0 0;
+    z-index: 10;
+    cursor: pointer;
+}
+/*
+.QuickLinkList 
+{
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 0;
+    z-index: 10;
+}
+.QuickLinkList a {
+    text-decoration: none;
+    display: block;
+    padding: 3px;
+}
+.QuickLinkList a:hover 
+{
+    background-color: red;
+}*/
+.QuickLinkIcon {
+    display: inline-block;
+    vertical-align: text-bottom;
+    background-position: -32px -16px;
+}
+.QuickLinks:hover .QuickLinkIcon {
+    background-position: -64px -16px;
+}
+.ui-icon-info {
+    display: inline-block;
+    vertical-align: text-bottom;
 }

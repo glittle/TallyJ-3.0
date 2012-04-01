@@ -55,10 +55,9 @@ input.searching
     margin-left: 20px;
     display: none;
 }
-.text20{ width: 70px; }
-.text50{ width: 150px;}
-.text100{ width: 150px;}
-.text150{ width: 180px;}
 .Ineligible {
     text-decoration: line-through;
+}
+.searchlabel {
+    display: block;
 }

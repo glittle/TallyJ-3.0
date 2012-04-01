@@ -29,7 +29,7 @@ namespace Tests.BusinessTests
       _persons = new List<Person>
                         {
                           new Person {VotingMethod = VotingMethodEnum.InPerson},
-                          new Person {AgeGroup = AgeGroup.Adult},
+                          // new Person {AgeGroup = AgeGroup.Adult},
                           new Person {},
                           new Person {},
                           new Person {},
@@ -456,6 +456,7 @@ namespace Tests.BusinessTests
 
       var votes = new List<vVoteInfo>
                     {
+                      // TODO 2012-03-24 Glen Little: Needs attention... these test are for normal elections, not single name...
                       new vVoteInfo {SingleNameElectionCount = 33},
                       new vVoteInfo {SingleNameElectionCount = 5},
                       new vVoteInfo {SingleNameElectionCount = 2},
@@ -485,7 +486,7 @@ namespace Tests.BusinessTests
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
 
       ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.TooMany);
-      ballots[1].StatusCode.ShouldEqual(BallotStatusEnum.TooFew);
+      ballots[1].StatusCode.ShouldEqual(BallotStatusEnum.Empty);
 
       var summary = model.ResultSummaryAuto;
       summary.TotalVotes.ShouldEqual(2);

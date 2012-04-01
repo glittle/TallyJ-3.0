@@ -1,13 +1,14 @@
 
 /*** ESSENTIAL STYLES ***/
-.sf-menu, .sf-menu *
+.sf-menu, .sf-menu *,
+.QuickLinks, .QuickLinks *
 {
     margin: 0;
     padding: 0;
     list-style: none;
     line-height: 1.0;
 }
-.sf-menu ul
+.sf-menu ul, .QuickLinks ul
 {
     position: absolute;
     top: -999em;
@@ -17,22 +18,34 @@
 {
     width: 100%;
 }
-.sf-menu li:hover
+.sf-menu li:hover,
+.QuickLinks li:hover
 {
     visibility: inherit; /* fixes IE7 'sticky bug' */
 }
-.sf-menu li
+.sf-menu li,
+.QuickLinks li
 {
+    color: #8dc63e;
     float: left;
     text-align: left;
     position: relative;
 }
-.sf-menu a
+.sf-menu a,
+.QuickLinks a
 {
     display: block;
     text-align: left;
     position: relative;
+    padding: 6px 25px 6px 4px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #000;
 }
+.QuickLinks a:hover {
+    color: #13A;
+}
+.QuickLinks li:hover ul, .QuickLinks li.sfHover ul,
 .sf-menu li:hover ul, .sf-menu li.sfHover ul
 {
     left: -5px;
@@ -42,6 +55,7 @@ ul.sf-menu li:hover li ul, ul.sf-menu li.sfHover li ul
 {
     top: -999em;
 }
+ul.QuickLinks li li:hover ul, ul.QuickLinks li li.sfHover ul,
 ul.sf-menu li li:hover ul, ul.sf-menu li li.sfHover ul
 {
     left: 10em; /* match ul width */
@@ -61,8 +75,6 @@ ul.sf-menu li li li:hover ul, ul.sf-menu li li li.sfHover ul
 .sf-menu
 {
     position: absolute;
-    top: 40px;
-    left: 55px;
     border: solid #BDD2FF 5px;
     border-bottom: none;
     border-top-left-radius: 10px;
@@ -78,9 +90,10 @@ ul.sf-menu li li li:hover ul, ul.sf-menu li li li.sfHover ul
 {
     border-left: none;
 }
+.QuickLinks li:hover ul, .QuickLinks li.sfHover ul,
 .sf-menu li:hover ul, .sf-menu li.sfHover ul
 {
-    top: 24px; /* match top ul list item height */
+    top: 15px; /* match top ul list item height */
 }
 .sf-menu > li > a
 {
@@ -161,12 +174,13 @@ a:focus > .sf-sub-indicator, a:hover > .sf-sub-indicator, a:active > .sf-sub-ind
 /*** shadows for all but IE6 ***/
 .sf-shadow ul
 {
-    background: url('../images/shadow.png') no-repeat bottom right;
-    padding: 0 8px 9px 0;
-    -moz-border-radius-bottomleft: 17px;
-    -moz-border-radius-topright: 17px;
-    -webkit-border-top-right-radius: 17px;
-    -webkit-border-bottom-left-radius: 17px;
+    /* background: url('../images/shadow.png') no-repeat bottom right; */
+    left: 6px;
+    margin-top: 3px;
+    padding: 5px 5px 5px 5px;
+    border: outset 3px #ccc;
+    border-top-style: solid;
+    background-color: #BDD2FF;
 }
 .sf-shadow ul.sf-shadow-off
 {

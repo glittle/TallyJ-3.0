@@ -55,7 +55,7 @@ var BallotNormalPageFunc = function () {
         local.votesList.on('change', 'select', invalidReasonChanged);
 
         local.votesList.sortable({
-            handle: '.VoteNum',
+            handle: '.ui-icon-arrow-2-n-s',
             items: '.VoteHost',
             axis: 'y',
             containment: 'parent',
@@ -132,7 +132,7 @@ var BallotNormalPageFunc = function () {
                 // no need to update client with new order
                 ShowStatusDisplay("Saved", 0, 3000, false, true);
                 // update to reflect changes
-                $.each(toUpdate, function(i, o) {
+                $.each(toUpdate, function (i, o) {
                     o.text(i + 1);
                 });
                 showExtraVotes();
@@ -712,6 +712,7 @@ var BallotNormalPageFunc = function () {
         $.each(votes, function () {
             if (this.invalid && this.invalid !== null) {
                 this.InvalidReasons = local.invalidReasonsHtml;
+                this.invalidType = 'C';
             }
             if (this.ineligible && this.ineligible !== null) {
                 // person is invalid!
@@ -724,7 +725,12 @@ var BallotNormalPageFunc = function () {
                 if (reasonList.length == 1) {
                     reason = reasonList[0].Desc;
                 }
-                this.Display = '<span class=InvalidName>{1}</span> &nbsp; <span class=Ineligible>Ineligible: {0}</span>'.filledWith(reason, this.name);
+                //this.Display = '<span class=InvalidName>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
+                this.Display = this.name;
+                this.invalid = vote.ineligible;
+                this.invalidType = 'P';
+                this.InvalidDescription = reason;
+
             }
             else {
                 this.Display = this.name;

@@ -1,5 +1,6 @@
 using System;
 
+/*
 namespace TallyJ.Models.Helper
 {
   /// <summary>
@@ -29,3 +30,4 @@ namespace TallyJ.Models.Helper
     public static readonly Guid? Unreadable_Writing_illegible = new Guid("CD27534D-D7E8-E011-A095-002269C41D11");
   }
 }
+ */

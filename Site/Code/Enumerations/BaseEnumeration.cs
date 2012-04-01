@@ -84,11 +84,16 @@ namespace TallyJ.Code.Enumerations
 
     #region IEnumeration<TSelf,TValue> Members
 
+    public IList<TSelf> Items
+    {
+      get { return BaseItems; }
+    }
+
     public TValue Value { get; private set; }
 
     public string Text { get; private set; }
 
-    public abstract IList<TSelf> Items { get; }
+    // public abstract IList<TSelf> Items { get; }
 
     public override string ToString()
     {

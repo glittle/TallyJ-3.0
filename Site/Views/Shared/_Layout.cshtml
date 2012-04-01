@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Enumerations
+﻿@using System.Xml
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
@@ -40,18 +41,18 @@
                     if (Request.IsAuthenticated)
                     {
                     @Html.ActionLink(" ", "Index", "Dashboard", null, new
-                                                                        {
-                                                                            Class = "site-title",
-                                                                            title = "Go to Dashboard"
-                                                                        })
+               {
+                   Class = "site-title",
+                   title = "Go to Dashboard"
+               })
                     }
                     else
                     {
                     @Html.ActionLink(" ", "Index", "Public", null, new
-                                                                     {
-                                                                         Class = "site-title",
-                                                                         title = "Go to Welcome Page"
-                                                                     })
+               {
+                   Class = "site-title",
+                   title = "Go to Welcome Page"
+               })
                     }
                 }
                 <div class="Version">
@@ -71,19 +72,41 @@
             <div class="float-left TopInfo">
                 @if (Request.IsAuthenticated)
                 {
-                  <div class="CurrentElectionName">@UserSession.CurrentElectionName <span class="ElectionState">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span></div>
-                    
-                    <div class="Heartbeat">
-                        Connected</div>
+                  <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionName</div>
+                    if (UserSession.CurrentElection != null)
+                     {
+                       <div class="ElectionState" title="Election status">
+                         Status: <span>@UserSession.CurrentElectionStatusName</span></div>
+                       <span class="AllowChangeElectionState ui-icon ui-icon-pencil" title="Change election status">
+                       </span>
+                       <div class="ChangeElectionState">
+                         <p>
+                           Change the election status to:</p>
+                         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
+                           @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
+                         </select>
+                       </div>
+                       <ul class="QuickLinks">
+                         <li>Pages for this Status <span class="ui-icon QuickLinkIcon"></span>
+                           <ul>
+                             @currentMenu.QuickLinks().JoinedAsString().AsRawHtml()
+                           </ul>
+                         </li>
+                       </ul>
+                     }
+                  <div class="Heartbeat">
+                    </div>
                 }
             </div>
             @if (ScreenMode != "Full")
             {
                 if (ScreenMode == "Mini")
                 {
-                <ul class="sf-menu">
+@*<ul class="sf-menu">
                     @currentMenu.InsertMenu()
-                </ul>
+                </ul>*@
+                
+                
                     if (currentMenu.ShowLocationSelection || currentMenu.ShowTellerSelector)
                     {
                 <div class="CurrentInfo">

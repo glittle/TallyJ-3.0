@@ -340,17 +340,26 @@ namespace TallyJ.Models
 
     public string InvalidReasonsJsonString()
     {
-      return Db.Reasons
-        //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
-        .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
-        .ThenBy(r => r.SortOrder)
+      return IneligibleReasonEnum.Items
         .Select(r => new
                        {
-                         Id = r.C_RowId,
-                         Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
-                         Desc = r.ReasonDescription
+                         Id = r.IndexNum,
+                         r.Group,
+                         Desc = r.Description
                        })
-        .SerializedAsJsonString();
+                       .SerializedAsJsonString();
+
+      //return Db.Reasons
+      //  //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
+      //  .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
+      //  .ThenBy(r => r.SortOrder)
+      //  .Select(r => new
+      //                 {
+      //                   Id = r.C_RowId,
+      //                   Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
+      //                   Desc = r.ReasonDescription
+      //                 })
+      //  .SerializedAsJsonString();
     }
 
     public object CurrentBallotsInfoList()
@@ -445,7 +454,7 @@ namespace TallyJ.Models
                        LocationGuid = currentLocationGuid,
                        ComputerCode = computerCode,
                        BallotNumAtComputer = NextBallotNumAtComputer(),
-                       StatusCode = BallotStatusEnum.TooFew,
+                       StatusCode = BallotStatusEnum.Empty,
                        TellerAtKeyboard = UserSession.GetCurrentTeller(1),
                        TellerAssisting = UserSession.GetCurrentTeller(2)
                      };

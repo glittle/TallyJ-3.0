@@ -22,8 +22,8 @@
 	max-width: 280px;
 	min-width: 50px;
 	
-	font-size: 11pt;
-	line-height: 12pt;
+	font-size: 10pt;
+	line-height: 11pt;
 }
 
 	/* Fluid class for determining actual width in IE */
@@ -292,15 +292,15 @@
 .ui-tooltip-blue .ui-tooltip-titlebar,
 .ui-tooltip-blue .ui-tooltip-content{
     border-color: #a6dbed; /* #ADD9ED; */
-    color: #5c7983; /* #5E99BD; */
+    color: #22262e; /* #5E99BD; */
 }
 
 	.ui-tooltip-blue .ui-tooltip-content{
-	    background-color: #b3ecff; /* #E5F6FE; */
+	    background-color: #BDD2FF; /* #E5F6FE; */
 	}
 
 	.ui-tooltip-blue .ui-tooltip-titlebar{
-		background-color: #D0E9F5;
+		background-color: #BDD2FF;
 	}
 
 	.ui-tooltip-blue .ui-state-default .ui-tooltip-icon{

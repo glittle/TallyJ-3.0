@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Xml;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using TallyJ.Models.Helper;
 
@@ -68,6 +69,7 @@ namespace TallyJ.Models
 
        */
 
+      var reason = IneligibleReasonEnum.Ineligible_Other;
 
       switch (spoiledGroup)
       {
@@ -75,58 +77,73 @@ namespace TallyJ.Models
           switch (spoiledDetail)
           {
             case "Not Eligible":
-              return IneligibleReason.Ineligible_Other;
+              reason = IneligibleReasonEnum.Ineligible_Other;
+              break;
 
             case "Moved elsewhere recently":
-              return IneligibleReason.Ineligible_Moved_elsewhere_recently;
+              reason = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently;
+              break;
 
             case "Resides elsewhere":
-              return IneligibleReason.Ineligible_Resides_elsewhere;
+              reason = IneligibleReasonEnum.Ineligible_Resides_elsewhere;
+              break;
 
             case "On other Institution":
-              return IneligibleReason.Ineligible_On_other_Institution;
+              reason = IneligibleReasonEnum.Ineligible_On_other_Institution;
+              break;
 
             case "Rights removed":
-              return IneligibleReason.Ineligible_Rights_removed;
+              reason = IneligibleReasonEnum.Ineligible_Rights_removed;
+              break;
 
             case "Non-Bahá'í":
-              return IneligibleReason.Ineligible_Non_Bahai;
+              reason = IneligibleReasonEnum.Ineligible_Non_Bahai;
+              break;
 
             case "Deceased":
-              return IneligibleReason.Ineligible_Deceased;
+              reason = IneligibleReasonEnum.Ineligible_Deceased;
+              break;
 
             case "Other":
             default:
-              return IneligibleReason.Ineligible_Other;
+              reason = IneligibleReasonEnum.Ineligible_Other;
+              break;
           }
+          break;
 
         case "Unidentifiable":
           switch (spoiledDetail)
           {
             case "Multiple people with same name":
-              return IneligibleReason.Unidentifiable_Multiple_people_with_identical_name;
+              reason = IneligibleReasonEnum.Unidentifiable_Multiple_people_with_identical_name;
+              break;
 
             case "Unknown person":
             case "Not Identifiable":
             default:
-              return IneligibleReason.Unidentifiable_Unknown_person;
+              reason = IneligibleReasonEnum.Unidentifiable_Unknown_person;
+              break;
           }
-        
+          break;
+
         case "UnReadable": // 1.7
         case "Unreadable": // 1.8
           switch (spoiledDetail)
           {
             case "In unknown language":
-              return IneligibleReason.Unreadable_In_another_language_not_translatable;
+              reason = IneligibleReasonEnum.Unreadable_In_another_language_not_translatable;
+              break;
 
             case "Not Legible":
             case "Writing unreadable":
             default:
-              return IneligibleReason.Unreadable_Writing_illegible;
+              reason = IneligibleReasonEnum.Unreadable_Writing_illegible;
+              break;
           }
+          break;
       }
 
-      return IneligibleReason.Ineligible_Other;
+      return reason;
     }
   }
 }

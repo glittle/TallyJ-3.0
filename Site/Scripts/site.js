@@ -1,5 +1,7 @@
 ﻿// Sunwapta Solutions Inc.
 /// <reference path="jquery-1.7.1.js" />
+/// <reference path="superfish.js" />
+/// <reference path="jquery.qtip.js" />
 
 var site = {
     onload: [],
@@ -17,6 +19,16 @@ var site = {
     heartbeatTimeout: null,
     timeOffsetKnown: false,
     //serverTime: null,
+    broadcastCode: {
+        electionStatusChanged: 'electionStatusChanged',
+        personSaved: 'personSaved'
+    },
+    broadcast: function (broadcastCode, data) {
+        $(document).triggerHandler(broadcastCode, data);
+    },
+    onbroadcast: function (broadcastCode, fn, eventData) {
+        $(document).on(broadcastCode, null, eventData, fn);
+    },
     timeOffset: 0,
     rootUrl: ''
 };
@@ -41,19 +53,55 @@ function Onload() {
 
     CheckTimeOffset();
 
-    ActivatePullInstructions();
+    AttachHelp();
 
     PrepareMainMenu();
 
+    AttachHandlers();
+
     PrepareTopLocationAndTellers();
+}
+
+function AttachHandlers() {
+    var hide = function (ev) {
+        if ($(ev.srcElement).parents('.TopInfo').length) {
+            return;
+        }
+        $('.ChangeElectionState').hide();
+        $(document).off('click', hide);
+    };
+    $('body.AuthKnown .AllowChangeElectionState').on('click', function () {
+        $('.ChangeElectionState').toggle();
+        $(document).on('click', hide);
+    });
+    $('#ddlElectionStatus').on('change', function () {
+        var ddl = $(this);
+        CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
+            status: ddl.val()
+        }, function (info) {
+            site.broadcast(site.broadcastCode.electionStatusChanged);
+
+            setTimeout(function () {
+                ResetStatusDisplay();
+                $('.ChangeElectionState').fadeOut();
+                if (info.QuickLinks) {
+                    $('.QuickLinks ul').html(info.QuickLinks);
+                    PrepareMainMenu();
+                }
+                $('.ElectionState span').text(ddl.find(':selected').text());
+            }, 0);
+        });
+    });
+
+
 }
 
 function CheckTimeOffset() {
     if (site.timeOffsetKnown) return;
     var now = new Date();
     var form = {
-         now: now.getTime() - now.getTimezoneOffset() * 60 * 1000
-     };
+        now: now.getTime() - now.getTimezoneOffset() * 60 * 1000
+    };
     CallAjaxHandler(GetRootUrl() + 'Public/GetTimeOffset', form, function (info) {
         site.timeOffset = info.timeOffset;
         site.timeOffsetKnown = true;
@@ -108,34 +156,22 @@ function PrepareTopLocationAndTellers() {
 }
 
 function PrepareMainMenu() {
-    //    $("#jMenu").jMenu({
-    //        openClick: false,
-    //        effects: {
-    //            effectSpeedOpen: 100,
-    //            effectSpeedClose: 300,
-    //            effectTypeOpen: 'show',
-    //            effectTypeClose: 'fade',
-    //            effectOpen: 'linear',
-    //            effectClose: 'linear'
-    //        },
-    //        TimeBeforeOpening: 100,
-    //        TimeBeforeClosing: 400,
-    //        animatedText: false
-    //    });
+    $('.QuickLinks').supersubs().superfish();
 
-    $("ul.sf-menu").supersubs({
-        minWidth: 12,   // minimum width of sub-menus in em units 
-        maxWidth: 27,   // maximum width of sub-menus in em units 
-        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
-        // due to slight rounding differences and font-family 
-    }).superfish();
+//    $("ul.sf-menu").supersubs({
+//        minWidth: 12,   // minimum width of sub-menus in em units 
+//        maxWidth: 27,   // maximum width of sub-menus in em units 
+//        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
+//        // due to slight rounding differences and font-family 
+//    }).superfish();
 }
 
-function ActivatePullInstructions() {
+function AttachHelp() {
     var pi = $('.PullInstructions');
-    pi.before($('<div class=PullInstructionsHandle>Instructions</div>'));
+    pi.before($('<div class=PullInstructionsHandle><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> Instructions</div>'));
 
-    var toggleIt = function (handle, fast) {
+    var toggleIt = function (handle,
+        fast) {
         var next = handle.next();
         if (fast) {
             next.toggle();
@@ -144,19 +180,25 @@ function ActivatePullInstructions() {
             next.slideToggle();
         }
         handle.toggleClass('Closed');
-        SetInStorage('HidePI_' + location.pathname, handle.hasClass('Closed') ? 'hide' : 'show');
+        SetInStorage('HidePI_' + location.pathname, handle.hasClass('Closed') ? 'hide': 'show');
     };
 
-    $(document).on('click', '.PullInstructionsHandle', function (ev) {
-        var handle = $(ev.target);
+    $(document).on('click', '.PullInstructionsHandle', function(ev) {
+        var handle = $(ev.currentTarget);
         toggleIt(handle, false);
     });
 
     if (GetFromStorage('HidePI_' + location.pathname, 'show') == 'hide') {
-        $('.PullInstructionsHandle').each(function () {
+        $('.PullInstructionsHandle').each(function() {
             toggleIt($(this), true);
         });
     }
+
+    $('.qTip').qtip({
+        style: {
+            classes: 'ui-tooltip-blue ui-tooltip-shadow'
+        }
+    });
 }
 
 //var UpdateActiveInfo = function () {
@@ -260,7 +302,7 @@ function ProcessPulseResult(info) {
     }
     site.computerActive = info.Active;
     if (info.Active) {
-        $('.Heartbeat').removeClass('Frozen').text('Connected').effect('highlight', 'slow');
+        $('.Heartbeat').removeClass('Frozen').text('').effect('highlight', 'slow');
     }
     else {
         $('.Heartbeat').addClass('Frozen').text('Not Connected');
@@ -744,18 +786,18 @@ String.prototype.filledWith = function () {
     var values = typeof arguments[0] === 'object' && arguments.length === 1 ? arguments[0] : arguments;
     if (arguments.length == 0 && arguments[0].length) {
         // use values in array, substituting {0}, {1}, etc.
-        values = { };
-        $.each(arguments[0], function(i, value) {
+        values = {};
+        $.each(arguments[0], function (i, value) {
             values[i] = value;
         });
     }
 
-    var testForFunc = /^#/ ; // simple test for "#"
-    var testForNoEscape = /^\^/ ; // simple test for "^"
-    var extractTokens = /{([^{]+?)}/g ; // greedy
+    var testForFunc = /^#/; // simple test for "#"
+    var testForNoEscape = /^\^/; // simple test for "^"
+    var extractTokens = /{([^{]+?)}/g; // greedy
 
-    var replaceTokens = function(input) {
-        return input.replace(extractTokens, function() {
+    var replaceTokens = function (input) {
+        return input.replace(extractTokens, function () {
             var token = arguments[1];
             var value = undefined;
             try {
@@ -767,9 +809,9 @@ String.prototype.filledWith = function () {
                     value = values[token.substring(1)];
                 } else {
                     var toEscape = values[token];
-                    value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace( /&/g , '&amp;').replace( /</g , '&lt;').replace( />/g , '&gt;').replace( /"/g , '&quot;').replace( /{/g , '&#123;');
+                    value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/{/g, '&#123;');
                 }
-            } catch(err) {
+            } catch (err) {
                 LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
                 LogMessage(values);
                 throw 'Error in filledWith';
@@ -786,7 +828,7 @@ String.prototype.filledWith = function () {
         result = replaceTokens(result);
     }
 
-    return result.replace( /&#123;/g , '{');
+    return result.replace(/&#123;/g, '{');
 };
 
 String.prototype.filledWithEach = function (arr, sep) {
@@ -927,3 +969,4 @@ function ExpandName(s) {
     }
     return result.join('');
 }
+

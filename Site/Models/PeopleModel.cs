@@ -66,7 +66,7 @@ namespace TallyJ.Models
     {
       ResetCombinedInfos(person);
       ClearVotingInfo(person);
-      ClearEligibilityRestrictions(person);
+      ResetInvolvementFlags(person);
     }
 
     /// <Summary>Only to be done before an election</Summary>
@@ -96,17 +96,16 @@ namespace TallyJ.Models
     ///     Use age group to determine eligibility.
     /// </summary>
     /// <param name="person"> </param>
-    public void ClearEligibilityRestrictions(Person person)
+    public void ResetInvolvementFlags(Person person)
     {
-      var canVote = person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
-
-      person.IneligibleReasonGuid = canVote ? null : IneligibleReason.Ineligible_Not_Adult;
+      //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
+      //person.IneligibleReasonGuid = canVote ? null : IneligibleReasonEnum.Ineligible_Not_Adult;
 
       var whoCanVote = UserSession.CurrentElection.CanVote;
       var whoCanReceiveVotes = UserSession.CurrentElection.CanReceive;
 
-      person.CanVote = whoCanVote == "A";
-      person.CanReceiveVotes = whoCanReceiveVotes == "A";
+      person.CanVote = whoCanVote == ElectionModel.CanVoteOrReceive.All;
+      person.CanReceiveVotes = whoCanReceiveVotes == ElectionModel.CanVoteOrReceive.All;
     }
 
     public JsonResult DetailsFor(int personId)
@@ -136,7 +135,7 @@ namespace TallyJ.Models
       return new
                {
                  person.C_RowId,
-                 person.AgeGroup,
+                 //person.AgeGroup,
                  person.BahaiId,
                  person.CanReceiveVotes,
                  person.CanVote,
@@ -182,7 +181,7 @@ namespace TallyJ.Models
 
       var editableFields = new
                              {
-                               personFromInput.AgeGroup,
+                               // personFromInput.AgeGroup,
                                personFromInput.BahaiId,
                                personFromInput.CanReceiveVotes,
                                personFromInput.CanVote,
@@ -370,7 +369,7 @@ namespace TallyJ.Models
         rows = Db.Database.ExecuteSqlCommand("Delete from tj.Person where ElectionGuid={0}",
                                              UserSession.CurrentElectionGuid);
       }
-      catch (SqlException e)
+      catch (SqlException)
       {
         return
           new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.

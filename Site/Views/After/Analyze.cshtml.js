@@ -28,14 +28,14 @@ var AnalyzePage = function () {
         //            });
         //        });
 
-        $('#body').on('change', '#ddlElectionStatus', function () {
-            ShowStatusDisplay('Updating...', 0);
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-                status: $(this).val()
-            }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
-            });
-        });
+//        $('#body').on('change', '#ddlElectionStatus', function () {
+//            ShowStatusDisplay('Updating...', 0);
+//            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
+//                status: $(this).val()
+//            }, function () {
+//                ShowStatusDisplay('Updated', 0, 3000, false, true);
+//            });
+//        });
 
         $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
 

@@ -28,11 +28,6 @@ namespace TallyJ.Code.Enumerations
       return item == null ? value : item.DisplayText;
     }
 
-    public override IList<VotingMethodEnum> Items
-    {
-      get { return BaseItems; }
-    }
-
     public static HtmlString ForHtmlSelect(string selected = "")
     {
       return

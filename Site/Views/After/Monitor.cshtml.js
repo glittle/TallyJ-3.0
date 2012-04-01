@@ -17,17 +17,17 @@ var MonitorPage = function () {
 
         var desiredTime = GetFromStorage(storageKey.MonitorRefresh, 60);
 
-        $('#ddlElectionStatus').on('change', function () {
-            //ShowStatusDisplay('Updating...');
-            var ddl = $(this);
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-                status: ddl.val()
-            }, function () {
-                //ShowStatusDisplay('Updated', 0, 1000, false, true);
-                ResetStatusDisplay();
-                $('.ElectionState').text(ddl.find(':selected').text());
-            });
-        });
+//        $('#ddlElectionStatus').on('change', function () {
+//            //ShowStatusDisplay('Updating...');
+//            var ddl = $(this);
+//            CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
+//                status: ddl.val()
+//            }, function () {
+//                //ShowStatusDisplay('Updated', 0, 1000, false, true);
+//                ResetStatusDisplay();
+//                $('.ElectionState').text(ddl.find(':selected').text());
+//            });
+//        });
 
         $('#ddlRefresh').val(desiredTime).change(function () {
             $('#chkAutoRefresh').prop('checked', true);

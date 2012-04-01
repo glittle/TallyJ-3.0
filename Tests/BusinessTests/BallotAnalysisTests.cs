@@ -80,7 +80,7 @@ namespace Tests.BusinessTests
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
-                      new Vote {InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank},
+                      new Vote {InvalidReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
                     };
 
       var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -125,13 +125,28 @@ namespace Tests.BusinessTests
       newStatus.ShouldEqual(BallotStatusEnum.TooFew);
     }
 
+    [TestMethod]
+    public void EmptyNumberOfVotes_Test()
+    {
+      var votes = new List<Vote>
+                    {
+                    };
+
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
+
+      string newStatus;
+      model.DetermineStatusFromVotesList(null, votes, out newStatus).ShouldEqual(true);
+
+      newStatus.ShouldEqual(BallotStatusEnum.Empty);
+    }
+
 
     [TestMethod]
     public void TooFewNumberOfVotesWithBlank_Test()
     {
       var votes = new List<Vote>
                     {
-                      new Vote {InvalidReasonGuid = IneligibleReason.Unreadable_Vote_is_blank},
+                      new Vote {InvalidReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
                       new Vote {PersonGuid = Guid.NewGuid()},
                       new Vote {PersonGuid = Guid.NewGuid()},
                     };

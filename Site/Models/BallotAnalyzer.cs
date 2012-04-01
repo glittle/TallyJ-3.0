@@ -96,7 +96,12 @@ namespace TallyJ.Models
       }
 
       // check counts
-      var numVotes = votes.Count(v => v.InvalidReasonGuid != IneligibleReason.Unreadable_Vote_is_blank);
+      var numVotes = votes.Count(v => v.InvalidReasonGuid != IneligibleReasonEnum.Unreadable_Vote_is_blank);
+
+      if (numVotes == 0)
+      {
+        return StatusChanged(BallotStatusEnum.Empty, currentStatusCode, out statusCode);
+      }
 
       if (numVotes < VotesNeededOnBallot)
       {

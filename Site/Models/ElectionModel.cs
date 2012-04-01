@@ -2,15 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
+using TallyJ.Controllers;
 using TallyJ.EF;
 
 namespace TallyJ.Models
 {
   public class ElectionModel : DataConnectedModel
   {
+    public static class CanVoteOrReceive
+    {
+      public const string All = "A";
+      public const string NamedPeople = "N";
+    }
+
+    public static class ElectionMode
+    {
+      public const string Normal = "N";
+      public const string TieBreak = "T";
+      public const string ByElection = "B";
+    }
+
     public ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
@@ -26,7 +42,7 @@ namespace TallyJ.Models
       switch (type)
       {
         case "LSA":
-          rules.CanVote = "A";
+          rules.CanVote = CanVoteOrReceive.All;
           rules.CanVoteLocked = true;
 
           rules.Extra = 0;
@@ -34,20 +50,20 @@ namespace TallyJ.Models
 
           switch (mode)
           {
-            case "N":
+            case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = true;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
-            case "T":
+            case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = "N";
+              rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
-            case "B":
+            case ElectionMode.ByElection:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
           rules.CanReceiveLocked = true;
@@ -55,7 +71,7 @@ namespace TallyJ.Models
           break;
 
         case "NSA":
-          rules.CanVote = "N"; // delegates
+          rules.CanVote = CanVoteOrReceive.NamedPeople; // delegates
           rules.CanVoteLocked = true;
 
           rules.Extra = 0;
@@ -63,20 +79,20 @@ namespace TallyJ.Models
 
           switch (mode)
           {
-            case "N":
+            case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = true;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
-            case "T":
+            case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = "N";
+              rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
-            case "B":
+            case ElectionMode.ByElection:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
 
@@ -85,64 +101,64 @@ namespace TallyJ.Models
           break;
 
         case "Con":
-          rules.CanVote = "A";
+          rules.CanVote = CanVoteOrReceive.All;
           rules.CanVoteLocked = true;
 
           switch (mode)
           {
-            case "N":
+            case ElectionMode.Normal:
               rules.Num = 5;
               rules.NumLocked = false;
 
               rules.Extra = 3;
               rules.ExtraLocked = false;
 
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
 
-            case "T":
+            case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
 
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = "N";
+              rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
-            case "B":
+            case ElectionMode.ByElection:
               throw new ApplicationException("Unit Conventions cannot have by-elections");
           }
           rules.CanReceiveLocked = true;
           break;
 
         case "Reg":
-          rules.CanVote = "N"; // LSA members
+          rules.CanVote = CanVoteOrReceive.NamedPeople; // LSA members
           rules.CanVoteLocked = false;
 
           switch (mode)
           {
-            case "N":
+            case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = false;
 
               rules.Extra = 3;
               rules.ExtraLocked = false;
 
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
 
-            case "T":
+            case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
 
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = "N";
+              rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
-            case "B":
+            case ElectionMode.ByElection:
               // Regional Councils often do not have by-elections, but some countries may allow it?
 
               rules.Num = 1;
@@ -151,14 +167,14 @@ namespace TallyJ.Models
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
           rules.CanReceiveLocked = true;
           break;
 
         case "Oth":
-          rules.CanVote = "A";
+          rules.CanVote = CanVoteOrReceive.All;
 
           rules.CanVoteLocked = false;
           rules.CanReceiveLocked = false;
@@ -167,22 +183,22 @@ namespace TallyJ.Models
 
           switch (mode)
           {
-            case "N":
+            case ElectionMode.Normal:
               rules.Num = 9;
               rules.Extra = 0;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
 
-            case "T":
+            case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.Extra = 0;
-              rules.CanReceive = "N";
+              rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
-            case "B":
+            case ElectionMode.ByElection:
               rules.Num = 1;
               rules.Extra = 0;
-              rules.CanReceive = "A";
+              rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
           break;
@@ -346,11 +362,11 @@ namespace TallyJ.Models
                          ElectionGuid = Guid.NewGuid(),
                          Name = "[New Election]",
                          ElectionType = "LSA",
-                         ElectionMode = "N",
+                         ElectionMode = ElectionMode.Normal,
                          NumberToElect = 9,
                          NumberExtra = 0,
-                         CanVote = "A",
-                         CanReceive = "A"
+                         CanVote = CanVoteOrReceive.All,
+                         CanReceive = CanVoteOrReceive.All
                        };
       Db.Elections.Add(election);
       Db.SaveChanges();
@@ -413,13 +429,14 @@ namespace TallyJ.Models
         .Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
 
-    public JsonResult SetTallyStatusJson(string status)
+    public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
       SetTallyStatus(status);
 
       return new
                {
-                 Saved = true
+                 Saved = true,
+                 QuickLinks = new MenuHelper(controller).QuickLinks().JoinedAsString()
                }.AsJsonResult();
     }
 

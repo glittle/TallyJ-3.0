@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Providers.Entities;
 using System.Web.Security;
 using TallyJ.Code.Data;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 using TallyJ.EF;
 using TallyJ.Models;
@@ -202,6 +203,27 @@ namespace TallyJ.Code.Session
     {
       get { return SessionKey.TimeOffset.FromSession(0); }
       set { SessionKey.TimeOffset.SetInSession(value); }
+    }
+
+    public static string CurrentElectionStatusName
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election==null ? "" : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+      }
+    }
+
+    public static bool IsFeatured(string pageFeatureWhen)
+    {
+      if (pageFeatureWhen == "*")
+      {
+        return true;
+      }
+      var election = CurrentElection;
+      var currentStatus = election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
+
+      return pageFeatureWhen.Contains(currentStatus);
     }
   }
 }

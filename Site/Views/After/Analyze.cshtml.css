@@ -62,7 +62,6 @@ tr.SectionO.Tied.Force {
 }
 table#totalCounts 
 {
-    margin-left: 40px;
 }
 table.Main, table#invalids {
     display: none;

@@ -14,7 +14,7 @@ namespace TallyJ.Code.Enumerations
     public static readonly LocationStatusEnum Done = new LocationStatusEnum("Done", "Done - All ballots finalized");
     public static readonly LocationStatusEnum NeedHelp = new LocationStatusEnum("NeedHelp", "Need Help!");
 
-       static LocationStatusEnum()
+    static LocationStatusEnum()
     {
       AddAsDefault(NotStarted);
       Add(Receiving);
@@ -34,11 +34,6 @@ namespace TallyJ.Code.Enumerations
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == value);
       return item == null ? "" : item.DisplayText;
-    }
-
-    public override IList<LocationStatusEnum> Items
-    {
-      get { return BaseItems; }
     }
 
     public static HtmlString ForHtmlSelect(string selected = "")

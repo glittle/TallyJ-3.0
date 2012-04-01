@@ -25,11 +25,6 @@ namespace TallyJ.Code.Enumerations
       _blankForDisplay = blankForDisplay;
     }
 
-    public override IList<ElectionModeEnum> Items
-    {
-      get { return BaseItems; }
-    }
-
     public static HtmlString ForHtmlSelect(string selected = "", Dictionary<string, string> extraAttribPerItem = null)
     {
       return

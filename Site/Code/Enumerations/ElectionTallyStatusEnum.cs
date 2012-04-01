@@ -13,7 +13,8 @@ namespace TallyJ.Code.Enumerations
     //<option value="Report">Reports Ready to Announce!</option>
 
 
-    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Not Started");
+    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setting Up");
+    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Names Ready");
     public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Tally in Progress");
     public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing Results");
     public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
@@ -22,6 +23,7 @@ namespace TallyJ.Code.Enumerations
     static ElectionTallyStatusEnum()
     {
       AddAsDefault(NotStarted);
+      Add(NamesReady);
       Add(Tallying);
       Add(Reviewing);
       Add(TieBreakNeeded);
@@ -31,11 +33,6 @@ namespace TallyJ.Code.Enumerations
     public ElectionTallyStatusEnum(string key, string display)
       : base(key, display)
     {
-    }
-
-    public override IList<ElectionTallyStatusEnum> Items
-    {
-      get { return BaseItems; }
     }
 
     public static HtmlString ForHtmlSelect(string selected = "")

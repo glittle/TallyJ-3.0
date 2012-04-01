@@ -80,7 +80,7 @@ namespace Tests.BusinessTests
 
       var vote4_9 = votes4[8];
       vote4_9.StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Ok);
-      vote4_9.InvalidReasonGuid.ShouldEqual(IneligibleReason.Unreadable_Writing_illegible);
+      vote4_9.InvalidReasonGuid.ShouldEqual(IneligibleReasonEnum.Unreadable_Writing_illegible);
 
 
       var ballot11 = fakes.Ballots[10];

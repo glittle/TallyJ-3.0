@@ -1,0 +1,119 @@
+﻿@model SetupModel
+@using TallyJ.Code.Session
+@{
+    ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+    ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
+}
+<input type="hidden" data-name="C_RowId" />
+<table class="personEdit">
+    <tr>
+        <td>
+            First Name
+        </td>
+        <td>
+            <input type="text" data-name="FirstName" maxlength="50" class="text50" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Last Name
+        </td>
+        <td>
+            <input type="text" data-name="LastName" maxlength="50" class="text50" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Other First Name(s)
+        </td>
+        <td>
+            <input type="text" data-name="OtherNames" maxlength="100" class="text100" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Other Last Name(s) / Maiden Name
+        </td>
+        <td>
+            <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Other Identifying Information
+        </td>
+        <td>
+            <input type="text" data-name="OtherInfo" maxlength="150" class="text150" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Sector / Area
+        </td>
+        <td>
+            <input type="text" data-name="Area" maxlength="50" class="text50" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Bahá'í ID
+        </td>
+        <td>
+            <input type="text" data-name="BahaiId" maxlength="20" class="text20" />
+        </td>
+    </tr>
+    @*        <tr>
+            <td>
+                Age Group
+            </td>
+            <td>
+                <select data-name="AgeGroup">
+                    <option value="A">Adult</option>
+                    <option value="Y">Youth</option>
+                    <option value="JY">Junior Youth</option>
+                    <option value="C">Child</option>
+                </select>
+            </td>
+        </tr>
+*@
+    <tr>
+        <td>
+            If ineligible, select reason:
+        </td>
+        <td>
+            <select id="ddlIneligible" data-name="IneligibleReasonGuid">
+            </select>
+        </td>
+    </tr>
+    @if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
+    {
+        <tr id="trCanVote">
+            <td>
+                Show as possible voter?
+            </td>
+            <td>
+                <input type="checkbox" data-name="CanVote" />
+            </td>
+        </tr>
+    }
+    @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
+    {
+        <tr id="trCanReceiveVotes">
+            <td>
+                Show for Tie-Break election?
+            </td>
+            <td>
+                <input type="checkbox" data-name="CanReceiveVotes" />
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+        </td>
+        <td>
+            <button type="button" id="btnSave" class="Primary" accesskey="S">
+                <u>S</u>ave Changes</button>
+        </td>
+    </tr>
+</table>

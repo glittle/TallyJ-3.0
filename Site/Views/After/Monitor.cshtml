@@ -78,12 +78,12 @@
   </tbody>
 </table>
 <div style="padding-top: 15px;">
-<div class="float-left">
+@*<div class="float-left">
     Election Status:<br/>
-    <select id="ddlElectionStatus" size="5"> @*@ElectionTallyStatusEnum.Count*@
+    <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count"> 
         @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
     </select>
-</div>
+</div>*@
 <div class="AutoButtons">
     <input type="checkbox" id="chkAutoRefresh" />
     <span>Auto-refresh monitor listing every </span>

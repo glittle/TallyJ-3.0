@@ -26,11 +26,6 @@ namespace TallyJ.Code.Enumerations
     {
     }
 
-    public override IList<ElectionTypeEnum> Items
-    {
-      get { return BaseItems; }
-    }
-
     public static HtmlString ForHtmlSelect(string selected = "")
     {
       return

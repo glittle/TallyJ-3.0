@@ -39,6 +39,7 @@
         <xs:attribute name="class" type="xs:string" use="optional" />
         <xs:attribute name="role" type="xs:string" use="required" />
         <xs:attribute name="desc" type="xs:string" use="required" />
+        <xs:attribute name="featureWhen" type="xs:string" use="optional" />
         <xs:attribute name="requireElection" type="xs:boolean" use="required" />
         <xs:attribute name="showOnDashboard" type="xs:boolean" use="optional" />
         <xs:attribute name="showLocationSelector" type="xs:boolean" use="optional" />

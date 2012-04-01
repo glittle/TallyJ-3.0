@@ -17,18 +17,18 @@
     Analyzing all ballots...
 </div>
 <div class="LeftHalf">
-    <div class="float-left">
+@*    <div class="float-left">
         <b>Election Status</b> (set by head teller)<br />
         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
         </select>
         @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")>
     <label for="chkShowAll">
-        Show "full report" with all votes on report screens?</label>*@
-    </div>
+        Show "full report" with all votes on report screens?</label>* @
+    </div>*@
     <table id="totalCounts" class="float-left">
         <caption>
-            Total Counts</caption>
+            Counts</caption>
         <tr>
             <td>
                 Total Voters
@@ -38,7 +38,7 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td><span class="ui-icon-info"></span>
                 Total Ballots Entered
             </td>
             <td>
