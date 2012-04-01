@@ -19,14 +19,15 @@
     </ol>
 </div>
 <div class="float-left">
+  <span id="more"></span>
   <label class="searchlabel" for="txtSearch">Search for a <u>p</u>erson:</label>
+
   <input id="txtSearch" accesskey="P" autocomplete="off"><span class="ui-icon ui-icon-info qTip"
                                                  title="Type any part of a person's name"></span> <span id="action"></span>
-  <button id="txtAddNew" type="button" accesskey="N">
+  <button id="btnAddNew" type="button" accesskey="N">
     Add <u>N</u>ew Person</button>
   <ul id="nameList">
   </ul>
-  <span id="more"></span>
 </div>
 <div id="editPanel">
   @RenderPage("EditPerson.cshtml")

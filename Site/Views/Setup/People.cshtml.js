@@ -14,6 +14,7 @@ var PeoplePage = function () {
         inputField: null,
         nameList: null,
         rowSelected: 0,
+        maintainCurrentRow: false,
         template: '<li id=P{Id}>{^Name}</li>'
     };
     var onNamesReady = function (info) {
@@ -24,16 +25,19 @@ var PeoplePage = function () {
             local.nameList.append('<li>...no matches found...</li>');
         }
         else {
-            local.rowSelected = 0;
+            if (!local.maintainCurrentRow) {
+                local.rowSelected = 0;
+            }
             if (info.MoreFound && local.lastSearch) {
                 local.nameList.append('<li>...more matched...</li>');
             }
             $.each(local.People, function (i, item) {
-                if (item.BestMatch) {
+                if (item.BestMatch && !local.maintainCurrentRow) {
                     local.rowSelected = i;
                 }
             });
         }
+        local.maintainCurrentRow = false;
         local.actionTag.removeClass('searching');
         local.inputField.removeClass('searching');
         local.nameList.children().eq(local.rowSelected).addClass('selected');
@@ -67,13 +71,7 @@ var PeoplePage = function () {
     };
 
     var addNewPerson = function () {
-        showPersonDetail({
-            Person: {
-                C_RowId: -1,
-                CanVote: publicInterface.defaultRules.CanVote == 'A',
-                CanReceiveVotes: publicInterface.defaultRules.CanReceive == 'A'
-            }
-        });
+        editPersonPage.startNewPerson($('#editPanel'));
     };
 
     var showPersonDetail = function (info) {
@@ -90,7 +88,6 @@ var PeoplePage = function () {
 
         editPersonPage.applyValues(panel, person);
 
-        panel.fadeIn();
     };
 
     //    var saveChanges = function () {
@@ -199,12 +196,13 @@ var PeoplePage = function () {
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
         $('#nameList li').live('click', nameClick).focus();
-        $('#txtAddNew').live('click', addNewPerson);
+        $('#btnAddNew').live('click', addNewPerson);
 
-        site.onbroadcast(site.broadcastCode.personSaved, function () {
+        site.onbroadcast(site.broadcastCode.personSaved, function (ev, person) {
             var searchText = $('#txtSearch').val();
             if (searchText) {
-                local.peopleHelper.SearchNames(searchText, onNamesReady, false);
+                local.maintainCurrentRow = true;
+                local.peopleHelper.SearchNames(searchText, onNamesReady, false, null);
             }
         });
 

@@ -61,3 +61,10 @@ input.searching
 .searchlabel {
     display: block;
 }
+#more {
+    float: right;
+    font-size: 90%;
+}
+#btnAddNew {
+    float: right;
+}

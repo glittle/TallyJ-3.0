@@ -291,12 +291,12 @@
 /*! Blue tooltip style */
 .ui-tooltip-blue .ui-tooltip-titlebar,
 .ui-tooltip-blue .ui-tooltip-content{
-    border-color: #a6dbed; /* #ADD9ED; */
+    border-color: #8CC63C; /* #ADD9ED; */
     color: #22262e; /* #5E99BD; */
 }
 
 	.ui-tooltip-blue .ui-tooltip-content{
-	    background-color: #BDD2FF; /* #E5F6FE; */
+	    background-color: #b0f84b; /*#BDD2FF; #E5F6FE; */
 	}
 
 	.ui-tooltip-blue .ui-tooltip-titlebar{

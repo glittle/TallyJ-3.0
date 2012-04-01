@@ -8,6 +8,13 @@ var EditPersonPage = function () {
         hostPanel: null
     };
 
+    var startNewPerson = function (panel) {
+        applyValues(panel, {
+            Person: {
+                C_RowId: -1
+            }
+        });
+    };
     var applyValues = function (panel, person) {
         if (panel && panel != null) {
             local.hostPanel = panel;
@@ -28,6 +35,7 @@ var EditPersonPage = function () {
             }
         });
 
+        panel.fadeIn();
         panel.find('[data-name="FirstName"]').focus();
 
         //TODO...
@@ -63,7 +71,7 @@ var EditPersonPage = function () {
             if (info.Person) {
                 applyValues(null, info.Person);
 
-                site.broadcast(site.broadcastCode.personSaved);
+                site.broadcast(site.broadcastCode.personSaved, info.Person);
             }
             ShowStatusDisplay(info.Status, 0, null, false, true);
         });
@@ -98,6 +106,7 @@ var EditPersonPage = function () {
         invalidReasons: [],
         defaultRules: null,
         applyValues: applyValues,
+        startNewPerson: startNewPerson,
         PreparePage: preparePage
     };
     return publicInterface;
