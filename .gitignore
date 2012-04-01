@@ -9,3 +9,5 @@ Site.sui
 *.vsmdi
 Tests/bin/*
 Tests/obj/*
+/Tests/bin
+/Site.suo
