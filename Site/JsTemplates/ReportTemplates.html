@@ -8,15 +8,16 @@
             </div>
         </div>
         <div class="row">
-            <div class="Ballot Status{StatusCode}">
+            <div class="Ballot BallotSpoiled{Spoiled}">
                 <div>
                     {C_BallotCode} ({StatusCode})</div>
                 <div>
-                    {^rows2}</div>
+                    {^rows2} &nbsp;</div>
             </div>
         </div>
         <div class="row2">
-            <span class="Vote">{Status}<span class="Person">{PersonFullNameFL}</span><span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>
+            <span class="Vote VoteSpoiled{Spoiled}"><span class="Person">{PersonFullNameFL}</span>
+                <span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>
     </div>
     <div id="AllReceivingVotesByVote" data-name="Full Tellers' Report (all who were voted for)">
         <div class="body">

@@ -205,6 +205,10 @@ namespace TallyJ.Models
     public virtual ResultSummary GenerateResults()
     {
       // first refresh all votes and ballots
+      if (VoteAnalyzer.UpdateAllStatuses(VoteInfos))
+      {
+        Db.SaveChanges();
+      }
       BallotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
 
       // clear any existing results

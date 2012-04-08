@@ -34,6 +34,11 @@ namespace TallyJ.Code.Enumerations
       return item == null ? "" : item.DisplayText;
     }
 
+    public static IEnumerable<object> Listing
+    {
+      get { return BaseItems.Select(i => new { v = i.Value, d = i.DisplayText }); }
+    }
+
     public static HtmlString ForHtmlSelect(string selected = "")
     {
       return
@@ -44,5 +49,10 @@ namespace TallyJ.Code.Enumerations
           .AsRawHtml();
     }
 
+    /// <Summary>Find the status that matches this string. If not found, default to something... use Review needed.</Summary>
+    public static BallotStatusEnum Parse(string code)
+    {
+      return BaseItems.SingleOrDefault(i => i.Value == code) ?? Review;
+    }
   }
 }

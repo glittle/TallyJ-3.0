@@ -188,16 +188,23 @@ var ImportCsvPage = function () {
         });
     };
     var showFields = function (info) {
-        var host = $('#fieldSelector').html('');
+        var host = $('#fieldSelector').html('<div class=ImportTips><span class="ui-icon ui-icon-info" id="qTipImportHead"></span><span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div>');
         var options = '<option value="{0}">{#ExpandName("{0}")}</option>'.filledWithEach(info.possible);
-        var template1 = '<div><h3>{field}</h3><div>{^sampleDivs}</div><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select></div>';
+        var template1 = '<div{extra}><h3>{field}</h3><div>{^sampleDivs}</div><select data-num={num}><option class=Ignore value="">-</option>' + options + '</select></div>';
         var count = 1;
         $.each(info.csvFields, function () {
             this.sampleDivs = '<div>{0}&nbsp;</div>'.filledWithEach(this.sample);
+            if (count == 1) {
+                this.extra = " class=FirstCol";
+            }
             this.num = count++;
             host.append(template1.filledWith(this));
             host.find('select').last().val(this.map);
         });
+
+        site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers as found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
+        site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown here, select the TallyJ field that is the best match for the information in the column.' });
+        ActivateTips();
     };
 
     var showUploads = function (info) {
@@ -235,7 +242,7 @@ var ImportCsvPage = function () {
             $.each(local.uploadList, function () {
                 this.RowClass = this.C_RowId == rowId ? 'Active' : 'NotActive';
             });
-            showUploads();
+            // showUploads();
             getFieldsInfoIfNeeded();
         }
         showActiveFileName();

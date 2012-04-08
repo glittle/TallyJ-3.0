@@ -1,7 +1,7 @@
 ﻿@model SetupModel
 @using TallyJ.Code.Session
 @{
-    ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
     ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
@@ -13,6 +13,7 @@
         </td>
         <td>
             <input type="text" data-name="FirstName" maxlength="50" class="text50" />
+            <span class="ui-icon ui-icon-info" id="qTipFName"></span>
         </td>
     </tr>
     <tr>
@@ -29,6 +30,7 @@
         </td>
         <td>
             <input type="text" data-name="OtherNames" maxlength="100" class="text100" />
+            <span class="ui-icon ui-icon-info" id="qTipOtherName"></span>
         </td>
     </tr>
     <tr>
@@ -45,6 +47,7 @@
         </td>
         <td>
             <input type="text" data-name="OtherInfo" maxlength="150" class="text150" />
+            <span class="ui-icon ui-icon-info" id="qTipOtherInfo"></span>
         </td>
     </tr>
     <tr>
@@ -53,6 +56,7 @@
         </td>
         <td>
             <input type="text" data-name="Area" maxlength="50" class="text50" />
+            <span class="ui-icon ui-icon-info" id="qTipArea"></span>
         </td>
     </tr>
     <tr>
@@ -61,6 +65,7 @@
         </td>
         <td>
             <input type="text" data-name="BahaiId" maxlength="20" class="text20" />
+            <span class="ui-icon ui-icon-info" id="qTipBahaiId"></span>
         </td>
     </tr>
     @*        <tr>
@@ -80,6 +85,7 @@
     <tr>
         <td>
             If ineligible, select reason:
+            <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
         </td>
         <td>
             <select id="ddlIneligible" data-name="IneligibleReasonGuid">
@@ -90,7 +96,8 @@
     {
         <tr id="trCanVote">
             <td>
-                Show as possible voter?
+                Show as voter on Front Desk?
+            <span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
             </td>
             <td>
                 <input type="checkbox" data-name="CanVote" />
@@ -101,7 +108,8 @@
     {
         <tr id="trCanReceiveVotes">
             <td>
-                Show for Tie-Break election?
+                Is tied in this Tie-Break election?
+            <span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
             </td>
             <td>
                 <input type="checkbox" data-name="CanReceiveVotes" />

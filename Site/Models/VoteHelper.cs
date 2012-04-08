@@ -8,6 +8,7 @@ namespace TallyJ.Models
     {
       public const string Ok = "Ok";
       public const string Changed = "Changed"; // if the person info does not match
+      public const string Spoiled = "Spoiled";
     }
   }
 }

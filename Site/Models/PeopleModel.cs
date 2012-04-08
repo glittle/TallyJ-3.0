@@ -145,7 +145,8 @@ namespace TallyJ.Models
                  person.OtherInfo,
                  person.OtherLastNames,
                  person.OtherNames,
-                 person.Area
+                 person.Area,
+                 person.C_FullName
                };
     }
 
@@ -206,7 +207,8 @@ namespace TallyJ.Models
       return new
                {
                  Status = "Saved",
-                 Person = PersonForEdit(savedPerson)
+                 Person = PersonForEdit(savedPerson),
+                 OnFile = Db.People.Count(p => p.ElectionGuid == currentElectionGuid)
                }.AsJsonResult();
     }
 
@@ -295,14 +297,14 @@ namespace TallyJ.Models
     {
       if (!VotingMethodEnum.Exists(voteType))
       {
-        return new {Message = "Invalid type"}.AsJsonResult();
+        return new { Message = "Invalid type" }.AsJsonResult();
       }
 
       var person =
         Db.People.SingleOrDefault(p => p.ElectionGuid == UserSession.CurrentElectionGuid && p.C_RowId == personId);
       if (person == null)
       {
-        return new {Message = "Unknown person"}.AsJsonResult();
+        return new { Message = "Unknown person" }.AsJsonResult();
       }
 
 
@@ -346,7 +348,7 @@ namespace TallyJ.Models
       {
         return new
                  {
-                   PersonLines = PersonLines(new List<Person> {person}),
+                   PersonLines = PersonLines(new List<Person> { person }),
                    LastRowVersion
                  }.AsJsonResult();
       }
@@ -372,11 +374,11 @@ namespace TallyJ.Models
       catch (SqlException)
       {
         return
-          new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.
+          new { Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people" }.
             AsJsonResult();
       }
 
-      return new {Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person"))}.AsJsonResult();
+      return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }
   }
 }

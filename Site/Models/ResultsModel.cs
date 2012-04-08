@@ -73,7 +73,7 @@ namespace TallyJ.Models
 
         return new
                  {
-                   ReportVotes = reportVotes.Select(r => new {r.PersonName, r.VoteCount, r.TieBreakCount, r.Section}),
+                   ReportVotes = reportVotes.Select(r => new { r.PersonName, r.VoteCount, r.TieBreakCount, r.Section }),
                    //ChartVotes = chartVotes,
                    NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
@@ -106,12 +106,13 @@ namespace TallyJ.Models
       if (resultSummaryAuto.BallotsNeedingReview != 0)
       {
         var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
-          .Join(Db.Locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new {vi, location})
+          .Join(Db.Locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
           .Select(x => new
                          {
                            x.vi.LocationId,
                            x.vi.BallotId,
-                           Ballot = x.location.Name + " - " + x.vi.C_BallotCode,
+                           Status = x.vi.BallotStatusCode == "Review" ? BallotStatusEnum.Review.DisplayText : "Verification Needed",
+                           Ballot = string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name)
                          })
           .Distinct()
           .OrderBy(x => x.Ballot);
@@ -160,6 +161,8 @@ namespace TallyJ.Models
                           rt.IsResolved
                         });
 
+      //var spoiledVotesSummary = Db.vVoteInfoes.where
+
       return new
                {
                  Votes = vResultInfos,
@@ -197,13 +200,14 @@ namespace TallyJ.Models
                            {
                              b.C_BallotCode,
                              b.StatusCode,
+                             Spoiled = b.StatusCode != BallotStatusEnum.Ok,
                              Rows2 = votes
                            .Where(v => v.BallotGuid == b.BallotGuid).OrderBy(v => v.PositionOnBallot)
                            .Select(v => new
                                           {
                                             v.PersonFullNameFL,
-                                            Status = v.VoteStatusCode==VoteHelper.VoteStatusCode.Ok ? "" : v.VoteStatusCode,
-                                            VoteInvalidReasonDesc = v.VoteInvalidReasonDesc.SurroundContentWith("[","]")
+                                            Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+                                            VoteInvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(v.VoteIneligibleReasonGuid.AsGuid()).SurroundContentWith("[", "]")
                                           })
                            });
 
@@ -231,7 +235,7 @@ namespace TallyJ.Models
           break;
 
         default:
-          return new {Status = "Unknown report"}.AsJsonResult();
+          return new { Status = "Unknown report" }.AsJsonResult();
       }
 
       return new

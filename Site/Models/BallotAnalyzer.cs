@@ -51,7 +51,7 @@ namespace TallyJ.Models
     /// <param name="ballot">The Ballot or vBallotInfo to check and update.</param>
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
     /// <returns>Returns the updated status code</returns>
-    public string UpdateBallotStatus(IBallotBase ballot, List<Vote> currentVotes)
+    public BallotStatusWithSpoilCount UpdateBallotStatus(IBallotBase ballot, List<Vote> currentVotes)
     {
       if (IsSingleNameElection)
       {
@@ -60,7 +60,7 @@ namespace TallyJ.Models
           ballot.StatusCode = BallotStatusEnum.Ok;
           SaveChangesToDatastore();
         }
-        return BallotStatusEnum.Ok;
+        return new BallotStatusWithSpoilCount { Status = BallotStatusEnum.Ok };
       }
 
 
@@ -68,21 +68,25 @@ namespace TallyJ.Models
       currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
 
       string ballotStatus;
-      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out ballotStatus))
+      int spoiledCount;
+      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out ballotStatus, out spoiledCount))
       {
         ballot.StatusCode = ballotStatus;
         SaveChangesToDatastore();
       }
-      return ballotStatus;
+      return new BallotStatusWithSpoilCount { Status = BallotStatusEnum.Parse(ballotStatus), SpoiledCount = spoiledCount };
     }
 
     /// <Summary>Review the votes, and determine if the containing ballot's status code should change</Summary>
     /// <param name="currentStatusCode"> The current status code </param>
     /// <param name="votes"> All the votes on this ballot </param>
     /// <param name="statusCode"> The new status code </param>
+    /// <param name="spoiledCount"> </param>
     /// <returns> True if the new status code is different from the current status code </returns>
-    public bool DetermineStatusFromVotesList(string currentStatusCode, List<Vote> votes, out string statusCode)
+    public bool DetermineStatusFromVotesList(string currentStatusCode, List<Vote> votes, out string statusCode, out int spoiledCount)
     {
+      spoiledCount = 0;
+
       // if under review, don't change that status
       if (currentStatusCode == BallotStatusEnum.Review)
       {
@@ -119,6 +123,8 @@ namespace TallyJ.Models
         return StatusChanged(BallotStatusEnum.Dup, currentStatusCode, out statusCode);
       }
 
+      spoiledCount = votes.Count(v => v.InvalidReasonGuid.HasValue);
+
       return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
     }
 
@@ -131,16 +137,16 @@ namespace TallyJ.Models
     }
 
     /// <Summary>Run <see cref="UpdateBallotStatus"/> on each of these Ballots, updating the database if needed</Summary>
-    /// <param name="ballotInfos">The list of Ballot records to update</param>
+    /// <param name="ballots">The list of Ballot records to update</param>
     /// <param name="voteInfos">All the Votes that are on all these Ballots.</param>
-    public void UpdateAllBallotStatuses(List<Ballot> ballotInfos, List<vVoteInfo> voteInfos)
+    public void UpdateAllBallotStatuses(List<Ballot> ballots, List<vVoteInfo> voteInfos)
     {
-      ballotInfos.ForEach(bi => UpdateBallotStatus(bi, voteInfos.Where(vi=>vi.BallotGuid==bi.BallotGuid).AsVotes().ToList()));
+      ballots.ForEach(b => UpdateBallotStatus(b, voteInfos.Where(vi => vi.BallotGuid == b.BallotGuid).AsVotes().ToList()));
     }
 
-    public bool BallotNeedsReview(Ballot ballotInfo)
+    public bool BallotNeedsReview(Ballot ballot)
     {
-      return ballotInfo.StatusCode == BallotStatusEnum.Review;
+      return ballot.StatusCode == BallotStatusEnum.Review;
     }
   }
 }

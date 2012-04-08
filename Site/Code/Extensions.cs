@@ -146,6 +146,16 @@ namespace TallyJ.Code
       return input.HasValue ? input.Value : Guid.Empty;
     }
 
+    public static Guid AsGuid(this string input)
+    {
+      Guid guid;
+      if(Guid.TryParse(input, out guid))
+      {
+        return guid;
+      }
+      return Guid.Empty;
+    }
+
     public static HtmlString AsHtmlString(this DateTime input, string format = "d MMMM yyyy")
     {
       if (input == DateTime.MinValue)
@@ -523,7 +533,7 @@ namespace TallyJ.Code
                                             C_RowId = vVoteInfo.VoteId,
                                             BallotGuid = vVoteInfo.BallotGuid,
                                             C_RowVersion = null,
-                                            InvalidReasonGuid = vVoteInfo.VoteInvalidReasonGuid,
+                                            InvalidReasonGuid = vVoteInfo.VoteIneligibleReasonGuid,
                                             PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
                                             PersonGuid = vVoteInfo.PersonGuid,
                                             PositionOnBallot = vVoteInfo.PositionOnBallot,

@@ -210,7 +210,7 @@ namespace TallyJ.Code.Session
       get
       {
         var election = CurrentElection;
-        return election==null ? "" : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+        return election==null ? ElectionTallyStatusEnum.NotStarted : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
       }
     }
 
@@ -221,7 +221,7 @@ namespace TallyJ.Code.Session
         return true;
       }
       var election = CurrentElection;
-      var currentStatus = election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
+      var currentStatus = election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
 
       return pageFeatureWhen.Contains(currentStatus);
     }

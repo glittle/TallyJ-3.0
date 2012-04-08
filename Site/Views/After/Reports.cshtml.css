@@ -70,31 +70,32 @@
     color: red;
     float: left;
 }
-
-.Ballot {
-    font-size: 10pt;
-    margin-top: 3px;
+.VoteSpoiledtrue {
     color: red;
     text-decoration: line-through;
 }
-.Ballot.StatusOk {
-    text-decoration: none;
-    color: #000;
+.Ballot {
+    font-size: 10pt;
+    margin-top: 3px;
+ }
+.BallotSpoiledtrue,
+.BallotSpoiledtrue div,
+.BallotSpoiledtrue span
+{
+    text-decoration: line-through;
+    color: red;
 }
 .Ballot > div {
     margin-left: 100px;
-    text-decoration: inherit;
 }
 .Ballot > div:first-child {
     float: left;
     margin-left: 0;
     width: 95px;
-    text-decoration: none;
 }
 .Ballot .Vote {
     display: inline-block;
     white-space: normal;
-    text-decoration: inherit;
 }
 .Ballot .Vote .Person 
 {
@@ -102,7 +103,9 @@
 }
 .Ballot .Vote .Invalid {
     color: red;
-    text-decoration: underline;
+    text-decoration: line-through;
+    font-style: italic;
+    font-size: 90%;
 }
 
 

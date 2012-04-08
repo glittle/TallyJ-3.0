@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using TallyJ.EF;
@@ -16,14 +17,16 @@ namespace TallyJ.Models
     int NextBallotNumAtComputer();
     string CurrentBallotJsonString();
     IEnumerable<object> CurrentVotesForJson();
-    JsonResult SaveVote(int personId, int voteId, int count, int invalid);
+    JsonResult SaveVote(int personId, int voteId, int count, Guid invalid);
     JsonResult DeleteVote(int vid);
-    string InvalidReasonsJsonString();
+    string InvalidReasonsByIdJsonString();
+    string InvalidReasonsByGuidJsonString();
     object CurrentBallotsInfoList();
     JsonResult SwitchToBallotJson(int ballotId);
     bool SortVotes(List<int> ids);
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);
+    object BallotForJson(vBallotInfo b);
   }
 }

@@ -27,10 +27,10 @@ namespace TallyJ.Code.Enumerations
     public static readonly IneligibleReasonEnum Unidentifiable_Multiple_people_with_identical_name = new IneligibleReasonEnum("D727534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Multiple people with identical name");
     public static readonly IneligibleReasonEnum Unidentifiable_Name_is_a_mix_of_multiple_people = new IneligibleReasonEnum("D827534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Name is a mix of multiple people");
     public static readonly IneligibleReasonEnum Unidentifiable_Unknown_person = new IneligibleReasonEnum("CE27534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Unknown person");
-    public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"In another language - not translatable");
+    public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"In an unknown language");
     public static readonly IneligibleReasonEnum Unreadable_Not_a_complete_name = new IneligibleReasonEnum("86DDBE4A-841D-E111-A7FB-002269C41D11", GroupName.Unreadable,"Not a complete name");
-    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote is blank");
-    public static readonly IneligibleReasonEnum Unreadable_Writing_illegible = new IneligibleReasonEnum("CD27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Writing illegible");
+    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
+    public static readonly IneligibleReasonEnum Unreadable_Writing_illegible = new IneligibleReasonEnum("CD27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Writing is illegible");
 
     static IneligibleReasonEnum()
     {
@@ -88,7 +88,7 @@ namespace TallyJ.Code.Enumerations
       return item == null ? "" : item.Description;
     }
 
-    public static IList<IneligibleReasonEnum> Items
+    public new static IList<IneligibleReasonEnum> Items
     {
       get { return BaseItems; }
     }

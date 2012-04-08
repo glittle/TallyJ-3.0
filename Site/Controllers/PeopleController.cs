@@ -38,5 +38,6 @@ namespace TallyJ.Controllers
       var model = new PeopleModel();
       return model.DetailsFor(id);
     }
+
   }
 }

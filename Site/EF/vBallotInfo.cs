@@ -32,5 +32,7 @@ namespace TallyJ.EF
         public string TellerAtKeyboardName { get; set; }
         public string TellerAssistingName { get; set; }
         public Nullable<long> RowVersionInt { get; set; }
+        public Nullable<int> SpoiledCount { get; set; }
+        public Nullable<int> VotesChanged { get; set; }
     }
 }

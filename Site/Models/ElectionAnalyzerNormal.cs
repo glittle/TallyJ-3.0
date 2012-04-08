@@ -50,9 +50,9 @@ namespace TallyJ.Models
         VoteInfos.Count(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi));
 
       // collect only valid votes
-      foreach (var vBallotInfo in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
+      foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
       {
-        var ballotGuid = vBallotInfo.BallotGuid;
+        var ballotGuid = ballot.BallotGuid;
         foreach (var vVoteInfo in VoteInfos.Where(vi => vi.BallotGuid==ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
         {
           var voteInfo = vVoteInfo;

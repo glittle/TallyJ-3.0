@@ -192,12 +192,12 @@ AS
 
 	select RowId [PersonId]
 			, _FullName [FullName]
-            , r1._RowId [Ineligible]
+            , res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
 			, case when ROW_NUMBER() over (order by Votes desc) = 1 
 						then 1 else 0 end [BestMatch]
 	from @results res
-		left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
+		-- left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
 	where res.SortOrder <= @MaxToReturn
 	order by PassNum, _FullName
 

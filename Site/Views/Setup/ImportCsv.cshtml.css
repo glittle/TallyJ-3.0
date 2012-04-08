@@ -8,10 +8,12 @@
 {
     display: inline-block;
 }
-.uploadList {
+.uploadList
+{
     margin-left: 10px;
 }
-.uploadList h4 {
+.uploadList h4
+{
     margin-left: -10px;
 }
 .uploadList table
@@ -79,7 +81,6 @@
 .qq-upload-list
 {
     display: none; /* don't need for tallyj */
-    
     margin: 15px 35px;
     padding: 0;
     list-style: disc;
@@ -120,60 +121,97 @@
 {
     display: inline;
 }
-tr.Active {
+tr.Active
+{
     background-color: #fff;
 }
-.Actions {
+.Actions
+{
     text-align: center;
 }
-.Actions div:hover {
+.Actions div:hover
+{
     background-color: #ddd;
 }
-.Actions div {
+.Actions div
+{
     cursor: pointer;
     font-size: 80%;
     margin-bottom: 3px;
     text-align: center;
     color: #00c600;
 }
-span.MakeActive:hover {
+span.MakeActive:hover
+{
     text-decoration: underline;
 }
-tr.Active .Actions div {
+tr.Active .Actions div
+{
     display: none;
 }
-tr.Active .Actions span {
-    
+tr.Active .Actions span
+{
 }
-tr.NotActive .Actions span {
+tr.NotActive .Actions span
+{
     display: none;
 }
-tr.Uploaded .CopyMap {
+tr.Uploaded .CopyMap
+{
     display: none;
 }
-#fieldSelector {
+#fieldSelector
+{
     white-space: nowrap;
     clear: right;
+    position: relative;
 }
-#fieldSelector > div {
+#fieldSelector > div
+{
     width: 100px;
     display: inline-block;
     background-color: #ddd;
     margin: 0 0 0 1px;
     overflow: hidden;
 }
-#fieldSelector select 
+#fieldSelector select
 {
     display: block;
     width: 100px;
 }
-#fieldSelector div div {
+#fieldSelector div div
+{
     overflow: hidden;
     padding: 0 0 0 2px;
 }
-#fieldSelector h3 {
+#fieldSelector h3
+{
     margin: 0 0 2px 2px;
 }
-#btnPrepareFields {
+#btnPrepareFields
+{
     float: right;
+}
+#fieldSelector > div.ImportTips
+{
+    height: 100%;
+    position: absolute;
+    width: 20px;
+    background-color: transparent;
+}
+.ImportTips span
+{
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+    top: 2px;
+}
+.ImportTips span#qTipImportFoot
+{
+    top: auto;
+    bottom: 4px;
+}
+#fieldSelector > div.FirstCol
+{
+    margin-left: 22px;
 }

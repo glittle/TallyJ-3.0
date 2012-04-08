@@ -17,19 +17,17 @@ namespace TallyJ.EF
         public int VoteId { get; set; }
         public string VoteStatusCode { get; set; }
         public Nullable<int> SingleNameElectionCount { get; set; }
+        public Nullable<bool> IsSingleNameElection { get; set; }
         public int PositionOnBallot { get; set; }
-        public Nullable<System.Guid> VoteInvalidReasonGuid { get; set; }
-        public Nullable<int> VoteInvalidReasonId { get; set; }
-        public string VoteInvalidReasonDesc { get; set; }
+        public Nullable<System.Guid> VoteIneligibleReasonGuid { get; set; }
         public string PersonCombinedInfoInVote { get; set; }
         public string PersonCombinedInfo { get; set; }
         public Nullable<System.Guid> PersonGuid { get; set; }
         public Nullable<int> PersonId { get; set; }
         public string PersonFullName { get; set; }
+        public string PersonFullNameFL { get; set; }
         public Nullable<bool> CanReceiveVotes { get; set; }
         public Nullable<System.Guid> PersonIneligibleReasonGuid { get; set; }
-        public Nullable<int> PersonIneligibleReasonId { get; set; }
-        public string PersonIneligibleReasonDesc { get; set; }
         public Nullable<int> ResultId { get; set; }
         public System.Guid BallotGuid { get; set; }
         public int BallotId { get; set; }
@@ -38,7 +36,5 @@ namespace TallyJ.EF
         public int LocationId { get; set; }
         public string LocationTallyStatus { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public Nullable<bool> IsSingleNameElection { get; set; }
-        public string PersonFullNameFL { get; set; }
     }
 }

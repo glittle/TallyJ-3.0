@@ -22,7 +22,7 @@ namespace TallyJ.Models
       return nextBallotNum;
     }
 
-    protected override object BallotForJson(vBallotInfo b)
+    public override object BallotForJson(vBallotInfo b)
     {
       return new
       {
@@ -30,6 +30,7 @@ namespace TallyJ.Models
         Code = b.C_BallotCode,
         b.StatusCode,
         StatusCodeText = BallotStatusEnum.TextFor(b.StatusCode),
+        b.SpoiledCount
       };
     }
   }

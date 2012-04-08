@@ -16,7 +16,6 @@
           <EntitySet Name="Location" EntityType="tallyj2dModel.Store.Location" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Message" EntityType="tallyj2dModel.Store.Message" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Person" EntityType="tallyj2dModel.Store.Person" store:Type="Tables" Schema="tj" />
-          <EntitySet Name="Reasons" EntityType="tallyj2dModel.Store.Reasons" store:Type="Tables" Schema="tj" />
           <EntitySet Name="Result" EntityType="tallyj2dModel.Store.Result" store:Type="Tables" Schema="tj" />
           <EntitySet Name="ResultSummary" EntityType="tallyj2dModel.Store.ResultSummary" store:Type="Tables" Schema="tj" />
           <EntitySet Name="ResultTie" EntityType="tallyj2dModel.Store.ResultTie" store:Type="Tables" Schema="tj" />
@@ -41,7 +40,9 @@
       [vBallotInfo].[TallyStatus] AS [TallyStatus], 
       [vBallotInfo].[TellerAtKeyboardName] AS [TellerAtKeyboardName], 
       [vBallotInfo].[TellerAssistingName] AS [TellerAssistingName], 
-      [vBallotInfo].[RowVersionInt] AS [RowVersionInt]
+      [vBallotInfo].[RowVersionInt] AS [RowVersionInt], 
+      [vBallotInfo].[SpoiledCount] AS [SpoiledCount], 
+      [vBallotInfo].[VotesChanged] AS [VotesChanged]
       FROM [tj].[vBallotInfo] AS [vBallotInfo]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vElectionListInfo" EntityType="tallyj2dModel.Store.vElectionListInfo" store:Type="Views" store:Schema="tj" store:Name="vElectionListInfo">
@@ -112,16 +113,14 @@
       [vResultInfo].[PersonName] AS [PersonName]
       FROM [tj].[vResultInfo] AS [vResultInfo]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" store:Schema="tj" store:Name="vVoteInfo">
-            <DefiningQuery>SELECT 
+          <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" Schema="tj" store:Name="vVoteInfo">
+            <!--<DefiningQuery>SELECT 
       [vVoteInfo].[VoteId] AS [VoteId], 
       [vVoteInfo].[VoteStatusCode] AS [VoteStatusCode], 
       [vVoteInfo].[SingleNameElectionCount] AS [SingleNameElectionCount], 
       [vVoteInfo].[IsSingleNameElection] AS [IsSingleNameElection], 
       [vVoteInfo].[PositionOnBallot] AS [PositionOnBallot], 
-      [vVoteInfo].[VoteInvalidReasonGuid] AS [VoteInvalidReasonGuid], 
-      [vVoteInfo].[VoteInvalidReasonId] AS [VoteInvalidReasonId], 
-      [vVoteInfo].[VoteInvalidReasonDesc] AS [VoteInvalidReasonDesc], 
+      [vVoteInfo].[VoteIneligibleReasonGuid] AS [VoteIneligibleReasonGuid], 
       [vVoteInfo].[PersonCombinedInfoInVote] AS [PersonCombinedInfoInVote], 
       [vVoteInfo].[PersonCombinedInfo] AS [PersonCombinedInfo], 
       [vVoteInfo].[PersonGuid] AS [PersonGuid], 
@@ -130,8 +129,6 @@
       [vVoteInfo].[PersonFullNameFL] AS [PersonFullNameFL], 
       [vVoteInfo].[CanReceiveVotes] AS [CanReceiveVotes], 
       [vVoteInfo].[PersonIneligibleReasonGuid] AS [PersonIneligibleReasonGuid], 
-      [vVoteInfo].[PersonIneligibleReasonId] AS [PersonIneligibleReasonId], 
-      [vVoteInfo].[PersonIneligibleReasonDesc] AS [PersonIneligibleReasonDesc], 
       [vVoteInfo].[ResultId] AS [ResultId], 
       [vVoteInfo].[BallotGuid] AS [BallotGuid], 
       [vVoteInfo].[BallotId] AS [BallotId], 
@@ -140,7 +137,7 @@
       [vVoteInfo].[LocationId] AS [LocationId], 
       [vVoteInfo].[LocationTallyStatus] AS [LocationTallyStatus], 
       [vVoteInfo].[ElectionGuid] AS [ElectionGuid]
-      FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>
+      FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>-->
           </EntitySet>
           <AssociationSet Name="FK_JoinElectionUser_Users" Association="tallyj2dModel.Store.FK_JoinElectionUser_Users">
             <End Role="Users" EntitySet="Users" />
@@ -313,16 +310,6 @@
           <Property Name="TellerAtKeyboard" Type="uniqueidentifier" />
           <Property Name="TellerAssisting" Type="uniqueidentifier" />
         </EntityType>
-        <EntityType Name="Reasons">
-          <Key>
-            <PropertyRef Name="_RowId" />
-          </Key>
-          <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="ReasonGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ReasonGroup" Type="nvarchar" Nullable="false" MaxLength="30" />
-          <Property Name="ReasonDescription" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="SortOrder" Type="int" />
-        </EntityType>
         <EntityType Name="Result">
           <Key>
             <PropertyRef Name="_RowId" />
@@ -434,6 +421,8 @@
           <Property Name="TellerAtKeyboardName" Type="nvarchar" MaxLength="50" />
           <Property Name="TellerAssistingName" Type="nvarchar" MaxLength="50" />
           <Property Name="RowVersionInt" Type="bigint" />
+          <Property Name="SpoiledCount" Type="int" />
+          <Property Name="VotesChanged" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vElectionListInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -536,22 +525,19 @@
         <EntityType Name="vVoteInfo">
           <Key>
             <PropertyRef Name="VoteId" />
-            
-            
-            
-            
-            
-            
-            
+            <PropertyRef Name="PositionOnBallot" />
+            <PropertyRef Name="BallotGuid" />
+            <PropertyRef Name="BallotId" />
+            <PropertyRef Name="BallotStatusCode" />
+            <PropertyRef Name="LocationId" />
+            <PropertyRef Name="ElectionGuid" />
           </Key>
           <Property Name="VoteId" Type="int" Nullable="false" />
-          <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
+          <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" StoreGeneratedPattern="None" />
           <Property Name="SingleNameElectionCount" Type="int" />
           <Property Name="IsSingleNameElection" Type="bit" />
           <Property Name="PositionOnBallot" Type="int" Nullable="false" />
-          <Property Name="VoteInvalidReasonGuid" Type="uniqueidentifier" />
-          <Property Name="VoteInvalidReasonId" Type="int" />
-          <Property Name="VoteInvalidReasonDesc" Type="nvarchar" MaxLength="50" />
+          <Property Name="VoteIneligibleReasonGuid" Type="uniqueidentifier" />
           <Property Name="PersonCombinedInfoInVote" Type="nvarchar(max)" />
           <Property Name="PersonCombinedInfo" Type="nvarchar(max)" />
           <Property Name="PersonGuid" Type="uniqueidentifier" />
@@ -560,8 +546,6 @@
           <Property Name="PersonFullNameFL" Type="nvarchar" MaxLength="460" />
           <Property Name="CanReceiveVotes" Type="bit" />
           <Property Name="PersonIneligibleReasonGuid" Type="uniqueidentifier" />
-          <Property Name="PersonIneligibleReasonId" Type="int" />
-          <Property Name="PersonIneligibleReasonDesc" Type="nvarchar" MaxLength="50" />
           <Property Name="ResultId" Type="int" />
           <Property Name="BallotGuid" Type="uniqueidentifier" Nullable="false" />
           <Property Name="BallotId" Type="int" Nullable="false" />
@@ -626,7 +610,6 @@
           <EntitySet Name="Locations" EntityType="TallyJ2Model.Location" />
           <EntitySet Name="Messages" EntityType="TallyJ2Model.Message" />
           <EntitySet Name="People" EntityType="TallyJ2Model.Person" />
-          <EntitySet Name="Reasons" EntityType="TallyJ2Model.Reason" />
           <EntitySet Name="Results" EntityType="TallyJ2Model.Result" />
           <EntitySet Name="ResultSummaries" EntityType="TallyJ2Model.ResultSummary" />
           <EntitySet Name="Tellers" EntityType="TallyJ2Model.Teller" />
@@ -639,11 +622,17 @@
             <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
           </AssociationSet>
           <EntitySet Name="Votes" EntityType="TallyJ2Model.Vote" />
-          <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
           <FunctionImport Name="CurrentRowVersion" ReturnType="Collection(Int64)" />
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2Model.vLocationInfo" />
           <EntitySet Name="ImportFiles" EntityType="TallyJ2Model.ImportFile" />
           <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2Model.vImportFileInfo" />
+          <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
+          <FunctionImport Name="EraseElectionContents">
+            <Parameter Name="ElectionGuidToClear" Mode="In" Type="Guid" />
+            <Parameter Name="EraseTallyContent" Mode="In" Type="Boolean" />
+            <Parameter Name="ByLoginId" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="vVoteInfoes" EntityType="TallyJ2Model.vVoteInfo" />
           <FunctionImport Name="SqlSearch" ReturnType="Collection(TallyJ2Model.SqlSearch_Result)">
             <Parameter Name="Election" Mode="In" Type="Guid" />
             <Parameter Name="Term1" Mode="In" Type="String" />
@@ -653,12 +642,6 @@
             <Parameter Name="MaxToReturn" Mode="In" Type="Int32" />
             <Parameter Name="MoreExactMatchesFound" Mode="InOut" Type="Boolean" />
             <Parameter Name="ShowDebugInfo" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <EntitySet Name="ResultTies" EntityType="TallyJ2Model.ResultTie" />
-          <FunctionImport Name="EraseElectionContents">
-            <Parameter Name="ElectionGuidToClear" Mode="In" Type="Guid" />
-            <Parameter Name="EraseTallyContent" Mode="In" Type="Boolean" />
-            <Parameter Name="ByLoginId" Mode="In" Type="String" />
           </FunctionImport>
           </EntityContainer>
         <ComplexType Name="CloneElection_Result">
@@ -805,16 +788,6 @@
           <Property Type="Guid" Name="TellerAtKeyboard" />
           <Property Type="Guid" Name="TellerAssisting" />
         </EntityType>
-        <EntityType Name="Reason">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Type="Int32" Name="C_RowId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Guid" Name="ReasonGuid" Nullable="false" />
-          <Property Type="String" Name="ReasonGroup" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="ReasonDescription" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="SortOrder" />
-        </EntityType>
         <EntityType Name="Result">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -888,6 +861,8 @@
           <Property Type="String" Name="TellerAtKeyboardName" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="TellerAssistingName" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="RowVersionInt" />
+          <Property Type="Int32" Name="SpoiledCount" />
+          <Property Type="Int32" Name="VotesChanged" />
         </EntityType>
         <EntityType Name="vElectionListInfo">
           <Key>
@@ -963,37 +938,6 @@
           <Property Type="Binary" Name="C_RowVersion" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Type="String" Name="PersonCombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="vVoteInfo">
-          <Key>
-            <PropertyRef Name="VoteId" />
-          </Key>
-          <Property Type="Int32" Name="VoteId" Nullable="false" />
-          <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="SingleNameElectionCount" />
-          <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
-          <Property Type="Guid" Name="VoteInvalidReasonGuid" />
-          <Property Type="Int32" Name="VoteInvalidReasonId" />
-          <Property Type="String" Name="VoteInvalidReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="PersonCombinedInfoInVote" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="PersonCombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Type="Guid" Name="PersonGuid" />
-          <Property Type="Int32" Name="PersonId" />
-          <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="CanReceiveVotes" />
-          <Property Type="Guid" Name="PersonIneligibleReasonGuid" />
-          <Property Type="Int32" Name="PersonIneligibleReasonId" />
-          <Property Type="String" Name="PersonIneligibleReasonDesc" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="ResultId" />
-          <Property Type="Guid" Name="BallotGuid" Nullable="false" />
-          <Property Type="Int32" Name="BallotId" Nullable="false" />
-          <Property Type="String" Name="BallotStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="LocationId" Nullable="false" />
-          <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
-          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
-          <Property Type="Boolean" Name="IsSingleNameElection" />
-          <Property Type="String" Name="PersonFullNameFL" MaxLength="460" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="vLocationInfo">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -1057,13 +1001,6 @@
           <Property Type="String" Name="Messages" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="CodePage" />
         </EntityType>
-        <ComplexType Name="SqlSearch_Result">
-          <Property Type="Int32" Name="PersonId" Nullable="true" />
-          <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
-          <Property Type="Int32" Name="Ineligible" Nullable="true" />
-          <Property Type="Int32" Name="MatchType" Nullable="true" />
-          <Property Type="Int32" Name="BestMatch" Nullable="false" />
-        </ComplexType>
         <EntityType Name="ResultTie">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -1076,6 +1013,46 @@
           <Property Type="Int32" Name="NumInTie" Nullable="false" />
           <Property Type="Boolean" Name="IsResolved" />
         </EntityType>
+        <EntityType Name="vVoteInfo">
+          <Key>
+            <PropertyRef Name="VoteId" />
+            <PropertyRef Name="PositionOnBallot" />
+            <PropertyRef Name="BallotGuid" />
+            <PropertyRef Name="BallotId" />
+            <PropertyRef Name="BallotStatusCode" />
+            <PropertyRef Name="LocationId" />
+            <PropertyRef Name="ElectionGuid" />
+          </Key>
+          <Property Type="Int32" Name="VoteId" Nullable="false" />
+          <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="Int32" Name="SingleNameElectionCount" />
+          <Property Type="Boolean" Name="IsSingleNameElection" />
+          <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
+          <Property Type="Guid" Name="VoteIneligibleReasonGuid" />
+          <Property Type="String" Name="PersonCombinedInfoInVote" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="PersonCombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="PersonGuid" />
+          <Property Type="Int32" Name="PersonId" />
+          <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="PersonFullNameFL" MaxLength="460" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="CanReceiveVotes" />
+          <Property Type="Guid" Name="PersonIneligibleReasonGuid" />
+          <Property Type="Int32" Name="ResultId" />
+          <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+          <Property Type="Int32" Name="BallotId" Nullable="false" />
+          <Property Type="String" Name="BallotStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="LocationId" Nullable="false" />
+          <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="SqlSearch_Result">
+          <Property Type="Int32" Name="PersonId" Nullable="true" />
+          <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
+          <Property Type="Guid" Name="Ineligible" Nullable="true" />
+          <Property Type="Int32" Name="MatchType" Nullable="true" />
+          <Property Type="Int32" Name="BestMatch" Nullable="false" />
+        </ComplexType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1237,17 +1214,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Reasons">
-            <EntityTypeMapping TypeName="TallyJ2Model.Reason">
-              <MappingFragment StoreEntitySet="Reasons">
-                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
-                <ScalarProperty Name="ReasonDescription" ColumnName="ReasonDescription" />
-                <ScalarProperty Name="ReasonGroup" ColumnName="ReasonGroup" />
-                <ScalarProperty Name="ReasonGuid" ColumnName="ReasonGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Results">
             <EntityTypeMapping TypeName="TallyJ2Model.Result">
               <MappingFragment StoreEntitySet="Result">
@@ -1305,6 +1271,8 @@
           <EntitySetMapping Name="vBallotInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vBallotInfo">
               <MappingFragment StoreEntitySet="vBallotInfo">
+                <ScalarProperty Name="VotesChanged" ColumnName="VotesChanged" />
+                <ScalarProperty Name="SpoiledCount" ColumnName="SpoiledCount" />
                 <ScalarProperty Name="RowVersionInt" ColumnName="RowVersionInt" />
                 <ScalarProperty Name="TellerAssistingName" ColumnName="TellerAssistingName" />
                 <ScalarProperty Name="TellerAtKeyboardName" ColumnName="TellerAtKeyboardName" />
@@ -1385,38 +1353,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vVoteInfoes">
-            <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
-              <MappingFragment StoreEntitySet="vVoteInfo">
-                <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
-                <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
-                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
-                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
-                <ScalarProperty Name="BallotStatusCode" ColumnName="BallotStatusCode" />
-                <ScalarProperty Name="BallotId" ColumnName="BallotId" />
-                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
-                <ScalarProperty Name="ResultId" ColumnName="ResultId" />
-                <ScalarProperty Name="PersonIneligibleReasonDesc" ColumnName="PersonIneligibleReasonDesc" />
-                <ScalarProperty Name="PersonIneligibleReasonId" ColumnName="PersonIneligibleReasonId" />
-                <ScalarProperty Name="PersonIneligibleReasonGuid" ColumnName="PersonIneligibleReasonGuid" />
-                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
-                <ScalarProperty Name="PersonFullName" ColumnName="PersonFullName" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="PersonCombinedInfo" ColumnName="PersonCombinedInfo" />
-                <ScalarProperty Name="PersonCombinedInfoInVote" ColumnName="PersonCombinedInfoInVote" />
-                <ScalarProperty Name="VoteInvalidReasonDesc" ColumnName="VoteInvalidReasonDesc" />
-                <ScalarProperty Name="VoteInvalidReasonId" ColumnName="VoteInvalidReasonId" />
-                <ScalarProperty Name="VoteInvalidReasonGuid" ColumnName="VoteInvalidReasonGuid" />
-                <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
-                <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
-                <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
-                <ScalarProperty Name="VoteId" ColumnName="VoteId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="CurrentRowVersion" FunctionName="tallyj2dModel.Store.CurrentRowVersion" />
           <EntitySetMapping Name="vLocationInfoes">
             <EntityTypeMapping TypeName="TallyJ2Model.vLocationInfo">
@@ -1480,17 +1416,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="FullName" ColumnName="FullName" />
-                <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
-                <ScalarProperty Name="MatchType" ColumnName="MatchType" />
-                <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="ResultTies">
             <EntityTypeMapping TypeName="TallyJ2Model.ResultTie">
               <MappingFragment StoreEntitySet="ResultTie">
@@ -1505,6 +1430,45 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="EraseElectionContents" FunctionName="tallyj2dModel.Store.EraseElectionContents" />
+          <EntitySetMapping Name="vVoteInfoes">
+            <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
+              <MappingFragment StoreEntitySet="vVoteInfo">
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+                <ScalarProperty Name="BallotStatusCode" ColumnName="BallotStatusCode" />
+                <ScalarProperty Name="BallotId" ColumnName="BallotId" />
+                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+                <ScalarProperty Name="ResultId" ColumnName="ResultId" />
+                <ScalarProperty Name="PersonIneligibleReasonGuid" ColumnName="PersonIneligibleReasonGuid" />
+                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
+                <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
+                <ScalarProperty Name="PersonFullName" ColumnName="PersonFullName" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="PersonCombinedInfo" ColumnName="PersonCombinedInfo" />
+                <ScalarProperty Name="PersonCombinedInfoInVote" ColumnName="PersonCombinedInfoInVote" />
+                <ScalarProperty Name="VoteIneligibleReasonGuid" ColumnName="VoteIneligibleReasonGuid" />
+                <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
+                <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
+                <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
+                <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
+                <ScalarProperty Name="VoteId" ColumnName="VoteId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TallyJ2Model.SqlSearch_Result">
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
+                <ScalarProperty Name="MatchType" ColumnName="MatchType" />
+                <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1526,7 +1490,7 @@
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram Name="MainData" ZoomLevel="78">
+      <Diagram Name="MainData" ZoomLevel="104">
         <EntityTypeShape EntityType="TallyJ2Model.User" Width="1.5" PointX="0.875" PointY="1.125" Height="2.1725878906250005" />
         <EntityTypeShape EntityType="TallyJ2Model.C_Log" Width="1.5" PointX="0.75" PointY="4.75" Height="2.1725878906250031" />
         <EntityTypeShape EntityType="TallyJ2Model.Ballot" Width="1.5" PointX="2.75" PointY="4.75" Height="2.9417936197916674" />
@@ -1535,7 +1499,6 @@
         <EntityTypeShape EntityType="TallyJ2Model.Location" Width="1.5" PointX="6.75" PointY="6.75" Height="2.9417936197916674" />
         <EntityTypeShape EntityType="TallyJ2Model.Message" Width="1.5" PointX="8.75" PointY="0.75" Height="2.1725878906250102" />
         <EntityTypeShape EntityType="TallyJ2Model.Person" Width="1.5" PointX="0.75" PointY="8.75" Height="5.4417122395833246" />
-        <EntityTypeShape EntityType="TallyJ2Model.Reason" Width="1.5" PointX="2.75" PointY="8.75" Height="1.9802864583333246" />
         <EntityTypeShape EntityType="TallyJ2Model.Result" Width="1.5" PointX="8.75" PointY="3.75" Height="3.9033007812499996" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultSummary" Width="1.5" PointX="8.75" PointY="8.75" Height="3.7109993489583246" />
         <EntityTypeShape EntityType="TallyJ2Model.Teller" Width="1.5" PointX="10.75" PointY="0.75" Height="2.3648893229166674" />
@@ -1548,11 +1511,11 @@
           <ConnectorPoint PointX="3" PointY="2.0526432291666623" />
         </AssociationConnector>
         <EntityTypeShape EntityType="TallyJ2Model.Vote" Width="1.5" PointX="12.75" PointY="4.75" Height="2.7494921875000031" />
-        <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="12.75" PointY="8.75" Height="5.6340136718750067" />
         <EntityTypeShape EntityType="TallyJ2Model.vLocationInfo" Width="1.5" PointX="3.375" PointY="13.75" Height="4.2879036458333317" />
         <EntityTypeShape EntityType="TallyJ2Model.ImportFile" Width="1.5" PointX="7.375" PointY="13.75" Height="3.5186979166666674" />
         <EntityTypeShape EntityType="TallyJ2Model.vImportFileInfo" Width="1.5" PointX="9.375" PointY="13.75" Height="3.3263964843750102" />
         <EntityTypeShape EntityType="TallyJ2Model.ResultTie" Width="1.5" PointX="0.75" PointY="15.75" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="TallyJ2Model.vVoteInfo" Width="1.5" PointX="11.375" PointY="10.75" Height="5.2494108072916674" />
       </Diagram>
     </Diagrams>
   </Designer>

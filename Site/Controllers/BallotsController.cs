@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -54,9 +55,10 @@ namespace TallyJ.Controllers
                }.AsJsonResult();
     }
 
-    public JsonResult SaveVote(int pid, int vid, int count, int invalid = 0)
+    public JsonResult SaveVote(int pid, int vid, int count, string invalid)
     {
-      return CurrentBallotModel.SaveVote(pid, vid, count, invalid);
+      var invalidGuid = invalid.AsGuid();
+      return CurrentBallotModel.SaveVote(pid, vid, count, invalidGuid);
     }
 
     public JsonResult DeleteVote(int vid)

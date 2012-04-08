@@ -11,7 +11,7 @@ namespace TallyJ.Models
       return 1;
     }
 
-    protected override object BallotForJson(vBallotInfo b)
+    public override object BallotForJson(vBallotInfo b)
     {
       return new
                {

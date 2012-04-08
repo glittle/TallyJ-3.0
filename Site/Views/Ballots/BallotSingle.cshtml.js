@@ -199,7 +199,7 @@ var BallotSinglePageFunc = function () {
         var form = {
             pid: host.data('person-id') || 0,
             vid: host.data('vote-id') || 0,
-            invalid: invalids.val() || 0,
+            invalid: invalids.val() || '',
             count: input.val() || 0
         };
 
@@ -288,7 +288,7 @@ var BallotSinglePageFunc = function () {
                 }
             });
         }
-        local.actionTag.removeClass('searching');
+        local.actionTag.text('').removeClass('searching');
         local.inputField.removeClass('searching');
 
         // single:
@@ -438,7 +438,7 @@ var BallotSinglePageFunc = function () {
             resetSearch();
             return;
         }
-        local.actionTag.addClass('delaying');
+        local.actionTag.text('').addClass('delaying');
         input.addClass('delaying');
 
         local.keyTimer = setTimeout(function () {
@@ -447,7 +447,7 @@ var BallotSinglePageFunc = function () {
             local.actionTag.removeClass('delaying');
             input.removeClass('delaying');
 
-            local.actionTag.addClass('searching');
+            local.actionTag.text('Searching...').addClass('searching');
             input.addClass('searching');
 
             local.peopleHelper.SearchNames(text, onNamesReady, true);

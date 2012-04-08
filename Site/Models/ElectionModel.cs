@@ -363,6 +363,7 @@ namespace TallyJ.Models
                          Name = "[New Election]",
                          ElectionType = "LSA",
                          ElectionMode = ElectionMode.Normal,
+                         TallyStatus = ElectionTallyStatusEnum.NotStarted,
                          NumberToElect = 9,
                          NumberExtra = 0,
                          CanVote = CanVoteOrReceive.All,

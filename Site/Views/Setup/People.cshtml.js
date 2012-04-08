@@ -10,32 +10,36 @@ var PeoplePage = function () {
         keyTimer: null,
         keyTime: 300,
         lastSearch: '',
+        totalOnFile: 0,
         actionTag: null,
         inputField: null,
         nameList: null,
         rowSelected: 0,
+        showPersonId: null,
         maintainCurrentRow: false,
         template: '<li id=P{Id}>{^Name}</li>'
     };
     var onNamesReady = function (info) {
         local.People = info.People;
         local.nameList.html(local.template.filledWithEach(local.People));
-        $('#more').html(info.MoreFound);
+        $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
         if (!local.People.length && local.lastSearch) {
             local.nameList.append('<li>...no matches found...</li>');
         }
         else {
-            if (!local.maintainCurrentRow) {
-                local.rowSelected = 0;
-            }
             if (info.MoreFound && local.lastSearch) {
                 local.nameList.append('<li>...more matched...</li>');
             }
-            $.each(local.People, function (i, item) {
-                if (item.BestMatch && !local.maintainCurrentRow) {
-                    local.rowSelected = i;
-                }
-            });
+            if (local.showPersonId) {
+                local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
+                local.showPersonId = 0;
+            } else {
+                $.each(local.People, function (i, item) {
+                    if (item.BestMatch && !local.maintainCurrentRow) {
+                        local.rowSelected = i;
+                    }
+                });
+            }
         }
         local.maintainCurrentRow = false;
         local.actionTag.removeClass('searching');
@@ -177,8 +181,11 @@ var PeoplePage = function () {
     var resetSearch = function () {
         onNamesReady({
             People: [],
-            MoreFound: comma(publicInterface.namesOnFile) + '  people on file'
+            MoreFound: moreFound(local.totalOnFile)
         });
+    };
+    var moreFound = function (num) {
+        return comma(num) + '  people on file';
     };
     var nameClick = function (ev) {
         var el = ev.target;
@@ -198,15 +205,26 @@ var PeoplePage = function () {
         $('#nameList li').live('click', nameClick).focus();
         $('#btnAddNew').live('click', addNewPerson);
 
-        site.onbroadcast(site.broadcastCode.personSaved, function (ev, person) {
-            var searchText = $('#txtSearch').val();
-            if (searchText) {
-                local.maintainCurrentRow = true;
-                local.peopleHelper.SearchNames(searchText, onNamesReady, false, null);
-            }
-        });
+        local.totalOnFile = publicInterface.namesOnFile;
+
+        site.onbroadcast(site.broadcastCode.personSaved, personSaved);
 
         resetSearch();
+
+        site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
+    };
+
+    var personSaved = function (ev, info) {
+        var searchText = $('#txtSearch').val();
+        local.totalOnFile = info.OnFile;
+        if (searchText) {
+            local.maintainCurrentRow = true;
+            local.showPersonId = info.Person.C_RowId;
+            local.peopleHelper.SearchNames(searchText, onNamesReady, false, null);
+        }
+        else {
+            $('#more').html(moreFound(info.OnFile));
+        }
     };
 
     //    var prepareReasons = function () {

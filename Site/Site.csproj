@@ -226,9 +226,6 @@
     <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\Reason.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\Result.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
@@ -269,6 +266,7 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
+    <Compile Include="Models\BallotStatusWithSpoilCount.cs" />
     <Compile Include="Models\ImportV1Base.cs" />
     <Compile Include="Models\ImportV1Community.cs" />
     <Compile Include="Models\ImportV1Election.cs" />
@@ -311,6 +309,7 @@
     </Compile>
     <Compile Include="EF\TallyJ2Entities.cs" />
     <Content Include="Content\themes\base\images\ui-icons_8dc63e_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_tallyj_256x240.png" />
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\arrows-ffffff.png" />
     <Content Include="Images\beta.gif" />
@@ -432,6 +431,7 @@
     <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
     <Content Include="Scripts\jquery.qtip.css" />
     <Content Include="Scripts\jquery.qtip.js" />
+    <Content Include="Scripts\jquery.qtip.min.css" />
     <Content Include="Scripts\jquery.qtip.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />

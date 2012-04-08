@@ -38,7 +38,7 @@
             </td>
         </tr>
         <tr>
-            <td><span class="ui-icon-info"></span>
+            <td>
                 Total Ballots Entered
             </td>
             <td>
@@ -47,7 +47,7 @@
         </tr>
         <tr>
             <td>
-                Total Invalid Ballots
+                Total Spoiled Ballots
             </td>
             <td>
                 <span data-name="TotalInvalidBallots"></span>
@@ -55,7 +55,7 @@
         </tr>
         <tr>
             <td>
-                Total Invalid Votes
+                Total Spoiled Votes
             </td>
             <td>
                 <span data-name="TotalInvalidVotes"></span>
@@ -109,11 +109,11 @@
     </table>
     <table id="invalids">
         <caption>
-            Ballots Requiring Review</caption>
+            These ballots need attention before results can be determined</caption>
         <tbody id="invalidsBody">
             <tr>
                 <td>
-                    {^Ballot}
+                    {^Ballot} - {Status}
                 </td>
             </tr>
         </tbody>

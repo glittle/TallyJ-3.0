@@ -70,7 +70,7 @@ var ReportsPage = function () {
     var expandRows = function (info, row2Template) {
         $.each(info.Rows, function () {
             if (row2Template) {
-                this.rows2 = row2Template.filledWithEach(this.Rows2, ', ');
+                this.rows2 = row2Template.filledWithEach(this.Rows2, ';&nbsp; ');
             }
         });
         return info.Rows;

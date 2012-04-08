@@ -34,7 +34,6 @@ namespace TallyJ.EF
         public DbSet<Location> Locations { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Person> People { get; set; }
-        public DbSet<Reason> Reasons { get; set; }
         public DbSet<Result> Results { get; set; }
         public DbSet<ResultSummary> ResultSummaries { get; set; }
         public DbSet<Teller> Tellers { get; set; }
@@ -43,11 +42,11 @@ namespace TallyJ.EF
         public DbSet<vResultInfo> vResultInfoes { get; set; }
         public DbSet<JoinElectionUser> JoinElectionUsers { get; set; }
         public DbSet<Vote> Votes { get; set; }
-        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
         public DbSet<vLocationInfo> vLocationInfoes { get; set; }
         public DbSet<ImportFile> ImportFiles { get; set; }
         public DbSet<vImportFileInfo> vImportFileInfoes { get; set; }
         public DbSet<ResultTie> ResultTies { get; set; }
+        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
     
         public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
         {
@@ -67,6 +66,23 @@ namespace TallyJ.EF
         public virtual ObjectResult<Nullable<long>> CurrentRowVersion()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<long>>("CurrentRowVersion");
+        }
+    
+        public virtual int EraseElectionContents(Nullable<System.Guid> electionGuidToClear, Nullable<bool> eraseTallyContent, string byLoginId)
+        {
+            var electionGuidToClearParameter = electionGuidToClear.HasValue ?
+                new ObjectParameter("ElectionGuidToClear", electionGuidToClear) :
+                new ObjectParameter("ElectionGuidToClear", typeof(System.Guid));
+    
+            var eraseTallyContentParameter = eraseTallyContent.HasValue ?
+                new ObjectParameter("EraseTallyContent", eraseTallyContent) :
+                new ObjectParameter("EraseTallyContent", typeof(bool));
+    
+            var byLoginIdParameter = byLoginId != null ?
+                new ObjectParameter("ByLoginId", byLoginId) :
+                new ObjectParameter("ByLoginId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("EraseElectionContents", electionGuidToClearParameter, eraseTallyContentParameter, byLoginIdParameter);
         }
     
         public virtual ObjectResult<SqlSearch_Result> SqlSearch(Nullable<System.Guid> election, string term1, string term2, string sound1, string sound2, Nullable<int> maxToReturn, ObjectParameter moreExactMatchesFound, Nullable<int> showDebugInfo)
@@ -102,23 +118,6 @@ namespace TallyJ.EF
                 new ObjectParameter("ShowDebugInfo", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SqlSearch_Result>("SqlSearch", electionParameter, term1Parameter, term2Parameter, sound1Parameter, sound2Parameter, maxToReturnParameter, moreExactMatchesFound, showDebugInfoParameter);
-        }
-    
-        public virtual int EraseElectionContents(Nullable<System.Guid> electionGuidToClear, Nullable<bool> eraseTallyContent, string byLoginId)
-        {
-            var electionGuidToClearParameter = electionGuidToClear.HasValue ?
-                new ObjectParameter("ElectionGuidToClear", electionGuidToClear) :
-                new ObjectParameter("ElectionGuidToClear", typeof(System.Guid));
-    
-            var eraseTallyContentParameter = eraseTallyContent.HasValue ?
-                new ObjectParameter("EraseTallyContent", eraseTallyContent) :
-                new ObjectParameter("EraseTallyContent", typeof(bool));
-    
-            var byLoginIdParameter = byLoginId != null ?
-                new ObjectParameter("ByLoginId", byLoginId) :
-                new ObjectParameter("ByLoginId", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("EraseElectionContents", electionGuidToClearParameter, eraseTallyContentParameter, byLoginIdParameter);
         }
     }
 }

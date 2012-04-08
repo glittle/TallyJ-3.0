@@ -3,7 +3,8 @@
     width: 400px;
 }
 
-.tabs {
+.tabs
+{
     min-height: 300px;
 }
 
@@ -39,10 +40,17 @@
     background-color: #c1f1b4;
     border-color: #999;
 }
-.nameList .InvalidName { text-decoration: line-through; }
-.nameList .Fuzzy{ font-style: italic; }
-.nameList .First {
-    padding: 3px 0 3px 0; 
+.nameList .InvalidName
+{
+    text-decoration: line-through;
+}
+.nameList .Fuzzy
+{
+    font-style: italic;
+}
+.nameList .First
+{
+    padding: 3px 0 3px 0;
     border-top: 3px double #ccc;
     width: 100%;
     display: block;
@@ -61,7 +69,8 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-.ballotList div span {
+.ballotList div span
+{
     color: #666;
 }
 .ballotList div:hover
@@ -79,16 +88,17 @@
 .action
 {
     font-size: 11px;
-    margin-top: 10px;
     min-width: 100px;
-    display: inline-block;
+    display: block;
 }
-.actionHolder {
+.actionHolder
+{
     margin-top: -5px;
     margin-bottom: 5px;
 }
 
-.tip1 {
+.tip1
+{
     color: #aaa;
     font-size: 10px;
     display: inline-block;
@@ -115,7 +125,8 @@ input.ZZsearching
     float: left;
     width: 530px;
 }
-.ui-icon-arrow-2-n-s {
+.ui-icon-arrow-2-n-s
+{
     display: inline-block;
     margin-left: 15px;
     cursor: ns-resize;
@@ -152,27 +163,36 @@ input.Vote
     border-bottom: 1px solid #ccc;
     padding-right: 4px;
 }
-.titleDiv div {
+.titleDiv div
+{
     margin: -7px 0 0 0;
 }
 button.smallButton
 {
     font-size: 12px;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
 }
 .Valid .Invalid
 {
     display: none;
 }
-.InvalidP .InvalidCustom,
-.InvalidC .InvalidPerson {
+.InvalidP .InvalidCustom, .InvalidC .InvalidPerson
+{
     display: none;
 }
-
-select.Invalid {
-    vertical-align: top;
+.InvalidP div.InvalidPerson
+{
+    color: #e80c4d;
+    margin: -6px 0 0 117px;
 }
-.VoteHost:hover .ui-icon {
+
+select.Invalid
+{
+    vertical-align: top;
+    color: #e80c4d;
+}
+.VoteHost:hover .ui-icon
+{
     visibility: visible;
 }
 
@@ -180,11 +200,12 @@ select.Invalid {
 {
     display: none;
     font-size: 16pt;
-    padding: 0 9px 0 2px;
+    padding: 0 9px 0 0;
 }
-.VoteHost.InvalidP span.Name {
+.VoteHost.InvalidP span.Name
+{
     display: inline;
-    font-size: 90%;
+    font-size: 1em;
     text-decoration: line-through;
 }
 .VoteHost.Valid span.Name
@@ -195,14 +216,18 @@ select.Invalid {
 {
     color: #e80c4d;
     font-weight: bold;
+    margin-left: 22px;
 }
-.Ok {
+.Ok
+{
     color: #0ce84d;
 }
-.Confirmed {
+.Confirmed
+{
     font-weight: bold;
 }
-.NotConfirmed {
+.NotConfirmed
+{
     opacity: .5;
 }
 
@@ -210,7 +235,8 @@ select.Invalid {
 {
     width: 260px;
 }
-div.heading {
+div.heading
+{
     font-weight: bold;
     margin: 0 0 4px 0;
 }
@@ -245,58 +271,75 @@ div.heading {
     text-align: right;
     margin-right: 5px;
 }
-.lblNumEntered {
-    
+.lblNumEntered
+{
 }
-.countsBad,
-.countsGood,
-.countsNeutral {
+.countsBad, .countsGood, .countsNeutral
+{
     margin: 4px 0 3px 0;
 }
-.countsBad {
+.countsBad
+{
     color: red;
 }
-.countsGood {
+.countsGood
+{
     color: green;
 }
-#votesList {
+#votesList
+{
     padding-top: 5px;
     margin-bottom: 20px;
 }
-.VoteNum {
+.VoteNum
+{
     display: inline-block;
     width: 20px;
     text-align: right;
-    margin-right: 9px;
+    margin-right: 12px;
     font-size: 80%;
     color: #aaa;
 }
-.InUse {
-    color: #f6941e;
+.InUse
+{
+    color: #f6941e; 
 }
-.titleDiv .ballotStatus {
+.titleDiv .ballotStatus
+{
     padding-right: 20px;
     vertical-align: top;
     font-size: 16pt;
 }
-.titleDiv .ballotCode {
+.titleDiv .ballotCode
+{
     padding-left: 3px;
     font-size: 16pt;
 }
-.duplicateVote .Name 
+.duplicateVote .Name {
+    color: #e80c4d;
+}
+.duplicateVote .Duplicate
 {
-    background-color: #f6941e;
+    color: #e80c4d;
+    margin-right: 2px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 1em;
+    margin-left: 25px;
 }
 
-.VoteHost {
+.VoteHost
+{
     background-color: #eeffd6;
     line-height: 1.5;
 }
-.ExtraVote {
+.ExtraVote
+{
     border-top: 1px solid black;
     margin-top: 5px;
 }
-.ExtraVote, .ExtraVotes {
+.ExtraVote, .ExtraVotes
+{
     background-color: #ffe3c2;
     line-height: 1.2;
 }
@@ -304,12 +347,32 @@ div.heading {
 {
     background-color: #cfc;
 }
-#tabBallots {
+#tabBallots
+{
     background-color: #efeeef;
 }
-#btnRefreshBallotList {
+#btnRefreshBallotList
+{
     margin: 14px 0 -3px 0;
 }
-#btnAddMissing {
+#btnAddMissing
+{
     float: right;
+}
+.review {
+    text-align: center;
+}
+#addMissingPanel {
+    display: none;   
+}
+h5 {
+    margin-top: 1em;
+}
+span.HideZero,
+span.HideZero0 {
+    display: none;
+}
+.SpoiledCount {
+    display: inline-block;
+    margin-left: 15px;
 }

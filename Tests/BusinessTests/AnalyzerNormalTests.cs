@@ -29,11 +29,11 @@ namespace Tests.BusinessTests
       _persons = new List<Person>
                         {
                           new Person {VotingMethod = VotingMethodEnum.InPerson},
-                          // new Person {AgeGroup = AgeGroup.Adult},
                           new Person {},
                           new Person {},
                           new Person {},
-                          new Person {IneligibleReasonGuid = Guid.NewGuid()},
+                          new Person {},
+                          new Person {IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person},
                         };
       _persons.ForEach(delegate(Person p)
       {

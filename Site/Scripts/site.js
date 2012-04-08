@@ -18,9 +18,10 @@ var site = {
     heartbeatSeconds: 60, // default seconds
     heartbeatTimeout: null,
     timeOffsetKnown: false,
-    //serverTime: null,
+    qTips: [],
     broadcastCode: {
         electionStatusChanged: 'electionStatusChanged',
+        startNewPerson: 'startNewPerson',
         personSaved: 'personSaved'
     },
     broadcast: function (broadcastCode, data) {
@@ -60,6 +61,55 @@ function Onload() {
     AttachHandlers();
 
     PrepareTopLocationAndTellers();
+
+    PrepareQTips();
+}
+function PrepareQTips(doNow) {
+    if (!doNow) {
+        setTimeout(function() {
+            PrepareQTips(true);
+        }, 500);
+        return;
+    }
+
+    // add some tips for pages without dedicated js
+    if ($('#qTipReg1').length) {
+        site.qTips.push({ selector: '#qTipReg1', title: 'Account Name', text: 'This is your personal account name, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.' });
+        site.qTips.push({ selector: '#qTipReg2', title: 'Email Address', text: 'Please use a valid address where you can be notified when there is important news regarding TallyJ. It will not be given to anyone else or used for other purposes.' });
+        site.qTips.push({ selector: '#qTipReg3', title: 'Password', text: 'Needs to be at least 6 characters long. It will be encrypted when stored, so cannot be viewed by anyone.' });
+    }
+
+    ActivateTips();
+}
+
+function ActivateTips() {
+    var baseOption = {
+        position: {
+            my: 'bottom left',
+            at: 'top center',
+            viewport: true
+        },
+        style: {
+            classes: 'ui-tooltip-green ui-tooltip-shadow'
+        }
+    };
+
+    $('.qTip').qtip(baseOption);
+    $.each(site.qTips, function () {
+        if ($(this).data('done')) return;
+        
+        var opt = $.extend({}, baseOption);
+        if (this.text) {
+            if (this.title) {
+                $.extend(opt, { content: { text: this.text, title: { text: this.title}} });
+            } else {
+                $.extend(opt, { content: { text: this.text} });
+            }
+        }
+        $(this).data('done', true);
+        $(this.selector).qtip(opt);
+    });
+
 }
 
 function AttachHandlers() {
@@ -158,12 +208,12 @@ function PrepareTopLocationAndTellers() {
 function PrepareMainMenu() {
     $('.QuickLinks').supersubs().superfish();
 
-//    $("ul.sf-menu").supersubs({
-//        minWidth: 12,   // minimum width of sub-menus in em units 
-//        maxWidth: 27,   // maximum width of sub-menus in em units 
-//        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
-//        // due to slight rounding differences and font-family 
-//    }).superfish();
+    //    $("ul.sf-menu").supersubs({
+    //        minWidth: 12,   // minimum width of sub-menus in em units 
+    //        maxWidth: 27,   // maximum width of sub-menus in em units 
+    //        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
+    //        // due to slight rounding differences and font-family 
+    //    }).superfish();
 }
 
 function AttachHelp() {
@@ -180,25 +230,20 @@ function AttachHelp() {
             next.slideToggle();
         }
         handle.toggleClass('Closed');
-        SetInStorage('HidePI_' + location.pathname, handle.hasClass('Closed') ? 'hide': 'show');
+        SetInStorage('HidePI_' + location.pathname, handle.hasClass('Closed') ? 'hide' : 'show');
     };
 
-    $(document).on('click', '.PullInstructionsHandle', function(ev) {
+    $(document).on('click', '.PullInstructionsHandle', function (ev) {
         var handle = $(ev.currentTarget);
         toggleIt(handle, false);
     });
 
     if (GetFromStorage('HidePI_' + location.pathname, 'show') == 'hide') {
-        $('.PullInstructionsHandle').each(function() {
+        $('.PullInstructionsHandle').each(function () {
             toggleIt($(this), true);
         });
     }
 
-    $('.qTip').qtip({
-        style: {
-            classes: 'ui-tooltip-blue ui-tooltip-shadow'
-        }
-    });
 }
 
 //var UpdateActiveInfo = function () {

@@ -48,7 +48,7 @@ namespace TallyJ.Code.Enumerations
     public static string TextFor(string electionType)
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == electionType);
-      return item == null ? "" : item.DisplayText;
+      return item == null ? NotStarted : item.DisplayText;
     }
   }
 }

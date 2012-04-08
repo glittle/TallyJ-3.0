@@ -2,6 +2,7 @@
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.Code
 @{
     ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffset.SerializedAsJsonString()));
@@ -16,7 +17,8 @@
 <head>
     <meta charset="utf-8" />
     @RenderPage("Headers.cshtml")
-    <title>TallyJ - @(ViewBag.Caption ?? ViewBag.Title)</title>
+    <title>TallyJ - @(currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? ViewBag.Title)
+    </title>
     <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
     <link rel="publisher" href="https://plus.google.com/109176504285792009711">
     <script type="text/javascript">
@@ -40,11 +42,8 @@
                 @{
                     if (Request.IsAuthenticated)
                     {
-                    @Html.ActionLink(" ", "Index", "Dashboard", null, new
-               {
-                   Class = "site-title",
-                   title = "Go to Dashboard"
-               })
+                    <a href="@Url.Action("Index", "Dashboard")" class="site-title" title="Go to Dashboard">
+                        <span>Dashboard</span></a>
                     }
                     else
                     {
@@ -72,29 +71,29 @@
             <div class="float-left TopInfo">
                 @if (Request.IsAuthenticated)
                 {
-                  <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionName</div>
+                    <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionName</div>
                     if (UserSession.CurrentElection != null)
-                     {
-                       <div class="ElectionState" title="Election status">
-                         Status: <span>@UserSession.CurrentElectionStatusName</span></div>
-                       <span class="AllowChangeElectionState ui-icon ui-icon-pencil" title="Change election status">
-                       </span>
-                       <div class="ChangeElectionState">
-                         <p>
-                           Change the election status to:</p>
-                         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
-                           @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
-                         </select>
-                       </div>
-                       <ul class="QuickLinks">
-                         <li>Pages for this Status <span class="ui-icon QuickLinkIcon"></span>
-                           <ul>
-                             @currentMenu.QuickLinks().JoinedAsString().AsRawHtml()
-                           </ul>
-                         </li>
-                       </ul>
-                     }
-                  <div class="Heartbeat">
+                    {
+                    <div class="ElectionState" title="Election status">
+                        Current Election Status: <span>@UserSession.CurrentElectionStatusName</span></div>
+                    <span class="AllowChangeElectionState ui-icon ui-icon-pencil qTip" title="Click to change the status of the election. This should be done frequently as the event progresses.">
+                    </span>
+                    <div class="ChangeElectionState">
+                        <p>
+                            Change the election status to:</p>
+                        <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
+                            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
+                        </select>
+                    </div>
+                    <ul class="QuickLinks">
+                        <li>Pages <span class="ui-icon QuickLinkIcon"></span>
+                            <ul>
+                                @currentMenu.QuickLinks().JoinedAsString().AsRawHtml()
+                            </ul>
+                        </li>
+                    </ul>
+                    }
+                    <div class="Heartbeat">
                     </div>
                 }
             </div>

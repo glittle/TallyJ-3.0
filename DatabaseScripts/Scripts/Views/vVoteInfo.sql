@@ -1,4 +1,5 @@
 ﻿
+
 IF EXISTS (SELECT * FROM sysobjects WHERE type = 'V' AND name = 'vVoteInfo')
   BEGIN
     DROP  View tj.vVoteInfo
@@ -18,9 +19,9 @@ as
 	 , v.SingleNameElectionCount
 	 , e.IsSingleNameElection
 	 , v.PositionOnBallot
-	 , v.InvalidReasonGuid [VoteInvalidReasonGuid]
-	 , vr._RowId [VoteInvalidReasonId]
-	 , vr.ReasonDescription [VoteInvalidReasonDesc]
+	 , v.InvalidReasonGuid [VoteIneligibleReasonGuid]
+	 --, vr._RowId [VoteInvalidReasonId]
+	 --, vr.ReasonDescription [VoteInvalidReasonDesc]
 	 , v.PersonCombinedInfo [PersonCombinedInfoInVote]
 	 , p.CombinedInfo [PersonCombinedInfo]
      , v.PersonGuid
@@ -29,8 +30,8 @@ as
 	 , p._FullNameFL [PersonFullNameFL]
 	 , p.CanReceiveVotes
 	 , p.IneligibleReasonGuid [PersonIneligibleReasonGuid]
-	 , pr._RowId [PersonIneligibleReasonId]
-	 , pr.ReasonDescription [PersonIneligibleReasonDesc]
+	 --, pr._RowId [PersonIneligibleReasonId]
+	 --, pr.ReasonDescription [PersonIneligibleReasonDesc]
 	 , r._RowId [ResultId]
 	 , v.BallotGuid
 	 , b._RowId [BallotId]
@@ -45,8 +46,8 @@ as
 	join tj.Election e on e.ElectionGuid = l.ElectionGuid
     left join tj.Person p on p.PersonGuid = v.PersonGuid
 	left join tj.Result r on r.PersonGuid = p.PersonGuid and r.ElectionGuid = l.ElectionGuid
-	left join tj.Reasons pr on pr.ReasonGuid = p.IneligibleReasonGuid
-	left join tj.Reasons vr on vr.ReasonGuid = v.InvalidReasonGuid
+	--left join tj.Reasons pr on pr.ReasonGuid = p.IneligibleReasonGuid
+	--left join tj.Reasons vr on vr.ReasonGuid = v.InvalidReasonGuid
 
 GO
 

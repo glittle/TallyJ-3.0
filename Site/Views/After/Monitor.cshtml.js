@@ -5,6 +5,7 @@ var MonitorPage = function () {
     var settings = {
         rowTemplateMain: '',
         rowTemplateExtra: '',
+        rowTemplateBallot: '',
         refreshTimeout: null
     };
 
@@ -13,21 +14,24 @@ var MonitorPage = function () {
         settings.rowTemplateMain = '<tr class="{ClassName}">' + tableBody.children().eq(0).html() + '</tr>';
         settings.rowTemplateExtra = '<tr class="Extra {ClassName}">' + tableBody.children().eq(1).html() + '</tr>';
 
+        var ballotTableBody = $('#ballotsBody');
+        settings.rowTemplateBallot = '<tr class="{ClassName}">' + ballotTableBody.children().eq(0).html() + '</tr>';
+
         showInfo(publicInterface.LocationInfos, true);
 
         var desiredTime = GetFromStorage(storageKey.MonitorRefresh, 60);
 
-//        $('#ddlElectionStatus').on('change', function () {
-//            //ShowStatusDisplay('Updating...');
-//            var ddl = $(this);
-//            CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
-//                status: ddl.val()
-//            }, function () {
-//                //ShowStatusDisplay('Updated', 0, 1000, false, true);
-//                ResetStatusDisplay();
-//                $('.ElectionState').text(ddl.find(':selected').text());
-//            });
-//        });
+        //        $('#ddlElectionStatus').on('change', function () {
+        //            //ShowStatusDisplay('Updating...');
+        //            var ddl = $(this);
+        //            CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
+        //                status: ddl.val()
+        //            }, function () {
+        //                //ShowStatusDisplay('Updated', 0, 1000, false, true);
+        //                ResetStatusDisplay();
+        //                $('.ElectionState').text(ddl.find(':selected').text());
+        //            });
+        //        });
 
         $('#ddlRefresh').val(desiredTime).change(function () {
             $('#chkAutoRefresh').prop('checked', true);
@@ -60,7 +64,11 @@ var MonitorPage = function () {
                 }, 500);
             });
         }
-        table.html(expandWithTemplates(info));
+        table.html(expandLocations(info.Locations));
+
+        var ballotTable = $('#ballotsBody');
+        ballotTable.html(expandBallots(info.Ballots));
+
 
         $('#lastRefresh').html(new Date().toLocaleTimeString());
 
@@ -121,17 +129,26 @@ var MonitorPage = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/RefreshMonitor', null, showInfo);
     };
 
-    var expandWithTemplates = function (info) {
+    var expandBallots = function (ballots) {
+        var html = [];
+        $.each(ballots, function () {
+            this.Btn = '<a target=L{LocationId} class=ZoomIn title=View href="../Ballots?l={LocationId}&b={Id}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
+
+            html.push(settings.rowTemplateBallot.filledWith(this));
+        });
+        return html.join('');
+    };
+    var expandLocations = function (locations) {
         var lastName = '';
         var count = 0;
         var rows = -1;
         var last = null;
         var html = [];
 
-        $.each(info.Locations, function () {
+        $.each(locations, function () {
             rows++;
 
-            this.Btn = '<a class=ZoomIn title=View href="../Ballots?l={LocationId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
+            this.Btn = '<a target=L{LocationId} class=ZoomIn title=View href="../Ballots?l={LocationId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
 
             if (this.Name != lastName) {
                 if (last != null) {
@@ -168,7 +185,7 @@ var MonitorPage = function () {
             last.rows = rows + 1;
         }
 
-        $.each(info.Locations, function () {
+        $.each(locations, function () {
             if (this.Extra) {
                 html.push(settings.rowTemplateExtra.filledWith(this));
             }

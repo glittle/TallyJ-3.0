@@ -10,98 +10,133 @@
     ContextItems.AddJavascriptForPage("guest", "monitorPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <table class="Main">
-  <thead>
-    <tr>
-      <th>
-        Location
-      </th>
-      <th>
-        Status
-      </th>
-      <th>
-        Computer
-      </th>
-      <th>
-        # Ballots
-      </th>
-      <th>
-        Minutes Ago
-      </th>
-      <th>
-        Tellers
-      </th>
-      <th>
-        Contact Info
-      </th>
-    </tr>
-  </thead>
-  <tbody id="mainBody">
-    <tr>
-      <th rowspan="{rows}">
-        {^Name}
-        {^Btn}
-      </th>
-      <td rowspan="{rows}">
-        {^TallyStatus}
-        {^BallotsReport}
-      </td>
-      <td>
-        {ComputerCode}
-      </td>
-      <td>
-        {BallotsAtComputer}
-      </td>
-      <td>
-        <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
-      </td>
-      <td>
-        {TellerName}
-      </td>
-      <td rowspan="{rows}">
-        {ContactInfo}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        {ComputerCode}
-      </td>
-      <td>
-        {BallotsAtComputer}
-      </td>
-      <td>
-        <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
-      </td>
-      <td>
-        {TellerName}
-      </td>
-    </tr>
-  </tbody>
+    <thead>
+        <tr>
+            <th>
+                Location
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Computer
+            </th>
+            <th>
+                # Ballots
+            </th>
+            <th>
+                Minutes Ago
+            </th>
+            <th>
+                Tellers
+            </th>
+            <th>
+                Contact Info
+            </th>
+        </tr>
+    </thead>
+    <tbody id="mainBody">
+        <tr>
+            <th rowspan="{rows}">
+                {^Name} {^Btn}
+            </th>
+            <td rowspan="{rows}">
+                {^TallyStatus} {^BallotsReport}
+            </td>
+            <td>
+                {ComputerCode}
+            </td>
+            <td>
+                {BallotsAtComputer}
+            </td>
+            <td>
+                <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
+            </td>
+            <td>
+                {TellerName}
+            </td>
+            <td rowspan="{rows}">
+                {ContactInfo}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {ComputerCode}
+            </td>
+            <td>
+                {BallotsAtComputer}
+            </td>
+            <td>
+                <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
+            </td>
+            <td>
+                {TellerName}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class="Ballots">
+    <thead>
+        <tr>
+            <th>
+                Ballot
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Tellers
+            </th>
+            <th>
+                Location
+            </th>
+        </tr>
+    </thead>
+    <tbody id="ballotsBody">
+        <tr>
+            <th>
+                {Code} {^Btn}
+            </th>
+            <td>
+                {Status}
+            </td>
+            <td>
+                {TellerAtKeyboardName}
+                {TellerAtAssistingName}
+            </td>
+            <td>
+                {LocationName}
+            </td>
+        </tr>
+    </tbody>
 </table>
 <div style="padding-top: 15px;">
-@*<div class="float-left">
+    @*<div class="float-left">
     Election Status:<br/>
     <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count"> 
         @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
     </select>
 </div>*@
-<div class="AutoButtons">
-    <input type="checkbox" id="chkAutoRefresh" />
-    <span>Auto-refresh monitor listing every </span>
-    <select id="ddlRefresh">
-        <option value="10">10 seconds</option>
-        <option value="15">20 seconds</option>
-        <option value="30">30 seconds</option>
-        <option value="60">minute</option>
-        <option value="120">2 minutes</option>
-    </select>
-    <button type="button" id="btnRefesh" accesskey="R">
-      <u>R</u>efresh Now</button>
-    Last Refresh at <span id="lastRefresh"></span>
+    <div class="AutoButtons">
+        <input type="checkbox" id="chkAutoRefresh" />
+        <span>Auto-refresh monitor listing every </span>
+        <select id="ddlRefresh">
+            <option value="10">10 seconds</option>
+            <option value="15">20 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">minute</option>
+            <option value="120">2 minutes</option>
+        </select>
+        <button type="button" id="btnRefesh" accesskey="R">
+            <u>R</u>efresh Now</button>
+        Last Refresh at <span id="lastRefresh"></span>
+    </div>
+    <div>
+        <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
+        <label for="chkList">
+            Show this Election on the TallyJ welcome page (only if Secret Code is set on Election
+            Setup page)</label>
+    </div>
+    <div class="Clear">
+    </div>
 </div>
-  <div>
-    <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
-    <label for="chkList">Show this Election on the TallyJ welcome page (only if Secret Code is set on Election Setup page)</label>
-  </div>
-  <div class="Clear"></div>  
-</div>
-

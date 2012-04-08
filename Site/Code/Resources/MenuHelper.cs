@@ -45,6 +45,17 @@ namespace TallyJ.Code.Resources
       }
     }
 
+    public string CurrentPageTitle
+    {
+      get
+      {
+        var currentNode = CurrentNode;
+
+        var title = currentNode.GetAttribute("title");
+        return title;
+      }
+    }
+
     /// <Summary>Current menu node. If none, returns an empty element.</Summary>
     public XmlElement CurrentNode
     {
@@ -53,7 +64,7 @@ namespace TallyJ.Code.Resources
         if (_currentNode != null) return _currentNode;
 
         var nodes = MainRootXml().SelectNodes("//*");
-        if (nodes == null) return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
+        if (nodes == null) return MakeEmptyNode();
 
         var routeData = _urlHelper.RequestContext.RouteData;
 
@@ -61,11 +72,16 @@ namespace TallyJ.Code.Resources
           .Cast<XmlNode>()
           .Where(n => n.NodeType == XmlNodeType.Element)
           .Cast<XmlElement>()
-          .Single(item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
+          .SingleOrDefault(item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
                           && routeData.Values["action"].ToString() == item.GetAttribute("action"));
 
-        return _currentNode;
+        return _currentNode ?? MakeEmptyNode();
       }
+    }
+
+    private XmlElement MakeEmptyNode()
+    {
+      return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
     }
 
     public bool ShowLocationSelection
@@ -194,13 +210,14 @@ namespace TallyJ.Code.Resources
                               .Where(n => n.NodeType == XmlNodeType.Element)
                               .Cast<XmlElement>()
                               .Where(c => UserSession.IsFeatured(c.GetAttribute("featureWhen"))))
-        .Select(item => "<li><a href='{Link}' class='{Class} Role-{Role}'>{Title}</a></li>".FilledWithObject(
+        .Select(item => "<li><a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a></li>".FilledWithObject(
           new
             {
               Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
               Class = item.GetAttribute("class"),
               Role = item.GetAttribute("role"),
               Title = item.GetAttribute("title"),
+              Tip = item.GetAttribute("desc"),
             }
           ));
     }

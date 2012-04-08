@@ -2,14 +2,14 @@
 * qTip2 - Pretty powerful tooltips
 * http://craigsworks.com/projects/qtip2/
 *
-* Version: nightly
+* Version: 2.0.0pre
 * Copyright 2009-2010 Craig Michael Thompson - http://craigsworks.com
 *
 * Dual licensed under MIT or GPLv2 licenses
 *   http://en.wikipedia.org/wiki/MIT_License
 *   http://en.wikipedia.org/wiki/GNU_General_Public_License
 *
-* Date: Tue Feb  7 13:29:42.0000000000 2012
+* Date: Mon Apr 2 21:24:16 2012 +0100
 */
 
 /* Core qTip styles */
@@ -22,8 +22,8 @@
 	max-width: 280px;
 	min-width: 50px;
 	
-	font-size: 10pt;
-	line-height: 11pt;
+	font-size: 10.5px;
+	line-height: 12px;
 }
 
 	/* Fluid class for determining actual width in IE */
@@ -121,7 +121,7 @@
 }
 
 	.ui-tooltip-default .ui-tooltip-titlebar{
-	    background-color: #FFEF93;
+		background-color: #FFEF93;
 	}
 
 	.ui-tooltip-default .ui-tooltip-icon{
@@ -134,28 +134,6 @@
 		border-color: #AAA;
 		color: #111;
 	}
-
-/* Tips plugin */
-.ui-tooltip .ui-tooltip-tip{
-	margin: 0 auto;
-	overflow: hidden;
-	z-index: 10;
-}
-
-	.ui-tooltip .ui-tooltip-tip,
-	.ui-tooltip .ui-tooltip-tip *{
-		position: absolute;
-		
-		line-height: 0.1px !important;
-		font-size: 0.1px !important;
-		color: #123456;
-
-		background: transparent;
-		border: 0px dashed transparent;
-	}
-	
-	.ui-tooltip .ui-tooltip-tip canvas{ top: 0; left: 0; }
-
 
 /* Modal plugin */
 #qtip-overlay{
@@ -179,6 +157,28 @@
 		filter:alpha(opacity=70);
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
 	}
+
+/* Tips plugin */
+.ui-tooltip .ui-tooltip-tip{
+	margin: 0 auto;
+	overflow: hidden;
+	z-index: 10;
+}
+
+	.ui-tooltip .ui-tooltip-tip,
+	.ui-tooltip .ui-tooltip-tip *{
+		position: absolute;
+		
+		line-height: 0.1px !important;
+		font-size: 0.1px !important;
+		color: #123456;
+
+		background: transparent;
+		border: 0px dashed transparent;
+	}
+	
+	.ui-tooltip .ui-tooltip-tip canvas{ top: 0; left: 0; }
+
 
 /*! Light tooltip style */
 .ui-tooltip-light .ui-tooltip-titlebar,
@@ -291,16 +291,16 @@
 /*! Blue tooltip style */
 .ui-tooltip-blue .ui-tooltip-titlebar,
 .ui-tooltip-blue .ui-tooltip-content{
-    border-color: #8CC63C; /* #ADD9ED; */
-    color: #22262e; /* #5E99BD; */
+	border-color: #ADD9ED;
+	color: #5E99BD;
 }
 
 	.ui-tooltip-blue .ui-tooltip-content{
-	    background-color: #b0f84b; /*#BDD2FF; #E5F6FE; */
+		background-color: #E5F6FE;
 	}
 
 	.ui-tooltip-blue .ui-tooltip-titlebar{
-		background-color: #BDD2FF;
+		background-color: #D0E9F5;
 	}
 
 	.ui-tooltip-blue .ui-state-default .ui-tooltip-icon{

@@ -161,6 +161,26 @@ footer
     background-image: url('../Images/LogoS.png');
     width: 55px;
     height: 59px;
+    position: relative;
+}
+.site-title span {
+    font-size: 8px;
+    display: block;
+    position: absolute;
+    bottom: -9px;
+    left: 3px;
+}
+a.site-title:link,
+a.site-title:visited,
+a.site-title:target {
+    color: #8DC63E;
+    text-decoration: none;
+}
+a.site-title:hover {
+    color: #638b2c;
+}
+body.Dashboard .site-title span {
+    display: none;
 }
 .TopInfo
 {
@@ -702,7 +722,7 @@ a.twitter
     display: none;
     position: absolute;
     z-index: 10;
-    left: 50px;
+    left: 220px;
     padding: 8px;
     border: outset 3px #ccc;
     border-top-style: solid;
@@ -733,7 +753,7 @@ a.twitter
 
 .PullInstructions
 {
-    border: 1px solid #8dc63e;
+    border: 1px solid #77BBFF;
     border-radius: 3px;
     font-size: 95%;
     padding: 0 5px 0 15px;
@@ -741,7 +761,8 @@ a.twitter
 }
 .PullInstructionsHandle
 {
-    color: #8dc63e;
+    color: #77BBFF;
+    x-color: #8dc63e;
     cursor: pointer;
     font-size: 90%;
     font-style: italic;
@@ -878,4 +899,18 @@ body.AuthKnown .CurrentElectionName {
 .ui-icon-info {
     display: inline-block;
     vertical-align: text-bottom;
+}
+.withTip label {
+    display: inline-block;
+}
+.ui-tooltip, .qtip {
+font-size: 13.5px;
+line-height: 15px;
+}
+.BetaWarningTitle {
+    color: red;
+    padding: 2em 5em;
+    text-align: center;
+    font-size: medium;
+    border: double 3px red;
 }

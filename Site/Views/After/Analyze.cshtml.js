@@ -210,7 +210,7 @@ var AnalyzePage = function () {
 
     var expandInvalids = function (needReview) {
         $.each(needReview, function () {
-            this.Ballot = '<a href="../Ballots?l={LocationId}&b={BallotId}">{Ballot}</a>'.filledWith(this);
+            this.Ballot = '<a target=L{LocationId} href="../Ballots?l={LocationId}&b={BallotId}">{Ballot}</a>'.filledWith(this);
             this.Link = this.PositionOnBallot;
         });
         return needReview;

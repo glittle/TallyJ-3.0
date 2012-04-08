@@ -10,9 +10,7 @@ var EditPersonPage = function () {
 
     var startNewPerson = function (panel) {
         applyValues(panel, {
-            Person: {
-                C_RowId: -1
-            }
+            C_RowId: -1
         });
     };
     var applyValues = function (panel, person) {
@@ -52,7 +50,7 @@ var EditPersonPage = function () {
 
     var saveChanges = function () {
         var form = {};
-        $(':input[data-name]').each(function () {
+        local.hostPanel.find(':input[data-name]').each(function () {
             var input = $(this);
             var value;
             switch (input.attr('type')) {
@@ -66,12 +64,17 @@ var EditPersonPage = function () {
             form[input.data('name')] = value;
         });
 
+        if (!(form.FirstName && form.LastName)) {
+            alert('First and Last names are required.');
+            return;
+        }
+
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
             if (info.Person) {
                 applyValues(null, info.Person);
 
-                site.broadcast(site.broadcastCode.personSaved, info.Person);
+                site.broadcast(site.broadcastCode.personSaved, info);
             }
             ShowStatusDisplay(info.Status, 0, null, false, true);
         });
@@ -81,13 +84,29 @@ var EditPersonPage = function () {
     var preparePage = function () {
         $('#btnSave').live('click', saveChanges);
         $('#ddlIneligible').html(prepareReasons());
+
+        site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {
+            startNewPerson($(data));
+        });
+
+        site.qTips.push({ selector: '#qTipFName', title: 'First and Last Name', text: 'These are the main names for this person. Both must be filled in.' });
+        site.qTips.push({ selector: '#qTipOtherName', title: 'Other Names', text: 'Optional. If a person may be know by other names, enter them here.' });
+        site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
+        site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
+        site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Can be searched on, and shows in final reports if elected.' });
+        site.qTips.push({ selector: '#qTipIneligible', title: 'Ineligible', text: 'Most people are eligible to participate in the election by voting or being voted for.'
+          + '<br><br>However, if this person is ineligible, select the best reason here. Their name will show in some lists, but votes for them will be automatically marked as spoiled.'
+        });
+        site.qTips.push({ selector: '#qTipCanVote', title: 'Delegate', text: 'In this election, only named individuals or delegates can participate as voters.  If this person can vote, check this box.' });
+        site.qTips.push({ selector: '#qTipCanReceive', title: 'Tie Break', text: 'In this election, only named individuals can be voted for.  If this person can receive votes, check this box.' });
     };
 
     var prepareReasons = function () {
-        var html = ['<option value="">Ineligible reasons...</option>'];
+        var html = ['<option value="">Eligible to participate</option>'];
         var group = '';
         $.each(publicInterface.invalidReasons, function () {
             var reasonGroup = this.Group;
+            if (reasonGroup == 'Unreadable') return;
             if (reasonGroup != group) {
                 if (group) {
                     html.push('</optgroup>');

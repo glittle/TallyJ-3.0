@@ -129,17 +129,17 @@ namespace TallyJ.Models
       else
       {
         ballot.StatusCode = BallotStatusEnum.Ok;
-
-        var ballotAnalyzer = new BallotAnalyzer();
-        ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVotes());
       }
+      var ballotAnalyzer = new BallotAnalyzer();
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVotes());
 
       Db.SaveChanges();
-      
+
       return new
                {
-                 ballot.StatusCode,
-                 StatusCodeText = BallotStatusEnum.TextFor(ballot.StatusCode),
+                 BallotStatus = ballotStatusInfo.Status.Value,
+                 BallotStatusText = ballotStatusInfo.Status.DisplayText,
+                 ballotStatusInfo.SpoiledCount
                }.AsJsonResult();
     }
 
@@ -208,12 +208,12 @@ namespace TallyJ.Models
                          pos = v.PositionOnBallot,
                          name = v.PersonFullName,
                          changed = !Equals(v.PersonCombinedInfo, v.PersonCombinedInfoInVote),
-                         invalid = v.VoteInvalidReasonId,
-                         ineligible = v.PersonIneligibleReasonId
+                         invalid = v.VoteIneligibleReasonGuid,
+                         ineligible = v.PersonIneligibleReasonGuid
                        });
     }
 
-    public JsonResult SaveVote(int personId, int voteId, int count, int invalidReason)
+    public JsonResult SaveVote(int personId, int voteId, int count, Guid invalidReason)
     {
       var currentElectionGuid = UserSession.CurrentElectionGuid;
 
@@ -241,13 +241,14 @@ namespace TallyJ.Models
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
         return new
                  {
                    Updated = true,
-                   BallotStatus = ballotStatus,
-                   BallotStatusText = BallotStatusEnum.TextFor(ballotStatus)
+                   BallotStatus = ballotStatusInfo.Status.Value,
+                   BallotStatusText = ballotStatusInfo.Status.DisplayText,
+                   ballotStatusInfo.SpoiledCount
                  }.AsJsonResult();
       }
 
@@ -286,6 +287,7 @@ namespace TallyJ.Models
         {
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
+          vote.InvalidReasonGuid = person.IneligibleReasonGuid;
         }
         if (invalidReasonGuid != Guid.Empty)
         {
@@ -295,15 +297,16 @@ namespace TallyJ.Models
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
         return new
                  {
                    Updated = true,
                    VoteId = vote.C_RowId,
                    pos = vote.PositionOnBallot,
-                   BallotStatus = ballotStatus,
-                   BallotStatusText =  BallotStatusEnum.TextFor(ballotStatus)
+                   BallotStatus = ballotStatusInfo.Status.Value,
+                   BallotStatusText =  ballotStatusInfo.Status.DisplayText,
+                   ballotStatusInfo.SpoiledCount
                  }.AsJsonResult();
       }
 
@@ -327,18 +330,19 @@ namespace TallyJ.Models
       UpdateVotePositions(voteInfo.BallotGuid);
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatus = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
 
       return new
                {
                  Deleted = true,
                  Votes = CurrentVotesForJson(),
-                 BallotStatus = ballotStatus,
-                 BallotStatusText = BallotStatusEnum.TextFor(ballotStatus)
+                 BallotStatus = ballotStatusInfo.Status.Value,
+                 BallotStatusText = ballotStatusInfo.Status.DisplayText,
+                 ballotStatusInfo.SpoiledCount
                }.AsJsonResult();
     }
 
-    public string InvalidReasonsJsonString()
+    public string InvalidReasonsByIdJsonString()
     {
       return IneligibleReasonEnum.Items
         .Select(r => new
@@ -360,6 +364,18 @@ namespace TallyJ.Models
       //                   Desc = r.ReasonDescription
       //                 })
       //  .SerializedAsJsonString();
+    }
+
+    public string InvalidReasonsByGuidJsonString()
+    {
+      return IneligibleReasonEnum.Items
+        .Select(r => new
+                       {
+                         Guid = r.Value,
+                         r.Group,
+                         Desc = r.Description
+                       })
+                       .SerializedAsJsonString();
     }
 
     public object CurrentBallotsInfoList()
@@ -405,23 +421,8 @@ namespace TallyJ.Models
     }
 
     /// <Summary>Convert int to Guid for InvalidReason. If vote is given, assign if different</Summary>
-    private Guid DetermineInvalidReasonGuid(int invalidReason, Vote vote = null)
+    private Guid DetermineInvalidReasonGuid(Guid invalidReasonGuid, Vote vote = null)
     {
-      if (invalidReason == 0)
-      {
-        return Guid.Empty;
-      }
-
-      var invalidReasonGuid =
-        Db.Reasons.Where(r => r.C_RowId == invalidReason).Select(r => r.ReasonGuid).SingleOrDefault();
-      if (invalidReasonGuid == Guid.Empty)
-      {
-        // didn't get a valid reason - use the last Ineligible reason... should be "Other"
-        invalidReasonGuid =
-          Db.Reasons.Where(r => r.ReasonGroup == "Ineligible").OrderByDescending(r => r.SortOrder).Select(
-            r => r.ReasonGuid).First();
-      }
-
       if (vote != null && vote.InvalidReasonGuid != invalidReasonGuid)
       {
         vote.InvalidReasonGuid = invalidReasonGuid.AsNullableGuid();
@@ -490,6 +491,6 @@ namespace TallyJ.Models
                };
     }
 
-    protected abstract object BallotForJson(vBallotInfo b);
+    public abstract object BallotForJson(vBallotInfo b);
   }
 }
