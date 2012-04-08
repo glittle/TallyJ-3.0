@@ -474,7 +474,7 @@ namespace Tests.BusinessTests
         vVoteInfo.BallotGuid = ballot1Guid;
         vVoteInfo.PersonGuid = Guid.NewGuid();
       }
-      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
+      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;  
       votes[4].BallotStatusCode = "TooFew";
       votes[5].PersonCombinedInfo = "different";
       votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
