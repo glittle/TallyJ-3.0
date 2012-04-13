@@ -10,7 +10,6 @@ var PeopleHelper = function (url) {
         ShowStatusDisplay('searching...', 500);
         CallAjaxHandler(local.url + '/GetPeople', {
             search: search,
-            includeIneligible: true,
             includeMatches: includeMatches
         }, onComplete, { callback: onNamesReady, search: search, usedIds: usedPersonIds }, onFail);
     };

@@ -31,7 +31,7 @@ namespace TallyJ.Models
     public override ResultSummary GenerateResults()
     {
       var summary = base.GenerateResults();
-
+      
       // for single name elections, # votes = # ballots
       summary.BallotsReceived
         = summary.NumVoters

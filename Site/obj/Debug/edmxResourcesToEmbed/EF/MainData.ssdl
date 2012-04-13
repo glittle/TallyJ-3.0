@@ -108,8 +108,8 @@
       [vResultInfo].[PersonName] AS [PersonName]
       FROM [tj].[vResultInfo] AS [vResultInfo]</DefiningQuery>
     </EntitySet>
-    <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" Schema="tj" store:Name="vVoteInfo">
-      <!--<DefiningQuery>SELECT 
+    <EntitySet Name="vVoteInfo" EntityType="tallyj2dModel.Store.vVoteInfo" store:Type="Views" store:Schema="tj" store:Name="vVoteInfo">
+      <DefiningQuery>SELECT 
       [vVoteInfo].[VoteId] AS [VoteId], 
       [vVoteInfo].[VoteStatusCode] AS [VoteStatusCode], 
       [vVoteInfo].[SingleNameElectionCount] AS [SingleNameElectionCount], 
@@ -132,7 +132,7 @@
       [vVoteInfo].[LocationId] AS [LocationId], 
       [vVoteInfo].[LocationTallyStatus] AS [LocationTallyStatus], 
       [vVoteInfo].[ElectionGuid] AS [ElectionGuid]
-      FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>-->
+      FROM [tj].[vVoteInfo] AS [vVoteInfo]</DefiningQuery>
     </EntitySet>
     <AssociationSet Name="FK_JoinElectionUser_Users" Association="tallyj2dModel.Store.FK_JoinElectionUser_Users">
       <End Role="Users" EntitySet="Users" />
@@ -214,7 +214,6 @@
     <Property Name="OwnerLoginId" Type="varchar" MaxLength="50" />
     <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
     <Property Name="ListedForPublicAsOf" Type="datetime2" />
-    <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="_RowVersion" Type="timestamp" Nullable="false" StoreGeneratedPattern="Computed" />
     <Property Name="ListForPublic" Type="bit" />
     <Property Name="ShowAsTest" Type="bit" />
@@ -343,6 +342,7 @@
     <Property Name="TotalVotes" Type="int" />
     <Property Name="BallotsReceived" Type="int" />
     <Property Name="BallotsNeedingReview" Type="int" />
+    <Property Name="CalledInBallots" Type="int" />
   </EntityType>
   <EntityType Name="ResultTie">
     <Key>
@@ -518,7 +518,7 @@
       <PropertyRef Name="ElectionGuid" />
     </Key>
     <Property Name="VoteId" Type="int" Nullable="false" />
-    <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" StoreGeneratedPattern="None" />
+    <Property Name="VoteStatusCode" Type="varchar" Nullable="false" MaxLength="10" />
     <Property Name="SingleNameElectionCount" Type="int" />
     <Property Name="IsSingleNameElection" Type="bit" />
     <Property Name="PositionOnBallot" Type="int" Nullable="false" />
@@ -577,5 +577,9 @@
     <Parameter Name="MaxToReturn" Type="int" Mode="In" />
     <Parameter Name="MoreExactMatchesFound" Type="bit" Mode="InOut" />
     <Parameter Name="ShowDebugInfo" Type="int" Mode="In" />
+  </Function>
+  <Function Name="UpdateVoteStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="tj">
+    <Parameter Name="VoteRowId" Type="int" Mode="In" />
+    <Parameter Name="StatusCode" Type="varchar" Mode="In" />
   </Function>
 </Schema>

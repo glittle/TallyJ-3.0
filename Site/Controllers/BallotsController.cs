@@ -23,7 +23,7 @@ namespace TallyJ.Controllers
         }
       }
 
-      var isSingle = UserSession.CurrentElection.IsSingleNameElection.AsBoolean();
+      var isSingle = UserSession.CurrentElection.IsSingleNameElection;
       var ballotModel = CurrentBallotModel;
 
       var ballotId = Request.QueryString["b"].AsInt();

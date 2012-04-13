@@ -74,10 +74,11 @@
                     <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionName</div>
                     if (UserSession.CurrentElection != null)
                     {
-                    <div class="ElectionState" title="Election status">
-                        Current Election Status: <span>@UserSession.CurrentElectionStatusName</span></div>
-                    <span class="AllowChangeElectionState ui-icon ui-icon-pencil qTip" title="Click to change the status of the election. This should be done frequently as the event progresses.">
-                    </span>
+                    <div class="ElectionState">
+                        Election Status<span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span>:
+                        <span class="AllowChangeElectionState ui-icon ui-icon-pencil qTip" title="Click to change the status of the election.">
+                        </span><span class="AllowChangeElectionState bold">@UserSession.CurrentElectionStatusName</span></div>
+                    
                     <div class="ChangeElectionState">
                         <p>
                             Change the election status to:</p>
@@ -85,13 +86,17 @@
                             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
                         </select>
                     </div>
-                    <ul class="QuickLinks">
+                    <div class="QuickLinks2">
+                        Quick Links<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
+                            id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+                    </div>
+@*                    <ul class="QuickLinks">
                         <li>Pages <span class="ui-icon QuickLinkIcon"></span>
                             <ul>
-                                @currentMenu.QuickLinks().JoinedAsString().AsRawHtml()
+                                @currentMenu.QuickLinks().AsRawHtml()
                             </ul>
                         </li>
-                    </ul>
+                    </ul>*@
                     }
                     <div class="Heartbeat">
                     </div>
@@ -109,7 +114,7 @@
                     if (currentMenu.ShowLocationSelection || currentMenu.ShowTellerSelector)
                     {
                 <div class="CurrentInfo">
-                    @if (currentMenu.ShowLocationSelection)
+                    @if (false && currentMenu.ShowLocationSelection)
                     {
                         <label for="ddlTopLocation">
                             Location:
@@ -122,7 +127,6 @@
                         <select disabled>
                             <option>@UserSession.CurrentComputerCode</option>
                         </select>
-                        <br />
                     }
                     @if (currentMenu.ShowTellerSelector)
                     {

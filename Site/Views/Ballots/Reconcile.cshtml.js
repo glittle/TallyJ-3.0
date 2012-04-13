@@ -15,7 +15,7 @@ var ReconcilePageFunc = function () {
     var preparePage = function () {
         $('#btnShowNames').click(function () {
             $(this).hide();
-            $('.Names').fadeIn();
+            $('.Names, #lists').fadeIn();
             local.showingNames = true;
         });
         $('#locations').change(changeLocation);
@@ -53,43 +53,61 @@ var ReconcilePageFunc = function () {
         }
 
         var methodInfos = {
-            M: { name: 'Mailed In', count: 0 },
+            P: { name: 'In Person', count: 0 },
             D: { name: 'Dropped Off', count: 0 },
-            P: { name: 'In Person', count: 0 }
+            M: { name: 'Mailed In', count: 0 },
+            C: { name: 'Called In', count: 0 }
         };
+        var methodList = ['P', 'D', 'M', 'C'];
 
         var host = $('#lists');
         host.html('');
 
-        for (var j = 0; j < local.ballotMethods.length; j++) {
-            method = local.ballotMethods[j];
+        for (var j = 0; j < methodList.length; j++) {
+            method = methodList[j];
             var methodInfo = methodInfos[method] || { name: '???', count: 0 };
 
             var methodName = methodInfo.name;
 
-            var sortedBallots = local.sortedBallots[method];
-            var ballotList = '<div><span>{C_FullName}</span><span class=When>{WhenText}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(extend(sortedBallots));
-            host.append('<div data-method={0}><h2>{1}</h2><div class=Count>Total: {2}</div><div class=Names>{^3}</div></div>'.filledWith(
-                method, methodName, sortedBallots.length, ballotList));
+            var sortedBallots = local.sortedBallots[method] || null;
+            if (sortedBallots) {
+                var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(extend(sortedBallots));
+                host.append('<div data-method={0}><h3>{1}: {2}</h3><div class=Names>{^3}</div></div>'.filledWith(
+                    method, methodName, sortedBallots.length, ballotList));
 
-            methodInfo.count = sortedBallots.length;
+                methodInfo.count = sortedBallots.length;
+            }
         }
 
         // show totals
-        var html = [];
-        var template = '<tr class="{className}"><td>{name}</td><td>{count}</td></tr>';
-        html.push(template.filledWith(methodInfos['M']));
-        html.push(template.filledWith(methodInfos['D']));
+        //        var html = [];
+        //        var template = '<tr class="{className}"><td>{name}</td><td>{count}</td></tr>';
+        //        html.push(template.filledWith(methodInfos['M']));
+        //        html.push(template.filledWith(methodInfos['D']));
+        //        html.push(template.filledWith(methodInfos['C']));
 
-        var subTotal = methodInfos['M'].count + methodInfos['D'].count;
+        var totals = {
+            absent: methodInfos['M'].count + methodInfos['D'].count + methodInfos['C'].count,
+            inPerson: methodInfos['P'].count
+        };
+        totals.total = totals.inPerson + totals.absent;
 
-        html.push(template.filledWith({ className: 'SubTotal', name: 'Absentee Ballots', count: subTotal }));
+        $('#Totals').html([
+                'Total: {total}'.filledWith(totals),
+                'Absent: {absent}'.filledWith(totals),
+                (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
+                (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
+                (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
+                (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)).bold()
+            ].join(' &nbsp; &nbsp; '));
 
-        html.push(template.filledWith(methodInfos['P']));
+        //        html.push(template.filledWith({ className: 'SubTotal', name: 'Absentee Ballots', count: subTotal }));
 
-        html.push(template.filledWith({ className: 'Total', name: 'Total', count: subTotal + methodInfos['P'].count }));
+        //        html.push(template.filledWith(methodInfos['P']));
 
-        $('#Totals').html('<table>{^0}</table>'.filledWith(html.join('')));
+        //        html.push(template.filledWith({ className: 'Total', name: 'Total', count: subTotal + methodInfos['P'].count }));
+
+        //        $('#Totals').html('<table>{^0}</table>'.filledWith(html.join('')));
 
 
         if (local.showingNames) {
@@ -98,8 +116,9 @@ var ReconcilePageFunc = function () {
     };
 
     var extend = function (ballots) {
+        if (!ballots) return null;
         $.each(ballots, function () {
-            this.WhenText = FormatDate(this.When, ' ', true, true);
+            //this.WhenText = FormatDate(this.When, ' ', true, true);
         });
         return ballots;
     };

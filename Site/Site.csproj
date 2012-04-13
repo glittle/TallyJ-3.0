@@ -221,6 +221,7 @@
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Partials\BallotRelated.cs" />
+    <Compile Include="EF\Partials\Election.cs" />
     <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Person.cs">

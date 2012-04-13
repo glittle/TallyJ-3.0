@@ -43,7 +43,7 @@ namespace Tests.BusinessTests
       election.DateOfElection.ShouldEqual(new DateTime(2011, 4, 20));
       election.ElectionType.ShouldEqual(ElectionTypeEnum.Lsa);
       election.ElectionMode.ShouldEqual(ElectionModeEnum.Normal);
-      election.IsSingleNameElection.ShouldEqual(null);
+      election.IsSingleNameElection.ShouldEqual(false);
       election.NumberExtra.ShouldEqual(0);
       election.NumberToElect.ShouldEqual(9);
       election.ShowAsTest.ShouldEqual(true, "Imported elections are marked as Test");
@@ -53,6 +53,7 @@ namespace Tests.BusinessTests
       var resultSummary = fakes.ResultSummaries[0];
       resultSummary.DroppedOffBallots.ShouldEqual(1);
       resultSummary.MailedInBallots.ShouldEqual(10);
+      resultSummary.CalledInBallots.ShouldEqual(0);
       resultSummary.InPersonBallots.ShouldEqual(17);
       resultSummary.NumEligibleToVote.ShouldEqual(51);
 

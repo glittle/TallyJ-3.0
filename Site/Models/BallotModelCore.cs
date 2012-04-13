@@ -252,7 +252,7 @@ namespace TallyJ.Models
                  }.AsJsonResult();
       }
 
-      var shouldCreateBallotIfNeeded = UserSession.CurrentElection.IsSingleNameElection.AsBoolean();
+      var shouldCreateBallotIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
       var ballot = GetCurrentBallotInfo(shouldCreateBallotIfNeeded);
       if (ballot == null)
       {

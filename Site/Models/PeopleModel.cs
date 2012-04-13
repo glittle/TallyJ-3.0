@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Objects.SqlClient;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -25,6 +26,7 @@ namespace TallyJ.Models
     #endregion
 
     private List<Location> _locations;
+    private List<Person> _peopleforFrontDesk;
 
     public long LastRowVersion
     {
@@ -40,11 +42,12 @@ namespace TallyJ.Models
       }
     }
 
-    public IQueryable<Person> PeopleInCurrentElection(bool includeIneligible)
+    public IQueryable<Person> PeopleInCurrentElection(bool onlyIfCanVote = false, bool includeIneligible = true)
     {
       {
         return Db.People
           .Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid)
+          .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
           .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
       }
     }
@@ -213,9 +216,15 @@ namespace TallyJ.Models
     }
 
     /// <Summary>Everyone</Summary>
-    public IEnumerable<object> PersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
+    public IEnumerable<object> FrontDeskPersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
-      return PersonLines(PeopleInCurrentElection(true).ToList());
+      return FrontDeskPersonLines(PeopleForFrontDesk());
+    }
+
+    /// <Summary>People to tbe listed on Front Desk page. Called more than once, so separated out</Summary>
+    public List<Person> PeopleForFrontDesk()
+    {
+      return _peopleforFrontDesk ?? (_peopleforFrontDesk = PeopleInCurrentElection(true).ToList());
     }
 
     public IEnumerable<object> BallotSources(int forLocationId = -1)
@@ -224,8 +233,12 @@ namespace TallyJ.Models
       var forLocationGuid = forLocationId == -1
                               ? Guid.Empty
                               : Locations.Where(l => l.C_RowId == forLocationId).Select(l => l.LocationGuid).Single();
+      var timeOffset = UserSession.TimeOffset;
+      var tellers =
+  Db.Tellers.Where(t => t.ElectionGuid == UserSession.CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
+                                                                                        t => t.Name);
 
-      return PeopleInCurrentElection(false)
+      return PeopleInCurrentElection() // start with everyone
         .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
         .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
         .ToList()
@@ -235,9 +248,10 @@ namespace TallyJ.Models
                          PersonId = p.C_RowId,
                          p.C_FullName,
                          VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
-                         When = p.RegistrationTime,
+                         When = ShowRegistrationTime(timeOffset, p),
                          p.VotingMethod,
-                         p.EnvNum
+                         EnvNum = ShowEnvNum(p),
+                         Tellers = ShowTellers(tellers, p)
                        });
     }
 
@@ -251,7 +265,7 @@ namespace TallyJ.Models
     }
 
     /// <Summary>Only those listed</Summary>
-    public IEnumerable<object> PersonLines(List<Person> people, FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
+    public IEnumerable<object> FrontDeskPersonLines(List<Person> people, FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
       var showLocations = locations.Count > 1;
@@ -275,22 +289,37 @@ namespace TallyJ.Models
                                        showLocations && p.VotingLocationGuid.HasValue
                                          ? locations[p.VotingLocationGuid.Value]
                                          : "",
-                                       p.TellerAtKeyboard.HasValue
-                                         ? " (" + tellers[p.TellerAtKeyboard.Value]
-                                           + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "") 
-                                           + ")"
-                                         : "",
-                                       p.RegistrationTime.HasValue
-                                         ? p.RegistrationTime.Value.AddMilliseconds(timeOffset).ToString("h:mm")
-                                         : ""
-                                     }.JoinedAsString(" ", true),
+                                       ShowTellers(tellers, p),
+                                       ShowRegistrationTime(timeOffset, p)
+                                     }.JoinedAsString("; ", true),
                          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
                          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
-                         EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson
-                                    ? null
-                                    : p.EnvNum
+                         CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
+                         EnvNum = ShowEnvNum(p)
                        });
+    }
+
+    private static int? ShowEnvNum(Person p)
+    {
+      return p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson
+               ? null
+               : p.EnvNum;
+    }
+
+    private static string ShowTellers(Dictionary<Guid, string> tellers, Person p)
+    {
+      return p.TellerAtKeyboard.HasValue
+               ? tellers[p.TellerAtKeyboard.Value]
+                 + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "")
+               : "";
+    }
+
+    private static string ShowRegistrationTime(int timeOffset, Person p)
+    {
+      return p.RegistrationTime.HasValue
+               ? p.RegistrationTime.Value.AddMilliseconds(timeOffset).ToString("h:mm tt").ToLowerInvariant()
+               : "";
     }
 
     public JsonResult RegisterVoteJson(int personId, string voteType, int lastRowVersion)
@@ -348,7 +377,7 @@ namespace TallyJ.Models
       {
         return new
                  {
-                   PersonLines = PersonLines(new List<Person> { person }),
+                   PersonLines = FrontDeskPersonLines(new List<Person> { person }),
                    LastRowVersion
                  }.AsJsonResult();
       }
@@ -358,7 +387,7 @@ namespace TallyJ.Models
         .ToList();
       return new
                {
-                 PersonLines = PersonLines(people),
+                 PersonLines = FrontDeskPersonLines(people),
                  LastRowVersion
                }.AsJsonResult();
     }

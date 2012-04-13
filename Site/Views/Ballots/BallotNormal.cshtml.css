@@ -359,8 +359,9 @@ div.heading
 {
     float: right;
 }
-.review {
-    text-align: center;
+.review 
+{
+    margin-top: 1em;
 }
 #addMissingPanel {
     display: none;   

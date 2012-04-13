@@ -13,7 +13,7 @@ namespace TallyJ.Models
     {
       return !voteInfo.VoteIneligibleReasonGuid.HasValue
              && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             && voteInfo.BallotStatusCode == BallotStatusEnum.Ok
+             //&& voteInfo.BallotStatusCode == BallotStatusEnum.Ok --> Vote status is not set by the Ballot's status
              && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
              && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
     }
@@ -21,8 +21,8 @@ namespace TallyJ.Models
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>
     public static bool VoteNeedReview(vVoteInfo voteInfo)
     {
-      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote
-             || voteInfo.BallotStatusCode == BallotStatusEnum.Review;
+      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote || voteInfo.VoteStatusCode!= VoteHelper.VoteStatusCode.Ok;
+      //       || voteInfo.BallotStatusCode == BallotStatusEnum.Review;
     }
 
     /// <Summary>Is this Vote not valid?</Summary>

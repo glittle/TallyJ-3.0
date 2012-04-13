@@ -19,7 +19,7 @@ body
     background-color: #fff;
     color: #333;
     font-size: .85em;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
 }
@@ -131,9 +131,10 @@ h5, h6
 .PageTitle
 {
     position: absolute;
-    left: 68px;
+    left: 81px;
     top: 0;
     color: #13a;
+    font-weight: bold;
     font-size: 110%;
 }
 .main-content
@@ -163,28 +164,30 @@ footer
     height: 59px;
     position: relative;
 }
-.site-title span {
-    font-size: 8px;
+.site-title span
+{
+    font-size: 9px;
     display: block;
     position: absolute;
-    bottom: -9px;
+    bottom: -11px;
     left: 3px;
 }
-a.site-title:link,
-a.site-title:visited,
-a.site-title:target {
+a.site-title:link, a.site-title:visited, a.site-title:target
+{
     color: #8DC63E;
     text-decoration: none;
 }
-a.site-title:hover {
+a.site-title:hover
+{
     color: #638b2c;
 }
-body.Dashboard .site-title span {
+body.Dashboard .site-title span
+{
     display: none;
 }
 .TopInfo
 {
-    margin-left: 34px;
+    margin-left: 18px;
 }
 .NormalMode .TopInfo
 {
@@ -509,17 +512,19 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus
     border: 1px solid #7ac0da;
 }
 
-input[type="submit"],
-input[type="file"],
-button.Primary
+input[type="submit"], input[type="file"], button.Primary
 {
+    -webkit-border-radius: 2px;
     background-color: #ccffbe;
     border: solid 1px #4e6d22;
     color: #4e6d22;
     cursor: pointer;
-    font-family: 'Segoe UI Semibold', Verdana, Helvetica, Sans-Serif;
+    font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
     font-size: 1.1em;
-    padding: .2em .5em;
+    padding: .2em .5em .35em .5em;
+}
+input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
+    background-color: #b6ff50;
 }
 
 /* ajax login/registration dialog */
@@ -710,15 +715,18 @@ a.twitter
     color: #013d7a;
     font-weight: bold;
 }
-.ElectionState {
+.ElectionState
+{
     display: inline-block;
     margin-left: 0px;
     color: #8dc63e;
 }
-.ElectionState span {
+.ElectionState span
+{
     color: #013d7a;
 }
-.ChangeElectionState {
+.ChangeElectionState
+{
     display: none;
     position: absolute;
     z-index: 10;
@@ -728,7 +736,8 @@ a.twitter
     border-top-style: solid;
     background-color: #BDD2FF;
 }
-.ChangeElectionState p {
+.ChangeElectionState p
+{
     margin: 0 .5em .5em 0;
 }
 .CurrentLocationName
@@ -767,16 +776,20 @@ a.twitter
     font-size: 90%;
     font-style: italic;
 }
-.PullInstructionsHandle .IfClosed {
+.PullInstructionsHandle .IfClosed
+{
     display: none;
 }
-.PullInstructionsHandle.Closed .IfClosed {
+.PullInstructionsHandle.Closed .IfClosed
+{
     display: inline-block;
 }
-.PullInstructionsHandle .IfOpen {
+.PullInstructionsHandle .IfOpen
+{
     display: inline-block;
 }
-.PullInstructionsHandle.Closed .IfOpen {
+.PullInstructionsHandle.Closed .IfOpen
+{
     display: none;
 }
 .PullInstructionsHandle.Closed
@@ -826,27 +839,23 @@ a.twitter
 .CurrentInfo
 {
     background: #c4dca4;
-    font-size: 9pt;
+    font-size: 10pt;
     position: absolute;
     right: 0;
-    top: 15px;
-    padding-left: 5px;
-    width: 367px;
-    border: solid #c4dca4 5px;
-    border-bottom: none;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    top: 0;
+    padding: 1px 5px 3px 7px;
+    border: solid #c4dca4 1px;
+    border-top: none;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
-.CurrentInfo .TopLocation {
-    width: 200px;
-}
-.CurrentInfo .TopTeller {
-    width: 100px;
+.CurrentInfo .TopTeller
+{
+    width: 130px;
 }
 
-body .ifAuthKnownInline,
-.AllowChangeElectionState,
-body .ifAuthKnownLI {
+body .ifAuthKnownInline, .AllowChangeElectionState, body .ifAuthKnownLI
+{
     display: none;
 }
 body.AuthKnown .ifAuthKnownLI
@@ -857,14 +866,39 @@ body.AuthKnown .ifAuthKnownInline
 {
     display: inline-block;
 }
-body.AuthKnown .AllowChangeElectionState {
+body.AuthKnown .AllowChangeElectionState
+{
     display: inline-block;
     margin-left: 3px;
-}
-body.AuthKnown .CurrentElectionName {
     cursor: pointer;
 }
-.QuickLinks 
+body.AuthKnown .CurrentElectionName
+{
+    cursor: pointer;
+}
+.QuickLinks2
+{
+    color: #8DC63E;
+    margin: 5px 0 -12px 0;
+}
+.QuickLinks2 a
+{
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #8DC63E;
+    padding: 0 4px 0 4px;
+    -webkit-border-radius: 2px;
+}
+.QuickLinks2 a:hover
+{
+    background-color: #b6ff50;
+}
+.QuickLinks2 a.Active
+{
+    color: #8dc63e;
+}
+
+.QuickLinks
 {
     margin: 5px 0 0 0;
     z-index: 10;
@@ -888,26 +922,33 @@ body.AuthKnown .CurrentElectionName {
 {
     background-color: red;
 }*/
-.QuickLinkIcon {
+.QuickLinkIcon
+{
     display: inline-block;
     vertical-align: text-bottom;
     background-position: -32px -16px;
 }
-.QuickLinks:hover .QuickLinkIcon {
+.QuickLinks:hover .QuickLinkIcon
+{
     background-position: -64px -16px;
 }
-.ui-icon-info {
+.ui-icon-info
+{
     display: inline-block;
     vertical-align: text-bottom;
+    cursor: help;
 }
-.withTip label {
+.withTip label
+{
     display: inline-block;
 }
-.ui-tooltip, .qtip {
-font-size: 13.5px;
-line-height: 15px;
+.ui-tooltip, .qtip
+{
+    font-size: 13.5px;
+    line-height: 15px;
 }
-.BetaWarningTitle {
+.BetaWarningTitle
+{
     color: red;
     padding: 2em 5em;
     text-align: center;

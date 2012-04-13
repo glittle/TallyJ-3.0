@@ -57,6 +57,7 @@ function Onload() {
     AttachHelp();
 
     PrepareMainMenu();
+    HighlightActiveLink();
 
     AttachHandlers();
 
@@ -64,13 +65,32 @@ function Onload() {
 
     PrepareQTips();
 }
+
+function HighlightActiveLink() {
+    var url = location.href;
+    $('#quickLinks2 a').each(function () {
+        var matched = url == this.href;
+        var a = $(this);
+        if (matched) {
+            a.addClass('Active');
+        }
+        else {
+            a.removeClass('Active');
+        }
+    });
+}
+
 function PrepareQTips(doNow) {
     if (!doNow) {
-        setTimeout(function() {
+        setTimeout(function () {
             PrepareQTips(true);
         }, 500);
         return;
     }
+
+    // global tips
+    site.qTips.push({ selector: '#qTipQuickLinks', title: 'Quick Links', text: 'Shows the pages relevant to the current status of the election. All other pages are still available, via the Dashboard.' });
+    site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election Status', text: 'An election proceeds through various statuses. The head teller should actively change the status when appropriate.' });
 
     // add some tips for pages without dedicated js
     if ($('#qTipReg1').length) {
@@ -97,7 +117,7 @@ function ActivateTips() {
     $('.qTip').qtip(baseOption);
     $.each(site.qTips, function () {
         if ($(this).data('done')) return;
-        
+
         var opt = $.extend({}, baseOption);
         if (this.text) {
             if (this.title) {
@@ -135,8 +155,8 @@ function AttachHandlers() {
                 ResetStatusDisplay();
                 $('.ChangeElectionState').fadeOut();
                 if (info.QuickLinks) {
-                    $('.QuickLinks ul').html(info.QuickLinks);
-                    PrepareMainMenu();
+                    $('#quickLinks2').html(info.QuickLinks);
+                    HighlightActiveLink();
                 }
                 $('.ElectionState span').text(ddl.find(':selected').text());
             }, 0);

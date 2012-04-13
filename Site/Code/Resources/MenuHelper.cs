@@ -201,7 +201,7 @@ namespace TallyJ.Code.Resources
       return false;
     }
 
-    public IEnumerable<string> QuickLinks()
+    public string QuickLinks()
     {
       return TrimmedMenu().ChildNodes
         .Cast<XmlElement>()
@@ -210,7 +210,7 @@ namespace TallyJ.Code.Resources
                               .Where(n => n.NodeType == XmlNodeType.Element)
                               .Cast<XmlElement>()
                               .Where(c => UserSession.IsFeatured(c.GetAttribute("featureWhen"))))
-        .Select(item => "<li><a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a></li>".FilledWithObject(
+        .Select(item => "<a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a>".FilledWithObject(
           new
             {
               Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
@@ -219,7 +219,7 @@ namespace TallyJ.Code.Resources
               Title = item.GetAttribute("title"),
               Tip = item.GetAttribute("desc"),
             }
-          ));
+          )).JoinedAsString(" ");
     }
   }
 

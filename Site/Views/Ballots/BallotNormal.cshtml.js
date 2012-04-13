@@ -17,6 +17,7 @@ var BallotNormalPageFunc = function () {
         searchPanel: null,
         ballotsPanel: null,
         btnDeleteBallot: null,
+        location: {},
         votesNeeded: 0,
         ballotStatus: '',
         ballotId: 0,
@@ -99,7 +100,8 @@ var BallotNormalPageFunc = function () {
             });
         });
         $('#txtNumCollected').on('change', function () {
-            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: +$(this).val() }, function (info) {
+            var num = Math.max(0, +$(this).val());
+            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: num }, function (info) {
                 if (info.Location) {
                     showLocation(info.Location);
                 }
@@ -412,6 +414,20 @@ var BallotNormalPageFunc = function () {
         var status = info.BallotStatus;
 
         var topDisplay = $('.ballotStatus');
+
+        //        var old = topDisplay.html();
+        //        if (old != '' && old != 'Empty' && info.BallotStatus != 'Empty' && info.BallotStatusText != old) {
+        //            var div = $('.titleDiv');
+        //            var current = '#EFEEEF';
+        //            var highlight = '#BCECF8';
+        //            div.css('background-color', highlight);
+        //            setTimeout(function () {
+        //                div.css('background-color', current);
+        //            }, 500);
+        //            //            div.animate({ backgroundColor: "#FFFF8E" }, 1000, null, function () {
+        //            //                div.animate({ backgroundColor: current }, 200);
+        //            //            });
+        //        }
         topDisplay.html(info.BallotStatusText);
 
         if (status == 'Ok') {
@@ -449,6 +465,7 @@ var BallotNormalPageFunc = function () {
     };
 
     var showLocation = function (location) {
+        local.location = location;
         $('.locationInfo').find('[data-name]').each(function () {
             var target = $(this);
             var value = location[target.data('name')];
@@ -467,7 +484,7 @@ var BallotNormalPageFunc = function () {
     };
 
     var showBallotCount = function (numEntered) {
-        var remainingToEnter = (location.BallotsCollected || 0) - (numEntered || 0);
+        var remainingToEnter = (local.location.BallotsCollected || 0) - (numEntered || 0);
         var html, title;
         if (remainingToEnter == 0) {
             //html = '<span class=countsGood>All ballots entered</span>';
@@ -592,6 +609,7 @@ var BallotNormalPageFunc = function () {
 
                 if (info.BallotStatus == 'Ok') {
                     local.tabList.tabs('select', tabNum.ballots);
+                    $('#btnNewBallot2').effect('highlight', null, 1500);
                 }
 
                 focusOnTextInput();

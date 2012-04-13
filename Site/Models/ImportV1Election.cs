@@ -211,6 +211,7 @@ namespace TallyJ.Models
                         ResultType = ResultType.Manual,
                         NumEligibleToVote = manualCountsXml.GetAttribute("AdultsInCommunity").AsInt(),
                         MailedInBallots = manualCountsXml.GetAttribute("MailedInBallots").AsInt(),
+                        CalledInBallots = 0,
                         DroppedOffBallots = manualCountsXml.GetAttribute("DroppedOffBallots").AsInt(),
                         InPersonBallots = manualCountsXml.GetAttribute("VotedInPerson").AsInt()
                       };

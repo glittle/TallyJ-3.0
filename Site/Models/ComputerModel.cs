@@ -99,7 +99,7 @@ namespace TallyJ.Models
 
       // reset ballot #
       SessionKey.CurrentBallotId.SetInSession(0);
-      if (UserSession.CurrentElection.IsSingleNameElection.AsBoolean())
+      if (UserSession.CurrentElection.IsSingleNameElection)
       {
         // for single name elections, only have one ballot per computer per location
         var ballotId =

@@ -17,7 +17,7 @@ as
        v._RowId [VoteId]
 	 , v.StatusCode [VoteStatusCode]
 	 , v.SingleNameElectionCount
-	 , e.IsSingleNameElection
+	 , cast(case when e.NumberToElect = 1 then 1 else 0 end as bit) IsSingleNameElection
 	 , v.PositionOnBallot
 	 , v.InvalidReasonGuid [VoteIneligibleReasonGuid]
 	 --, vr._RowId [VoteInvalidReasonId]

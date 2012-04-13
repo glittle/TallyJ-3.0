@@ -33,7 +33,7 @@
             <li><a href="#tabLocation" accesskey="1">This Location</a> </li>
             <li><a href="#tabBallots" accesskey="2">Ballots<span id="collectedVsEnteredTitle"></span>
             </a></li>
-            <li><a href="#tabNameSearch" accesskey="3">Add Votes</a></li>
+            <li><a href="#tabNameSearch" accesskey="3">Add to Ballot</a></li>
         </ul>
         <div id="tabNameSearch">
             <div class="heading">
@@ -72,7 +72,7 @@
             </div>
             <div>
                 Envelopes Counted:
-                <input id="txtNumCollected" type="number" data-name="BallotsCollected" class="txtNumCollected" />
+                <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
             </div>
             <div>
                 <button id="btnNewBallot2" class="NewBallotBtns smallButton" accesskey="N">
@@ -112,14 +112,14 @@
         <span class="VoteNum">#</span> Names on the ballot</div>
     <div id="votesList">
     </div>
-    <div class="review">
-        <label for="cbReview">
-            If this ballot needs extra review, tick here</label><input type="checkbox" id="cbReview" /></div>
-    <button type="button" id="btnDeleteBallot" disabled class="smallButton" title="Delete after all votes have been deleted">
-        Delete this empty ballot</button>
-    <button type="button" id="btnNewBallot" class="NewBallotBtns smallButton float-right"
+    <button type="button" id="btnNewBallot" class="NewBallotBtns smallButton"
         accesskey="N" tabindex="2">
         Start <u>N</u>ew Ballot</button>
+    <button type="button" id="btnDeleteBallot" disabled class="smallButton" title="Delete after all votes have been deleted">
+        Delete this empty ballot</button>
+    <div class="review">
+        <label for="cbReview">
+            If this ballot needs review by the head teller, tick here</label><input type="checkbox" id="cbReview" /></div>
 </div>
 <div id="addMissingPanel" class="votesPanel">
     <h3>

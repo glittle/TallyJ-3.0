@@ -18,6 +18,6 @@
   </ol>
 </div>
 <div id="search"></div>
-<div id="Main">
-  @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.PersonLines()).AsRawHtml()
+<div id="Main" class="@(Model.PeopleForFrontDesk().Any(p=>p.Area.HasContent()) ? "WithArea" : "")">
+  @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
 </div>

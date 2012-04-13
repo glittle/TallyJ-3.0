@@ -4,17 +4,23 @@
 }
 .EnvNum
 {
-    width: 3em;
     float: right;
     text-align: right;
+    margin-right: 1em;
+}
+.Names div {
+    border-bottom: dotted 1px #ccc;    
+}
+.Names div:hover {
+    background-color: #ddd;    
 }
 .When {
-    width: 4em;
-    float: right;
     text-align: right;
+    float: right;
 }
 #lists {
     clear: left;
+    display: none;
 }
 #lists > div
 {
@@ -28,16 +34,7 @@
 }
 .Totals
 {
-    float: left;
-}
-
-.Totals table
-{
-    border-collapse: collapse;
-}
-.Totals td {
-    text-align: right;
-    width: 25px;
+    margin: 15px 0 0 0;
 }
 .Totals tr td:first-child {
     font-weight: bold;
@@ -54,8 +51,12 @@ tr.Total td {
 }
 #btnShowNames {
     float: left;
-    margin: 25px 0 0 50px;
+    margin: 25px 0 0 0;
 }
 .Names {
     display: none;
+    width: 400px;
+}
+h3 {
+    margin: 1.2em 0 .2em 0;
 }

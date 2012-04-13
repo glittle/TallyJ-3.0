@@ -92,3 +92,6 @@ div.More h3.TellerTitle {
 div:hover > .ui-icon-trash {
     visibility: visible;
 }
+button.Primary {
+    margin-left: 0;
+}

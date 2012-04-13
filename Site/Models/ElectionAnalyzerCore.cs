@@ -207,7 +207,7 @@ namespace TallyJ.Models
       // first refresh all votes and ballots
       if (VoteAnalyzer.UpdateAllStatuses(VoteInfos))
       {
-        Db.SaveChanges();
+        SaveChanges();
       }
       BallotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
 
@@ -469,7 +469,7 @@ namespace TallyJ.Models
       // result.TieBreakCount = null;  -- don't clear this, as it may be entered after tie-break vote is held
 
       result.TieBreakGroup = null;
-      result.TieBreakRequired = null;
+      result.TieBreakRequired = false;
 
       result.VoteCount = null;
     }
@@ -482,6 +482,7 @@ namespace TallyJ.Models
       summary.InPersonBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
       summary.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
       summary.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
+      summary.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
     }
   }
 }

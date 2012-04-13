@@ -44,13 +44,13 @@ namespace Tests.BusinessTests
 
 
     [TestMethod]
-    public void Ballot_OnePerson()
+    public void Ballot_TwoPeople()
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
                        {
                          ElectionGuid = electionGuid,
-                         NumberToElect = 1,
+                         NumberToElect = 2,
                          NumberExtra = 0
                        };
 
@@ -62,11 +62,12 @@ namespace Tests.BusinessTests
                       };
       var votes = new List<vVoteInfo>
                     {
-                      new vVoteInfo {},
+                      new vVoteInfo { PersonGuid = personGuid },
+                      new vVoteInfo { PersonGuid = Guid.NewGuid()},
                     };
       foreach (var vVoteInfo in votes)
       {
-        vVoteInfo.PersonGuid = personGuid; // all for one person in this test
+        //vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
         vVoteInfo.BallotGuid = ballots.Select(b => b.BallotGuid).First();
@@ -80,12 +81,17 @@ namespace Tests.BusinessTests
 
       var results = model.Results;
 
-      results.Count.ShouldEqual(1);
+      results.Count.ShouldEqual(2);
 
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(1);
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
+
+      var result2 = results[0];
+      result2.VoteCount.ShouldEqual(1);
+      result2.Rank.ShouldEqual(1);
+      result2.Section.ShouldEqual(ResultHelper.Section.Top);
 
       var resultSummaryAuto = model.ResultSummaryAuto;
       resultSummaryAuto.BallotsNeedingReview.ShouldEqual(0);
@@ -94,6 +100,7 @@ namespace Tests.BusinessTests
       resultSummaryAuto.DroppedOffBallots.ShouldEqual(0);
       resultSummaryAuto.InPersonBallots.ShouldEqual(1);
       resultSummaryAuto.MailedInBallots.ShouldEqual(0);
+      resultSummaryAuto.CalledInBallots.ShouldEqual(0);
       resultSummaryAuto.NumEligibleToVote.ShouldEqual(5);
       resultSummaryAuto.NumVoters.ShouldEqual(1);
       resultSummaryAuto.ResultType.ShouldEqual(ResultType.Automatic);
@@ -427,174 +434,6 @@ namespace Tests.BusinessTests
       result3.ForceShowInOther = true;
     }
 
-
-    [TestMethod]
-    public void Invalid_Ballots_Affect_Results()
-    {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 1,
-                         NumberExtra = 0
-                       };
-      var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
-
-      var ballot1Guid = Guid.NewGuid();
-      var ballot2Guid = Guid.NewGuid();
-      var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok}
-                      };
-
-      var votes = new List<vVoteInfo>
-                    {
-                      // TODO 2012-03-24 Glen Little: Needs attention... these test are for normal elections, not single name...
-                      new vVoteInfo {SingleNameElectionCount = 33},
-                      new vVoteInfo {SingleNameElectionCount = 5},
-                      new vVoteInfo {SingleNameElectionCount = 2},
-                      new vVoteInfo {SingleNameElectionCount = 4},
-                      new vVoteInfo {SingleNameElectionCount = 27},
-                      new vVoteInfo {SingleNameElectionCount = 27},
-                      new vVoteInfo {SingleNameElectionCount = 27},
-                    };
-      foreach (var vVoteInfo in votes)
-      {
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        vVoteInfo.BallotGuid = ballot1Guid;
-        vVoteInfo.PersonGuid = Guid.NewGuid();
-      }
-      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;  
-      votes[4].BallotStatusCode = "TooFew";
-      votes[5].PersonCombinedInfo = "different";
-      votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
-
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
-
-      model.GenerateResults();
-
-      var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
-
-      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.TooMany);
-      ballots[1].StatusCode.ShouldEqual(BallotStatusEnum.Empty);
-
-      var summary = model.ResultSummaryAuto;
-      summary.TotalVotes.ShouldEqual(2);
-      summary.SpoiledBallots.ShouldEqual(2);
-      summary.SpoiledVotes.ShouldEqual(0);
-      summary.BallotsNeedingReview.ShouldEqual(0);
-
-      results.Count.ShouldEqual(0);
-    }
-
-    [TestMethod]
-    public void Invalid_People_Do_Not_Affect_Results()
-    {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 1,
-                         NumberExtra = 0
-                       };
-      var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
-      var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                      };
-
-      var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {SingleNameElectionCount = 33, BallotGuid = ballots[0].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[1].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 2, BallotGuid = ballots[2].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 4, BallotGuid = ballots[3].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[4].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[5].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[6].BallotGuid},
-                    };
-      foreach (var vVoteInfo in votes)
-      {
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        vVoteInfo.PersonGuid = Guid.NewGuid();
-      }
-      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
-      votes[4].BallotStatusCode = "TooFew"; // will be reset to Okay
-      votes[5].PersonCombinedInfo = "different";
-      votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
-
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
-
-      model.GenerateResults();
-
-      var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
-      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
-
-      resultTies.Count.ShouldEqual(1);
-      resultTies[0].NumToElect.ShouldEqual(1);
-      resultTies[0].NumInTie.ShouldEqual(3);
-      resultTies[0].TieBreakRequired.ShouldEqual(true);
-
-      results.Count.ShouldEqual(3);
-
-      var summary = model.ResultSummaryAuto;
-      summary.TotalVotes.ShouldEqual(7);
-      summary.SpoiledBallots.ShouldEqual(0);
-      summary.SpoiledVotes.ShouldEqual(4);
-      summary.BallotsNeedingReview.ShouldEqual(0);
-
-      var result1 = results[0];
-      result1.VoteCount.ShouldEqual(1);
-      result1.Section.ShouldEqual(ResultHelper.Section.Top);
-      result1.IsTied.ShouldEqual(true);
-      result1.TieBreakRequired = true;
-
-      var result2 = results[1];
-      result2.VoteCount.ShouldEqual(1);
-      result2.Section.ShouldEqual(ResultHelper.Section.Other);
-      result2.IsTied.ShouldEqual(true);
-      result2.TieBreakRequired = true;
-      result2.ForceShowInOther = true;
-
-      var result3 = results[2];
-      result3.VoteCount.ShouldEqual(1);
-      result3.Section.ShouldEqual(ResultHelper.Section.Other);
-      result3.IsTied.ShouldEqual(true);
-      result3.TieBreakRequired = true;
-      result3.ForceShowInOther = true;
-    }
-
-
     [TestMethod]
     public void ElectionWithTwoSetsOfTies()
     {
@@ -732,6 +571,122 @@ namespace Tests.BusinessTests
       results[5].ForceShowInOther.ShouldEqual(true);
       results[5].TieBreakRequired = true;
       results[5].ForceShowInOther = true;
+
+    }
+
+    [TestMethod]
+    public void ElectionTieSpanningTopExtraOther()
+    {
+      var electionGuid = Guid.NewGuid();
+      var election = new Election
+      {
+        ElectionGuid = electionGuid,
+        NumberToElect = 2,
+        NumberExtra = 2
+      };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
+
+      var ballots = new List<Ballot>
+                      {
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+                        new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+                       new Ballot
+                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+                      };
+
+      // results wanted:
+      //  person 0 = 2 votes
+      //  person 1 = 1
+      // ---
+      //  person 2 = 1
+      //  person 3 = 1
+      // --
+      //  person 4 = 1
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
+                      new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
+                      
+                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
+                      new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
+                      
+                      new vVoteInfo {PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
+                      new vVoteInfo {PersonGuid = SamplePeople[4].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
+                    };
+      foreach (var vVoteInfo in votes)
+      {
+        vVoteInfo.ElectionGuid = electionGuid;
+        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
+        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+      }
+
+      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+
+      model.GenerateResults();
+
+      var summary = model.ResultSummaryAuto;
+      summary.BallotsReceived.ShouldEqual(3);
+      summary.TotalVotes.ShouldEqual(6);
+      summary.SpoiledBallots.ShouldEqual(0);
+      summary.SpoiledVotes.ShouldEqual(0);
+      summary.BallotsNeedingReview.ShouldEqual(0);
+
+      var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(3);
+      resultTies[0].NumInTie.ShouldEqual(4);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
+
+      results.Count.ShouldEqual(5);
+
+      results[0].IsTied.ShouldEqual(false);
+      results[0].CloseToPrev.ShouldEqual(false);
+      results[0].CloseToNext.ShouldEqual(true);
+      results[0].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[0].TieBreakRequired.ShouldEqual(false);
+      results[0].ForceShowInOther.ShouldEqual(false);
+
+      results[1].IsTied.ShouldEqual(true);
+      results[1].TieBreakGroup.ShouldEqual("A");
+      results[1].CloseToPrev.ShouldEqual(true);
+      results[1].CloseToNext.ShouldEqual(true);
+      results[1].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[1].TieBreakRequired.ShouldEqual(true);
+      results[1].ForceShowInOther.ShouldEqual(false);
+
+      results[2].IsTied.ShouldEqual(true);
+      results[2].TieBreakGroup.ShouldEqual("A");
+      results[2].CloseToPrev.ShouldEqual(true);
+      results[2].CloseToNext.ShouldEqual(true);
+      results[2].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[2].TieBreakRequired.ShouldEqual(true);
+      results[2].ForceShowInOther.ShouldEqual(false);
+
+      results[3].IsTied.ShouldEqual(true);
+      results[3].TieBreakGroup.ShouldEqual("A");
+      results[3].CloseToPrev.ShouldEqual(true);
+      results[3].CloseToNext.ShouldEqual(true);
+      results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[3].TieBreakRequired.ShouldEqual(true);
+      results[3].ForceShowInOther.ShouldEqual(false);
+
+      results[4].IsTied.ShouldEqual(true);
+      results[4].TieBreakGroup.ShouldEqual("A");
+      results[4].CloseToPrev.ShouldEqual(true);
+      results[4].CloseToNext.ShouldEqual(false);
+      results[4].Section.ShouldEqual(ResultHelper.Section.Other);
+      results[4].ForceShowInOther.ShouldEqual(true);
+      results[4].TieBreakRequired.ShouldEqual(true);
+      results[4].ForceShowInOther.ShouldEqual(true);
 
     }
 

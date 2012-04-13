@@ -18,7 +18,7 @@ namespace TallyJ.Models
     {
       _election = election;
 
-      _analyzer = CurrentElection.IsSingleNameElection.AsBoolean()
+      _analyzer = CurrentElection.IsSingleNameElection
                     ? new ElectionAnalyzerSingleName() as IElectionAnalyzer
                     : new ElectionAnalyzerNormal();
     }

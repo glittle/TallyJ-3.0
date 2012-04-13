@@ -41,10 +41,10 @@ as
   select l.*
 	   , bv.ComputerCode ComputerCode
 	   -- , bv.BallotId
-	   , e.IsSingleNameElection
-	   , case when e.IsSingleNameElection = 1 then bv.SingleNameBallots
+	   , cast(case when e.NumberToElect = 1 then 1 else 0 end as bit) IsSingleNameElection
+	   , case when e.NumberToElect = 1 then bv.SingleNameBallots
 	          else bv.Ballots end [BallotsAtComputer]
-	   , case when e.IsSingleNameElection = 1 then total.SingleNameBallots
+	   , case when e.NumberToElect = 1 then total.SingleNameBallots
 	          else total.Ballots end [BallotsAtLocation]
 	   , c.LastContact
 	   , coalesce(t1.Name + coalesce(', ' + t2.Name, '') ,'') [TellerName]

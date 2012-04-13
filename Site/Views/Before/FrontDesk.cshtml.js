@@ -24,6 +24,8 @@ var FrontDeskPage = function () {
             case 222:
                 letter = "'";
                 break;
+            case 116: // F5
+                return;
             default:
                 letter = String.fromCharCode(key);
                 break;
@@ -95,7 +97,8 @@ var FrontDeskPage = function () {
         var pid = row.attr('id').substr(1);
 
         var btnType = btn.hasClass('InPerson') ? 'P'
-            : btn.hasClass('DroppedOff') ? 'D' : 'M';
+            : btn.hasClass('DroppedOff') ? 'D'
+            : btn.hasClass('CalledIn') ? 'C' : 'M';
 
 
         var form = {

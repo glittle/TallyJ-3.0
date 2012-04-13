@@ -7,7 +7,7 @@ namespace TallyJ.Models
   {
     public static IBallotModel GetForCurrentElection()
     {
-      var isSingle = UserSession.CurrentElection.IsSingleNameElection.AsBoolean();
+      var isSingle = UserSession.CurrentElection.IsSingleNameElection;
       return isSingle ? (IBallotModel) new BallotSingleModel() : new BallotNormalModel();
     }
   }

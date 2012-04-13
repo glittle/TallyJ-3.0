@@ -19,7 +19,7 @@ namespace TallyJ.Models
     {
       var currentElection = UserSession.CurrentElection;
       VotesNeededOnBallot = currentElection.NumberToElect.AsInt();
-      IsSingleNameElection = currentElection.IsSingleNameElection.AsBoolean();
+      IsSingleNameElection = currentElection.IsSingleNameElection;
     }
 
     /// <Summary>For testing</Summary>
@@ -32,7 +32,7 @@ namespace TallyJ.Models
 
     public BallotAnalyzer(Election election, Func<int> saveChangesToDatastore)
     {
-      IsSingleNameElection = election.IsSingleNameElection.AsBoolean();
+      IsSingleNameElection = election.IsSingleNameElection;
       VotesNeededOnBallot = election.NumberToElect.AsInt();
       SaveChangesToDatastore = saveChangesToDatastore;
     }

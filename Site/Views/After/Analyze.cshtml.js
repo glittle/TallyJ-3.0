@@ -264,7 +264,7 @@ var AnalyzePage = function () {
                     var list = $.map(votes, function (v) {
                         return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
                     });
-                    tie.People = '<div><input data-rid="{rid}" class=TieBreakCount type=number value="{TieBreakCount}">{PersonName}</div>'.filledWithEach(list.sort(function (a, b) {
+                    tie.People = '<div><input data-rid="{rid}" class=TieBreakCount type=number min=0 value="{TieBreakCount}">{PersonName}</div>'.filledWithEach(list.sort(function (a, b) {
                         if (a.PersonName < b.PersonName) return -1;
                         if (a.PersonName > b.PersonName) return 1;
                         return 0;

@@ -24,7 +24,7 @@ td
 }
 
 tr.Odd {
-    background-color: #ddd;
+    background-color: #eaeaea;
 }
 tr.Odd td {
     border-left: 1px solid #d0d0d0;

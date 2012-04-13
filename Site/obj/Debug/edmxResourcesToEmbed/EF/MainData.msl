@@ -72,7 +72,6 @@
           <ScalarProperty Name="ShowAsTest" ColumnName="ShowAsTest" />
           <ScalarProperty Name="ListForPublic" ColumnName="ListForPublic" />
           <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
-          <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
           <ScalarProperty Name="ListedForPublicAsOf" ColumnName="ListedForPublicAsOf" />
           <ScalarProperty Name="ElectionPasscode" ColumnName="ElectionPasscode" />
           <ScalarProperty Name="OwnerLoginId" ColumnName="OwnerLoginId" />
@@ -180,6 +179,7 @@
     <EntitySetMapping Name="ResultSummaries">
       <EntityTypeMapping TypeName="TallyJ2Model.ResultSummary">
         <MappingFragment StoreEntitySet="ResultSummary">
+          <ScalarProperty Name="CalledInBallots" ColumnName="CalledInBallots" />
           <ScalarProperty Name="BallotsNeedingReview" ColumnName="BallotsNeedingReview" />
           <ScalarProperty Name="BallotsReceived" ColumnName="BallotsReceived" />
           <ScalarProperty Name="TotalVotes" ColumnName="TotalVotes" />
@@ -398,6 +398,14 @@
           <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
           <ScalarProperty Name="VoteId" ColumnName="VoteId" />
         </MappingFragment>
+      </EntityTypeMapping>
+      <EntityTypeMapping TypeName="TallyJ2Model.vVoteInfo">
+        <ModificationFunctionMapping>
+          <UpdateFunction FunctionName="tallyj2dModel.Store.UpdateVoteStatus">
+            <ScalarProperty Name="VoteStatusCode" ParameterName="StatusCode" Version="Current" />
+            <ScalarProperty Name="VoteId" ParameterName="VoteRowId" Version="Current" />
+          </UpdateFunction>
+        </ModificationFunctionMapping>
       </EntityTypeMapping>
     </EntitySetMapping>
     <FunctionImportMapping FunctionImportName="SqlSearch" FunctionName="tallyj2dModel.Store.SqlSearch">

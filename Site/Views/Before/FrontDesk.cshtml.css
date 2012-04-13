@@ -35,6 +35,9 @@ p
 }
 #Main u
 {
+    display: none;
+}
+#Main.WithArea u {
     text-decoration: none;
     width: 150px;
     overflow: hidden;
@@ -44,6 +47,8 @@ p
 {
     display: inline-block;
     float: right;
+    font-size: .8em;
+    margin-top: 6px;
 }
 
 .Btn.true, .Btn.True

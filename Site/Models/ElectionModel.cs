@@ -234,12 +234,12 @@ namespace TallyJ.Models
 
         var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
-        var isSingleNameElection = election.NumberToElect.AsInt() == 1;
-        if (election.IsSingleNameElection != isSingleNameElection)
-        {
-          election.IsSingleNameElection = isSingleNameElection;
-          changed = true;
-        }
+        //var isSingleNameElection = election.NumberToElect.AsInt() == 1;
+        //if (election.IsSingleNameElection != isSingleNameElection)
+        //{
+        //  election.IsSingleNameElection = isSingleNameElection;
+        //  changed = true;
+        //}
 
         if (changed)
         {
@@ -437,7 +437,7 @@ namespace TallyJ.Models
       return new
                {
                  Saved = true,
-                 QuickLinks = new MenuHelper(controller).QuickLinks().JoinedAsString()
+                 QuickLinks = new MenuHelper(controller).QuickLinks()
                }.AsJsonResult();
     }
 
