@@ -113,8 +113,8 @@ namespace TallyJ.Models
 
     public JsonResult EditLocation(int id, string text)
     {
-      var location =
-        Db.Locations.SingleOrDefault(l => l.C_RowId == id && l.ElectionGuid == UserSession.CurrentElectionGuid);
+      var locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
+      var location = locations.SingleOrDefault(l => l.C_RowId == id);
 
       if (location == null)
       {
@@ -128,20 +128,29 @@ namespace TallyJ.Models
 
       if (text.HasNoContent() && location.C_RowId != 0)
       {
-        // delete existing if we can
-        var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
-        if (!used)
+        if (locations.Count() > 1)
         {
-          Db.Locations.Remove(location);
-          Db.SaveChanges();
+          // delete existing if we can
+          var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
+          if (!used)
+          {
+            Db.Locations.Remove(location);
+            Db.SaveChanges();
 
-          status = "Deleted";
-          locationId = 0;
-          locationText = "";
+            status = "Deleted";
+            locationId = 0;
+            locationText = "";
+          }
+          else
+          {
+            status = "Cannot deleted this location because it has Ballots recorded in it";
+            locationId = location.C_RowId;
+            locationText = location.Name;
+          }
         }
         else
-        {
-          status = "Cannot deleted this location because it has Ballots recorded in it";
+        { // only one
+          status = "At least one location is required";
           locationId = location.C_RowId;
           locationText = location.Name;
         }

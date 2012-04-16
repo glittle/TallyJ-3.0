@@ -39,6 +39,8 @@ namespace TallyJ.Models
           // don't show any details if review is needed
           return new
                    {
+                     StatusText = "Ballots need review",
+                     Status = "Errors"
                    }.AsJsonResult();
         }
 

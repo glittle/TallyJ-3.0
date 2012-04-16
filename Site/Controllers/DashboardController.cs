@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Models;
-using TallyJ.Code;
 
 namespace TallyJ.Controllers
 {
@@ -14,8 +11,9 @@ namespace TallyJ.Controllers
     {
       if (UserSession.CurrentElection == null || UserSession.CurrentLocation == null)
       {
-        return RedirectToAction("ChooseElection");
-        // return View("ChooseElection", new ElectionsListViewModel());
+        return UserSession.IsKnownTeller
+                 ? RedirectToAction("ChooseElection")
+                 : RedirectToAction("LogOff", "Account");
       }
 
       return View(new ElectionsListViewModel());
@@ -28,9 +26,8 @@ namespace TallyJ.Controllers
 
     public JsonResult ChooseLocation(int id)
     {
-      return new { Selected = new ComputerModel().AddCurrentComputerIntoLocation(id) }.AsJsonResult();
+      return new {Selected = new ComputerModel().AddCurrentComputerIntoLocation(id)}.AsJsonResult();
     }
-
 
 
     public JsonResult ChooseTeller(int num, int teller, string newName = "")
@@ -42,6 +39,5 @@ namespace TallyJ.Controllers
     {
       return new TellerModel().DeleteTeller(id).AsJsonResult();
     }
-
   }
 }

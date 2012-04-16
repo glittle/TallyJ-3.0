@@ -14,8 +14,6 @@ var SetupIndexPage = function () {
         $('#ddlType').live('change keyup', startToAdjustByType);
         $('#ddlMode').live('change keyup', startToAdjustByType);
 
-        $('#btnResetPeople').live('click', resetVoteStatuses);
-
         $('#btnSave').live('click', saveChanges);
         $('#btnAddLocation').live('click', addLocation);
 
@@ -28,32 +26,46 @@ var SetupIndexPage = function () {
         });
 
 
-        $('#btnResetList').click(function () {
-            ShowStatusDisplay('Resetting...');
-            CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null, function (info) {
-                ResetStatusDisplay();
-            });
-        });
+        $('#btnResetList').click(resetVoteStatuses);
 
         applyValues(publicInterface.Election);
         showLocations(publicInterface.Locations);
         showTellers(publicInterface.Tellers);
 
         $('#txtName').focus();
+
+        site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
+        site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
+        site.qTips.push({ selector: '#qTipConvenor', title: 'Convenor', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
+        site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
+        site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
+        site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
+        site.qTips.push({ selector: '#qTipNum', title: 'Names of Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
+        site.qTips.push({ selector: '#qTipExtras', title: 'Next Highest', text: 'For Unit Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
+        site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" delegates. This is dicated by the type of election.' });
+        site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election.' });
+        site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
+        site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
+        site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
+        site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations or polling stations, add names for each location here.  For most elections, only one location should be used.  Mailed-in ballots are NOT a location.' });
+        site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
+        site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
+        site.qTips.push({ selector: '#qTip', title: '', text: '' });
+
     };
 
     var resetVoteStatuses = function () {
-        ShowStatusDisplay('Updating...', 0);
-        CallAjaxHandler(publicInterface.controllerUrl + '/ResetAll', null, function () {
-            ShowStatusDisplay('Updated', 0, 3000, false, true);
+        ShowStatusDisplay('Updaing...', 0);
+        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
+            ShowStatusDisplay('Done', 0, 3000, false, true);
         });
     };
 
     var showLocations = function (locations) {
-        if (locations == null) {
-            $('#locationList').html('[None]');
-            return;
-        }
+        //        if (locations == null) {
+        //            $('#locationList').html('[None]');
+        //            return;
+        //        }
 
         $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
 
@@ -61,11 +73,13 @@ var SetupIndexPage = function () {
     };
 
     var showTellers = function (tellers) {
-        if (tellers == null) {
-            $('#tellersList').html('[None]');
+        //        if (tellers == null) {
+        //            $('#tellersList').html('[None]');
+        //            return;
+        //        }
+        if (tellers == null || tellers.length == 0) {
             return;
         }
-
         $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
     };
 
@@ -109,7 +123,10 @@ var SetupIndexPage = function () {
     var setupLocationSortable = function () {
         $('#locationList').sortable({
             handle: '.ui-icon',
-            stop: orderChanged
+            stop: orderChanged,
+            axis: 'y',
+            containment: 'parent',
+            tolerance: 'pointer'
         });
     };
     var orderChanged = function (ev, ui) {

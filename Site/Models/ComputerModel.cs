@@ -101,11 +101,11 @@ namespace TallyJ.Models
       SessionKey.CurrentBallotId.SetInSession(0);
       if (UserSession.CurrentElection.IsSingleNameElection)
       {
-        // for single name elections, only have one ballot per computer per location
+        // for single name elections, only have one ballot per computer per location. (But if altered from a normal election to a single name election, may have multiple.)
         var ballotId =
           Db.Ballots.Where(
             b => b.LocationGuid == location.LocationGuid && b.ComputerCode == computer.ComputerCode)
-            .Select(b => b.C_RowId).SingleOrDefault();
+            .Select(b => b.C_RowId).FirstOrDefault();
         if (ballotId != 0)
         {
           SessionKey.CurrentBallotId.SetInSession(ballotId);

@@ -24,7 +24,7 @@ namespace TallyJ.Models
       {
         return new
                  {
-                   Error = "Sorry, that election is not available"
+                   Error = "Sorry, unable to join that election"
                  }.AsJsonResult();
       }
 
@@ -35,6 +35,7 @@ namespace TallyJ.Models
       UserSession.ProcessLogin();
 
       UserSession.IsGuestTeller = true;
+
 
       model.JoinIntoElection(desiredElection.ElectionGuid);
 

@@ -40,7 +40,7 @@ section.features
     padding-left: 20px;
     padding-right: 10px;
     margin-bottom: 15px;
-    margin-left: 0px;
+    margin-left: 38px;
 }
 .featuresTitle
 {
@@ -109,3 +109,6 @@ section.features
     xfont-weight: bold;
 }
 */
+.h2 {
+    margin-top: 10px;
+}

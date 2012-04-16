@@ -268,10 +268,12 @@
     </Compile>
     <Compile Include="Models\BallotAnalyzer.cs" />
     <Compile Include="Models\BallotStatusWithSpoilCount.cs" />
+    <Compile Include="Models\ElectionStatusSharer.cs" />
     <Compile Include="Models\ImportV1Base.cs" />
     <Compile Include="Models\ImportV1Community.cs" />
     <Compile Include="Models\ImportV1Election.cs" />
     <Compile Include="Models\ImportV1Model.cs" />
+    <Compile Include="Models\PulseInfo.cs" />
     <Compile Include="Models\ResultHelper.cs" />
     <Compile Include="Models\RollCallModel.cs" />
     <Compile Include="Models\UploadProvider.cs" />
@@ -319,6 +321,7 @@
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />
     <Content Include="Images\favicon.ico" />
+    <Content Include="Images\gplus-16.png" />
     <Content Include="Images\keys.png" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />

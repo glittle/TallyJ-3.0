@@ -5,8 +5,8 @@ namespace TallyJ.Code.Session
 	  public const string CurrentBallotId = "CurrentBallotId";
 
 	  public const string CurrentComputer = "CurrentComputer";
-	  public const string CurrentElection = "CurrentElection";
 	  public const string CurrentLocation = "CurrentLocation";
+	  public const string CurrentElectionGuid = "ElectionGuid";
 	  public const string CurrentTeller = "CurrentTeller";
 
 	  public const string IsGuestTeller = "IsGuestTeller";

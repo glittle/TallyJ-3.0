@@ -15,11 +15,14 @@
   <h1>@ViewBag.Title.</h1>
   <h2>@ViewBag.Message</h2>
 </hgroup>
-@if (@electionsInfo.Count() > 0)
+@if (electionsInfo.Count() > 0)
 {
     <h3>Your Elections</h3>
 }<div id="ElectionList">
 </div>
-<div class="Election MakeNew">
+@if (UserSession.IsKnownTeller)
+{
+  <div class="Election MakeNew">
     <button type="button" id="btnCreate">
-        Create a New Election</button></div>
+      Create a New Election</button></div>
+}

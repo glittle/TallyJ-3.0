@@ -138,9 +138,9 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult ResetAll()
+    public JsonResult ResetInvolvement()
     {
-      new PeopleModel().CleanAllPersonRecordsBeforeStarting();
+      new PeopleModel().ResetInvolvementFlags();
       return "Done".AsJsonResult();
     }
 

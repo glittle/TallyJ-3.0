@@ -13,7 +13,7 @@
     <li>After reading these instructions at the top of a page, you can click on "Hide Instructions" just above, to hide them.</li>
   </ol>
 </div>
-@foreach (XmlElement item in new MenuHelper(this).TrimmedMenu().ChildNodes)
+@foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
 {
   <section class="features">
     <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
@@ -23,7 +23,7 @@
                             .Cast<XmlElement>()
                             .Where(c=>c.GetAttribute("showOnDashboard").DefaultTo("true")=="true"))
     {
-        <a href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) ? "Featured" : "NotFeatured")">
+        <a href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
             <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">
                 <h3>
                     @child.GetAttribute("title")</h3>

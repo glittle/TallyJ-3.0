@@ -13,12 +13,10 @@ namespace TallyJ.Models
     public HtmlString VisibleElectionsOptions()
     {
       const string template = "<option value=\"{0}\">{1}</option>";
-      return new ElectionModel()
-        .VisibleElections()
-        .OrderBy(e => e.Name)
-        .Select(x => template.FilledWith(x.C_RowId, x.Name))
-        .JoinedAsString()
-        .DefaultTo(template.FilledWith(0, "[No active elections]"))
+      var visibleElections = new ElectionModel().VisibleElections();
+      var listing = visibleElections.OrderBy(e => e.Name).Select(x => template.FilledWith(x.C_RowId, x.Name)).JoinedAsString();
+      return listing
+        .DefaultTo(template.FilledWith(0, "(Sorry, no elections are active right now.)"))
         .AsRawHtml();
     }
 

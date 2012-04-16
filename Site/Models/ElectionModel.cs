@@ -207,6 +207,13 @@ namespace TallyJ.Models
       return rules;
     }
 
+    /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
+    public Election GetFreshFromDb(Guid electionGuid)
+    {
+      var election = Db.Elections.Single(e => e.ElectionGuid == electionGuid);
+      UserSession.CurrentElection = election;
+      return election;
+    }
 
     /// <Summary>Saves changes to this electoin</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
@@ -275,12 +282,18 @@ namespace TallyJ.Models
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
 
-      var firstLocation = Db.Locations.OrderBy(l=>l.SortOrder).FirstOrDefault(l => l.ElectionGuid == election.ElectionGuid);
+      var firstLocation = Db.Locations.OrderBy(l => l.SortOrder).FirstOrDefault(l => l.ElectionGuid == election.ElectionGuid);
       // default to top location
       if (firstLocation != null)
       {
         computerModel.AddCurrentComputerIntoLocation(firstLocation.C_RowId);
       }
+
+      var message = UserSession.IsGuestTeller
+                      ? "Guest teller joined into Election"
+                      : "Teller (" + UserSession.MemberName + ") switched into Election";
+
+      new LogHelper().Add(message);
 
       return true;
     }
@@ -372,6 +385,7 @@ namespace TallyJ.Models
       Db.Elections.Add(election);
       Db.SaveChanges();
 
+      new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
                    {
@@ -419,25 +433,27 @@ namespace TallyJ.Models
         election.TallyStatus = status;
 
         Db.SaveChanges();
+
+        new ElectionStatusSharer().SetStateFor(election);
       }
     }
 
     public IEnumerable<Election> VisibleElections()
     {
-      return Db.Elections
-        .Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "")
-        .ToList()
-        .Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+      var electionsWithCode = Db.Elections.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
+      return electionsWithCode.Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
     }
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
       SetTallyStatus(status);
 
+      new LogHelper().Add("Status changed to " + status);
+
       return new
                {
                  Saved = true,
-                 QuickLinks = new MenuHelper(controller).QuickLinks()
+                 QuickLinks = new MenuHelper(controller.Url).QuickLinks()
                }.AsJsonResult();
     }
 
@@ -458,13 +474,14 @@ namespace TallyJ.Models
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
     {
-      var election = UserSession.CurrentElection;
-      if (election.ListForPublic != listOnPage && UserSession.IsKnownTeller)
+      if (UserSession.IsKnownTeller)
       {
+        var election = UserSession.CurrentElection;
         Db.Elections.Attach(election);
 
         election.ListForPublic = listOnPage;
-        election.ListedForPublicAsOf = DateTime.Now;
+
+        election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
 
         Db.SaveChanges();
         return new { Saved = true }.AsJsonResult();
@@ -473,11 +490,20 @@ namespace TallyJ.Models
       return new { Saved = false }.AsJsonResult();
     }
 
-    public void ProcessPulse()
+    /// <Summary>Do any processing for the election</Summary>
+    /// <returns>True if the status changed</returns>
+    public bool ProcessPulse()
     {
       var election = UserSession.CurrentElection;
 
-      if (election == null) return;
+      if (election == null) return false;
+
+      var sharedState = new ElectionStatusSharer().GetStateFor(UserSession.CurrentElectionGuid);
+      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
+      if (someoneElseChangedTheStatus)
+      {
+        election = GetFreshFromDb(election.ElectionGuid);
+      }
 
       if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
@@ -485,6 +511,8 @@ namespace TallyJ.Models
         election.ListedForPublicAsOf = DateTime.Now;
         Db.SaveChanges();
       }
+
+      return someoneElseChangedTheStatus;
     }
 
   }

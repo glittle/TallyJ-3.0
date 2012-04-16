@@ -115,6 +115,7 @@ function ActivateTips() {
     };
 
     $('.qTip').qtip(baseOption);
+    
     $.each(site.qTips, function () {
         if ($(this).data('done')) return;
 
@@ -146,24 +147,36 @@ function AttachHandlers() {
     });
     $('#ddlElectionStatus').on('change', function () {
         var ddl = $(this);
-        CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
+        var form = {
             status: ddl.val()
-        }, function (info) {
-            site.broadcast(site.broadcastCode.electionStatusChanged);
-
-            setTimeout(function () {
-                ResetStatusDisplay();
-                $('.ChangeElectionState').fadeOut();
-                if (info.QuickLinks) {
-                    $('#quickLinks2').html(info.QuickLinks);
-                    HighlightActiveLink();
-                }
-                $('.ElectionState span').text(ddl.find(':selected').text());
-            }, 0);
+        };
+        CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
+            $('.ChangeElectionState').fadeOut();
+            site.broadcast(site.broadcastCode.electionStatusChanged, info);
+            ResetStatusDisplay();
         });
     });
+    site.onbroadcast(site.broadcastCode.electionStatusChanged, UpdateElectionStatus);
+}
 
-
+function UpdateElectionStatus(ev, info) {
+    setTimeout(function () {
+        if (info.QuickLinks) {
+            $('#quickLinks2').html(info.QuickLinks);
+            HighlightActiveLink();
+        }
+        var target = $('.ElectionState');
+        if (info.Code) {
+            target.data('status', info.Code);
+        }
+        if (info.Name) {
+            target.find('span')
+                .text(info.Name)
+                .effect('highlight', {}, 3000);
+        } else {
+            target.find('span').text($('#ddlElectionStatus').find(':selected').text());
+        }
+    }, 0);
 }
 
 function CheckTimeOffset() {
@@ -357,7 +370,10 @@ function ActivateHeartbeat(makeActive, delaySeconds) {
 
 function SendHeartbeat() {
     if (!site.heartbeatActive) return;
-    CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', null, ProcessPulseResult);
+    var form = {
+        Status: $('.ElectionState').data('status')
+    };
+    CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', form, ProcessPulseResult);
 }
 
 function ProcessPulseResult(info) {
@@ -372,9 +388,10 @@ function ProcessPulseResult(info) {
     else {
         $('.Heartbeat').addClass('Frozen').text('Not Connected');
     }
-    //  if (info.VersionNum) {
-    //    lastVersionNum().set(info.VersionNum);
-    //  }
+    if (info.NewStatus) {
+        site.broadcast(site.broadcastCode.electionStatusChanged, info.NewStatus);
+    }
+
     if (info.PulseSeconds) {
         site.heartbeatSeconds = info.PulseSeconds;
     }

@@ -158,7 +158,7 @@ namespace TallyJ.Models
                                            , currentPeople
                                            , delegate(Person person)
                                                {
-                                                 personModel.ResetAllInfo(person);
+                                                 personModel.SetCombinedInfoAtStart(person);
                                                  person.ElectionGuid = currentElectionGuid;
                                                  Db.People.Add(person);
                                                }
@@ -187,7 +187,7 @@ namespace TallyJ.Models
                                           , currentPeople
                                           , person =>
                                               {
-                                                personModel.ResetAllInfo(person);
+                                                personModel.SetCombinedInfoAtStart(person);
                                                 Db.People.Add(person);
                                               }
                                           , summary => Db.ResultSummaries.Add(summary)

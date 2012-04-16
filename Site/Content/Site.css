@@ -104,7 +104,9 @@ h5, h6
 {
     font-size: 1em;
 }
-
+span, div {
+    cursor: default;
+}
 
 /* main layout 
 ----------------------------------------------------------*/
@@ -134,7 +136,6 @@ h5, h6
     left: 81px;
     top: 0;
     color: #13a;
-    font-weight: bold;
     font-size: 110%;
 }
 .main-content
@@ -181,7 +182,8 @@ a.site-title:hover
 {
     color: #638b2c;
 }
-body.Dashboard .site-title span
+body.Dashboard .site-title span,
+body.NormalMode .site-title span
 {
     display: none;
 }
@@ -209,6 +211,14 @@ body.Dashboard .site-title span
 .Version
 {
     display: none;
+}
+.MainTop
+{
+    float: left;
+}
+.NormalMode .MainTop
+{
+    display: block;
 }
 .NormalMode .Version
 {
@@ -314,7 +324,7 @@ ul#menu li a:hover
 {
     background-color: #fff;
 }
-.featured .content-wrapper
+.Xfeatured .content-wrapper
 {
     background-color: #7ac0da;
     background-image: -ms-linear-gradient(left, #7AC0DA 0%, #A4D4E6 100%);
@@ -328,7 +338,8 @@ ul#menu li a:hover
 
 .featured hgroup.title h1, .featured hgroup.title h2
 {
-    color: #fff;
+    color: #7ac0da;
+    -xcolor: #fff;
 }
 
 .featured p
@@ -515,6 +526,8 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus
 input[type="submit"], input[type="file"], button.Primary
 {
     -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
     background-color: #ccffbe;
     border: solid 1px #4e6d22;
     color: #4e6d22;
@@ -523,7 +536,8 @@ input[type="submit"], input[type="file"], button.Primary
     font-size: 1.1em;
     padding: .2em .5em .35em .5em;
 }
-input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
+input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover
+{
     background-color: #b6ff50;
 }
 
@@ -606,8 +620,9 @@ input[type="text"].input-validation-error, input[type="password"].input-validati
 
 ul#social li
 {
-    display: inline;
+    display: inline-block;
     list-style: none;
+    vertical-align: top;
 }
 
 ul#social li a
@@ -618,12 +633,14 @@ ul#social li a
 
 a.facebook, a.twitter, a.gplus
 {
-    display: block;
-    float: left;
+    display: inline-block;
     height: 24px;
-    padding-left: 17px;
-    text-indent: -9999px;
     width: 16px;
+}
+
+a.facebook, a.twitter
+{
+    width: 24px;
 }
 
 a.facebook
@@ -633,7 +650,7 @@ a.facebook
 
 a.gplus
 {
-    background: url("https://ssl.gstatic.com/images/icons/gplus-16.png") no-repeat;
+    background: url("../images/gplus-16.png") no-repeat;
 }
 
 a.twitter
@@ -651,10 +668,12 @@ a.twitter
     background-color: #ccffbe;
     border: 1px solid #AAA;
     border-top: none;
-    padding: 2px 7px 5px 7px;
+    padding: 2px 17px 5px 15px;
     -moz-border-radius-bottomright: 6px;
+    -webkit-border-radius-bottomright: 6px;
     border-bottom-right-radius: 6px;
     -moz-border-radius-bottomleft: 6px;
+    -webkit-border-radius-bottomleft: 6px;
     border-bottom-left-radius: 6px;
 }
 
@@ -764,6 +783,8 @@ a.twitter
 {
     border: 1px solid #77BBFF;
     border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
     font-size: 95%;
     padding: 0 5px 0 15px;
     margin-bottom: 5px;
@@ -771,7 +792,6 @@ a.twitter
 .PullInstructionsHandle
 {
     color: #77BBFF;
-    x-color: #8dc63e;
     cursor: pointer;
     font-size: 90%;
     font-style: italic;
@@ -813,10 +833,10 @@ a.twitter
 {
     display: block;
     top: 2px;
-    width: 350px;
+    width: 282px;
     overflow: visible;
-    margin-left: 100px;
-    float: left;
+    right: 0;
+    position: absolute;
     color: #8DC63E;
     z-index: 1;
     font-size: 10pt;
@@ -866,10 +886,13 @@ body.AuthKnown .ifAuthKnownInline
 {
     display: inline-block;
 }
+body.AuthGuest .AllowChangeElectionState,
 body.AuthKnown .AllowChangeElectionState
 {
     display: inline-block;
     margin-left: 3px;
+}
+body.AuthKnown .AllowChangeElectionState {
     cursor: pointer;
 }
 body.AuthKnown .CurrentElectionName
@@ -879,7 +902,7 @@ body.AuthKnown .CurrentElectionName
 .QuickLinks2
 {
     color: #8DC63E;
-    margin: 5px 0 -12px 0;
+    margin: 5px 0 12px 0;
 }
 .QuickLinks2 a
 {
@@ -887,7 +910,22 @@ body.AuthKnown .CurrentElectionName
     text-decoration: none;
     border: 1px solid #8DC63E;
     padding: 0 4px 0 4px;
+    border-radius: 2px;
     -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+}
+.AuthKnown .AllowChangeElectionState.bold {
+    border: 1px solid #013D7A;
+    padding: 0 4px 2px 4px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+}
+.AuthKnown .AllowChangeElectionState.bold:hover {
+    background-color: #BDD2FF;
+}
+.AuthGuest .AllowChangeElectionState.ui-icon {
+    display: none;
 }
 .QuickLinks2 a:hover
 {
@@ -936,7 +974,6 @@ body.AuthKnown .CurrentElectionName
 {
     display: inline-block;
     vertical-align: text-bottom;
-    cursor: help;
 }
 .withTip label
 {
@@ -954,4 +991,7 @@ body.AuthKnown .CurrentElectionName
     text-align: center;
     font-size: medium;
     border: double 3px red;
+}
+.Spacer {
+    height: 50px;
 }

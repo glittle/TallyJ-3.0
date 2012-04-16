@@ -2,7 +2,7 @@
     background-color: #EFEEEF;
 }
 .content-wrapper {
-    width: 90%;
+    width: 100%;
 }
 header, footer
 {
@@ -25,7 +25,6 @@ h1
 #Results
 {
     width: 100%;
-    margin: 5pt auto;
     text-align: center;
     font-size: 24pt; /* smaller for most, larger for Petpetua */
 }
@@ -43,24 +42,19 @@ th {
     padding: 2px 7px;
 }
 #totalCounts td,
-.Main td
+table.Main td
 {
     text-align: center;
     min-width: 40px;
     padding: 2px 7px;
 }
-td:first-child {
+table.Main td:first-child {
     border-right: 1px solid #d0d0d0;
-    
 }
 
-tr.Odd
+.HolderLeft tbody tr:nth-child(odd)
 {
-    background-color: #ddd;
-}
-tr.Odd td
-{
-    border-left: 1px solid #d0d0d0;
+    background-color: #E9E8E9;
 }
 
 th:first-child {
@@ -90,11 +84,21 @@ tr.Extra
     padding: 25pt 0 0pt 0;
     width: 100%;
 }
-.Holder
+table.Holder
 {
-    display: inline-block;
+    margin: 0 auto;
+}
+.HolderLeft {
     vertical-align: top;
-    margin: 0 40px;
+    width: 65%;
+}
+.HolderLeft td:nth-child(2) {
+    background-color: 
+}
+.HolderRight {
+    vertical-align: top;
+    width: 35%;
+    color: #666;
 }
 table.Main
 {
@@ -107,10 +111,13 @@ table caption
     white-space: nowrap;
     text-align: left;
 }
-.Main td.Left,
+table.Main td.Left,
 #totalCounts td.Left
 {
     text-align: left;
+}
+#mainBody {
+    width: 80%;
 }
 #zzbtnRefesh
 {
@@ -123,7 +130,6 @@ table caption
 #Status
 {
     font-weight: bold;
-    color: red;
 }
 #Wait
 {

@@ -10,88 +10,80 @@
 @section featured {
     <section class="featured">
         <div class="content-wrapper">
-            <hgroup class="title">
+            @*            <hgroup class="title">
                 <h1>@ViewBag.Title.</h1>
                 <h2>@ViewBag.Message</h2>
             </hgroup>
-            <p>
+*@
+            <div class="Intro">
                 Allah'u'abh&aacute;! Welcome to TallyJ! This online tool is specifically designed
                 to assist tellers during Bah&aacute;'&iacute; elections.
-            </p>
+            </div>
         </div>
     </section>
 }
-<section class="features">
+<section class="features middle">
     <section class="featureBig JoinPanel">
         <div class="top">
         </div>
         <h3>
-            To join an election as a teller</h3>
+            Join an election as a teller</h3>
         <ol>
             <li>
                 <p>
-                    Select the election from this list, or enter the election code</p>
+                    Select the election you are a teller for:</p>
                 <div class="table">
-                    <div>
-                        <span>Active Elections:</span>
-                        <select id="ddlElections" size="4">
-                            @Model.VisibleElectionsOptions()
-                            @*
-                      @(Model.PublicElections
-         .Select(x => "<option value=\"{0}\">{1}</option>".FilledWith(x.Key, x.Value))
-         .JoinedAsString()
-         .AsRawHtml())
-                      *@
-                        </select>
-                    </div>
-                    <div class="or">
-                        or</div>
-                    <div>
-                        <span>Code:</span>
-                        <input id="txtCode" maxlength="15" />
-                    </div>
+                    <select id="ddlElections" size="4">
+                        @Model.VisibleElectionsOptions()
+                    </select>
                 </div>
             </li>
             <li>
                 <p>
-                    Enter the secret code for the selected election:</p>
+                    Type in the access code you were given:</p>
                 <div>
                     <input id="txtPasscode" type="password" maxlength="50" />
                 </div>
             </li>
             <li>
-              <p>
-                Join the election:</p>
+                <p>
+                    Join the election:</p>
                 <input id="btnJoin" type="submit" value="Join Now" title="Join Now" />
                 @*<button type="button" id="btnJoin">
-                    Join Now</button>*@
-                <span id="joinStatus" class="idle"></span></li>
+                    Join Now</button>*@ <span id="joinStatus" class="idle"></span></li>
         </ol>
     </section>
     <section class="featureBig CenterPanel">
         <div class="top">
         </div>
         <h1 id="introTitle">
-            Start here!</h1>
-        <div style="position: relative">
-            <p style="position: absolute; " id="startJoin" class="StartJoin" title="If you are here to be a teller in an active election, click here!">
-                Join an Election as a Teller</p>
+            Choose an Option!</h1>
+        <div class="centerbuttons">
+            <p style="position: absolute; left: 12px" id="startJoin" class="StartJoin qTip" title="You do not need to register, but will need to know the code for the election you are joining.">
+                Join an Election as a Teller
+            </p>
             <p style="position: absolute; width: 100%; text-align: center; top: 25px; z-index: 1">
-                or</p>
-            <p style="position: absolute; right: 0" id="startLogin" class="StartJoin" title="Click here to log in and enter the site. If you do not have an account yet, here is where you can make one.">
-                Set up an Election</p>
+                or
+            </p>
+            <p style="position: absolute; right: 13px" id="startLogin" class="StartJoin qTip"
+                title="Create and manage an election. If you do not have an account yet, you can register here.">
+                Log in to your Election
+            </p>
         </div>
+        <div class="browser">
+            (Please note, TallyJ works best using Chrome or Internet Explorer 9.)</div>
     </section>
     <section class="featureBig LoginPanel">
         <div class="top">
         </div>
         <h3>
-            To set up an election or manage your elections</h3>
+            Log in to make an election or access your elections</h3>
         @if (Request.IsAuthenticated)
         {
             <p class="AlreadyIn">
-                You are currently logged in and can use the @Html.ActionLink("Dashboard", "Index", "Dashboard")
-                for most operations.</p>
+                You are stilled logged in!</p>
+            <p class="AlreadyIn">
+                Go to the @Html.ActionLink("Dashboard", "Index", "Dashboard").</p>
         }
         else
         {
@@ -101,7 +93,7 @@
     <div class="clear-fix">
     </div>
 </section>
-<section class="features">
+<section class="features bottom">
     <a href="@Url.Action("Learning")">
         <section class="feature">
             <h3>
@@ -109,7 +101,7 @@
             <p>
                 Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
         </section></a><a href="@Url.Action("Contact")"><section class="feature"><h3>
-            Contact Us</h3>
+            Contact</h3>
             <p>
                 How to get in contact.</p>
         </section></a> <a href="@Url.Action("About")">
@@ -125,6 +117,7 @@
                     <p>
                         For if you will not have access to the Internet when and where you will need to
                         use TallyJ.</p>
-                </section></a></section>
+                </section></a>
+</section>
 <div class="Summary">
     TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections</div>

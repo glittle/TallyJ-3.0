@@ -5,5 +5,6 @@ namespace TallyJ.Code.Session
 		public const string ResourcesForJavascript = "RFJS";
 		public const string JavascriptForPage = "JSFP";
 		public const string JsTemplates = "JSTmpl";
-	}
+    public const string CurrentElection = "CurrentElection";
+  }
 }

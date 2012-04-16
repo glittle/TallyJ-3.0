@@ -346,10 +346,31 @@ namespace TallyJ.Code
       }
       return (T)value;
     }
+/// <summary>
+    /// Get a named object from Page Items.
+    /// </summary>
+    /// <typeparam name="T">The type of the stored object</typeparam>
+    /// <param name="input">Name in list</param>
+    /// <param name="defaultValue">Default value to use if nothing found</param>
+    /// <returns></returns>
+    public static T FromPageItems<T>(this string input, T defaultValue)
+    {
+      var value = HttpContext.Current.Items[input];
+      if (value == null || value.GetType() != typeof(T))
+      {
+        return defaultValue;
+      }
+      return (T)value;
+    }
 
     public static T SetInSession<T>(this string input, T newValue)
     {
       HttpContext.Current.Session[input] = newValue;
+      return newValue;
+    }
+    public static T SetInPageItems<T>(this string input, T newValue)
+    {
+      HttpContext.Current.Items[input] = newValue;
       return newValue;
     }
 

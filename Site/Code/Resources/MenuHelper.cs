@@ -14,14 +14,9 @@ namespace TallyJ.Code.Resources
     private XmlElement _currentNode;
     private XmlElement _root;
 
-    public MenuHelper(WebViewPage viewPage)
+    public MenuHelper(UrlHelper urlHelper)
     {
-      _urlHelper = viewPage.Url;
-    }
-
-    public MenuHelper(Controller controller)
-    {
-      _urlHelper = new UrlHelper(controller.ControllerContext.RequestContext);
+      _urlHelper = urlHelper;
     }
 
     /// <Summary>Title of current menu item, if there is one. Empty string if not.</Summary>

@@ -8,8 +8,10 @@ var dashboardIndex = function () {
         elections: [],
         electionsUrl: '',
         PreparePage: function () {
-            site.onbroadcast(site.broadcastCode.electionStatusChanged, function () {
-                location.reload();
+            site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
+                if (info.QuickLinks) {
+                    location.reload();
+                }
             });
         }
     };

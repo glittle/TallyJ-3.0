@@ -337,7 +337,7 @@ namespace TallyJ.Models
           person.ElectionGuid = UserSession.CurrentElectionGuid;
           person.PersonGuid = Guid.NewGuid();
 
-          personModel.ResetAllInfo(person);
+          personModel.SetCombinedInfoAtStart(person);
 
           Db.People.Add(person);
 

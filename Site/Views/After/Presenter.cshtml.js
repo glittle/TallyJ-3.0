@@ -16,6 +16,7 @@ var PresenterPage = function () {
 
         $('#btnRefesh').click(function () {
             getReportData();
+            this.blur();
         });
         $('#btnReturn').click(function () {
             location.href = site.rootUrl + 'Dashboard';
@@ -31,6 +32,17 @@ var PresenterPage = function () {
         var tFoot = $('#mainFoot');
         settings.footTemplate = tFoot.html();
         tFoot.html('');
+
+        site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
+            if (info.Code == 'Report') {
+                getReportData();
+            }
+            else {
+                $('#Results').hide();
+                $('#Wait').show();
+                $('#Status').text(info.Name);
+            }
+        });
 
         setTimeout(function () {
             getReportData();
@@ -53,17 +65,22 @@ var PresenterPage = function () {
             $('#Wait').show();
             $('#Status').text(info.StatusText);
 
-            settings.refreshTimeout = setTimeout(function () {
-                getReportData();
-            }, 30000);
+            ActivateHeartbeat(true, 15);
+
+            //            settings.refreshTimeout = setTimeout(function () {
+            //                getReportData();
+            //            }, 30000);
 
             return;
         }
+
+        ActivateHeartbeat(true, 60);
 
         settings.reportHidden = true;
 
         $('.Holder').hide();
         $('#Results').show();
+        $('.Ready').show();
         $('#Wait').hide();
 
         if (info.ReportVotes) {
@@ -94,19 +111,11 @@ var PresenterPage = function () {
             case 66: // B
             case 98: // b
             case 27: // esc
-                if (!settings.reportHidden) {
-                    $('.Holder').fadeOut();
-                    settings.reportHidden = true;
-                }
+                hideReport();
                 break;
 
             case 32: // space
-                if (settings.reportHidden) {
-                    $('.Ready').fadeOut(500, null, function () {
-                        $('.Holder').fadeIn(3000);
-                    });
-                    settings.reportHidden = false;
-                }
+                showReport();
                 break;
 
             default:
@@ -114,7 +123,22 @@ var PresenterPage = function () {
                 break;
         }
     };
-
+    var showReport = function () {
+        if (settings.reportHidden) {
+            $('.Ready').fadeOut(500, null, function () {
+                $('.Holder').fadeIn(3000);
+            });
+            settings.reportHidden = false;
+        }
+    };
+    var hideReport = function () {
+        if (!settings.reportHidden) {
+            $('.Holder').fadeOut(200, null, function () {
+                $('.Ready').fadeIn(500);
+            });
+            settings.reportHidden = true;
+        }
+    };
     var showChart = function (info) {
         var maxToShow = 10; //TODO what is good limit?
 

@@ -70,7 +70,7 @@ section.featureBig div.top
 }
 #txtPasscode
 {
-    width: 100px;
+    width: 200px;
 }
 #ddlElections
 {
@@ -104,6 +104,10 @@ div.or
 {
     color: red;
 }
+#joinStatus.active
+{
+    color: orange;
+}
 
 .featureBig hgroup h1
 {
@@ -124,6 +128,14 @@ section.CenterPanel
     float: none;
     margin: 0 auto 0 auto;
 }
+section.CenterPanel.chosen {
+    float: left;
+    opacity: 0.2;
+    margin: 5px;
+}
+section.CenterPanel.chosen:hover {
+    opacity: 0.9;
+}
 .JoinPanel
 {
     display: none;
@@ -134,13 +146,22 @@ section.CenterPanel
 }
 .StartJoin
 {
-    padding: 0 20px 0 20px;
     font-size: 20px;
     width: 150px;
-    cursor: pointer;
     z-index: 2;
-}
+    
+    background-color: #ccffbe;
 
+    padding: 0 11px 4px 12px;
+
+    -webkit-border-radius: 2px;
+    border: solid 1px #4e6d22;
+    cursor: pointer;
+    font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
+}
+.StartJoin:hover {
+    color: #8dc63e;
+}
 
 fieldset input[type="text"], fieldset input[type="password"]
 {
@@ -151,15 +172,46 @@ fieldset input[type="text"], fieldset input[type="password"]
     width: 150px;
     text-align: center;
 }
-.Summary {
+.Summary
+{
     height: 0px;
     width: 0px;
     position: absolute;
     text-align: 999px;
     overflow: hidden;
 }
-.AlreadyIn {
+.AlreadyIn
+{
     width: 60%;
     text-align: center;
     margin: 3em auto 0 auto;
+}
+.Intro
+{
+    color: #F6941E;
+    font-size: large;
+    padding: 1.4em 0 1.4em 22px;
+}
+#introTitle {
+    color: #013d7a;
+    margin-bottom: 1em;
+}
+.middle {
+    margin-left: 20px;
+    margin-right: 15px;
+}
+.bottom {
+    margin-left: 13px;
+}
+.centerbuttons {
+    position: relative; 
+    margin: 0 auto 0 auto;
+}
+.CenterPanel div.browser {
+    position: absolute;
+    bottom: 16px;
+    text-align: center;
+    width: 100%;
+    font-size: 90%;
+    color: #999;
 }

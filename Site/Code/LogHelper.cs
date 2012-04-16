@@ -1,3 +1,4 @@
+using System;
 using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
@@ -26,6 +27,7 @@ namespace TallyJ.Code
     private void AddToLog(C_Log logItem)
     {
       var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+      logItem.AsOf = DateTime.Now;
       db.C_Log.Add(logItem);
       db.SaveChanges();
     }

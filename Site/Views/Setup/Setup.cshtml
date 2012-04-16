@@ -15,15 +15,9 @@
 <div class="PullInstructions">
     <ol>
         <li>Here is where you setup your election, especially configuring the type of election.</li>
-        <li>The Name will be seen by anyone using TallyJ, while the Convenor and Date are mostly
-            for reports later.</li>
-        <li>Carefully choose the Type of Election and Variation, then if appropriate, the number
+        <li>Carefully choose the Type and Variation of the Election, then if appropriate, the number
             of names to be put on each ballot and how many to report for those with the next
             highest number of votes.</li>
-      <li>If your election is distributed - being held in multiple venues - enter a list of
-        Location names here. This will, for example, permit the Roll Call tool to show the
-        correct people.</li>
-        <li>Teller names are added by the tellers when working at a computer.</li>
         <li>After you have read these instructions, you may click on the word "Instructions"
             above the box to hide them or to show them again.</li>
     </ol>
@@ -33,13 +27,13 @@
         <th>
         </th>
         <td>
-            <button type="button" id="btnSave" class="Primary">
-                Save Changes</button>
+            <button type="button" id="btnSave" class="Primary" accesskey="S">
+              <u>S</u>ave Changes</button>
         </td>
     </tr>
     <tr>
         <th>
-            Just Testing?
+            Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
         </th>
         <td>
             <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
@@ -49,7 +43,7 @@
     </tr>
     <tr>
         <th>
-            Name
+            Name<span class="ui-icon ui-icon-info" id="qTipName"></span>
         </th>
         <td>
             <input type="text" id="txtName" data-name="Name">
@@ -57,7 +51,7 @@
     </tr>
     <tr>
         <th>
-            Convenor
+            Convenor<span class="ui-icon ui-icon-info" id="qTipConvenor"></span>
         </th>
         <td>
             <input type="text" id="txtConvenor" data-name="Convenor">
@@ -65,7 +59,7 @@
     </tr>
     <tr>
         <th>
-            Election Date
+            Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
         </th>
         <td>
             <input type="date" id="txtDate" data-name="DateOfElection">
@@ -73,7 +67,7 @@
     </tr>
     <tr>
         <th>
-            Type of Election
+            Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
         </th>
         <td>
             <select id="ddlType" data-name="ElectionType">
@@ -83,7 +77,7 @@
     </tr>
     <tr>
         <th>
-            Variation
+            Variation<span class="ui-icon ui-icon-info" id="qTipVariation"></span>
         </th>
         <td>
             <select id="ddlMode" data-name="ElectionMode">
@@ -100,7 +94,7 @@
     </tr>
     <tr class="electionDetailT">
         <th>
-            Names on Ballot
+            Names on Ballot<span class="ui-icon ui-icon-info" id="qTipNum"></span>
         </th>
         <td>
             <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
@@ -108,7 +102,7 @@
     </tr>
     <tr class="electionDetailB">
         <th>
-            Report on next highest
+            Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
         </th>
         <td>
             <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
@@ -116,7 +110,7 @@
     </tr>
     <tr class="electionDetail">
         <th>
-            Who can vote?
+            Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
         </th>
         <td>
             <select id="ddlCanVote" data-name="CanVote">
@@ -125,37 +119,32 @@
             </select>
         </td>
     </tr>
-    <tr class="electionDetail">
-        <th>
-            Who can be voted for?
-        </th>
-        <td>
-            <select id="ddlCanReceive" data-name="CanReceive">
-                <option value="A">Everyone on the list</option>
-                <option value="N">Named individuals</option>
-            </select>
-        </td>
-    </tr>
     <tr class="electionDetailB">
         <th>
+            Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
         </th>
         <td>
-            <button id="btnResetPeople" type="button">
-                Update all Person records</button>
+          <select id="ddlCanReceive" data-name="CanReceive">
+            <option value="A">Everyone on the list</option>
+            <option value="N">Named individuals</option>
+          </select>
+          <button type="button" id="btnResetList">
+            Update Records</button><span class="ui-icon ui-icon-info" id="qTipReset"></span>
         </td>
     </tr>
     <tr class="electionDetail">
         <th>
-            <label for="chkList">
-                Show on TallyJ welcome screen</label>
+            Allow Tellers Access?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
         </th>
         <td>
-            <input type="checkbox" id="chkList" data-name="ListForPublic" />
+          <input type="checkbox" id="chkList" data-name="ListForPublic" />
+          <label for="chkList">Show on Home Page?</label>
+          (Required to allow tellers to join in.)
         </td>
     </tr>
     <tr class="electionDetailB">
         <th>
-            "Secret Code" for Teller access
+            Access Code for Tellers<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
         </th>
         <td>
             <input type="text" data-name="ElectionPasscode" maxlength="50" />
@@ -168,19 +157,15 @@
     <div id="locationList">
     </div>
     <button type="button" id="btnAddLocation">
-        Add Location</button>
+      Add Location</button> 
+      <span class="ui-icon ui-icon-info" id="qTipLocation"></span>
     <h3 class="TellerTitle">
-        Tellers at Computers</h3>
+        Tellers using computers <span class="ui-icon ui-icon-info" id="qTipTellers"></span></h3>
     <div id="tellersList">
+      <i>(Filled by tellers as needed)</i>
     </div>
 </div>
 <div class="More Misc">
-    <p>
-        To re-clean the data before this election, removing voting information (who can
-        vote, where they voted, who is ineligible):
-        <button type="button" id="btnResetList">
-            Reset voting information</button>
-    </p>
     <p class="techInfo" title="Technical information">
         Internal code: <span data-name="ElectionGuid"></span>
     </p>

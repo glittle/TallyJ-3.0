@@ -14,8 +14,8 @@
     <div class="Nav">
         <button id="btnReturn" type="button">
             Return to Dashboard</button>
-        <div>Keys: 
-            F11 (full-screen), Space(show), B(hide)</div>
+        <div>
+            Keys: F11 (full-screen), Space(show), B(hide)</div>
         <button type="button" id="btnRefesh">
             Refresh</button>
     </div>
@@ -23,94 +23,99 @@
         <p class="bold">
             The results are not available yet.</p>
         <p>
-            They will be available when the head teller releases them. This page will automatically
-            show them when they are available.</p>
+            They will be available when the head teller releases them.
+        </p>
         <p>
-            Current status: @ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)
+            This page will automatically show them when they are available.</p>
+        <p>
+            Current status: <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
         </p>
     </div>
     <div id="Results" class="Hidden">
-      <h1>
-        Tellers' Report</h1>
-        <div class="Ready">Ready to Display</div>
+        <h1>
+            Tellers' Report</h1>
+        <div class="Ready">
+            Ready to Display</div>
         <div id="chart">
         </div>
-        <div class="Holder">
-            <table class="Main">
-                <thead>
-                    <tr>
-                        <th>
-                            Elected
-                        </th>
-                        <th>
-                            Votes
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="mainBody">
-                    <tr class="{ClassName}">
-                        <td class="Left">
-                            {PersonName}
-                        </td>
-                        <td>
-                            {VoteDisplay}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="Holder">
-            <table id="totalCounts">
-                <thead>
-                    <tr>
-                        <th>
-                            Ballot Information
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                </thead>
-                <tr>
-                    <td class="Left">
-                        Eligible to Vote
-                    </td>
-                    <td class="numberCell">
-                        <span data-name="NumEligibleToVote"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="Left">
-                        Number who Voted
-                    </td>
-                    <td class="numberCell">
-                        <span data-name="NumBallots"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="Left">
-                        Particpation Rate
-                    </td>
-                    <td class="numberCell">
-                        <span data-name="Participation"></span>%
-                    </td>
-                </tr>
-                <tr>
-                    <td class="Left">
-                        Invalid Ballots
-                    </td>
-                    <td class="numberCell">
-                        <span data-name="TotalInvalidBallots"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="Left">
-                        Invalid Votes
-                    </td>
-                    <td class="numberCell">
-                        <span data-name="TotalInvalidVotes"></span>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <table class="Holder">
+            <tr>
+                <td class="HolderLeft">
+                    <table class="Main">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Elected
+                                </th>
+                                <th>
+                                    Votes
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="mainBody">
+                            <tr class="{ClassName}">
+                                <td class="Left">
+                                    {PersonName}
+                                </td>
+                                <td>
+                                    {VoteDisplay}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td class="HolderRight">
+                    <table id="totalCounts">
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    Ballot Information
+                                </th>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td class="Left">
+                                Eligible to Vote
+                            </td>
+                            <td class="numberCell">
+                                <span data-name="NumEligibleToVote"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Left">
+                                Number who Voted
+                            </td>
+                            <td class="numberCell">
+                                <span data-name="NumBallots"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Left">
+                                Particpation Rate
+                            </td>
+                            <td class="numberCell">
+                                <span data-name="Participation"></span>%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Left">
+                                Invalid Ballots
+                            </td>
+                            <td class="numberCell">
+                                <span data-name="TotalInvalidBallots"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Left">
+                                Invalid Votes
+                            </td>
+                            <td class="numberCell">
+                                <span data-name="TotalInvalidVotes"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>

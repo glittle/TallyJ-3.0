@@ -34,9 +34,9 @@ namespace TallyJ.Controllers
       return View();
     }
 
-    public JsonResult Heartbeat()
+    public JsonResult Heartbeat(PulseInfo info)
     {
-      return new PulseModel().ProcessPulseJson();
+      return new PulseModel(this, info).ProcessPulseJson();
     }
 
     public ActionResult Install()
@@ -64,4 +64,5 @@ namespace TallyJ.Controllers
                }.AsJsonResult();
     }
   }
+
 }

@@ -7,8 +7,9 @@
     ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffset.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
-    ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(@Url.Content("~")));
-    var currentMenu = new MenuHelper(this);
+    ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
+    ContextItems.AddJavascriptForPage("pulse", "site.firstPulse='{0}';".FilledWith(new PulseModel(Url).Pulse()));
+    var currentMenu = new MenuHelper(Url);
     var locationHelper = new LocationHelper();
     var tellerHelper = new TellerHelper();
 }
@@ -38,7 +39,7 @@
 <body class="@ControllerActionNames @(ScreenMode + "Mode") @AuthLevel">
     <header>
         <div class="content-wrapper">
-            <div class="float-left">
+            <div class="MainTop">
                 @{
                     if (Request.IsAuthenticated)
                     {
@@ -54,8 +55,8 @@
                })
                     }
                 }
-                <div class="Version">
-                    Version: @RenderPage("Version.cshtml")</div>
+              <div class="Version">
+                Version: @RenderPage("Version.cshtml")</div>
             </div>
             @if (ScreenMode == "Normal")
             {
@@ -68,40 +69,42 @@
                             target="gdoc">this document</a> for status updates!
                 </div> 
             }
-            <div class="float-left TopInfo">
-                @if (Request.IsAuthenticated)
-                {
+            @if (Request.IsAuthenticated)
+            {
+                <div class="float-left TopInfo">
                     <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionName</div>
-                    if (UserSession.CurrentElection != null)
+                    @if (UserSession.CurrentElection != null)
                     {
-                    <div class="ElectionState">
+                    <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
                         Election Status<span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span>:
-                        <span class="AllowChangeElectionState ui-icon ui-icon-pencil qTip" title="Click to change the status of the election.">
-                        </span><span class="AllowChangeElectionState bold">@UserSession.CurrentElectionStatusName</span></div>
-                    
+                        <span class="AllowChangeElectionState bold">@UserSession.CurrentElectionStatusName</span></div>
                     <div class="ChangeElectionState">
                         <p>
                             Change the election status to:</p>
                         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
-                            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
+                            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection)
                         </select>
                     </div>
                     <div class="QuickLinks2">
                         Quick Links<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
                             id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
                     </div>
-@*                    <ul class="QuickLinks">
+                    @*                    <ul class="QuickLinks">
                         <li>Pages <span class="ui-icon QuickLinkIcon"></span>
                             <ul>
                                 @currentMenu.QuickLinks().AsRawHtml()
                             </ul>
                         </li>
-                    </ul>*@
-                    }
-                    <div class="Heartbeat">
+                    </ul>
+                                        <div class="Heartbeat">
                     </div>
-                }
-            </div>
+*@ }
+                    else
+                    {
+                        <div class="Spacer"></div>
+                    }
+                </div>
+            }
             @if (ScreenMode != "Full")
             {
                 if (ScreenMode == "Mini")
@@ -162,13 +165,68 @@
             </div>
             <div class="float-right">
                 <ul id="social">
+                    <li>
+                        <link href="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed.cssgz?1334210082"
+                            media="screen" rel="stylesheet" type="text/css" />
+                        <script src="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed_libraries.jsgz?1334210083"
+                            type="text/javascript"></script>
+                        <script>
+
+                            // ********************************************************************************
+                            // This needs to be placed in the document body where you want the widget to render
+                            // ********************************************************************************
+                            try {
+                                new DESK.Widget({
+                                    version: 1,
+                                    site: 'tallyj.desk.com',
+                                    port: '80',
+                                    type: 'chat',
+                                    displayMode: 1,  //0 for popup, 1 for lightbox
+                                    features: {
+                                        offerAlways: false,
+                                        offerAgentsOnline: true,
+                                        offerRoutingAgentsAvailable: false,
+                                        offerEmailIfChatUnavailable: true
+                                    },
+                                    fields: {
+                                        ticket: {
+
+                                            // desc: '',
+                                            // labels_new: '',
+                                            // priority: '',
+                                            // subject: ''
+                                        },
+                                        interaction: {
+                                            email: @UserSession.MemberEmail.QuotedForJavascript().AsRawHtml(),
+                                            name: @UserSession.MemberName.QuotedForJavascript().AsRawHtml()
+                                        },
+                                        chat: {
+
+                                            //subject: '' 
+                                        },
+                                        customer: {
+
+                                            // company: '',
+                                            // desc: '',
+                                            // first_name: '',
+                                            // last_name: '',
+                                            // locale_code: '',
+                                            // title: ''
+                                        }
+                                    }
+                                }).render();
+                            } catch (ex) {
+                                LogMessage(ex);
+                            }
+                        </script>
+                    </li>
                     <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
-                        class="facebook" title="Go to the TallyJ Support page">Facebook</a></li>
+                        class="facebook" title="Go to the TallyJ Support page"></a></li>
                     <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
-                        title="View news from #TallyJ_Bahai">Twitter</a></li>
+                        title="View news from #TallyJ_Bahai"></a></li>
                     <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
                         href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;">
-                        Google+</a></li>
+                    </a></li>
                 </ul>
             </div>
         </div>

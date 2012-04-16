@@ -13,6 +13,7 @@ namespace TallyJ.Models
   {
     private ElectionModel _electionModel;
     private LocationModel _locationModel;
+    private Election _election;
 
     public int NumberOfPeople
     {
@@ -38,7 +39,7 @@ namespace TallyJ.Models
 
     public Election CurrentElection
     {
-      get { return Db.Elections.Single(e => e.ElectionGuid == UserSession.CurrentElectionGuid); }
+      get { return _election ?? (_election = UserSession.CurrentElection); }
     }
 
     public ElectionModel CurrentElectionModel

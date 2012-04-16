@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Enumerations
 {
@@ -33,6 +34,15 @@ namespace TallyJ.Code.Enumerations
     public ElectionTallyStatusEnum(string key, string display)
       : base(key, display)
     {
+    }
+
+    public static HtmlString ForHtmlSelect(Election selected)
+    {
+      if (selected == null)
+      {
+        return ForHtmlSelect();
+      }
+      return ForHtmlSelect(selected.TallyStatus);
     }
 
     public static HtmlString ForHtmlSelect(string selected = "")

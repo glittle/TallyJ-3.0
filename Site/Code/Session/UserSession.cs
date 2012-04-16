@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Web;
-using System.Web.Providers.Entities;
 using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
@@ -21,6 +20,41 @@ namespace TallyJ.Code.Session
       get { return HttpContext.Current.User.Identity.Name ?? ""; }
     }
 
+    /// <Summary>May be null if not logged in.</Summary>
+    public static MembershipUser MemberInfo
+    {
+      get
+      {
+        try
+        {
+          return Membership.GetUser(LoginId);
+        }
+        catch (Exception)
+        {
+          // likely not logged in yet
+          return null;
+        }
+      }
+    }
+
+    public static string MemberEmail
+    {
+      get
+      {
+        var info = MemberInfo;
+        return info == null ? "" : info.Email;
+      }
+    }
+
+    public static string MemberName
+    {
+      get
+      {
+        var info = MemberInfo;
+        return info == null ? "" : info.UserName;
+      }
+    }
+
     private static bool UserGuidHasBeenLoaded
     {
       get { return SessionKey.UserGuidRetrieved.FromSession(false); }
@@ -34,7 +68,7 @@ namespace TallyJ.Code.Session
         if (!UserGuidHasBeenLoaded && LoginId.HasContent())
         {
           var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-          var user = db.Users.Where(u => u.UserName == LoginId).SingleOrDefault();
+          var user = db.Users.SingleOrDefault(u => u.UserName == LoginId);
 
           UserGuidHasBeenLoaded = true;
 
@@ -56,12 +90,25 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    ///     The current election, as stored in Session.  Could be null.
+    ///     The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also sets the CurrentElectionGuid into Session.
     /// </summary>
     public static Election CurrentElection
     {
-      get { return SessionKey.CurrentElection.FromSession<Election>(null); }
-      set { SessionKey.CurrentElection.SetInSession(value); }
+      get
+      {
+        var election = ItemKey.CurrentElection.FromPageItems<Election>(null);
+        if (election == null && CurrentElectionGuid != Guid.Empty)
+        {
+          election = UnityInstance.Resolve<IDbContextFactory>().DbContext.Elections.SingleOrDefault(
+            e => e.ElectionGuid == CurrentElectionGuid);
+        }
+        return election;
+      }
+      set
+      {
+        ItemKey.CurrentElection.SetInPageItems(value);
+        CurrentElectionGuid = value.ElectionGuid;
+      }
     }
 
     /// <summary>
@@ -76,13 +123,11 @@ namespace TallyJ.Code.Session
       }
     }
 
+    /// <Summary>Stored as Guid in session</Summary>
     public static Guid CurrentElectionGuid
     {
-      get
-      {
-        var current = CurrentElection;
-        return current == null ? Guid.Empty : current.ElectionGuid;
-      }
+      get { return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty); }
+      set { SessionKey.CurrentElectionGuid.SetInSession(value); }
     }
 
     public static Location CurrentLocation
@@ -139,29 +184,6 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static Guid? GetCurrentTeller(int num)
-    {
-      var stored = HttpContext.Current.Session[SessionKey.CurrentTeller + num];
-      return stored == null ? null : (Guid?) stored;
-    }
-
-    public static void SetCurrentTeller(int num, Guid? tellerGuid)
-    {
-      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = tellerGuid;
-    }
-
-    public static void ProcessLogin()
-    {
-      HttpContext.Current.Session.Clear();
-      SessionKey.CurrentComputer.SetInSession(new ComputerModel().CreateComputerRecordForMe());
-    }
-
-    public static void ProcessLogout()
-    {
-      new ComputerModel().DeleteAtLogout(ComputerRowId);
-      HttpContext.Current.Session.Clear();
-    }
-
     /// <Summary>defaults to true</Summary>
     public static bool IsGuestTeller
     {
@@ -185,10 +207,7 @@ namespace TallyJ.Code.Session
 
     public static string WebProtocol
     {
-      get
-      {
-        return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http";
-      }
+      get { return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http"; }
     }
 
     /// <Summary>Has the client/server time difference been figured out?</Summary>
@@ -197,7 +216,7 @@ namespace TallyJ.Code.Session
       get { return SessionKey.TimeOffsetKnown.FromSession(false); }
       set { SessionKey.TimeOffsetKnown.SetInSession(value); }
     }
-    
+
     /// <Summary>Has the client/server time difference been figured out?</Summary>
     public static int TimeOffset
     {
@@ -210,8 +229,42 @@ namespace TallyJ.Code.Session
       get
       {
         var election = CurrentElection;
-        return election==null ? ElectionTallyStatusEnum.NotStarted : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+        return election == null
+                 ? ElectionTallyStatusEnum.NotStarted
+                 : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
       }
+    }
+
+    public static string CurrentElectionStatus
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
+      }
+    }
+
+    public static Guid? GetCurrentTeller(int num)
+    {
+      var stored = HttpContext.Current.Session[SessionKey.CurrentTeller + num];
+      return stored == null ? null : (Guid?) stored;
+    }
+
+    public static void SetCurrentTeller(int num, Guid? tellerGuid)
+    {
+      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = tellerGuid;
+    }
+
+    public static void ProcessLogin()
+    {
+      HttpContext.Current.Session.Clear();
+      SessionKey.CurrentComputer.SetInSession(new ComputerModel().CreateComputerRecordForMe());
+    }
+
+    public static void ProcessLogout()
+    {
+      new ComputerModel().DeleteAtLogout(ComputerRowId);
+      HttpContext.Current.Session.Clear();
     }
 
     public static bool IsFeatured(string pageFeatureWhen)
@@ -221,7 +274,9 @@ namespace TallyJ.Code.Session
         return true;
       }
       var election = CurrentElection;
-      var currentStatus = election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
+      var currentStatus = election == null
+                            ? ElectionTallyStatusEnum.NotStarted
+                            : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
 
       return pageFeatureWhen.Contains(currentStatus);
     }
