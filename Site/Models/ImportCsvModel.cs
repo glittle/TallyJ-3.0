@@ -228,7 +228,7 @@ namespace TallyJ.Models
 
       fileInfo.ColumnsToRead = mapping.JoinedAsString(",");
 
-      fileInfo.ProcessingStatus = mapping.Count != 0 ? "Mapped" : "Uploaded";
+      fileInfo.ProcessingStatus = mapping != null && mapping.Count != 0 ? "Mapped" : "Uploaded";
 
       Db.SaveChanges();
 
@@ -338,6 +338,7 @@ namespace TallyJ.Models
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
+          personModel.ResetInvolvementFlags(person);
 
           Db.People.Add(person);
 

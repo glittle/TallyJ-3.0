@@ -15,6 +15,12 @@ var RollCallPage = function () {
 
         scrollToMe(local.nameDivs[1]);
 
+        ActivateHeartbeat(true, 15); // faster
+
+        site.onbroadcast(site.broadcastCode.pulse, function (ev, info) {
+            processPulse(info);
+        });
+
         $(document).keydown(keyDown);
 
         //        main.animate({
@@ -27,6 +33,15 @@ var RollCallPage = function () {
             location.href = site.rootUrl + 'Dashboard';
             return false;
         });
+    };
+
+    var processPulse = function (info) {
+        var people = info.MorePeople;
+        if (people) {
+            var firstBlankAtEnd = $('div.Voter#P-100');
+            firstBlankAtEnd.before(people);
+            local.nameDivs = $('.Main').children('div.Voter');
+        }
     };
 
     var keyDown = function (ev) {

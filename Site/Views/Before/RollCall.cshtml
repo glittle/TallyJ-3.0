@@ -3,6 +3,7 @@
 @using TallyJ.Code.Session
 @{
     ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
     TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
@@ -18,5 +19,5 @@
         <div>Press F11 for full-screen!</div>
         <div>Press Up,Down to move names.</div>
     </div>
-    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters(2, 6, true)).AsRawHtml()
+    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters()).AsRawHtml()
 </div>

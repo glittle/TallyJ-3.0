@@ -12,7 +12,8 @@ var site = {
     teller2: '',
     templates: {},
     computerActive: true,
-    //lastVersionNum: 0,
+    context: '', // controller/action
+    lastVersionNum: 0,
     infoForHeartbeat: {},
     heartbeatActive: true,
     heartbeatSeconds: 60, // default seconds
@@ -22,7 +23,8 @@ var site = {
     broadcastCode: {
         electionStatusChanged: 'electionStatusChanged',
         startNewPerson: 'startNewPerson',
-        personSaved: 'personSaved'
+        personSaved: 'personSaved',
+        pulse: 'pulse'
     },
     broadcast: function (broadcastCode, data) {
         $(document).triggerHandler(broadcastCode, data);
@@ -371,7 +373,9 @@ function ActivateHeartbeat(makeActive, delaySeconds) {
 function SendHeartbeat() {
     if (!site.heartbeatActive) return;
     var form = {
-        Status: $('.ElectionState').data('status')
+        Status: $('.ElectionState').data('status'),
+        Context: site.context,
+        Stamp: site.lastVersionNum
     };
     CallAjaxHandler(GetRootUrl() + 'Public/Heartbeat', form, ProcessPulseResult);
 }
@@ -381,6 +385,10 @@ function ProcessPulseResult(info) {
     if (!info) {
         return;
     }
+    if (info.NewStamp) {
+        site.lastVersionNum = info.NewStamp;
+    }
+
     site.computerActive = info.Active;
     if (info.Active) {
         $('.Heartbeat').removeClass('Frozen').text('').effect('highlight', 'slow');
@@ -388,6 +396,7 @@ function ProcessPulseResult(info) {
     else {
         $('.Heartbeat').addClass('Frozen').text('Not Connected');
     }
+    
     if (info.NewStatus) {
         site.broadcast(site.broadcastCode.electionStatusChanged, info.NewStatus);
     }
@@ -395,6 +404,8 @@ function ProcessPulseResult(info) {
     if (info.PulseSeconds) {
         site.heartbeatSeconds = info.PulseSeconds;
     }
+
+    site.broadcast(site.broadcastCode.pulse, info);
 }
 
 // function ShowQaPanel(url) {

@@ -18,7 +18,7 @@ namespace TallyJ.Controllers
       return null;
     }
 
-    public JsonResult GetPeople(string search, bool includeMatches = false)
+    public JsonResult GetPeople(string search, bool includeMatches = false, bool forBallot = true)
     {
       var currentElection = UserSession.CurrentElection;
       if (currentElection == null)
@@ -29,8 +29,8 @@ namespace TallyJ.Controllers
                  }.AsJsonResult();
       }
 
-      var model = new PeopleSearchModel(new PeopleModel().PeopleInCurrentElection());
-      return model.Search(search, includeMatches);
+      var model = new PeopleSearchModel();
+      return model.Search(search, includeMatches, forBallot);
     }
 
     public JsonResult GetDetail(int id)

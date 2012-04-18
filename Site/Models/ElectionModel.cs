@@ -221,6 +221,11 @@ namespace TallyJ.Models
       var election = Db.Elections.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
       if (election != null)
       {
+        var currentType = election.ElectionType;
+        var currentMode = election.ElectionMode;
+        var currentCan = election.CanVote;
+        var currentReceive = election.CanReceive;
+
         // List of fields to allow edit from setup page
         var editableFields = new
                                {
@@ -252,6 +257,20 @@ namespace TallyJ.Models
         {
           Db.SaveChanges();
           UserSession.CurrentElection = election;
+        }
+
+        if (currentMode != election.ElectionMode 
+          || currentType != election.ElectionType
+          || currentCan != election.CanVote
+          || currentReceive != election.CanReceive
+          )
+        {
+          // reset flags
+          new PeopleModel().ResetInvolvementFlags();
+          Db.SaveChanges();
+
+          // update analysis
+          new ResultsModel().GenerateResults();
         }
 
         return new

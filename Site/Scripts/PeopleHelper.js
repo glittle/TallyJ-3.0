@@ -6,11 +6,12 @@ var PeopleHelper = function (url) {
         url: url,
         lastInfo: null
     };
-    var startGettingPeople = function (search, onNamesReady, includeMatches, usedPersonIds) {
+    var startGettingPeople = function (search, onNamesReady, includeMatches, usedPersonIds, forBallot) {
         ShowStatusDisplay('searching...', 500);
         CallAjaxHandler(local.url + '/GetPeople', {
             search: search,
-            includeMatches: includeMatches
+            includeMatches: includeMatches,
+            forBallot: forBallot
         }, onComplete, { callback: onNamesReady, search: search, usedIds: usedPersonIds }, onFail);
     };
 
@@ -96,8 +97,8 @@ var PeopleHelper = function (url) {
     var publicInterface = {
         Prepare: function () {
         },
-        SearchNames: function (searchText, onNamesReady, includeMatches, usedPersonIds) {
-            startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds);
+        SearchNames: function (searchText, onNamesReady, includeMatches, usedPersonIds, forBallot) {
+            startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds, forBallot);
         },
         RefreshListing: function (searchText, onNamesReady, usedPersonIds) {
             refreshListing(searchText, onNamesReady, usedPersonIds);

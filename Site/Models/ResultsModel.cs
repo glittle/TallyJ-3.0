@@ -107,8 +107,10 @@ namespace TallyJ.Models
       // don't show any details if review is needed
       if (resultSummaryAuto.BallotsNeedingReview != 0)
       {
+        var locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
+
         var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
-          .Join(Db.Locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
+          .Join(locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
           .Select(x => new
                          {
                            x.vi.LocationId,
@@ -119,9 +121,20 @@ namespace TallyJ.Models
           .Distinct()
           .OrderBy(x => x.Ballot);
 
+        var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
+          .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, location) => new {b, location})
+          .Select(x => new
+                         {
+                           LocationId = x.location.C_RowId,
+                           BallotId = x.b.C_RowId,
+                           Status =
+                         x.b.StatusCode == "Review" ? BallotStatusEnum.Review.DisplayText : "Verification Needed",
+                           Ballot = string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name)
+                         });
+
         return new
                  {
-                   NeedReview = needReview,
+                   NeedReview = needReview.Concat(needReview2).Distinct(),
                    NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
                    TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,

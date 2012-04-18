@@ -175,7 +175,7 @@ var PeoplePage = function () {
             local.actionTag.addClass('searching');
             input.addClass('searching');
 
-            local.peopleHelper.SearchNames(text, onNamesReady, false);
+            local.peopleHelper.SearchNames(text, onNamesReady, false, null, false);
         }, local.keyTime);
     };
     var resetSearch = function () {
@@ -220,7 +220,7 @@ var PeoplePage = function () {
         if (searchText) {
             local.maintainCurrentRow = true;
             local.showPersonId = info.Person.C_RowId;
-            local.peopleHelper.SearchNames(searchText, onNamesReady, false, null);
+            local.peopleHelper.SearchNames(searchText, onNamesReady, false, null, false);
         }
         else {
             $('#more').html(moreFound(info.OnFile));

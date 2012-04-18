@@ -215,3 +215,9 @@ tr.Uploaded .CopyMap
 {
     margin-left: 22px;
 }
+#mappingError
+{
+    color: red;
+    font-size: 110%;
+    margin: 4px 0 0 23px;
+}

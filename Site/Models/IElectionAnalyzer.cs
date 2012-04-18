@@ -18,5 +18,7 @@ namespace TallyJ.Models
 
     /// <Summary>Indicate if the results are available, or need to be generated</Summary>
     bool IsResultAvailable { get; }
+
+    List<Ballot> Ballots { get; }
   }
 }

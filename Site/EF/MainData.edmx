@@ -1056,6 +1056,7 @@
           <Property Type="String" Name="FullName" Nullable="true" MaxLength="500" />
           <Property Type="Guid" Name="Ineligible" Nullable="true" />
           <Property Type="Int32" Name="MatchType" Nullable="true" />
+          <Property Type="Boolean" Name="CanReceiveVotes" Nullable="true" />
           <Property Type="Int32" Name="BestMatch" Nullable="false" />
         </ComplexType>
         </Schema>
@@ -1478,6 +1479,7 @@
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
                 <ScalarProperty Name="MatchType" ColumnName="MatchType" />
+                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
                 <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
               </ComplexTypeMapping>
             </ResultMapping>

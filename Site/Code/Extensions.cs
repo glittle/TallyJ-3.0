@@ -213,6 +213,23 @@ namespace TallyJ.Code
       //return Util.Strings.Coalesce(input, 0);
     }
 
+    public static long AsLong(this object input, long defaultValue = 0)
+    {
+      if (input == null)
+        return defaultValue;
+      if (input == DBNull.Value)
+        return defaultValue;
+
+      try
+      {
+        return (long)Math.Truncate(Convert.ToDouble(input));
+      }
+      catch (Exception)
+      {
+        return defaultValue;
+      }
+    }
+
 
     /// <summary>
     ///   Use the input string as the format with string.Format

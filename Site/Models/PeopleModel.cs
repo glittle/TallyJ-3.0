@@ -28,6 +28,7 @@ namespace TallyJ.Models
 
     private List<Location> _locations;
     private List<Person> _peopleforFrontDesk;
+    private IQueryable<Person> _people;
 
     public long LastRowVersion
     {
@@ -57,10 +58,19 @@ namespace TallyJ.Models
       }
     }
 
+    private IQueryable<Person> PeopleInElectionQuery
+    {
+      get
+      {
+        return _people ??
+               (_people = Db.People.Where(l => l.ElectionGuid == CurrentElectionGuid));
+      }
+    }
+
     public IQueryable<Person> PeopleInCurrentElection(bool onlyIfCanVote = false, bool includeIneligible = true)
     {
       {
-        return Db.People
+        return PeopleInElectionQuery
           .Where(p => p.ElectionGuid == CurrentElectionGuid)
           .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
           .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
@@ -73,7 +83,7 @@ namespace TallyJ.Models
     /// </summary>
     public void ResetInvolvementFlags()
     {
-      foreach (var person in Db.People)
+      foreach (var person in PeopleInElectionQuery)
       {
         ResetInvolvementFlags(person);
       }
@@ -111,7 +121,7 @@ namespace TallyJ.Models
     //}
 
     /// <summary>
-    ///     Use age group to determine eligibility.
+    ///     Set person's flag based on what is default for this election
     /// </summary>
     /// <param name="person"> </param>
     public void ResetInvolvementFlags(Person person)
@@ -129,7 +139,7 @@ namespace TallyJ.Models
     public JsonResult DetailsFor(int personId)
     {
       var person =
-        Db.People.SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == CurrentElectionGuid);
+        PeopleInElectionQuery.SingleOrDefault(p => p.C_RowId == personId);
 
       if (person == null)
       {
@@ -171,7 +181,7 @@ namespace TallyJ.Models
     public JsonResult SavePerson(Person personFromInput)
     {
       var savedPerson =
-        Db.People.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == CurrentElectionGuid);
+        PeopleInCurrentElection().SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == CurrentElectionGuid);
 
       if (savedPerson == null)
       {
@@ -201,18 +211,32 @@ namespace TallyJ.Models
                              {
                                // personFromInput.AgeGroup,
                                personFromInput.BahaiId,
-                               personFromInput.CanReceiveVotes,
-                               personFromInput.CanVote,
                                personFromInput.FirstName,
                                personFromInput.IneligibleReasonGuid,
                                personFromInput.LastName,
                                personFromInput.OtherInfo,
                                personFromInput.OtherLastNames,
                                personFromInput.OtherNames,
-                               personFromInput.Area
+                               personFromInput.Area,
                              }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       var changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields);
+
+      // these two may not be present, depending on the election type
+      const string all = ElectionModel.CanVoteOrReceive.All;
+      var canReceiveVotes = personFromInput.CanReceiveVotes.GetValueOrDefault(CurrentElection.CanReceive == all);
+      if (savedPerson.CanReceiveVotes != canReceiveVotes)
+      {
+        savedPerson.CanReceiveVotes = canReceiveVotes;
+        changed = true;
+      }
+
+      var canVote = personFromInput.CanVote.GetValueOrDefault(CurrentElection.CanVote == all);
+      if (savedPerson.CanVote != canVote)
+      {
+        savedPerson.CanVote = canVote;
+        changed = true;
+      }
 
       if (changed)
       {
@@ -341,14 +365,14 @@ namespace TallyJ.Models
     {
       if (!VotingMethodEnum.Exists(voteType))
       {
-        return new {Message = "Invalid type"}.AsJsonResult();
+        return new { Message = "Invalid type" }.AsJsonResult();
       }
 
       var person =
         Db.People.SingleOrDefault(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowId == personId);
       if (person == null)
       {
-        return new {Message = "Unknown person"}.AsJsonResult();
+        return new { Message = "Unknown person" }.AsJsonResult();
       }
 
 
@@ -391,7 +415,7 @@ namespace TallyJ.Models
       {
         return new
                  {
-                   PersonLines = FrontDeskPersonLines(new List<Person> {person}),
+                   PersonLines = FrontDeskPersonLines(new List<Person> { person }),
                    LastRowVersion
                  }.AsJsonResult();
       }
@@ -417,11 +441,11 @@ namespace TallyJ.Models
       catch (SqlException)
       {
         return
-          new {Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"}.
+          new { Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people" }.
             AsJsonResult();
       }
 
-      return new {Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person"))}.AsJsonResult();
+      return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }
   }
 }

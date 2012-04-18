@@ -548,7 +548,7 @@ var BallotNormalPageFunc = function () {
         };
 
         if (invalidId) {
-            invalids.data('invalid', invalidId);
+            invalids.data('invalid  ', invalidId);
             for (var i = 0; i < local.votes.length; i++) {
                 var vote = local.votes[i];
                 if (vote.vid == voteId) {
@@ -975,7 +975,7 @@ var BallotNormalPageFunc = function () {
             local.actionTag.text('Searching...');
             input.addClass('searching');
 
-            local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds());
+            local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
         }, local.keyTime);
     };
 

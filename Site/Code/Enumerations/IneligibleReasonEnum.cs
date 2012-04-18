@@ -23,10 +23,13 @@ namespace TallyJ.Code.Enumerations
     public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Other");
     public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Resides elsewhere");
     public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Rights removed");
+    public static readonly IneligibleReasonEnum Ineligible_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.Ineligible, "Not tied in this tie-break");
+
     public static readonly IneligibleReasonEnum Unidentifiable_Could_refer_to_more_than_one_person = new IneligibleReasonEnum("D927534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Could refer to more than one person");
     public static readonly IneligibleReasonEnum Unidentifiable_Multiple_people_with_identical_name = new IneligibleReasonEnum("D727534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Multiple people with identical name");
     public static readonly IneligibleReasonEnum Unidentifiable_Name_is_a_mix_of_multiple_people = new IneligibleReasonEnum("D827534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Name is a mix of multiple people");
     public static readonly IneligibleReasonEnum Unidentifiable_Unknown_person = new IneligibleReasonEnum("CE27534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Unknown person");
+    
     public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"In an unknown language");
     public static readonly IneligibleReasonEnum Unreadable_Not_a_complete_name = new IneligibleReasonEnum("86DDBE4A-841D-E111-A7FB-002269C41D11", GroupName.Unreadable,"Not a complete name");
     public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
@@ -42,6 +45,7 @@ namespace TallyJ.Code.Enumerations
       Add(Ineligible_Rights_removed);
       Add(Ineligible_Non_Bahai);
       Add(Ineligible_Deceased);
+      Add(Ineligible_Not_in_TieBreak);
       Add(Ineligible_Other);
 
       Add(Unidentifiable_Unknown_person);

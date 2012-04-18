@@ -450,7 +450,7 @@ var BallotSinglePageFunc = function () {
             local.actionTag.text('Searching...').addClass('searching');
             input.addClass('searching');
 
-            local.peopleHelper.SearchNames(text, onNamesReady, true);
+            local.peopleHelper.SearchNames(text, onNamesReady, true, true);
         }, local.keyTime);
     };
 

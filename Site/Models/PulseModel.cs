@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Resources;
@@ -35,6 +37,7 @@ namespace TallyJ.Models
 
     public object Pulse()
     {
+      var result2 = new Dictionary<string, object>();
       var isStillAllowed = new ComputerModel().ProcessPulse();
 
       new ElectionModel().ProcessPulse();
@@ -43,6 +46,16 @@ namespace TallyJ.Models
       if (_infoFromClient != null)
       {
         statusChanged = _infoFromClient.Status != UserSession.CurrentElectionStatus;
+
+        switch (_infoFromClient.Context)
+        {
+          case "BeforeRollCall":
+            var rollcall = new RollCallModel();
+            long newStamp;
+            result2.Add("MorePeople", rollcall.GetMorePeople(_infoFromClient.Stamp, out newStamp));
+            result2.Add("NewStamp", newStamp);
+            break;
+        }
       }
 
       var newStatus = statusChanged
@@ -53,15 +66,17 @@ namespace TallyJ.Models
                                 Code = UserSession.CurrentElectionStatus,
                               }
                               : null;
-
-      var result = new
-                       {
-                         Active = isStillAllowed,
                          //VersionNum = new Random().Next(1, 100),
-                         NewStatus = newStatus,
-                         PulseSeconds = isStillAllowed ? 0 : 60 // if 0, client will use its current pulse number
-                       };
-      return result;
+
+      if (newStatus != null)
+      {
+        result2.Add("NewStatus", newStatus);
+      }
+      result2.Add("Active", isStillAllowed);
+      result2.Add("PulseSeconds", isStillAllowed ? 0 : 60); // if 0, client will use its current pulse number
+      
+      return result2;
+
     }
   }
 }

@@ -155,25 +155,41 @@ var ImportCsvPage = function () {
 
         var selectChanged = $(this);
         var selectNumChanged = selectChanged.data('num');
-        var newValue = selectChanged.val();
+        var mapped = {};
+        var dups = 0;
 
         $('#fieldSelector').children().each(function () {
             var div = $(this);
             var select = div.find('select');
-
-            // if other has same value, reset the other
-            if (select.data('num') != selectNumChanged) {
-                if (select.val() == newValue) {
-                    select.val('');
-                }
+            if (select.length == 0) {
+                return;
             }
+            //            // if other has same value, reset the other
+            //            if (otherSelect.data('num') != selectNumChanged) {
+            //                if (otherSelect.val() == newValue) {
+            //                    // otherSelect.val('');
+            //                    dups = true;
+            //                }
+            //            }
 
-            var to = select.val();
-            if (to) {
+            var value = select.val();
+            if (value) {
+                mapped[value] = (mapped[value] || 0) + 1;
+                if (mapped[value] > 1) {
+                    dups++;
+                }
                 var from = div.find('h3').text();
-                mappings.push(from + '->' + to);
+                mappings.push(from + '->' + value);
             }
         });
+
+        var $err = $('#mappingError');
+        if (dups) {
+            $err.text('Duplicate mappings found. Each TallyJ field can only be mapped to one data column.');
+            return;
+        }
+        $err.text('');
+        
         ShowStatusDisplay('Saving...');
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveMapping', { id: local.activeFileRowId, mapping: mappings }, function (info) {
             if (info.Message) {
@@ -203,7 +219,7 @@ var ImportCsvPage = function () {
         });
 
         site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers as found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
-        site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown here, select the TallyJ field that is the best match for the information in the column.' });
+        site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown above, select the TallyJ field that is the best match for the information in the column.' });
         ActivateTips();
     };
 

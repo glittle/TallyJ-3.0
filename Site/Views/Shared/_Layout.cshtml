@@ -8,7 +8,8 @@
     ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffset.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
-    ContextItems.AddJavascriptForPage("pulse", "site.firstPulse='{0}';".FilledWith(new PulseModel(Url).Pulse()));
+    ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
+    ContextItems.AddJavascriptForPage("pulse", "site.firstPulse={0};".FilledWith(new PulseModel(Url).Pulse().SerializedAsJsonString()));
     var currentMenu = new MenuHelper(Url);
     var locationHelper = new LocationHelper();
     var tellerHelper = new TellerHelper();

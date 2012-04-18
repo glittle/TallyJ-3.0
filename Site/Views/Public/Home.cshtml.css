@@ -154,10 +154,13 @@ section.CenterPanel.chosen:hover {
 
     padding: 0 11px 4px 12px;
 
-    -webkit-border-radius: 2px;
     border: solid 1px #4e6d22;
     cursor: pointer;
     font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
 }
 .StartJoin:hover {
     color: #8dc63e;

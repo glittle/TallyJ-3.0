@@ -32,6 +32,11 @@ namespace TallyJ.Code
       get { return ControllerName + " " + ActionName; }
     }
 
+    public string ControllerActionNamesJoined
+    {
+      get { return ControllerName + ActionName; }
+    }
+
     public string ControllerName
     {
       get { return Url.RequestContext.RouteData.Values["controller"].ToString(); }

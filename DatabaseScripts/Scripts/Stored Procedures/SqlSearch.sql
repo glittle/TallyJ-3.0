@@ -163,6 +163,7 @@ AS
 	 AgeGroup varchar(20),
 	 IneligibleReasonGuid uniqueidentifier,
 	 SortOrder int,
+	 CanReceiveVotes bit,
 	 Votes int
   )
 
@@ -179,7 +180,7 @@ AS
 	   , p.AgeGroup
 	   , p.IneligibleReasonGuid
 	   , ROW_NUMBER() over (order by h.PassNum, _FullName) [SortOrder]
-
+	   , p.CanReceiveVotes
 	   , coalesce((select SUM(case when v.IsSingleNameElection = 1 then 1 else v.SingleNameElectionCount end) from tj.vVoteInfo v where v.PersonGuid = p.PersonGuid),0) [Votes]
 
    from @hits h
@@ -194,6 +195,7 @@ AS
 			, _FullName [FullName]
             , res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
+			, res.CanReceiveVotes
 			, case when ROW_NUMBER() over (order by Votes desc) = 1 
 						then 1 else 0 end [BestMatch]
 	from @results res
@@ -209,7 +211,7 @@ GO
 -- Testing code
 -- / *
 declare @more bit
-exec tj.SqlSearch 'BBA4B2AA-C5A6-4A2F-8B5E-BCC7CEF1C029', 'glen', '', '', '', 15, @more out, 55
+exec tj.SqlSearch '5F9B0749-259D-4618-A68E-E1381DD97F06', 'j', '', '', '', 15, @more out, 55
 select @more [MoreFound], 1
 /*exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'gle', null, 'kn', '', 15, @more out
 select @more [MoreFound], 2

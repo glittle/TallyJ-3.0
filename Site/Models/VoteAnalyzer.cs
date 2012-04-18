@@ -13,7 +13,6 @@ namespace TallyJ.Models
     {
       return !voteInfo.VoteIneligibleReasonGuid.HasValue
              && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             //&& voteInfo.BallotStatusCode == BallotStatusEnum.Ok --> Vote status is not set by the Ballot's status
              && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
              && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
     }

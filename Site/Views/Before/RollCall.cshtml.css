@@ -16,7 +16,7 @@ footer {
 .TopLine
 {
     background-position: 20px 2px;
-    background-image: url(../../Images/LogoTopSmall.png);
+    background-image: url(../../Images/LogoSm.png);
     font-size: 20pt;
     color: #013d7a;
     padding: 13pt 0 0pt 0;
@@ -59,18 +59,16 @@ footer {
     background-color: #efeeef;
     text-align: center;
     min-height: 120pt;
-    font-weight: bold;
-    font-family: Perpetua, 'Lucida Calligraphy', Times New Roman, Times, serif;
 }
 .Voter div 
 {
     padding-top: 15pt;
-    font-size: 50pt; /* 50 for most, 60 for Petpetua */
+    font-size: 55pt; /* 50 for most, 60 for Petpetua */
 }
 .Voter span {
-    font-size: 20pt;
-    color: #999;
-    margin-top: -5pt;
+    font-size: 26pt;
+    color: #777;
+    margin-top: -11pt;
     display: block;
 }
 

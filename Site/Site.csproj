@@ -329,6 +329,7 @@
     <Content Include="Images\LogoS.png" />
     <Content Include="Images\LogoSideL.png" />
     <Content Include="Images\LogoSideM.png" />
+    <Content Include="Images\LogoSm.png" />
     <Content Include="Images\LogoSq.png" />
     <Compile Include="Models\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />

@@ -28,14 +28,14 @@ var AnalyzePage = function () {
         //            });
         //        });
 
-//        $('#body').on('change', '#ddlElectionStatus', function () {
-//            ShowStatusDisplay('Updating...', 0);
-//            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-//                status: $(this).val()
-//            }, function () {
-//                ShowStatusDisplay('Updated', 0, 3000, false, true);
-//            });
-//        });
+        //        $('#body').on('change', '#ddlElectionStatus', function () {
+        //            ShowStatusDisplay('Updating...', 0);
+        //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
+        //                status: $(this).val()
+        //            }, function () {
+        //                ShowStatusDisplay('Updated', 0, 3000, false, true);
+        //            });
+        //        });
 
         $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
 
@@ -101,13 +101,13 @@ var AnalyzePage = function () {
             if (info.Votes.length != 0) {
                 var max = info.Votes[0].VoteCount;
 
-                $('.ChartLine').each(function() {
+                $('.ChartLine').each(function () {
                     var item = $(this);
                     item.animate({
-                            width: (item.data('value') / max * 100) + '%'
-                        }, {
-                            duration: 2000
-                        });
+                        width: (item.data('value') / max * 100) + '%'
+                    }, {
+                        duration: 2000
+                    });
                 });
             }
 

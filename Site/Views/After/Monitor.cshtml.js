@@ -41,7 +41,10 @@ var MonitorPage = function () {
 
         $('#chkAutoRefresh').click(setAutoRefresh);
         $('#chkList').click(updateListing);
-        $('#btnRefesh').click(refresh);
+        $('#btnRefesh').click(function () {
+            ShowStatusDisplay("Refreshing...");
+            refresh();
+        });
 
         if (publicInterface.isGuest) {
             $('#chkList').prop('disabled', true);
@@ -66,9 +69,14 @@ var MonitorPage = function () {
         }
         table.html(expandLocations(info.Locations));
 
-        var ballotTable = $('#ballotsBody');
-        ballotTable.html(expandBallots(info.Ballots));
-
+        var ballotHost = $('table.Ballots');
+        if (info.Ballots.length == 0) {
+            ballotHost.hide();
+        } else {
+            ballotHost.show();
+            var ballotTable = $('#ballotsBody');
+            ballotTable.html(expandBallots(info.Ballots));
+        }
 
         $('#lastRefresh').html(new Date().toLocaleTimeString());
 

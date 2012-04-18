@@ -137,12 +137,12 @@ namespace TallyJ.Controllers
       return new LocationModel().SortLocations(ids);
     }
 
-    [ForAuthenticatedTeller]
-    public JsonResult ResetInvolvement()
-    {
-      new PeopleModel().ResetInvolvementFlags();
-      return "Done".AsJsonResult();
-    }
+    //[ForAuthenticatedTeller]
+    //public JsonResult ResetInvolvement()
+    //{
+    //  new PeopleModel().ResetInvolvementFlags();
+    //  return "Done".AsJsonResult();
+    //}
 
     [ForAuthenticatedTeller]
     public JsonResult ReadFields(int id)

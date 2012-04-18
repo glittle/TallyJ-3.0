@@ -28,7 +28,7 @@ namespace Tests.BusinessTests
                                     new Person {FirstName = "Dd", LastName = "De"},
                                   });
 
-      _model = new PeopleSearchModel(_testGroup.AsQueryable());
+      //_model = new PeopleSearchModel(_testGroup.AsQueryable());
     }
 
     //[TestMethod]

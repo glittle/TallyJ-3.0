@@ -26,7 +26,7 @@ var SetupIndexPage = function () {
         });
 
 
-        $('#btnResetList').click(resetVoteStatuses);
+        //$('#btnResetList').click(resetVoteStatuses);
 
         applyValues(publicInterface.Election);
         showLocations(publicInterface.Locations);
@@ -44,22 +44,22 @@ var SetupIndexPage = function () {
         site.qTips.push({ selector: '#qTipExtras', title: 'Next Highest', text: 'For Unit Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
         site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" delegates. This is dicated by the type of election.' });
         site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election.' });
-        site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
+        //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
         site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
         site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
         site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations or polling stations, add names for each location here.  For most elections, only one location should be used.  Mailed-in ballots are NOT a location.' });
         site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
-        site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
-        site.qTips.push({ selector: '#qTip', title: '', text: '' });
+        //site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
+        //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     };
 
-    var resetVoteStatuses = function () {
-        ShowStatusDisplay('Updaing...', 0);
-        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
-            ShowStatusDisplay('Done', 0, 3000, false, true);
-        });
-    };
+//    var resetVoteStatuses = function () {
+//        ShowStatusDisplay('Updaing...', 0);
+//        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
+//            ShowStatusDisplay('Done', 0, 3000, false, true);
+//        });
+//    };
 
     var showLocations = function (locations) {
         //        if (locations == null) {

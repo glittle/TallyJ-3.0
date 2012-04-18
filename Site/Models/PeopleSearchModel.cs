@@ -4,6 +4,7 @@ using System.Data.Objects;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
@@ -13,19 +14,18 @@ namespace TallyJ.Models
 {
   public class PeopleSearchModel : DataConnectedModel
   {
-    private readonly IQueryable<Person> _people;
+    // private readonly IQueryable<Person> _people;
 
-    public PeopleSearchModel(IQueryable<Person> people)
+    public PeopleSearchModel()
     {
-      _people = people;
     }
 
-    private IQueryable<Person> People
-    {
-      get { return _people; }
-    }
+    //private IQueryable<Person> People
+    //{
+    //  get { return _people; }
+    //}
 
-    public JsonResult Search(string nameToFind, bool includeMatches)
+    public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
     {
       const int max = 45;
 
@@ -49,6 +49,8 @@ namespace TallyJ.Models
 
       var moreFound = moreExactMatchesFound.Value != null && (bool)moreExactMatchesFound.Value;
 
+      var voteHelper = new VoteHelper(forBallot);
+
       return new
       {
         People = results
@@ -56,7 +58,7 @@ namespace TallyJ.Models
           {
             Id = p.PersonId,
             Name = p.FullName,
-            p.Ineligible,
+            Ineligible = voteHelper.IneligibleToReceiveVotes(p.Ineligible, p.CanReceiveVotes),
             BestMatch = p.BestMatch == 1,
             p.MatchType
           }),

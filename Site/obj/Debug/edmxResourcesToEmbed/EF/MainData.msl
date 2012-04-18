@@ -415,6 +415,7 @@
           <ScalarProperty Name="FullName" ColumnName="FullName" />
           <ScalarProperty Name="Ineligible" ColumnName="Ineligible" />
           <ScalarProperty Name="MatchType" ColumnName="MatchType" />
+          <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
           <ScalarProperty Name="BestMatch" ColumnName="BestMatch" />
         </ComplexTypeMapping>
       </ResultMapping>

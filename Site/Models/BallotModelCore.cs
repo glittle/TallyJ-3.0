@@ -14,10 +14,16 @@ namespace TallyJ.Models
     public const string ReasonGroupIneligible = "Ineligible";
 
     private BallotAnalyzer _analyzer;
+    private VoteHelper _voteHelper;
 
     protected BallotAnalyzer Analyzer
     {
       get { return _analyzer ?? (_analyzer = new BallotAnalyzer()); }
+    }
+
+    protected VoteHelper VoteHelperLocal
+    {
+      get { return _voteHelper ?? (_voteHelper = new VoteHelper(true)); }
     }
 
     #region IBallotModel Members
@@ -122,16 +128,10 @@ namespace TallyJ.Models
     {
       var ballot = CurrentBallot();
 
-      if (needsReview)
-      {
-        ballot.StatusCode = BallotStatusEnum.Review;
-      }
-      else
-      {
-        ballot.StatusCode = BallotStatusEnum.Ok;
-      }
+      ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
+
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVotes());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVoteInfoes());
 
       Db.SaveChanges();
 
@@ -209,7 +209,7 @@ namespace TallyJ.Models
                          name = v.PersonFullName,
                          changed = !Equals(v.PersonCombinedInfo, v.PersonCombinedInfoInVote),
                          invalid = v.VoteIneligibleReasonGuid,
-                         ineligible = v.PersonIneligibleReasonGuid
+                         ineligible = VoteHelperLocal.IneligibleToReceiveVotes(v.PersonIneligibleReasonGuid, v.CanReceiveVotes)
                        });
     }
 
@@ -241,7 +241,7 @@ namespace TallyJ.Models
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
 
         return new
                  {
@@ -287,7 +287,7 @@ namespace TallyJ.Models
         {
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.IneligibleReasonGuid;
+          vote.InvalidReasonGuid = VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid, person.CanReceiveVotes);
         }
         if (invalidReasonGuid != Guid.Empty)
         {
@@ -297,7 +297,7 @@ namespace TallyJ.Models
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
 
         return new
                  {
@@ -330,7 +330,7 @@ namespace TallyJ.Models
       UpdateVotePositions(voteInfo.BallotGuid);
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVotes());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
 
       return new
                {

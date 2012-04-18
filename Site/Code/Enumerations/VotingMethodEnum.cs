@@ -30,6 +30,20 @@ namespace TallyJ.Code.Enumerations
       return item == null ? value : item.DisplayText;
     }
 
+    public static string PresentAbsentTextFor(string value)
+    {
+      var item = BaseItems.SingleOrDefault(i => i.Value == value);
+      if (item == null)
+      {
+        return value;
+      }
+      if (item == InPerson)
+      {
+        return "Present";
+      }
+      return "Ballot # ";
+    }
+
     public static HtmlString ForHtmlSelect(string selected = "")
     {
       return
