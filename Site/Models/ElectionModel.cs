@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using NLog;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
@@ -459,8 +460,19 @@ namespace TallyJ.Models
 
     public IEnumerable<Election> VisibleElections()
     {
-      var electionsWithCode = Db.Elections.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
-      return electionsWithCode.Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+      // this is first hit on the database on the home page... need special logging
+      try
+      {
+        var electionsWithCode = Db.Elections.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
+        return electionsWithCode.Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+      }
+      catch (Exception e)
+      {
+        var logger = LogManager.GetCurrentClassLogger();
+        logger.ErrorException("Reading VisibleElections", e);
+
+        return new List<Election>();
+      }
     }
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
