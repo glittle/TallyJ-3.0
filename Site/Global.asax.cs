@@ -185,6 +185,8 @@ namespace TallyJ
     {
       routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+      routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
+
       routes.MapRoute(
         "Default", // Route name
         "{controller}/{action}", // URL with parameters
