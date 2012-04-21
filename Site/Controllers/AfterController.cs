@@ -26,7 +26,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult Reports()
     {
-      return View();
+      return View("Reports");
     }
 
     public ActionResult Presenter()
@@ -80,6 +80,18 @@ namespace TallyJ.Controllers
     public JsonResult SaveTieCounts(List<string> counts)
     {
       return new ResultsModel().SaveTieCounts(counts);
+    }
+
+    public ActionResult Pdf(string id)
+    {
+      var path = HttpContext.Server.MapPath(string.Format("~/Reports/{0}.rpt", id));
+      if (System.IO.File.Exists(path))
+      {
+        var model = new CrystalReportsModel(path);
+        return model.PdfResult;
+      }
+      ViewBag.Error = "Invalid report name";
+      return View("ReportsCR");
     }
   }
 

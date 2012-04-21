@@ -75,7 +75,7 @@ namespace TallyJ.Models
 
         return new
                  {
-                   ReportVotes = reportVotes.Select(r => new { r.PersonName, r.VoteCount, r.TieBreakCount, r.Section }),
+                   ReportVotes = reportVotes.Select(r => new {r.PersonName, r.VoteCount, r.TieBreakCount, r.Section}),
                    //ChartVotes = chartVotes,
                    NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
@@ -110,12 +110,13 @@ namespace TallyJ.Models
         var locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
 
         var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
-          .Join(locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
+          .Join(locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new {vi, location})
           .Select(x => new
                          {
                            x.vi.LocationId,
                            x.vi.BallotId,
-                           Status = x.vi.BallotStatusCode == "Review" ? BallotStatusEnum.Review.DisplayText : "Verification Needed",
+                           Status =
+                         x.vi.BallotStatusCode == "Review" ? BallotStatusEnum.Review.DisplayText : "Verification Needed",
                            Ballot = string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name)
                          })
           .Distinct()
@@ -136,6 +137,7 @@ namespace TallyJ.Models
                  {
                    NeedReview = needReview.Concat(needReview2).Distinct(),
                    NumBallots = resultSummaryAuto.BallotsReceived,
+                   resultSummaryAuto.TotalBallotsCollected,
                    resultSummaryAuto.TotalVotes,
                    TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
                    TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,
@@ -187,6 +189,7 @@ namespace TallyJ.Models
                  NumToElect = _election.NumberToElect,
                  NumExtra = _election.NumberExtra,
                  resultSummaryAuto.TotalVotes,
+                 resultSummaryAuto.TotalBallotsCollected,
                  TotalInvalidVotes = resultSummaryAuto.SpoiledVotes,
                  TotalInvalidBallots = resultSummaryAuto.SpoiledBallots,
                };
@@ -222,7 +225,9 @@ namespace TallyJ.Models
                                           {
                                             v.PersonFullNameFL,
                                             Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
-                                            VoteInvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(v.VoteIneligibleReasonGuid.AsGuid()).SurroundContentWith("[", "]")
+                                            VoteInvalidReasonDesc =
+                                          IneligibleReasonEnum.DescriptionFor(v.VoteIneligibleReasonGuid.AsGuid()).
+                                          SurroundContentWith("[", "]")
                                           })
                            });
 
@@ -249,8 +254,27 @@ namespace TallyJ.Models
             );
           break;
 
+        case "SimpleResults":
+          var summary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == UserSession.CurrentElectionGuid);
+          var result = Db.Results.Where(r => r.ElectionGuid == UserSession.CurrentElectionGuid).OrderBy(r => r.Rank).Take(
+              UserSession.CurrentElection.NumberToElect.AsInt())
+              .Join(Db.People.Where(p=>p.ElectionGuid==UserSession.CurrentElectionGuid), r => r.PersonGuid, p => p.PersonGuid,
+                    (result1, person) =>
+                    new {person.C_FullNameFL, person.BahaiId, result1.Rank, result1.VoteCount, result1.TieBreakCount});
+
+          var info = summary.GetAllProperties();
+
+          data = new
+                   {
+                     People = result,
+                     Info = info.Select(i=> new { i.Key, i.Value })
+                   };
+
+          break;
+
+
         default:
-          return new { Status = "Unknown report" }.AsJsonResult();
+          return new {Status = "Unknown report"}.AsJsonResult();
       }
 
       return new
@@ -266,14 +290,14 @@ namespace TallyJ.Models
     {
       // input like:   2_3,5_3,235_0
       var countItems = counts.Select(delegate(string s)
-                                                          {
-                                                            var parts = s.SplitWithString("_", StringSplitOptions.None);
-                                                            return new
-                                                                     {
-                                                                       ResultId = parts[0].AsInt(),
-                                                                       Value = parts[1].AsInt()
-                                                                     };
-                                                          }).ToList();
+                                       {
+                                         var parts = s.SplitWithString("_", StringSplitOptions.None);
+                                         return new
+                                                  {
+                                                    ResultId = parts[0].AsInt(),
+                                                    Value = parts[1].AsInt()
+                                                  };
+                                       }).ToList();
       var resultsIds = countItems.Select(ci => ci.ResultId).ToArray();
 
       var results =

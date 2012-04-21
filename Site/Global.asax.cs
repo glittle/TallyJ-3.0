@@ -189,12 +189,12 @@ namespace TallyJ
 
       routes.MapRoute(
         "Default", // Route name
-        "{controller}/{action}", // URL with parameters
+        "{controller}/{action}/{id}", // URL with parameters
         new
           {
             controller = "Public",
             action = "Index",
-            //id = UrlParameter.Optional
+            id = UrlParameter.Optional
           } // Parameter defaults
         );
     }
