@@ -76,9 +76,9 @@
     <Reference Include="LinqKit">
       <HintPath>..\packages\Other\LinqKit.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=x86">
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CrystalReportsBin\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO">
       <HintPath>..\packages\CsvReader\LumenWorks.Framework.IO.dll</HintPath>
@@ -474,12 +474,6 @@
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\superfish.css" />
     <Content Include="Scripts\superfish.js" />
-    <Content Include="Views\After\ReportsCR.cshtml.css">
-      <DependentUpon>ReportsCR.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\After\ReportsCR.cshtml.js">
-      <DependentUpon>ReportsCR.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\After\Reports.cshtml.css">
       <DependentUpon>Reports.cshtml</DependentUpon>
     </Content>
@@ -673,7 +667,6 @@
     <Content Include="Views\Before\RollCall.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\Ballots\Reconcile.cshtml" />
-    <Content Include="Views\After\ReportsCR.cshtml" />
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>

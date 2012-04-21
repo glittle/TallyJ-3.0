@@ -75,7 +75,7 @@ namespace TallyJ.Models
 
         return new
                  {
-                   ReportVotes = reportVotes.Select(r => new {r.PersonName, r.VoteCount, r.TieBreakCount, r.Section}),
+                   ReportVotes = reportVotes.Select(r => new { r.PersonName, r.VoteCount, r.TieBreakCount, r.Section }),
                    //ChartVotes = chartVotes,
                    NumBallots = resultSummaryAuto.BallotsReceived,
                    resultSummaryAuto.TotalVotes,
@@ -110,7 +110,7 @@ namespace TallyJ.Models
         var locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
 
         var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
-          .Join(locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new {vi, location})
+          .Join(locations, vi => vi.LocationId, l => l.C_RowId, (vi, location) => new { vi, location })
           .Select(x => new
                          {
                            x.vi.LocationId,
@@ -123,7 +123,7 @@ namespace TallyJ.Models
           .OrderBy(x => x.Ballot);
 
         var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
-          .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, location) => new {b, location})
+          .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, location) => new { b, location })
           .Select(x => new
                          {
                            LocationId = x.location.C_RowId,
@@ -256,25 +256,65 @@ namespace TallyJ.Models
 
         case "SimpleResults":
           var summary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == UserSession.CurrentElectionGuid);
-          var result = Db.Results.Where(r => r.ElectionGuid == UserSession.CurrentElectionGuid).OrderBy(r => r.Rank).Take(
-              UserSession.CurrentElection.NumberToElect.AsInt())
-              .Join(Db.People.Where(p=>p.ElectionGuid==UserSession.CurrentElectionGuid), r => r.PersonGuid, p => p.PersonGuid,
-                    (result1, person) =>
-                    new {person.C_FullNameFL, person.BahaiId, result1.Rank, result1.VoteCount, result1.TieBreakCount});
 
-          var info = summary.GetAllProperties();
+          if (summary == null || summary.BallotsNeedingReview != 0)
+          // TODO 2012-04-20 Glen Little: Add   || !summary.UseOnReports.GetValueOrDefault()
+          {
+            return new
+             {
+               Status = "Results not available",
+               ElectionStatus = CurrentElection.TallyStatus,
+               ElectionStatusText = ElectionTallyStatusEnum.TextFor(CurrentElection.TallyStatus)
+             }.AsJsonResult();
+          }
 
-          data = new
+          var result = Db.Results
+            .Where(r => r.ElectionGuid == UserSession.CurrentElectionGuid)
+            .OrderBy(r => r.Rank)
+            .Take(UserSession.CurrentElection.NumberToElect.AsInt())
+            .ToList()
+            .Join(Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid), r => r.PersonGuid,
+                  p => p.PersonGuid,
+                  (result1, person) => new { person, result1 })
+            .ToList();
+
+          return new
                    {
-                     People = result,
-                     Info = info.Select(i=> new { i.Key, i.Value })
-                   };
-
-          break;
-
+                     People = result.Select(rp =>
+                                            new
+                                              {
+                                                Name = rp.person.C_FullNameFL,
+                                                rp.person.BahaiId,
+                                                rp.result1.Rank,
+                                                VoteCountPlus = rp.result1.VoteCount.GetValueOrDefault() +
+                                                                (rp.result1.TieBreakCount.GetValueOrDefault() == 0
+                                                                   ? ""
+                                                                   : " / {0}".FilledWith(rp.result1.TieBreakCount)),
+                                              }
+                       ),
+                     Info = new
+                              {
+                                Name = UserSession.CurrentElectionName,
+                                summary.BallotsReceived,
+                                summary.CalledInBallots,
+                                summary.DroppedOffBallots,
+                                summary.InPersonBallots,
+                                summary.MailedInBallots,
+                                summary.NumEligibleToVote, // could vote
+                                summary.NumVoters,  // did vote
+                                summary.SpoiledBallots,
+                                summary.SpoiledVotes,
+                                summary.TotalBallotsCollected,
+                                summary.TotalVotes,
+                                Pct = summary.NumEligibleToVote.GetValueOrDefault() == 0 ? 0 : Math.Round(100.0 * summary.BallotsReceived.GetValueOrDefault() / summary.NumEligibleToVote.GetValueOrDefault())
+                              },
+                     Status = "ok",
+                     ElectionStatus = CurrentElection.TallyStatus,
+                     ElectionStatusText = ElectionTallyStatusEnum.TextFor(CurrentElection.TallyStatus)
+                   }.AsJsonResult();
 
         default:
-          return new {Status = "Unknown report"}.AsJsonResult();
+          return new { Status = "Unknown report" }.AsJsonResult();
       }
 
       return new

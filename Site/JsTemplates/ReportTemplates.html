@@ -19,6 +19,108 @@
             <span class="Vote VoteSpoiled{Spoiled}"><span class="Person">{PersonFullNameFL}</span>
                 <span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>
     </div>
+    <div id="SimpleResults" data-name="Teller's Report">
+        <div class="body">
+            <h1>
+                Tellers' Report</h1>
+            <h2>
+                {Name}</h2>
+            <table class="resultInfo">
+                <tr>
+                    <td>
+                        Number of eligible voters
+                    </td>
+                    <td>
+                        {NumEligibleToVote}
+                    </td>
+                </tr>
+                <tr class="rpt1Detail">
+                    <td>
+                        Number of ballots cast in person
+                    </td>
+                    <td>
+                        {InPersonBallots}
+                    </td>
+                </tr>
+                <tr class="rpt1Detail">
+                    <td>
+                        Number of ballots received by mail
+                    </td>
+                    <td>
+                        {MailedInBallots}
+                    </td>
+                </tr>
+                <tr class="rpt1Detail">
+                    <td>
+                        Number of hand-delivered ballots
+                    </td>
+                    <td>
+                        {DroppedOffBallots}
+                    </td>
+                </tr>
+                <tr class="rpt1Detail {#({CalledInBallots}==0 ? 'Hidden' : '')}">
+                    <td>
+                        Number of phoned-in ballots
+                    </td>
+                    <td>
+                        {CalledInBallots}
+                    </td>
+                </tr>
+                <tr class="rpt1Total">
+                    <td>
+                        Total number of ballots received
+                    </td>
+                    <td>
+                        {TotalBallotsCollected}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Total number of ballots counted
+                    </td>
+                    <td>
+                        {BallotsReceived}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Percentage of participation
+                    </td>
+                    <td>
+                        {Pct}%
+                    </td>
+                </tr>
+                <tr class="rpt1Detail">
+                    <td>
+                        Number of spoiled ballots
+                    </td>
+                    <td>
+                        {SpoiledBallots}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Number of spoiled votes
+                    </td>
+                    <td>
+                        {SpoiledVotes}
+                    </td>
+                </tr>
+            </table>
+            <h2 class="SectionTitle">
+                Elected</h2>
+            <div class="result1">
+                <div>
+                    <span># </span><span>Name </span><span>Bahá'í Id </span><span>Votes </span>
+                </div>
+                {^result1rows}
+            </div>
+        </div>
+        <div class="result1row">
+            <div>
+                <span>{Rank}</span><span>{Name}</span><span>{BahaiId}</span><span>{VoteCountPlus}</span></div>
+        </div>
+    </div>
     <div id="AllReceivingVotesByVote" data-name="Full Tellers' Report (all who were voted for)">
         <div class="body">
             <h1>

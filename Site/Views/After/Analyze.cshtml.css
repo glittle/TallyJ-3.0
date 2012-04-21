@@ -49,10 +49,11 @@ tr.SectionO.Tied.Force {
 }
 .LeftHalf {
     width: 59%;
+    margin-right: 2%;
     float: left;
 }
 .RightHalf {
-    width: 40%;
+    width: 38%;
     float: left;
 }
 #chart {
@@ -129,4 +130,7 @@ input.TieBreakCount {
 }
 .SectionO .ChartLine {
     background-color: #ccc;
+}
+.PersonColumn {
+    width: 290px;
 }

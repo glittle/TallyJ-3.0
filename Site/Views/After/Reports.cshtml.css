@@ -1,6 +1,7 @@
-﻿.chooser
+﻿div.chooser
 {
     width: 200px;
+    padding: 2px;
     float: left;
     background-color: cornsilk;
 }
@@ -14,10 +15,12 @@
     color: blue;
 }
 .chooser ul li {
+    margin-left: -10px;
 }
 .chooser h1 {
-    font-size: 12pt;
-    margin: 0;
+    font-size: 14pt;
+    font-weight: normal;
+    margin: 0 0 0 4px;
 }
 .status {
     color: red;
@@ -39,6 +42,11 @@
     margin: 0 0 4pt 0;
     padding: 0;
     font-size: 120%;
+}
+#report h2 {
+    margin: 6pt 0 4pt 0;
+    padding: 0;
+    font-size: 140%;
 }
 #report p.Comment {
     font-size: 80%;
@@ -108,6 +116,44 @@
     font-size: 90%;
 }
 
+table.resultInfo tr td {
+    padding: 3px 7px;
+}
+table.resultInfo tr td:nth-child(1) {
+    padding-right: 15px;
+}
+table.resultInfo tr.rpt1Total td:nth-child(2) {
+    border-top: 1px double #000;
+    border-bottom: none;
+}
+table.resultInfo tr.rpt1Detail td:nth-child(2) {
+    border-bottom: none;
+}
+table.resultInfo tr td:nth-child(2) {
+    text-align: right;
+    border-bottom: 1px solid #000;
+    padding-left: 25px;
+    padding-right: 12px;
+}
+
+div.result1 {
+    display: table;
+    margin-left: 10px;
+}
+div.result1 div {
+    display: table-row;
+}
+div.result1 div span {
+    display: table-cell;
+    text-align: center;
+    border: 1px solid gray;
+    padding: 3px 10px;
+}
+div.result1 div span:nth-child(2) {
+    text-align: left;
+}
+
+
 
 @media print
 {
@@ -122,4 +168,8 @@
         padding: 0;
         margin: 0;
     }
+}
+
+.Hidden {
+    display: none;
 }
