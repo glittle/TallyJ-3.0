@@ -214,6 +214,8 @@ namespace TallyJ.Models
           var ballots = Db.vBallotInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid).ToList();
           var votes = Db.vVoteInfoes.Where(b => b.ElectionGuid == CurrentElection.ElectionGuid).ToList();
           data = ballots
+            .OrderBy(b=>b.ComputerCode)
+            .ThenBy(b=>b.BallotNumAtComputer)
             .Select(b => new
                            {
                              b.C_BallotCode,
