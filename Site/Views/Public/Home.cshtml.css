@@ -214,7 +214,14 @@ fieldset input[type="text"], fieldset input[type="password"]
     position: absolute;
     bottom: 16px;
     text-align: center;
-    width: 100%;
+    width: 95%;
     font-size: 90%;
     color: #999;
+}
+
+.CenterPanel div.browser.ie {
+    color: red;
+    font-weight: bold;
+    font-size: 105%;
+    margin-bottom: 20px;
 }

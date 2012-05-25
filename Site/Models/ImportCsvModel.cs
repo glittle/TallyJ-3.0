@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using LumenWorks.Framework.IO.Csv;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
-using TallyJ.Models.Helper;
 
 namespace TallyJ.Models
 {
   public class ImportCsvModel : DataConnectedModel
   {
-    const string FileTypeCsv = "CSV";
+    private const string FileTypeCsv = "CSV";
 
     private IEnumerable<string> DbFieldsList
     {
@@ -35,19 +35,6 @@ namespace TallyJ.Models
         // screen this hardcoded list against the Person object to ensure we aren't using old field names
         var sample = new Person();
         return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name));
-      }
-    }
-
-    public Dictionary<int, string> Encodings
-    {
-      get
-      {
-        return new Dictionary<int, string>
-                 {
-                   {1252, "English & European"},
-                   {65001, "UTF-8"},
-                   {1200, "UTF-16"},
-                 };
       }
     }
 
@@ -81,6 +68,8 @@ namespace TallyJ.Models
       {
         return "Read {0}. Should be {1}.".FilledWith(numWritten, fileSize);
       }
+
+      new ImportHelper().ExtraProcessingIfMultipartEncoded(record);
 
       Db.ImportFiles.Add(record);
       Db.SaveChanges();
@@ -132,10 +121,11 @@ namespace TallyJ.Models
                  previousFiles = PreviousUploads()
                }.AsJsonResult();
     }
+
     public JsonResult CopyMap(int from, int to)
     {
       var files = Db.ImportFiles.Where(fi => fi.ElectionGuid == UserSession.CurrentElectionGuid
-                      && (fi.C_RowId == from || fi.C_RowId == to)).ToList();
+                                             && (fi.C_RowId == from || fi.C_RowId == to)).ToList();
       if (files.Count != 2)
       {
         throw new ApplicationException("File(s) not found");
@@ -167,7 +157,6 @@ namespace TallyJ.Models
     {
       var textReader = new StringReader(importFile.Contents.AsString(importFile.CodePage));
       var csv = new CsvReader(textReader, true) { SkipEmptyLines = true };
-
       var csvHeaders = csv.GetFieldHeaders();
 
       //mapping:   csv->db,csv->db

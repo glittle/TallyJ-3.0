@@ -189,7 +189,7 @@ var ImportCsvPage = function () {
             return;
         }
         $err.text('');
-        
+
         ShowStatusDisplay('Saving...');
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveMapping', { id: local.activeFileRowId, mapping: mappings }, function (info) {
             if (info.Message) {
@@ -236,6 +236,9 @@ var ImportCsvPage = function () {
         local.uploadListBody.find('select').each(function () {
             var select = $(this);
             select.val(select.data('value'));
+            if (this.selectedIndex == -1) {
+                this.selectedIndex = 0;
+            }
         });
 
         if (list.length == 1) {

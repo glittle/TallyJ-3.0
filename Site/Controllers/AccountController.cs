@@ -90,6 +90,7 @@ namespace TallyJ.Controllers
 		//
 		// GET: /Account/LogOff
 
+    [AllowAnonymous]
 		public ActionResult LogOff()
 		{
       if (UserSession.IsLoggedIn)
@@ -101,6 +102,12 @@ namespace TallyJ.Controllers
 
 			return RedirectToAction("Index", "Public");
 		}
+
+    [AllowAnonymous]
+		public ActionResult LogOut()
+    {
+      return LogOff();
+    }
 
 		//
 		// GET: /Account/Register

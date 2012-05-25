@@ -89,7 +89,7 @@
                 </td>
                 <td>
                     <select data-value="{CodePage}">
-                        @Model.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+                        @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
                     </select>
                 </td>
                 <td>
