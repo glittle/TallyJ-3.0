@@ -24,6 +24,7 @@ var PresenterPage = function () {
         });
 
         $(window).on('keydown', keyDown);
+        $('#btnShow').on('click', showReport);
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();

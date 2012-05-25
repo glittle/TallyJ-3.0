@@ -81,8 +81,8 @@ tr.Extra
      text-align: center;
     font-size: 16pt;
     color: #aaa;
-    padding: 25pt 0 0pt 0;
-    width: 100%;
+    margin-top: 2em;
+    padding: .5em 1em;
 }
 table.Holder
 {
