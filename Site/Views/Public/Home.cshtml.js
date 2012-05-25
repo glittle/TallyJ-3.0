@@ -15,9 +15,19 @@ var HomeIndexPage = function () {
         //        $('#ddlElections').on('change', null, null, function () {
         //            $('#txtCode').val('');
         //        });
+        $('#btnRefresh').on('click', null, function () {
+            CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function (info) {
+                $('#ddlElections').html(info.html);
+                selectDefaultElection();
+            });
 
+        });
         $('.CenterPanel').on('click', 'p.StartJoin', startJoinClick);
 
+        selectDefaultElection();
+    };
+
+    var selectDefaultElection = function () {
         var children = $('#ddlElections').children();
         if (children.length == 1 && children.eq(0).val() != 0) {
             children.eq(0).prop('selected', true);

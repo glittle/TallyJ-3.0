@@ -225,3 +225,8 @@ fieldset input[type="text"], fieldset input[type="password"]
     font-size: 105%;
     margin-bottom: 20px;
 }
+#btnRefresh 
+{
+    vertical-align: top;
+    font-size: 85%;
+}

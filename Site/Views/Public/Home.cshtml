@@ -31,11 +31,12 @@
         <ol>
             <li>
                 <p>
-                    Select the election you are a teller for:</p>
+                    Select the election:</p>
                 <div class="table">
-                    <select id="ddlElections" size="4">
-                        @Model.VisibleElectionsOptions()
-                    </select>
+                  <select id="ddlElections" size="4">
+                    @Model.VisibleElectionsOptions()
+                  </select>
+                  <button type="button" id="btnRefresh">Refresh</button>
                 </div>
             </li>
             <li>

@@ -63,6 +63,16 @@ namespace TallyJ.Controllers
                  timeOffset = diff
                }.AsJsonResult();
     }
+
+
+    public JsonResult OpenElections()
+    {
+      return new
+               {
+                 html = new PublicHomeViewModel().VisibleElectionsOptions().ToString()
+               }.AsJsonResult();
+    }
+ 
   }
 
 }
