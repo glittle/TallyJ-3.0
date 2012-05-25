@@ -176,6 +176,7 @@ namespace TallyJ.Models
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
         .Where(vi => vi.FileType == FileTypeV1Community || vi.FileType == FileTypeV1Election)
         .OrderByDescending(vi => vi.UploadTime)
+        .ToList()
         .Select(vi => new
                         {
                           vi.C_RowId,
