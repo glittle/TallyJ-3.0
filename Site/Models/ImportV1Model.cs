@@ -170,6 +170,8 @@ namespace TallyJ.Models
 
     public object PreviousUploads()
     {
+      var timeOffset = UserSession.TimeOffsetServerAhead;
+
       return Db.vImportFileInfoes
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
         .Where(vi => vi.FileType == FileTypeV1Community || vi.FileType == FileTypeV1Election)
@@ -178,7 +180,7 @@ namespace TallyJ.Models
                         {
                           vi.C_RowId,
                           vi.FileSize,
-                          vi.UploadTime,
+                          UploadTime = vi.UploadTime.Value.AddMilliseconds(0 - timeOffset),
                           vi.FileType,
                           vi.ProcessingStatus,
                           vi.OriginalFileName,
