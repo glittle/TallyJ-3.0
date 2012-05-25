@@ -181,7 +181,7 @@ namespace TallyJ.Models
                         {
                           vi.C_RowId,
                           vi.FileSize,
-                          UploadTime = vi.UploadTime.Value.AddMilliseconds(0 - timeOffset),
+                          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
                           vi.FileType,
                           vi.ProcessingStatus,
                           vi.OriginalFileName,

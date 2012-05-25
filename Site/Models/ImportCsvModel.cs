@@ -89,11 +89,12 @@ namespace TallyJ.Models
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
         .Where(vi => vi.FileType == FileTypeCsv)
         .OrderByDescending(vi => vi.UploadTime)
+        .ToList()
         .Select(vi => new
                         {
                           vi.C_RowId,
                           vi.FileSize,
-                          UploadTime = vi.UploadTime.Value.AddMilliseconds(0 - timeOffset),
+                          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
                           vi.FileType,
                           vi.ProcessingStatus,
                           vi.OriginalFileName,
