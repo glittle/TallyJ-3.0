@@ -5,7 +5,7 @@
 @using TallyJ.Code
 @{
     ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
-    ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffset.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
     ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));

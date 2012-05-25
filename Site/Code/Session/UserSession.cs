@@ -218,7 +218,7 @@ namespace TallyJ.Code.Session
     }
 
     /// <Summary>Has the client/server time difference been figured out?</Summary>
-    public static int TimeOffset
+    public static int TimeOffsetServerAhead
     {
       get { return SessionKey.TimeOffset.FromSession(0); }
       set { SessionKey.TimeOffset.SetInSession(value); }

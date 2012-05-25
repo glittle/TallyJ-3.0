@@ -271,7 +271,7 @@ namespace TallyJ.Models
       var forLocationGuid = forLocationId == -1
                               ? Guid.Empty
                               : Locations.Where(l => l.C_RowId == forLocationId).Select(l => l.LocationGuid).Single();
-      var timeOffset = UserSession.TimeOffset;
+      var timeOffset = UserSession.TimeOffsetServerAhead;
       var tellers =
         Db.Tellers.Where(t => t.ElectionGuid == CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
                                                                                               t => t.Name);
@@ -311,7 +311,7 @@ namespace TallyJ.Models
       var tellers =
         Db.Tellers.Where(t => t.ElectionGuid == CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
                                                                                               t => t.Name);
-      var timeOffset = UserSession.TimeOffset;
+      var timeOffset = UserSession.TimeOffsetServerAhead;
 
       return people
         .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
@@ -357,7 +357,7 @@ namespace TallyJ.Models
     private static string ShowRegistrationTime(int timeOffset, Person p)
     {
       return p.RegistrationTime.HasValue
-               ? p.RegistrationTime.Value.AddMilliseconds(timeOffset).ToString("h:mm tt").ToLowerInvariant()
+               ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString("h:mm tt").ToLowerInvariant()
                : "";
     }
 

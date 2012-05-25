@@ -56,7 +56,7 @@ namespace TallyJ.Controllers
       var clientTimeNow = new DateTime(1970, 1, 1).AddMilliseconds(now + fudgeFactor);
       var serverTime = DateTime.Now;
       var diff = (serverTime - clientTimeNow).TotalMilliseconds;
-      UserSession.TimeOffset = diff.AsInt();
+      UserSession.TimeOffsetServerAhead = diff.AsInt();
       UserSession.TimeOffsetKnown = true;
       return new
                {
