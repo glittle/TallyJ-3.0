@@ -11,3 +11,8 @@ Tests/bin/*
 Tests/obj/*
 /Tests/bin
 /Site.suo
+/DatabaseScripts/Sandbox
+/Site/obj
+/DatabaseScripts/obj
+/DatabaseScripts/sql
+*.suo
