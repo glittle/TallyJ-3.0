@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 
 namespace TallyJ.Controllers
 {

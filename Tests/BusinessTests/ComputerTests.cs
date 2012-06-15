@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 using System.Linq;
 using Tests.Support;
 

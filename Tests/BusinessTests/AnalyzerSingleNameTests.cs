@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 using Tests.Support;
 
 namespace Tests.BusinessTests

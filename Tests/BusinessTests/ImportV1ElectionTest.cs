@@ -8,8 +8,8 @@ using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
-using TallyJ.Models;
-using TallyJ.Models.Helper;
+using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using Tests.Support;
 using System.Linq;
 

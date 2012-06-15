@@ -7,7 +7,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{82098EE8-7152-4A16-A412-0D408891CDF9}</ProjectGuid>
+    <ProjectGuid>{A444CE75-8087-4828-BCE5-87A82752E0EC}</ProjectGuid>
     <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -21,6 +21,10 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
     <!-- UseIISExpress>true</UseIISExpress-->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -62,9 +66,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.5.0.0-rc\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\Other\Enyim.Caching.dll</HintPath>
@@ -293,39 +297,39 @@
     <Compile Include="EF\vVoteInfo.cs">
       <DependentUpon>DbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\BallotAnalyzer.cs" />
-    <Compile Include="Models\BallotStatusWithSpoilCount.cs" />
-    <Compile Include="Models\ElectionStatusSharer.cs" />
-    <Compile Include="Models\ImportV1Base.cs" />
-    <Compile Include="Models\ImportV1Community.cs" />
-    <Compile Include="Models\ImportV1Election.cs" />
-    <Compile Include="Models\ImportV1Model.cs" />
-    <Compile Include="Models\PulseInfo.cs" />
-    <Compile Include="Models\ResultHelper.cs" />
-    <Compile Include="Models\RollCallModel.cs" />
-    <Compile Include="Models\UploadProvider.cs" />
-    <Compile Include="Models\VoteAnalyzer.cs" />
-    <Compile Include="Models\VoteHelper.cs" />
-    <Compile Include="Models\BallotModelCore.cs" />
-    <Compile Include="Models\BallotModelFactory.cs" />
-    <Compile Include="Models\BallotNormalModel.cs" />
-    <Compile Include="Models\BallotSingleModel.cs" />
-    <Compile Include="Models\ComputerModel.cs" />
-    <Compile Include="Models\ElectionAnalyzerNormal.cs" />
-    <Compile Include="Models\ElectionAnalyzerCore.cs" />
-    <Compile Include="Models\ElectionRules.cs" />
-    <Compile Include="Models\Helpers.cs" />
-    <Compile Include="Models\Helper\AgeGroup.cs" />
-    <Compile Include="Models\Helper\IneligibleReason.cs" />
-    <Compile Include="Models\IBallotModel.cs" />
-    <Compile Include="Models\IElectionAnalyzer.cs" />
-    <Compile Include="Models\ImportCsvModel.cs" />
-    <Compile Include="Models\LocationModel.cs" />
-    <Compile Include="Models\MonitorModel.cs" />
-    <Compile Include="Models\PeopleModel.cs" />
-    <Compile Include="Models\PeopleSearchModel.cs" />
+    <Compile Include="CoreModels\BallotAnalyzer.cs" />
+    <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
+    <Compile Include="CoreModels\ElectionStatusSharer.cs" />
+    <Compile Include="CoreModels\ImportV1Base.cs" />
+    <Compile Include="CoreModels\ImportV1Community.cs" />
+    <Compile Include="CoreModels\ImportV1Election.cs" />
+    <Compile Include="CoreModels\ImportV1Model.cs" />
+    <Compile Include="CoreModels\PulseInfo.cs" />
+    <Compile Include="CoreModels\ResultHelper.cs" />
+    <Compile Include="CoreModels\RollCallModel.cs" />
+    <Compile Include="CoreModels\UploadProvider.cs" />
+    <Compile Include="CoreModels\VoteAnalyzer.cs" />
+    <Compile Include="CoreModels\VoteHelper.cs" />
+    <Compile Include="CoreModels\BallotModelCore.cs" />
+    <Compile Include="CoreModels\BallotModelFactory.cs" />
+    <Compile Include="CoreModels\BallotNormalModel.cs" />
+    <Compile Include="CoreModels\BallotSingleModel.cs" />
+    <Compile Include="CoreModels\ComputerModel.cs" />
+    <Compile Include="CoreModels\ElectionAnalyzerNormal.cs" />
+    <Compile Include="CoreModels\ElectionAnalyzerCore.cs" />
+    <Compile Include="CoreModels\ElectionRules.cs" />
+    <Compile Include="CoreModels\Helpers.cs" />
+    <Compile Include="CoreModels\Helper\AgeGroup.cs" />
+    <Compile Include="CoreModels\Helper\IneligibleReason.cs" />
+    <Compile Include="CoreModels\IBallotModel.cs" />
+    <Compile Include="CoreModels\IElectionAnalyzer.cs" />
+    <Compile Include="CoreModels\ImportCsvModel.cs" />
+    <Compile Include="CoreModels\LocationModel.cs" />
+    <Compile Include="CoreModels\MonitorModel.cs" />
+    <Compile Include="CoreModels\PeopleModel.cs" />
+    <Compile Include="CoreModels\PeopleSearchModel.cs" />
     <Compile Include="EF\Partials\SerializableClasses.cs" />
-    <Compile Include="Models\ElectionModel.cs" />
+    <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="EF\DbContextGenerator.Context.cs">
       <AutoGen>True</AutoGen>
@@ -358,7 +362,7 @@
     <Content Include="Images\LogoSideM.png" />
     <Content Include="Images\LogoSm.png" />
     <Content Include="Images\LogoSq.png" />
-    <Compile Include="Models\ElectionsListViewModel.cs" />
+    <Compile Include="CoreModels\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="EF\MainData.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -368,14 +372,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\Helper\PersonHelper.cs" />
-    <Compile Include="Models\PublicHomeViewModel.cs" />
-    <Compile Include="Models\PulseModel.cs" />
-    <Compile Include="Models\ResultsModel.cs" />
-    <Compile Include="Models\SetupModel.cs" />
-    <Compile Include="Models\ElectionAnalyzerSingleName.cs" />
-    <Compile Include="Models\TellerModel.cs" />
+    <Compile Include="CoreModels\AccountModels.cs" />
+    <Compile Include="CoreModels\Helper\PersonHelper.cs" />
+    <Compile Include="CoreModels\PublicHomeViewModel.cs" />
+    <Compile Include="CoreModels\PulseModel.cs" />
+    <Compile Include="CoreModels\ResultsModel.cs" />
+    <Compile Include="CoreModels\SetupModel.cs" />
+    <Compile Include="CoreModels\ElectionAnalyzerSingleName.cs" />
+    <Compile Include="CoreModels\TellerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

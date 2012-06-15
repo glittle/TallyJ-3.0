@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using TallyJ.EF;
-using TallyJ.Models;
-using TallyJ.Models.Helper;
+using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using TallyJ.Code;
 
 namespace Tests.BusinessTests

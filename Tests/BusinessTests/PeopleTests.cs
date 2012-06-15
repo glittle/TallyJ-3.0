@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
 using TallyJ.EF;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 using TallyJ.Code.Helpers;
 using Tests.Support;
 

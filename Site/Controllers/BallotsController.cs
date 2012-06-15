@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 using System.Linq;
 
 namespace TallyJ.Controllers

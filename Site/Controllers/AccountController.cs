@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.CoreModels;
 using TallyJ.Code;
 
 namespace TallyJ.Controllers
