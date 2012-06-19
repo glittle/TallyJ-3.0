@@ -225,77 +225,93 @@
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
     <Compile Include="EF\Ballot.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\CloneElection_Result.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Computer.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\C_Log.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Election.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ImportFile.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\JoinElectionUser.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Location.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\MainData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MainData.edmx</DependentUpon>
     </Compile>
     <Compile Include="EF\Message.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Model1.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Model1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Partials\BallotRelated.cs" />
     <Compile Include="EF\Partials\Election.cs" />
-    <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Functions.cs" />
+    <Compile Include="EF\Partials\IHasElectionGuid.cs" />
+    <Compile Include="EF\Partials\SerializableClasses.cs" />
     <Compile Include="EF\Person.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Result.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultSummary.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultTie.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\SqlSearch_Result.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Teller.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\User.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vBallotInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vElectionListInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vImportFileInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vLocationInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Vote.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vResultInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\vVoteInfo.cs">
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="CoreModels\BallotAnalyzer.cs" />
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
@@ -328,20 +344,8 @@
     <Compile Include="CoreModels\MonitorModel.cs" />
     <Compile Include="CoreModels\PeopleModel.cs" />
     <Compile Include="CoreModels\PeopleSearchModel.cs" />
-    <Compile Include="EF\Partials\SerializableClasses.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
-    <Compile Include="EF\DbContextGenerator.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGenerator.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\DbContextGenerator.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGenerator.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\TallyJ2Entities.cs" />
     <Content Include="Content\themes\base\images\ui-icons_8dc63e_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_tallyj_256x240.png" />
     <Content Include="Images\ajax-loader.gif" />
@@ -364,11 +368,6 @@
     <Content Include="Images\LogoSq.png" />
     <Compile Include="CoreModels\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
-    <Compile Include="EF\MainData.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MainData.edmx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -626,12 +625,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EntityDeploy Include="EF\MainData.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MainData.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Before\FrontDesk.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -652,14 +645,6 @@
     <Content Include="Views\After\Presenter.cshtml" />
     <Content Include="Views\After\Monitor.cshtml" />
     <Content Include="App.Config" />
-    <None Include="EF\DbContextGenerator.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DbContextGenerator.Context.cs</LastGenOutput>
-    </None>
-    <None Include="EF\DbContextGenerator.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DbContextGenerator.cs</LastGenOutput>
-    </None>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
@@ -676,6 +661,21 @@
     <Content Include="Views\Before\RollCall.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\Ballots\Reconcile.cshtml" />
+    <EntityDeploy Include="EF\MainData.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MainData.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="EF\MainData.edmx.diagram">
+      <DependentUpon>MainData.edmx</DependentUpon>
+    </Content>
+    <Content Include="EF\Model1.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Model1.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="EF\Model1.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Model1.cs</LastGenOutput>
+    </Content>
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -687,6 +687,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

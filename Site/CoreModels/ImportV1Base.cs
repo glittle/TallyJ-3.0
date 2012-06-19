@@ -4,14 +4,14 @@ using System.Web.Mvc;
 using System.Xml;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.EF;
 using TallyJ.CoreModels.Helper;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public abstract class ImportV1Base
   {
-    protected readonly IDbContext _db;
+    protected readonly TallyJ2dContext _db;
     protected readonly ImportFile _file;
     protected readonly XmlDocument _xmlDoc;
 
@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Base for Importing V1.</Summary>
     /// <remarks>Need list of people to merge into.</remarks>
-    protected ImportV1Base(IDbContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    protected ImportV1Base(TallyJ2dContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
     {
       _db = db;
       _file = file;

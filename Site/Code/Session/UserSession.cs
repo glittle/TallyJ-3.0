@@ -5,8 +5,10 @@ using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
-using TallyJ.EF;
+
 using TallyJ.CoreModels;
+using TallyJ.EF;
+using Membership = System.Web.Security.Membership;
 
 namespace TallyJ.Code.Session
 {

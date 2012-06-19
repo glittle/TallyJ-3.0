@@ -25,8 +25,8 @@ namespace TallyJ.EF
         public string OriginalFileName { get; set; }
         public string ProcessingStatus { get; set; }
         public string FileType { get; set; }
+        public Nullable<int> CodePage { get; set; }
         public string Messages { get; set; }
         public byte[] Contents { get; set; }
-        public Nullable<int> CodePage { get; set; }
     }
 }

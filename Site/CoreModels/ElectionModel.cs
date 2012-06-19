@@ -11,6 +11,7 @@ using TallyJ.Code.Session;
 using TallyJ.Controllers;
 using TallyJ.EF;
 
+
 namespace TallyJ.CoreModels
 {
   public class ElectionModel : DataConnectedModel

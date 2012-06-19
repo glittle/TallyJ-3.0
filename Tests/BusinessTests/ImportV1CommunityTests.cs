@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TallyJ.EF;
+
 using TallyJ.CoreModels;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
@@ -51,9 +51,9 @@ namespace Tests.BusinessTests
     }
   }
 
-  public class FakeDataContext : IDbContext
+  public class FakeDataContext : TallyJ2dContext
   {
-    public int SaveChanges()
+    public override int SaveChanges()
     {
       // okay
       return 0;

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using TallyJ.Code.Enumerations;
-using TallyJ.EF;
 using TallyJ.Code;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {

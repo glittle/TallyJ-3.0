@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using NLog;
 using TallyJ.Code;
-using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {

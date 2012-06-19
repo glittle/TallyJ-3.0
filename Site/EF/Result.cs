@@ -24,10 +24,10 @@ namespace TallyJ.EF
         public Nullable<bool> CloseToNext { get; set; }
         public Nullable<bool> IsTied { get; set; }
         public string TieBreakGroup { get; set; }
+        public Nullable<bool> TieBreakRequired { get; set; }
         public Nullable<int> TieBreakCount { get; set; }
         public Nullable<bool> IsTieResolved { get; set; }
         public Nullable<int> RankInExtra { get; set; }
         public Nullable<bool> ForceShowInOther { get; set; }
-        public Nullable<bool> TieBreakRequired { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+
 
 namespace TallyJ.Code.Resources
 {

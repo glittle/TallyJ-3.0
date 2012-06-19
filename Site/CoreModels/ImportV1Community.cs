@@ -4,8 +4,8 @@ using System.Linq;
 using System.Xml;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.EF;
 using TallyJ.Code;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -15,7 +15,7 @@ namespace TallyJ.CoreModels
     int _nonAdults = 0;
     int _alreadyLoaded = 0;
 
-    public ImportV1Community(IDbContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    public ImportV1Community(TallyJ2dContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
       : base(db, file, xml, people, addPerson, logHelper)
     {
     }

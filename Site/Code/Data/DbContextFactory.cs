@@ -9,11 +9,11 @@ namespace TallyJ.Code.Data
 {
   public class DbContextFactory : IDbContextFactory
   {
-    private TallyJ2Entities _tallyJ2Entities;
+    private TallyJ2dContext _tallyJ2Entities;
 
     #region IDbContextFactory Members
 
-    public TallyJ2Entities DbContext
+    public TallyJ2dContext DbContext
     {
       get
       {
@@ -22,22 +22,19 @@ namespace TallyJ.Code.Data
           return _tallyJ2Entities;
         }
 
-        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+        //var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
-        //  metadata=res://*/EF.MainData.csdl|res://*/EF.MainData.ssdl|res://*/EF.MainData.msl;provider=System.Data.SqlClient;provider connection string="data source=.;initial catalog=tallyj2d;integrated security=True;multipleactiveresultsets=True;App=EntityFramework"
-        //  metadata=res://*/
-
-
-        var connection = new SqlConnection(cnString);
-        var workspace = new MetadataWorkspace(
-          new[] { "res://*/" },
-          new[] { typeof(SqlSearch_Result).Assembly }
-          );
+        //var connection = new SqlConnection(cnString);
+        //var workspace = new MetadataWorkspace(
+        //  new[] { "res://*/" },
+        //  new[] { typeof(SqlSearch_Result).Assembly }
+        //  );
 
         
-        var entityConnection = new EntityConnection(workspace, connection);
+        //var entityConnection = new EntityConnection(workspace, connection);
 
-        return _tallyJ2Entities = new TallyJ2Entities(entityConnection);
+        return _tallyJ2Entities = new TallyJ2dContext();
+        //return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
       }
     }
 

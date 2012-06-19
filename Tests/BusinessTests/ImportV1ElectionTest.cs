@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Mime;
-using System.Reflection;
-using System.Threading;
+using System.Linq;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
-using TallyJ.EF;
 using TallyJ.CoreModels;
-using TallyJ.CoreModels.Helper;
+using TallyJ.EF;
+using Tests.Properties;
 using Tests.Support;
-using System.Linq;
 
 namespace Tests.BusinessTests
 {
@@ -27,15 +22,15 @@ namespace Tests.BusinessTests
       var xmlDoc = new XmlDocument();
       var fakeDataContext = new FakeDataContext();
 
-      xmlDoc.LoadXml(Properties.Resources.SampleElection);
-      
+      xmlDoc.LoadXml(Resources.SampleElection);
+
       var electionGuid = Guid.NewGuid();
-      var election = new Election { ElectionGuid = electionGuid };
-      var location = new Location { LocationGuid = Guid.NewGuid() };
+      var election = new Election {ElectionGuid = electionGuid};
+      var location = new Location {LocationGuid = Guid.NewGuid()};
 
       var model = new ImportV1Election(fakeDataContext, fakeImportFile, xmlDoc, election, location,
-        fakes.AddBallotToDb, fakes.AddVoteToDb,
-        fakes.People, fakes.AddPersonToDb, fakes.AddResultSummaryToDb, fakes.LogHelper);
+                                       fakes.AddBallotToDb, fakes.AddVoteToDb,
+                                       fakes.People, fakes.AddPersonToDb, fakes.AddResultSummaryToDb, fakes.LogHelper);
 
       model.Process();
 
@@ -91,6 +86,5 @@ namespace Tests.BusinessTests
       var votes11 = fakes.Votes.Where(v => v.BallotGuid == ballot11.BallotGuid).ToList();
       votes11.Count.ShouldEqual(10);
     }
-
   }
 }

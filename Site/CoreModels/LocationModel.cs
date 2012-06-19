@@ -8,6 +8,7 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
+
 namespace TallyJ.CoreModels
 {
   public class LocationModel : DataConnectedModel

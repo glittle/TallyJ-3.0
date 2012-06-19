@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     private readonly Action<Vote> _storeVote;
     private int _ballotsLoaded;
 
-    public ImportV1Election(IDbContext db, ImportFile file, XmlDocument xml,
+    public ImportV1Election(TallyJ2dContext db, ImportFile file, XmlDocument xml,
                             Election election,
                             Location location,
                             Action<Ballot> storeBallot,

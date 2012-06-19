@@ -9,6 +9,7 @@ using TallyJ.Code.Session;
 using System.Linq;
 using TallyJ.EF;
 
+
 namespace TallyJ.CoreModels
 {
   public class TellerModel : DataConnectedModel

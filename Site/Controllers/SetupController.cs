@@ -6,8 +6,8 @@ using System.Web.Mvc;
 //using Krystalware.SlickUpload.Storage.Streams;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.EF;
 using TallyJ.CoreModels;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {

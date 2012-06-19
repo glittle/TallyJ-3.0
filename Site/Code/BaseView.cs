@@ -5,6 +5,7 @@ using TallyJ.Code.Data;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
+
 using TallyJ.EF;
 
 namespace TallyJ.Code
@@ -16,13 +17,13 @@ namespace TallyJ.Code
 
   public abstract class BaseView<TModel> : WebViewPage<TModel>
   {
-    private TallyJ2Entities _db;
+    private TallyJ2dContext _db;
     private IViewResourcesHelper _viewResourcesHelper;
 
     /// <summary>
     ///     Access to the database
     /// </summary>
-    public TallyJ2Entities DbContext
+    public TallyJ2dContext DbContext
     {
       get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
     }

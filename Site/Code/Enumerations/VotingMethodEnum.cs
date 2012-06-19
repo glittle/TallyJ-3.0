@@ -39,9 +39,10 @@ namespace TallyJ.Code.Enumerations
       }
       if (item == InPerson)
       {
-        return "Present";
+        return "";
+        //return "Present";
       }
-      return "Ballot # ";
+      return "Envelope # ";
     }
 
     public static HtmlString ForHtmlSelect(string selected = "")

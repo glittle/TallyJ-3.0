@@ -2,9 +2,10 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
-using TallyJ.EF;
+
 using TallyJ.CoreModels;
 using TallyJ.Code.Helpers;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
