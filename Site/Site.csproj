@@ -271,6 +271,7 @@
     <Compile Include="EF\Partials\Functions.cs" />
     <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\SerializableClasses.cs" />
+    <Compile Include="EF\Partials\TallyJ2Entities.cs" />
     <Compile Include="EF\Person.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
