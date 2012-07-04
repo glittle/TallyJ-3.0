@@ -224,6 +224,7 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="CoreModels\ElectionExportImportModel.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

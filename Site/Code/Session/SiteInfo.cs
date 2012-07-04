@@ -1,5 +1,7 @@
+using System;
 using System.Configuration;
 using System.Web.Hosting;
+using System.Web.Providers.Entities;
 
 namespace TallyJ.Code.Session
 {
@@ -43,7 +45,12 @@ namespace TallyJ.Code.Session
 			get { return ConfigurationManager.AppSettings["Environment"].DefaultTo(""); }
 		}
 
-		/// <summary>
+	  public string ServerName
+	  {
+      get { return Environment.MachineName; }
+	  }
+
+	  /// <summary>
 		///   Root path as defined in Global.asax
 		/// </summary>
 		public string RootPath

@@ -987,7 +987,7 @@ body.AuthKnown .CurrentElectionName
 .BetaWarningTitle
 {
     color: red;
-    padding: 2em 5em;
+    padding: 2em 2em;
     text-align: center;
     font-size: medium;
     border: double 3px red;

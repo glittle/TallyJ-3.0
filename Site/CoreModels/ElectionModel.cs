@@ -2,33 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 using NLog;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Controllers;
 using TallyJ.EF;
-
 
 namespace TallyJ.CoreModels
 {
   public class ElectionModel : DataConnectedModel
   {
-    public static class CanVoteOrReceive
-    {
-      public const string All = "A";
-      public const string NamedPeople = "N";
-    }
-
-    public static class ElectionMode
-    {
-      public const string Normal = "N";
-      public const string TieBreak = "T";
-      public const string ByElection = "B";
-    }
-
     public ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
@@ -261,10 +245,10 @@ namespace TallyJ.CoreModels
           UserSession.CurrentElection = election;
         }
 
-        if (currentMode != election.ElectionMode 
-          || currentType != election.ElectionType
-          || currentCan != election.CanVote
-          || currentReceive != election.CanReceive
+        if (currentMode != election.ElectionMode
+            || currentType != election.ElectionType
+            || currentCan != election.CanVote
+            || currentReceive != election.CanReceive
           )
         {
           // reset flags
@@ -303,7 +287,8 @@ namespace TallyJ.CoreModels
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
 
-      var firstLocation = Db.Locations.OrderBy(l => l.SortOrder).FirstOrDefault(l => l.ElectionGuid == election.ElectionGuid);
+      var firstLocation =
+        Db.Locations.OrderBy(l => l.SortOrder).FirstOrDefault(l => l.ElectionGuid == election.ElectionGuid);
       // default to top location
       if (firstLocation != null)
       {
@@ -465,7 +450,9 @@ namespace TallyJ.CoreModels
       try
       {
         var electionsWithCode = Db.Elections.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
-        return electionsWithCode.Where(e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+        return
+          electionsWithCode.Where(
+            e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
       }
       catch (Exception e)
       {
@@ -501,7 +488,7 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
       }
 
-      return new { Saved = true }.AsJsonResult();
+      return new {Saved = true}.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
@@ -516,14 +503,14 @@ namespace TallyJ.CoreModels
         election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
 
         Db.SaveChanges();
-        return new { Saved = true }.AsJsonResult();
+        return new {Saved = true}.AsJsonResult();
       }
 
-      return new { Saved = false }.AsJsonResult();
+      return new {Saved = false}.AsJsonResult();
     }
 
     /// <Summary>Do any processing for the election</Summary>
-    /// <returns>True if the status changed</returns>
+    /// <returns> True if the status changed </returns>
     public bool ProcessPulse()
     {
       var election = UserSession.CurrentElection;
@@ -547,5 +534,25 @@ namespace TallyJ.CoreModels
       return someoneElseChangedTheStatus;
     }
 
+    #region Nested type: CanVoteOrReceive
+
+    public static class CanVoteOrReceive
+    {
+      public const string All = "A";
+      public const string NamedPeople = "N";
+    }
+
+    #endregion
+
+    #region Nested type: ElectionMode
+
+    public static class ElectionMode
+    {
+      public const string Normal = "N";
+      public const string TieBreak = "T";
+      public const string ByElection = "B";
+    }
+
+    #endregion
   }
 }

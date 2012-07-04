@@ -52,5 +52,12 @@ namespace TallyJ.Controllers
       var model = new ElectionModel();
       return model.Create();
     }
+
+    [ForAuthenticatedTeller]
+    public ActionResult ExportElection(Guid guid)
+    {
+      var model = new ElectionExportImportModel(guid);
+      return model.Export();
+    }
   }
 }

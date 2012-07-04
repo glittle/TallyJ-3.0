@@ -950,13 +950,13 @@ String.prototype.filledWithEach = function (arr, sep) {
 //            if (prop === null) {
 //                toJoin.push(i + sep1);
 //            } else if (typeof prop === 'object' && prop.jquery) {
-//                toJoin.push(i + sep1 + escape(prop.val()));
+//                toJoin.push(i + sep1 + encodeURIComponent(prop.val()));
 //            } else if ($.isArray(prop)) {
-//                toJoin.push(i + sep1 + escape(prop.join()));
+//                toJoin.push(i + sep1 + encodeURIComponent(prop.join()));
 //            } else if (typeof prop === 'object') {
-//                toJoin.push(i + sep1 + JoinProperties(prop.jquery ? escape(prop.val()) : prop, sepInner1, sepInner2));
+//                toJoin.push(i + sep1 + JoinProperties(prop.jquery ? encodeURIComponent(prop.val()) : prop, sepInner1, sepInner2));
 //            } else {
-//                toJoin.push(i + sep1 + escape(prop));
+//                toJoin.push(i + sep1 + encodeURIComponent(prop));
 //            }
 //        }
 //    }
