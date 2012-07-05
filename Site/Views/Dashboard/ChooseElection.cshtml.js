@@ -8,6 +8,7 @@ var HomeIndexPage = function () {
     var preparePage = function () {
         $(document).on('click', '.btnSelectElection', null, selectElection);
         $(document).on('click', '.btnCopyElection', null, copyElection);
+        $(document).on('click', '.btnExport', null, exportElection);
         //$(document).on('click', '.btnSelectLocation', null, selectLocation);
         $(document).on('click', '#btnCreate', null, createElection);
         showElections(publicInterface.elections);
@@ -35,11 +36,11 @@ var HomeIndexPage = function () {
         }
 
         /* - old template:
-            <div class="SelectLocation">
+        <div class="SelectLocation">
         Select the location you are at...</div>
-    <div class="Locations">
+        <div class="Locations">
         {Locations}
-    </div>
+        </div>
         */
     };
 
@@ -68,44 +69,44 @@ var HomeIndexPage = function () {
 
             location.href = site.rootUrl + 'Dashboard';
 
-//            $('.Election.true').removeClass('true');
-//            row.addClass('true');
+            //            $('.Election.true').removeClass('true');
+            //            row.addClass('true');
 
-//            $('.CurrentElectionName').text(info.ElectionName);
-//            $('.CurrentLocationName').text('[No location selected]');
+            //            $('.CurrentElectionName').text(info.ElectionName);
+            //            $('.CurrentLocationName').text('[No location selected]');
 
-//            showLocations(info.Locations, row);
+            //            showLocations(info.Locations, row);
 
 
-//            site.heartbeatActive = true;
-//            ActivateHeartbeat(true);
+            //            site.heartbeatActive = true;
+            //            ActivateHeartbeat(true);
         }
 
     };
 
-//    var showLocations = function (list, row) {
-//        var host = row.find('.Locations');
-//        host.html(site.templates.LocationSelectItem.filledWithEach(list));
-//    };
+    //    var showLocations = function (list, row) {
+    //        var host = row.find('.Locations');
+    //        host.html(site.templates.LocationSelectItem.filledWithEach(list));
+    //    };
 
-//    var selectLocation = function () {
-//        var btn = $(this);
-//        var form =
-//        {
-//            id: btn.data('id')
-//        };
+    //    var selectLocation = function () {
+    //        var btn = $(this);
+    //        var form =
+    //        {
+    //            id: btn.data('id')
+    //        };
 
-//        ShowStatusDisplay('Selecting location...');
+    //        ShowStatusDisplay('Selecting location...');
 
-//        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
-//    };
+    //        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
+    //    };
 
-//    var afterSelectLocation = function (info) {
-//        if (info.Selected) {
-//            location.href = site.rootUrl + 'Dashboard';
-//            return;
-//        }
-//    };
+    //    var afterSelectLocation = function (info) {
+    //        if (info.Selected) {
+    //            location.href = site.rootUrl + 'Dashboard';
+    //            return;
+    //        }
+    //    };
 
     var createElection = function () {
         if (publicInterface.isGuest) return;
@@ -118,6 +119,23 @@ var HomeIndexPage = function () {
                 location.href = site.rootUrl + 'Setup';
                 return;
             }
+        });
+    };
+
+    var exportElection = function () {
+        if (publicInterface.isGuest) return;
+
+        var btn = $(this);
+        var guid = btn.parents('.Election').data('guid');
+
+        //var oldText = btn.text();
+
+        btn.addClass('exporting');
+        var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
+        iframe.ready(function () {
+            setTimeout(function () {
+                btn.removeClass('exporting');
+            }, 1000);
         });
     };
 

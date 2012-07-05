@@ -13,6 +13,12 @@
 {
     opacity: .5;
 }
+button.btnExport {
+    float: right;
+}
+button.exporting {
+    background-color: greenyellow;
+}
 .Locations
 {
     display: none;

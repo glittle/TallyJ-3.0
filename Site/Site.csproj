@@ -382,6 +382,7 @@
     <Compile Include="CoreModels\ElectionAnalyzerSingleName.cs" />
     <Compile Include="CoreModels\TellerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Xslt\FormatExport1.xslt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
