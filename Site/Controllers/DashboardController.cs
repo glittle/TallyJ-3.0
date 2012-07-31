@@ -1,7 +1,11 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.IO;
+using System.Web;
+using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.ExportImport;
 
 namespace TallyJ.Controllers
 {
@@ -22,6 +26,13 @@ namespace TallyJ.Controllers
     public ActionResult ChooseElection()
     {
       return View(new ElectionsListViewModel());
+    }
+
+
+    [HttpPost]
+    public JsonResult LoadV2Election(HttpPostedFileBase f)
+    {
+      return new ElectionLoader().Import(f);
     }
 
     public JsonResult ChooseLocation(int id)

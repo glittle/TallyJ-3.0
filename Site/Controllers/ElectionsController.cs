@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.ExportImport;
 
 namespace TallyJ.Controllers
 {
@@ -56,8 +57,18 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult ExportElection(Guid guid)
     {
-      var model = new ElectionExportImportModel(guid);
+      var model = new ElectionExporter(guid);
       return model.Export();
+    }
+
+    [ForAuthenticatedTeller]
+    public ActionResult DeleteElection(Guid guid)
+    {
+      return new {Message = "Testing only", Success = true}.AsJsonResult();
+      //return new {Success = true}.AsJsonResult();
+
+      //var model = new ElectionExportImportModel(guid);
+      //return model.Export();
     }
   }
 }

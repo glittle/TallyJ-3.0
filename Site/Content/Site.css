@@ -199,7 +199,7 @@ body.NormalMode .site-title span
 {
     display: block;
     color: #c8c8c8;
-    margin: 5px 0 20px 0;
+    margin: 5px 0 0 0;
     background-image: url('../Images/LogoSideM.png');
     width: 400px;
     height: 106px;
@@ -219,13 +219,17 @@ body.NormalMode .site-title span
 .NormalMode .MainTop
 {
     display: block;
+    position: relative;
+    height: 106px;
 }
 .NormalMode .Version
 {
     display: block;
     color: #ade65e;
     text-align: right;
-    margin-top: -35px;
+    top: 95px;
+    position: absolute;
+    right: 0;
 }
 
 /* login  
@@ -533,7 +537,6 @@ input[type="submit"], input[type="file"], button.Primary
     color: #4e6d22;
     cursor: pointer;
     font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
-    font-size: 1.1em;
     padding: .2em .5em .35em .5em;
 }
 input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover

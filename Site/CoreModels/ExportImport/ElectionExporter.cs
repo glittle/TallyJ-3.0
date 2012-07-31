@@ -1,23 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web.Mvc;
-using System.Xml;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
-namespace TallyJ.CoreModels
+namespace TallyJ.CoreModels.ExportImport
 {
-  public class ElectionExportImportModel : DataConnectedModel
+  public class ElectionExporter : DataConnectedModel
   {
     private readonly Guid _electionGuid;
     private Election _election;
 
-    public ElectionExportImportModel(Guid electionGuid)
+    public ElectionExporter(Guid electionGuid)
     {
       _electionGuid = electionGuid;
     }
@@ -26,6 +22,9 @@ namespace TallyJ.CoreModels
     {
       // collect all the info
       _election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
+
+      var logger = new LogHelper(_electionGuid);
+      logger.Add("Export to file started");
 
       if (_election == null) return null;
 
@@ -53,7 +52,6 @@ namespace TallyJ.CoreModels
           ByUser = UserSession.UserGuid,
           Server = site.ServerName,
           Environment = site.CurrentEnvironment,
-
           election = ExportElection(_election),
           resultSummary = ExportResultSummaries(resultSummaries),
           result = ExportResults(results),
@@ -66,7 +64,9 @@ namespace TallyJ.CoreModels
           //log = ExportLogs(logs)
         };
 
-      var exportName = string.Format("{0} {1}.TallyJ", _election.DateOfElection.GetValueOrDefault(DateTime.Today).ToString("yyyy-MM-dd"), _election.Name);
+      var exportName = string.Format("{0} {1}.TallyJ",
+                                     _election.DateOfElection.GetValueOrDefault(DateTime.Today).ToString("yyyy-MM-dd"),
+                                     _election.Name);
 
       return new Exporter(blob, "TallyJ2", exportName);
     }
@@ -116,10 +116,12 @@ namespace TallyJ.CoreModels
             p.OtherLastNames,
             p.OtherInfo,
             p.BahaiId,
+            p.CombinedInfoAtStart,
+            Changed=p.CombinedInfoAtStart!=p.CombinedInfo ? (bool?) true : null,
             p.AgeGroup,
             p.Area,
-            CanReceiveVotes = p.CanReceiveVotes.Value ? null : (bool?)false,
-            CanVote = p.CanVote.Value ? null : (bool?)false,
+            CanReceiveVotes = p.CanReceiveVotes.Value ? null : (bool?) false,
+            CanVote = p.CanVote.Value ? null : (bool?) false,
             p.IneligibleReasonGuid,
             p.VotingMethod,
             p.EnvNum,
@@ -127,7 +129,7 @@ namespace TallyJ.CoreModels
             p.VotingLocationGuid,
             p.TellerAtKeyboard,
             p.TellerAssisting,
-            ChangedAfterLoad = (p.CombinedInfoAtStart != p.CombinedInfo) ? (bool?)true : null
+            ChangedAfterLoad = (p.CombinedInfoAtStart != p.CombinedInfo) ? (bool?) true : null
           }).ToList();
     }
 
@@ -136,12 +138,14 @@ namespace TallyJ.CoreModels
       return tellers.Select(t => new
         {
           t.Name,
-          IsHeadTeller = t.IsHeadTeller.Value ? (bool?)true : null,
+          IsHeadTeller = t.IsHeadTeller.Value ? (bool?) true : null,
           t.TellerGuid,
         }).ToList();
     }
 
-    private IList ExportLocationComputerBallotVote(IQueryable<Location> locations, IQueryable<Computer> computers, IQueryable<Ballot> ballots, IQueryable<Vote> votes, IQueryable<C_Log> logs)
+    private IList ExportLocationComputerBallotVote(IQueryable<Location> locations, IQueryable<Computer> computers,
+                                                   IQueryable<Ballot> ballots, IQueryable<Vote> votes,
+                                                   IQueryable<C_Log> logs)
     {
       return locations
         .OrderBy(l => l.SortOrder)
@@ -182,8 +186,8 @@ namespace TallyJ.CoreModels
         .ToList()
         .Select(ballot => new
           {
-            BallotCode = ballot.C_BallotCode,
             ballot.StatusCode,
+            ballot.ComputerCode,
             ballot.BallotNumAtComputer,
             ballot.TellerAtKeyboard,
             ballot.TellerAssisting,
@@ -218,14 +222,14 @@ namespace TallyJ.CoreModels
             r.RankInExtra,
             r.VoteCount,
             r.PersonGuid,
-            IsTied = r.IsTied.Value == false ? null : (bool?)true,
+            IsTied = r.IsTied.Value == false ? null : (bool?) true,
             IsTieResolved = r.IsTied.Value ? r.IsTieResolved : null,
             r.TieBreakGroup,
-            TieBreakRequired = r.TieBreakRequired.Value == false ? null : (bool?)true,
+            TieBreakRequired = r.TieBreakRequired.Value == false ? null : (bool?) true,
             r.TieBreakCount,
-            ForceShowInOther = r.ForceShowInOther.Value == false ? null : (bool?)true,
-            CloseToNext = r.CloseToNext.Value == false ? null : (bool?)true,
-            CloseToPrev = r.CloseToPrev.Value == false ? null : (bool?)true
+            ForceShowInOther = r.ForceShowInOther.Value == false ? null : (bool?) true,
+            CloseToNext = r.CloseToNext.Value == false ? null : (bool?) true,
+            CloseToPrev = r.CloseToPrev.Value == false ? null : (bool?) true
           }).ToList();
     }
 
@@ -239,7 +243,7 @@ namespace TallyJ.CoreModels
             rt.NumInTie,
             rt.IsResolved,
             TieBreakRequired = rt.TieBreakRequired == false ? null : rt.TieBreakRequired,
-            NumToElect = rt.NumToElect == 0 ? null : (int?)rt.NumToElect,
+            NumToElect = rt.NumToElect == 0 ? null : (int?) rt.NumToElect,
           }).ToList();
     }
 
@@ -275,9 +279,9 @@ namespace TallyJ.CoreModels
           election.NumberExtra,
           election.Name,
           election.Convenor,
-          IsSingleNameElection = election.IsSingleNameElection == false ? null : (bool?)true,
-          ShowAsTest = election.ShowAsTest == null || election.ShowAsTest.Value == false ? null : (bool?)true,
-          ListForPublic = election.ListForPublic == null || election.ListForPublic.Value == false ? null : (bool?)true,
+          IsSingleNameElection = election.IsSingleNameElection == false ? null : (bool?) true,
+          ShowAsTest = election.ShowAsTest == null || election.ShowAsTest.Value == false ? null : (bool?) true,
+          ListForPublic = election.ListForPublic == null || election.ListForPublic.Value == false ? null : (bool?) true,
           election.ListedForPublicAsOf,
           election.ElectionPasscode,
           election.CanVote,
@@ -285,127 +289,9 @@ namespace TallyJ.CoreModels
           //election.ElectionGuid,
           election.LastEnvNum,
           election.OwnerLoginId,
-          ShowFullReport = election.ShowFullReport == null || election.ShowFullReport.Value == false ? null : (bool?)true
+          ShowFullReport =
+            election.ShowFullReport == null || election.ShowFullReport.Value == false ? null : (bool?) true
         };
-    }
-  }
-
-  public class Exporter : ActionResult
-  {
-    private readonly object _blob;
-    private readonly string _rootName;
-    private readonly string _exportName;
-    private XmlWriter _writer;
-
-    public Exporter(object blob, string rootName, string exportName)
-    {
-      _blob = blob;
-      _rootName = rootName;
-      _exportName = exportName;
-    }
-
-    public override void ExecuteResult(ControllerContext context)
-    {
-      var response = context.HttpContext.Response;
-      response.ClearContent();
-      response.ContentType = "text/xml";
-      response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xml", _exportName));
-
-      var settings = new XmlWriterSettings
-        {
-          Indent = true,
-          Encoding = Encoding.UTF8,
-          ConformanceLevel = ConformanceLevel.Document,
-          CheckCharacters = true
-        };
-      _writer = XmlWriter.Create(response.OutputStream, settings);
-      _writer.WriteStartDocument();
-
-      AddItem(_blob, _rootName);
-
-      _writer.WriteEndDocument();
-
-      _writer.Flush();
-      _writer = null;
-    }
-
-    private void AddItem(object blob, string name)
-    {
-      var started = false;
-
-      foreach (
-        var property in
-          blob.GetAllProperties().Where(property => property.Value != null && property.Value.ToString() != string.Empty)
-        )
-      {
-        if (!started)
-        {
-          _writer.WriteStartElement(name);
-          started = true;
-        }
-
-        var value = property.Value;
-        if (value is String || value is Int32 || value is DateTime || value is Guid)
-        {
-          _writer.WriteAttributeString(property.Key, value.ToString());
-        }
-        else if (value is Boolean)
-        {
-          _writer.WriteAttributeString(property.Key, (bool)value ? "true" : "false");
-        }
-        else if (value is IList)
-        {
-          foreach (var item in (IList)value)
-          {
-            AddItem(item, property.Key);
-          }
-        }
-        else
-        {
-          AddItem(value, property.Key);
-        }
-      }
-
-      if (started)
-      {
-        _writer.WriteEndElement();
-      }
-    }
-  }
-
-  public static class LocalExtensions
-  {
-    public static IList FilterNulls<T>(this IEnumerable<T> list)
-    {
-      return list.Select(FilterNullProperties).ToList();
-    }
-
-    public static object NullIfEquals(this bool? input, bool defaultValue)
-    {
-      if (input.HasValue)
-      {
-        return input.Value.NullIfEquals(defaultValue);
-      }
-      return null;
-    }
-
-    public static object NullIfEquals(this bool input, bool defaultValue)
-    {
-      if (input == defaultValue)
-      {
-        return null;
-      }
-      return input;
-    }
-
-    private static object FilterNullProperties<T>(T o)
-    {
-      var target = Activator.CreateInstance<T>();
-      foreach (var keyValuePair in o.GetAllProperties().Where(keyValuePair => keyValuePair.Value != null))
-      {
-        target.SetPropertyValue(keyValuePair.Key, keyValuePair.Value);
-      }
-      return target;
     }
   }
 }

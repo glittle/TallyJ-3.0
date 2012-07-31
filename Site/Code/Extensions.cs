@@ -491,6 +491,14 @@ namespace TallyJ.Code
       return new TimeSpan(0, input, 0);
     }
 
+    /// <Summary>Get most inner exception</Summary>
+    public static Exception LastException(this Exception input)
+    {
+      if (input == null) return null;
+      if (input.InnerException == null) return input;
+      return input.InnerException.LastException();
+    }
+
     public static string GetAllMsgs(this Exception input, string sep)
     {
       if (input == null) return "";

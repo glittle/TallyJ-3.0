@@ -25,7 +25,7 @@
         <group title="General" longtitle="General pages" showTitleInPage="false">
             <page title="Dashboard" featureWhen="OnDash" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
             <page title="Reference Materials" featureWhen="OnDash" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
-            <page title="Switch to a Different Election" featureWhen="OnDash" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="Switch to a different election"></page>
+            <page title="Manage Elections" featureWhen="OnDash, Report, NotStarted" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
             <page title="Change my Password" featureWhen="OnDash" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
             <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="true" requireElection="false" role="*" desc="Welcome page"></page>
             <page title="Logout" featureWhen="OnDash" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>

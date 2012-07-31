@@ -8,6 +8,10 @@
     color: #8dc63e;
     font-weight: bold;
 }
+.Detail i {
+    font-size: 80%;
+    font-style: normal;
+}
 .Election.true button.btnSelectElection,
 .Locations .true button
 {
@@ -16,7 +20,10 @@
 button.btnExport {
     float: right;
 }
-button.exporting {
+button.btnDelete {
+    float: right;
+}
+button.active {
     background-color: greenyellow;
 }
 .Locations
@@ -43,13 +50,18 @@ button.exporting {
     margin-top: 25px;
 }
 .TestElection {
-    color: #777;
+    color: #bbb;
 }
 .Test {
     display: none;
 }
 .TestElection .Test {
     display: inline-block;
-    color: #f33;
-    font-weight: bold;
+}
+#fileName {
+    xdisplay: none;
+}
+#file-uploader {
+    display: inline-block;
+    margin-left: 20px;
 }

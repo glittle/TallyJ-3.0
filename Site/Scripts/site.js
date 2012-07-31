@@ -503,18 +503,18 @@ function PrepareStatusDisplay() {
     //}
 }
 
-function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusReset, showAsError, showStatic) {
-    statusDisplay.minDisplayTimeBeforeStatusReset = minDisplayTimeBeforeStatusReset =
-         (typeof minDisplayTimeBeforeStatusReset === 'number') ? minDisplayTimeBeforeStatusReset : 15 * 1000;
+function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
+    statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
+         (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 15 * 1000;
 
-    if (typeof dontShowUntilAfter !== 'number') {
-        dontShowUntilAfter = 500;
+    if (typeof delayBeforeShowing !== 'number') {
+        delayBeforeShowing = 500;
     }
 
-    if (dontShowUntilAfter > 0) {
+    if (delayBeforeShowing > 0) {
         statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function () {
-            ShowStatusDisplay(msg, 0, minDisplayTimeBeforeStatusReset, showAsError);
-        }, dontShowUntilAfter);
+            ShowStatusDisplay(msg, 0, timeBeforeStatusReset, showErrorIcon);
+        }, delayBeforeShowing);
         return;
     }
     var target = $('#statusDisplay2, #statusDisplay');
@@ -522,10 +522,10 @@ function ShowStatusDisplay(msg, dontShowUntilAfter, minDisplayTimeBeforeStatusRe
         // ??? on a page without a Status display
     }
     var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
-    var imageHtml = showAsError ? '<span class="ui-icon ui-icon-alert"></span>' :
-                        showStatic ? '' : loaderPath;
+    var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' :
+                        showNoIcon ? '' : loaderPath;
     target.html(imageHtml + msg).show();
-    if (showAsError) {
+    if (showErrorIcon) {
         target.addClass('error');
     } else {
         target.removeClass('error');

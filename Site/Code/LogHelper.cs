@@ -13,11 +13,22 @@ namespace TallyJ.Code
 
   public class LogHelper : ILogHelper
   {
+    private readonly Guid _electionGuid;
+
+    public LogHelper(Guid electionGuid)
+    {
+      _electionGuid = electionGuid;
+    }
+
+    public LogHelper() : this(UserSession.CurrentElectionGuid)
+    {
+    }
+
     public void Add(string message)
     {
       AddToLog(new C_Log
                  {
-                   ElectionGuid = UserSession.CurrentElectionGuid,
+                   ElectionGuid = _electionGuid,
                    ComputerCode = UserSession.CurrentComputerCode,
                    LocationGuid = UserSession.CurrentLocationGuid,
                    Details = message

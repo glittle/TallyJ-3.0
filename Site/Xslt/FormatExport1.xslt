@@ -7,7 +7,6 @@
                 <title>Exported Election</title>
             </head>
             <body>
-
                 <h1>
                     <xsl:value-of select="election/@Name"/>
                 </h1>
@@ -40,7 +39,7 @@
                 <xsl:value-of select="@VoteCount"/>
                 <xsl:choose>
                     <xsl:when test="@TieBreakCount != 0">
-                        <xsl:text> / </xsl:text>
+                        <xsl:text>, </xsl:text>
                         <xsl:value-of select="@TieBreakCount"/>
                     </xsl:when>
                 </xsl:choose>

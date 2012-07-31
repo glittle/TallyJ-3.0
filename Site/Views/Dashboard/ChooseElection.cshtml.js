@@ -1,22 +1,140 @@
 ﻿/// <reference path="../../Scripts/site.js" />
 /// <reference path="../../Scripts/jquery-1.7.1.js" />
+/// <reference path="../../Scripts/fileuploader.js" />
 
 var HomeIndexPage = function () {
-    var localSettings = {
+    var local = {
+        uploader: null
     };
 
     var preparePage = function () {
         $(document).on('click', '.btnSelectElection', null, selectElection);
-        $(document).on('click', '.btnCopyElection', null, copyElection);
-        $(document).on('click', '.btnExport', null, exportElection);
-        //$(document).on('click', '.btnSelectLocation', null, selectLocation);
-        $(document).on('click', '#btnCreate', null, createElection);
+
         showElections(publicInterface.elections);
 
-        if (publicInterface.isGuest) {
-            $('#btnCreate').prop('disabled', true);
+        if (!publicInterface.isGuest) {
+            $(document).on('click', '.btnCopyElection', null, copyElection);
+            $(document).on('click', '.btnExport', null, exportElection);
+            $(document).on('click', '.btnDelete', null, deleteElection);
+            $(document).on('click', '#btnLoad', null, loadElection);
+            $(document).on('click', '#file-uploader', null, loadElection2);
+            $(document).on('click', '#btnCreate', null, createElection);
+
+            $(document).on('click', '#btnUpload2', null, upload2);
+
+            //            $('#loadFile2').iframePostForm({
+            //                iframeID: 'glen1',
+            //                json: true,
+            //                post: function() {
+            //                    LogMessage('in post');
+            //                },
+            //                complete: function(response) {
+            //                    LogMessage('in complete');
+            //                    LogMessage(response);
+            //                    debugger;
+            //                }
+            //            });
+
+            //            local.uploader = new qq.FileUploader({
+            //                element: $('#file-uploader')[0],
+            //                action: publicInterface.controllerUrl + '/LoadElection',
+            //                allowedExtensions: ['xml'],
+            //                template: '<div class="qq-uploader">' +
+            //                    '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
+            //                    '<button type=button class="qq-upload-button" title="Load an election from a previously saved file">Load from a File</button>' +
+            //                    '<ul class="qq-upload-list"></ul>' +
+            //                    '</div>',
+            //                fileTemplate: '<li style="display:none">' +
+            //                    '<span class="qq-upload-file"></span>' +
+            //                    '<span class="qq-upload-spinner"></span>' +
+            //                    '<span class="qq-upload-size"></span>' +
+            //                    '<a class="qq-upload-cancel" href="#">Cancel</a>' +
+            //                    '<span class="qq-upload-failed-text">Failed</span>' +
+            //                    '</li>',
+            //                onSubmit: function(id, fileName) {
+            //                    ShowStatusDisplay('Loading...', 0);
+            //                },
+            //                onProgress: function(id, fileName, loaded, total) {
+            //                    return false;
+            //                },
+            //                onComplete: function(id, fileName, info) {
+            //                    ResetStatusDisplay();
+            //                    if (info.success) {
+            //                        getUploadsList();
+            //                        if (info.rowId) {
+            //                        }
+            //                    } else {
+            //                        if (info && info.messages) {
+            //                            ShowStatusFailed(info.messages);
+            //                        } else {
+            //                            ShowStatusFailed('unknown error<select onfocus="this.blur();">');
+            //                        }
+            //                    }
+            //                },
+            //                onCancel: function(id, fileName) {
+            //                    ResetStatusDisplay();
+            //                },
+            //                showMessage: function(message) { ShowStatusFailed(message); }
+            //            });
+
+
+        } else {
+            $('.btnExport, .btnDelete, #btnLoad, #btnCreate').hide();
         }
 
+
+    };
+
+    var upload2 = function () {
+
+        var $input = $('#f');
+        if ($input.val() == '') {
+            return;
+        }
+
+        ShowStatusDisplay("Uploading election...", 0);
+
+        var form = $('#form2');
+        var frameId = 'uploadFrame2';
+        if (!$('#' + frameId).length) {
+            $('body').append('<iframe id=' + frameId + ' name=' + frameId + ' style="display:none" />');
+        }
+        form.attr({
+            target: frameId,
+            action: publicInterface.loadElectionUrl,
+            enctype: 'multipart/form-data',
+            method: 'post'
+        });
+
+        var frameObject = $('#' + frameId).load(function () {
+            frameObject.unbind('load');
+
+            var response = frameObject.contents().text();
+            var info;
+            try {
+                info = $.parseJSON(response);
+            } catch (e) {
+                info = { Success: false, Message: "Unexpected server message" };
+            }
+
+            if (info.Success) {
+                $input.val(''); // blank out file name
+
+                var form2 =
+                    {
+                        guid: info.ElectionGuid
+                    };
+
+                ShowStatusDisplay("Selecting election...", 0);
+
+                CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form2, afterSelectElection);
+            }
+            else {
+                ShowStatusFailed(info.Message);
+            }
+        });
+
+        form.submit();
     };
 
     var showElections = function (info) {
@@ -50,16 +168,16 @@ var HomeIndexPage = function () {
         var btn = $(this);
         var row = btn.parents('.Election');
         var form =
-        {
-            guid: row.data('guid')
-        };
+            {
+                guid: row.data('guid')
+            };
 
         ShowStatusDisplay("Selecting election...");
 
-        CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection, row);
+        CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
     };
 
-    var afterSelectElection = function (info, row) {
+    var afterSelectElection = function (info) {
         if (info.Pulse) {
             ProcessPulseResult(info.Pulse);
         }
@@ -81,7 +199,9 @@ var HomeIndexPage = function () {
             //            site.heartbeatActive = true;
             //            ActivateHeartbeat(true);
         }
-
+        else {
+            ShowStatusFailed("Unable to select");
+        }
     };
 
     //    var showLocations = function (list, row) {
@@ -130,13 +250,49 @@ var HomeIndexPage = function () {
 
         //var oldText = btn.text();
 
-        btn.addClass('exporting');
+        btn.addClass('active');
         var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
         iframe.ready(function () {
             setTimeout(function () {
-                btn.removeClass('exporting');
+                btn.removeClass('active');
             }, 1000);
         });
+    };
+
+    var deleteElection = function () {
+        if (publicInterface.isGuest) return;
+
+        if (!confirm('Completely delete this election?')) {
+            return;
+        }
+
+        var btn = $(this);
+        var row = btn.parents('.Election');
+        var form =
+            {
+                guid: row.data('guid')
+            };
+
+        btn.addClass('active');
+        CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
+            btn.removeClass('active');
+            if (info.Success) {
+                ShowStatusDisplay(info.Message, 0, 3000, false, true);
+                row.slideUp();
+                row.remove();
+            } else {
+                ShowStatusFailed(info.Message);
+            }
+        });
+    };
+
+    var loadElection = function () {
+        $('#fileName').show();
+    };
+
+    var loadElection2 = function () {
+        var name = $('#fileName').val();
+        LogMessage(name);
     };
 
     var copyElection = function () {
@@ -144,9 +300,9 @@ var HomeIndexPage = function () {
 
         var btn = $(this);
         var form =
-        {
-            guid: btn.parents('.Election').data('guid')
-        };
+            {
+                guid: btn.parents('.Election').data('guid')
+            };
 
         if (!confirm('Are you sure you want to make a new election based on this one?')) {
             return;
@@ -169,6 +325,7 @@ var HomeIndexPage = function () {
         elections: [],
         isGuest: false,
         electionsUrl: '',
+        loadElectionUrl: '',
         PreparePage: preparePage
     };
 
@@ -177,6 +334,82 @@ var HomeIndexPage = function () {
 
 var chooseElectionPage = HomeIndexPage();
 
-$(function () {
+$(function() {
     chooseElectionPage.PreparePage();
 });
+
+
+///**
+//* jQuery plugin for posting form including file inputs.
+//* 
+//* Copyright (c) 2010 - 2011 Ewen Elder
+//*
+//* Licensed under the MIT and GPL licenses:
+//* http://www.opensource.org/licenses/mit-license.php
+//* http://www.gnu.org/licenses/gpl.html
+//*
+//* @author: Ewen Elder <ewen at jainaewen dot com> <glomainn at yahoo dot co dot uk>
+//* @version: 1.1.1 (2011-07-29)
+//**/
+//(function($) {
+//    $.fn.iframePostForm = function(options) {
+//        var response,
+//            returnReponse,
+//            element,
+//            status = true,
+//            iframe;
+
+//        options = $.extend({ }, $.fn.iframePostForm.defaults, options);
+
+//        // Add the iframe.
+//        if (!$('#' + options.iframeID).length) {
+//            $('body').append('<iframe id="' + options.iframeID + '" name="' + options.iframeID + '" style="display:none" />');
+//        }
+
+//        return $(this).each(function() {
+//            element = $(this);
+
+//            // Target the iframe.
+//            element.attr('target', options.iframeID);
+
+//            // Submit listener.
+//            element.submit(function() {
+//                // If status is false then abort.
+//                status = options.post.apply(this);
+
+//                if (status === false) {
+//                    return status;
+//                }
+
+//                iframe = $('#' + options.iframeID).load(function() {
+//                    response = iframe.contents().find('body');
+
+//                    if (options.json) {
+//                        returnReponse = $.parseJSON(response.html());
+//                    } else {
+//                        returnReponse = response.html();
+//                    }
+
+//                    options.complete.apply(this, [returnReponse]);
+
+//                    iframe.unbind('load');
+
+//                    setTimeout(function() {
+//                        response.html('');
+//                    }, 1);
+//                });
+//                return status;
+//            });
+//        });
+//    };
+
+//    $.fn.iframePostForm.defaults =
+//        {
+//            iframeID: 'iframe-post-form',       // Iframe ID.
+//            json: false,                        // Parse server response as a json object.
+//            post: function() {
+//            },               // Form onsubmit.
+//            complete: function(response) {
+//            }    // After response from the server has been received.
+//        };
+//})(jQuery);

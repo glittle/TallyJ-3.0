@@ -5,24 +5,33 @@
     ViewBag.Title = "Choose an Election";
     ViewBag.Message = "Select or create an election";
 
-    ContextItems.AddJavascriptForPage("url", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("url1", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("url2", "chooseElectionPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
     var electionsInfo = Model.MyElectionsInfo.ToList();
     ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
     ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
+@*<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>*@
 <hgroup class="title">
-  <h1>@ViewBag.Title.</h1>
-  <h2>@ViewBag.Message</h2>
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
 </hgroup>
 @if (electionsInfo.Count() > 0)
 {
-    <h3>Your Elections</h3>
+    <h3>
+        Your Elections</h3>
 }<div id="ElectionList">
 </div>
 @if (UserSession.IsKnownTeller)
 {
-  <div class="Election MakeNew">
-    <button type="button" id="btnCreate">
-      Create a New Election</button></div>
+    <div class="Election MakeNew">
+        <button type="button" id="btnCreate">Create a New Election</button>
+      <div id="file-uploader"></div>
+      
+      <form id="form2">
+        <input name="f" type="file" />
+        <button type="button" id="btnUpload2">Load Now</button>
+      </form>
+    </div>
 }

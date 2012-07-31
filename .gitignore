@@ -1,4 +1,4 @@
-_ReSharper.Site/
+_ReSharper*
 Site.csproj.dotsettings.user
 Site/bin/*/*
 Site/bin/*
@@ -16,3 +16,21 @@ Tests/obj/*
 /DatabaseScripts/obj
 /DatabaseScripts/sql
 *.suo
+
+bin
+Bin
+obj
+App_Data
+TestResults
+*.patch
+*.sln.cache
+*.orig
+*.suo
+*.log
+*.exe
+*.dll
+*.resources
+packages
+EntityFramework.xml
+EntityFramework.SqlServer.xml
+EntityFramework.SqlServerCompact.xml

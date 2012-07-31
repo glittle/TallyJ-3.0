@@ -121,6 +121,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -224,7 +225,10 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
-    <Compile Include="CoreModels\ElectionExportImportModel.cs" />
+    <Compile Include="CoreModels\ExportImport\Exporter.cs" />
+    <Compile Include="CoreModels\ExportImport\ElectionLoader.cs" />
+    <Compile Include="CoreModels\ExportImport\ElectionExporter.cs" />
+    <Compile Include="CoreModels\ExportImport\LocalExtensions.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -318,10 +322,10 @@
     <Compile Include="CoreModels\BallotAnalyzer.cs" />
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
-    <Compile Include="CoreModels\ImportV1Base.cs" />
-    <Compile Include="CoreModels\ImportV1Community.cs" />
-    <Compile Include="CoreModels\ImportV1Election.cs" />
-    <Compile Include="CoreModels\ImportV1Model.cs" />
+    <Compile Include="CoreModels\ImportV1\ImportV1Base.cs" />
+    <Compile Include="CoreModels\ImportV1\ImportV1Community.cs" />
+    <Compile Include="CoreModels\ImportV1\ImportV1Election.cs" />
+    <Compile Include="CoreModels\ImportV1\ImportV1Model.cs" />
     <Compile Include="CoreModels\PulseInfo.cs" />
     <Compile Include="CoreModels\ResultHelper.cs" />
     <Compile Include="CoreModels\RollCallModel.cs" />
@@ -539,7 +543,9 @@
     <Content Include="Views\Dashboard\ChooseElection.cshtml.js">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\menu.xml" />
+    <Content Include="Views\menu.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Public\About.cshtml.css">
       <DependentUpon>About.cshtml</DependentUpon>
     </Content>
@@ -685,6 +691,9 @@
     <Content Include="Views\Setup\ImportV1.cshtml" />
     <Content Include="Views\Shared\Version.cshtml" />
     <Content Include="Views\Setup\EditPerson.cshtml" />
+    <None Include="Xsd\TallyJv2-Export.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
