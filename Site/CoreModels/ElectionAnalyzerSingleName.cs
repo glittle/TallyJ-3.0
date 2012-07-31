@@ -20,6 +20,10 @@ namespace TallyJ.CoreModels
     {
     }
 
+    public ElectionAnalyzerSingleName(Election election) : base(election)
+    {
+    }
+
     //public ElectionAnalyzerSingleName(Election election, ResultSummary resultSummary, List<Result> results,
     //                                  List<vVoteInfo> voteinfos, List<Ballot> ballots, Func<Result, Result> deleteResult,
     //                                  Func<Result, Result> addResult
@@ -66,7 +70,7 @@ namespace TallyJ.CoreModels
         {
           result = new Result
                      {
-                       ElectionGuid = CurrentElection.ElectionGuid,
+                       ElectionGuid = TargetElection.ElectionGuid,
                        PersonGuid = voteInfo.PersonGuid.AsGuid()
                      };
           ResetValues(result);

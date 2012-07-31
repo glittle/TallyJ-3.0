@@ -22,6 +22,10 @@ namespace TallyJ.CoreModels
       //_locationInfos = locationInfos;
     }
 
+    public ElectionAnalyzerNormal(Election election) : base(election)
+    {
+    }
+
     //private List<vLocationInfo> _locationInfos;
     ///// <Summary>Current location records</Summary>
     //public List<vLocationInfo> LocationInfos
@@ -41,7 +45,7 @@ namespace TallyJ.CoreModels
       summary.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
 
       summary.BallotsReceived = Ballots.Count;
-      summary.TotalVotes = summary.BallotsReceived * CurrentElection.NumberToElect;
+      summary.TotalVotes = summary.BallotsReceived * TargetElection.NumberToElect;
 
       var invalidBallotGuids = Ballots.Where(b => b.StatusCode != "Ok").Select(b => b.BallotGuid).ToList();
 
@@ -64,7 +68,7 @@ namespace TallyJ.CoreModels
           {
             result = new Result
                        {
-                         ElectionGuid = CurrentElection.ElectionGuid,
+                         ElectionGuid = TargetElection.ElectionGuid,
                          PersonGuid = voteInfo.PersonGuid.AsGuid()
                        };
             ResetValues(result);

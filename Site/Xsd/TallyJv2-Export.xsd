@@ -122,6 +122,7 @@
                         <xs:attribute name="OtherLastNames" type="xs:string" use="optional" />
                         <xs:attribute name="CanReceiveVotes" type="xs:boolean" use="optional" />
                         <xs:attribute name="IneligibleReasonGuid" type="xs:string" use="optional" />
+                        <xs:attribute name="CombinedInfoAtStart" type="xs:string" use="optional" />
                         <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
                         <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
                         <xs:attribute name="BahaiId" type="xs:string" use="optional" />

@@ -59,9 +59,14 @@ namespace TallyJ.CoreModels
       _addResultTie = fakes.AddResultTie;
     }
 
+    protected ElectionAnalyzerCore(Election election)
+    {
+      _election = election;
+    }
+
     protected BallotAnalyzer BallotAnalyzer
     {
-      get { return _ballotAnalyzer ?? (_ballotAnalyzer = new BallotAnalyzer(CurrentElection, SaveChanges)); }
+      get { return _ballotAnalyzer ?? (_ballotAnalyzer = new BallotAnalyzer(TargetElection, SaveChanges)); }
     }
 
     /// <Summary>Remove this result from the datastore</Summary>
@@ -100,7 +105,7 @@ namespace TallyJ.CoreModels
       get
       {
         return _people ?? (_people = Db.People
-                                       .Where(p => p.ElectionGuid == CurrentElection.ElectionGuid)
+                                       .Where(p => p.ElectionGuid == TargetElection.ElectionGuid)
                                        .ToList());
       }
     }
@@ -111,12 +116,12 @@ namespace TallyJ.CoreModels
       get
       {
         return _resultTies ?? (_resultTies = Db.ResultTies
-                                               .Where(p => p.ElectionGuid == CurrentElection.ElectionGuid)
+                                               .Where(p => p.ElectionGuid == TargetElection.ElectionGuid)
                                                .ToList());
       }
     }
 
-    internal Election CurrentElection
+    internal Election TargetElection
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
     }
@@ -128,7 +133,7 @@ namespace TallyJ.CoreModels
         return _ballots ?? (_ballots = Db.Ballots
                                          .Where(
                                            b =>
-                                           Db.Locations.Where(l => l.ElectionGuid == CurrentElection.ElectionGuid).
+                                           Db.Locations.Where(l => l.ElectionGuid == TargetElection.ElectionGuid).
                                              Select(l => l.LocationGuid).Contains(b.LocationGuid))
                                          .ToList());
       }
@@ -142,7 +147,7 @@ namespace TallyJ.CoreModels
       get
       {
         return _results ?? (_results = Db.Results
-                                         .Where(r => r.ElectionGuid == CurrentElection.ElectionGuid)
+                                         .Where(r => r.ElectionGuid == TargetElection.ElectionGuid)
                                          .ToList());
       }
     }
@@ -157,13 +162,13 @@ namespace TallyJ.CoreModels
           return _resultSummary;
         }
 
-        _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == CurrentElection.ElectionGuid);
+        _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == TargetElection.ElectionGuid);
 
         if (_resultSummary == null)
         {
           _resultSummary = new ResultSummary
                              {
-                               ElectionGuid = CurrentElection.ElectionGuid,
+                               ElectionGuid = TargetElection.ElectionGuid,
                                ResultType = ResultType.Automatic
                              };
           Db.ResultSummaries.Add(_resultSummary);
@@ -179,7 +184,7 @@ namespace TallyJ.CoreModels
       get
       {
         return _voteinfos ?? (_voteinfos = Db.vVoteInfoes
-                                             .Where(vi => vi.ElectionGuid == CurrentElection.ElectionGuid)
+                                             .Where(vi => vi.ElectionGuid == TargetElection.ElectionGuid)
                                              .OrderBy(vi => vi.BallotGuid)
                                              .ToList());
       }
@@ -195,7 +200,7 @@ namespace TallyJ.CoreModels
           return true;
         }
 
-        _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == CurrentElection.ElectionGuid);
+        _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == TargetElection.ElectionGuid);
 
         return _resultSummary != null;
       }
@@ -241,7 +246,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Assign an ordinal rank number to all results. Ties are NOT reflected in rank number. If there is a tie, they are sorted "randomly".</Summary>
     internal void DetermineOrderAndSections()
     {
-      var election = CurrentElection;
+      var election = TargetElection;
 
       var ordinalRank = 0;
       var ordinalRankInExtra = 0;
@@ -318,7 +323,7 @@ namespace TallyJ.CoreModels
 
         var resultTie = new ResultTie
                           {
-                            ElectionGuid = CurrentElection.ElectionGuid,
+                            ElectionGuid = TargetElection.ElectionGuid,
                             TieBreakGroup = code
                           };
 
