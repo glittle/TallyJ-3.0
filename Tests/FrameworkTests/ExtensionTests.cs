@@ -184,6 +184,47 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
+    public void AsNullableTrueOrNull_Test()
+    {
+      bool? item = null;
+      bool? trueValue = true;
+
+      item.OnlyIfTrue().ShouldEqual(null);
+
+
+      item = false;
+      var item2 = false;
+      item.OnlyIfTrue().ShouldEqual(null);
+      item2.OnlyIfTrue().ShouldEqual(null);
+
+      item = true;
+      item2 = true;
+      item.OnlyIfTrue().ShouldEqual(trueValue);
+      item2.OnlyIfTrue().ShouldEqual(trueValue);
+    }
+
+    [TestMethod]
+    public void AsNullableFalseOrNull_Test()
+    {
+      bool? item = null;
+      bool? falseValue = false;
+
+      item.OnlyIfFalse().ShouldEqual(falseValue);
+
+      item = false;
+      var item2 = false;
+      item.OnlyIfFalse().ShouldEqual(falseValue);
+      item2.OnlyIfFalse().ShouldEqual(falseValue);
+
+      item = true;
+      item2 = true;
+      item.OnlyIfFalse().ShouldEqual(null);
+      item2.OnlyIfFalse().ShouldEqual(null);
+
+    }
+
+
+    [TestMethod]
     public void AsGuid_Test()
     {
       var newGuid = Guid.NewGuid();

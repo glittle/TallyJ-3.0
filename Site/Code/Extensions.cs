@@ -8,16 +8,14 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-
 using TallyJ.EF;
 
 namespace TallyJ.Code
 {
   public static class Extensions
   {
-
     /// <summary>
-    ///   Not IsNullOrEmpty
+    ///     Not IsNullOrEmpty
     /// </summary>
     public static bool HasContent(this string input)
     {
@@ -25,30 +23,30 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Return true if the input is empty or null.
+    ///     Return true if the input is empty or null.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <param name="input"> </param>
+    /// <returns> </returns>
     public static bool HasNoContent(this string input)
     {
       return string.IsNullOrEmpty(input);
     }
 
     /// <summary>
-    /// Format for display in an MVC page.
+    ///     Format for display in an MVC page.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <param name="input"> </param>
+    /// <returns> </returns>
     public static HtmlString AsRawHtml(this string input)
     {
       return new HtmlString(input);
     }
 
     /// <summary>
-    /// Format for display in an MVC page.
+    ///     Format for display in an MVC page.
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <param name="input"> </param>
+    /// <returns> </returns>
     public static MvcHtmlString AsRawMvcHtml(this string input)
     {
       return new MvcHtmlString(input);
@@ -56,17 +54,18 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///   Split using a single separator
+    ///     Split using a single separator
     /// </summary>
-    public static string[] SplitWithString(this string input, string separator, StringSplitOptions stringSplitOptions = StringSplitOptions.RemoveEmptyEntries)
+    public static string[] SplitWithString(this string input, string separator,
+                                           StringSplitOptions stringSplitOptions = StringSplitOptions.RemoveEmptyEntries)
     {
       return input == null
                ? null
-               : input.Split(new[] { separator }, stringSplitOptions);
+               : input.Split(new[] {separator}, stringSplitOptions);
     }
 
     /// <summary>
-    ///   Use the input string as the format with string.Format
+    ///     Use the input string as the format with string.Format
     /// </summary>
     public static string FilledWithList<T>(this string input, IEnumerable<T> values)
     {
@@ -80,12 +79,12 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Fill template with named items
+    ///     Fill template with named items
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="input"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <typeparam name="T"> </typeparam>
+    /// <param name="input"> </param>
+    /// <param name="value"> </param>
+    /// <returns> </returns>
     public static string FilledWithObject<T>(this string input, T value)
     {
       if (value == null)
@@ -118,9 +117,42 @@ namespace TallyJ.Code
       return new TemplateHelper(input).FillByArray(values);
     }
 
+    /// <Summary>Returns true if this bool? is true</Summary>
     public static bool AsBoolean(this bool? input)
     {
       return input.HasValue && input.Value;
+    }
+
+    /// <Summary>Returns a true bool?, or null if false</Summary>
+    /// <param name="input">Input value</param>
+    /// <remarks>Used mainly for exporting to xml documents</remarks>
+    public static bool? OnlyIfTrue(this bool? input)
+    {
+      return input.HasValue && input.Value ? (bool?) true : null;
+    }
+
+    /// <Summary>Returns a false bool? if the input is false, or null if it is true</Summary>
+    /// <param name="input">Input value</param>
+    /// <remarks>Used mainly for exporting to xml documents</remarks>
+    public static bool? OnlyIfFalse(this bool? input)
+    {
+      return input.HasValue && input.Value ? null : (bool?) false;
+    }
+
+    /// <Summary>Returns a true bool?, or null if false</Summary>
+    /// <param name="input">Input value</param>
+    /// <remarks>Used mainly for exporting to xml documents</remarks>
+    public static bool? OnlyIfTrue(this bool input)
+    {
+      return input ? (bool?) true : null;
+    }
+
+    /// <Summary>Returns a false bool? if the input is false, or null if it is true</Summary>
+    /// <param name="input">Input value</param>
+    /// <remarks>Used mainly for exporting to xml documents</remarks>
+    public static bool? OnlyIfFalse(this bool input)
+    {
+      return input ? null : (bool?) false;
     }
 
     public static bool AsBoolean(this string input)
@@ -150,7 +182,7 @@ namespace TallyJ.Code
     public static Guid AsGuid(this string input)
     {
       Guid guid;
-      if(Guid.TryParse(input, out guid))
+      if (Guid.TryParse(input, out guid))
       {
         return guid;
       }
@@ -205,7 +237,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (int)Math.Truncate(Convert.ToDouble(input));
+        return (int) Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -223,7 +255,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (long)Math.Truncate(Convert.ToDouble(input));
+        return (long) Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -233,7 +265,7 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///   Use the input string as the format with string.Format
+    ///     Use the input string as the format with string.Format
     /// </summary>
     public static string FilledWith(this string input, params object[] values)
     {
@@ -257,10 +289,13 @@ namespace TallyJ.Code
       return string.Format(input, values);
     }
 
-    /// <summary>Return the URL to the content file, with a version number based on the timestamp.</summary>
-    public static string AsClientFileWithVersion(this string contentFilePath, string productionNameModifier = "", string debuggingNameModifier = "")
+    /// <summary>
+    ///     Return the URL to the content file, with a version number based on the timestamp.
+    /// </summary>
+    public static string AsClientFileWithVersion(this string contentFilePath, string productionNameModifier = "",
+                                                 string debuggingNameModifier = "")
     {
-      bool UseDebugFiles = true; //TODO: move to config
+      var UseDebugFiles = true; //TODO: move to config
 
       if (productionNameModifier.HasContent() || debuggingNameModifier.HasContent())
       {
@@ -275,15 +310,17 @@ namespace TallyJ.Code
       }
 
       var version = fileInfo.LastWriteTime.Ticks.ToString();
-      var trimmed = version.TrimEnd(new[] { '0' });
+      var trimmed = version.TrimEnd(new[] {'0'});
       const int sizeToUse = 5;
 
-      var shortVersion = trimmed.Length <= sizeToUse ? trimmed : trimmed.Substring(trimmed.Length - sizeToUse, sizeToUse);
+      var shortVersion = trimmed.Length <= sizeToUse
+                           ? trimmed
+                           : trimmed.Substring(trimmed.Length - sizeToUse, sizeToUse);
       return VirtualPathUtility.ToAbsolute(contentFilePath) + "?v=" + shortVersion;
     }
 
     /// <summary>
-    ///   For an enumeration of strings, join them.
+    ///     For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list)
     {
@@ -291,7 +328,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   For an enumeration of strings, join them.
+    ///     For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator)
     {
@@ -299,7 +336,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   For an enumeration of strings, join them.
+    ///     For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator, bool skipBlanks)
     {
@@ -307,15 +344,17 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   For an enumeration of strings, join them. Each item has itemLeft and itemRight added.
+    ///     For an enumeration of strings, join them. Each item has itemLeft and itemRight added.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator, string itemLeft,
-                      string itemRight, bool skipBlanks)
+                                        string itemRight, bool skipBlanks)
     {
       List<string> list2 = null;
       return list == null || (list2 = list.ToList()).Count() == 0
-           ? string.Empty
-           : string.Join(separator, list2.Where(s => !skipBlanks || s.HasContent()).Select(s => itemLeft + s + itemRight).ToArray());
+               ? string.Empty
+               : string.Join(separator,
+                             list2.Where(s => !skipBlanks || s.HasContent()).Select(s => itemLeft + s + itemRight).
+                               ToArray());
     }
 
     public static string SurroundWith(this string input, string bothSides)
@@ -329,7 +368,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   Surround with left and right strings. If the input has no content, an empty string is returned.
+    ///     Surround with left and right strings. If the input has no content, an empty string is returned.
     /// </summary>
     public static string SurroundContentWith(this string input, string left, string right)
     {
@@ -340,7 +379,9 @@ namespace TallyJ.Code
     }
 
 
-    /// <summary>Add new item to the end of the enumeration</summary>
+    /// <summary>
+    ///     Add new item to the end of the enumeration
+    /// </summary>
     public static IEnumerable<T> AddTo<T>(this IEnumerable<T> input, List<T> addToThis)
     {
       var list = input.ToList();
@@ -349,36 +390,37 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Get a named object from Session.
+    ///     Get a named object from Session.
     /// </summary>
-    /// <typeparam name="T">The type of the stored object</typeparam>
-    /// <param name="input">Name in Session</param>
-    /// <param name="defaultValue">Default value to use if nothing found</param>
-    /// <returns></returns>
+    /// <typeparam name="T"> The type of the stored object </typeparam>
+    /// <param name="input"> Name in Session </param>
+    /// <param name="defaultValue"> Default value to use if nothing found </param>
+    /// <returns> </returns>
     public static T FromSession<T>(this string input, T defaultValue)
     {
       var value = HttpContext.Current.Session[input];
-      if (value == null || value.GetType() != typeof(T))
+      if (value == null || value.GetType() != typeof (T))
       {
         return defaultValue;
       }
-      return (T)value;
+      return (T) value;
     }
-/// <summary>
-    /// Get a named object from Page Items.
+
+    /// <summary>
+    ///     Get a named object from Page Items.
     /// </summary>
-    /// <typeparam name="T">The type of the stored object</typeparam>
-    /// <param name="input">Name in list</param>
-    /// <param name="defaultValue">Default value to use if nothing found</param>
-    /// <returns></returns>
+    /// <typeparam name="T"> The type of the stored object </typeparam>
+    /// <param name="input"> Name in list </param>
+    /// <param name="defaultValue"> Default value to use if nothing found </param>
+    /// <returns> </returns>
     public static T FromPageItems<T>(this string input, T defaultValue)
     {
       var value = HttpContext.Current.Items[input];
-      if (value == null || value.GetType() != typeof(T))
+      if (value == null || value.GetType() != typeof (T))
       {
         return defaultValue;
       }
-      return (T)value;
+      return (T) value;
     }
 
     public static T SetInSession<T>(this string input, T newValue)
@@ -386,6 +428,7 @@ namespace TallyJ.Code
       HttpContext.Current.Session[input] = newValue;
       return newValue;
     }
+
     public static T SetInPageItems<T>(this string input, T newValue)
     {
       HttpContext.Current.Items[input] = newValue;
@@ -394,7 +437,7 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///   If input is empty, use <paramref name = "defaultValue" />
+    ///     If input is empty, use <paramref name="defaultValue" />
     /// </summary>
     public static string DefaultTo(this object input, object defaultValue)
     {
@@ -404,7 +447,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   If input is empty, use <paramref name = "defaultValue" />
+    ///     If input is empty, use <paramref name="defaultValue" />
     /// </summary>
     public static string DefaultTo(this string input, string defaultValue)
     {
@@ -412,7 +455,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   If input is 0, use <paramref name = "defaultValue" />
+    ///     If input is 0, use <paramref name="defaultValue" />
     /// </summary>
     public static int DefaultTo(this int input, int defaultValue)
     {
@@ -420,7 +463,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   If input is 0, use <paramref name = "defaultValue" />
+    ///     If input is 0, use <paramref name="defaultValue" />
     /// </summary>
     public static int DefaultTo(this int? input, int defaultValue)
     {
@@ -431,8 +474,8 @@ namespace TallyJ.Code
     public static string QuotedForJavascript(this string input)
     {
       return String.Format("\"{0}\"", input
-                        .CleanedForJavascriptStrings()
-                        .Replace("\"", "\\\"")
+                                        .CleanedForJavascriptStrings()
+                                        .Replace("\"", "\\\"")
         );
     }
 
@@ -455,10 +498,10 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    /// Converts this object to a JSON string
+    ///     Converts this object to a JSON string
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <param name="input"> </param>
+    /// <returns> </returns>
     public static string SerializedAsJsonString(this object input)
     {
       return new JavaScriptSerializer().Serialize(input);
@@ -466,19 +509,19 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    /// Wrap object for returning to client as a JsonResult
+    ///     Wrap object for returning to client as a JsonResult
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="behavior">Behavior to use, usually only POST is allowed.</param>
-    /// <returns></returns>
+    /// <param name="input"> </param>
+    /// <param name="behavior"> Behavior to use, usually only POST is allowed. </param>
+    /// <returns> </returns>
     public static JsonResult AsJsonResult(this object input, JsonRequestBehavior behavior = JsonRequestBehavior.DenyGet)
     {
       var jsonResult = new JsonResult
-      {
-        ContentType = "text/plain", // allow client full control over reading response (don't send as JSON type)
-        Data = input,
-        JsonRequestBehavior = behavior
-      };
+        {
+          ContentType = "text/plain", // allow client full control over reading response (don't send as JSON type)
+          Data = input,
+          JsonRequestBehavior = behavior
+        };
       return jsonResult;
     }
 
@@ -486,6 +529,7 @@ namespace TallyJ.Code
     {
       return new TimeSpan(0, 0, input);
     }
+
     public static TimeSpan minutes(this int input)
     {
       return new TimeSpan(0, input, 0);
@@ -504,10 +548,10 @@ namespace TallyJ.Code
       if (input == null) return "";
 
       var list = new List<string>
-                   {
-                     input.Message, 
-                     input.InnerException.GetAllMsgs(sep)
-                   };
+        {
+          input.Message,
+          input.InnerException.GetAllMsgs(sep)
+        };
       return list.JoinedAsString(sep, true);
     }
 
@@ -517,11 +561,14 @@ namespace TallyJ.Code
     }
 
     /// <Summary>Copy byte array using this codepage.</Summary>
-    /// <remarks>See http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx for values</remarks>
+    /// <remarks>
+    ///     See http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx for values
+    /// </remarks>
     public static string AsString(this byte[] input, int codePage)
     {
       return Encoding.GetEncoding(codePage).GetString(input);
     }
+
     public static string AsString(this byte[] input, int? codePage)
     {
       return Encoding.GetEncoding(codePage.DefaultTo(1252)).GetString(input);
@@ -533,33 +580,35 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///   Returns <paramref name = "pluralOrZero" /> if input is not 1, empty string if it is.
+    ///     Returns <paramref name="pluralOrZero" /> if input is not 1, empty string if it is.
     /// </summary>
-    /// <param name = "input"></param>
-    /// <param name = "pluralOrZero"></param>
+    /// <param name="input"> </param>
+    /// <param name="pluralOrZero"> </param>
     public static string Plural(this int input, string pluralOrZero = "s")
     {
       return Plural(input, pluralOrZero, string.Empty);
     }
 
     /// <summary>
-    ///   Returns <paramref name = "pluralOrZero" /> if input is not 1, <param name = "single" /> if it is.
+    ///     Returns <paramref name="pluralOrZero" /> if input is not 1,
+    ///     <param name="single" />
+    ///     if it is.
     /// </summary>
-    /// <param name = "input"></param>
-    /// <param name = "pluralOrZero"></param>
-    /// <param name="single"></param>
+    /// <param name="input"> </param>
+    /// <param name="pluralOrZero"> </param>
+    /// <param name="single"> </param>
     public static string Plural(this int input, string pluralOrZero, string single)
     {
       return Plural(input, pluralOrZero, single, pluralOrZero);
     }
 
     /// <summary>
-    ///   Returns <paramref name = "plural" /> if input is > 1, <paramref name = "single" /> if it is 1, <paramref name = "zero" /> if it is 0.
+    ///     Returns <paramref name="plural" /> if input is > 1, <paramref name="single" /> if it is 1, <paramref name="zero" /> if it is 0.
     /// </summary>
-    /// <param name = "input"></param>
-    /// <param name = "plural"></param>
-    /// <param name = "single"></param>
-    /// <param name = "zero"></param>
+    /// <param name="input"> </param>
+    /// <param name="plural"> </param>
+    /// <param name="single"> </param>
+    /// <param name="zero"> </param>
     public static string Plural(this int input, string plural, string single, string zero)
     {
       switch (input)
@@ -576,27 +625,34 @@ namespace TallyJ.Code
     public static IEnumerable<Vote> AsVotes(this IEnumerable<vVoteInfo> inputs)
     {
       return inputs.Select(vVoteInfo => new Vote
-                                          {
-                                            C_RowId = vVoteInfo.VoteId,
-                                            BallotGuid = vVoteInfo.BallotGuid,
-                                            C_RowVersion = null,
-                                            InvalidReasonGuid = vVoteInfo.VoteIneligibleReasonGuid,
-                                            PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
-                                            PersonGuid = vVoteInfo.PersonGuid,
-                                            PositionOnBallot = vVoteInfo.PositionOnBallot,
-                                            SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
-                                            StatusCode = vVoteInfo.VoteStatusCode
-                                          });
+        {
+          C_RowId = vVoteInfo.VoteId,
+          BallotGuid = vVoteInfo.BallotGuid,
+          C_RowVersion = null,
+          InvalidReasonGuid = vVoteInfo.VoteIneligibleReasonGuid,
+          PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
+          PersonGuid = vVoteInfo.PersonGuid,
+          PositionOnBallot = vVoteInfo.PositionOnBallot,
+          SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
+          StatusCode = vVoteInfo.VoteStatusCode
+        });
     }
 
     /// <Summary>Return the string without accents.</Summary>
-    /// <remarks>Adapted from http://blogs.msdn.com/b/michkap/archive/2007/05/14/2629747.aspx </remarks>
+    /// <remarks>
+    ///     Adapted from http://blogs.msdn.com/b/michkap/archive/2007/05/14/2629747.aspx
+    /// </remarks>
     public static string WithoutDiacritics(this string input, bool toLower = false)
     {
       var normalized = input.Normalize(NormalizationForm.FormD);
       var sb = new StringBuilder();
 
-      foreach (var ch in from n in normalized let uc = CharUnicodeInfo.GetUnicodeCategory(n) where uc != UnicodeCategory.NonSpacingMark select n)
+      foreach (
+        var ch in
+          from n in normalized
+          let uc = CharUnicodeInfo.GetUnicodeCategory(n)
+          where uc != UnicodeCategory.NonSpacingMark
+          select n)
       {
         sb.Append(ch);
       }

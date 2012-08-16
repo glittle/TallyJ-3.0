@@ -49,9 +49,11 @@ namespace TallyJ.CoreModels.ExportImport
       var blob = new
         {
           Exported = DateTime.Now.ToString("o"),
-          ByUser = UserSession.UserGuid,
+          ByUser = UserSession.MemberName,
+          UserEmail = UserSession.MemberEmail,
           Server = site.ServerName,
           Environment = site.CurrentEnvironment,
+          // elements
           election = ExportElection(_election),
           resultSummary = ExportResultSummaries(resultSummaries),
           result = ExportResults(results),
@@ -76,7 +78,7 @@ namespace TallyJ.CoreModels.ExportImport
       return users.OrderBy(u => u.UserName).Select(u => new
         {
           u.UserName,
-          u.LastActivityDate
+          u.LastActivityDate,
         }).ToList();
     }
 
@@ -107,6 +109,7 @@ namespace TallyJ.CoreModels.ExportImport
       return people
         .OrderBy(p => p.LastName)
         .ThenBy(p => p.FirstName)
+        .ToList()
         .Select(p => new
           {
             p.PersonGuid,
@@ -117,11 +120,11 @@ namespace TallyJ.CoreModels.ExportImport
             p.OtherInfo,
             p.BahaiId,
             p.CombinedInfoAtStart,
-            Changed=p.CombinedInfoAtStart!=p.CombinedInfo ? (bool?) true : null,
+            Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
             p.AgeGroup,
             p.Area,
-            CanReceiveVotes = p.CanReceiveVotes.Value ? null : (bool?) false,
-            CanVote = p.CanVote.Value ? null : (bool?) false,
+            CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
+            CanVote = p.CanVote.OnlyIfFalse(),
             p.IneligibleReasonGuid,
             p.VotingMethod,
             p.EnvNum,
@@ -129,16 +132,16 @@ namespace TallyJ.CoreModels.ExportImport
             p.VotingLocationGuid,
             p.TellerAtKeyboard,
             p.TellerAssisting,
-            ChangedAfterLoad = (p.CombinedInfoAtStart != p.CombinedInfo) ? (bool?) true : null
+            ChangedAfterLoad = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue()
           }).ToList();
     }
 
     private IList ExportTellers(IQueryable<Teller> tellers)
     {
-      return tellers.Select(t => new
+      return tellers.ToList().Select(t => new
         {
           t.Name,
-          IsHeadTeller = t.IsHeadTeller.Value ? (bool?) true : null,
+          IsHeadTeller = t.IsHeadTeller.OnlyIfTrue(),
           t.TellerGuid,
         }).ToList();
     }
@@ -215,6 +218,7 @@ namespace TallyJ.CoreModels.ExportImport
     {
       return results
         .OrderBy(r => r.Rank)
+        .ToList()
         .Select(r => new
           {
             r.Rank,
@@ -222,14 +226,14 @@ namespace TallyJ.CoreModels.ExportImport
             r.RankInExtra,
             r.VoteCount,
             r.PersonGuid,
-            IsTied = r.IsTied.Value == false ? null : (bool?) true,
-            IsTieResolved = r.IsTied.Value ? r.IsTieResolved : null,
+            IsTied = r.IsTied.OnlyIfTrue(),
+            IsTieResolved = r.IsTied.OnlyIfTrue(),
             r.TieBreakGroup,
-            TieBreakRequired = r.TieBreakRequired.Value == false ? null : (bool?) true,
+            TieBreakRequired = r.IsTied.AsBoolean() ? r.TieBreakRequired : null,
             r.TieBreakCount,
-            ForceShowInOther = r.ForceShowInOther.Value == false ? null : (bool?) true,
-            CloseToNext = r.CloseToNext.Value == false ? null : (bool?) true,
-            CloseToPrev = r.CloseToPrev.Value == false ? null : (bool?) true
+            ForceShowInOther = r.ForceShowInOther.OnlyIfTrue(),
+            CloseToNext = r.CloseToNext.OnlyIfTrue(),
+            CloseToPrev = r.CloseToPrev.OnlyIfTrue()
           }).ToList();
     }
 
@@ -242,7 +246,7 @@ namespace TallyJ.CoreModels.ExportImport
             rt.TieBreakGroup,
             rt.NumInTie,
             rt.IsResolved,
-            TieBreakRequired = rt.TieBreakRequired == false ? null : rt.TieBreakRequired,
+            rt.TieBreakRequired,
             NumToElect = rt.NumToElect == 0 ? null : (int?) rt.NumToElect,
           }).ToList();
     }
@@ -279,9 +283,9 @@ namespace TallyJ.CoreModels.ExportImport
           election.NumberExtra,
           election.Name,
           election.Convenor,
-          IsSingleNameElection = election.IsSingleNameElection == false ? null : (bool?) true,
-          ShowAsTest = election.ShowAsTest == null || election.ShowAsTest.Value == false ? null : (bool?) true,
-          ListForPublic = election.ListForPublic == null || election.ListForPublic.Value == false ? null : (bool?) true,
+          IsSingleNameElection = election.IsSingleNameElection.OnlyIfTrue(),
+          ShowAsTest = election.ShowAsTest.OnlyIfTrue(),
+          ListForPublic = election.ListForPublic.OnlyIfTrue(),
           election.ListedForPublicAsOf,
           election.ElectionPasscode,
           election.CanVote,
@@ -289,8 +293,7 @@ namespace TallyJ.CoreModels.ExportImport
           //election.ElectionGuid,
           election.LastEnvNum,
           election.OwnerLoginId,
-          ShowFullReport =
-            election.ShowFullReport == null || election.ShowFullReport.Value == false ? null : (bool?) true
+          ShowFullReport = election.ShowFullReport.OnlyIfTrue()
         };
     }
   }
