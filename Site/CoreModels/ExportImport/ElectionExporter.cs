@@ -75,11 +75,13 @@ namespace TallyJ.CoreModels.ExportImport
 
     private IList ExportUsers(IQueryable<User> users)
     {
-      return users.OrderBy(u => u.UserName).Select(u => new
-        {
-          u.UserName,
-          u.LastActivityDate,
-        }).ToList();
+      return users.OrderBy(u => u.UserName)
+        .ToList()
+        .Select(u => new 
+          {
+            u.UserName,
+            LastActivityDate = u.LastActivityDate.ToString("o")
+          }).ToList();
     }
 
     private IList ExportReasons()
@@ -128,7 +130,7 @@ namespace TallyJ.CoreModels.ExportImport
             p.IneligibleReasonGuid,
             p.VotingMethod,
             p.EnvNum,
-            p.RegistrationTime,
+            RegistrationTime = p.RegistrationTime.AsString("o").OnlyIfHasContent(),
             p.VotingLocationGuid,
             p.TellerAtKeyboard,
             p.TellerAssisting,
@@ -283,7 +285,6 @@ namespace TallyJ.CoreModels.ExportImport
           election.NumberExtra,
           election.Name,
           election.Convenor,
-          IsSingleNameElection = election.IsSingleNameElection.OnlyIfTrue(),
           ShowAsTest = election.ShowAsTest.OnlyIfTrue(),
           ListForPublic = election.ListForPublic.OnlyIfTrue(),
           election.ListedForPublicAsOf,

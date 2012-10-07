@@ -65,3 +65,7 @@ button.active {
     display: inline-block;
     margin-left: 20px;
 }
+#form2
+{
+    float: right;
+}

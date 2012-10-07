@@ -92,7 +92,7 @@ var HomeIndexPage = function () {
             return;
         }
 
-        ShowStatusDisplay("Uploading election...", 0);
+        ShowStatusDisplay("Loading election...", 0);
 
         var form = $('#form2');
         var frameId = 'uploadFrame2';

@@ -22,6 +22,12 @@ namespace TallyJ.Code
       return !string.IsNullOrEmpty(input);
     }
 
+    /// <Summary>Whether this guid is the Empty guid or not</Summary>
+    public static bool HasContent(this Guid input)
+    {
+      return input != Guid.Empty;
+    }
+
     /// <summary>
     ///     Return true if the input is empty or null.
     /// </summary>
@@ -145,6 +151,12 @@ namespace TallyJ.Code
     public static bool? OnlyIfTrue(this bool input)
     {
       return input ? (bool?) true : null;
+    }
+
+    /// <Summary>Returns null if this is null or an empty string</Summary>
+    public static string OnlyIfHasContent(this string input)
+    {
+      return input.HasContent() ? input : null;
     }
 
     /// <Summary>Returns a false bool? if the input is false, or null if it is true</Summary>

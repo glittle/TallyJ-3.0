@@ -14,6 +14,10 @@ namespace TallyJ.CoreModels
 {
   public class PeopleModel : DataConnectedModel
   {
+    public PeopleModel()
+    {
+    }
+
     #region FrontDeskSortEnum enum
 
     public enum FrontDeskSortEnum
@@ -29,6 +33,11 @@ namespace TallyJ.CoreModels
     private List<Location> _locations;
     private List<Person> _peopleforFrontDesk;
     private IQueryable<Person> _people;
+
+    public PeopleModel(Election election)
+    {
+      _election = election;
+    }
 
     public long LastRowVersion
     {
@@ -124,6 +133,7 @@ namespace TallyJ.CoreModels
     ///     Set person's flag based on what is default for this election
     /// </summary>
     /// <param name="person"> </param>
+    /// <param name="election"> </param>
     public void ResetInvolvementFlags(Person person)
     {
       //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;

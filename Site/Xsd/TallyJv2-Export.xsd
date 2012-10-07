@@ -9,57 +9,60 @@
                         <xs:attribute name="ElectionType" type="xs:string" use="required" />
                         <xs:attribute name="ElectionMode" type="xs:string" use="required" />
                         <xs:attribute name="DateOfElection" type="xs:string"  use="optional" />
-                        <xs:attribute name="NumberToElect" type="xs:unsignedByte" use="required" />
-                        <xs:attribute name="NumberExtra" type="xs:unsignedByte" use="required" />
+                        <xs:attribute name="NumberToElect" type="xs:nonNegativeInteger" use="required" />
+                        <xs:attribute name="NumberExtra" type="xs:nonNegativeInteger" use="required" />
                         <xs:attribute name="Name" type="xs:string" use="required" />
                         <xs:attribute name="Convenor" type="xs:string"  use="optional" />
                         <xs:attribute name="ShowAsTest" type="xs:boolean"  use="optional" />
                         <xs:attribute name="ListedForPublicAsOf" type="xs:string"  use="optional" />
                         <xs:attribute name="CanVote" type="xs:string"  use="optional" />
                         <xs:attribute name="CanReceive" type="xs:string"  use="optional" />
-                        <xs:attribute name="LastEnvNum" type="xs:unsignedByte"  use="optional" />
+                        <xs:attribute name="ElectionPasscode" type="xs:string"  use="optional" />
+                        <xs:attribute name="LastEnvNum" type="xs:nonNegativeInteger"  use="optional" />
+                        <xs:attribute name="ListForPublic" type="xs:boolean"  use="optional" />
+                        <xs:attribute name="ShowFullReport" type="xs:boolean"  use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="resultSummary" minOccurs="0">
                     <xs:complexType>
                         <xs:attribute name="ResultType" type="xs:string" use="required" />
-                        <xs:attribute name="NumVoters" type="xs:unsignedByte"  use="optional" />
-                        <xs:attribute name="NumEligibleToVote" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="BallotsReceived" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="InPersonBallots" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="DroppedOffBallots" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="MailedInBallots" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="CalledInBallots" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="BallotsNeedingReview" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="SpoiledBallots" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="SpoiledVotes" type="xs:unsignedByte" use="optional" />
-                        <xs:attribute name="TotalVotes" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="NumVoters" type="xs:nonNegativeInteger"  use="optional" />
+                        <xs:attribute name="NumEligibleToVote" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="BallotsReceived" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="InPersonBallots" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="DroppedOffBallots" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="MailedInBallots" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="CalledInBallots" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="BallotsNeedingReview" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="SpoiledBallots" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="SpoiledVotes" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="TotalVotes" type="xs:nonNegativeInteger" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" maxOccurs="unbounded" name="result">
                     <xs:complexType>
-                        <xs:attribute name="Rank" type="xs:unsignedByte" use="required" />
+                        <xs:attribute name="Rank" type="xs:nonNegativeInteger" use="required" />
                         <xs:attribute name="Section" type="xs:string" use="required" />
-                        <xs:attribute name="VoteCount" type="xs:unsignedByte" use="required" />
+                        <xs:attribute name="VoteCount" type="xs:nonNegativeInteger" use="required" />
                         <xs:attribute name="PersonGuid" type="xs:string" use="required" />
                         <xs:attribute name="IsTied" type="xs:boolean" use="optional" />
                         <xs:attribute name="IsTieResolved" type="xs:boolean" use="optional" />
                         <xs:attribute name="TieBreakGroup" type="xs:string" use="optional" />
                         <xs:attribute name="CloseToNext" type="xs:boolean" use="optional" />
                         <xs:attribute name="CloseToPrev" type="xs:boolean" use="optional" />
-                        <xs:attribute name="RankInExtra" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="RankInExtra" type="xs:nonNegativeInteger" use="optional" />
                         <xs:attribute name="TieBreakRequired" type="xs:boolean" use="optional" />
-                        <xs:attribute name="TieBreakCount" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="TieBreakCount" type="xs:nonNegativeInteger" use="optional" />
                         <xs:attribute name="ForceShowInOther" type="xs:boolean" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" maxOccurs="unbounded" name="resultTie">
                     <xs:complexType>
                         <xs:attribute name="TieBreakGroup" type="xs:string" use="required" />
-                        <xs:attribute name="NumInTie" type="xs:unsignedByte" use="required" />
+                        <xs:attribute name="NumInTie" type="xs:nonNegativeInteger" use="required" />
                         <xs:attribute name="IsResolved" type="xs:boolean" use="required" />
                         <xs:attribute name="TieBreakRequired" type="xs:boolean" use="optional" />
-                        <xs:attribute name="NumToElect" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="NumToElect" type="xs:nonNegativeInteger" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" maxOccurs="unbounded" name="teller">
@@ -89,14 +92,15 @@
                                         <xs:element maxOccurs="unbounded" name="vote">
                                             <xs:complexType>
                                                 <xs:attribute name="StatusCode" type="xs:string" use="required" />
-                                                <xs:attribute name="PersonGuid" type="xs:string" use="required" />
+                                                <xs:attribute name="PersonGuid" type="xs:string" use="optional" />
                                                 <xs:attribute name="InvalidReasonGuid" type="xs:string" use="optional" />
+                                                <xs:attribute name="SingleNameElectionCount" type="xs:nonNegativeInteger" use="optional" />
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
                                     <xs:attribute name="ComputerCode" type="xs:string" use="required" />
                                     <xs:attribute name="StatusCode" type="xs:string" use="required" />
-                                    <xs:attribute name="BallotNumAtComputer" type="xs:unsignedByte" use="required" />
+                                    <xs:attribute name="BallotNumAtComputer" type="xs:nonNegativeInteger" use="required" />
                                     <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
                                     <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
                                 </xs:complexType>
@@ -111,21 +115,31 @@
                         </xs:sequence>
                         <xs:attribute name="Name" type="xs:string" use="required" />
                         <xs:attribute name="TallyStatus" type="xs:string" use="optional" />
-                        <xs:attribute name="BallotsCollected" type="xs:unsignedByte" use="optional" />
+                        <xs:attribute name="ContactInfo" type="xs:string" use="optional" />
+                        <xs:attribute name="BallotsCollected" type="xs:nonNegativeInteger" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element maxOccurs="unbounded" name="person">
                     <xs:complexType>
                         <xs:attribute name="PersonGuid" type="xs:string" use="required" />
-                        <xs:attribute name="FirstName" type="xs:string" use="required" />
                         <xs:attribute name="LastName" type="xs:string" use="required" />
+                        <xs:attribute name="FirstName" type="xs:string" use="required" />
                         <xs:attribute name="OtherLastNames" type="xs:string" use="optional" />
+                        <xs:attribute name="OtherNames" type="xs:string" use="optional" />
+                        <xs:attribute name="OtherInfo" type="xs:string" use="optional" />
+                        <xs:attribute name="Area" type="xs:string" use="optional" />
+                        <xs:attribute name="BahaiId" type="xs:string" use="optional" />
+                        <xs:attribute name="CombinedInfoAtStart" type="xs:string" use="optional" />
+                        <xs:attribute name="AgeGroup" type="xs:string" use="optional" />
+                        <xs:attribute name="CanVote" type="xs:boolean" use="optional" />
                         <xs:attribute name="CanReceiveVotes" type="xs:boolean" use="optional" />
                         <xs:attribute name="IneligibleReasonGuid" type="xs:string" use="optional" />
-                        <xs:attribute name="CombinedInfoAtStart" type="xs:string" use="optional" />
+                        <xs:attribute name="RegistrationTime" type="xs:string" use="optional" />
+                        <xs:attribute name="VotingLocationGuid" type="xs:string" use="optional" />
+                        <xs:attribute name="VotingMethod" type="xs:string" use="optional" />
+                        <xs:attribute name="EnvNum" type="xs:positiveInteger" use="optional" />
                         <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
                         <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
-                        <xs:attribute name="BahaiId" type="xs:string" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element maxOccurs="unbounded" name="reason">
@@ -139,6 +153,8 @@
             <xs:attribute name="Exported" type="xs:dateTime" use="optional" />
             <xs:attribute name="ByUser" type="xs:string" use="optional" />
             <xs:attribute name="Server" type="xs:string" use="optional" />
+            <xs:attribute name="UserEmail" type="xs:string" use="optional" />
+            <xs:attribute name="userEmail" type="xs:string" use="optional" />
             <xs:attribute name="Environment" type="xs:string" use="optional" />
         </xs:complexType>
     </xs:element>

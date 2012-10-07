@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Schema;
 using TallyJ.Code;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels.ExportImport
@@ -41,17 +42,17 @@ namespace TallyJ.CoreModels.ExportImport
         analyzer.GenerateResults();
 
         return success
-                 ? new Result(true, "", _electionGuid).AsJsonResult()
-                 : new Result(false, "(Under construction!)").AsJsonResult();
+                 ? new Result(_electionGuid).AsJsonResult()
+                 : new Result("(Under construction!)").AsJsonResult();
       }
       catch (LoaderException ex)
       {
-        return new Result(false, ex.GetAllMsgs("\n")).AsJsonResult();
+        return new Result(ex.GetAllMsgs("\n")).AsJsonResult();
       }
       catch (Exception ex)
       {
         // some unexpected exception...
-        return new Result(false, ex.GetType().Name + ": " + ex.GetAllMsgs("\n")).AsJsonResult();
+        return new Result(ex.GetType().Name + ": " + ex.GetAllMsgs("\n")).AsJsonResult();
       }
     }
 
@@ -114,7 +115,7 @@ namespace TallyJ.CoreModels.ExportImport
     {
       _guidMap = new Dictionary<Guid, Guid>();
 
-      using (var transaction = new TransactionScope())
+//      using (var transaction = new TransactionScope())
       {
         try
         {
@@ -164,7 +165,7 @@ namespace TallyJ.CoreModels.ExportImport
           throw new LoaderException("Unable to save: " + msgs.JoinedAsString("; "));
         }
 
-        transaction.Complete();
+//        transaction.Complete();
       }
 
       return true;
@@ -193,7 +194,7 @@ namespace TallyJ.CoreModels.ExportImport
         else
         {
           var last = matching.OrderBy(e => e.Name).Last();
-          var num = last.Name.Split(' ').Last().AsInt();
+          var num = last.Name.Replace(newName, "").Split(' ').Last().AsInt();
           _election.Name = string.Format("{0} - {1}", newName, num + 1);
         }
       }
@@ -256,7 +257,7 @@ namespace TallyJ.CoreModels.ExportImport
         throw new LoaderException("No people in the file");
       }
 
-      _peopleModel = new PeopleModel();
+      _peopleModel = new PeopleModel(_election);
 
       foreach (XmlElement personXml in peopleXml)
       {
@@ -271,6 +272,9 @@ namespace TallyJ.CoreModels.ExportImport
       // need to map Guid to new Guid
       var person = new Person();
       personXml.CopyAttributeValuesTo(person);
+      
+      _peopleModel.ResetInvolvementFlags(person);
+      person.UpdateCombinedSoundCodes();
 
       // reset Guid to a new guid
       var oldGuid = person.PersonGuid;
@@ -307,11 +311,11 @@ namespace TallyJ.CoreModels.ExportImport
       locationXml.CopyAttributeValuesTo(location);
 
       // reset Guid to a new guid
-      var oldGuid = location.LocationGuid;
       var newGuid = Guid.NewGuid();
-      _guidMap.Add(oldGuid, newGuid);
 
-      var locationGuid = location.LocationGuid = newGuid;
+      var locationGuid 
+        = location.LocationGuid
+        = newGuid;
       location.ElectionGuid = _electionGuid;
 
       Db.Locations.Add(location);
@@ -325,8 +329,8 @@ namespace TallyJ.CoreModels.ExportImport
         {
           LoadComputer(computerXml, locationGuid);
         }
+        Db.SaveChanges();
       }
-      Db.SaveChanges();
 
       var ballotsXml = locationXml.SelectNodes("t:ballot", _nsm);
       if (ballotsXml != null)
@@ -335,8 +339,8 @@ namespace TallyJ.CoreModels.ExportImport
         {
           LoadBallotAndVotes(ballotXml, locationGuid);
         }
+        Db.SaveChanges();
       }
-      Db.SaveChanges();
 
       var logsXml = locationXml.SelectNodes("t:log", _nsm);
       if (logsXml != null)
@@ -345,8 +349,8 @@ namespace TallyJ.CoreModels.ExportImport
         {
           LoadLog(logXml, locationGuid);
         }
+        Db.SaveChanges();
       }
-      Db.SaveChanges();
 
       var logger = new LogHelper(_electionGuid);
       logger.Add("Loaded election from file");
@@ -389,6 +393,7 @@ namespace TallyJ.CoreModels.ExportImport
         {
           LoadVote(voteXml, positionOnBallot++, ballotGuid);
         }
+        Db.SaveChanges();
       }
     }
 
@@ -401,8 +406,13 @@ namespace TallyJ.CoreModels.ExportImport
       vote.BallotGuid = ballotGuid;
       UpdateGuidFromMapping(vote, v => v.PersonGuid);
 
-      var person = Db.People.Single(p => p.PersonGuid == vote.PersonGuid);
-      vote.PersonCombinedInfo = person.CombinedInfo;
+      if (vote.PersonGuid.AsGuid().HasContent())
+      {
+        var person = Db.People.Single(p => p.ElectionGuid == _electionGuid && p.PersonGuid == vote.PersonGuid);
+        vote.PersonCombinedInfo = person.CombinedInfo;
+      }
+
+      Db.Votes.Add(vote);
     }
 
     private void LoadLog(XmlElement logXml, Guid locationGuid)
@@ -456,10 +466,18 @@ namespace TallyJ.CoreModels.ExportImport
       public string Message;
       public bool Success;
 
-      public Result(bool success, string message = "", Guid electionGuid = default(Guid))
+      /// <Summary>Failed result</Summary>
+      public Result(string message = "")
       {
-        Success = success;
+        Success = false;
         Message = message;
+      }
+
+      /// <Summary>Success!</Summary>
+      public Result(Guid electionGuid)
+      {
+        ElectionGuid = electionGuid;
+        Success = true;
       }
     }
 
