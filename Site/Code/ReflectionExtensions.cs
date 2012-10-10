@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml;
 
@@ -281,6 +282,18 @@ namespace TallyJ.Code
 
       targetProperty.SetValue(targetObject, realValue, null);
       return true;
+    }
+
+    /// <Summary>Get the property name as a string.  e.g.  myObject.GetName(x=>x.Property)</Summary>
+    public static string GetPropertyName<T,TReturn>(this T input, Expression<Func<T,TReturn>> property) where T: class
+    {
+
+      var memberExpression = property.Body as MemberExpression;
+      if (memberExpression == null)
+      {
+        throw new ApplicationException("Should be '()=>x.y'. Invalid syntax: " + property.Body);
+      }
+      return memberExpression.Member.Name;
     }
   }
 }

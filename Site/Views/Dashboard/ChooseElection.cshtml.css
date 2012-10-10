@@ -8,6 +8,10 @@
     color: #8dc63e;
     font-weight: bold;
 }
+    .Election.deleting
+    {
+        background-color: red;
+    }
 .Detail i {
     font-size: 80%;
     font-style: normal;

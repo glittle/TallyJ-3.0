@@ -90,6 +90,7 @@
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
+    <Compile Include="FrameworkTests\ReflectionHelperTests.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

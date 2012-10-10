@@ -186,6 +186,7 @@
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\LogHelper.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
+    <Compile Include="Code\ReflectionHelper.cs" />
     <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
     <Compile Include="Code\RequireLocationPolicy.cs" />
     <Compile Include="Code\Resources\LinkedResourcesHelper.cs" />
@@ -225,6 +226,7 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="CoreModels\ExportImport\ElectionDeleter.cs" />
     <Compile Include="CoreModels\ExportImport\Exporter.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionLoader.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionExporter.cs" />

@@ -262,12 +262,14 @@ var HomeIndexPage = function () {
     var deleteElection = function () {
         if (publicInterface.isGuest) return;
 
-        if (!confirm('Completely delete this election?')) {
+        var btn = $(this);
+        var row = btn.parents('.Election');
+        var name = btn.parent().find('b').text();
+
+        if (!confirm('Completely delete election: {0}?'.filledWith(name))) {
             return;
         }
 
-        var btn = $(this);
-        var row = btn.parents('.Election');
         var form =
             {
                 guid: row.data('guid')
@@ -276,10 +278,12 @@ var HomeIndexPage = function () {
         btn.addClass('active');
         CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
             btn.removeClass('active');
-            if (info.Success) {
-                ShowStatusDisplay(info.Message, 0, 3000, false, true);
-                row.slideUp();
-                row.remove();
+            if (info.Deleted) {
+                row.addClass('deleting');
+                row.fadeTo(1000, 0, function () {
+                    row.remove();
+                    ShowStatusDisplay('Deleted.', 0, 1500, false, true);
+                });
             } else {
                 ShowStatusFailed(info.Message);
             }

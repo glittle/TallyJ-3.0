@@ -64,11 +64,8 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult DeleteElection(Guid guid)
     {
-      return new {Message = "Testing only", Success = true}.AsJsonResult();
-      //return new {Success = true}.AsJsonResult();
-
-      //var model = new ElectionExportImportModel(guid);
-      //return model.Export();
+      var model = new ElectionDeleter(guid);
+      return model.Delete();
     }
   }
 }
