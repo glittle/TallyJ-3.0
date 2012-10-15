@@ -527,7 +527,7 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus
     border: 1px solid #7ac0da;
 }
 
-input[type="submit"], input[type="file"], button.Primary
+/*input[type="submit"], input[type="file"], button.Primary
 {
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
@@ -538,10 +538,10 @@ input[type="submit"], input[type="file"], button.Primary
     cursor: pointer;
     font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
     padding: .2em .5em .35em .5em;
-}
+}*/
 input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover
 {
-    background-color: #b6ff50;
+    /*background-color: #b6ff50;*/
 }
 
 /* ajax login/registration dialog */

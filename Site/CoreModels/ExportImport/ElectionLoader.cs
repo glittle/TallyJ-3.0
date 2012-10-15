@@ -465,6 +465,7 @@ namespace TallyJ.CoreModels.ExportImport
       public Guid ElectionGuid;
       public string Message;
       public bool Success;
+      public IEnumerable<object> Elections;
 
       /// <Summary>Failed result</Summary>
       public Result(string message = "")
@@ -476,6 +477,7 @@ namespace TallyJ.CoreModels.ExportImport
       /// <Summary>Success!</Summary>
       public Result(Guid electionGuid)
       {
+        Elections = new ElectionsListViewModel().MyElectionsInfo;
         ElectionGuid = electionGuid;
         Success = true;
       }

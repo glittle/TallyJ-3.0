@@ -20,5 +20,10 @@ namespace TallyJ.EF
         public Nullable<bool> ListForPublic { get; set; }
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }
         public string ElectionPasscode { get; set; }
+        public Nullable<System.DateTime> DateOfElection { get; set; }
+        public string ElectionType { get; set; }
+        public string ElectionMode { get; set; }
+        public Nullable<bool> ShowAsTest { get; set; }
+        public Nullable<int> NumVoters { get; set; }
     }
 }

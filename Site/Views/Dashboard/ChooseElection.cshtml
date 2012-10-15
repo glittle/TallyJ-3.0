@@ -19,18 +19,26 @@
 </hgroup>
 @if (electionsInfo.Count() > 0)
 {
-    <h3>
-        Your Elections</h3>
+    <h3>Your Elections</h3>
 }<div id="ElectionList">
 </div>
 @if (UserSession.IsKnownTeller)
 {
-    <div class="Election MakeNew">
-        <button type="button" id="btnCreate">Create a New Election</button>
-      
-      <form id="form2">
-        <input id="loadFile" name="f" type="file" />
-        <button type="button" id="btnUpload2">Load Now</button>
-      </form>
-    </div>
+    <h3 class="MakeNew">New Election?</h3>
+    <p>Two options:</p>
+    <ol>
+        <li>
+            <button type="button" id="btnCreate">Create a New Election</button>
+
+        </li>
+        <li>
+            <form name="formLoadFile" id="formLoadFile">
+                <label for="loadFile">Load an existing Election from a TallyJ file on your computer:</label><br>
+                <input id="loadFile" name="loadFile" type="file" />
+                @*        <button type="button" id="btnUpload2">Load Now</button>*@
+            </form>
+
+        </li>
+    </ol>
+
 }

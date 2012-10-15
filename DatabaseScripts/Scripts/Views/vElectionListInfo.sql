@@ -17,10 +17,16 @@ as
 	  , ListForPublic
 	  , ListedForPublicAsOf
 	  , ElectionPasscode
-  from tj.Election
-  where ListForPublic = 1
-    and ElectionPasscode is not null
-	and ListedForPublicAsOf is not null -- check using web server clock
+	  , DateOfElection
+	  , ElectionType
+	  , ElectionMode
+	  , ShowAsTest
+	  , (select count(*) from tj.Person p where p.ElectionGuid = e.ElectionGuid)
+	    NumVoters
+  from tj.Election e
+ -- where ListForPublic = 1
+ --   and ElectionPasscode is not null
+--and ListedForPublicAsOf is not null -- check using web server clock
 
 GO
 

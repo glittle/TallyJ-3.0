@@ -506,6 +506,11 @@ function PrepareStatusDisplay() {
 function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
     statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
          (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 15 * 1000;
+    if (statusDisplay.minDisplayTimeBeforeStatusReset) {
+        clearTimeout(statusDisplay.resetTimer);
+        statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
+        statusDisplay.minDisplayTimeBeforeStatusReset = 0;
+    }
 
     if (typeof delayBeforeShowing !== 'number') {
         delayBeforeShowing = 500;
@@ -531,6 +536,10 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
         target.removeClass('error');
     }
     // idea: hold errors until click ok?    <button onclick="ClearDisplay()" type=button>Ok</button>
+}
+
+function ShowStatusSuccess(msg) {
+    ShowStatusDisplay(msg, 0, 3000, false, true);
 }
 
 function ShowStatusFailed(msg, keepTime) {

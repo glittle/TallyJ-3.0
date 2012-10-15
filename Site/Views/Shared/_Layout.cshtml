@@ -32,7 +32,11 @@
         (function () {
             var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            try {
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            } catch(e) {
+
+            } 
         })();
 
     </script>
@@ -166,7 +170,7 @@
             </div>
             <div class="float-right">
                 <ul id="social">
-                    <li>
+                    @*<li>
                         <link href="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed.cssgz?1334210082"
                             media="screen" rel="stylesheet" type="text/css" />
                         <script src="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed_libraries.jsgz?1334210083"
@@ -220,7 +224,7 @@
                                 LogMessage(ex);
                             }
                         </script>
-                    </li>
+                    </li>*@
                     <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
                         class="facebook" title="Go to the TallyJ Support page"></a></li>
                     <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"

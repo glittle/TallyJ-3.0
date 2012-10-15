@@ -10,13 +10,16 @@
 }
     .Election.deleting
     {
-        background-color: red;
+        background-color: rgb(255, 98, 98);
+    }
+    .Election.justloaded
+    {
+        background-color: rgb(98, 255, 98);
     }
 .Detail i {
     font-size: 80%;
     font-style: normal;
 }
-.Election.true button.btnSelectElection,
 .Locations .true button
 {
     opacity: .5;
@@ -72,4 +75,8 @@ button.active {
 #form2
 {
     float: right;
+}
+.numVoters
+{
+
 }

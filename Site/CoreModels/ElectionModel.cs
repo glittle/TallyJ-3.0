@@ -444,12 +444,12 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public IEnumerable<Election> VisibleElections()
+    public IEnumerable<vElectionListInfo> VisibleElections()
     {
       // this is first hit on the database on the home page... need special logging
       try
       {
-        var electionsWithCode = Db.Elections.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
+        var electionsWithCode = Db.vElectionListInfoes.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
         return
           electionsWithCode.Where(
             e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
@@ -459,7 +459,7 @@ namespace TallyJ.CoreModels
         var logger = LogManager.GetCurrentClassLogger();
         logger.ErrorException("Reading VisibleElections", e);
 
-        return new List<Election>();
+        return new List<vElectionListInfo>();
       }
     }
 

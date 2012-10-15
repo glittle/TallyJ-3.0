@@ -52,7 +52,12 @@
       [vElectionListInfo].[Name] AS [Name], 
       [vElectionListInfo].[ListForPublic] AS [ListForPublic], 
       [vElectionListInfo].[ListedForPublicAsOf] AS [ListedForPublicAsOf], 
-      [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode]
+      [vElectionListInfo].[ElectionPasscode] AS [ElectionPasscode], 
+      [vElectionListInfo].[DateOfElection] AS [DateOfElection], 
+      [vElectionListInfo].[ElectionType] AS [ElectionType], 
+      [vElectionListInfo].[ElectionMode] AS [ElectionMode], 
+      [vElectionListInfo].[ShowAsTest] AS [ShowAsTest], 
+      [vElectionListInfo].[NumVoters] AS [NumVoters]
       FROM [tj].[vElectionListInfo] AS [vElectionListInfo]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vImportFileInfo" EntityType="TallyJ2dModel.Store.vImportFileInfo" store:Type="Views" store:Schema="tj" store:Name="vImportFileInfo">
@@ -439,6 +444,11 @@
           <Property Name="ListForPublic" Type="bit" />
           <Property Name="ListedForPublicAsOf" Type="datetime2" />
           <Property Name="ElectionPasscode" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateOfElection" Type="datetime2" Precision="0" />
+          <Property Name="ElectionType" Type="varchar" MaxLength="5" />
+          <Property Name="ElectionMode" Type="varchar" MaxLength="1" />
+          <Property Name="ShowAsTest" Type="bit" />
+          <Property Name="NumVoters" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
       warning 6002: The table/view 'TallyJ2d.tj.vImportFileInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -933,6 +943,11 @@
           <Property Name="ListForPublic" Type="Boolean" />
           <Property Name="ListedForPublicAsOf" Type="DateTime" Precision="7" />
           <Property Name="ElectionPasscode" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Type="DateTime" Name="DateOfElection" Precision="0" />
+          <Property Type="String" Name="ElectionType" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ElectionMode" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Type="Boolean" Name="ShowAsTest" />
+          <Property Type="Int32" Name="NumVoters" />
         </EntityType>
         <EntityType Name="vImportFileInfo">
           <Key>
@@ -1356,6 +1371,11 @@
           <EntitySetMapping Name="vElectionListInfoes">
             <EntityTypeMapping TypeName="TallyJ2dModel.vElectionListInfo">
               <MappingFragment StoreEntitySet="vElectionListInfo">
+                <ScalarProperty Name="NumVoters" ColumnName="NumVoters" />
+                <ScalarProperty Name="ShowAsTest" ColumnName="ShowAsTest" />
+                <ScalarProperty Name="ElectionMode" ColumnName="ElectionMode" />
+                <ScalarProperty Name="ElectionType" ColumnName="ElectionType" />
+                <ScalarProperty Name="DateOfElection" ColumnName="DateOfElection" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

@@ -30,9 +30,9 @@ namespace TallyJ.Controllers
 
 
     [HttpPost]
-    public JsonResult LoadV2Election(HttpPostedFileBase f)
+    public JsonResult LoadV2Election(HttpPostedFileBase loadFile)
     {
-      return new ElectionLoader().Import(f);
+      return new ElectionLoader().Import(loadFile);
     }
 
     public JsonResult ChooseLocation(int id)

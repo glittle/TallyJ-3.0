@@ -19,6 +19,7 @@ var HomeIndexPage = function () {
             $(document).on('click', '#btnLoad', null, loadElection);
             $(document).on('click', '#file-uploader', null, loadElection2);
             $(document).on('click', '#btnCreate', null, createElection);
+            $(document).on('change', '#loadFile', null, upload2);
 
             $(document).on('click', '#btnUpload2', null, upload2);
 
@@ -86,18 +87,19 @@ var HomeIndexPage = function () {
     };
 
     var upload2 = function () {
-
-        var $input = $('#f');
+        var $input = $('#loadFile');
         if ($input.val() == '') {
             return;
         }
 
         ShowStatusDisplay("Loading election...", 0);
 
-        var form = $('#form2');
-        var frameId = 'uploadFrame2';
-        if (!$('#' + frameId).length) {
+        var form = $('#formLoadFile');
+        var frameId = 'tempUploadFrame';
+        var frame = $('#' + frameId);
+        if (!frame.length) {
             $('body').append('<iframe id=' + frameId + ' name=' + frameId + ' style="display:none" />');
+            frame = $('#' + frameId);
         }
         form.attr({
             target: frameId,
@@ -106,8 +108,9 @@ var HomeIndexPage = function () {
             method: 'post'
         });
 
-        var frameObject = $('#' + frameId).load(function () {
+        var frameObject = frame.load(function () {
             frameObject.unbind('load');
+            $input.val(''); // blank out file name
 
             var response = frameObject.contents().text();
             var info;
@@ -118,16 +121,24 @@ var HomeIndexPage = function () {
             }
 
             if (info.Success) {
-                $input.val(''); // blank out file name
+                showElections(info.Elections);
+                ShowStatusSuccess('Loaded');
 
-                var form2 =
-                    {
-                        guid: info.ElectionGuid
-                    };
+                var newRow = $('div.Election[data-guid="{0}"]'.filledWith(info.ElectionGuid));
+                scrollToMe(newRow);
 
-                ShowStatusDisplay("Selecting election...", 0);
+//                newRow.addClass('justloaded');
+//                setTimeout(function () {
+//                    newRow.removeClass('justloaded');
+//                }, 6000);
+                
 
-                CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form2, afterSelectElection);
+//                var form2 =
+//                    {
+//                        guid: info.ElectionGuid
+//                    };
+//                ShowStatusDisplay("Selecting election...", 0);
+//                CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form2, afterSelectElection);
             }
             else {
                 ShowStatusFailed(info.Message);
@@ -276,15 +287,16 @@ var HomeIndexPage = function () {
             };
 
         btn.addClass('active');
+        row.addClass('deleting');
         CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
             btn.removeClass('active');
             if (info.Deleted) {
-                row.addClass('deleting');
-                row.fadeTo(1000, 0, function () {
+                row.slideUp(1000, 0, function () {
                     row.remove();
                     ShowStatusDisplay('Deleted.', 0, 1500, false, true);
                 });
             } else {
+                row.removeClass('deleting');
                 ShowStatusFailed(info.Message);
             }
         });
@@ -325,6 +337,26 @@ var HomeIndexPage = function () {
             ActivateHeartbeat(true);
         });
     };
+    
+    var scrollToMe = function (nameDiv) {
+        var target = $(nameDiv);
+        target.addClass('justloaded');
+
+        var top = target.offset().top;
+        var fudge = -83;
+        var time = 800;
+
+        $('html,body').animate({
+            scrollTop: top + fudge
+        }, time);
+
+        setTimeout(function () {
+            target.toggleClass('justloaded', 'slow');
+        }, 3000);
+    };
+
+
+
     var publicInterface = {
         elections: [],
         isGuest: false,

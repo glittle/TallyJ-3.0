@@ -29,7 +29,8 @@ namespace TallyJ.CoreModels
                              e.DateOfElection,
                              e.ElectionType,
                              e.ElectionMode,
-                             e.ShowAsTest
+                             e.ShowAsTest,
+                             e.NumVoters
                            })
             .Select(info =>
                       {
@@ -43,19 +44,20 @@ namespace TallyJ.CoreModels
                                       Locations = isCurrent ? locations : null,
                                       Type = ElectionTypeEnum.TextFor(info.ElectionType),
                                       Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (",")"),
-                                      IsTest = info.ShowAsTest.AsBoolean()
+                                      IsTest = info.ShowAsTest.AsBoolean(),
+                                      info.NumVoters
                                     };
                       });
       }
     }
 
-    private IEnumerable<Election> MyElections()
+    private List<vElectionListInfo> MyElections()
     {
       if (UserSession.IsKnownTeller)
       {
         var userGuid = UserSession.UserGuid;
         return Db
-          .Elections
+          .vElectionListInfoes
           .SelectMany(e => Db.JoinElectionUsers.Where(j => j.UserId == userGuid),
                       (e, j) => new {e, j})
           .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
@@ -66,10 +68,13 @@ namespace TallyJ.CoreModels
       var currentElection = UserSession.CurrentElection;
       if (UserSession.IsGuestTeller && currentElection!=null)
       {
-        return new List<Election> { currentElection };
+        return new List<vElectionListInfo>
+          {
+            Db.vElectionListInfoes.Single(e=>e.ElectionGuid== currentElection.ElectionGuid)
+          };
       }
 
-      return new List<Election>();
+      return new List<vElectionListInfo>();
     }
   }
 }
