@@ -20,6 +20,10 @@
     font-size: 80%;
     font-style: normal;
 }
+.numVoters
+{
+    font-size: 80%;
+}
 .Locations .true button
 {
     opacity: .5;
@@ -75,8 +79,4 @@ button.active {
 #form2
 {
     float: right;
-}
-.numVoters
-{
-
 }

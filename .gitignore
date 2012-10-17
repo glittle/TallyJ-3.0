@@ -16,7 +16,6 @@ Tests/obj/*
 /DatabaseScripts/obj
 /DatabaseScripts/sql
 *.suo
-
 bin
 Bin
 obj
