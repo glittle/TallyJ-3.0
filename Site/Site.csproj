@@ -693,9 +693,9 @@
     <Content Include="Views\Setup\ImportV1.cshtml" />
     <Content Include="Views\Shared\Version.cshtml" />
     <Content Include="Views\Setup\EditPerson.cshtml" />
-    <None Include="Xsd\TallyJv2-Export.xsd">
+    <Content Include="Xsd\TallyJv2-Export.xsd">
       <SubType>Designer</SubType>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
