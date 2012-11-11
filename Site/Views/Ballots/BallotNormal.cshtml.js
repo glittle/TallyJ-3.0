@@ -96,7 +96,7 @@ var BallotNormalPageFunc = function () {
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
+                ShowStatusSuccess('Updated');
             });
         });
         $('#txtNumCollected').on('change', function () {
@@ -105,7 +105,7 @@ var BallotNormalPageFunc = function () {
                 if (info.Location) {
                     showLocation(info.Location);
                 }
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
+                ShowStatusSuccess('Updated');
             });
         });
         resetSearch();
@@ -143,7 +143,7 @@ var BallotNormalPageFunc = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
             if (info) {
                 // no need to update client with new order
-                ShowStatusDisplay("Saved", 0, 3000, false, true);
+                ShowStatusSuccess("Saved");
                 // update to reflect changes
                 $.each(toUpdate, function (i, o) {
                     o.text(i + 1);
@@ -175,7 +175,7 @@ var BallotNormalPageFunc = function () {
         CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
             showBallots(info);
             highlightBallotInList();
-            ShowStatusDisplay('Updated', 0, 3000, false, true);
+            ShowStatusSuccess('Updated');
         });
     };
 
@@ -194,7 +194,7 @@ var BallotNormalPageFunc = function () {
                     }
                 });
             }
-            ShowStatusDisplay('Updated', 0, 3000, false, true);
+            ShowStatusSuccess('Updated');
         });
     };
 
@@ -452,13 +452,13 @@ var BallotNormalPageFunc = function () {
         //var isReview = local.ballotStatus == 'Review';
 
         //if (checked != isReview) {
-        ShowStatusDisplay('Saving', 0);
+        ShowStatusDisplay('Saving');
 
         CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
             updateStatusDisplay(info);
             updateStatusInList(info);
 
-            ShowStatusDisplay('Saved', 0, 3000, false, true);
+            ShowStatusSuccess('Saved');
         });
 
         //}
@@ -568,7 +568,7 @@ var BallotNormalPageFunc = function () {
 
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
             if (info.Updated) {
-                ShowStatusDisplay('Saved', 0, 3000, false, true);
+                ShowStatusSuccess('Saved');
                 // assume any error was removed
                 host.removeClass('Changedtrue').addClass('Changedfalse');
 
@@ -636,7 +636,7 @@ var BallotNormalPageFunc = function () {
         ShowStatusDisplay('Deleting...');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteVote', form, function (info) {
             if (info.Deleted) {
-                ShowStatusDisplay('Deleted', 0, 3000, false, true);
+                ShowStatusSuccess('Deleted');
                 host.remove();
 
                 if (info.NumNeeded) {
@@ -670,7 +670,7 @@ var BallotNormalPageFunc = function () {
         ShowStatusDisplay('Deleting...');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteBallot', null, function (info) {
             if (info.Deleted) {
-                ShowStatusDisplay('Deleted', 0, 3000, false, true);
+                ShowStatusSuccess('Deleted');
 
                 showBallot(info);
 

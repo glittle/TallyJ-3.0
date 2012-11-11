@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TallyJ2dModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+    <Schema Namespace="TallyJ2dModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="TallyJ2dModelStoreContainer">
           <EntitySet Name="Users" EntityType="TallyJ2dModel.Store.Users" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="_Log" EntityType="TallyJ2dModel.Store._Log" store:Type="Tables" Schema="tj" />
@@ -611,8 +611,8 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="TallyJ2dModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="TallyJ2dContext" annotation:LazyLoadingEnabled="true">
+      <Schema Namespace="TallyJ2dModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TallyJ2dContext" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
           <EntitySet Name="C_Log" EntityType="TallyJ2dModel.C_Log" />
           <EntitySet Name="Ballots" EntityType="TallyJ2dModel.Ballot" />
           <EntitySet Name="Computers" EntityType="TallyJ2dModel.Computer" />
@@ -632,7 +632,6 @@
           <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2dModel.vImportFileInfo" />
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2dModel.vLocationInfo" />
           <EntitySet Name="vResultInfoes" EntityType="TallyJ2dModel.vResultInfo" />
-          <EntitySet Name="vVoteInfoes" EntityType="TallyJ2dModel.vVoteInfo" />
           <FunctionImport Name="CloneElection" ReturnType="Collection(TallyJ2dModel.CloneElection_Result)">
             <Parameter Name="SourceElection" Mode="In" Type="Guid" />
             <Parameter Name="ByLoginId" Mode="In" Type="String" />
@@ -662,12 +661,13 @@
             <End Role="User" EntitySet="Users" />
             <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
           </AssociationSet>
+          <EntitySet Name="vVoteInfoes" EntityType="TallyJ2dModel.vVoteInfo" />
         </EntityContainer>
         <EntityType Name="C_Log">
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="AsOf" Type="DateTime" Nullable="false" Precision="2" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="LocationGuid" Type="Guid" />
@@ -678,22 +678,22 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="LocationGuid" Type="Guid" Nullable="false" />
           <Property Name="BallotGuid" Type="Guid" Nullable="false" />
           <Property Name="StatusCode" Type="String" Nullable="false" MaxLength="10" Unicode="false" FixedLength="false" />
           <Property Name="ComputerCode" Type="String" Nullable="false" MaxLength="2" Unicode="false" FixedLength="false" />
           <Property Name="BallotNumAtComputer" Type="Int32" Nullable="false" />
-          <Property Name="C_BallotCode" Type="String" MaxLength="32" Unicode="false" FixedLength="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_BallotCode" Type="String" MaxLength="32" Unicode="false" FixedLength="false" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="TellerAtKeyboard" Type="Guid" />
           <Property Name="TellerAssisting" Type="Guid" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
         </EntityType>
         <EntityType Name="Computer">
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="LastContact" Type="DateTime" Precision="1" />
           <Property Name="ElectionGuid" Type="Guid" />
           <Property Name="LocationGuid" Type="Guid" />
@@ -709,7 +709,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="150" Unicode="true" FixedLength="false" />
           <Property Name="Convenor" Type="String" MaxLength="150" Unicode="true" FixedLength="false" />
@@ -728,7 +728,7 @@
           <Property Name="OwnerLoginId" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="ElectionPasscode" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="ListedForPublicAsOf" Type="DateTime" Precision="7" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ListForPublic" Type="Boolean" />
           <Property Name="ShowAsTest" Type="Boolean" />
         </EntityType>
@@ -736,12 +736,12 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="UploadTime" Type="DateTime" Precision="2" />
           <Property Name="ImportTime" Type="DateTime" Precision="2" />
-          <Property Name="FileSize" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="HasContent" Type="Boolean" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="FileSize" Type="Int32" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="HasContent" Type="Boolean" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="FirstDataRow" Type="Int32" />
           <Property Name="ColumnsToRead" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="OriginalFileName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
@@ -755,7 +755,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="UserId" Type="Guid" Nullable="false" />
           <Property Name="Role" Type="String" MaxLength="10" Unicode="false" FixedLength="false" />
@@ -765,7 +765,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="LocationGuid" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
@@ -780,18 +780,18 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="Title" Type="String" Nullable="false" MaxLength="150" Unicode="true" FixedLength="false" />
           <Property Name="Details" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="AsOf" Type="DateTime" Nullable="false" Precision="0" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="PersonGuid" Type="Guid" Nullable="false" />
           <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
@@ -812,10 +812,10 @@
           <Property Name="VotingLocationGuid" Type="Guid" />
           <Property Name="VotingMethod" Type="String" MaxLength="1" Unicode="false" FixedLength="false" />
           <Property Name="EnvNum" Type="Int32" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_FullName" Type="String" MaxLength="461" Unicode="true" FixedLength="false" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_RowVersionInt" Type="Int64" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_FullNameFL" Type="String" MaxLength="460" Unicode="true" FixedLength="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="C_FullName" Type="String" MaxLength="461" Unicode="true" FixedLength="false" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="C_RowVersionInt" Type="Int64" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="C_FullNameFL" Type="String" MaxLength="460" Unicode="true" FixedLength="false" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="TellerAtKeyboard" Type="Guid" />
           <Property Name="TellerAssisting" Type="Guid" />
         </EntityType>
@@ -823,7 +823,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="PersonGuid" Type="Guid" Nullable="false" />
           <Property Name="VoteCount" Type="Int32" />
@@ -843,7 +843,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="ResultType" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="true" />
           <Property Name="UseOnReports" Type="Boolean" />
@@ -863,7 +863,7 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="TieBreakGroup" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="false" />
           <Property Name="TieBreakRequired" Type="Boolean" />
@@ -875,26 +875,26 @@
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="TellerGuid" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="UsingComputerCode" Type="String" MaxLength="2" Unicode="false" FixedLength="false" />
           <Property Name="IsHeadTeller" Type="Boolean" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
         </EntityType>
         <EntityType Name="Vote">
           <Key>
             <PropertyRef Name="C_RowId" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="BallotGuid" Type="Guid" Nullable="false" />
           <Property Name="PositionOnBallot" Type="Int32" Nullable="false" />
           <Property Name="PersonGuid" Type="Guid" />
           <Property Name="StatusCode" Type="String" Nullable="false" MaxLength="10" Unicode="false" FixedLength="false" />
           <Property Name="InvalidReasonGuid" Type="Guid" />
           <Property Name="SingleNameElectionCount" Type="Int32" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="PersonCombinedInfo" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
         </EntityType>
         <EntityType Name="vBallotInfo">
@@ -919,7 +919,7 @@
           <Property Name="C_BallotCode" Type="String" MaxLength="32" Unicode="false" FixedLength="false" />
           <Property Name="TellerAtKeyboard" Type="Guid" />
           <Property Name="TellerAssisting" Type="Guid" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="LocationId" Type="Int32" Nullable="false" />
           <Property Name="LocationName" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
@@ -937,7 +937,7 @@
             <PropertyRef Name="ElectionGuid" />
             <PropertyRef Name="Name" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="150" Unicode="true" FixedLength="false" />
           <Property Name="ListForPublic" Type="Boolean" />
@@ -954,7 +954,7 @@
             <PropertyRef Name="C_RowId" />
             <PropertyRef Name="ElectionGuid" />
           </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="UploadTime" Type="DateTime" Precision="2" />
           <Property Name="ImportTime" Type="DateTime" Precision="2" />
@@ -1019,40 +1019,6 @@
           <Property Name="ForceShowInOther" Type="Boolean" />
           <Property Name="PersonName" Type="String" MaxLength="461" Unicode="true" FixedLength="false" />
         </EntityType>
-        <EntityType Name="vVoteInfo">
-          <Key>
-            <PropertyRef Name="VoteId" />
-            <PropertyRef Name="VoteStatusCode" />
-            <PropertyRef Name="PositionOnBallot" />
-            <PropertyRef Name="BallotGuid" />
-            <PropertyRef Name="BallotId" />
-            <PropertyRef Name="BallotStatusCode" />
-            <PropertyRef Name="LocationId" />
-            <PropertyRef Name="ElectionGuid" />
-          </Key>
-          <Property Name="VoteId" Type="Int32" Nullable="false" />
-          <Property Name="VoteStatusCode" Type="String" Nullable="false" MaxLength="10" Unicode="false" FixedLength="false" />
-          <Property Name="SingleNameElectionCount" Type="Int32" />
-          <Property Name="IsSingleNameElection" Type="Boolean" />
-          <Property Name="PositionOnBallot" Type="Int32" Nullable="false" />
-          <Property Name="VoteIneligibleReasonGuid" Type="Guid" />
-          <Property Name="PersonCombinedInfoInVote" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
-          <Property Name="PersonCombinedInfo" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
-          <Property Name="PersonGuid" Type="Guid" />
-          <Property Name="PersonId" Type="Int32" />
-          <Property Name="PersonFullName" Type="String" MaxLength="461" Unicode="true" FixedLength="false" />
-          <Property Name="PersonFullNameFL" Type="String" MaxLength="460" Unicode="true" FixedLength="false" />
-          <Property Name="CanReceiveVotes" Type="Boolean" />
-          <Property Name="PersonIneligibleReasonGuid" Type="Guid" />
-          <Property Name="ResultId" Type="Int32" />
-          <Property Name="BallotGuid" Type="Guid" Nullable="false" />
-          <Property Name="BallotId" Type="Int32" Nullable="false" />
-          <Property Name="BallotStatusCode" Type="String" Nullable="false" MaxLength="10" Unicode="false" FixedLength="false" />
-          <Property Name="C_BallotCode" Type="String" MaxLength="32" Unicode="false" FixedLength="false" />
-          <Property Name="LocationId" Type="Int32" Nullable="false" />
-          <Property Name="LocationTallyStatus" Type="String" MaxLength="15" Unicode="false" FixedLength="false" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-        </EntityType>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
           <Property Type="Guid" Name="NewElectionGuid" Nullable="true" />
@@ -1089,11 +1055,45 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="vVoteInfo">
+          <Key>
+            <PropertyRef Name="VoteId" />
+            <PropertyRef Name="VoteStatusCode" />
+            <PropertyRef Name="PositionOnBallot" />
+            <PropertyRef Name="BallotGuid" />
+            <PropertyRef Name="BallotId" />
+            <PropertyRef Name="BallotStatusCode" />
+            <PropertyRef Name="LocationId" />
+            <PropertyRef Name="ElectionGuid" />
+          </Key>
+          <Property Type="Int32" Name="VoteId" Nullable="false" />
+          <Property Type="String" Name="VoteStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="SingleNameElectionCount" />
+          <Property Type="Boolean" Name="IsSingleNameElection" />
+          <Property Type="Int32" Name="PositionOnBallot" Nullable="false" />
+          <Property Type="Guid" Name="VoteIneligibleReasonGuid" />
+          <Property Type="String" Name="PersonCombinedInfoInVote" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="PersonCombinedInfo" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="PersonGuid" />
+          <Property Type="Int32" Name="PersonId" />
+          <Property Type="String" Name="PersonFullName" MaxLength="461" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="PersonFullNameFL" MaxLength="460" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="CanReceiveVotes" />
+          <Property Type="Guid" Name="PersonIneligibleReasonGuid" />
+          <Property Type="Int32" Name="ResultId" />
+          <Property Type="Guid" Name="BallotGuid" Nullable="false" />
+          <Property Type="Int32" Name="BallotId" Nullable="false" />
+          <Property Type="String" Name="BallotStatusCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="C_BallotCode" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="LocationId" Nullable="false" />
+          <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="TallyJ2dModelStoreContainer" CdmEntityContainer="TallyJ2dContext">
           <EntitySetMapping Name="C_Log">
             <EntityTypeMapping TypeName="TallyJ2dModel.C_Log">
@@ -1449,34 +1449,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vVoteInfoes">
-            <EntityTypeMapping TypeName="TallyJ2dModel.vVoteInfo">
-              <MappingFragment StoreEntitySet="vVoteInfo">
-                <ScalarProperty Name="VoteId" ColumnName="VoteId" />
-                <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
-                <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
-                <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
-                <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
-                <ScalarProperty Name="VoteIneligibleReasonGuid" ColumnName="VoteIneligibleReasonGuid" />
-                <ScalarProperty Name="PersonCombinedInfoInVote" ColumnName="PersonCombinedInfoInVote" />
-                <ScalarProperty Name="PersonCombinedInfo" ColumnName="PersonCombinedInfo" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="PersonFullName" ColumnName="PersonFullName" />
-                <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
-                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
-                <ScalarProperty Name="PersonIneligibleReasonGuid" ColumnName="PersonIneligibleReasonGuid" />
-                <ScalarProperty Name="ResultId" ColumnName="ResultId" />
-                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
-                <ScalarProperty Name="BallotId" ColumnName="BallotId" />
-                <ScalarProperty Name="BallotStatusCode" ColumnName="BallotStatusCode" />
-                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
-                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
-                <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="CloneElection" FunctionName="TallyJ2dModel.Store.CloneElection">
             <ResultMapping>
               <ComplexTypeMapping TypeName="TallyJ2dModel.CloneElection_Result">
@@ -1512,12 +1484,40 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="vVoteInfoes">
+            <EntityTypeMapping TypeName="TallyJ2dModel.vVoteInfo">
+              <MappingFragment StoreEntitySet="vVoteInfo">
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="LocationTallyStatus" ColumnName="LocationTallyStatus" />
+                <ScalarProperty Name="LocationId" ColumnName="LocationId" />
+                <ScalarProperty Name="C_BallotCode" ColumnName="_BallotCode" />
+                <ScalarProperty Name="BallotStatusCode" ColumnName="BallotStatusCode" />
+                <ScalarProperty Name="BallotId" ColumnName="BallotId" />
+                <ScalarProperty Name="BallotGuid" ColumnName="BallotGuid" />
+                <ScalarProperty Name="ResultId" ColumnName="ResultId" />
+                <ScalarProperty Name="PersonIneligibleReasonGuid" ColumnName="PersonIneligibleReasonGuid" />
+                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
+                <ScalarProperty Name="PersonFullNameFL" ColumnName="PersonFullNameFL" />
+                <ScalarProperty Name="PersonFullName" ColumnName="PersonFullName" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="PersonCombinedInfo" ColumnName="PersonCombinedInfo" />
+                <ScalarProperty Name="PersonCombinedInfoInVote" ColumnName="PersonCombinedInfoInVote" />
+                <ScalarProperty Name="VoteIneligibleReasonGuid" ColumnName="VoteIneligibleReasonGuid" />
+                <ScalarProperty Name="PositionOnBallot" ColumnName="PositionOnBallot" />
+                <ScalarProperty Name="IsSingleNameElection" ColumnName="IsSingleNameElection" />
+                <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
+                <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
+                <ScalarProperty Name="VoteId" ColumnName="VoteId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <Connection>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
@@ -1527,11 +1527,11 @@
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="True" />
-        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams></Diagrams>
+    <Diagrams />
   </Designer>
 </edmx:Edmx>

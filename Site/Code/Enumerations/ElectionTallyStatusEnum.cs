@@ -14,12 +14,12 @@ namespace TallyJ.Code.Enumerations
     //<option value="Report">Reports Ready to Announce!</option>
 
 
-    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setting Up");
-    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Election Day, Before Ballots Collected");
-    public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Tellers Processing Ballots");
-    public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing Results");
-    public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
-    public static readonly ElectionTallyStatusEnum Report = new ElectionTallyStatusEnum("Report", "Results Ready to Announce!");
+    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Initial Setup");
+    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Before Collecting Ballots");
+    public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Tallying Ballots");
+    public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing");
+    //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
+    public static readonly ElectionTallyStatusEnum Report = new ElectionTallyStatusEnum("Report", "Review Complete");
 
     static ElectionTallyStatusEnum()
     {
@@ -27,7 +27,7 @@ namespace TallyJ.Code.Enumerations
       Add(NamesReady);
       Add(Tallying);
       Add(Reviewing);
-      Add(TieBreakNeeded);
+      //Add(TieBreakNeeded);
       Add(Report);
     }
 
@@ -36,28 +36,28 @@ namespace TallyJ.Code.Enumerations
     {
     }
 
-    public static HtmlString ForHtmlSelect(Election selected)
+    public static HtmlString ForHtmlList(Election selected)
     {
       if (selected == null)
       {
-        return ForHtmlSelect();
+        return ForHtmlList();
       }
-      return ForHtmlSelect(selected.TallyStatus);
+      return ForHtmlList(selected.TallyStatus);
     }
 
-    public static HtmlString ForHtmlSelect(string selected = "")
+    public static HtmlString ForHtmlList(string selected = "")
     {
       return
         BaseItems
-          .Select(bi => "<option value='{0}'{2}>{1}</option>"
-                          .FilledWith(bi.Value, bi.Text, bi.Value == selected ? " selected" : ""))
+          .Select(bi => "<li data-state='{0}' class='Active_{2}'>{1}</li>"
+                          .FilledWith(bi.Value, bi.Text, bi.Value == selected))
           .JoinedAsString()
           .AsRawHtml();
     }
 
-    public static string TextFor(string electionType)
+    public static string TextFor(string status)
     {
-      var item = BaseItems.SingleOrDefault(i => i.Value == electionType);
+      var item = BaseItems.SingleOrDefault(i => i.Value == status);
       return item == null ? NotStarted : item.DisplayText;
     }
   }

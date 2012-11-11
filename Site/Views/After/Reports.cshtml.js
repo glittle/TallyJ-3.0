@@ -31,7 +31,7 @@ var ReportsPage = function () {
     };
 
     var getReport = function (code) {
-        ShowStatusDisplay('Getting data...', 0);
+        ShowStatusDisplay('Getting data...');
         local.reportHolder.fadeOut();
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, code);
     };

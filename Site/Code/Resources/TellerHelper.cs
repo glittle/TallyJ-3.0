@@ -28,7 +28,7 @@ namespace TallyJ.Code.Resources
         .Select(l => new { l.C_RowId, l.Name, Selected = l.TellerGuid == tellerGuid ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
         .JoinedAsString()
-        .SurroundWith("<option value='0'>(Please Choose!)</option>", "<option value='-1'>+ Add teller name</option>");
+        .SurroundWith("<option value='0'>(Select active teller)</option>", "<option value='-1'>+ Add teller name</option>");
     }
 
     public void RefreshTellerList()

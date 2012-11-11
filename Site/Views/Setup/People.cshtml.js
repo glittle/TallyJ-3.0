@@ -70,7 +70,7 @@ var PeoplePage = function () {
                 return false;
             }
         });
-        ShowStatusDisplay("Loading...", 0);
+        ShowStatusDisplay("Loading...");
         CallAjaxHandler(publicInterface.peopleUrl + '/GetDetail', { id: personId }, showPersonDetail);
     };
 
@@ -119,7 +119,7 @@ var PeoplePage = function () {
     //                    local.peopleHelper.SearchNames(searchText, onNamesReady, false);
     //                }
     //            }
-    //            ShowStatusDisplay(info.Status, 0, null, false, true);
+    //            ShowStatusDisplay(info.Status);
     //        });
     //    };
 

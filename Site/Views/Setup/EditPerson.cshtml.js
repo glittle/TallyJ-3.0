@@ -76,7 +76,7 @@ var EditPersonPage = function () {
 
                 site.broadcast(site.broadcastCode.personSaved, info);
             }
-            ShowStatusDisplay(info.Status, 0, null, false, true);
+            ShowStatusDisplay(info.Status);
         });
     };
 

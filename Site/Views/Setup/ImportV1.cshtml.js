@@ -36,7 +36,7 @@ var ImportV1Page = function () {
             ShowStatusDisplay('Deleting...');
 
             CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeopleAndBallots', null, function (info) {
-                ShowStatusDisplay('Deleted', 0, 2000, false, true);
+                ShowStatusSuccess('Deleted');
                 $('#importResults').html(info.Results);
             });
         });
@@ -57,7 +57,7 @@ var ImportV1Page = function () {
                 if (rowId == local.activeFileRowId) {
                     local.activeFileRowId = 0;
                 }
-                ShowStatusDisplay('Deleted', 0, 2000, false, true);
+                ShowStatusSuccess('Deleted');
             });
         });
 
@@ -69,7 +69,7 @@ var ImportV1Page = function () {
                     ShowStatusFailed(info.Message);
                 }
                 else {
-                    ShowStatusDisplay('Saved', 0, 2000, false, true);
+                    ShowStatusSuccess('Saved');
                 }
             });
         });
@@ -85,7 +85,7 @@ var ImportV1Page = function () {
             CallAjaxHandler(publicInterface.controllerUrl + '/ImportXml', { id: local.activeFileRowId }, function (info) {
                 if (info.importReport) {
                     $('#importResults').html(info.importReport);
-                    ShowStatusDisplay(info.importReport, 0, null, false, true);
+                    ShowStatusSuccess(info.importReport);
                 }
                 ResetStatusDisplay();
             });
@@ -106,7 +106,7 @@ var ImportV1Page = function () {
             action: publicInterface.controllerUrl + '/UploadXml',
             allowedExtensions: ['xml'],
             onSubmit: function (id, fileName) {
-                ShowStatusDisplay('Uploading...', 0);
+                ShowStatusDisplay('Uploading...');
             },
             onProgress: function (id, fileName, loaded, total) {
             },
@@ -173,7 +173,7 @@ var ImportV1Page = function () {
                 ShowStatusFailed(info.Message);
             }
             else {
-                ShowStatusDisplay('Saved', 0, 2000, false, true);
+                ShowStatusSuccess('Saved');
             }
             if (info.Status) {
                 activeUploadFileRow().children().eq(1).text(info.Status);

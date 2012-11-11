@@ -129,7 +129,7 @@ var MonitorPage = function () {
         };
         ShowStatusDisplay('Saving...');
         CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing', form, function () {
-            ShowStatusDisplay('Saved', 0, 3000, false, true);
+            ShowStatusSuccess('Saved');
         });
     };
 

@@ -126,7 +126,7 @@ namespace Tests.BusinessTests
                           {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok}
                       };
 
-      var votes = new List<vVoteInfo>
+      var voteinfos = new List<vVoteInfo>
                     {
                       // TODO 2012-03-24 Glen Little: Needs attention... these test are for normal elections, not single name...
                       new vVoteInfo {SingleNameElectionCount = 33},
@@ -137,21 +137,23 @@ namespace Tests.BusinessTests
                       new vVoteInfo {SingleNameElectionCount = 27},
                       new vVoteInfo {SingleNameElectionCount = 27},
                     };
-      foreach (var vote in votes)
+      var rowId = 1;
+      foreach (var voteInfo in voteinfos)
       {
-        vote.ElectionGuid = electionGuid;
-        vote.PersonCombinedInfo = vote.PersonCombinedInfoInVote = "zz";
-        vote.BallotStatusCode = BallotStatusEnum.Ok;
-        vote.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        vote.BallotGuid = ballot1Guid;
-        vote.PersonGuid = Guid.NewGuid();
+        voteInfo.VoteId = rowId++;
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.BallotGuid = ballot1Guid;
+        voteInfo.PersonGuid = Guid.NewGuid();
       }
-      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
-      votes[4].BallotStatusCode = "TooFew";
-      votes[5].PersonCombinedInfo = "different";
-      votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
+      voteinfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
+      voteinfos[4].BallotStatusCode = "TooFew";
+      voteinfos[5].PersonCombinedInfo = "different";
+      voteinfos[6].PersonIneligibleReasonGuid = Guid.NewGuid();
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, voteinfos, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -193,7 +195,7 @@ namespace Tests.BusinessTests
                           {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
                       };
 
-      var votes = new List<vVoteInfo>
+      var voteInfos = new List<vVoteInfo>
                     {
                       new vVoteInfo {SingleNameElectionCount = 33, BallotGuid = ballots[0].BallotGuid},
                       new vVoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
@@ -203,20 +205,22 @@ namespace Tests.BusinessTests
                       new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
                       new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
                     };
-      foreach (var vVoteInfo in votes)
+      var rowId = 1;
+      foreach (var voteInfo in voteInfos)
       {
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        vVoteInfo.PersonGuid = Guid.NewGuid();
+        voteInfo.VoteId = rowId++;
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonGuid = Guid.NewGuid();
       }
-      votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
-      votes[4].BallotStatusCode = "TooFew"; // will be reset to Okay
-      votes[5].PersonCombinedInfo = "different";
-      votes[6].PersonIneligibleReasonGuid = Guid.NewGuid();
+      voteInfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
+      voteInfos[4].BallotStatusCode = "TooFew"; // will be reset to Okay
+      voteInfos[5].PersonCombinedInfo = "different";
+      voteInfos[6].PersonIneligibleReasonGuid = Guid.NewGuid();
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes, election, voteInfos, ballots, SamplePeople);
 
       model.GenerateResults();
 

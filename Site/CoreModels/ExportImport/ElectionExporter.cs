@@ -99,7 +99,7 @@ namespace TallyJ.CoreModels.ExportImport
       return logs.OrderBy(l => l.AsOf)
         .Select(l => new
           {
-            l.AsOf,
+            AsOf = l.AsOf.ToString("o"),
             //l.LocationGuid,
             l.ComputerCode,
             l.Details,
@@ -116,13 +116,12 @@ namespace TallyJ.CoreModels.ExportImport
           {
             p.PersonGuid,
             p.FirstName,
-            p.LastName,
+            LastName = p.LastName.DefaultTo(""),
             p.OtherNames,
             p.OtherLastNames,
             p.OtherInfo,
             p.BahaiId,
             p.CombinedInfoAtStart,
-            Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
             p.AgeGroup,
             p.Area,
             CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
@@ -134,7 +133,7 @@ namespace TallyJ.CoreModels.ExportImport
             p.VotingLocationGuid,
             p.TellerAtKeyboard,
             p.TellerAssisting,
-            ChangedAfterLoad = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue()
+            Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
           }).ToList();
     }
 
@@ -287,11 +286,10 @@ namespace TallyJ.CoreModels.ExportImport
           election.Convenor,
           ShowAsTest = election.ShowAsTest.OnlyIfTrue(),
           ListForPublic = election.ListForPublic.OnlyIfTrue(),
-          election.ListedForPublicAsOf,
+          ListedForPublicAsOf = election.ListedForPublicAsOf.AsString("o"),
           election.ElectionPasscode,
           election.CanVote,
           election.CanReceive,
-          //election.ElectionGuid,
           election.LastEnvNum,
           election.OwnerLoginId,
           ShowFullReport = election.ShowFullReport.OnlyIfTrue()

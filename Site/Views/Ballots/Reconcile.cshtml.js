@@ -26,7 +26,7 @@ var ReconcilePageFunc = function () {
     var changeLocation = function () {
         var newLocation = $(this).val();
         if (newLocation != local.currentLocation) {
-            ShowStatusDisplay('Loading ballot information', 0);
+            ShowStatusDisplay('Loading ballot information');
             CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
                 local.currentLocation = newLocation;
                 processBallots(info.Ballots);

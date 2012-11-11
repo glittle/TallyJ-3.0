@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code;
 using TallyJ.EF;
+using System.Linq;
 
 namespace TallyJ.CoreModels
 {
@@ -31,7 +32,7 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Update statuses... return true if any were updated</Summary>
-    public static bool UpdateAllStatuses(List<vVoteInfo> voteInfos)
+    public static bool UpdateAllStatuses(List<vVoteInfo> voteInfos, List<Vote> votes)
     {
       var changeMade = false;
       voteInfos.ForEach(delegate(vVoteInfo info)
@@ -43,11 +44,13 @@ namespace TallyJ.CoreModels
                                                 info.PersonCombinedInfo != info.PersonCombinedInfoInVote
                                                   ? VoteHelper.VoteStatusCode.Changed
                                                   : VoteHelper.VoteStatusCode.Ok;
-                            if (newStatus != oldStatus)
-                            {
-                              info.VoteStatusCode = newStatus;
-                              changeMade = true;
-                            }
+                            if (newStatus == oldStatus) return;
+
+                            // update both the VoteInfo and the Vote
+                            info.VoteStatusCode = newStatus;
+                            votes.Single(v => v.C_RowId == info.VoteId).StatusCode = newStatus;
+
+                            changeMade = true;
                           });
       return changeMade;
     }

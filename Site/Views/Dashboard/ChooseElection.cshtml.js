@@ -53,7 +53,7 @@ var HomeIndexPage = function () {
             //                    '<span class="qq-upload-failed-text">Failed</span>' +
             //                    '</li>',
             //                onSubmit: function(id, fileName) {
-            //                    ShowStatusDisplay('Loading...', 0);
+            //                    ShowStatusDisplay('Loading...');
             //                },
             //                onProgress: function(id, fileName, loaded, total) {
             //                    return false;
@@ -92,7 +92,7 @@ var HomeIndexPage = function () {
             return;
         }
 
-        ShowStatusDisplay("Loading election...", 0);
+        ShowStatusDisplay("Loading election...");
 
         var form = $('#formLoadFile');
         var frameId = 'tempUploadFrame';
@@ -137,7 +137,7 @@ var HomeIndexPage = function () {
 //                    {
 //                        guid: info.ElectionGuid
 //                    };
-//                ShowStatusDisplay("Selecting election...", 0);
+//                ShowStatusDisplay("Selecting election...");
 //                CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form2, afterSelectElection);
             }
             else {
@@ -293,7 +293,7 @@ var HomeIndexPage = function () {
             if (info.Deleted) {
                 row.slideUp(1000, 0, function () {
                     row.remove();
-                    ShowStatusDisplay('Deleted.', 0, 1500, false, true);
+                    ShowStatusSuccess('Deleted.');
                 });
             } else {
                 row.removeClass('deleting');

@@ -123,7 +123,7 @@
                     <xs:complexType>
                         <xs:attribute name="PersonGuid" type="xs:string" use="required" />
                         <xs:attribute name="LastName" type="xs:string" use="required" />
-                        <xs:attribute name="FirstName" type="xs:string" use="required" />
+                        <xs:attribute name="FirstName" type="xs:string" use="optional" />
                         <xs:attribute name="OtherLastNames" type="xs:string" use="optional" />
                         <xs:attribute name="OtherNames" type="xs:string" use="optional" />
                         <xs:attribute name="OtherInfo" type="xs:string" use="optional" />
@@ -140,6 +140,7 @@
                         <xs:attribute name="EnvNum" type="xs:positiveInteger" use="optional" />
                         <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
                         <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
+                        <xs:attribute name="Changed" type="xs:boolean" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element maxOccurs="unbounded" name="reason">

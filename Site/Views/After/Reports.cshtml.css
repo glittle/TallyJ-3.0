@@ -80,6 +80,8 @@
 }
 .VoteSpoiledtrue {
     color: red;
+}
+.VoteSpoiledtrue .Person {
     text-decoration: line-through;
 }
 .Ballot {
@@ -93,6 +95,7 @@
     text-decoration: line-through;
     color: red;
 }
+
 .Ballot > div {
     margin-left: 100px;
 }
@@ -109,9 +112,11 @@
 {
     white-space: inherit;
 }
+  .Ballot .Vote .Invalid
+  {
+  }
 .Ballot .Vote .Invalid {
     color: red;
-    text-decoration: line-through;
     font-style: italic;
     font-size: 90%;
 }

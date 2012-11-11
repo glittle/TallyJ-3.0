@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
-
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
@@ -28,19 +27,19 @@ namespace Tests.BusinessTests
       _fakes = new AnalyzerFakes();
 
       _persons = new List<Person>
-                        {
-                          new Person {VotingMethod = VotingMethodEnum.InPerson},
-                          new Person {},
-                          new Person {},
-                          new Person {},
-                          new Person {},
-                          new Person {IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person},
-                        };
+        {
+          new Person {VotingMethod = VotingMethodEnum.InPerson},
+          new Person {},
+          new Person {},
+          new Person {},
+          new Person {},
+          new Person {IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person},
+        };
       _persons.ForEach(delegate(Person p)
-      {
-        p.CanVote = true;
-        p.PersonGuid = Guid.NewGuid();
-      });
+        {
+          p.CanVote = true;
+          p.PersonGuid = Guid.NewGuid();
+        });
     }
 
 
@@ -49,24 +48,24 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 2,
-                         NumberExtra = 0,
-                         CanReceive = ElectionModel.CanVoteOrReceive.All
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 2,
+          NumberExtra = 0,
+          CanReceive = ElectionModel.CanVoteOrReceive.All
+        };
 
       var personGuid = Guid.NewGuid();
 
       var ballots = new List<Ballot>
-                      {
-                        new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
-                      };
+        {
+          new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
+        };
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo { PersonGuid = personGuid },
-                      new vVoteInfo { PersonGuid = Guid.NewGuid()},
-                    };
+        {
+          new vVoteInfo {PersonGuid = personGuid},
+          new vVoteInfo {PersonGuid = Guid.NewGuid()},
+        };
       foreach (var vVoteInfo in votes)
       {
         //vVoteInfo.PersonGuid = personGuid; // all for one person in this test
@@ -107,31 +106,34 @@ namespace Tests.BusinessTests
       resultSummaryAuto.NumVoters.ShouldEqual(1);
       resultSummaryAuto.ResultType.ShouldEqual(ResultType.Automatic);
     }
-[TestMethod]
+
+    [TestMethod]
     public void Ballot_TwoPeople_NameChanged()
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 2,
-                         NumberExtra = 0,
-                         CanReceive = ElectionModel.CanVoteOrReceive.All
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 2,
+          NumberExtra = 0,
+          CanReceive = ElectionModel.CanVoteOrReceive.All
+        };
 
       var personGuid = Guid.NewGuid();
 
       var ballots = new List<Ballot>
-                      {
-                        new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
-                      };
-      var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo { PersonGuid = personGuid },
-                      new vVoteInfo { PersonGuid = Guid.NewGuid()},
-                    };
-      foreach (var vVoteInfo in votes)
+        {
+          new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
+        };
+      var vVoteInfos = new List<vVoteInfo>
+        {
+          new vVoteInfo {PersonGuid = personGuid},
+          new vVoteInfo {PersonGuid = Guid.NewGuid()},
+        };
+      var rowId = 1;
+      foreach (var vVoteInfo in vVoteInfos)
       {
+        vVoteInfo.VoteId = rowId++;
         //vVoteInfo.PersonGuid = personGuid; // all for one person in this test
         vVoteInfo.ElectionGuid = electionGuid;
         vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
@@ -139,10 +141,10 @@ namespace Tests.BusinessTests
         vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
-      
-      votes[0].PersonCombinedInfo = "yy";
-  
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+
+      vVoteInfos[0].PersonCombinedInfo = "yy";
+
+      var model = new ElectionAnalyzerNormal(_fakes, election, vVoteInfos, ballots, SamplePeople);
 
       model.GenerateResults();
 
@@ -168,37 +170,37 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 1,
-                         NumberExtra = 0
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 1,
+          NumberExtra = 0
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballot1Guid = Guid.NewGuid();
       var ballot2Guid = Guid.NewGuid();
       var ballot3Guid = Guid.NewGuid();
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+        };
 
       var person1Guid = Guid.NewGuid();
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {SingleNameElectionCount = 33, PersonGuid = person1Guid, BallotGuid = ballot1Guid},
-                      new vVoteInfo {SingleNameElectionCount = 5, PersonGuid = person1Guid, BallotGuid = ballot2Guid},
-                      new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
-                    };
+        {
+          new vVoteInfo {SingleNameElectionCount = 33, PersonGuid = person1Guid, BallotGuid = ballot1Guid},
+          new vVoteInfo {SingleNameElectionCount = 5, PersonGuid = person1Guid, BallotGuid = ballot2Guid},
+          new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -233,37 +235,37 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 1,
-                         NumberExtra = 0
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 1,
+          NumberExtra = 0
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballot1Guid = Guid.NewGuid();
       var ballot2Guid = Guid.NewGuid();
       var ballot3Guid = Guid.NewGuid();
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+        };
 
 
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid=ballot1Guid},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid=ballot2Guid},
-                      new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid=ballot3Guid},
-                    };
+        {
+          new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid = ballot1Guid},
+          new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid = ballot2Guid},
+          new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -318,45 +320,45 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 3,
-                         NumberExtra = 0
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 3,
+          NumberExtra = 0
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballot1Guid = Guid.NewGuid();
       var ballot2Guid = Guid.NewGuid();
       var ballot3Guid = Guid.NewGuid();
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+        };
 
       var person1Guid = Guid.NewGuid();
       var person2Guid = Guid.NewGuid();
       var person3Guid = Guid.NewGuid();
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot1Guid},
-                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot2Guid},
-                      new vVoteInfo {PersonGuid = person1Guid, BallotGuid=ballot3Guid},
-                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot1Guid},
-                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot2Guid},
-                      new vVoteInfo {PersonGuid = person2Guid, BallotGuid=ballot3Guid},
-                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot1Guid},
-                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot2Guid},
-                      new vVoteInfo {PersonGuid = person3Guid, BallotGuid=ballot3Guid},
-                    };
+        {
+          new vVoteInfo {PersonGuid = person1Guid, BallotGuid = ballot1Guid},
+          new vVoteInfo {PersonGuid = person1Guid, BallotGuid = ballot2Guid},
+          new vVoteInfo {PersonGuid = person1Guid, BallotGuid = ballot3Guid},
+          new vVoteInfo {PersonGuid = person2Guid, BallotGuid = ballot1Guid},
+          new vVoteInfo {PersonGuid = person2Guid, BallotGuid = ballot2Guid},
+          new vVoteInfo {PersonGuid = person2Guid, BallotGuid = ballot3Guid},
+          new vVoteInfo {PersonGuid = person3Guid, BallotGuid = ballot1Guid},
+          new vVoteInfo {PersonGuid = person3Guid, BallotGuid = ballot2Guid},
+          new vVoteInfo {PersonGuid = person3Guid, BallotGuid = ballot3Guid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -412,35 +414,35 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-                       {
-                         ElectionGuid = electionGuid,
-                         NumberToElect = 1,
-                         NumberExtra = 0
-                       };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 1,
+          NumberExtra = 0
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballot1Guid = Guid.NewGuid();
       var ballot2Guid = Guid.NewGuid();
       var ballot3Guid = Guid.NewGuid();
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok},
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok},
+        };
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid=ballot1Guid},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid=ballot2Guid},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid=ballot3Guid},
-                    };
+        {
+          new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid = ballot1Guid},
+          new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid = ballot2Guid},
+          new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -496,30 +498,30 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-      {
-        ElectionGuid = electionGuid,
-        NumberToElect = 2,
-        NumberExtra = 2
-      };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 2,
+          NumberExtra = 2
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                       new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                       new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                       new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+        };
 
       // results wanted:
       //  person 0 = 3 votes
@@ -531,22 +533,18 @@ namespace Tests.BusinessTests
       //  person 4 = 1
       //  person 5 = 1
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
-                      
-                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
-                      
-                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
-
-                      new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[3].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[3].BallotGuid}, 
-                      
-                      new vVoteInfo {PersonGuid = SamplePeople[4].PersonGuid, BallotGuid = ballots[4].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[5].PersonGuid, BallotGuid = ballots[4].BallotGuid}, 
-                    };
+        {
+          new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[2].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[2].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[3].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[3].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[4].PersonGuid, BallotGuid = ballots[4].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[5].PersonGuid, BallotGuid = ballots[4].BallotGuid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -628,7 +626,6 @@ namespace Tests.BusinessTests
       results[5].ForceShowInOther.ShouldEqual(true);
       results[5].TieBreakRequired = true;
       results[5].ForceShowInOther = true;
-
     }
 
     [TestMethod]
@@ -636,26 +633,26 @@ namespace Tests.BusinessTests
     {
       var electionGuid = Guid.NewGuid();
       var election = new Election
-      {
-        ElectionGuid = electionGuid,
-        NumberToElect = 2,
-        NumberExtra = 2
-      };
+        {
+          ElectionGuid = electionGuid,
+          NumberToElect = 2,
+          NumberExtra = 2
+        };
       var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+        {
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = electionGuid
+        };
 
       var ballots = new List<Ballot>
-                      {
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                        new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                       new Ballot
-                          {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-                      };
+        {
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+          new Ballot
+            {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+        };
 
       // results wanted:
       //  person 0 = 2 votes
@@ -666,16 +663,14 @@ namespace Tests.BusinessTests
       // --
       //  person 4 = 1
       var votes = new List<vVoteInfo>
-                    {
-                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid}, 
-                      
-                      new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[1].BallotGuid}, 
-                      
-                      new vVoteInfo {PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
-                      new vVoteInfo {PersonGuid = SamplePeople[4].PersonGuid, BallotGuid = ballots[2].BallotGuid}, 
-                    };
+        {
+          new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[2].BallotGuid},
+          new vVoteInfo {PersonGuid = SamplePeople[4].PersonGuid, BallotGuid = ballots[2].BallotGuid},
+        };
       foreach (var vVoteInfo in votes)
       {
         vVoteInfo.ElectionGuid = electionGuid;
@@ -744,8 +739,6 @@ namespace Tests.BusinessTests
       results[4].ForceShowInOther.ShouldEqual(true);
       results[4].TieBreakRequired.ShouldEqual(true);
       results[4].ForceShowInOther.ShouldEqual(true);
-
     }
-
   }
 }

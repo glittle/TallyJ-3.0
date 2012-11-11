@@ -14,7 +14,7 @@ create
 View [tj].[vVoteInfo]
 as
   select 
-       v._RowId [VoteId]
+     v._RowId [VoteId]
 	 , v.StatusCode [VoteStatusCode]
 	 , v.SingleNameElectionCount
 	 , cast(case when e.NumberToElect = 1 then 1 else 0 end as bit) IsSingleNameElection

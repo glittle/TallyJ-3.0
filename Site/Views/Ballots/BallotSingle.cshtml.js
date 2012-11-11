@@ -48,7 +48,7 @@ var BallotSinglePageFunc = function () {
         $('#ddlLocationStatus').on('change', changeLocationStatus);
         $('#txtContact').on('change', function () {
             CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
+                ShowStatusSuccess('Updated');
             });
         });
         $('#txtNumCollected').on('change', function () {
@@ -56,7 +56,7 @@ var BallotSinglePageFunc = function () {
                 if (info.Location) {
                     showLocation(info.Location);
                 }
-                ShowStatusDisplay('Updated', 0, 3000, false, true);
+                ShowStatusSuccess('Updated');
             });
         });
         resetSearch();
@@ -81,7 +81,7 @@ var BallotSinglePageFunc = function () {
                     }
                 });
             }
-            ShowStatusDisplay('Updated', 0, 3000, false, true);
+            ShowStatusSuccess('Updated');
         });
     };
 
@@ -214,7 +214,7 @@ var BallotSinglePageFunc = function () {
 
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
             if (info.Updated) {
-                ShowStatusDisplay('Saved', 0, 3000, false, true);
+                ShowStatusSuccess('Saved');
                 // assume any error was removed
                 host.removeClass('Changedtrue').addClass('Changedfalse');
             }
@@ -255,7 +255,7 @@ var BallotSinglePageFunc = function () {
         ShowStatusDisplay('Deleting...');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteVote', form, function (info) {
             if (info.Deleted) {
-                ShowStatusDisplay('Deleted', 0, 3000, false, true);
+                ShowStatusSuccess('Deleted');
                 host.remove();
 
                 if (info.Location) {

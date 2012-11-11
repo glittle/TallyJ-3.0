@@ -125,6 +125,22 @@ namespace TallyJ.Code.Session
       }
     }
 
+    /// <summary>
+    ///     Title of election, if one is selected
+    /// </summary>
+    public static string CurrentElectionDisplayNameAndInfo
+    {
+      get
+      {
+        var current = CurrentElection;
+        
+        var type = ElectionTypeEnum.TextFor(current.ElectionType);
+        var mode = ElectionModeEnum.TextFor(current.ElectionMode).SurroundContentWith(" (", ")");
+
+        return current == null ? "[No election selected]" : "{0}{1} - {2}".FilledWith(type, mode, current.Name);
+      }
+    }
+
     /// <Summary>Stored as Guid in session</Summary>
     public static Guid CurrentElectionGuid
     {
@@ -242,7 +258,7 @@ namespace TallyJ.Code.Session
       get
       {
         var election = CurrentElection;
-        return election == null ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
+        return election == null || election.TallyStatus.HasNoContent() ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
       }
     }
 

@@ -51,7 +51,7 @@ var PresenterPage = function () {
     };
 
     var getReportData = function () {
-        ShowStatusDisplay('Getting results...', 0);
+        ShowStatusDisplay('Getting results...');
         clearTimeout(settings.refreshTimeout);
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReport', null, showInfo);
     };

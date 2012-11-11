@@ -47,8 +47,8 @@ namespace TallyJ.EF
         public DbSet<vImportFileInfo> vImportFileInfoes { get; set; }
         public DbSet<vLocationInfo> vLocationInfoes { get; set; }
         public DbSet<vResultInfo> vResultInfoes { get; set; }
-        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<vVoteInfo> vVoteInfoes { get; set; }
     
         public virtual ObjectResult<CloneElection_Result> CloneElection(Nullable<System.Guid> sourceElection, string byLoginId)
         {

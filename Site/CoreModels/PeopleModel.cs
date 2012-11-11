@@ -358,10 +358,16 @@ namespace TallyJ.CoreModels
 
     private static string ShowTellers(Dictionary<Guid, string> tellers, Person p)
     {
-      return p.TellerAtKeyboard.HasValue
-               ? tellers[p.TellerAtKeyboard.Value]
-                 + (p.TellerAssisting.HasValue ? ", " + tellers[p.TellerAssisting.Value] : "")
-               : "";
+      var names = new List<string>
+        {
+          p.TellerAtKeyboard.HasValue
+            ? (tellers.ContainsKey(p.TellerAtKeyboard.Value) ? tellers[p.TellerAtKeyboard.Value] : "?")
+            : "",
+          p.TellerAssisting.HasValue
+            ? (tellers.ContainsKey(p.TellerAssisting.Value) ? tellers[p.TellerAssisting.Value] : "?")
+            : ""
+        };
+      return names.JoinedAsString(", ", true);
     }
 
     private static string ShowRegistrationTime(int timeOffset, Person p)

@@ -20,20 +20,20 @@ var AnalyzePage = function () {
             runAnalysis(false);
         });
         //        $('#chkShowAll').on('click change', function () {
-        //            ShowStatusDisplay('Updating...', 0);
+        //            ShowStatusDisplay('Updating...');
         //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionShowAll', {
         //                showAll: $(this).prop('checked')
         //            }, function () {
-        //                ShowStatusDisplay('Updated', 0, 3000, false, true);
+        //                ShowStatusSuccess('Updated');
         //            });
         //        });
 
         //        $('#body').on('change', '#ddlElectionStatus', function () {
-        //            ShowStatusDisplay('Updating...', 0);
+        //            ShowStatusDisplay('Updating...');
         //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
         //                status: $(this).val()
         //            }, function () {
-        //                ShowStatusDisplay('Updated', 0, 3000, false, true);
+        //                ShowStatusSuccess('Updated');
         //            });
         //        });
 
@@ -67,7 +67,7 @@ var AnalyzePage = function () {
     };
 
     var runAnalysis = function (firstLoad) {
-        ShowStatusDisplay('Analyzing ballots...', 0);
+        ShowStatusDisplay('Analyzing ballots...');
         $('.LeftHalf, .RightHalf').fadeOut();
 
         CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
@@ -247,7 +247,7 @@ var AnalyzePage = function () {
             $.each(items, function () {
                 var tie = this;
                 if (!tie.TieBreakRequired) {
-                    tie.Conclusion = 'This tie does not need to be resolved, as it has no impact on the results of the election.';
+                    tie.Conclusion = 'This tie does not need to be resolved, as does not affect who is elected.';
                 }
                 else {
                     var firstPara;
@@ -334,9 +334,9 @@ var AnalyzePage = function () {
         var form = {
             counts: values
         };
-        ShowStatusDisplay("Saving...", 0);
+        ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SaveTieCounts', form, function (info) {
-            ShowStatusDisplay("Saved", 0, 3000, false, true);
+            ShowStatusSuccess("Saved");
             runAnalysis(false);
         });
     };

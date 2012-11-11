@@ -55,9 +55,9 @@ var SetupIndexPage = function () {
     };
 
 //    var resetVoteStatuses = function () {
-//        ShowStatusDisplay('Updaing...', 0);
+//        ShowStatusDisplay('Updaing...');
 //        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
-//            ShowStatusDisplay('Done', 0, 3000, false, true);
+//            ShowStatusSuccess('Done');
 //        });
 //    };
 
@@ -107,7 +107,7 @@ var SetupIndexPage = function () {
         };
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
-            ShowStatusDisplay(info.Status, 0, 3000, false, true);
+            ShowStatusSuccess(info.Status);
 
             if (info.Id == 0) {
                 input.parent().remove();
@@ -143,7 +143,7 @@ var SetupIndexPage = function () {
         };
         ShowStatusDisplay("Saving...");
         CallAjaxHandler(publicInterface.controllerUrl + '/SortLocations', form, function (info) {
-            ShowStatusDisplay("Saved", 0, 3000, false, true);
+            ShowStatusSuccess("Saved");
         });
     };
 
@@ -213,7 +213,7 @@ var SetupIndexPage = function () {
                 $('.CurrentElectionName').text(info.Election.Name);
             }
             ResetStatusDisplay();
-            ShowStatusDisplay(info.Status, 0, 3000, false, true);
+            ShowStatusSuccess(info.Status);
         });
     };
 

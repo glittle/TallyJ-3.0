@@ -37,6 +37,7 @@ namespace TallyJ.CoreModels
     private List<ResultTie> _resultTies;
     private List<Result> _results;
     private List<vVoteInfo> _voteinfos;
+    private List<Vote> _votes;
 
     protected ElectionAnalyzerCore()
     {
@@ -52,6 +53,7 @@ namespace TallyJ.CoreModels
       _people = people;
       _ballots = ballots;
       _voteinfos = voteinfos;
+      _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
       _deleteResult = fakes.RemoveResult;
       _addResult = fakes.AddResult;
       _saveChanges = fakes.SaveChanges;
@@ -126,6 +128,21 @@ namespace TallyJ.CoreModels
       get { return _election ?? (_election = UserSession.CurrentElection); }
     }
 
+    /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
+    public List<Vote> Votes
+    {
+      get
+      {
+        if (_votes != null) return _votes;
+        
+        var voteIds = VoteInfos.Select(vi => vi.VoteId).ToList();
+        
+        return _votes = Db.Votes.Where(v => voteIds.Contains(v.C_RowId)).ToList();
+      }
+    }
+
+    #region IElectionAnalyzer Members
+
     public List<Ballot> Ballots
     {
       get
@@ -138,8 +155,6 @@ namespace TallyJ.CoreModels
                                          .ToList());
       }
     }
-
-    #region IElectionAnalyzer Members
 
     /// <Summary>Current Results records</Summary>
     public List<Result> Results
@@ -167,10 +182,10 @@ namespace TallyJ.CoreModels
         if (_resultSummary == null)
         {
           _resultSummary = new ResultSummary
-                             {
-                               ElectionGuid = TargetElection.ElectionGuid,
-                               ResultType = ResultType.Automatic
-                             };
+            {
+              ElectionGuid = TargetElection.ElectionGuid,
+              ResultType = ResultType.Automatic
+            };
           Db.ResultSummaries.Add(_resultSummary);
         }
 
@@ -178,15 +193,19 @@ namespace TallyJ.CoreModels
       }
     }
 
-    /// <Summary>Current VoteInfo records</Summary>
+    /// <Summary>Current VoteInfo records. They are detached, so no updates can be done</Summary>
     public List<vVoteInfo> VoteInfos
     {
       get
       {
-        return _voteinfos ?? (_voteinfos = Db.vVoteInfoes
-                                             .Where(vi => vi.ElectionGuid == TargetElection.ElectionGuid)
-                                             .OrderBy(vi => vi.BallotGuid)
-                                             .ToList());
+        if (_voteinfos != null) return _voteinfos;
+        else
+          _voteinfos = Db.vVoteInfoes
+            .Where(vi => vi.ElectionGuid == TargetElection.ElectionGuid)
+            .OrderBy(vi => vi.BallotGuid)
+            .ToList();
+        _voteinfos.ForEach(Db.Detach);
+        return _voteinfos;
       }
     }
 
@@ -210,7 +229,7 @@ namespace TallyJ.CoreModels
     public virtual ResultSummary GenerateResults()
     {
       // first refresh all votes and ballots
-      if (VoteAnalyzer.UpdateAllStatuses(VoteInfos))
+      if (VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes))
       {
         SaveChanges();
       }
@@ -322,10 +341,10 @@ namespace TallyJ.CoreModels
         var code = "" + groupCode;
 
         var resultTie = new ResultTie
-                          {
-                            ElectionGuid = TargetElection.ElectionGuid,
-                            TieBreakGroup = code
-                          };
+          {
+            ElectionGuid = TargetElection.ElectionGuid,
+            TieBreakGroup = code
+          };
 
         ResultTies.Add(resultTie);
         AddResultTie(resultTie);
@@ -366,12 +385,12 @@ namespace TallyJ.CoreModels
       var groupOnlyInOther = groupInOther && !(groupInTop || groupInExtra);
 
       results.ForEach(delegate(Result r)
-                        {
-                          r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
-                          r.IsTieResolved = r.TieBreakCount.AsInt() > 0
-                                            && !results.Any(r2 => r2.C_RowId != r.C_RowId
-                                                                  && r2.TieBreakCount == r.TieBreakCount);
-                        });
+        {
+          r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
+          r.IsTieResolved = r.TieBreakCount.AsInt() > 0
+                            && !results.Any(r2 => r2.C_RowId != r.C_RowId
+                                                  && r2.TieBreakCount == r.TieBreakCount);
+        });
 
       if (groupInOther && (groupInTop || groupInExtra))
       {

@@ -37,7 +37,7 @@ var ImportCsvPage = function () {
 
             ShowStatusDisplay('Saving...');
             CallAjaxHandler(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId }, function (info) {
-                ShowStatusDisplay('Saved', 0, 2000, false, true);
+                ShowStatusSuccess('Saved');
                 showFields(info);
             });
 
@@ -49,7 +49,7 @@ var ImportCsvPage = function () {
             ShowStatusDisplay('Deleting...');
 
             CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
-                ShowStatusDisplay('Deleted', 0, 2000, false, true);
+                ShowStatusSuccess('Deleted');
                 $('#importResults').html(info.Results);
             });
         });
@@ -70,7 +70,7 @@ var ImportCsvPage = function () {
                 if (rowId == local.activeFileRowId) {
                     local.activeFileRowId = 0;
                 }
-                ShowStatusDisplay('Deleted', 0, 2000, false, true);
+                ShowStatusSuccess('Deleted');
             });
         });
         $('#uploadListBody select').live('change', function () {
@@ -81,7 +81,7 @@ var ImportCsvPage = function () {
                     ShowStatusFailed(info.Message);
                 }
                 else {
-                    ShowStatusDisplay('Saved', 0, 2000, false, true);
+                    ShowStatusSuccess('Saved');
                 }
             });
         });
@@ -117,7 +117,7 @@ var ImportCsvPage = function () {
             action: publicInterface.controllerUrl + '/Upload',
             allowedExtensions: ['CSV'],
             onSubmit: function (id, fileName) {
-                ShowStatusDisplay('Uploading...', 0);
+                ShowStatusDisplay('Uploading...');
             },
             onProgress: function (id, fileName, loaded, total) {
             },
@@ -196,7 +196,7 @@ var ImportCsvPage = function () {
                 ShowStatusFailed(info.Message);
             }
             else {
-                ShowStatusDisplay('Saved', 0, 2000, false, true);
+                ShowStatusSuccess('Saved');
             }
             if (info.Status) {
                 activeUploadFileRow().children().eq(1).text(info.Status);
