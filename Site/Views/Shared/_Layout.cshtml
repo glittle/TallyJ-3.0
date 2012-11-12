@@ -69,7 +69,7 @@
         <div class="beta1">
           <div class="betaImg">
           </div>
-          TallyJ is in final beta mode. Please send feedback to <a title="Send email to Glen"
+          TallyJ is ready for use! Please send feedback to <a title="Send email to Glen"
             href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
               href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
               target="gdoc">this document</a> for status updates!
@@ -82,7 +82,7 @@
           @if (UserSession.CurrentElection != null)
           {
             <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
-              <span>State</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="Change state" data-state="@UserSession.CurrentElectionStatus">
+              <span>State</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Only head teller may change election state")" data-state="@UserSession.CurrentElectionStatus">
                 @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection)
               </ol>
             </div>@*

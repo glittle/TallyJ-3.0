@@ -794,7 +794,6 @@ a.twitter
       display: inline-block;
       margin: 0 5px;
       padding: 0 5px;
-      cursor: pointer;
 
     color: #333;
     text-decoration: none;
@@ -805,9 +804,14 @@ a.twitter
     -moz-border-radius: 2px;
 
     }
-    .ElectionState ol li.Active_False:hover
+    body.AuthKnown .ElectionState ol li.Active_False:hover
     {
+      cursor: pointer;
       background-color: #b6ff50;
+    }
+    body.AuthGuest .ElectionState ol li.Active_False:hover
+    {
+      cursor:not-allowed;
     }
 
 .ChangeElectionState
@@ -1021,6 +1025,10 @@ body.AuthKnown .CurrentElectionName
   }
 
 .AuthGuest .AllowChangeElectionState.ui-icon
+{
+  display: none;
+}
+.AuthGuest .NotFeatured
 {
   display: none;
 }

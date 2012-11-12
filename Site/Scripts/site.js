@@ -147,7 +147,7 @@ function AttachHandlers() {
     $('.ChangeElectionState').toggle();
     $(document).on('click', hide);
   });
-  $('#electionState li').on('click', function () {
+  $('body.AuthKnown #electionState li').on('click', function () {
     var item = $(this);
     var form = {
       status: item.data('state')

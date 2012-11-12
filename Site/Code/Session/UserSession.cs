@@ -5,17 +5,15 @@ using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
-
 using TallyJ.CoreModels;
 using TallyJ.EF;
-using Membership = System.Web.Security.Membership;
 
 namespace TallyJ.Code.Session
 {
   public static class UserSession
   {
     /// <summary>
-    ///     Logged in identity name.
+    ///   Logged in identity name.
     /// </summary>
     public static string LoginId
     {
@@ -84,7 +82,7 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    ///     Has this person logged in?
+    ///   Has this person logged in?
     /// </summary>
     public static bool IsLoggedIn
     {
@@ -92,7 +90,7 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    ///     The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also sets the CurrentElectionGuid into Session.
+    ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also sets the CurrentElectionGuid into Session.
     /// </summary>
     public static Election CurrentElection
     {
@@ -114,7 +112,7 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    ///     Title of election, if one is selected
+    ///   Title of election, if one is selected
     /// </summary>
     public static string CurrentElectionName
     {
@@ -126,18 +124,20 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    ///     Title of election, if one is selected
+    ///   Title of election, if one is selected
     /// </summary>
     public static string CurrentElectionDisplayNameAndInfo
     {
       get
       {
         var current = CurrentElection;
-        
+        if (current == null)
+          return "[No election selected]";
+
         var type = ElectionTypeEnum.TextFor(current.ElectionType);
         var mode = ElectionModeEnum.TextFor(current.ElectionMode).SurroundContentWith(" (", ")");
 
-        return current == null ? "[No election selected]" : "{0}{1} - {2}".FilledWith(type, mode, current.Name);
+        return "{0}{1} - {2}".FilledWith(type, mode, current.Name);
       }
     }
 
@@ -258,7 +258,9 @@ namespace TallyJ.Code.Session
       get
       {
         var election = CurrentElection;
-        return election == null || election.TallyStatus.HasNoContent() ? ElectionTallyStatusEnum.NotStarted : election.TallyStatus;
+        return election == null || election.TallyStatus.HasNoContent()
+                 ? ElectionTallyStatusEnum.NotStarted
+                 : election.TallyStatus;
       }
     }
 
