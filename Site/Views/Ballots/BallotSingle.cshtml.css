@@ -1,73 +1,83 @@
 ﻿.div1
 {
-    width: 340px;
+    width: 400px;
 }
 
-#bnHolder
+.tabs
 {
-    position: relative;
-    height: 300px;
-    width: 330px;
+    min-height: 300px;
 }
 
-
-#nameList
+.nameList
 {
-    height: 300px;
-    width: 300px;
+    margin: 0 0 10px 0;
+    height: 400px;
+    width: 350px;
     border: solid 1px #999;
     padding: 4px;
     font-size: 110%;
     line-height: 1.5;
     overflow: auto;
+    position: relative;
 }
-#nameList u
+.nameList u
 {
     text-decoration: none;
 }
-#nameList li
+.nameList li
 {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-#nameList li:hover
+.nameList li:hover
 {
     border-color: #ddd;
 }
-#nameList li.selected
+.nameList li.selected
 {
     background-color: #c1f1b4;
     border-color: #999;
 }
-#nameList .InvalidName { text-decoration: line-through; }
-#nameList .Fuzzy{ font-style: italic; }
-#nameList .First {
+.nameList .InvalidName
+{
+    text-decoration: line-through;
+}
+.nameList .Fuzzy
+{
+    font-style: italic;
+}
+.nameList .First
+{
     padding: 3px 0 3px 0; 
     border-top: 3px double #ccc;
     width: 100%;
     display: block;
 }
 
-
-#ballotList
+.ballotList
 {
     overflow: auto;
     padding: 2px;
+    height: 250px;
 }
-#ballotList li
+.ballotList div
 {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-#ballotList li:hover
+.ballotList div span
+{
+    color: #666;
+}
+.ballotList div:hover
 {
     border-color: #ddd;
 }
-#ballotList li.selected
+.ballotList div.selected
 {
     background-color: #c1f1b4;
     border-color: #999;
@@ -75,37 +85,59 @@
 
 
 
-#actionZZ
+.action
 {
-    width: 20px;
-    height: 1em;
+    font-size: 11px;
+    min-width: 100px;
+    display: block;
+}
+.actionHolder
+{
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.tip1
+{
+    color: #aaa;
+    font-size: 10px;
     display: inline-block;
 }
-span.delayingZZ
+span.ZZdelaying
 {
     background-color: #f8f541;
 }
-span.searchingZZ
+span.ZZsearching
 {
     background-color: #f1c1b4;
 }
-input.delaying
+input.ZZdelaying
 {
     background-color: #fffebf;
 }
-input.searching
+input.ZZsearching
 {
     background-color: #ffe8e2;
 }
-#votesPanel
+.votesPanel
 {
     margin-left: 15px;
+    float: left;
+    width: 530px;
+}
+.ui-icon-arrow-2-n-s
+{
+    display: inline-block;
+    margin-left: 15px;
+    cursor: ns-resize;
+    visibility: hidden;
 }
 .ui-icon-trash
 {
     display: inline-block;
-    margin-left: 15px;
+    margin-left: 7px;
     cursor: pointer;
+    visibility: hidden;
 }
 .InvalidName
 {
@@ -127,40 +159,91 @@ input.Vote
 .titleDiv
 {
     font-weight: bold;
+    font-size: 12pt;
     border-bottom: 1px solid #ccc;
+    padding-right: 4px;
 }
-#btnAddSpoiled
+.titleDiv div
 {
-    font-size: 90%;
-    float: right;
+    margin: -7px 0 0 0;
+}
+button.smallButton
+{
+    font-size: 12px;
+    font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
 }
 .Valid .Invalid
 {
     display: none;
 }
+.InvalidP .InvalidCustom, .InvalidC .InvalidPerson
+{
+    display: none;
+}
+.InvalidP div.InvalidPerson
+{
+    color: #e80c4d;
+    margin: -6px 0 0 117px;
+}
+
+select.Invalid
+{
+    vertical-align: top;
+    color: #e80c4d;
+}
+.VoteHost:hover .ui-icon
+{
+    visibility: visible;
+}
 
 .VoteHost span.Name
 {
     display: none;
+    font-size: 16pt;
+    padding: 0 9px 0 0;
+}
+.VoteHost.InvalidP span.Name
+{
+    display: inline;
+    font-size: 1em;
+    text-decoration: line-through;
 }
 .VoteHost.Valid span.Name
 {
     display: inline;
 }
-.Ineligible, span.Invalid
+.InvalidBallot, .Ineligible, span.Invalid
 {
     color: #e80c4d;
     font-weight: bold;
+    margin-left: 22px;
+}
+.Ok
+{
+    color: #0ce84d;
+}
+.Confirmed
+{
+    font-weight: bold;
+}
+.NotConfirmed
+{
+    opacity: .5;
+}
+
+.txtContact
+{
+    width: 260px;
+}
+div.heading
+{
+    font-weight: bold;
+    margin: 0 0 4px 0;
 }
 
 #txtContact
 {
     width: 393px;
-}
-#votesPanel
-{
-    float: left;
-    width: 605px;
 }
 table.locationInfo
 {
@@ -188,11 +271,6 @@ table.locationInfo td
 {
     font-size: 12px;
 }
-#votesList
-{
-    max-height: 300px;
-    overflow: auto;
-}
 
 .ChangedMessage
 {
@@ -210,20 +288,119 @@ table.locationInfo td
     border: 1px solid red;
     background-color: #ffcccc;
 }
-#txtNumCollected
+.txtNumCollected
 {
-    width: 65px;
-    margin-right: 5px;
+    width: 40px;
     text-align: right;
+    margin-right: 5px;
 }
-.countsBad,
-.countsGood,
-.countsNeutral {
-    margin-left: 10px;
+.lblNumEntered
+{
 }
-.countsBad {
+.countsBad, .countsGood, .countsNeutral
+{
+    margin: 4px 0 3px 0;
+}
+.countsBad
+{
     color: red;
 }
-.countsGood {
+.countsGood
+{
     color: green;
+}
+#votesList
+{
+    padding-top: 5px;
+    margin-bottom: 20px;
+}
+.VoteNum
+{
+    display: inline-block;
+    width: 20px;
+    text-align: right;
+    margin-right: 12px;
+    font-size: 80%;
+    color: #aaa;
+}
+.InUse
+{
+    color: #f6941e; 
+}
+.titleDiv .ballotStatus
+{
+    padding-right: 20px;
+    vertical-align: top;
+    font-size: 16pt;
+}
+.titleDiv .ballotCode
+{
+    padding-left: 3px;
+    font-size: 16pt;
+}
+.duplicateVote .Name {
+    color: #e80c4d;
+}
+.duplicateVote .Duplicate
+{
+    color: #e80c4d;
+    margin-right: 2px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 1em;
+    margin-left: 25px;
+}
+
+.VoteHost
+{
+    background-color: #eeffd6;
+    line-height: 1.5;
+}
+.ExtraVote
+{
+    border-top: 1px solid black;
+    margin-top: 5px;
+}
+.ExtraVote, .ExtraVotes
+{
+    background-color: #ffe3c2;
+    line-height: 1.2;
+}
+.ballotList li:hover
+{
+    background-color: #cfc;
+}
+#tabBallots
+{
+    background-color: #efeeef;
+}
+#btnRefreshBallotList
+{
+    margin: 14px 0 -3px 0;
+}
+#btnAddMissing
+{
+    float: right;
+}
+.review 
+{
+    margin-top: 1em;
+}
+#addMissingPanel {
+    display: none;   
+}
+h5 {
+    margin-top: 1em;
+}
+span.HideZero,
+span.HideZero0 {
+    display: none;
+}
+.SpoiledCount {
+    display: inline-block;
+    margin-left: 15px;
+}
+#btnDeleteBallot
+{
+  display: none;
 }

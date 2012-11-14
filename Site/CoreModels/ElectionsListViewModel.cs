@@ -14,8 +14,8 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var locationModel = new LocationModel();
-        var locations = locationModel.LocationsForCurrentElection
+        var locationModel = ContextItems.LocationModel;
+        var locations = locationModel.Locations
           .OrderBy(l => l.SortOrder)
           .Select(l => new { l.Name, l.C_RowId, IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid });
 

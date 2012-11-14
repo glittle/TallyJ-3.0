@@ -1,13 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using TallyJ.Code.Resources;
+using TallyJ.CoreModels;
 
 namespace TallyJ.Code.Session
 {
 	public static class ContextItems
 	{
-		public static Dictionary<string, string> JavascriptForPage
+    public static LocationModel LocationModel
+    {
+      get
+      {
+        var model = CurrentContext.Items[ItemKey.LocationModel] as LocationModel;
+				if (model == null)
+				{
+					CurrentContext.Items[ItemKey.LocationModel] = model = new LocationModel();
+				}
+				return model;
+      }
+    }
+
+	  public static Dictionary<string, string> JavascriptForPage
 		{
 			get
 			{
@@ -33,7 +48,13 @@ namespace TallyJ.Code.Session
 			}
 		}
 
-		/// <summary>Add line(s) of javascript to be inserted into the page</summary>
+	  /// <summary>Add line(s) of javascript to be inserted into the page</summary>
+	  public static void AddJavascriptForPage(string firstLine, params string[] linesOfCode)
+	  {
+	    AddJavascriptForPage(Guid.NewGuid().ToString(), firstLine, linesOfCode);
+	  }
+
+	  /// <summary>Add line(s) of javascript to be inserted into the page</summary>
 		public static void AddJavascriptForPage(string uniqueKey, string firstLine, params string[] linesOfCode)
 		{
 			if (JavascriptForPage.ContainsKey(uniqueKey))

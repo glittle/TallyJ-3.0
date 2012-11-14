@@ -11,7 +11,6 @@
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
   ContextItems.AddJavascriptForPage("pulse", "site.firstPulse={0};".FilledWith(new PulseModel(Url).Pulse().SerializedAsJsonString()));
   var currentMenu = new MenuHelper(Url);
-  var locationHelper = new LocationHelper();
   var tellerHelper = new TellerHelper();
 }
 <!DOCTYPE html>
@@ -128,30 +127,36 @@
     @RenderSection("featured", false)
     <section class="content-wrapper main-content clear-fix">
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
-      @if (currentMenu.ShowLocationSelection || currentMenu.ShowTellerSelector)
+      @{
+        var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+        var showTellerSelector = currentMenu.ShowTellerSelector;
+      }
+      @if (showLocationSelector || showTellerSelector)
       {
         <div class="CurrentInfo">
-          @if (false && currentMenu.ShowLocationSelection)
+          @if (showLocationSelector)
           {
             <label for="ddlTopLocation">
               Location:
             </label>
-            <select id="ddlTopLocation" class="TopLocation" @locationHelper.ShowDisabled>
-              @locationHelper.GetLocationOptions()
+            <select id="ddlTopLocation" class="TopLocation" @ContextItems.LocationModel.ShowDisabled>
+              @ContextItems.LocationModel.GetLocationOptions()
             </select>
-            <label>
+            <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
+            @*<label>
               Computer:</label>
             <select disabled>
               <option>@UserSession.CurrentComputerCode</option>
-            </select>
+            </select>*@
           }
-          @if (currentMenu.ShowTellerSelector)
+          @if (showTellerSelector)
           {
             <label for="ddlTopTeller1">
               Teller at keyboard:</label>
             <select id="ddlTopTeller1" class="TopTeller">
               @tellerHelper.GetTellerOptions(1).AsRawHtml()
             </select>
+            <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
             <label for="ddlTopTeller2">
               Assisting:</label>
             <select id="ddlTopTeller2" class="TopTeller">

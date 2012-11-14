@@ -3,7 +3,7 @@
   <menu id="main">
     <group title="Preparing" longtitle="Initial Setup - Preparing for the election before the big day" showTitleInPage="false">
       <page title="Manage Elections" featureWhen="OnDash, Report, NotStarted" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
-      <page title="Setup this Election" featureWhen="NotStarted" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
+      <page title="Configure this Election" featureWhen="NotStarted" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>
     </group>

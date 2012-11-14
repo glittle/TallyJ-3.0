@@ -7,6 +7,40 @@
 }
 <input type="hidden" data-name="C_RowId" />
 <table class="personEdit">
+    @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
+    {
+        <tr id="trCanReceiveVotes">
+          <td>
+            <label for="input1">Can be voted for in this election?</label>
+          </td>
+            <td>
+                <input type="checkbox" id="input1" data-name="CanReceiveVotes" />
+            <span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
+            </td>
+        </tr>
+    }
+    @if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
+    {
+        <tr id="trCanVote">
+            <td>
+                <label for="input2">Can vote in this election?</label>
+            </td>
+            <td>
+                <input type="checkbox" data-name="CanVote" id="input2" />
+            <span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
+            </td>
+        </tr>
+    }
+    <tr>
+        <td>
+            <label for="ddlIneligible">Select correct eligiblity status:</label>
+        </td>
+        <td>
+            <select id="ddlIneligible" data-name="IneligibleReasonGuid">
+            </select>
+            <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
+        </td>
+    </tr>
     <tr>
         <td>
             First Name
@@ -22,6 +56,7 @@
         </td>
         <td>
             <input type="text" data-name="LastName" maxlength="50" class="text50" />
+            <span class="ui-icon ui-icon-info" id="qTipLName"></span>
         </td>
     </tr>
     <tr>
@@ -39,6 +74,7 @@
         </td>
         <td>
             <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />
+            <span class="ui-icon ui-icon-info" id="qTipOtherLastName"></span>
         </td>
     </tr>
     <tr>
@@ -82,40 +118,6 @@
             </td>
         </tr>
 *@
-    <tr>
-        <td>
-            Select correct eligiblity status:
-            <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
-        </td>
-        <td>
-            <select id="ddlIneligible" data-name="IneligibleReasonGuid">
-            </select>
-        </td>
-    </tr>
-    @if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
-    {
-        <tr id="trCanVote">
-            <td>
-                Show as voter on Front Desk?
-            <span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
-            </td>
-            <td>
-                <input type="checkbox" data-name="CanVote" />
-            </td>
-        </tr>
-    }
-    @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
-    {
-        <tr id="trCanReceiveVotes">
-            <td>
-                Is tied in this Tie-Break election?
-            <span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
-            </td>
-            <td>
-                <input type="checkbox" data-name="CanReceiveVotes" />
-            </td>
-        </tr>
-    }
     <tr>
         <td>
         </td>

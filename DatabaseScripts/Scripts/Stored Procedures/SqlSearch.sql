@@ -70,8 +70,24 @@ AS
 
   */
 
+  if @Raw1 = '~~Voters~~'
+  begin
+      insert into @hits (RowId, PassNum)
+				select p._RowId, 0 
+					from tj.Person p
+					where p.ElectionGuid = @Election
+            and p.CanVote = 1
 
-  if LEN(@term1) > 0
+  end
+  else if @Raw1 = '~~Tied~~'
+  begin
+      insert into @hits (RowId, PassNum)
+				select p._RowId, 0
+					from tj.Person p
+					where p.ElectionGuid = @Election
+            and p.CanReceiveVotes = 1
+  end
+  else if LEN(@term1) > 0
   begin
 
 	  declare @passNum int
@@ -209,10 +225,21 @@ GRANT  EXECUTE  ON [tj].[SqlSearch]  TO [TallyJSite]
 GO
 
 -- Testing code
--- / *
+/*
 declare @more bit
-exec tj.SqlSearch '5F9B0749-259D-4618-A68E-E1381DD97F06', 'j', '', '', '', 15, @more out, 55
-select @more [MoreFound], 1
+exec tj.SqlSearch 'd85b4ad7-f796-410a-b9da-28c5ca4d9eb2', 'a', '', '', '', 15, @more out, 55
+select @more [MoreFound]
+*/
+
+declare @more bit
+exec tj.SqlSearch 'd85b4ad7-f796-410a-b9da-28c5ca4d9eb2', '~~Voters~~', '', '', '', 15, @more out, 55
+select @more [MoreFound]
+
+--declare @more bit
+exec tj.SqlSearch 'd85b4ad7-f796-410a-b9da-28c5ca4d9eb2', '~~Tied~~', '', '', '', 15, @more out, 55
+select @more [MoreFound]
+
+
 /*exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'gle', null, 'kn', '', 15, @more out
 select @more [MoreFound], 2
 exec tj.SqlSearch '3936024A-7709-4FAA-9D24-24F7FF933AEE', 'gle', 'li', 'kn', 'l', 15, @more out
@@ -230,4 +257,11 @@ SET FMTONLY OFF;
 
 select * from tj.Election
 -- select * from tj.Person where electionguid = '3936024A-7709-4FAA-9D24-24F7FF933AEE'
+
+select p.* 
+					from tj.Person p
+					where p.ElectionGuid = 'd85b4ad7-f796-410a-b9da-28c5ca4d9eb2'
+            and p.CanReceiveVotes = 1
+
+
 -- */

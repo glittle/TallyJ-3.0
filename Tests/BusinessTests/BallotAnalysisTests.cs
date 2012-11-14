@@ -195,6 +195,27 @@ namespace Tests.BusinessTests
     }
 
     [TestMethod]
+    public void TooManyNumberOfVotesWithSpoiled_Test()
+    {
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                      new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                      new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                      new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    };
+
+      var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
+
+      string newStatus;
+      int spoiledCount;
+      model.DetermineStatusFromVotesList(null, votes, out newStatus, out spoiledCount).ShouldEqual(true);
+
+      newStatus.ShouldEqual(BallotStatusEnum.TooMany);
+      spoiledCount.ShouldEqual(0);
+    }
+
+    [TestMethod]
     public void TooFewNumberOfVotes_Test()
     {
       var votes = new List<vVoteInfo>

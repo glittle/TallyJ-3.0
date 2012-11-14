@@ -79,7 +79,7 @@ namespace TallyJ.CoreModels
     public bool AddCurrentComputerIntoLocation(int id)
     {
       var location =
-        new LocationModel().LocationsForCurrentElection.SingleOrDefault(
+        ContextItems.LocationModel.Locations.SingleOrDefault(
           l => l.C_RowId == id);
 
       if (location == null)

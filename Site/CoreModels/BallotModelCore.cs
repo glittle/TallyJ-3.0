@@ -59,7 +59,7 @@ namespace TallyJ.CoreModels
                                   Votes = CurrentVotesForJson(),
                                   NumNeeded = UserSession.CurrentElection.NumberToElect
                                 },
-                 Location = new LocationModel().LocationInfoForJson(location)
+                 Location = ContextItems.LocationModel.LocationInfoForJson(location)
                }.AsJsonResult();
     }
 
@@ -120,7 +120,7 @@ namespace TallyJ.CoreModels
                {
                  Deleted = true,
                  Ballots = CurrentBallotsInfoList(),
-                 Location = new LocationModel().LocationInfoForJson(UserSession.CurrentLocation)
+                 Location = ContextItems.LocationModel.LocationInfoForJson(UserSession.CurrentLocation)
                }.AsJsonResult();
     }
 

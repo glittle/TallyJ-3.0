@@ -162,7 +162,6 @@ var PeoplePage = function () {
         if (local.lastSearch === text.trim()) return;
         if (text == '') {
             resetSearch();
-            local.lastSearch = '';
             return;
         }
         local.actionTag.addClass('delaying');
@@ -179,7 +178,9 @@ var PeoplePage = function () {
         }, local.keyTime);
     };
     var resetSearch = function () {
-        onNamesReady({
+      $('#txtSearch').val('');
+      local.lastSearch = '';
+      onNamesReady({
             People: [],
             MoreFound: moreFound(local.totalOnFile)
         });
@@ -205,6 +206,13 @@ var PeoplePage = function () {
         $('#nameList li').live('click', nameClick).focus();
         $('#btnAddNew').live('click', addNewPerson);
 
+        $('#btnListVoters').click(function () {
+          specialSearch('~~Voters~~');
+        });
+        $('#btnListTied').click(function () {
+          specialSearch('~~Tied~~');
+        });
+
         local.totalOnFile = publicInterface.namesOnFile;
 
         site.onbroadcast(site.broadcastCode.personSaved, personSaved);
@@ -214,7 +222,12 @@ var PeoplePage = function () {
         site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
     };
 
-    var personSaved = function (ev, info) {
+  var specialSearch = function(code) {
+    resetSearch();
+    local.peopleHelper.SearchNames(code, onNamesReady, false, null, false);
+  };
+  
+  var personSaved = function (ev, info) {
         var searchText = $('#txtSearch').val();
         local.totalOnFile = info.OnFile;
         if (searchText) {

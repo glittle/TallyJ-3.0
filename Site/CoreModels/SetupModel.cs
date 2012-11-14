@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Web;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
@@ -11,9 +9,8 @@ namespace TallyJ.CoreModels
 {
   public class SetupModel : DataConnectedModel
   {
-    private ElectionModel _electionModel;
-    private LocationModel _locationModel;
     private Election _election;
+    private ElectionModel _electionModel;
 
     public int NumberOfPeople
     {
@@ -24,15 +21,15 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return CurrentLocationModel.LocationsForCurrentElection
+        return ContextItems.LocationModel.Locations
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
-                         {
-                           l.Name,
-                           l.ContactInfo,
-                           l.C_RowId
-                         })
+            {
+              l.Name,
+              l.ContactInfo,
+              l.C_RowId
+            })
           .SerializedAsJsonString();
       }
     }
@@ -47,11 +44,6 @@ namespace TallyJ.CoreModels
       get { return _electionModel ?? (_electionModel = new ElectionModel()); }
     }
 
-    public LocationModel CurrentLocationModel
-    {
-      get { return _locationModel ?? (_locationModel = new LocationModel()); }
-    }
-
     public object RulesForCurrentElection
     {
       get
@@ -60,11 +52,11 @@ namespace TallyJ.CoreModels
         var rules = CurrentElectionModel.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
 
         return new
-                 {
-                   type = currentElection.ElectionType,
-                   mode = currentElection.ElectionMode,
-                   rules = rules.SerializedAsJsonString()
-                 };
+          {
+            type = currentElection.ElectionType,
+            mode = currentElection.ElectionMode,
+            rules = rules.SerializedAsJsonString()
+          };
       }
     }
 
@@ -77,23 +69,28 @@ namespace TallyJ.CoreModels
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
-                         {
-                           l.Name,
-                           l.C_RowId
-                         })
+            {
+              l.Name,
+              l.C_RowId
+            })
           .SerializedAsJsonString();
       }
+    }
+
+    public bool HasBallots
+    {
+      get { return Db.vBallotInfoes.Any(b => b.ElectionGuid == UserSession.CurrentElectionGuid); }
     }
 
     public string InvalidReasonsJsonString()
     {
       return IneligibleReasonEnum.Items
         .Select(r => new
-                       {
-                         Guid = r.Value,
-                         r.Group,
-                         Desc = r.Description
-                       }).SerializedAsJsonString();
+          {
+            Guid = r.Value,
+            r.Group,
+            Desc = r.Description
+          }).SerializedAsJsonString();
     }
 
     //public HtmlString IneligibleReasonsForSelect()

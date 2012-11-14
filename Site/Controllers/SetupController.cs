@@ -128,13 +128,13 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult EditLocation(int id, string text)
     {
-      return new LocationModel().EditLocation(id, text);
+      return ContextItems.LocationModel.EditLocation(id, text);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult SortLocations(List<int> ids)
     {
-      return new LocationModel().SortLocations(ids);
+      return ContextItems.LocationModel.SortLocations(ids);
     }
 
     //[ForAuthenticatedTeller]

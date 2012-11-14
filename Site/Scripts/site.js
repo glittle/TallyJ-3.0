@@ -93,6 +93,8 @@ function PrepareQTips(doNow) {
   // global tips
   site.qTips.push({ selector: '#qTipQuickLinks', title: 'Common Pages', text: 'Shows the pages relevant to the current state of the election. All other pages are still available in the Dashboard.' });
   site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate.' });
+  site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
+  site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 
   // add some tips for pages without dedicated js
   if ($('#qTipReg1').length) {
@@ -203,6 +205,7 @@ function PrepareTopLocationAndTellers() {
       ShowStatusSuccess('Saved');
     });
   });
+  
   $('.TopTeller').change(function (ev) {
     ShowStatusDisplay('Saving...');
     var ddl = $(this);
@@ -233,11 +236,15 @@ function PrepareTopLocationAndTellers() {
         otherDll.html(info.TellerList);
         otherDll.val(otherValue);
       }
+
+      $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
     });
   }).each(function () {
     var ddl = $(this);
     ddl.data('current', ddl.val());
   });
+  
+  $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
 }
 
 function PrepareMainMenu() {
@@ -424,11 +431,11 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
     success: function (data) {
       if (HasErrors(data)) return;
 
+      ResetStatusDisplay();
+
       if (typeof callbackWithInfo != 'undefined') {
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
       }
-
-      ResetStatusDisplay();
     },
     error: function (xmlHttpRequest, textStatus) {
       if (typeof callbackOnFailed != 'undefined') {
@@ -539,7 +546,7 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
 }
 
 function ShowStatusSuccess(msg) {
-  ShowStatusDisplay(msg, 0, 5000, false, true);
+  ShowStatusDisplay(msg, 0, 3000, false, true);
 }
 
 function ShowStatusFailed(msg, keepTime) {

@@ -1,11 +1,13 @@
-﻿<div class="VoteHost Changed{changed} Valid{invalid}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
-    <input class="Vote" type="text" value='{count}' tabindex="1"><span class="Name">{name}</span>
+﻿<div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <input class="Vote" type="text" value='{count}' tabindex="1">
     <span class="Invalid">Spoiled: </span>
-    <select class="Invalid" data-invalid="{invalid}" tabindex="1">
-        {InvalidReasons}
+    <span class="Name">{^Display}</span>
+    <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
+        {^InvalidReasons}
     </select>
-    <span class="ui-icon ui-icon-trash" title="Delete this vote line"></span>
-    <div class="ChangedMessage" title="This person's record was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!">Error (mouse over to see explanation)
+    <span class="ui-icon ui-icon-trash" title="Delete this person's ballots from this ballot group"></span>
+    <div class="Invalid InvalidPerson">{InvalidDescription}</div>
+    <div class="ChangedMessage">This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!
     <button type="button" class="btnClearChangeError">Verified correct</button>
     </div>
 </div>

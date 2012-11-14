@@ -14,13 +14,16 @@
       be mixed together, then opened and tallied.</li>
   </ol>
 </div>
-<div>
+@if(ContextItems.LocationModel.HasLocations)
+{
+  <div>
     Showing ballots collected at:
     <select id="locations">
-        <option value="-1">[All Locations]</option>
-        @Model.GetLocationOptions()
+      <option value="-1">[All Locations]</option>
+      @Model.GetLocationOptions()
     </select>
-</div>
+  </div>
+}
 <div class="Totals Count">
   <div id="Totals"></div>
 </div>

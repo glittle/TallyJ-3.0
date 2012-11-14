@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -13,20 +14,54 @@ namespace TallyJ.CoreModels
 {
   public class LocationModel : DataConnectedModel
   {
+    private List<Location> _locations;
+
     /// <Summary>List of Locations</Summary>
-    public IQueryable<Location> LocationsForCurrentElection
+    public List<Location> Locations
     {
       get
       {
-        return
-          Db.Locations
-            .Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid);
+        return _locations ?? (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
       }
+    }
+
+    public string ShowDisabled
+    {
+      get { return Locations.Count == 1 ? " disabled" : ""; }
+    }
+
+    public HtmlString GetLocationOptions()
+    {
+      var currentLocation = UserSession.CurrentLocation;
+      var selected = 0;
+      if (currentLocation != null)
+      {
+        selected = currentLocation.C_RowId;
+      }
+
+      return Locations
+        .OrderBy(l => l.SortOrder)
+        .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
+        .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
+        .JoinedAsString()
+        .AsRawHtml();
+    }
+
+    /// <Summary>Does this page need to show the location selector?</Summary>
+    public bool ShowLocationSelector(MenuHelper currentMenu)
+    {
+      return currentMenu.ShowLocationSelection && HasLocations;
+    }
+
+    /// <Summary>Does this election have more than one location?</Summary>
+    public bool HasLocations
+    {
+      get { return Locations.Count > 1; }
     }
 
     public JsonResult UpdateStatus(int locationId, string status)
     {
-      var location = Db.Locations.SingleOrDefault(l => l.ElectionGuid == UserSession.CurrentElectionGuid && l.C_RowId == locationId);
+      var location = Locations.SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
@@ -114,8 +149,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult EditLocation(int id, string text)
     {
-      var locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
-      var location = locations.SingleOrDefault(l => l.C_RowId == id);
+      var location = Locations.SingleOrDefault(l => l.C_RowId == id);
 
       if (location == null)
       {
@@ -129,7 +163,7 @@ namespace TallyJ.CoreModels
 
       if (text.HasNoContent() && location.C_RowId != 0)
       {
-        if (locations.Count() > 1)
+        if (Locations.Count() > 1)
         {
           // delete existing if we can
           var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
@@ -185,8 +219,7 @@ namespace TallyJ.CoreModels
     {
       //var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
-      var locations =
-        Db.Locations.Where(l => idList.Contains(l.C_RowId) && l.ElectionGuid == UserSession.CurrentElectionGuid);
+      var locations = Locations.Where(l => idList.Contains(l.C_RowId)).ToList();
 
       var sortOrder = 1;
       foreach (var id in idList)

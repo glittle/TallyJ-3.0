@@ -78,7 +78,7 @@ namespace TallyJ.Controllers
 
     public JsonResult UpdateLocationStatus(int id, string status)
     {
-      return new LocationModel().UpdateStatus(id, status);
+      return ContextItems.LocationModel.UpdateStatus(id, status);
     }
 
     //public JsonResult UpdateBallotStatus(string status)
@@ -93,12 +93,12 @@ namespace TallyJ.Controllers
     
     public JsonResult UpdateLocationInfo(string info)
     {
-      return new LocationModel().UpdateContactInfo(info);
+      return ContextItems.LocationModel.UpdateContactInfo(info);
     }
     
     public JsonResult UpdateLocationCollected(int numCollected)
     {
-      return new LocationModel().UpdateNumCollected(numCollected);
+      return ContextItems.LocationModel.UpdateNumCollected(numCollected);
     }
 
     public JsonResult RefreshBallotsList()
