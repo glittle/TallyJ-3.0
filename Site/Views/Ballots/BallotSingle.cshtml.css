@@ -50,8 +50,10 @@
     text-decoration: line-through;
   }
 
-  .nameList .Fuzzy
+  .nameList .Match2,
+  .nameList .Match4
   {
+    background-color: #efeeef;
     font-style: italic;
   }
 

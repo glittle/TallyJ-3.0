@@ -321,6 +321,30 @@ namespace Tests.BusinessTests
     }
 
     [TestMethod]
+    public void HasDuplicates_and_Too_Many_Test()
+    {
+      var dupPersonGuid = Guid.NewGuid();
+
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                      new vVoteInfo {PersonGuid = dupPersonGuid},
+                      new vVoteInfo {PersonGuid = dupPersonGuid},
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                      new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    };
+
+      var model = new BallotAnalyzer(5, _fakes.SaveChanges, false);
+
+      string newStatus;
+      int spoiledCount;
+      model.DetermineStatusFromVotesList(BallotStatusEnum.Ok, votes, out newStatus, out spoiledCount).ShouldEqual(true);
+
+      newStatus.ShouldEqual(BallotStatusEnum.TooMany);
+    }
+
+    [TestMethod]
     public void AllSpoiled_Test()
     {
       var dupPersonGuid = Guid.NewGuid();

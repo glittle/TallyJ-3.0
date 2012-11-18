@@ -197,7 +197,7 @@ AS
 	   , p.IneligibleReasonGuid
 	   , ROW_NUMBER() over (order by h.PassNum, _FullName) [SortOrder]
 	   , p.CanReceiveVotes
-	   , coalesce((select SUM(case when v.IsSingleNameElection = 1 then 1 else v.SingleNameElectionCount end) from tj.vVoteInfo v where v.PersonGuid = p.PersonGuid),0) [Votes]
+	   , coalesce((select SUM(case when v.IsSingleNameElection = 1 then v.SingleNameElectionCount else 1 end) from tj.vVoteInfo v where v.PersonGuid = p.PersonGuid),0) [Votes]
 
    from @hits h
      join tj.Person p on p._RowId = h.RowId
@@ -212,8 +212,9 @@ AS
             , res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
 			, res.CanReceiveVotes
-			, case when ROW_NUMBER() over (partition by PassNum order by Votes desc) = 1 
-						then 1 else 0 end [BestMatch]
+			--, case when ROW_NUMBER() over (partition by PassNum order by Votes desc) = 1 
+			--			then 1 else 0 end 
+      , Votes [BestMatch]
 	from @results res
 		-- left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
 	where res.SortOrder <= @MaxToReturn

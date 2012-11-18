@@ -624,12 +624,7 @@ var BallotSinglePageFunc = function () {
       if (beingRefreshed) {
 
       } else {
-        local.rowSelected = -1;
-        $.each(local.People, function (i, item) {
-          if (item.BestMatch && local.rowSelected === -1) {
-            local.rowSelected = i;
-          }
-        });
+        local.rowSelected = info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
         var ineligible = $(item).data('ineligible');
@@ -876,6 +871,7 @@ var BallotSinglePageFunc = function () {
   };
 
   var resetSearch = function () {
+    local.lastSearch = '';
     onNamesReady({
       People: [],
       MoreFound: ''

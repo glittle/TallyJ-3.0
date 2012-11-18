@@ -57,7 +57,7 @@ namespace TallyJ.CoreModels
                 Id = p.PersonId,
                 Name = p.FullName,
                 Ineligible = voteHelper.IneligibleToReceiveVotes(p.Ineligible, p.CanReceiveVotes),
-                BestMatch = p.BestMatch == 1,
+                p.BestMatch,
                 p.MatchType
               }),
           MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
