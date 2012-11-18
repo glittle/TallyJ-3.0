@@ -16,7 +16,7 @@ var BallotSinglePageFunc = function () {
     nameList: null,
     searchPanel: null,
     ballotsPanel: null,
-    btnDeleteBallot: null,
+    //btnDeleteBallot: null,
     location: {},
     votesNeeded: 0,
     ballotStatus: '',
@@ -33,23 +33,24 @@ var BallotSinglePageFunc = function () {
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
   };
   var tabNum = {
-    ballots: 0,
-    ballot: 1
+    ballot: 0
   };
 
   var preparePage = function () {
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
+    local.inputField = $('#txtSearch');
+    local.inputField.on('keyup paste', runSearch).focus();
+
     local.actionTag = $('#action');
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
-    local.ballotsPanel = $('#ballots');
+    //    local.ballotsPanel = $('#ballots');
     local.votesList = $('#votesList');
 
     local.nameList.on('click', 'li', nameClick);
-    $('#ballotList').on('click', 'div', ballotClick);
+    //$('#ballotList').on('click', 'div', ballotClick);
 
     $('#btnAddSpoiled').on('click', addSpoiled);
 
@@ -59,32 +60,32 @@ var BallotSinglePageFunc = function () {
     local.votesList.on('change', 'select', invalidReasonChanged);
 
     local.tabList = $('#tabs');
-    local.tabList.tabs({
-      show: function (event, ui) {
-        switch (ui.index) {
-          case tabNum.ballot:
-            local.inputField.focus().select();
-            break;
-        }
-      }
-    });
-    // local.tabList.tabs('select', tabNum.ballots);
+    local.tabList.tabs();
+    //    {
+    //      show: function (event, ui) {
+    //        switch (ui.index) {
+    //          case tabNum.ballot:
+    //            local.inputField.focus().select();
+    //            break;
+    //        }
+    //      }
+    //    });
 
-    local.btnDeleteBallot = $('#btnDeleteBallot');
-    local.btnDeleteBallot.on('click', deleteBallot);
+    //    local.btnDeleteBallot = $('#btnDeleteBallot');
+    //    local.btnDeleteBallot.on('click', deleteBallot);
 
-    $('#btnRefreshBallotCount').on('click', changeLocationStatus);
-    $('#btnRefreshBallotList').on('click', startToRefreshBallotList);
+    $('#btnRefreshBallotCount').click(changeLocationStatus);
+    $('#btnRefreshBallotList').click(startToRefreshBallotList);
 
-    $('#btnNewBallot').on('click', newBallot);
-    $('#btnNewBallot2').on('click', newBallot);
+    //    $('#btnNewBallot').on('click', newBallot);
+    //    $('#btnNewBallot2').on('click', newBallot);
 
-    $('#btnAddMissing').on('click', addMissing);
-    $('#btnCancelAddMissing').on('click', cancelAddMissing);
+    $('#btnAddMissing').click(addMissing);
+    $('#btnCancelAddMissing').click(cancelAddMissing);
 
-    $('#cbReview').on('click, change', cbReviewChanged);
+    //    $('#cbReview').on('click, change', cbReviewChanged);
 
-    $('#ddlLocationStatus').on('change', changeLocationStatus);
+    //    $('#ddlLocationStatus').on('change', changeLocationStatus);
     $('#txtContact').on('change', function () {
       CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
         ShowStatusSuccess('Updated');
@@ -101,31 +102,76 @@ var BallotSinglePageFunc = function () {
     });
     resetSearch();
 
+    local.votesList.sortable({
+      handle: '.ui-icon-arrow-2-n-s',
+      items: '.VoteHost',
+      axis: 'y',
+      containment: 'parent',
+      tolerance: 'pointer',
+      stop: orderChanged
+    });
+
     local.invalidReasonsHtml = prepareReasons();
     local.invalidReasonsShortHtml = prepareReasons('Unreadable');
 
     site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add a missing name" button instead.' });
+    site.qTips.push({ selector: '#qTipNumVotes', title: '# Votes', text: 'After the paper ballots are sorted by name, enter the number of votes each person has received.  When typing the number, the Up and Down keys will change the number of votes for you.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+    site.onbroadcast(site.broadcastCode.locationChanged, function () {
+      // do instant reload
+      changeLocation();
+    });
 
     showBallot(publicInterface);
   };
-  var newBallot = function () {
-    // disable on click...
-    $('.NewBallotBtns').prop('disabled', true);
-
-    CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
-      showBallot(info);
-      local.tabList.tabs('select', tabNum.ballot);
-      local.inputField.focus().val('').change();
-      local.nameList.html('');
-      $('.NewBallotBtns').prop('disabled', false);
-    });
-  };
+  //  var newBallot = function () {
+  //    // disable on click...
+  //    $('.NewBallotBtns').prop('disabled', true);
+  //
+  //    CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
+  //      showBallot(info);
+  //      //local.tabList.tabs('select', tabNum.ballot);
+  //      local.inputField.focus().val('').change();
+  //      local.nameList.html('');
+  //      $('.NewBallotBtns').prop('disabled', false);
+  //    });
+  //  };
 
   var focusOnTextInput = function () {
     local.inputField.focus().select();
+  };
+
+  var orderChanged = function (ev, ui) {
+    var ids = [];
+    var pos = 1;
+    var toUpdate = [];
+
+    local.votesList.children().each(function () {
+      var voteHost = $(this);
+      var id = +voteHost.data('vote-id');
+      if (id > 0) {
+        ids.push(id);
+        toUpdate.push(voteHost.find('.VoteNum'));
+      }
+      pos++;
+    });
+    var form = {
+      idList: ids
+    };
+    ShowStatusDisplay("Saving...");
+    CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
+      if (info) {
+        // no need to update client with new order
+        ShowStatusSuccess("Saved");
+        // update to reflect changes
+        $.each(toUpdate, function (i, o) {
+          o.text(i + 1);
+        });
+      }
+    });
+
   };
 
   var startToRefreshBallotList = function () {
@@ -134,6 +180,15 @@ var BallotSinglePageFunc = function () {
       highlightBallotInList();
       ShowStatusSuccess('Updated');
     });
+  };
+
+  var changeLocation = function () {
+    ShowStatusDisplay('Loading location...');
+    CallAjaxHandler(publicInterface.controllerUrl + '/GetLocationInfo', null, function (info) {
+      showLocation(info.Location);
+      showBallot(info);
+    });
+
   };
 
   var changeLocationStatus = function () {
@@ -199,7 +254,7 @@ var BallotSinglePageFunc = function () {
 
     var ballotInfo = info.BallotInfo;
     if (ballotInfo) {
-      local.tabList.tabs('enable', tabNum.ballot);
+      //local.tabList.tabs('enable', tabNum.ballot);
       $('#votesPanel').css('visibility', 'visible');
 
       var ballot = ballotInfo.Ballot;
@@ -215,17 +270,17 @@ var BallotSinglePageFunc = function () {
 
       updateStatusDisplay(ballot);
 
-      local.tabList.tabs('select', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
+      //local.tabList.tabs('select', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
 
       highlightBallotInList();
 
     } else {
       $('.ballotCode').text('');
 
-      $('#votesPanel').css('visibility', 'hidden');
-      local.tabList.tabs('select', tabNum.ballots);
-      local.tabList.tabs('disable', tabNum.ballot);
-      local.btnDeleteBallot.hide();
+      //$('#votesPanel').css('visibility', 'hidden');
+      //local.tabList.tabs('select', tabNum.ballots);
+      //      local.tabList.tabs('disable', tabNum.ballot);
+      //local.btnDeleteBallot.hide();
     }
 
     if (info.Location) {
@@ -246,7 +301,7 @@ var BallotSinglePageFunc = function () {
       select.val(select.data('invalid'));
     });
 
-    local.btnDeleteBallot.toggle(votes.length === 0);
+    //local.btnDeleteBallot.toggle(votes.length === 0);
   };
   var updateStatusInList = function (info) {
     $('#BallotStatus' + local.ballotId).html(local.ballotListDetailTemplate.filledWith(info));
@@ -261,7 +316,7 @@ var BallotSinglePageFunc = function () {
       info.BallotStatusText = info.StatusCodeText;
     }
 
-    $('#cbReview').attr('checked', info.BallotStatus == 'Review');
+    //    $('#cbReview').attr('checked', info.BallotStatus == 'Review');
 
     var status = info.BallotStatus;
 
@@ -278,22 +333,22 @@ var BallotSinglePageFunc = function () {
     }
   };
 
-  var cbReviewChanged = function () {
-    var checked = $('#cbReview').prop('checked');
-    //var isReview = local.ballotStatus == 'Review';
-
-    //if (checked != isReview) {
-    ShowStatusDisplay('Saving');
-
-    CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
-      updateStatusDisplay(info);
-      updateStatusInList(info);
-
-      ShowStatusSuccess('Saved');
-    });
-
-    //}
-  };
+  //  var cbReviewChanged = function () {
+  //    var checked = $('#cbReview').prop('checked');
+  //    //var isReview = local.ballotStatus == 'Review';
+  //
+  //    //if (checked != isReview) {
+  //    ShowStatusDisplay('Saving');
+  //
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
+  //      updateStatusDisplay(info);
+  //      updateStatusInList(info);
+  //
+  //      ShowStatusSuccess('Saved');
+  //    });
+  //
+  //    //}
+  //  };
 
   var showLocation = function (location) {
     local.location = location;
@@ -318,16 +373,16 @@ var BallotSinglePageFunc = function () {
     var remainingToEnter = (local.location.BallotsCollected || 0) - (numEntered || 0);
     var html, title;
     if (remainingToEnter == 0) {
-      title = ': All entered';
+      title = 'All entered';
     } else if (remainingToEnter < 0) {
-      title = ': {0} too many'.filledWith(0 - remainingToEnter);
+      title = '{0} too many'.filledWith(0 - remainingToEnter);
     }
     else {
-      title = ': {0} more'.filledWith(remainingToEnter);
+      title = '{0} more'.filledWith(remainingToEnter);
     }
 
-    $('#collectedVsEnteredTitle').text(title);
-    $('#lblNumEntered').text(numEntered || 0);
+    $('#collectedVsEntered').text(title ? ' (' + title + ')' : '');
+    $('#numEntered').text(numEntered || 0);
   };
 
   var showBallots = function (info) {
@@ -347,7 +402,8 @@ var BallotSinglePageFunc = function () {
 
   var voteNumChange = function (ev) {
     var input = $(ev.target);
-
+    var saveNow = ev.type==='change';
+    
     switch (ev.which) {
       case 13:
         // enter
@@ -355,11 +411,29 @@ var BallotSinglePageFunc = function () {
         ev.stopPropagation();
         ev.stopImmediatePropagation();
         local.inputField.focus();
-        return;
+        saveNow = true;
+        break;
+
+      case 38:
+        input.val(+input.val() + 1);
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        saveNow = true;
+        break;
+
+      case 40:
+        input.val(+input.val() - 1);
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        saveNow = true;
+        break;
+        
       default:
     }
 
-    if (ev.type == 'change') {
+    if (saveNow) {
       startSavingVote(input.parent());
     }
   };
@@ -419,11 +493,11 @@ var BallotSinglePageFunc = function () {
         // assume any error was removed
         host.removeClass('Changedtrue').addClass('Changedfalse');
 
-        if (!publicInterface.Location) {
-          location.href = location.href;
-          //TODO: use Ajax to reload the content?
-          return;
-        }
+        //        if (!publicInterface.Location) {
+        //          location.href = location.href;
+        //          //TODO: use Ajax to reload the content?
+        //          return;
+        //        }
 
         if (info.Location) {
           showLocation(info.Location);
@@ -442,8 +516,7 @@ var BallotSinglePageFunc = function () {
                 vote.pos = info.pos;
               }
             }
-          }
-          else {
+          } else {
             ShowStatusFailed('Error on save. Please reload this page.');
           }
         }
@@ -454,14 +527,17 @@ var BallotSinglePageFunc = function () {
 
         local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
 
+        showBallotCount(info.NumSingleNameVotes);
+
         if (info.BallotStatus == 'Ok') {
-          local.tabList.tabs('select', tabNum.ballots);
-          $('#btnNewBallot2').effect('highlight', null, 1500);
+          //local.tabList.tabs('select', tabNum.ballots);
+          //$('#btnNewBallot2').effect('highlight', null, 1500);
         }
 
-        focusOnTextInput();
-      }
-      else {
+//        if (form.count) {
+//          focusOnTextInput();
+//        }
+      } else {
         ShowStatusFailed(info.Error);
       }
 
@@ -498,9 +574,9 @@ var BallotSinglePageFunc = function () {
         updateStatusDisplay(info);
         updateStatusInList(info);
 
-        if (info.BallotStatus == 'Ok') {
-          local.tabList.tabs('select', tabNum.ballots);
-        }
+        //        if (info.BallotStatus == 'Ok') {
+        //          local.tabList.tabs('select', tabNum.ballots);
+        //        }
 
         if (info.Location) {
           showLocation(info.Location);
@@ -548,8 +624,9 @@ var BallotSinglePageFunc = function () {
       if (beingRefreshed) {
 
       } else {
+        local.rowSelected = -1;
         $.each(local.People, function (i, item) {
-          if (item.BestMatch) {
+          if (item.BestMatch && local.rowSelected === -1) {
             local.rowSelected = i;
           }
         });

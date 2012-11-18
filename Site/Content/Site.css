@@ -970,6 +970,10 @@ body.AuthGuest .ElectionState ol li.Active_False:hover
   {
     background: #ff7e7e;
   }
+  .CurrentInfo.NotSet #ddlTopTeller1
+  {
+    color: #ff7e7e;
+  }
 
 body .ifAuthKnownInline, .AllowChangeElectionState, body .ifAuthKnownLI
 {

@@ -73,7 +73,7 @@ namespace TallyJ.Controllers
 
     public JsonResult SwitchToBallot(int ballotId)
     {
-      return CurrentBallotModel.SwitchToBallotJson(ballotId);
+      return CurrentBallotModel.SwitchToBallotAndGetInfo(ballotId).AsJsonResult();
     }
 
     public JsonResult UpdateLocationStatus(int id, string status)
@@ -93,7 +93,20 @@ namespace TallyJ.Controllers
     
     public JsonResult UpdateLocationInfo(string info)
     {
-      return ContextItems.LocationModel.UpdateContactInfo(info);
+      return ContextItems.LocationModel.UpdateLocationInfo(info);
+    }
+    
+    public JsonResult GetLocationInfo()
+    {
+      if (UserSession.CurrentElection.IsSingleNameElection)
+      {
+        return new
+        {
+          Location = ContextItems.LocationModel.CurrentBallotLocationInfo(),
+          BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
+        }.AsJsonResult();
+      }
+      return null;
     }
     
     public JsonResult UpdateLocationCollected(int numCollected)

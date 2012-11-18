@@ -62,7 +62,11 @@ namespace TallyJ.CoreModels
           ballot.StatusCode = BallotStatusEnum.Ok;
           SaveChangesToDatastore();
         }
-        return new BallotStatusWithSpoilCount { Status = BallotStatusEnum.Ok };
+        return new BallotStatusWithSpoilCount
+          {
+            Status = BallotStatusEnum.Ok,
+            NumSingleNameVotes = currentVoteInfos.Sum(vi=>vi.SingleNameElectionCount).AsInt()
+          };
       }
 
 
@@ -78,7 +82,11 @@ namespace TallyJ.CoreModels
         ballot.StatusCode = ballotStatus;
         SaveChangesToDatastore();
       }
-      return new BallotStatusWithSpoilCount { Status = BallotStatusEnum.Parse(ballotStatus), SpoiledCount = spoiledCount };
+      return new BallotStatusWithSpoilCount
+        {
+          Status = BallotStatusEnum.Parse(ballotStatus), 
+          SpoiledCount = spoiledCount
+        };
     }
 
     /// <Summary>Review the votes, and determine if the containing ballot's status code should change</Summary>

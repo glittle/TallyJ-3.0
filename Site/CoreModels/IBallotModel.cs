@@ -7,26 +7,24 @@ namespace TallyJ.CoreModels
 {
   public interface IBallotModel
   {
-    /// <param name="b"></param>
-    /// <param name="createIfNeeded"></param>
     /// <Summary>Current Ballot... could be null</Summary>
-    vBallotInfo GetCurrentBallotInfo(bool createIfNeeded = false);
+    vBallotInfo GetCurrentBallotInfo();
 
     void SetAsCurrentBallot(int ballotId);
 
     int NextBallotNumAtComputer();
-    string CurrentBallotJsonString();
-    IEnumerable<object> CurrentVotesForJson();
+    object CurrentBallotInfo();
+    IEnumerable<object> CurrentVotesForJs();
     JsonResult SaveVote(int personId, int voteId, int count, Guid invalid);
     JsonResult DeleteVote(int vid);
     string InvalidReasonsByIdJsonString();
     string InvalidReasonsByGuidJsonString();
     object CurrentBallotsInfoList();
-    JsonResult SwitchToBallotJson(int ballotId);
+    object SwitchToBallotAndGetInfo(int ballotId);
     bool SortVotes(List<int> ids);
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);
-    object BallotForJson(vBallotInfo b);
+    object BallotInfoForJs(vBallotInfo b);
   }
 }

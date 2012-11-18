@@ -286,21 +286,41 @@ namespace TallyJ.CoreModels
         Db.Tellers.Where(t => t.ElectionGuid == CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
                                                                                               t => t.Name);
 
-      return PeopleInCurrentElection() // start with everyone
+      var ballotSources = PeopleInCurrentElection() // start with everyone
         .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
         .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
         .ToList()
-        .OrderBy(p => p.VotingMethod).ThenBy(p => p.RegistrationTime)
+        .OrderBy(p => p.VotingMethod)
+        .ThenBy(p => p.RegistrationTime)
         .Select(p => new
-                       {
-                         PersonId = p.C_RowId,
-                         p.C_FullName,
-                         VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
-                         When = ShowRegistrationTime(timeOffset, p),
-                         p.VotingMethod,
-                         EnvNum = ShowEnvNum(p),
-                         Tellers = ShowTellers(tellers, p)
-                       });
+          {
+            PersonId = p.C_RowId,
+            p.C_FullName,
+            VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+            When = ShowRegistrationTime(timeOffset, p),
+            p.VotingMethod,
+            EnvNum = ShowEnvNum(p),
+            Tellers = ShowTellers(tellers, p)
+          })
+         .ToList();
+
+      var location = ContextItems.LocationModel.HasLocations
+        ? Locations.Single(l => l.LocationGuid == forLocationGuid)
+        : Locations.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
+
+      if (location.BallotsCollected.AsInt() == 0)
+      {
+        location.BallotsCollected = ballotSources.Count;
+        Db.SaveChanges();
+
+        if (location.LocationGuid == UserSession.CurrentLocationGuid)
+        {
+          UserSession.CurrentLocation = location;
+        }
+      }
+
+
+      return ballotSources;
     }
 
     public HtmlString GetLocationOptions()

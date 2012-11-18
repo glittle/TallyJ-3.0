@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Resources
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @model IBallotModel
 @{
@@ -8,9 +9,10 @@
   ContextItems.AddJavascriptForPage("pageUrl", "ballotSinglePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("peopleUrl", "ballotSinglePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("invalids", "ballotSinglePage.invalidReasons={0};".FilledWith(Model.InvalidReasonsByGuidJsonString()));
-  ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotJsonString()));
+  ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("location", "ballotSinglePage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballots", "ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("locationSingle?", "ballotSinglePage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
+  //  ContextItems.AddJavascriptForPage("ballots", "ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -28,8 +30,7 @@
 <div class="float-left div1">
   <div id="tabs" class="tabs">
     <ul>
-      <li><a href="#tabBallots" accesskey="1">All ballot groups</a> </li>
-      <li><a href="#tabNameSearch" accesskey="2">Add another person</a></li>
+      <li><a href="#tabNameSearch">Add another person</a></li>
     </ul>
     <div id="tabNameSearch">
       <div class="float-left">
@@ -47,7 +48,7 @@
           Add a <u>m</u>issing person</button>
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
         <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="smallButton spoiledBtn float-right">
-          Add a spoi<u>l</u>ed line</button>
+          Add spoi<u>l</u>ed votes</button>
       </div>
       <div class="actionHolder Clear">
         <div class="tip1">
@@ -59,64 +60,58 @@
       <div class="Clear5">
       </div>
     </div>
-    <div id="tabBallots" class="locationInfo">
-      <div>
-        <button id="btnNewBallot2" class="NewBallotBtns smallButton" accesskey="N">
-          Start <u>N</u>ew Ballot group</button>
-      </div>
-      <h5>Ballots</h5>
-      <div id="ballotList" class="ballotList">
-      </div>
-      <button type="button" id="btnRefreshBallotList">
-        Refresh</button>
-    </div>
   </div>
 </div>
 <div id="votesPanel" class="votesPanel">
-  <table class="locationInfo">
-    <tr>
-      <th rowspan="3">
-        <span data-name="Name"></span>
-      </th>
-      <td>
-        <span>Status:</span>
-        <select id="ddlLocationStatus" data-name="TallyStatus" tabindex="2">
-          <option value="">Please select...</option>
-          <option value="NotStarted">Not started</option>
-          <option value="Collecting">Collecting ballots</option>
-          <option value="Counting">Counting and entering ballots</option>
-          <option value="Done">Done - All ballots entered and checked</option>
-          <option value="NeedHelp">Need Help!</option>
-        </select>
-        Ballots Collected:
-                <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
-    </tr>
-    <tr>
-      <td>
-        <span>Contact Info:</span>
-        <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
-      </td>
-    </tr>
-    <tr>
-      <td>Ballots Entered: <span id="numEntered" data-name="BallotsEntered"></span><span id="collectedVsEntered"></span>
-        <button type="button" id="btnRefreshBallotCount">
-          Refresh</button>
-      </td>
-    </tr>
-  </table>
-  <div style="font-weight: bold;">
-    Ballot Group <span id="ballotCode"></span>
+  <div class="divLocationInfo">
+    <table class="locationInfo">
+      @if (ContextItems.LocationModel.HasLocations)
+      {
+        <tr>
+          <td>This Location:
+          </td>
+          <td>"<b><span data-name="Name"></span></b>"
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span>Location Status:</span></td>
+          <td>
+            <select id="ddlLocationStatus" data-name="TallyStatusCode" tabindex="2">
+              @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
+            </select>
+          </td>
+        </tr>
+      }
+      <tr>
+        <td>Ballots Collected:</td>
+        <td>
+          <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
+          <span>Entered so far:</span>
+          <b><span id="numEntered" data-name="BallotsEntered"></span>
+            <span id="collectedVsEntered"></span>
+          </b>
+          <button type="button" id="btnRefreshBallotCount">
+            Refresh</button>
+        </td>
+      </tr>
+      @if (ContextItems.LocationModel.HasLocations)
+      {
+        <tr>
+          <td>
+            <span>Contact Info:</span></td>
+          <td>
+            <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+          </td>
+        </tr>
+      }
+    </table>
   </div>
   <div class="titleDiv">
-    <span class="Vote"># Votes</span>Name of each person receiving a vote (in any order)
+    <span># Votes<span class="ui-icon ui-icon-info" id="qTipNumVotes"></span></span>
+    Name of each person receiving a vote <span class="NotBold">(in any order)</span>
   </div>
   <div id="votesList">
-  </div>
-  <button type="button" id="btnDeleteBallot" class="smallButton" title="Delete after all votes have been deleted">
-    Delete this empty ballot</button>
-  <div class="review">
-    <label for="cbReview">
-      If this ballot needs review by the head teller, tick here</label><input type="checkbox" id="cbReview" />
   </div>
 </div>
 <div id="addMissingPanel" class="votesPanel">

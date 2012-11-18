@@ -6,18 +6,23 @@ var SetupIndexPage = function () {
     // temporary cache of rules, for the life of this page
   };
   var settings = {
-    locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span></div>',
+    locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>     <span class="ui-icon ui-icon-trash" title="Delete this location"></span></div>',
     tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller"></span></div>'
   };
   var preparePage = function () {
 
-    $('#ddlType').live('change keyup', startToAdjustByType);
-    $('#ddlMode').live('change keyup', startToAdjustByType);
+    $(document).on('change keyup', '#ddlType', startToAdjustByType);
+    $(document).on('change keyup', '#ddlMode', startToAdjustByType);
 
-    $('#btnSave').live('click', saveChanges);
-    $('#btnAddLocation').live('click', addLocation);
+    $(document).on('click', '#btnSave', saveChanges);
+    $(document).on('click', '#btnAddLocation', addLocation);
 
-    $('#locationList').live('change', 'input', locationChanged);
+    $('#locationList').on('change', 'input', function () {
+      locationChanged($(this));
+    });
+    $('#locationList').on('click', '.ui-icon-trash', function () {
+      locationChanged($(this).parent().find('input'), true);
+    });
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
@@ -98,15 +103,18 @@ var SetupIndexPage = function () {
     });
   };
 
-  var locationChanged = function (ev) {
-    var input = $(ev.target);
+  var locationChanged = function (input, deleteThis) {
     var form = {
       id: input.data('id'),
-      text: input.val()
+      text: deleteThis ? '' : input.val()
     };
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
-      ShowStatusSuccess(info.Status);
+    CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function(info) {
+      if (info.success) {
+        ShowStatusSuccess(info.Status);
+      } else {
+        ShowStatusFailed(info.Status);
+      }
 
       if (info.Id == 0) {
         input.parent().remove();

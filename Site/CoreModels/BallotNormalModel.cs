@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels
       return nextBallotNum;
     }
 
-    public override object BallotForJson(vBallotInfo b)
+    public override object BallotInfoForJs(vBallotInfo b)
     {
       return new
       {

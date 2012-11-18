@@ -200,11 +200,11 @@ var PeoplePage = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
 
-        local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
+        local.inputField = $(document).on('keyup paste', '#txtSearch', runSearch).focus();
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
-        $('#nameList li').live('click', nameClick).focus();
-        $('#btnAddNew').live('click', addNewPerson);
+        $(document).on('click', '#nameList li', nameClick).focus();
+        $(document).on('click', '#btnAddNew', addNewPerson);
 
         $('#btnListVoters').click(function () {
           specialSearch('~~Voters~~');

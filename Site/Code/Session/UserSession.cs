@@ -119,7 +119,7 @@ namespace TallyJ.Code.Session
       get
       {
         var current = CurrentElection;
-        return current == null ? "[No election selected]" : current.Name;
+        return current == null ? "" : current.Name;
       }
     }
 
@@ -132,12 +132,20 @@ namespace TallyJ.Code.Session
       {
         var current = CurrentElection;
         if (current == null)
-          return "[No election selected]";
+          return "";
 
         var type = ElectionTypeEnum.TextFor(current.ElectionType);
-        var mode = ElectionModeEnum.TextFor(current.ElectionMode).SurroundContentWith(" (", ")");
+        var mode = ElectionModeEnum.TextFor(current.ElectionMode);
 
-        return "{0}{1} - {2}".FilledWith(type, mode, current.Name);
+        var modeWithNum = mode;
+        var numToElect = current.NumberToElect.AsInt();
+        if (numToElect != 9)
+        {
+          modeWithNum = "{0}for {1} member{2}".FilledWith(mode.SurroundContentWith("", " "), current.NumberToElect,
+                                                          numToElect.Plural());
+        }
+
+        return "{0}{1} - \"{2}\"".FilledWith(type, modeWithNum.SurroundContentWith(" (", ")"), current.Name);
       }
     }
 
@@ -151,6 +159,7 @@ namespace TallyJ.Code.Session
     public static Location CurrentLocation
     {
       get { return SessionKey.CurrentLocation.FromSession<Location>(null); }
+      set { SessionKey.CurrentLocation.SetInSession(value); }
     }
 
     public static string CurrentLocationName

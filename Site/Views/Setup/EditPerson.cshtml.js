@@ -82,7 +82,7 @@ var EditPersonPage = function () {
 
 
     var preparePage = function () {
-        $('#btnSave').live('click', saveChanges);
+        $('#btnSave').click(saveChanges);
         $('#ddlIneligible').html(prepareReasons());
 
         site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {

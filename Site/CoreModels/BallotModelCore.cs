@@ -29,20 +29,22 @@ namespace TallyJ.CoreModels
     #region IBallotModel Members
 
     /// <Summary>Current Ballot... could be null</Summary>
-    public vBallotInfo GetCurrentBallotInfo(bool createIfNeeded = false)
+    public vBallotInfo GetCurrentBallotInfo()
     {
+      var createIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
+
       var ballot = Db.vBallotInfoes.SingleOrDefault(b => b.C_RowId == currentBallotId);
 
-      if (createIfNeeded)
+      if (ballot == null && createIfNeeded)
       {
-        return CreateBallot();
+        ballot = CreateAndRegisterBallot();
       }
 
       return ballot;
     }
 
-    public JsonResult SwitchToBallotJson(int ballotId)
+    public object SwitchToBallotAndGetInfo(int ballotId)
     {
       SetAsCurrentBallot(ballotId);
 
@@ -55,17 +57,17 @@ namespace TallyJ.CoreModels
                {
                  BallotInfo = new
                                 {
-                                  Ballot = BallotForJson(ballotInfo),
-                                  Votes = CurrentVotesForJson(),
+                                  Ballot = BallotInfoForJs(ballotInfo),
+                                  Votes = CurrentVotesForJs(),
                                   NumNeeded = UserSession.CurrentElection.NumberToElect
                                 },
                  Location = ContextItems.LocationModel.LocationInfoForJson(location)
-               }.AsJsonResult();
+               };
     }
 
     public bool SortVotes(List<int> ids)
     {
-      var ballotGuid = CurrentBallot().BallotGuid;
+      var ballotGuid = CurrentRawBallot().BallotGuid;
       var votes = Db.Votes
         .Where(v => v.BallotGuid == ballotGuid)
         .ToList();
@@ -82,14 +84,14 @@ namespace TallyJ.CoreModels
 
     public JsonResult StartNewBallotJson()
     {
-      var ballotInfo = CreateBallot();
+      var ballotInfo = CreateAndRegisterBallot();
 
       return new
                {
                  BallotInfo = new
                                 {
-                                  Ballot = BallotForJson(ballotInfo),
-                                  Votes = CurrentVotesForJson(),
+                                  Ballot = BallotInfoForJs(ballotInfo),
+                                  Votes = CurrentVotesForJs(),
                                   NumNeeded = UserSession.CurrentElection.NumberToElect
                                 },
                  Ballots = CurrentBallotsInfoList()
@@ -99,7 +101,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Delete a ballot, but only if already empty</Summary>
     public JsonResult DeleteBallotJson()
     {
-      var ballot = CurrentBallot();
+      var ballot = CurrentRawBallot();
       var ballotGuid = ballot.BallotGuid;
 
       var hasVotes = Db.Votes.Any(v => v.BallotGuid == ballotGuid);
@@ -126,12 +128,12 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetNeedsReview(bool needsReview)
     {
-      var ballot = CurrentBallot();
+      var ballot = CurrentRawBallot();
 
       ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVoteInfoes());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVoteInfos());
 
       Db.SaveChanges();
 
@@ -180,25 +182,25 @@ namespace TallyJ.CoreModels
 
     public abstract int NextBallotNumAtComputer();
 
-    public string CurrentBallotJsonString()
+    public object CurrentBallotInfo()
     {
       var ballotInfo = GetCurrentBallotInfo();
       if (ballotInfo == null)
       {
-        return "null";
+        return null;
       }
 
       return new
                {
-                 Ballot = BallotForJson(ballotInfo),
-                 Votes = CurrentVotesForJson(),
+                 Ballot = BallotInfoForJs(ballotInfo),
+                 Votes = CurrentVotesForJs(),
                  NumNeeded = UserSession.CurrentElection.NumberToElect
-               }.SerializedAsJsonString();
+               };
     }
 
-    public IEnumerable<object> CurrentVotesForJson()
+    public IEnumerable<object> CurrentVotesForJs()
     {
-      return CurrentVoteInfoes()
+      return CurrentVoteInfos()
         .OrderBy(v => v.PositionOnBallot)
         .Select(v => new
                        {
@@ -231,32 +233,38 @@ namespace TallyJ.CoreModels
           return new { Updated = false, Error = "Invalid vote id" }.AsJsonResult();
         }
 
-        var vote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
+        Db.Detach(voteInfo);
 
-        vote.SingleNameElectionCount = count;
-        vote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
+        var rawVote = Db.Votes.Single(v => v.C_RowId == voteInfo.VoteId);
 
-        DetermineInvalidReasonGuid(invalidReason, vote);
+        voteInfo.SingleNameElectionCount = count;
+        rawVote.SingleNameElectionCount = count;
+
+        rawVote.PersonCombinedInfo = voteInfo.PersonCombinedInfo;
+
+        DetermineInvalidReasonGuid(invalidReason, rawVote);
+
 
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
 
         return new
                  {
                    Updated = true,
                    BallotStatus = ballotStatusInfo.Status.Value,
                    BallotStatusText = ballotStatusInfo.Status.DisplayText,
-                   ballotStatusInfo.SpoiledCount
+                   ballotStatusInfo.SpoiledCount,
+                   ballotStatusInfo.NumSingleNameVotes
+                   
                  }.AsJsonResult();
       }
 
-      var shouldCreateBallotIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
-      var ballot = GetCurrentBallotInfo(shouldCreateBallotIfNeeded);
+      var ballot = GetCurrentBallotInfo();
       if (ballot == null)
       {
-        return new {Updated = false, Error = "Invalid ballot"}.AsJsonResult();
+        return new { Updated = false, Error = "Invalid ballot" }.AsJsonResult();
       }
 
       // don't have an active Ballot!
@@ -297,7 +305,7 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
 
         return new
                  {
@@ -305,13 +313,14 @@ namespace TallyJ.CoreModels
                    VoteId = vote.C_RowId,
                    pos = vote.PositionOnBallot,
                    BallotStatus = ballotStatusInfo.Status.Value,
-                   BallotStatusText =  ballotStatusInfo.Status.DisplayText,
-                   ballotStatusInfo.SpoiledCount
+                   BallotStatusText = ballotStatusInfo.Status.DisplayText,
+                   ballotStatusInfo.SpoiledCount,
+                   ballotStatusInfo.NumSingleNameVotes
                  }.AsJsonResult();
       }
 
       // don't recognize person id
-      return new {Updated = false, Error = "Invalid person"}.AsJsonResult();
+      return new { Updated = false, Error = "Invalid person" }.AsJsonResult();
     }
 
     public JsonResult DeleteVote(int vid)
@@ -320,7 +329,7 @@ namespace TallyJ.CoreModels
         Db.vVoteInfoes.SingleOrDefault(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid && vi.VoteId == vid);
       if (voteInfo == null)
       {
-        return new {Message = "Not found"}.AsJsonResult();
+        return new { Message = "Not found" }.AsJsonResult();
       }
 
       var vote = Db.Votes.Single(v => v.C_RowId == vid);
@@ -330,12 +339,12 @@ namespace TallyJ.CoreModels
       UpdateVotePositions(voteInfo.BallotGuid);
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentBallot(), CurrentVoteInfoes());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
 
       return new
                {
                  Deleted = true,
-                 Votes = CurrentVotesForJson(),
+                 Votes = CurrentVotesForJs(),
                  BallotStatus = ballotStatusInfo.Status.Value,
                  BallotStatusText = ballotStatusInfo.Status.DisplayText,
                  ballotStatusInfo.SpoiledCount
@@ -392,7 +401,7 @@ namespace TallyJ.CoreModels
     #endregion
 
     /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
-    public Ballot CurrentBallot()
+    public Ballot CurrentRawBallot()
     {
       var ballotId = SessionKey.CurrentBallotId.FromSession(0);
       return Db.Ballots.Single(b => b.C_RowId == ballotId);
@@ -409,15 +418,16 @@ namespace TallyJ.CoreModels
       return Db.Votes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
     }
 
-    public List<vVoteInfo> CurrentVoteInfoes()
+    public List<vVoteInfo> CurrentVoteInfos()
     {
-      var ballot = GetCurrentBallotInfo();
+      var ballotInfo = GetCurrentBallotInfo();
 
-      if (ballot == null)
+      if (ballotInfo == null)
       {
         return new List<vVoteInfo>();
       }
-      return Db.vVoteInfoes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
+
+      return Db.vVoteInfoes.Where(v => v.BallotGuid == ballotInfo.BallotGuid).ToList();
     }
 
     /// <Summary>Convert int to Guid for InvalidReason. If vote is given, assign if different</Summary>
@@ -444,7 +454,7 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
     }
 
-    public vBallotInfo CreateBallot()
+    public vBallotInfo CreateAndRegisterBallot()
     {
       var currentLocationGuid = UserSession.CurrentLocationGuid;
       var computerCode = UserSession.CurrentComputerCode;
@@ -486,11 +496,11 @@ namespace TallyJ.CoreModels
 
       return new
                {
-                 Ballots = ballots.ToList().Select(BallotForJson),
+                 Ballots = ballots.ToList().Select(BallotInfoForJs),
                  Last = maxRowVersion
                };
     }
 
-    public abstract object BallotForJson(vBallotInfo b);
+    public abstract object BallotInfoForJs(vBallotInfo b);
   }
 }

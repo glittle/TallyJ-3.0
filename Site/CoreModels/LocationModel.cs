@@ -135,7 +135,7 @@ namespace TallyJ.CoreModels
     }
 
 
-    public JsonResult UpdateContactInfo(string info)
+    public JsonResult UpdateLocationInfo(string info)
     {
       var location = UserSession.CurrentLocation;
       Db.Locations.Attach(location);
@@ -160,6 +160,7 @@ namespace TallyJ.CoreModels
       int locationId;
       string locationText;
       string status;
+      var success = false;
 
       if (text.HasNoContent() && location.C_RowId != 0)
       {
@@ -173,6 +174,7 @@ namespace TallyJ.CoreModels
             Db.SaveChanges();
 
             status = "Deleted";
+            success = true;
             locationId = 0;
             locationText = "";
           }
@@ -198,11 +200,13 @@ namespace TallyJ.CoreModels
         status = "Saved";
         locationId = location.C_RowId;
         locationText = location.Name;
+        success = true;
       }
       else
       {
         status= "Nothing to save";
         locationId = 0;
+        success = true;
         locationText = "";
       }
 
@@ -211,6 +215,7 @@ namespace TallyJ.CoreModels
                  // returns 0 if deleted or not created
                  Id = locationId,
                  Text = locationText,
+                 Success = success,
                  Status = status
                }.AsJsonResult();
     }

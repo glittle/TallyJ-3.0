@@ -27,8 +27,8 @@ namespace TallyJ.CoreModels
     public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
     {
       const int max = 45;
-
-      var parts = nameToFind.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+      
+      var parts = nameToFind.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
 
       var term1 = parts[0];
       var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
@@ -41,30 +41,28 @@ namespace TallyJ.CoreModels
         metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
       }
 
-      var moreExactMatchesFound = new ObjectParameter("MoreExactMatchesFound", typeof(bool));
+      var moreExactMatchesFound = new ObjectParameter("MoreExactMatchesFound", typeof (bool));
 
       var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
                                  moreExactMatchesFound, null);
-
-      var moreFound = moreExactMatchesFound.Value != null && (bool)moreExactMatchesFound.Value;
+      var moreFound = moreExactMatchesFound.Value != null && (bool) moreExactMatchesFound.Value;
 
       var voteHelper = new VoteHelper(forBallot);
 
       return new
-      {
-        People = results
-          .Select(p => new
-          {
-            Id = p.PersonId,
-            Name = p.FullName,
-            Ineligible = voteHelper.IneligibleToReceiveVotes(p.Ineligible, p.CanReceiveVotes),
-            BestMatch = p.BestMatch == 1,
-            p.MatchType
-          }),
-        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
-      }
+        {
+          People = results
+            .Select(p => new
+              {
+                Id = p.PersonId,
+                Name = p.FullName,
+                Ineligible = voteHelper.IneligibleToReceiveVotes(p.Ineligible, p.CanReceiveVotes),
+                BestMatch = p.BestMatch == 1,
+                p.MatchType
+              }),
+          MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
+        }
         .AsJsonResult();
-   
     }
 
     //public JsonResult Search_Old(string nameToFind, bool includeMatches)

@@ -22,6 +22,7 @@ var site = {
   qTips: [],
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
+    locationChanged: 'locationChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
     pulse: 'pulse'
@@ -203,11 +204,11 @@ function PrepareTopLocationAndTellers() {
     };
     CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
       ShowStatusSuccess('Saved');
+      site.broadcast(site.broadcastCode.locationChanged);
     });
   });
   
   $('.TopTeller').change(function (ev) {
-    ShowStatusDisplay('Saving...');
     var ddl = $(this);
     var choice = +ddl.val();
     var form = {
@@ -222,6 +223,7 @@ function PrepareTopLocationAndTellers() {
         return;
       }
     }
+    ShowStatusDisplay('Saving...');
 
     CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller', form, function (info) {
       ShowStatusSuccess('Saved');

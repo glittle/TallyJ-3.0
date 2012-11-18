@@ -51,8 +51,8 @@ namespace TallyJ.Code.Resources
 					  string.Format("site.templates.{0}={1}", templateName,
 									GetFileContent(templateName).QuotedForJavascript()
 						))
-			  .JoinedAsString(";")
-			  .SurroundWith("", ";");
+			  .JoinedAsString(";\n")
+			  .SurroundWith("", ";\n");
 		}
 
 	  public static string GetFileContent(File templateName)

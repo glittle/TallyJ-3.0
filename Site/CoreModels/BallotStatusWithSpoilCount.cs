@@ -6,5 +6,6 @@ namespace TallyJ.CoreModels
   {
     public BallotStatusEnum Status { get; set; }
     public int SpoiledCount { get; set; }
+    public int NumSingleNameVotes { get; set; }
   }
 }

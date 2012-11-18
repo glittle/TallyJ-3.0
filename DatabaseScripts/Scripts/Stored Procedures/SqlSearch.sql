@@ -212,7 +212,7 @@ AS
             , res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
 			, res.CanReceiveVotes
-			, case when ROW_NUMBER() over (order by Votes desc) = 1 
+			, case when ROW_NUMBER() over (partition by PassNum order by Votes desc) = 1 
 						then 1 else 0 end [BestMatch]
 	from @results res
 		-- left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
