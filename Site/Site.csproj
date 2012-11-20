@@ -706,6 +706,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Content Include="Download\open\sampleCommunity.csv" />
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
