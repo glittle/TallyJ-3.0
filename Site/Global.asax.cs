@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using FluentSecurity;
 using Le;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
 using NLog;
@@ -79,6 +80,9 @@ namespace TallyJ
 
 
       //AreaRegistration.RegisterAllAreas();
+
+      // Register the default hubs route: ~/signalr/hubs
+      RouteTable.Routes.MapHubs();            
 
       RegisterGlobalFilters(GlobalFilters.Filters);
       RegisterRoutes(RouteTable.Routes);

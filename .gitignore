@@ -27,9 +27,7 @@ TestResults
 *.suo
 *.log
 *.exe
-*.dll
 *.resources
-packages
 EntityFramework.xml
 EntityFramework.SqlServer.xml
 EntityFramework.SqlServerCompact.xml

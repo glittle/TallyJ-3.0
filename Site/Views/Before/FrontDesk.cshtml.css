@@ -31,7 +31,8 @@ p
     width: 16px;
     display: inline-block;
     text-align: center;
-    font-size: 90%;
+  font-weight: bold;
+  color: rgb(135, 98, 135);
 }
 #Main u
 {

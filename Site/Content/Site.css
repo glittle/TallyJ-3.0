@@ -1122,3 +1122,8 @@ body.AuthKnown .CurrentElectionName
 {
   height: 50px;
 }
+.copyright
+{
+  float: left;
+  margin-top: 9px;
+}

@@ -447,23 +447,27 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
+      List<Person> people;
       if (lastRowVersion == 0)
       {
-        return new
-                 {
-                   PersonLines = FrontDeskPersonLines(new List<Person> { person }),
-                   LastRowVersion
-                 }.AsJsonResult();
+        people = new List<Person> { person };
+      }
+      else
+      {
+        people = Db.People
+  .Where(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
+  .ToList();
       }
 
-      var people = Db.People
-        .Where(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
-        .ToList();
-      return new
-               {
-                 PersonLines = FrontDeskPersonLines(people),
-                 LastRowVersion
-               }.AsJsonResult();
+      var updateInfo = new
+      {
+        PersonLines = FrontDeskPersonLines(people),
+        LastRowVersion
+      };
+
+      FrontDeskHub.UpdateAllConnectedClients(updateInfo);
+
+      return updateInfo.AsJsonResult();
     }
 
     public JsonResult DeleteAllPeople()
