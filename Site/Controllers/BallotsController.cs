@@ -104,6 +104,7 @@ namespace TallyJ.Controllers
         {
           Location = ContextItems.LocationModel.CurrentBallotLocationInfo(),
           BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
+          Ballots = CurrentBallotModel.CurrentBallotsInfoList()
         }.AsJsonResult();
       }
       return null;

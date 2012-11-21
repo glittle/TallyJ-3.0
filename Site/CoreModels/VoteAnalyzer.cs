@@ -21,7 +21,8 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>
     public static bool VoteNeedReview(vVoteInfo voteInfo)
     {
-      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote || voteInfo.VoteStatusCode!= VoteHelper.VoteStatusCode.Ok;
+      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote;
+      //      || voteInfo.VoteStatusCode!= VoteHelper.VoteStatusCode.Ok;
       //       || voteInfo.BallotStatusCode == BallotStatusEnum.Review;
     }
 

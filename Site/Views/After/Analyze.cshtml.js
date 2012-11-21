@@ -224,7 +224,7 @@ var AnalyzePage = function () {
                 this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
                 (i % 2 == 0 ? 'Even' : 'Odd'),
                 (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
-            this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : '(Tie ' + this.TieBreakGroup + ' Okay)') : '';
+            this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
             if (this.CloseToNext) {
                 this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
             } else if (this.CloseToPrev) {

@@ -19,7 +19,7 @@
                 Status
             </th>
             <th>
-                Computer
+                @(UserSession.CurrentElection.IsSingleNameElection ? "Group" : "Computer")
             </th>
             <th>
                 # Ballots

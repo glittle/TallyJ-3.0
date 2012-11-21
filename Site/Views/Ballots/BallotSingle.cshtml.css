@@ -1,6 +1,10 @@
-﻿.div1
+﻿body
 {
-  width: 400px;
+  overflow-y: scroll;
+}
+.div1
+{
+  width: 350px;
 }
 
 .tabs
@@ -12,7 +16,7 @@
 {
   margin: 0 0 10px 0;
   height: 400px;
-  width: 350px;
+  width: 300px;
   border: solid 1px #999;
   padding: 4px;
   font-size: 110%;
@@ -70,6 +74,7 @@
   overflow: auto;
   padding: 2px;
   height: 250px;
+  width: 320px;
 }
 
   .ballotList div

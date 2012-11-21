@@ -12,7 +12,7 @@
   ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("location", "ballotSinglePage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
   ContextItems.AddJavascriptForPage("locationSingle?", "ballotSinglePage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
-  //  ContextItems.AddJavascriptForPage("ballots", "ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballots", "ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -30,8 +30,16 @@
 <div class="float-left div1">
   <div id="tabs" class="tabs">
     <ul>
+      <li><a href="#tabBallots">Ballot Groups</a></li>
       <li><a href="#tabNameSearch">Add another person</a></li>
     </ul>
+
+    <div id="tabBallots" class="locationInfo">
+      <h5>Ballot Groups <span class="ui-icon ui-icon-info" id="qTipBallotGroups"></span></h5>
+      <div id="ballotList" class="ballotList">
+      </div>
+    </div>
+
     <div id="tabNameSearch">
       <div class="float-left">
         <div>

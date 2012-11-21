@@ -233,6 +233,27 @@ namespace Tests.BusinessTests
     }
 
     [TestMethod]
+    public void SingleIneligible_Test()
+    {
+      var votes = new List<vVoteInfo>
+                    {
+                      new vVoteInfo
+                        {
+                          VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Not_a_complete_name,
+                          SingleNameElectionCount = 4
+                        },
+                    };
+
+      var model = new BallotAnalyzer(1, _fakes.SaveChanges, true);
+
+      string newStatus;
+      int spoiledCount;
+      model.DetermineStatusFromVotesList(null, votes, out newStatus, out spoiledCount).ShouldEqual(true);
+
+      newStatus.ShouldEqual(BallotStatusEnum.Ok);
+    }
+
+    [TestMethod]
     public void EmptyNumberOfVotes_Test()
     {
       var votes = new List<vVoteInfo>

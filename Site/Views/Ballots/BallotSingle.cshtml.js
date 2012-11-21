@@ -30,10 +30,11 @@ var BallotSinglePageFunc = function () {
     lastBallotRowVersion: 0,
     searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
-    ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+    ballotListTemplate: '<div id=B{Id}>Group {Code}</div>'
   };
   var tabNum = {
-    ballot: 0
+    ballotList: 0,
+    ballot: 1
   };
 
   var preparePage = function () {
@@ -46,11 +47,11 @@ var BallotSinglePageFunc = function () {
     local.actionTag = $('#action');
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
-    //    local.ballotsPanel = $('#ballots');
+    local.ballotsPanel = $('#ballots');
     local.votesList = $('#votesList');
 
     local.nameList.on('click', 'li', nameClick);
-    //$('#ballotList').on('click', 'div', ballotClick);
+    $('#ballotList').on('click', 'div', ballotClick);
 
     $('#btnAddSpoiled').on('click', addSpoiled);
 
@@ -74,8 +75,8 @@ var BallotSinglePageFunc = function () {
     //    local.btnDeleteBallot = $('#btnDeleteBallot');
     //    local.btnDeleteBallot.on('click', deleteBallot);
 
-    $('#btnRefreshBallotCount').click(changeLocationStatus);
-    $('#btnRefreshBallotList').click(startToRefreshBallotList);
+    //$('#btnRefreshBallotCount').click(changeLocationStatus);
+//    $('#btnRefreshBallotquList').click(startToRefreshBallotList);
 
     //    $('#btnNewBallot').on('click', newBallot);
     //    $('#btnNewBallot2').on('click', newBallot);
@@ -117,6 +118,7 @@ var BallotSinglePageFunc = function () {
     site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add a missing name" button instead.' });
     site.qTips.push({ selector: '#qTipNumVotes', title: '# Votes', text: 'After the paper ballots are sorted by name, enter the number of votes each person has received.  When typing the number, the Up and Down keys will change the number of votes for you.' });
+    site.qTips.push({ selector: '#qTipBallotGroups', title: 'Ballot Groups', text: 'Since this is an election for just one person, a ballot and a vote are effectively the same.  For each person the number of votes cast for them is counted by hand and entered here.  If multiple computers are used, then each computer will enter a group of ballots.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
     site.onbroadcast(site.broadcastCode.locationChanged, function () {
@@ -174,13 +176,13 @@ var BallotSinglePageFunc = function () {
 
   };
 
-  var startToRefreshBallotList = function () {
-    CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
-      showBallots(info);
-      highlightBallotInList();
-      ShowStatusSuccess('Updated');
-    });
-  };
+//  var startToRefreshBallotList = function () {
+//    CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
+//      showBallots(info);
+//      highlightBallotInList();
+//      ShowStatusSuccess('Updated');
+//    });
+//  };
 
   var changeLocation = function () {
     ShowStatusDisplay('Loading location...');
@@ -698,7 +700,6 @@ var BallotSinglePageFunc = function () {
 
   var addToVotesList = function (selectedPersonLi) {
     if (!selectedPersonLi.length) return;
-
     var rawId = selectedPersonLi.attr('id');
     if (!rawId) return;
 

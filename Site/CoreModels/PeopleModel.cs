@@ -304,7 +304,7 @@ namespace TallyJ.CoreModels
           })
          .ToList();
 
-      var location = ContextItems.LocationModel.HasLocations
+      var location = ContextItems.LocationModel.HasLocations && forLocationGuid.HasContent()
         ? Locations.Single(l => l.LocationGuid == forLocationGuid)
         : Locations.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
 
