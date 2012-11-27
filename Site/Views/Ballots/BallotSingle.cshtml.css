@@ -339,6 +339,11 @@ table.locationInfo td
   background-color: #ffcccc;
 }
 
+input.changing
+{
+  background-color: #cfc;
+}
+
 #txtNumCollected
 {
   width: 60px;
@@ -369,6 +374,8 @@ table.locationInfo td
 {
   padding-top: 5px;
   margin-bottom: 20px;
+  max-height: 300px;
+  overflow: auto;
 }
 
 .VoteNum

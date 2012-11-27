@@ -23,6 +23,9 @@ var PresenterPage = function () {
       location.href = site.rootUrl + 'Dashboard';
       return false;
     });
+    $('#btnShowNames').click(function () {
+      showReport();
+    });
 
     $(window).on('keydown', keyDown);
     $('#btnShow').on('click', showReport);

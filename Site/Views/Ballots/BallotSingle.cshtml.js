@@ -71,6 +71,7 @@ var BallotSinglePageFunc = function () {
     //        }
     //      }
     //    });
+    local.tabList.tabs('select', tabNum.ballot);
 
     //    local.btnDeleteBallot = $('#btnDeleteBallot');
     //    local.btnDeleteBallot.on('click', deleteBallot);
@@ -242,7 +243,7 @@ var BallotSinglePageFunc = function () {
 
     var newHost = local.votesList.find('.VoteHost').last();
 
-    startSavingVote(newHost);
+    startSavingVote(newHost, false);
   };
 
   var toggleAddMissingPanel = function () {
@@ -368,12 +369,13 @@ var BallotSinglePageFunc = function () {
           break;
       }
     });
+    
     showBallotCount(location.BallotsEntered);
   };
 
   var showBallotCount = function (numEntered) {
     var remainingToEnter = (local.location.BallotsCollected || 0) - (numEntered || 0);
-    var html, title;
+    var title;
     if (remainingToEnter == 0) {
       title = 'All entered';
     } else if (remainingToEnter < 0) {
@@ -393,8 +395,10 @@ var BallotSinglePageFunc = function () {
     $('#ballotList')
         .html(local.ballotListTemplate.filledWithEach(list));
 
-    showBallotCount(list.length);
-
+    if (info.LocationBallotsEntered) {
+      showBallotCount(info.LocationBallotsEntered);
+    }
+    
     local.lastBallotRowVersion = info.Last;
   };
 
@@ -436,7 +440,9 @@ var BallotSinglePageFunc = function () {
     }
 
     if (saveNow) {
-      startSavingVote(input.parent());
+      startSavingVote(input.parent(), true);
+    } else {
+      input.addClass('changing');
     }
   };
 
@@ -449,19 +455,20 @@ var BallotSinglePageFunc = function () {
 
     select.attr('size', 1);
     var parent = select.parent();
-    startSavingVote(parent);
+    startSavingVote(parent, false);
   };
 
   var resaveVote = function (ev) {
     var host = $(ev.target).parents('.VoteHost');
-    startSavingVote(host);
+    startSavingVote(host, false);
   };
 
-  var startSavingVote = function (host) {
+  var startSavingVote = function (host, focusOnNew) {
     var input = host.find('input');
     var invalids = host.find('select:visible');
     var invalidId = invalids.val() || '';
     var voteId = +host.data('vote-id') || 0;
+    input.focus();
 
     var form = {
       pid: host.data('person-id') || 0,
@@ -482,19 +489,31 @@ var BallotSinglePageFunc = function () {
 
     if (isNaN(form.count) || +form.count < 0) {
       alert('Invalid number. Please correct.');
-      input.focus();
       return;
     }
 
+    if (form.vid) {
+      // previously saved
+      for (i = 0; i < local.votes.length; i++) {
+        vote = local.votes[i];
+        if (vote.vid == form.vid) {
+          if (vote.count === +form.count) {
+            return;
+          }
+          break;
+        }
+      }
+    }
+
     ShowStatusDisplay('Saving...');
-    input.focus();
 
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
       if (info.Updated) {
         ShowStatusSuccess('Saved');
         // assume any error was removed
         host.removeClass('Changedtrue').addClass('Changedfalse');
-
+        input.removeClass('changing');
+        
         //        if (!publicInterface.Location) {
         //          location.href = location.href;
         //          //TODO: use Ajax to reload the content?
@@ -521,6 +540,14 @@ var BallotSinglePageFunc = function () {
           } else {
             ShowStatusFailed('Error on save. Please reload this page.');
           }
+        } else {
+          for (i = 0; i < local.votes.length; i++) {
+            vote = local.votes[i];
+            if (vote.vid == form.vid) {
+              vote.count = +form.count;
+              break;
+            }
+          }
         }
 
         //setBallotStatus(info.BallotStatus, info.BallotStatusText, true, info.SpoiledCount);
@@ -529,16 +556,16 @@ var BallotSinglePageFunc = function () {
 
         local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
 
-        showBallotCount(info.NumSingleNameVotes);
+        showBallotCount(info.LocationBallotsEntered);
 
         if (info.BallotStatus == 'Ok') {
           //local.tabList.tabs('select', tabNum.ballots);
           //$('#btnNewBallot2').effect('highlight', null, 1500);
         }
 
-//        if (form.count) {
-//          focusOnTextInput();
-//        }
+        if (focusOnNew) {
+          focusOnTextInput();
+        }
       } else {
         ShowStatusFailed(info.Error);
       }
@@ -575,6 +602,8 @@ var BallotSinglePageFunc = function () {
 
         updateStatusDisplay(info);
         updateStatusInList(info);
+
+        showBallotCount(info.LocationBallotsEntered);
 
         //        if (info.BallotStatus == 'Ok') {
         //          local.tabList.tabs('select', tabNum.ballots);
@@ -706,19 +735,23 @@ var BallotSinglePageFunc = function () {
     var personId = +rawId.substr(1);
     if (personId == 0) return;
 
-    local.votes.push({
-      vid: 0,
-      pid: personId,
-      name: selectedPersonLi.text(),
-      count: 0,
-      ineligible: selectedPersonLi.data('ineligible')
-    });
+    // find existing
+    var host = local.votesList.find('.VoteHost[data-person-id="{0}"]'.filledWith(personId));
+    if (host.length == 0) {
+      local.votes.push({
+        vid: 0,
+        pid: personId,
+        name: selectedPersonLi.text(),
+        count: 0,
+        ineligible: selectedPersonLi.data('ineligible')
+      });
 
-    showVotes();
+      showVotes();
 
-    var newHost = local.votesList.find('.VoteHost').last();
-
-    startSavingVote(newHost);
+      host = local.votesList.find('.VoteHost').last();
+    }
+    
+    startSavingVote(host, false);
   };
 
   var addSpoiled = function () {
@@ -907,9 +940,10 @@ var BallotSinglePageFunc = function () {
       }
       return true;
     });
-
+    
     edit($(el));
   };
+  
   var publicInterface = {
     peopleUrl: '',
     controllerUrl: '',

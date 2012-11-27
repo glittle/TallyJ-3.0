@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.Objects;
 using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Web;
@@ -170,9 +172,20 @@ namespace TallyJ.CoreModels
       }
       Db.Computers.Attach(computer);
 
-      computer.LastContact = DateTime.Now;
+      var lastContact = DateTime.Now;
+      computer.LastContact = lastContact;
 
-      Db.SaveChanges();
+      try
+      {
+        Db.SaveChanges();
+      }
+      catch (DbUpdateConcurrencyException ex)
+      {
+        ((IObjectContextAdapter) Db).ObjectContext.Detach(computer);
+        // if this computer has been inactive, its computer record may have been removed
+        CreateComputerRecordForMe();
+        AddCurrentComputerIntoElection(UserSession.CurrentElectionGuid);
+      }
 
       if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
       {

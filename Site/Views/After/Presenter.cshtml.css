@@ -108,18 +108,19 @@ tr.Extra
 table.Holder
 {
   margin: 0 auto;
+  width: 100%;
 }
 
 .HolderLeft
 {
   vertical-align: top;
-  width: 35%;
+  width: 49%;
 }
 
 .HolderRight
 {
   vertical-align: top;
-  width: 64%;
+  width: 50%;
 }
 
 #totalCounts
@@ -150,6 +151,7 @@ table.Main td.Left,
 #totalCounts td.Left
 {
   text-align: left;
+  padding-right: 30px;
 }
 
 #mainBody

@@ -71,13 +71,16 @@
                 <span data-name="Participation"></span>%
               </td>
             </tr>
-            <tr>
-              <td class="Left">Invalid Ballots
-              </td>
-              <td class="numberCell">
-                <span data-name="TotalInvalidBallots"></span>
-              </td>
-            </tr>
+            @if (!UserSession.CurrentElection.IsSingleNameElection)
+            {
+              <tr>
+                <td class="Left">Invalid Ballots
+                </td>
+                <td class="numberCell">
+                  <span data-name="TotalInvalidBallots"></span>
+                </td>
+              </tr>
+            }
             <tr>
               <td class="Left">Invalid Votes
               </td>

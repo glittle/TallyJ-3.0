@@ -527,8 +527,18 @@ namespace TallyJ.CoreModels
       if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
         Db.Elections.Attach(election);
-        election.ListedForPublicAsOf = DateTime.Now;
-        Db.SaveChanges();
+        var listedForPublicAsOf = DateTime.Now;
+        election.ListedForPublicAsOf = listedForPublicAsOf;
+        try
+        {
+          Db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+          election = GetFreshFromDb(election.ElectionGuid);
+          election.ListedForPublicAsOf = listedForPublicAsOf;
+          Db.SaveChanges();
+        }
       }
 
       return someoneElseChangedTheStatus;

@@ -104,7 +104,10 @@ namespace TallyJ.CoreModels
 
     public object LocationInfoForJson(Location location)
     {
-      var ballots = Db.vLocationInfoes.Where(l => l.LocationGuid == location.LocationGuid).Sum(l => l.BallotsAtComputer);
+      var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
+      var sum = isSingleName
+                  ? Db.vVoteInfoes.Where(vi => vi.LocationId == location.C_RowId).Sum(vi => vi.SingleNameElectionCount)
+                  : Db.vBallotInfoes.Count(b => b.LocationId == location.C_RowId);
 
       return new
                {
@@ -114,7 +117,7 @@ namespace TallyJ.CoreModels
                  location.ContactInfo,
                  location.BallotsCollected,
                  location.Name,
-                 BallotsEntered = ballots
+                 BallotsEntered = sum
                };
     }
 

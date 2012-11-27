@@ -247,7 +247,7 @@ var AnalyzePage = function () {
             $.each(items, function () {
                 var tie = this;
                 if (!tie.TieBreakRequired) {
-                    tie.Conclusion = 'This tie does not need to be resolved, as does not affect who is elected.';
+                    tie.Conclusion = 'This tie does not need to be resolved, because it does not affect who is elected.';
                 }
                 else {
                     var firstPara;
@@ -259,7 +259,7 @@ var AnalyzePage = function () {
                         firstPara = '<p>A tie-break election is required to break this tie.</p>';
                     }
                     tie.Conclusion = firstPara
-                        + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes recieved by each person below.</p>'
+                        + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
                             .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie);
                     var list = $.map(votes, function (v) {
                         return v.TieBreakGroup == tie.TieBreakGroup ? v : null;

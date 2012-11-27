@@ -96,11 +96,11 @@
         <td>
           <input id="txtNumCollected" type="number" data-name="BallotsCollected" />
           <span>Entered so far:</span>
-          <b><span id="numEntered" data-name="BallotsEntered"></span>
-            <span id="collectedVsEntered"></span>
+          <span id="numEntered" data-name="BallotsEntered"></span>
+          <b>  <span id="collectedVsEntered"></span>
           </b>
-          <button type="button" id="btnRefreshBallotCount">
-            Refresh</button>
+          @*<button type="button" id="btnRefreshBallotCount">
+            Refresh</button>*@
         </td>
       </tr>
       @if (ContextItems.LocationModel.HasLocations)
@@ -117,7 +117,7 @@
   </div>
   <div class="titleDiv">
     <span># Votes<span class="ui-icon ui-icon-info" id="qTipNumVotes"></span></span>
-    Name of each person receiving a vote <span class="NotBold">(in any order)</span>
+    &nbsp; Name of person <span class="NotBold">(in any order)</span>
   </div>
   <div id="votesList">
   </div>

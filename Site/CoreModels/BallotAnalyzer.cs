@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels
         return new BallotStatusWithSpoilCount
           {
             Status = BallotStatusEnum.Ok,
-            NumSingleNameVotes = currentVoteInfos.Sum(vi=>vi.SingleNameElectionCount).AsInt()
+            SpoiledCount = 0
           };
       }
 

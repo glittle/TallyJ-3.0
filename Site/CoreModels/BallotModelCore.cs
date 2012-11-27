@@ -133,7 +133,7 @@ namespace TallyJ.CoreModels
       ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, CurrentVoteInfos());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosForCurrentBallot());
 
       Db.SaveChanges();
 
@@ -200,7 +200,7 @@ namespace TallyJ.CoreModels
 
     public IEnumerable<object> CurrentVotesForJs()
     {
-      return CurrentVoteInfos()
+      return VoteInfosForCurrentBallot()
         .OrderBy(v => v.PositionOnBallot)
         .Select(v => new
                        {
@@ -218,6 +218,7 @@ namespace TallyJ.CoreModels
     public JsonResult SaveVote(int personId, int voteId, int count, Guid invalidReason)
     {
       var currentElectionGuid = UserSession.CurrentElectionGuid;
+      var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
 
       if (voteId != 0)
       {
@@ -244,11 +245,13 @@ namespace TallyJ.CoreModels
 
         DetermineInvalidReasonGuid(invalidReason, rawVote);
 
-
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), VoteInfosForCurrentBallot());
+        var sum = isSingleName
+                    ? Db.vVoteInfoes.Where(vi => vi.LocationId == voteInfo.LocationId).Sum(vi => vi.SingleNameElectionCount)
+                    : Db.vBallotInfoes.Count(b => b.LocationId == voteInfo.LocationId);
 
         return new
                  {
@@ -256,8 +259,7 @@ namespace TallyJ.CoreModels
                    BallotStatus = ballotStatusInfo.Status.Value,
                    BallotStatusText = ballotStatusInfo.Status.DisplayText,
                    ballotStatusInfo.SpoiledCount,
-                   ballotStatusInfo.NumSingleNameVotes
-                   
+                   LocationBallotsEntered = sum
                  }.AsJsonResult();
       }
 
@@ -305,7 +307,11 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), VoteInfosForCurrentBallot());
+
+        var sum = isSingleName
+                    ? Db.vVoteInfoes.Where(vi => vi.LocationId == ballot.LocationId).Sum(vi => vi.SingleNameElectionCount)
+                    : Db.vBallotInfoes.Count(b => b.LocationId == ballot.LocationId);
 
         return new
                  {
@@ -315,7 +321,7 @@ namespace TallyJ.CoreModels
                    BallotStatus = ballotStatusInfo.Status.Value,
                    BallotStatusText = ballotStatusInfo.Status.DisplayText,
                    ballotStatusInfo.SpoiledCount,
-                   ballotStatusInfo.NumSingleNameVotes
+                   LocationBallotsEntered = sum
                  }.AsJsonResult();
       }
 
@@ -339,7 +345,11 @@ namespace TallyJ.CoreModels
       UpdateVotePositions(voteInfo.BallotGuid);
 
       var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), CurrentVoteInfos());
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), VoteInfosForCurrentBallot());
+      var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
+      var sum = isSingleName
+            ? Db.vVoteInfoes.Where(vi => vi.LocationId == voteInfo.LocationId).Sum(vi => vi.SingleNameElectionCount)
+            : Db.vBallotInfoes.Count(b => b.LocationId == voteInfo.LocationId);
 
       return new
                {
@@ -347,7 +357,8 @@ namespace TallyJ.CoreModels
                  Votes = CurrentVotesForJs(),
                  BallotStatus = ballotStatusInfo.Status.Value,
                  BallotStatusText = ballotStatusInfo.Status.DisplayText,
-                 ballotStatusInfo.SpoiledCount
+                 ballotStatusInfo.SpoiledCount,
+                 LocationBallotsEntered = sum
                }.AsJsonResult();
     }
 
@@ -418,7 +429,7 @@ namespace TallyJ.CoreModels
       return Db.Votes.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
     }
 
-    public List<vVoteInfo> CurrentVoteInfos()
+    public List<vVoteInfo> VoteInfosForCurrentBallot()
     {
       var ballotInfo = GetCurrentBallotInfo();
 
