@@ -7,7 +7,7 @@ var SetupIndexPage = function () {
   };
   var settings = {
     locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>     <span class="ui-icon ui-icon-trash" title="Delete this location"></span></div>',
-    tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller"></span></div>'
+    tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>'
   };
   var preparePage = function () {
 
@@ -26,8 +26,9 @@ var SetupIndexPage = function () {
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
-    $("#txtDate").datepicker({
-      dateFormat: 'd MM yy'
+    //debugger;
+    $("input[type=date]").datepicker({
+      //dateFormat: 'd MMM yy'
     });
     
     applyValues(publicInterface.Election);
@@ -41,6 +42,7 @@ var SetupIndexPage = function () {
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
     site.qTips.push({ selector: '#qTipConvenor', title: 'Convenor', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd'});
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
@@ -174,7 +176,8 @@ var SetupIndexPage = function () {
       var value = election[input.data('name')] || '';
       switch (input.attr('type')) {
         case 'date':
-          input.datepicker('setDate', ('' + value).parseJsonDate());
+          var dateString = ('' + value).parseJsonDateForInput();
+          input.val(dateString);
           break;
         case 'checkbox':
           input.prop('checked', value);

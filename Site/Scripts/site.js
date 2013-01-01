@@ -469,6 +469,16 @@ String.prototype.parseJsonDate = function () {
   ///Date(-1566496800000)/
 };
 
+String.prototype.parseJsonDateForInput = function () {
+  if (this == '') return '';
+  var d = this.parseJsonDate();
+  
+  var day = ("0" + d.getDate()).slice(-2);
+  var month = ("0" + (d.getMonth() + 1)).slice(-2);
+  var date = d.getFullYear() + "-" + (month) + "-" + (day);
+  return date;
+};
+
 function JsonParse(json) {
   if (typeof (JSON) == undefined && JSON) {
     //if (!!window.chrome) json = json.replace('\\', '\\\\');
