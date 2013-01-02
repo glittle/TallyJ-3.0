@@ -373,8 +373,7 @@ input.changing
 #votesList
 {
   padding-top: 5px;
-  margin-bottom: 20px;
-  max-height: 300px;
+  max-height: 400px;
   overflow: auto;
 }
 

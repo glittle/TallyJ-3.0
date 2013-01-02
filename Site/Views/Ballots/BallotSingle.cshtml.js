@@ -77,7 +77,7 @@ var BallotSinglePageFunc = function () {
     //    local.btnDeleteBallot.on('click', deleteBallot);
 
     //$('#btnRefreshBallotCount').click(changeLocationStatus);
-//    $('#btnRefreshBallotquList').click(startToRefreshBallotList);
+    //    $('#btnRefreshBallotquList').click(startToRefreshBallotList);
 
     //    $('#btnNewBallot').on('click', newBallot);
     //    $('#btnNewBallot2').on('click', newBallot);
@@ -177,13 +177,13 @@ var BallotSinglePageFunc = function () {
 
   };
 
-//  var startToRefreshBallotList = function () {
-//    CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
-//      showBallots(info);
-//      highlightBallotInList();
-//      ShowStatusSuccess('Updated');
-//    });
-//  };
+  //  var startToRefreshBallotList = function () {
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
+  //      showBallots(info);
+  //      highlightBallotInList();
+  //      ShowStatusSuccess('Updated');
+  //    });
+  //  };
 
   var changeLocation = function () {
     ShowStatusDisplay('Loading location...');
@@ -306,6 +306,7 @@ var BallotSinglePageFunc = function () {
 
     //local.btnDeleteBallot.toggle(votes.length === 0);
   };
+  
   var updateStatusInList = function (info) {
     $('#BallotStatus' + local.ballotId).html(local.ballotListDetailTemplate.filledWith(info));
   };
@@ -369,7 +370,7 @@ var BallotSinglePageFunc = function () {
           break;
       }
     });
-    
+
     showBallotCount(location.BallotsEntered);
   };
 
@@ -398,7 +399,7 @@ var BallotSinglePageFunc = function () {
     if (info.LocationBallotsEntered) {
       showBallotCount(info.LocationBallotsEntered);
     }
-    
+
     local.lastBallotRowVersion = info.Last;
   };
 
@@ -408,40 +409,53 @@ var BallotSinglePageFunc = function () {
 
   var voteNumChange = function (ev) {
     var input = $(ev.target);
-    var saveNow = ev.type==='change';
+    var saveNow = ev.type === 'change';
+    var focusOnNew = false;
+    var changing = true;
+    LogMessage(ev.type);
+    LogMessage(ev.which);
     
+
     switch (ev.which) {
       case 13:
         // enter
         ev.preventDefault();
         ev.stopPropagation();
         ev.stopImmediatePropagation();
-        local.inputField.focus();
         saveNow = true;
+        focusOnNew = true;
         break;
 
-      case 38:
-        input.val(+input.val() + 1);
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        saveNow = true;
+      case 9:
+        changing = false;
         break;
 
-      case 40:
-        input.val(+input.val() - 1);
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        saveNow = true;
-        break;
-        
+      //case 38:
+      //  //input.val(+input.val() + 1);
+      //  ev.preventDefault();
+      //  ev.stopPropagation();
+      //  ev.stopImmediatePropagation();
+      //  //local.inputField.focus();
+      //  saveNow = false; // the change event will save it
+      //  focusOnNew = false;
+      //  break;
+
+      //case 40:
+      //  //input.val(+input.val() - 1);
+      //  ev.preventDefault();
+      //  ev.stopPropagation();
+      //  ev.stopImmediatePropagation();
+      //  //local.inputField.focus();
+      //  saveNow = false;
+      //  focusOnNew = false;
+      //  break;
+
       default:
     }
 
     if (saveNow) {
-      startSavingVote(input.parent(), true);
-    } else {
+      startSavingVote(input.parent(), focusOnNew);
+    } else if(changing) {
       input.addClass('changing');
     }
   };
@@ -479,7 +493,7 @@ var BallotSinglePageFunc = function () {
 
     if (invalidId) {
       invalids.data('invalid  ', invalidId);
-      for (var i = 0; i < local.votes.length; i++) {
+      for (var i = 0, max = local.votes.length; i < max; i++) {
         var vote = local.votes[i];
         if (vote.vid == voteId) {
           vote.invalid = invalidId;
@@ -494,10 +508,15 @@ var BallotSinglePageFunc = function () {
 
     if (form.vid) {
       // previously saved
-      for (i = 0; i < local.votes.length; i++) {
+      for (i = 0, max = local.votes.length; i < max; i++) {
         vote = local.votes[i];
         if (vote.vid == form.vid) {
           if (vote.count === +form.count) {
+            host.removeClass('Changedtrue').addClass('Changedfalse');
+            input.removeClass('changing');
+            if (focusOnNew) {
+              focusOnTextInput();
+            }
             return;
           }
           break;
@@ -513,7 +532,7 @@ var BallotSinglePageFunc = function () {
         // assume any error was removed
         host.removeClass('Changedtrue').addClass('Changedfalse');
         input.removeClass('changing');
-        
+
         //        if (!publicInterface.Location) {
         //          location.href = location.href;
         //          //TODO: use Ajax to reload the content?
@@ -530,7 +549,7 @@ var BallotSinglePageFunc = function () {
             host.attr('id', 'V' + info.VoteId);
             host.find('.VoteNum').text(info.pos);
 
-            for (i = 0; i < local.votes.length; i++) {
+            for (i = 0, max = local.votes.length; i < max; i++) {
               vote = local.votes[i];
               if (vote.vid == 0) {
                 vote.vid = info.VoteId;
@@ -541,10 +560,11 @@ var BallotSinglePageFunc = function () {
             ShowStatusFailed('Error on save. Please reload this page.');
           }
         } else {
-          for (i = 0; i < local.votes.length; i++) {
+          for (i = 0, max = local.votes.length; i < max; i++) {
             vote = local.votes[i];
             if (vote.vid == form.vid) {
               vote.count = +form.count;
+              host.find('input').val(vote.count);
               break;
             }
           }
@@ -562,7 +582,6 @@ var BallotSinglePageFunc = function () {
           //local.tabList.tabs('select', tabNum.ballots);
           //$('#btnNewBallot2').effect('highlight', null, 1500);
         }
-
         if (focusOnNew) {
           focusOnTextInput();
         }
@@ -750,7 +769,7 @@ var BallotSinglePageFunc = function () {
 
       host = local.votesList.find('.VoteHost').last();
     }
-    
+
     startSavingVote(host, false);
   };
 
@@ -940,10 +959,10 @@ var BallotSinglePageFunc = function () {
       }
       return true;
     });
-    
+
     edit($(el));
   };
-  
+
   var publicInterface = {
     peopleUrl: '',
     controllerUrl: '',

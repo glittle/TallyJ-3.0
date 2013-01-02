@@ -737,7 +737,7 @@ a.twitter
 .StatusOuter
 {
   /* inspired by http://simon.html5.org/sandbox/css/center-fixed */
-  min-width: 1050px;
+  min-width: 400px;
   position: fixed;
   top: 0;
   left: 0;
