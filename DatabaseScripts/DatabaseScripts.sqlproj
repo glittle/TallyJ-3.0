@@ -1,8 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
     <PostConversionRemoveFromScc>
     </PostConversionRemoveFromScc>
     <PostConversionAddToScc>
@@ -162,6 +166,14 @@
     <Folder Include="Scripts\Triggers" />
     <Folder Include="Scripts\Stored Procedures" />
     <Folder Include="Scripts\Functions" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="tj\" />
+    <Folder Include="tj\Tables\" />
+    <Folder Include="tj\Views\" />
+    <Folder Include="Security\" />
+    <Folder Include="tj\Functions\" />
+    <Folder Include="tj\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <BuildContributorArgument Include="OutDir=$(OutDir)" />
@@ -228,5 +240,40 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Permissions.sql" />
+    <Build Include="dbo\Tables\UsersInRoles.sql" />
+    <Build Include="dbo\Tables\Users.sql" />
+    <Build Include="dbo\Tables\Roles.sql" />
+    <Build Include="dbo\Tables\Profiles.sql" />
+    <Build Include="dbo\Tables\Memberships.sql" />
+    <Build Include="dbo\Tables\Applications.sql" />
+    <Build Include="tj\Tables\ResultTie.sql" />
+    <Build Include="tj\Tables\_Log.sql" />
+    <Build Include="tj\Tables\Vote.sql" />
+    <Build Include="tj\Tables\Teller.sql" />
+    <Build Include="tj\Tables\ResultSummary.sql" />
+    <Build Include="tj\Tables\Result.sql" />
+    <Build Include="tj\Tables\Person.sql" />
+    <Build Include="tj\Tables\Message.sql" />
+    <Build Include="tj\Tables\Location.sql" />
+    <Build Include="tj\Tables\JoinElectionUser.sql" />
+    <Build Include="tj\Tables\ImportFile.sql" />
+    <Build Include="tj\Tables\Election.sql" />
+    <Build Include="tj\Tables\Computer.sql" />
+    <Build Include="tj\Tables\Ballot.sql" />
+    <Build Include="tj\Views\vLocationInfo.sql" />
+    <Build Include="tj\Views\_vUserElectionList.sql" />
+    <Build Include="tj\Views\vVoteInfo.sql" />
+    <Build Include="tj\Views\vResultInfo.sql" />
+    <Build Include="tj\Views\vImportFileInfo.sql" />
+    <Build Include="tj\Views\vElectionListInfo.sql" />
+    <Build Include="tj\Views\vBallotInfo.sql" />
+    <Build Include="Security\TallyJSite.sql" />
+    <Build Include="tj\Functions\HasMatch.sql" />
+    <Build Include="tj\Stored Procedures\EraseElectionContents.sql" />
+    <Build Include="tj\Stored Procedures\SqlSearch.sql" />
+    <Build Include="tj\Stored Procedures\CurrentRowVersion.sql" />
+    <Build Include="tj\Stored Procedures\CloneElection.sql" />
+    <Build Include="tj\Stored Procedures\UpdateVoteStatus.sql" />
+    <Build Include="Security\tj.sql" />
   </ItemGroup>
 </Project>

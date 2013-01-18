@@ -1127,3 +1127,109 @@ body.AuthKnown .CurrentElectionName
   float: left;
   margin-top: 9px;
 }
+
+.ShowMasterMenu
+{
+  float: right;
+  padding-top: 10px;
+}
+
+.MasterMenu section.features a
+{
+    text-decoration: none;
+    cursor: pointer;
+}
+.MasterMenu section.features a section
+{
+    border: 2px solid transparent;
+}
+.MasterMenu section.features a:hover.Featured section
+{
+    border: 2px solid #ddd;
+}
+.MasterMenu section.features a:hover.NotFeatured section
+{
+    border: 1px solid #ddd;
+}
+
+.MasterMenu section.features a:active section
+{
+    border: 2px solid #8dc63e;
+}
+
+.MasterMenu hgroup.title a
+{
+    float: right;
+    color: #013d7a;
+    text-decoration: none;
+}
+.MasterMenu hgroup.title a:hover
+{
+    text-decoration: underline;
+}
+.MasterMenu section.todo h3, 
+.MasterMenu section.todo
+{
+    color: #ccc;
+}
+.MasterMenu section.features
+{
+    padding-left: 20px;
+    padding-right: 10px;
+    margin-bottom: 15px;
+    margin-left: 38px;
+}
+.MasterMenu .featuresTitle
+{
+    margin: -5px 0 0px -17px;
+    color: #bbb;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 23px;
+}
+.MasterMenu .Projector h3
+{
+    background-position: right 4px;
+    background-image: url('../Images/SlideProjector.gif');
+    background-repeat: no-repeat;
+}
+.MasterMenu .Role-known h3
+{
+    background-position: right 4px;
+    background-image: url('../../Images/keys.png');
+    background-repeat: no-repeat;
+}
+.MasterMenu .TipKnown {
+    background-image: url('../../Images/keys.png');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 16px;
+    height: 16px;    
+}
+.MasterMenu .TipProjector {
+    background-image: url('../../Images/SlideProjector.gif');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 16px;
+    height: 16px;    
+}
+.MasterMenu .NotFeatured:hover h3 {
+    color: #000;
+}
+.MasterMenu .NotFeatured section.feature {
+    background-image: none;
+    height: 45px;
+    padding: 10px 15px 20px 10px;
+    border: solid #ccc thin;
+}
+.MasterMenu .NotFeatured h3 
+{
+    color: #666;
+}
+.MasterMenu .NotFeatured p {
+    display: none;
+}
+.MasterMenu .h2 {
+    margin-top: 10px;
+}
+

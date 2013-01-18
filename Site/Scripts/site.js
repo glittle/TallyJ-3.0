@@ -252,6 +252,27 @@ function PrepareTopLocationAndTellers() {
 function PrepareMainMenu() {
   $('.QuickLinks').supersubs().superfish();
 
+  $('#btnShowMasterMenu').click(function () {
+    $("#MasterMenu").dialog("open");
+    return false;
+  });
+
+  $("#MasterMenu").dialog({
+    autoOpen: false,
+    show: "blind fast",
+    hide: "explode",
+    resizable: false,
+    draggable: false,
+    modal: true,
+    position: {
+      my: "center top",
+      at: "center top",
+      of: window
+    },
+    width: '95%'
+
+  });
+
   //    $("ul.sf-menu").supersubs({
   //        minWidth: 12,   // minimum width of sub-menus in em units 
   //        maxWidth: 27,   // maximum width of sub-menus in em units 

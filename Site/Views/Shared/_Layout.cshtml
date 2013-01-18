@@ -76,6 +76,12 @@
       }
       @if (Request.IsAuthenticated)
       {
+        <div class="ShowMasterMenu">
+          <button type="button" id="btnShowMasterMenu">Main Menu</button>
+        </div>
+        <div class="MasterMenu" id="MasterMenu">
+          @Html.Partial("MasterMenu")
+        </div>
         <div class="float-left TopInfo">
           <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
           @if (UserSession.CurrentElection != null)
@@ -143,7 +149,7 @@
               @ContextItems.LocationModel.GetLocationOptions()
             </select>
             <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
-            @*<label>
+@*<label>
               Computer:</label>
             <select disabled>
               <option>@UserSession.CurrentComputerCode</option>
@@ -171,7 +177,7 @@
   <footer>
     <div class="content-wrapper">
       <div class="copyright">
-          &copy; @DateTime.Now.Year Glen Little
+        &copy; @DateTime.Now.Year Glen Little
       </div>
       <div class="float-right">
         <ul id="social">
