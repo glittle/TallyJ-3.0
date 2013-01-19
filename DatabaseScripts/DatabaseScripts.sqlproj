@@ -227,6 +227,8 @@
     <None Include="Scripts\Stored Procedures\UpdateVoteStatus.sql">
       <SubType>NotInBuild</SubType>
     </None>
+    <None Include="Schema Comparisons\SqlSchemaCompare1.scmp" />
+    <None Include="Schema Comparisons\SqlSchemaCompare2.scmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug.publish.xml" />

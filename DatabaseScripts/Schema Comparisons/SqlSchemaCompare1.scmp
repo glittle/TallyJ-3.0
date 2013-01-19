@@ -3,7 +3,7 @@
   <Version>10</Version>
   <SourceModelProvider>
     <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=(localdb)\projects;Initial Catalog=tallyj2d;Integrated Security=True;Pooling=False</ConnectionString>
+      <ConnectionString>Data Source=.;Initial Catalog=TallyJ2d;Integrated Security=True;Pooling=False</ConnectionString>
     </ConnectionBasedModelProvider>
   </SourceModelProvider>
   <TargetModelProvider>
