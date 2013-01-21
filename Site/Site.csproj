@@ -536,9 +536,9 @@
     <Content Include="Scripts\jquery-ui-1.10.0.min.js" />
     <Content Include="Scripts\jquery.signalR-1.0.0-alpha2.js" />
     <Content Include="Scripts\jquery.signalR-1.0.0-alpha2.min.js" />
-    <None Include="Views\Dashboard\Index.cshtml.less">
+    <Content Include="Views\Dashboard\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
-    </None>
+    </Content>
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -699,7 +699,7 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Content\Site.less" />
+    <Content Include="Content\Site.less" />
     <Content Include="Scripts\AjaxLogin.js" />
     <Content Include="Images\accent.png" />
     <Content Include="Images\bullet.png" />
