@@ -6,6 +6,6 @@ namespace TallyJ.Code.Resources
 	public interface IViewResourcesHelper
 	{
 		void Register<T>(WebViewPage<T> viewPage);
-		IHtmlString CreateTagsToReferenceClientResourceFiles(string extension);
-	}
+        IHtmlString CreateTagsToReferenceContentFiles(string extension, params string[] secondaryExtensions);
+    }
 }

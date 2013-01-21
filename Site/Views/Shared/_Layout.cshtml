@@ -4,93 +4,94 @@
 @using TallyJ.Code.Session
 @using TallyJ.Code
 @{
-  ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
-  ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
-  ContextItems.AddJavascriptForPage("pulse", "site.firstPulse={0};".FilledWith(new PulseModel(Url).Pulse().SerializedAsJsonString()));
-  var currentMenu = new MenuHelper(Url);
-  var tellerHelper = new TellerHelper();
+    ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
+    ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
+    ContextItems.AddJavascriptForPage("pulse", "site.firstPulse={0};".FilledWith(new PulseModel(Url).Pulse().SerializedAsJsonString()));
+    var currentMenu = new MenuHelper(Url);
+    var tellerHelper = new TellerHelper();
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  @RenderPage("Headers.cshtml")
-  <title>TallyJ - @(currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? ViewBag.Title)
-  </title>
-  <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
-  <link rel="publisher" href="https://plus.google.com/109176504285792009711">
-  <script type="text/javascript">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    @RenderPage("Headers.cshtml")
+    <title>TallyJ - @(currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? ViewBag.Title)
+    </title>
+    <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
+    <link rel="publisher" href="https://plus.google.com/109176504285792009711">
+    <script type="text/javascript">
 
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-1312528-6']);
-    _gaq.push(['_trackPageview']);
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-1312528-6']);
+        _gaq.push(['_trackPageview']);
 
-    (function () {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      try {
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      } catch (e) {
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            try {
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            } catch (e) {
 
-      }
-    })();
+            }
+        })();
 
-  </script>
+    </script>
 </head>
 <body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") @AuthLevel">
-  <header>
-    <div class="content-wrapper">
-      <div class="MainTop">
-        @{
-          if (Request.IsAuthenticated)
-          {
-          <a href="@Url.Action("Index", "Dashboard")" class="site-title" title="Go to Dashboard">
-            <span>Dashboard</span></a>
-          }
-          else
-          {
-          @Html.ActionLink(" ", "Index", "Public", null, new
+    <header>
+        <div class="content-wrapper">
+            <div class="MainTop">
+                @{
+                    if (Request.IsAuthenticated)
+                    {
+                    <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
+                        @*<span>Dashboard</span>*@</a>
+                    }
+                    else
+                    {
+                    @Html.ActionLink(" ", "Index", "Public", null, new
                {
-                 Class = "site-title",
-                 title = "Go to Welcome Page"
+                   Class = "site-title",
+                   title = "Go to Welcome Page"
                })
-          }
-        }
-        <div class="Version">
-          @RenderPage("Version.cshtml")
-        </div>
-      </div>
-      @if (ScreenMode == "Normal")
-      {
-        <div class="beta1">
-          <div class="betaImg">
-          </div>
-          TallyJ is ready for use! Please send feedback to <a title="Send email to Glen"
-            href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
-              href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
-              target="gdoc">this document</a> for status updates!
-        </div> 
-      }
-      @if (Request.IsAuthenticated)
-      {
-        <div class="ShowMasterMenu">
-          <button type="button" id="btnShowMasterMenu">Main Menu</button>
-        </div>
-        <div class="MasterMenu" id="MasterMenu">
-          @Html.Partial("MasterMenu")
-        </div>
-        <div class="float-left TopInfo">
-          <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
-          @if (UserSession.CurrentElection != null)
-          {
-            <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
-              <span>State</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Only head teller may change election state")" data-state="@UserSession.CurrentElectionStatus">
-                @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection)
-              </ol>
-            </div>@*
+                    }
+                }
+                <div class="Version">
+                    @RenderPage("Version.cshtml")
+                </div>
+            </div>
+            @if (ScreenMode == "Normal")
+            {
+                <div class="beta1">
+                    <div class="betaImg">
+                    </div>
+                    TallyJ is ready for use! Please send feedback to <a title="Send email to Glen"
+                        href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
+                            href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/edit"
+                            target="gdoc">this document</a> for status updates!
+                </div> 
+            }
+            @if (Request.IsAuthenticated)
+            {
+                <div class="ShowMasterMenu">
+                    <a href="#MasterMenu" role="button" class="btn btn-info ShowMasterMenu" data-toggle="modal">Go to ...</a>
+                </div>
+                <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    @Html.Partial("MasterMenu")
+                </div>
+                <div class="float-left TopInfo">
+                    <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
+                    @if (UserSession.CurrentElection != null)
+                    {
+                        <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
+                            <span>Election Status:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Only head teller may change election state")" data-state="@UserSession.CurrentElectionStatus">
+                                @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection)
+                            </ol>
+                        </div>@*
                     <div class="ChangeElectionState">
                         <p>
                             Change the election status to:</p>
@@ -98,10 +99,10 @@
                             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection)
                         </select>
                     </div>*@
-            <div class="QuickLinks2">
-              Common Pages<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
-                id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
-            </div>
+                        <div class="QuickLinks2">
+                            Common Pages<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
+                                id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+                        </div>
 @*                    <ul class="QuickLinks">
                         <li>Pages <span class="ui-icon QuickLinkIcon"></span>
                             <ul>
@@ -112,76 +113,76 @@
                                         <div class="Heartbeat">
                     </div>
 *@ }
-          else
-          {
-            <div class="Spacer"></div>
-          }
-        </div>
-      }
-      @if (ScreenMode != "Full")
-      {
-        if (ScreenMode == "Mini")
-        {
+                    else
+                    {
+                        <div class="Spacer"></div>
+                    }
+                </div>
+            }
+            @if (ScreenMode != "Full")
+            {
+                if (ScreenMode == "Mini")
+                {
 @*<ul class="sf-menu">
                     @currentMenu.InsertMenu()
                 </ul>*@
-        }
-      }
-    </div>
-  </header>
-  <div id="body">
-    @RenderSection("featured", false)
-    <section class="content-wrapper main-content clear-fix">
-      @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
-      @{
-        var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-        var showTellerSelector = currentMenu.ShowTellerSelector;
-      }
-      @if (showLocationSelector || showTellerSelector)
-      {
-        <div class="CurrentInfo">
-          @if (showLocationSelector)
-          {
-            <label for="ddlTopLocation">
-              Location:
-            </label>
-            <select id="ddlTopLocation" class="TopLocation" @ContextItems.LocationModel.ShowDisabled>
-              @ContextItems.LocationModel.GetLocationOptions()
-            </select>
-            <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
+                }
+            }
+        </div>
+    </header>
+    <div id="body">
+        @RenderSection("featured", false)
+        <section class="content-wrapper main-content clear-fix">
+            @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
+            @{
+                var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+                var showTellerSelector = currentMenu.ShowTellerSelector;
+            }
+            @if (showLocationSelector || showTellerSelector)
+            {
+                <div class="CurrentInfo">
+                    @if (showLocationSelector)
+                    {
+                        <label for="ddlTopLocation">
+                            Location:
+                        </label>
+                        <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
+                            @ContextItems.LocationModel.GetLocationOptions()
+                        </select>
+                        <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
 @*<label>
               Computer:</label>
             <select disabled>
               <option>@UserSession.CurrentComputerCode</option>
             </select>*@
-          }
-          @if (showTellerSelector)
-          {
-            <label for="ddlTopTeller1">
-              Teller at keyboard:</label>
-            <select id="ddlTopTeller1" class="TopTeller">
-              @tellerHelper.GetTellerOptions(1).AsRawHtml()
-            </select>
-            <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
-            <label for="ddlTopTeller2">
-              Assisting:</label>
-            <select id="ddlTopTeller2" class="TopTeller">
-              @tellerHelper.GetTellerOptions(2).AsRawHtml()
-            </select>
-          }
-        </div>
-      }
-      @RenderBody()
-    </section>
-  </div>
-  <footer>
-    <div class="content-wrapper">
-      <div class="copyright">
-        &copy; @DateTime.Now.Year Glen Little
-      </div>
-      <div class="float-right">
-        <ul id="social">
-          @*<li>
+                    }
+                    @if (showTellerSelector)
+                    {
+                        <label for="ddlTopTeller1">
+                            Teller at keyboard:</label>
+                        <select id="ddlTopTeller1" class="TopTeller input-medium">
+                            @tellerHelper.GetTellerOptions(1).AsRawHtml()
+                        </select>
+                        <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
+                        <label for="ddlTopTeller2">
+                            Assisting:</label>
+                        <select id="ddlTopTeller2" class="TopTeller input-medium">
+                            @tellerHelper.GetTellerOptions(2).AsRawHtml()
+                        </select>
+                    }
+                </div>
+            }
+            @RenderBody()
+        </section>
+    </div>
+    <footer>
+        <div class="content-wrapper">
+            <div class="copyright">
+                &copy; @DateTime.Now.Year Glen Little
+            </div>
+            <div class="float-right">
+                <ul id="social">
+                    @*<li>
                         <link href="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed.cssgz?1334210082"
                             media="screen" rel="stylesheet" type="text/css" />
                         <script src="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed_libraries.jsgz?1334210083"
@@ -236,16 +237,16 @@
                             }
                         </script>
                     </li>*@
-          <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
-            class="facebook" title="Go to the TallyJ Support page"></a></li>
-          <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
-            title="View news from #TallyJ_Bahai"></a></li>
-          <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
-            href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;"></a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
-  @ContextItems.GetJavascriptForPage()
+                    <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
+                        class="facebook" title="Go to the TallyJ Support page"></a></li>
+                    <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+                        title="View news from #TallyJ_Bahai"></a></li>
+                    <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
+                        href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;"></a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    @ContextItems.GetJavascriptForPage()
 </body>
 </html>

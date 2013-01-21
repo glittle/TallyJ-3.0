@@ -12,6 +12,10 @@
     ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
     TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
+@section featured {
+    <section class="featured empty">
+    </section>
+}
 @*<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>*@
 <hgroup class="title">
     <h1>@ViewBag.Title.</h1>
@@ -27,7 +31,7 @@
     <h3 class="MakeNew">New Election?</h3>
     <ol>
         <li>Start a 
-            <button type="button" id="btnCreate">New Election</button>
+            <button type="button" class="btn btn-warning btn-mini" id="btnCreate">New Election</button>
         </li>
       <li>
         <form name="formLoadFile" id="formLoadFile">

@@ -71,7 +71,7 @@ var BallotSinglePageFunc = function () {
     //        }
     //      }
     //    });
-    local.tabList.tabs('select', tabNum.ballot);
+    local.tabList.tabs('option', 'active', tabNum.ballot);
 
     //    local.btnDeleteBallot = $('#btnDeleteBallot');
     //    local.btnDeleteBallot.on('click', deleteBallot);
@@ -135,7 +135,7 @@ var BallotSinglePageFunc = function () {
   //
   //    CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
   //      showBallot(info);
-  //      //local.tabList.tabs('select', tabNum.ballot);
+  //      //local.tabList.tabs('option', 'active', tabNum.ballot);
   //      local.inputField.focus().val('').change();
   //      local.nameList.html('');
   //      $('.NewBallotBtns').prop('disabled', false);
@@ -273,7 +273,7 @@ var BallotSinglePageFunc = function () {
 
       updateStatusDisplay(ballot);
 
-      //local.tabList.tabs('select', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
+      //local.tabList.tabs('option', 'active', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
 
       highlightBallotInList();
 
@@ -281,7 +281,7 @@ var BallotSinglePageFunc = function () {
       $('.ballotCode').text('');
 
       //$('#votesPanel').css('visibility', 'hidden');
-      //local.tabList.tabs('select', tabNum.ballots);
+      //local.tabList.tabs('option', 'active', tabNum.ballots);
       //      local.tabList.tabs('disable', tabNum.ballot);
       //local.btnDeleteBallot.hide();
     }
@@ -579,7 +579,7 @@ var BallotSinglePageFunc = function () {
         showBallotCount(info.LocationBallotsEntered);
 
         if (info.BallotStatus == 'Ok') {
-          //local.tabList.tabs('select', tabNum.ballots);
+          //local.tabList.tabs('option', 'active', tabNum.ballots);
           //$('#btnNewBallot2').effect('highlight', null, 1500);
         }
         if (focusOnNew) {
@@ -625,7 +625,7 @@ var BallotSinglePageFunc = function () {
         showBallotCount(info.LocationBallotsEntered);
 
         //        if (info.BallotStatus == 'Ok') {
-        //          local.tabList.tabs('select', tabNum.ballots);
+        //          local.tabList.tabs('option', 'active', tabNum.ballots);
         //        }
 
         if (info.Location) {

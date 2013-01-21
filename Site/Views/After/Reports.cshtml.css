@@ -1,9 +1,15 @@
-﻿div.chooser
+﻿ul {
+    padding-left: 10px;
+}
+div.chooser
 {
     width: 200px;
     padding: 2px;
     float: left;
     background-color: cornsilk;
+}
+.chooser button {
+    margin-left: 25px;
 }
 .chooser ul {
     list-style: decimal;

@@ -28,10 +28,7 @@
 {
     opacity: .5;
 }
-button.btnExport {
-    float: right;
-}
-button.btnDelete {
+.btn-group {
     float: right;
 }
 button.active {

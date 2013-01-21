@@ -44,6 +44,9 @@ var PeoplePage = function () {
         local.maintainCurrentRow = false;
         local.actionTag.removeClass('searching');
         local.inputField.removeClass('searching');
+        local.actionTag.removeClass('delaying');
+        local.inputField.removeClass('delaying');
+
         local.nameList.children().eq(local.rowSelected).addClass('selected');
     };
     var moveSelected = function (delta) {
@@ -179,6 +182,8 @@ var PeoplePage = function () {
     };
     var resetSearch = function () {
       $('#txtSearch').val('');
+      local.actionTag.removeClass('delaying');
+      local.inputField.removeClass('delaying');
       local.lastSearch = '';
       onNamesReady({
             People: [],
@@ -200,7 +205,8 @@ var PeoplePage = function () {
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
         local.peopleHelper.Prepare();
 
-        local.inputField = $(document).on('keyup paste', '#txtSearch', runSearch).focus();
+        local.inputField = $('#txtSearch').focus();
+        local.inputField.bind('keyup paste', runSearch);
         local.actionTag = $('#action');
         local.nameList = $('#nameList');
         $(document).on('click', '#nameList li', nameClick).focus();

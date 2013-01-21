@@ -6,50 +6,53 @@
     ViewBag.Message = "The election system for Bahá’í tellers";
 
     ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
 }
 @section featured {
-    <section class="featured">
-        <div class="content-wrapper">
+    <section class="featured empty">
+@*        <div class="content-wrapper">*@
             @*            <hgroup class="title">
                 <h1>@ViewBag.Title.</h1>
                 <h2>@ViewBag.Message</h2>
             </hgroup>
 *@
-            <div class="Intro">
+@*            <div class="Intro">
                 Allah'u'abh&aacute;! Welcome to TallyJ! This online tool is specifically designed
                 to assist tellers during Bah&aacute;'&iacute; elections.
-            </div>
-        </div>
+            </div>*@
+@*        </div>*@
     </section>
 }
 <section class="features middle">
     <section class="featureBig JoinPanel">
         <div class="top">
         </div>
-        <h3>
-            Join an election as a teller</h3>
+        <h2>Join an election as a teller</h2>
         <ol>
             <li>
                 <p>
-                    Select the election:</p>
+                    Select the election:
+                </p>
                 <div class="table">
-                  <select id="ddlElections" size="4">
-                    @Model.VisibleElectionsOptions()
-                  </select>
-                  <button type="button" id="btnRefresh">Refresh</button>
+                    <select id="ddlElections" size="4">
+                        @Model.VisibleElectionsOptions()
+                    </select>
+                    <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
                 </div>
             </li>
             <li>
                 <p>
-                    Type in the access code you were given:</p>
+                    Type in the access code you were given:
+                </p>
                 <div>
                     <input id="txtPasscode" type="password" maxlength="50" />
                 </div>
             </li>
             <li>
                 <p>
-                    Join the election:</p>
-                <input id="btnJoin" type="submit" value="Join Now" title="Join Now" />
+                    Join the election:
+                </p>
+                <button type="submit" class="btn btn-primary" id="btnJoin">Join Now</button>
                 @*<button type="button" id="btnJoin">
                     Join Now</button>*@ <span id="joinStatus" class="idle"></span></li>
         </ol>
@@ -57,39 +60,45 @@
     <section class="featureBig CenterPanel">
         <div class="top">
         </div>
-        <h1 id="introTitle">
-            Choose an Option!</h1>
+        <h1 id="introTitle">Choose an Option!</h1>
         <div class="centerbuttons">
-            <p style="position: absolute; left: 12px" id="startJoin" class="StartJoin qTip" title="You do not need to register, but will need to know the code for the election you are joining.">
-                Join an Election as a Teller
-            </p>
-            <p style="position: absolute; width: 100%; text-align: center; top: 25px; z-index: 1">
-                or
-            </p>
-            <p style="position: absolute; right: 13px" id="startLogin" class="StartJoin qTip"
+            <div class="centerL qTip" title="You do not need to register, but will need to know the code for the election you are joining.">
+                <button class="btn btn-primary" id="btnChooseJoin">Join an Election</button>
+                <p>Join an election as a teller</p>
+            </div>
+            <div class="centerR qTip"
                 title="Create and manage an election. If you do not have an account yet, you can register here.">
-                Log in to your Election
-            </p>
+                <button class="btn btn-success" id="btnChooseLogin">Log In</button>
+                <p>Log in to create and manage your elections</p>
+
+            </div>
         </div>
         <!--[if gt IE 6]>
         <div class="browser ie">
-<![endif]-->
+            Please note that TallyJ works best with Chrome and Firefox.<br>
+            Other browsers have not been fully tested.
+        </div>
+        <![endif]-->
         <!--[if !IE]> -->
         <div class="browser">
-            <!-- <![endif]-->
-          Please note that TallyJ works best with Google Chrome.<br>Other browsers have not been fully tested.</div>
+            Please note that TallyJ works best with Chrome and Firefox.<br>
+            Other browsers have not been fully tested.
+        </div>
+        <![endif]-->
     </section>
     <section class="featureBig LoginPanel">
         <div class="top">
         </div>
-        <h3>
-            Log in to make an election or access your elections</h3>
+        <h2>Log in to make an election or access your elections</h2>
         @if (Request.IsAuthenticated)
         {
             <p class="AlreadyIn">
-                You are stilled logged in!</p>
+                You are stilled logged in!
+            </p>
             <p class="AlreadyIn">
-                Go to the @Html.ActionLink("Dashboard", "Index", "Dashboard").</p>
+                Go to the 
+                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+            </p>
         }
         else
         {
@@ -102,28 +111,35 @@
 <section class="features bottom">
     <a href="@Url.Action("Learning")">
         <section class="feature">
-            <h3>
-                Reference Materials</h3>
+            <h1>Reference Materials</h1>
             <p>
-                Read more about Bahá’í elections, the job of tellers, and how TallyJ works.</p>
-        </section></a><a href="@Url.Action("Contact")"><section class="feature"><h3>
-            Contact</h3>
+                Read more about Bahá’í elections, the job of tellers, and how TallyJ works.
+            </p>
+        </section>
+    </a><a href="@Url.Action("Contact")">
+        <section class="feature">
+            <h1>Contact</h1>
             <p>
-                How to get in contact.</p>
-        </section></a> <a href="@Url.Action("About")">
-            <section class="feature">
-                <h3>
-                    About TallyJ</h3>
-                <p>
-                    Want to know more about TallyJ?</p>
-            </section></a> <a href="@Url.Action("Install")">
-                <section class="feature">
-                    <h3>
-                        Install for Local Use?</h3>
-                    <p>
-                        For if you will not have access to the Internet when and where you will need to
-                        use TallyJ.</p>
-                </section></a>
+                How to get in contact.
+            </p>
+        </section>
+    </a><a href="@Url.Action("About")">
+        <section class="feature">
+            <h1>About TallyJ</h1>
+            <p>
+                Want to know more about TallyJ?
+            </p>
+        </section>
+    </a><a href="@Url.Action("Install")">
+        <section class="feature">
+            <h1>Install for Local Use?</h1>
+            <p>
+                For if you will not have access to the Internet when and where you will need to
+                        use TallyJ.
+            </p>
+        </section>
+    </a>
 </section>
 <div class="Summary">
-    TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections</div>
+    TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
+</div>

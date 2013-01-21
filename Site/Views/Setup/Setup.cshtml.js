@@ -171,7 +171,7 @@ var SetupIndexPage = function () {
       return;
     };
 
-    $('.Demographics :input["data-name"]').each(function () {
+    $('.Demographics :input[data-name]').each(function () {
       var input = $(this);
       var value = election[input.data('name')] || '';
       switch (input.attr('type')) {
@@ -202,7 +202,7 @@ var SetupIndexPage = function () {
       C_RowId: publicInterface.Election ? publicInterface.Election.C_RowId : 0
     };
 
-    $(':input["data-name"]').each(function () {
+    $(':input[data-name]').each(function () {
       var input = $(this);
       var value;
       switch (input.attr('type')) {

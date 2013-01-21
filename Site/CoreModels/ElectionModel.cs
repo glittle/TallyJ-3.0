@@ -472,7 +472,8 @@ namespace TallyJ.CoreModels
       return new
                {
                  Saved = true,
-                 QuickLinks = new MenuHelper(controller.Url).QuickLinks()
+                 QuickLinks = new MenuHelper(controller.Url).QuickLinks(),
+                 StateName = UserSession.CurrentElectionStatusName
                }.AsJsonResult();
     }
 

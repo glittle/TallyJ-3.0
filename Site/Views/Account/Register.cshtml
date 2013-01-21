@@ -3,11 +3,13 @@
 @{
     ViewBag.Title = "Register";
 }
+@section featured {
+    <section class="featured empty">
+    </section>
+}
 <hgroup class="title">
-    <h1>
-        Register.</h1>
-    <h2>
-        Use the form below to create a new account.</h2>
+    <h1>Register.</h1>
+    <h2>Use the form below to create a new account.</h2>
 </hgroup>
 @*<p class="message-info">
     Passwords are required to be a minimum of @Membership.MinRequiredPasswordLength
@@ -50,7 +52,10 @@
                 @Html.PasswordFor(m => m.ConfirmPassword)
                 @Html.ValidationMessageFor(m => m.ConfirmPassword)
             </li>
+            <li>
+                <input type="submit" value="Register" title="Register" class="btn btn-primary" />
+
+            </li>
         </ol>
-        <input type="submit" value="Register" title="Register" />
     </fieldset>
 }

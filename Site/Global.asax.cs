@@ -15,6 +15,7 @@ using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
 using NLog;
 using TallyJ.Code;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers;
@@ -202,6 +203,23 @@ namespace TallyJ
         );
     }
 
+    public override void Init()
+    {
+        base.Init();
+        BeginRequest += OnBeginRequest;
+    }
 
+    private void OnBeginRequest(object sender, EventArgs e)
+    {
+        var urlAdjuster = new UrlAdjuster(Request.Url.AbsolutePath);
+
+        var newUrl = urlAdjuster.AdjustedUrl;
+        if (newUrl.HasContent())
+        {
+            Context.RewritePath(newUrl);
+        }
+    }
+
+ 
   }
 }

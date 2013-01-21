@@ -37,32 +37,66 @@ namespace TallyJ.Code.Resources
 			}
 		}
 
-		/// <summary>From the layout page, this is called to inject links to CSS and JS files for this view</summary>
-		/// <param name="extension"></param>
-		public IHtmlString CreateTagsToReferenceClientResourceFiles(string extension)
-		{
-			var cachedPaths = UnityInstance.Resolve<IViewResourcesCache>();
+        /// <summary>From the layout page, this is called to inject links to CSS and JS files for this view</summary>
+        /// <param name="extension"></param>
+        /// <param name="secondaryExtensions"></param>
+        public IHtmlString CreateTagsToReferenceContentFiles(string extension, params string[] secondaryExtensions)
+        {
+            var cachedPaths = UnityInstance.Resolve<IViewResourcesCache>();
 
-			// make a local copy, so we can clear the ones we've done
-			var list = _list.ToList();
+            // make a local copy, so we can clear the ones we've done
+            var list = _list.ToList();
 
-		  //Debug: ContextItems.AddJavascriptForPage(new Random().Next(1, 555).ToString(), "// " + list.JoinedAsString(", "));
+            //_list.Clear();
+            // --> is an included View creates tags, other ones will be re-injected too... should find way to stop this
+            //     however, browsers are forgiving, and only call for the resource once!
 
-			var alreadySent = HttpContext.Current.Items["ClientFilesSent"] as List<string>;
-			if (alreadySent == null)
-			{
-				HttpContext.Current.Items["ClientFilesSent"] = alreadySent = new List<string>();
-			}
+            const string clientFilesSent = "ClientFilesSent";
 
-			var htmlString =
-				list
-					.SelectMany(s => cachedPaths.GetTag(s, extension))
-					.Where(s => s.HasContent() && !alreadySent.Contains(s))
-					.AddTo(alreadySent)
-					.JoinedAsString("\n");
+            var alreadySent = HttpContext.Current.Items[clientFilesSent] as List<string>;
 
-			return new MvcHtmlString(htmlString);
-		}
+            if (alreadySent == null)
+            {
+                HttpContext.Current.Items[clientFilesSent] = alreadySent = new List<string>();
+            }
+
+            var htmlString =
+              list
+                .SelectMany(s => cachedPaths.GetTag(s, extension, secondaryExtensions))
+                .Where(s => s.HasContent() && !alreadySent.Contains(s))
+                .AddTo(alreadySent)
+                .JoinedAsString("\n");
+
+            return htmlString.AsRawHtml();
+        }
+
+
+        ///// <summary>From the layout page, this is called to inject links to CSS and JS files for this view</summary>
+        ///// <param name="extension"></param>
+        //public IHtmlString CreateTagsToReferenceClientResourceFiles(string extension)
+        //{
+        //    var cachedPaths = UnityInstance.Resolve<IViewResourcesCache>();
+
+        //    // make a local copy, so we can clear the ones we've done
+        //    var list = _list.ToList();
+
+        //  //Debug: ContextItems.AddJavascriptForPage(new Random().Next(1, 555).ToString(), "// " + list.JoinedAsString(", "));
+
+        //    var alreadySent = HttpContext.Current.Items["ClientFilesSent"] as List<string>;
+        //    if (alreadySent == null)
+        //    {
+        //        HttpContext.Current.Items["ClientFilesSent"] = alreadySent = new List<string>();
+        //    }
+
+        //    var htmlString =
+        //        list
+        //            .SelectMany(s => cachedPaths.GetTag(s, extension))
+        //            .Where(s => s.HasContent() && !alreadySent.Contains(s))
+        //            .AddTo(alreadySent)
+        //            .JoinedAsString("\n");
+
+        //    return new MvcHtmlString(htmlString);
+        //}
 
 		#endregion
 	}

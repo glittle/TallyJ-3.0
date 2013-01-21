@@ -45,10 +45,10 @@
     <div id="tabNameSearch">
       <div class="float-right">
         <span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="smallButton">
+        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
           Add na<u>m</u>e not in list</button>
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="smallButton spoiledBtn float-right">
+        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
           Add a spoi<u>l</u>ed line</button>
       </div>
       <div class="heading">
@@ -58,7 +58,7 @@
         <div>
           Search for a <u>p</u>erson:
         </div>
-        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off">
+        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
         <div class="action">
           <span id="action"></span><span id="more"></span>
         </div>
@@ -85,14 +85,14 @@
                 <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
       </div>
       <div>
-        <button id="btnNewBallot2" class="NewBallotBtns smallButton" accesskey="N">
+        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success" accesskey="N">
           Start <u>N</u>ew Ballot</button>
         Ballots entered so far: <span id="lblNumEntered" class="lblNumEntered"></span>
       </div>
       <h5>Ballots</h5>
       <div id="ballotList" class="ballotList">
       </div>
-      <button type="button" id="btnRefreshBallotList">
+      <button type="button" id="btnRefreshBallotList" class="btn btn-info">
         Refresh</button>
     </div>
     @if (ContextItems.LocationModel.HasLocations)
@@ -125,10 +125,10 @@
   </div>
   <div id="votesList">
   </div>
-  <button type="button" id="btnNewBallot" class="NewBallotBtns smallButton"
+  <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
     accesskey="N" tabindex="2">
     Start <u>N</u>ew Ballot</button>
-  <button type="button" id="btnDeleteBallot" disabled class="smallButton" title="Delete after all votes have been deleted">
+  <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
     Delete this empty ballot</button>
   <div class="review">
     <label for="cbReview">
@@ -137,7 +137,7 @@
 </div>
 <div id="addMissingPanel" class="votesPanel">
   <h3>Adding Name Not in List
-        <button id="btnCancelAddMissing" type="button" class="smallButton">
+        <button id="btnCancelAddMissing" type="button" class="btn btn-mini btn-warning">
           Cancel</button></h3>
   @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
 </div>

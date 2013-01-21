@@ -82,7 +82,6 @@ var BallotNormalPageFunc = function () {
         }
       }
     });
-    // local.tabList.tabs('select', tabNum.ballots);
 
     local.btnDeleteBallot = $('#btnDeleteBallot');
     local.btnDeleteBallot.on('click', deleteBallot);
@@ -166,7 +165,7 @@ var BallotNormalPageFunc = function () {
 
     CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
       showBallot(info);
-      local.tabList.tabs('select', tabNum.ballot);
+      local.tabList.tabs('option', 'active', tabNum.ballot);
       local.inputField.focus().val('').change();
       local.nameList.html('');
       $('.NewBallotBtns').prop('disabled', false);
@@ -264,7 +263,7 @@ var BallotNormalPageFunc = function () {
 
       updateStatusDisplay(ballot);
 
-      local.tabList.tabs('select', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
+      local.tabList.tabs('option', 'active', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
 
       highlightBallotInList();
 
@@ -272,7 +271,7 @@ var BallotNormalPageFunc = function () {
       $('.ballotCode').text('');
 
       $('#votesPanel').css('visibility', 'hidden');
-      local.tabList.tabs('select', tabNum.ballots);
+      local.tabList.tabs('option', 'active', tabNum.ballots);
       local.tabList.tabs('disable', tabNum.ballot);
       local.btnDeleteBallot.prop('disabled', true);
     }
@@ -580,7 +579,7 @@ var BallotNormalPageFunc = function () {
         local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
 
         if (info.BallotStatus == 'Ok') {
-          local.tabList.tabs('select', tabNum.ballots);
+          local.tabList.tabs('option', 'active', tabNum.ballots);
           $('#btnNewBallot2').effect('highlight', null, 1500);
         }
 
@@ -624,7 +623,7 @@ var BallotNormalPageFunc = function () {
         updateStatusInList(info);
 
         if (info.BallotStatus == 'Ok') {
-          local.tabList.tabs('select', tabNum.ballots);
+          local.tabList.tabs('option','active', tabNum.ballots);
         }
 
         if (info.Location) {

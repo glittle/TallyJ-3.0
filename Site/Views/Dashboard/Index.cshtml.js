@@ -10,14 +10,13 @@ var dashboardIndex = function () {
         PreparePage: function () {
             site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
                 if (info.State) {
-                  $('.features a').each(function () {
+                  $('.features a, .mmSection a').each(function () {
                     var target = $(this);
                     var when = target.data('when');
                     var matched = when.search(info.State) != -1 || when == 'OnDash';
                     target.toggleClass('Featured', matched);
                     target.toggleClass('NotFeatured', !matched);
                   });
-
                 }
             });
         }

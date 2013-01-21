@@ -167,7 +167,7 @@ input.Vote
 }
 .titleDiv div
 {
-    margin: -7px 0 0 0;
+    margin: -3px 0 0 0;
 }
 button.smallButton
 {
@@ -193,15 +193,18 @@ select.Invalid
     vertical-align: top;
     color: #e80c4d;
 }
-.VoteHost:hover .ui-icon
+.VoteHost .ui-icon
 {
     visibility: visible;
+    float: right;
+    margin: 5px 10px 0 10px;
+    z-index: 1;
 }
 
 .VoteHost span.Name
 {
     display: none;
-    font-size: 16pt;
+    font-size: 14pt;
     padding: 0 9px 0 0;
 }
 .VoteHost.InvalidP span.Name
@@ -333,7 +336,6 @@ div.heading
 .VoteHost
 {
     background-color: #eeffd6;
-    line-height: 1.5;
 }
 .ExtraVote
 {

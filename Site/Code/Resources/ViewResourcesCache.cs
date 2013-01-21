@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
-using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.Code.Resources
@@ -18,48 +18,79 @@ namespace TallyJ.Code.Resources
 			_dict = new Dictionary<string, bool>();
 		}
 
-		#region IViewResourcesCache Members
+        public IEnumerable<string> GetTag(string virtualPath, string extension, string[] secondaryExtensions)
+        {
+            var list = new List<string>
+        {
+          extension
+        };
+            list.AddRange(secondaryExtensions);
+            string resourceUrl;
+            var found = CheckFile(virtualPath, list, out extension, out resourceUrl);
 
-		public IEnumerable<string> GetTag(string virtualPath, string extension)
-		{
-			var resourceUrl = virtualPath + "." + extension;
-			var rawPath = HttpContext.Current.Server.MapPath(resourceUrl);
+            if (!found)
+            {
+                yield return string.Empty;
+            }
+            else
+            {
+                var containerPath = Path.GetDirectoryName(virtualPath);
+                var file = Path.GetFileName(resourceUrl);
 
-			if (!_dict.ContainsKey(rawPath))
-			{
-				// learn about this possible file
-			  var exists = File.Exists(rawPath);
-			  _dict.Add(rawPath, exists);
-      
-        //Debug: ContextItems.AddJavascriptForPage(rawPath, "// {0} {1}".FilledWith(exists, rawPath));
-      }
+                switch (extension.ToLower())
+                {
+                    case "min.css":
+                    case "css":
+                    case "less":
+                        yield return _linkedResourcesHelper.CreateStyleSheetLinkTag(file, containerPath);
+                        break;
 
-			if (!_dict[rawPath])
-			{
-				yield return string.Empty;
-			}
-			else
-			{
-				var containerPath = Path.GetDirectoryName(virtualPath);
-				var file = Path.GetFileName(resourceUrl);
+                    case "min.js":
+                    case "js":
+                        yield return _linkedResourcesHelper.CreateJavascriptSourceTag(file, containerPath);
+                        break;
 
-				switch (extension.ToLower())
-				{
-					case "css":
-						yield return _linkedResourcesHelper.CreateStyleSheetLinkTag(file, containerPath);
-						break;
+                    default:
+                        yield return string.Empty;
+                        break;
+                }
+            }
+        }
 
-					case "js":
-						yield return _linkedResourcesHelper.CreateJavascriptSourceTag(file, containerPath);
-						break;
+        private bool CheckFile(string virtualPath, IList<string> extensions, out string foundExtension, out string url)
+        {
+            if (extensions.Count == 0)
+            {
+                foundExtension = null;
+                url = null;
+                return false;
+            }
 
-					default:
-						yield return string.Empty;
-						break;
-				}
-			}
-		}
+            var extension = extensions[0];
 
-		#endregion
-	}
+            url = virtualPath + "." + extension;
+            var rawPath = HttpContext.Current.Server.MapPath(url);
+
+            bool exists;
+
+            if (_dict.ContainsKey(rawPath))
+            {
+                exists = _dict[rawPath];
+            }
+            else
+            {
+                // learn about this possible file
+                exists = File.Exists(rawPath);
+                _dict.Add(rawPath, exists);
+            }
+
+            if (exists)
+            {
+                foundExtension = extension;
+                return true;
+            }
+
+            return CheckFile(virtualPath, extensions.Skip(1).ToList(), out foundExtension, out url);
+        }
+    }
 }

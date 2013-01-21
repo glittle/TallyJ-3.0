@@ -95,7 +95,7 @@ var EditPersonPage = function () {
         site.qTips.push({ selector: '#qTipOtherLastName', title: 'Other Names', text: 'Optional. If a person may be known by other last names, enter them here.' });
         site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
         site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
-        site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Can be searched on, and shows in final reports if elected.' });
+        site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows in final reports if elected.' });
         site.qTips.push({ selector: '#qTipIneligible', title: 'Ineligible', text: 'Most people are eligible to participate in the election by voting or being voted for.'
           + '<br><br>However, if this person is ineligible, select the best reason here. Their name will show in some lists, but votes for them will be automatically marked as spoiled.'
         });

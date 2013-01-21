@@ -4,6 +4,6 @@ namespace TallyJ.Code.Resources
 {
 	public interface IViewResourcesCache
 	{
-		IEnumerable<string> GetTag(string virtualPath, string extension);
+        IEnumerable<string> GetTag(string virtualPath, string extension, string[] secondaryExtensions);
 	}
 }

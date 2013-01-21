@@ -46,17 +46,17 @@
         <div>
           Search for a <u>p</u>erson:
         </div>
-        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off">
+        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
         <div class="action">
           <span id="action"></span><span id="more"></span>
         </div>
       </div>
       <div class="float-right">
         <span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="smallButton">
+        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-success">
           Add a <u>m</u>issing person</button>
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="smallButton spoiledBtn float-right">
+        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-success spoiledBtn float-right">
           Add spoi<u>l</u>ed votes</button>
       </div>
       <div class="actionHolder Clear">
@@ -125,7 +125,7 @@
 </div>
 <div id="addMissingPanel" class="votesPanel">
   <h3>Add Missing Person
-        <button id="btnCancelAddMissing" type="button" class="smallButton">
+        <button id="btnCancelAddMissing" type="button" class="btn btn-mini btn-warning">
           Cancel</button></h3>
   @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
 </div>

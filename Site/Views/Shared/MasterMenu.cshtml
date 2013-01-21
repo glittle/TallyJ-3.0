@@ -1,26 +1,37 @@
 ﻿@using System.Xml
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
-@foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
-{
-  <section class="features">
-    <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
-    @foreach (var child in item.ChildNodes
-                            .Cast<XmlNode>()
-                            .Where(n=>n.NodeType==XmlNodeType.Element)
-                            .Cast<XmlElement>()
-                            .Where(c=>c.GetAttribute("showOnDashboard").DefaultTo("true")=="true"))
-    {
-        <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
-            <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">
-                <h3>
-                    @child.GetAttribute("title")</h3>
-                <p>
-                    @child.GetAttribute("desc")</p>
-            </section></a>
-    }
-    <div class="Clear">
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <div id="mmHeader">
+        @(UserSession.CurrentElection == null ? "No Election Selected" : UserSession.CurrentElectionStatusName)
     </div>
-  </section>
-}
-<div class="Clear"></div>
+</div>
+<div class="modal-body">
+    @foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
+    {
+        var started = false;
+        <section class="mmSection">
+            @foreach (var child in item.ChildNodes
+                            .Cast<XmlNode>()
+                            .Where(n => n.NodeType == XmlNodeType.Element)
+                            .Cast<XmlElement>()
+                            )
+            {
+                if (!started)
+                {
+                <h1 class="mmTitle">@item.GetAttribute("longtitle")</h1>
+                    started = true;
+                }
+                <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
+                    <span class="mainmenu @child.GetAttribute("class") Role-@child.GetAttribute("role")">
+                        @child.GetAttribute("title")
+                    </span>
+                </a>
+            }
+            <div class="Clear">
+            </div>
+        </section>
+    }
+</div>
