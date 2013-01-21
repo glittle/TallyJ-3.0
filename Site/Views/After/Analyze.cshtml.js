@@ -269,7 +269,7 @@ var AnalyzePage = function () {
                         if (a.PersonName > b.PersonName) return 1;
                         return 0;
                     }));
-                    tie.Buttons = '<button type=button class=btnSaveTieCounts>Save Counts & Re-run Analysis</button>';
+                    tie.Buttons = '<button class="btn btn-mini" type=button class=btnSaveTieCounts>Save Counts & Re-run Analysis</button>';
                 }
             });
             return items;
