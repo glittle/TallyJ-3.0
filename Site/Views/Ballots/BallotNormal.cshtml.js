@@ -119,7 +119,7 @@ var BallotNormalPageFunc = function () {
     local.invalidReasonsShortHtml = prepareReasons('Unreadable');
 
     site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
-    site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add a missing name" button instead.' });
+    site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add name not in list" button instead.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
 

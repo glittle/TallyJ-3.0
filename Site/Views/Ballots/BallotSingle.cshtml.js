@@ -117,7 +117,7 @@ var BallotSinglePageFunc = function () {
     local.invalidReasonsShortHtml = prepareReasons('Unreadable');
 
     site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
-    site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add a missing name" button instead.' });
+    site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'If the line on the ballot paper cannot be read for some reason, then use this button to add a line to respresent it.<br><br>If the name can be read, then use the "Add name not in list" button instead.' });
     site.qTips.push({ selector: '#qTipNumVotes', title: '# Votes', text: 'After the paper ballots are sorted by name, enter the number of votes each person has received.  When typing the number, the Up and Down keys will change the number of votes for you.' });
     site.qTips.push({ selector: '#qTipBallotGroups', title: 'Ballot Groups', text: 'Since this is an election for just one person, a ballot and a vote are effectively the same.  For each person the number of votes cast for them is counted by hand and entered here.  If multiple computers are used, then each computer will enter a group of ballots.' });
 
