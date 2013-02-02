@@ -114,13 +114,13 @@ table.Holder
 .HolderLeft
 {
   vertical-align: top;
-  width: 49%;
+  width: 40%;
 }
 
 .HolderRight
 {
   vertical-align: top;
-  width: 50%;
+  width: 59%;
 }
 
 #totalCounts

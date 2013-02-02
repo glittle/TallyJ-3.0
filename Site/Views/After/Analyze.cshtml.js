@@ -109,6 +109,27 @@ var AnalyzePage = function () {
                         duration: 2000
                     });
                 });
+
+                var groupMax = 0;
+                var currentGroup = '';
+                $('.ChartLineTie').each(function() {
+                    var item = $(this);
+                    var value = item.data('value');
+                    if (value) {
+                        var group = item.data('group');
+                        if (group != currentGroup) {
+                            currentGroup = group;
+                            groupMax = value;
+                        }
+                        item.css('background-color', '#013d{0}0'.filledWith(group));
+                        item.animate({
+                                width: (value / groupMax * 100) + '%'
+                            }, {
+                                duration: 2000
+                            });
+                    }
+                });
+
             }
 
             //            setTimeout(function () {
@@ -130,7 +151,8 @@ var AnalyzePage = function () {
             var value = info[span.data('name')];
             span.text(value);
         });
-
+        $('#trCountMismatch').toggle(info.BallotCountMismatch);
+ 
         table.show();
         $('.LeftHalf, .RightHalf').fadeIn();
 
@@ -142,12 +164,11 @@ var AnalyzePage = function () {
 
         var maxToShow = (numToElect + numExtra) * 1.5;
 
-        var getVoteCounts = function () {
+        var getVoteCounts = function (ties) {
             var determineColor = function (item, i) {
-                //                if (item.TieBreakRequired) {
-                //                    return '#F' + item.TieBreakGroup + item.TieBreakGroup; // works for groups A-F
-                //                }
-                //                else 
+                if (ties) {
+                    return 'blue';
+                }
                 if (i < numToElect) {
                     return 'green';
                 }
@@ -198,6 +219,9 @@ var AnalyzePage = function () {
             series: [{
                 name: 'Votes',
                 data: getVoteCounts()
+            }, {
+                name: 'Tied',
+                data: getVoteCounts(true)
             }],
             tooltip: {
                 formatter: function () {
@@ -259,7 +283,7 @@ var AnalyzePage = function () {
                         firstPara = '<p>A tie-break election is required to break this tie.</p>';
                     }
                     tie.Conclusion = firstPara
-                        + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
+                        + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below. (A secondary tie between people after the first {0} does not matter.)</p>'
                             .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie);
                     var list = $.map(votes, function (v) {
                         return v.TieBreakGroup == tie.TieBreakGroup ? v : null;

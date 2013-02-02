@@ -31,15 +31,7 @@
             Counts</caption>
         <tr>
             <td>
-                Total Voters
-            </td>
-            <td>
-                <span data-name="NumVoted"></span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Total Ballots Collected
+                Voters Registered
             </td>
             <td>
                 <span data-name="TotalBallotsCollected"></span>
@@ -47,10 +39,18 @@
         </tr>
         <tr>
             <td>
-                Total Ballots Entered
+                Ballots Entered
             </td>
             <td>
                 <span data-name="NumBallots"></span>
+            </td>
+        </tr>
+        <tr id="trCountMismatch">
+            <td>
+                Warning:
+            </td>
+            <td>
+                Count of voters registered and ballots entered should match!
             </td>
         </tr>
         <tr>
@@ -101,7 +101,8 @@
                 </td>
                 <td class="Left">
                     {PersonName}
-                  <div class="ChartLine" data-value="{VoteCount}" data-tieValue="{TieBreakCount}"></div>
+                  <div class="ChartLine" data-value="{VoteCount}"></div>
+                  <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
                 </td>
                 <td>
                     {VoteDisplay}

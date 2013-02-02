@@ -81,7 +81,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      DoFinalAnalysis();
+      DoFinalAnalysis(summary);
 
       return summary;
     }

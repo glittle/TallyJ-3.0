@@ -82,7 +82,7 @@ namespace TallyJ.CoreModels
         result.VoteCount = voteCount;
       }
 
-      DoFinalAnalysis();
+      DoFinalAnalysis(summary);
 
       return summary;
     }
