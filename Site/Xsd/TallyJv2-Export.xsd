@@ -37,6 +37,7 @@
                         <xs:attribute name="SpoiledBallots" type="xs:nonNegativeInteger" use="optional" />
                         <xs:attribute name="SpoiledVotes" type="xs:nonNegativeInteger" use="optional" />
                         <xs:attribute name="TotalVotes" type="xs:nonNegativeInteger" use="optional" />
+                        <xs:attribute name="UseOnReports" type="xs:boolean" use="optional" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element minOccurs="0" maxOccurs="unbounded" name="result">

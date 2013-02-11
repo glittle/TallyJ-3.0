@@ -370,14 +370,14 @@ namespace Tests.BusinessTests
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
-      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakGroup.ShouldEqual(1);
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(10);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
-      result2.TieBreakGroup.ShouldEqual("A");
+      result2.TieBreakGroup.ShouldEqual(1);
     }
 
     [TestMethod]
@@ -429,21 +429,21 @@ namespace Tests.BusinessTests
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
-      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakGroup.ShouldEqual(1);
 
       var result2 = results[1];
       result2.VoteCount.ShouldEqual(10);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
-      result2.TieBreakGroup.ShouldEqual("A");
+      result2.TieBreakGroup.ShouldEqual(1);
 
       var result3 = results[2];
       result3.VoteCount.ShouldEqual(10);
       result3.Rank.ShouldEqual(3);
       result3.Section.ShouldEqual(ResultHelper.Section.Other);
       result3.IsTied.ShouldEqual(true);
-      result3.TieBreakGroup.ShouldEqual("A");
+      result3.TieBreakGroup.ShouldEqual(1);
     }
 
 

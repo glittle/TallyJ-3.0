@@ -327,7 +327,7 @@
           <Property Name="CloseToPrev" Type="bit" />
           <Property Name="CloseToNext" Type="bit" />
           <Property Name="IsTied" Type="bit" />
-          <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+          <Property Name="TieBreakGroup" Type="int" />
           <Property Name="TieBreakRequired" Type="bit" />
           <Property Name="TieBreakCount" Type="int" />
           <Property Name="IsTieResolved" Type="bit" />
@@ -360,7 +360,7 @@
           </Key>
           <Property Name="_RowId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="TieBreakGroup" Type="varchar" Nullable="false" MaxLength="1" />
+          <Property Name="TieBreakGroup" Type="int" Nullable="false" />
           <Property Name="TieBreakRequired" Type="bit" />
           <Property Name="NumToElect" Type="int" Nullable="false" />
           <Property Name="NumInTie" Type="int" Nullable="false" />
@@ -521,7 +521,7 @@
           <Property Name="CloseToPrev" Type="bit" />
           <Property Name="CloseToNext" Type="bit" />
           <Property Name="IsTied" Type="bit" />
-          <Property Name="TieBreakGroup" Type="varchar" MaxLength="1" />
+          <Property Name="TieBreakGroup" Type="int" />
           <Property Name="TieBreakRequired" Type="bit" />
           <Property Name="TieBreakCount" Type="int" />
           <Property Name="IsTieResolved" Type="bit" />
@@ -622,16 +622,13 @@
           <EntitySet Name="Locations" EntityType="TallyJ2dModel.Location" />
           <EntitySet Name="Messages" EntityType="TallyJ2dModel.Message" />
           <EntitySet Name="People" EntityType="TallyJ2dModel.Person" />
-          <EntitySet Name="Results" EntityType="TallyJ2dModel.Result" />
           <EntitySet Name="ResultSummaries" EntityType="TallyJ2dModel.ResultSummary" />
-          <EntitySet Name="ResultTies" EntityType="TallyJ2dModel.ResultTie" />
           <EntitySet Name="Tellers" EntityType="TallyJ2dModel.Teller" />
           <EntitySet Name="Votes" EntityType="TallyJ2dModel.Vote" />
           <EntitySet Name="vBallotInfoes" EntityType="TallyJ2dModel.vBallotInfo" />
           <EntitySet Name="vElectionListInfoes" EntityType="TallyJ2dModel.vElectionListInfo" />
           <EntitySet Name="vImportFileInfoes" EntityType="TallyJ2dModel.vImportFileInfo" />
           <EntitySet Name="vLocationInfoes" EntityType="TallyJ2dModel.vLocationInfo" />
-          <EntitySet Name="vResultInfoes" EntityType="TallyJ2dModel.vResultInfo" />
           <FunctionImport Name="CloneElection" ReturnType="Collection(TallyJ2dModel.CloneElection_Result)">
             <Parameter Name="SourceElection" Mode="In" Type="Guid" />
             <Parameter Name="ByLoginId" Mode="In" Type="String" />
@@ -662,6 +659,9 @@
             <End Role="JoinElectionUser" EntitySet="JoinElectionUsers" />
           </AssociationSet>
           <EntitySet Name="vVoteInfoes" EntityType="TallyJ2dModel.vVoteInfo" />
+          <EntitySet Name="Results" EntityType="TallyJ2dModel.Result" />
+          <EntitySet Name="ResultTies" EntityType="TallyJ2dModel.ResultTie" />
+          <EntitySet Name="vResultInfoes" EntityType="TallyJ2dModel.vResultInfo" />
         </EntityContainer>
         <EntityType Name="C_Log">
           <Key>
@@ -819,26 +819,6 @@
           <Property Name="TellerAtKeyboard" Type="Guid" />
           <Property Name="TellerAssisting" Type="Guid" />
         </EntityType>
-        <EntityType Name="Result">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="PersonGuid" Type="Guid" Nullable="false" />
-          <Property Name="VoteCount" Type="Int32" />
-          <Property Name="Rank" Type="Int32" Nullable="false" />
-          <Property Name="Section" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="true" />
-          <Property Name="CloseToPrev" Type="Boolean" />
-          <Property Name="CloseToNext" Type="Boolean" />
-          <Property Name="IsTied" Type="Boolean" />
-          <Property Name="TieBreakGroup" Type="String" MaxLength="1" Unicode="false" FixedLength="false" />
-          <Property Name="TieBreakRequired" Type="Boolean" />
-          <Property Name="TieBreakCount" Type="Int32" />
-          <Property Name="IsTieResolved" Type="Boolean" />
-          <Property Name="RankInExtra" Type="Int32" />
-          <Property Name="ForceShowInOther" Type="Boolean" />
-        </EntityType>
         <EntityType Name="ResultSummary">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -858,18 +838,6 @@
           <Property Name="BallotsReceived" Type="Int32" />
           <Property Name="BallotsNeedingReview" Type="Int32" />
           <Property Name="CalledInBallots" Type="Int32" />
-        </EntityType>
-        <EntityType Name="ResultTie">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="TieBreakGroup" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="false" />
-          <Property Name="TieBreakRequired" Type="Boolean" />
-          <Property Name="NumToElect" Type="Int32" Nullable="false" />
-          <Property Name="NumInTie" Type="Int32" Nullable="false" />
-          <Property Name="IsResolved" Type="Boolean" />
         </EntityType>
         <EntityType Name="Teller">
           <Key>
@@ -994,31 +962,6 @@
           <Property Name="TellerName" Type="String" MaxLength="102" Unicode="true" FixedLength="false" />
           <Property Name="SortOrder2" Type="Int64" Nullable="false" />
         </EntityType>
-        <EntityType Name="vResultInfo">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-            <PropertyRef Name="ElectionGuid" />
-            <PropertyRef Name="PersonGuid" />
-            <PropertyRef Name="Rank" />
-            <PropertyRef Name="Section" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="PersonGuid" Type="Guid" Nullable="false" />
-          <Property Name="VoteCount" Type="Int32" />
-          <Property Name="Rank" Type="Int32" Nullable="false" />
-          <Property Name="Section" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="true" />
-          <Property Name="CloseToPrev" Type="Boolean" />
-          <Property Name="CloseToNext" Type="Boolean" />
-          <Property Name="IsTied" Type="Boolean" />
-          <Property Name="TieBreakGroup" Type="String" MaxLength="1" Unicode="false" FixedLength="false" />
-          <Property Name="TieBreakRequired" Type="Boolean" />
-          <Property Name="TieBreakCount" Type="Int32" />
-          <Property Name="IsTieResolved" Type="Boolean" />
-          <Property Name="RankInExtra" Type="Int32" />
-          <Property Name="ForceShowInOther" Type="Boolean" />
-          <Property Name="PersonName" Type="String" MaxLength="461" Unicode="true" FixedLength="false" />
-        </EntityType>
         <ComplexType Name="CloneElection_Result">
           <Property Type="Boolean" Name="Success" Nullable="true" />
           <Property Type="Guid" Name="NewElectionGuid" Nullable="true" />
@@ -1088,6 +1031,63 @@
           <Property Type="Int32" Name="LocationId" Nullable="false" />
           <Property Type="String" Name="LocationTallyStatus" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Result">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="Guid" Name="PersonGuid" Nullable="false" />
+          <Property Type="Int32" Name="VoteCount" />
+          <Property Type="Int32" Name="Rank" Nullable="false" />
+          <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Type="Boolean" Name="CloseToPrev" />
+          <Property Type="Boolean" Name="CloseToNext" />
+          <Property Type="Boolean" Name="IsTied" />
+          <Property Type="Int32" Name="TieBreakGroup" />
+          <Property Type="Boolean" Name="TieBreakRequired" />
+          <Property Type="Int32" Name="TieBreakCount" />
+          <Property Type="Boolean" Name="IsTieResolved" />
+          <Property Type="Int32" Name="RankInExtra" />
+          <Property Type="Boolean" Name="ForceShowInOther" />
+        </EntityType>
+        <EntityType Name="ResultTie">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="Int32" Name="TieBreakGroup" Nullable="false" />
+          <Property Type="Boolean" Name="TieBreakRequired" />
+          <Property Type="Int32" Name="NumToElect" Nullable="false" />
+          <Property Type="Int32" Name="NumInTie" Nullable="false" />
+          <Property Type="Boolean" Name="IsResolved" />
+        </EntityType>
+        <EntityType Name="vResultInfo">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+            <PropertyRef Name="ElectionGuid" />
+            <PropertyRef Name="PersonGuid" />
+            <PropertyRef Name="Rank" />
+            <PropertyRef Name="Section" />
+          </Key>
+          <Property Type="Int32" Name="C_RowId" Nullable="false" />
+          <Property Type="Guid" Name="ElectionGuid" Nullable="false" />
+          <Property Type="Guid" Name="PersonGuid" Nullable="false" />
+          <Property Type="Int32" Name="VoteCount" />
+          <Property Type="Int32" Name="Rank" Nullable="false" />
+          <Property Type="String" Name="Section" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Type="Boolean" Name="CloseToPrev" />
+          <Property Type="Boolean" Name="CloseToNext" />
+          <Property Type="Boolean" Name="IsTied" />
+          <Property Type="Int32" Name="TieBreakGroup" />
+          <Property Type="Boolean" Name="TieBreakRequired" />
+          <Property Type="Int32" Name="TieBreakCount" />
+          <Property Type="Boolean" Name="IsTieResolved" />
+          <Property Type="Int32" Name="RankInExtra" />
+          <Property Type="Boolean" Name="ForceShowInOther" />
+          <Property Type="String" Name="PersonName" MaxLength="461" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1259,27 +1259,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Results">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Result">
-              <MappingFragment StoreEntitySet="Result">
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
-                <ScalarProperty Name="Rank" ColumnName="Rank" />
-                <ScalarProperty Name="Section" ColumnName="Section" />
-                <ScalarProperty Name="CloseToPrev" ColumnName="CloseToPrev" />
-                <ScalarProperty Name="CloseToNext" ColumnName="CloseToNext" />
-                <ScalarProperty Name="IsTied" ColumnName="IsTied" />
-                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
-                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
-                <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
-                <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
-                <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
-                <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ResultSummaries">
             <EntityTypeMapping TypeName="TallyJ2dModel.ResultSummary">
               <MappingFragment StoreEntitySet="ResultSummary">
@@ -1298,19 +1277,6 @@
                 <ScalarProperty Name="BallotsReceived" ColumnName="BallotsReceived" />
                 <ScalarProperty Name="BallotsNeedingReview" ColumnName="BallotsNeedingReview" />
                 <ScalarProperty Name="CalledInBallots" ColumnName="CalledInBallots" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ResultTies">
-            <EntityTypeMapping TypeName="TallyJ2dModel.ResultTie">
-              <MappingFragment StoreEntitySet="ResultTie">
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
-                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
-                <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
-                <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
-                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1427,28 +1393,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="vResultInfoes">
-            <EntityTypeMapping TypeName="TallyJ2dModel.vResultInfo">
-              <MappingFragment StoreEntitySet="vResultInfo">
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
-                <ScalarProperty Name="Rank" ColumnName="Rank" />
-                <ScalarProperty Name="Section" ColumnName="Section" />
-                <ScalarProperty Name="CloseToPrev" ColumnName="CloseToPrev" />
-                <ScalarProperty Name="CloseToNext" ColumnName="CloseToNext" />
-                <ScalarProperty Name="IsTied" ColumnName="IsTied" />
-                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
-                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
-                <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
-                <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
-                <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
-                <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
-                <ScalarProperty Name="PersonName" ColumnName="PersonName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="CloneElection" FunctionName="TallyJ2dModel.Store.CloneElection">
             <ResultMapping>
               <ComplexTypeMapping TypeName="TallyJ2dModel.CloneElection_Result">
@@ -1509,6 +1453,62 @@
                 <ScalarProperty Name="SingleNameElectionCount" ColumnName="SingleNameElectionCount" />
                 <ScalarProperty Name="VoteStatusCode" ColumnName="VoteStatusCode" />
                 <ScalarProperty Name="VoteId" ColumnName="VoteId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Results">
+            <EntityTypeMapping TypeName="TallyJ2dModel.Result">
+              <MappingFragment StoreEntitySet="Result">
+                <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
+                <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
+                <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
+                <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
+                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
+                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+                <ScalarProperty Name="IsTied" ColumnName="IsTied" />
+                <ScalarProperty Name="CloseToNext" ColumnName="CloseToNext" />
+                <ScalarProperty Name="CloseToPrev" ColumnName="CloseToPrev" />
+                <ScalarProperty Name="Section" ColumnName="Section" />
+                <ScalarProperty Name="Rank" ColumnName="Rank" />
+                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResultTies">
+            <EntityTypeMapping TypeName="TallyJ2dModel.ResultTie">
+              <MappingFragment StoreEntitySet="ResultTie">
+                <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
+                <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
+                <ScalarProperty Name="NumToElect" ColumnName="NumToElect" />
+                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
+                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vResultInfoes">
+            <EntityTypeMapping TypeName="TallyJ2dModel.vResultInfo">
+              <MappingFragment StoreEntitySet="vResultInfo">
+                <ScalarProperty Name="PersonName" ColumnName="PersonName" />
+                <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
+                <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
+                <ScalarProperty Name="IsTieResolved" ColumnName="IsTieResolved" />
+                <ScalarProperty Name="TieBreakCount" ColumnName="TieBreakCount" />
+                <ScalarProperty Name="TieBreakRequired" ColumnName="TieBreakRequired" />
+                <ScalarProperty Name="TieBreakGroup" ColumnName="TieBreakGroup" />
+                <ScalarProperty Name="IsTied" ColumnName="IsTied" />
+                <ScalarProperty Name="CloseToNext" ColumnName="CloseToNext" />
+                <ScalarProperty Name="CloseToPrev" ColumnName="CloseToPrev" />
+                <ScalarProperty Name="Section" ColumnName="Section" />
+                <ScalarProperty Name="Rank" ColumnName="Rank" />
+                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -299,7 +299,7 @@ namespace TallyJ.CoreModels
         internal void AnalyzeForTies()
         {
             Result aboveResult = null;
-            var nextTieBreakGroup = 'A';
+            var nextTieBreakGroup = 1;
 
             foreach (var result in Results.OrderBy(r => r.Rank))
             {
@@ -318,7 +318,7 @@ namespace TallyJ.CoreModels
 
                         if (aboveResult.TieBreakGroup.HasNoContent())
                         {
-                            aboveResult.TieBreakGroup = "" + nextTieBreakGroup;
+                            aboveResult.TieBreakGroup = nextTieBreakGroup;
                             nextTieBreakGroup++;
                         }
                         result.TieBreakGroup = aboveResult.TieBreakGroup;
@@ -344,9 +344,9 @@ namespace TallyJ.CoreModels
             }
 
             // pass 2
-            for (var groupCode = 'A'; groupCode < nextTieBreakGroup; groupCode++)
+            for (var groupCode = 1; groupCode < nextTieBreakGroup; groupCode++)
             {
-                var code = "" + groupCode;
+                var code = groupCode;
 
                 var resultTie = new ResultTie
                     {

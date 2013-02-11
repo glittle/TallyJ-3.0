@@ -293,7 +293,7 @@ namespace Tests.BusinessTests
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
-      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakGroup.ShouldEqual(1);
       result1.TieBreakRequired.ShouldEqual(true);
 
       var result2 = results[1];
@@ -301,7 +301,7 @@ namespace Tests.BusinessTests
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
-      result2.TieBreakGroup.ShouldEqual("A");
+      result2.TieBreakGroup.ShouldEqual(1);
       result2.ForceShowInOther.ShouldEqual(true);
       result2.TieBreakRequired.ShouldEqual(true);
 
@@ -310,7 +310,7 @@ namespace Tests.BusinessTests
       result3.Rank.ShouldEqual(3);
       result3.Section.ShouldEqual(ResultHelper.Section.Other);
       result3.IsTied.ShouldEqual(true);
-      result3.TieBreakGroup.ShouldEqual("A");
+      result3.TieBreakGroup.ShouldEqual(1);
       result3.ForceShowInOther.ShouldEqual(true);
       result3.TieBreakRequired.ShouldEqual(true);
     }
@@ -386,7 +386,7 @@ namespace Tests.BusinessTests
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
-      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakGroup.ShouldEqual(1);
       result1.TieBreakRequired.ShouldEqual(false);
       result1.ForceShowInOther.ShouldEqual(false);
 
@@ -395,7 +395,7 @@ namespace Tests.BusinessTests
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Top);
       result2.IsTied.ShouldEqual(true);
-      result2.TieBreakGroup.ShouldEqual("A");
+      result2.TieBreakGroup.ShouldEqual(1);
       result2.ForceShowInOther.ShouldEqual(false);
       result2.TieBreakRequired.ShouldEqual(false);
 
@@ -404,7 +404,7 @@ namespace Tests.BusinessTests
       result3.Rank.ShouldEqual(3);
       result3.Section.ShouldEqual(ResultHelper.Section.Top);
       result3.IsTied.ShouldEqual(true);
-      result3.TieBreakGroup.ShouldEqual("A");
+      result3.TieBreakGroup.ShouldEqual(1);
       result3.ForceShowInOther.ShouldEqual(false);
       result3.TieBreakRequired.ShouldEqual(false);
     }
@@ -471,7 +471,7 @@ namespace Tests.BusinessTests
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
-      result1.TieBreakGroup.ShouldEqual("A");
+      result1.TieBreakGroup.ShouldEqual(1);
       result1.TieBreakRequired = true;
 
       var result2 = results[1];
@@ -479,7 +479,7 @@ namespace Tests.BusinessTests
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
-      result2.TieBreakGroup.ShouldEqual("A");
+      result2.TieBreakGroup.ShouldEqual(1);
       result2.TieBreakRequired = true;
       result2.ForceShowInOther = true;
 
@@ -488,7 +488,7 @@ namespace Tests.BusinessTests
       result3.Rank.ShouldEqual(3);
       result3.Section.ShouldEqual(ResultHelper.Section.Other);
       result3.IsTied.ShouldEqual(true);
-      result3.TieBreakGroup.ShouldEqual("A");
+      result3.TieBreakGroup.ShouldEqual(1);
       result3.TieBreakRequired = true;
       result3.ForceShowInOther = true;
     }
@@ -586,7 +586,7 @@ namespace Tests.BusinessTests
       results[0].ForceShowInOther = null;
 
       results[1].IsTied.ShouldEqual(true);
-      results[1].TieBreakGroup.ShouldEqual("A");
+      results[1].TieBreakGroup.ShouldEqual(1);
       results[1].CloseToPrev.ShouldEqual(true);
       results[1].CloseToNext.ShouldEqual(true);
       results[1].Section.ShouldEqual(ResultHelper.Section.Top);
@@ -594,7 +594,7 @@ namespace Tests.BusinessTests
       results[1].ForceShowInOther = false;
 
       results[2].IsTied.ShouldEqual(true);
-      results[2].TieBreakGroup.ShouldEqual("A");
+      results[2].TieBreakGroup.ShouldEqual(1);
       results[2].CloseToPrev.ShouldEqual(true);
       results[2].CloseToNext.ShouldEqual(true);
       results[2].Section.ShouldEqual(ResultHelper.Section.Extra);
@@ -602,7 +602,7 @@ namespace Tests.BusinessTests
       results[2].ForceShowInOther = false;
 
       results[3].IsTied.ShouldEqual(true);
-      results[3].TieBreakGroup.ShouldEqual("B");
+      results[3].TieBreakGroup.ShouldEqual(2);
       results[3].CloseToPrev.ShouldEqual(true);
       results[3].CloseToNext.ShouldEqual(true);
       results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
@@ -610,7 +610,7 @@ namespace Tests.BusinessTests
       results[3].ForceShowInOther = false;
 
       results[4].IsTied.ShouldEqual(true);
-      results[4].TieBreakGroup.ShouldEqual("B");
+      results[4].TieBreakGroup.ShouldEqual(2);
       results[4].CloseToPrev.ShouldEqual(true);
       results[4].CloseToNext.ShouldEqual(true);
       results[4].Section.ShouldEqual(ResultHelper.Section.Other);
@@ -619,7 +619,7 @@ namespace Tests.BusinessTests
       results[4].ForceShowInOther = true;
 
       results[5].IsTied.ShouldEqual(true);
-      results[5].TieBreakGroup.ShouldEqual("B");
+      results[5].TieBreakGroup.ShouldEqual(2);
       results[5].CloseToPrev.ShouldEqual(true);
       results[5].CloseToNext.ShouldEqual(false);
       results[5].Section.ShouldEqual(ResultHelper.Section.Other);
@@ -708,7 +708,7 @@ namespace Tests.BusinessTests
       results[0].ForceShowInOther.ShouldEqual(false);
 
       results[1].IsTied.ShouldEqual(true);
-      results[1].TieBreakGroup.ShouldEqual("A");
+      results[1].TieBreakGroup.ShouldEqual(1);
       results[1].CloseToPrev.ShouldEqual(true);
       results[1].CloseToNext.ShouldEqual(true);
       results[1].Section.ShouldEqual(ResultHelper.Section.Top);
@@ -716,7 +716,7 @@ namespace Tests.BusinessTests
       results[1].ForceShowInOther.ShouldEqual(false);
 
       results[2].IsTied.ShouldEqual(true);
-      results[2].TieBreakGroup.ShouldEqual("A");
+      results[2].TieBreakGroup.ShouldEqual(1);
       results[2].CloseToPrev.ShouldEqual(true);
       results[2].CloseToNext.ShouldEqual(true);
       results[2].Section.ShouldEqual(ResultHelper.Section.Extra);
@@ -724,7 +724,7 @@ namespace Tests.BusinessTests
       results[2].ForceShowInOther.ShouldEqual(false);
 
       results[3].IsTied.ShouldEqual(true);
-      results[3].TieBreakGroup.ShouldEqual("A");
+      results[3].TieBreakGroup.ShouldEqual(1);
       results[3].CloseToPrev.ShouldEqual(true);
       results[3].CloseToNext.ShouldEqual(true);
       results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
@@ -732,7 +732,7 @@ namespace Tests.BusinessTests
       results[3].ForceShowInOther.ShouldEqual(false);
 
       results[4].IsTied.ShouldEqual(true);
-      results[4].TieBreakGroup.ShouldEqual("A");
+      results[4].TieBreakGroup.ShouldEqual(1);
       results[4].CloseToPrev.ShouldEqual(true);
       results[4].CloseToNext.ShouldEqual(false);
       results[4].Section.ShouldEqual(ResultHelper.Section.Other);

@@ -8,7 +8,7 @@
     [CloseToPrev]      BIT              NULL,
     [CloseToNext]      BIT              NULL,
     [IsTied]           BIT              NULL,
-    [TieBreakGroup]    VARCHAR (1)      NULL,
+    [TieBreakGroup]    INT              NULL,
     [TieBreakRequired] BIT              NULL,
     [TieBreakCount]    INT              NULL,
     [IsTieResolved]    BIT              NULL,
@@ -18,6 +18,8 @@
     CONSTRAINT [FK_Result_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]),
     CONSTRAINT [FK_Result_Person] FOREIGN KEY ([PersonGuid]) REFERENCES [tj].[Person] ([PersonGuid]) ON DELETE CASCADE
 );
+
+
 
 
 GO

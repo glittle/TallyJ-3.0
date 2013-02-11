@@ -12,8 +12,8 @@ create
 View [tj].[vResultInfo]
 as
   select 
-      r.*
-	, p._FullName [PersonName]
+      r.* 
+	, p._Fullname [PersonName]
   from tj.Result r
      join tj.Person p on p.PersonGuid = r.PersonGuid
 

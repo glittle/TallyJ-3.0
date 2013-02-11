@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[ResultTie] (
     [_RowId]           INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]     UNIQUEIDENTIFIER NOT NULL,
-    [TieBreakGroup]    VARCHAR (1)      NOT NULL,
+    [TieBreakGroup]    INT              NOT NULL,
     [TieBreakRequired] BIT              NULL,
     [NumToElect]       INT              NOT NULL,
     [NumInTie]         INT              NOT NULL,
@@ -9,6 +9,8 @@
     CONSTRAINT [PK_ResultTie] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_ResultTie_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 GO

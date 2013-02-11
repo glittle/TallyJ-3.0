@@ -16,7 +16,7 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public string TieBreakGroup { get; set; }
+        public int TieBreakGroup { get; set; }
         public Nullable<bool> TieBreakRequired { get; set; }
         public int NumToElect { get; set; }
         public int NumInTie { get; set; }

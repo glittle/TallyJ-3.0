@@ -14,19 +14,19 @@
         <EntityTypeShape EntityType="TallyJ2dModel.Location" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.Message" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.Person" Width="1.5" PointX="2.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Result" Width="1.5" PointX="8.75" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="8.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="TallyJ2dModel.ResultTie" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.Teller" Width="1.5" PointX="10.75" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="10.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.vBallotInfo" Width="1.5" PointX="4.75" PointY="11.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.vElectionListInfo" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.vImportFileInfo" Width="1.5" PointX="12.75" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.vLocationInfo" Width="1.5" PointX="12.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="TallyJ2dModel.vResultInfo" Width="1.5" PointX="14.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="TallyJ2dModel.User" Width="1.5" PointX="0.75" PointY="0.875" />
         <AssociationConnector Association="TallyJ2dModel.FK_JoinElectionUser_Users" />
         <EntityTypeShape EntityType="TallyJ2dModel.vVoteInfo" Width="1.5" PointX="14.75" PointY="5.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Result" Width="1.5" PointX="4.7942535359385676" PointY="21.829237962993439" />
+        <EntityTypeShape EntityType="TallyJ2dModel.ResultTie" Width="1.5" PointX="4.96303718209408" PointY="24.84773069287079" />
+        <EntityTypeShape EntityType="TallyJ2dModel.vResultInfo" Width="1.5" PointX="3.6732743455438293" PointY="31.906560197429062" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

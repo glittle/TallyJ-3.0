@@ -39,6 +39,11 @@ namespace TallyJ.Code
       return string.IsNullOrEmpty(input);
     }
 
+      public static bool HasNoContent(this int? input)
+    {
+      return !input.HasValue || input.Value == 0;
+    }
+
     /// <summary>
     ///     Format for display in an MVC page.
     /// </summary>

@@ -337,9 +337,6 @@
     <Compile Include="EF\Vote.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\vResultInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="CoreModels\BallotAnalyzer.cs" />
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
@@ -472,6 +469,9 @@
     <Content Include="Images\LogoSq.png" />
     <Compile Include="CoreModels\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
+    <Compile Include="EF\vResultInfo.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\vVoteInfo.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
