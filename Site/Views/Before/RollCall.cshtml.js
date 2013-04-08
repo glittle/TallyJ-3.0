@@ -4,7 +4,7 @@
 
 var RollCallPage = function () {
     var local = {
-        currentNameNum: 0,
+        currentNameNum: 1,
         currentVoterDiv: null,
         nameDivs: []
     };
@@ -45,7 +45,7 @@ var RollCallPage = function () {
     };
 
     var keyDown = function (ev) {
-        var delta = 1;
+        var delta = 0;
         switch (ev.which) {
             case 75: // k
             case 38: // up
@@ -66,12 +66,23 @@ var RollCallPage = function () {
                 break;
             case 36: // home
                 delta = 1 - local.currentNameNum;
+                ev.preventDefault();
+                break;
+                
+            case 35: // end
+                delta = local.nameDivs.length - local.currentNameNum - 1;
+                ev.preventDefault();
                 break;
 
             case 34: // page down
                 delta = 4;
                 ev.preventDefault();
                 break;
+                
+            case 27: //esc
+                $('.Nav').toggleClass('Show');
+                ev.preventDefault();
+                return;
 
             default:
                 LogMessage(ev.which);
@@ -100,15 +111,12 @@ var RollCallPage = function () {
             scrollTop: top + fudge
         }, time);
 
-        voter.animate({
-            backgroundColor: '#fff'
-        }, time);
+        voter.switchClass('Other', 'Current', time, 'linear');
 
         if (local.currentVoterDiv) {
-            local.currentVoterDiv.animate({
-                backgroundColor: '#efeeef'
-            }, time);
+            local.currentVoterDiv.switchClass('Current', 'Other', time, 'linear');
         }
+
         local.currentVoterDiv = voter;
     };
 
