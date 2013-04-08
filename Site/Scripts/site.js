@@ -19,6 +19,7 @@ var site = {
     heartbeatSeconds: 60, // default seconds
     heartbeatTimeout: null,
     timeOffsetKnown: false,
+    firstPulse: null,
     qTips: [],
     broadcastCode: {
         electionStatusChanged: 'electionStatusChanged',
@@ -53,7 +54,11 @@ function Onload() {
 
     // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
-    SendHeartbeat();
+    if (site.firstPulse) {
+        ProcessPulseResult(site.firstPulse);
+    } else {
+        SendHeartbeat();
+    }
 
     CheckTimeOffset();
 
