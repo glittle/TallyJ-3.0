@@ -1,4 +1,4 @@
-﻿CREATE
+﻿ALTER
 /*
 
 Name: SqlSearch
@@ -43,17 +43,17 @@ AS
   declare @temp nvarchar(30)
   declare @passGroup int
 
-  declare @hits table (
-     RowId int,
-	 PassNum int,
-	 PassGroup int,
-	 BothMatched bit,
-	 Source nvarchar(2000),
-	 FirstMatch int,
-	 EndFirstMatch int,
-	 Search1 nvarchar(30),
-	 Search2 nvarchar(30)
-  )
+  select
+     cast(0 as int) RowId,
+	 cast(0 as int) PassNum,
+	 cast(0 as int) PassGroup,
+	 cast(0 as bit) BothMatched,
+	 space(2000) Source,
+	 cast(0 as int) FirstMatch,
+	 cast(0 as int) EndFirstMatch,
+	 space(30) Search1,
+	 space(30) Search2
+  into #hits
 
   /* pass numbers
 
@@ -68,7 +68,7 @@ AS
 
   if @Raw1 = '~~Voters~~'
   begin
-      insert into @hits (RowId, PassNum)
+      insert into #hits (RowId, PassNum)
 				select p._RowId, 0 
 					from tj.Person p
 					where p.ElectionGuid = @Election
@@ -77,7 +77,7 @@ AS
   end
   else if @Raw1 = '~~Tied~~'
   begin
-      insert into @hits (RowId, PassNum)
+      insert into #hits (RowId, PassNum)
 				select p._RowId, 0
 					from tj.Person p
 					where p.ElectionGuid = @Election
@@ -119,7 +119,7 @@ AS
 					from tj.Person p
 					where p.ElectionGuid = @Election
 				)
-				insert into @hits
+				insert into #hits
 				select m.RowId [RowId]
 					, @passNum
 					, @passGroup
@@ -136,11 +136,11 @@ AS
 				if LEN(replace(@search2,'^','')) > 0
 				begin
 				
-					update @hits
+					update #hits
 					    set EndFirstMatch = CHARINDEX(@sep, Source collate Latin1_General_CI_AI, FirstMatch)
 					where PassNum = @passNum
 				
-					update @hits
+					update #hits
 						set BothMatched = 1
 					where CHARINDEX(@Search2, Source collate Latin1_General_CI_AI, EndFirstMatch) > 0
 						and PassNum = @passNum
@@ -154,36 +154,35 @@ AS
 	end
 
   --can't leave @ShowDebugInfo, or EF4 will read this structure
-  --if @ShowDebugInfo > 3 select * from @hits order by 1
+  --if @ShowDebugInfo > 3 select * from #hits order by 1
 
   
   if len(coalesce(@Raw2,'')) > 0
   begin
-    delete from @hits where BothMatched = 0
+    delete from #hits where BothMatched = 0
   end
 
 
 
 
   --> did use 'into #results' but that fails with SET FMTONLY ON, so EF4 can't read it
-  declare @results table (
-     RowId int,
-	 FirstMatch int,
-	 PassNum int,
-	 PassGroup int,
-	 _FullName nvarchar(500),
-	 AgeGroup varchar(20),
-	 IneligibleReasonGuid uniqueidentifier,
-	 SortOrder int,
-	 CanReceiveVotes bit,
-	 Votes int
-  )
+  --declare #results table (
+  --   RowId int,
+	 --FirstMatch int,
+	 --PassNum int,
+	 --PassGroup int,
+	 --_FullName nvarchar(500),
+	 --AgeGroup varchar(20),
+	 --IneligibleReasonGuid uniqueidentifier,
+	 --SortOrder int,
+	 --CanReceiveVotes bit,
+	 --Votes int
+  --)
 
   ;with byScore as (
      select RowId, PassNum, ROW_NUMBER() over (partition by RowId order by PassNum) RowNum
-	 from @hits
+	 from #hits
   )
-  insert into @results
   select h.RowId
        , h.FirstMatch
 	   , h.PassNum
@@ -194,24 +193,24 @@ AS
 	   , ROW_NUMBER() over (order by h.PassNum, _FullName) [SortOrder]
 	   , p.CanReceiveVotes
 	   , coalesce((select SUM(case when v.IsSingleNameElection = 1 then v.SingleNameElectionCount else 1 end) from tj.vVoteInfo v where v.PersonGuid = p.PersonGuid),0) [Votes]
-
-   from @hits h
+   into #results
+   from #hits h
      join tj.Person p on p._RowId = h.RowId
 	 join byScore s on s.RowId = h.RowId and s.PassNum = h.PassNum
    where s.RowNum = 1
 
-  set @MoreExactMatchesFound = case when (select COUNT(*) from @results where PassNum = 300) > @MaxToReturn then 1 else 0 end 
 
-
-	select RowId [PersonId]
+  set @MoreExactMatchesFound = case when (select COUNT(*) from #results where PassNum = 300) > @MaxToReturn then 1 else 0 end 
+  
+  select RowId [PersonId]
 			, _FullName [FullName]
-            , res.IneligibleReasonGuid [Ineligible]
+			, res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
 			, res.CanReceiveVotes
 			--, case when ROW_NUMBER() over (partition by PassNum order by Votes desc) = 1 
 			--			then 1 else 0 end 
       , Votes [BestMatch]
-	from @results res
+	from #results res
 		-- left join tj.Reasons r1 on r1.ReasonGuid = res.IneligibleReasonGuid
 	where res.SortOrder <= @MaxToReturn
 	order by PassNum, _FullName

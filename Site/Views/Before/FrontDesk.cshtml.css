@@ -10,10 +10,17 @@ p
 .Voter
 {
     clear: both;
+    border: 2px solid transparent;
 }
 .Voter:hover
 {
-    background-color: #cfc;
+    border-color: #00ff00;
+}
+.Voter.KeyMatch {
+    background-color: #ffff99;
+}
+.Voter.KeyMatch.Focused {
+    background-color: #00ff00;
 }
 .Btn
 {

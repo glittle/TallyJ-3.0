@@ -7,7 +7,8 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
-using TallyJ.EF;
+using TallyJ.Models;
+using TallyJ.Models.Persistance;
 
 namespace TallyJ.Controllers
 {

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>System.Web.Providers</id>
+    <version>1.2</version>
+    <title>ASP.NET Universal Providers For SqlExpress</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>http://www.microsoft.com/web/webpi/eula/system.web.providers-1.0-eula.htm</licenseUrl>
+    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=aspnetwebstack&amp;DownloadId=360555</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Legacy package, System.Web.Providers is now included in the 'Microsoft.AspNet.Providers' package.</description>
+    <summary>Legacy package, System.Web.Providers is now included in the 'Microsoft.AspNet.Providers' package.</summary>
+    <dependencies>
+      <dependency id="Microsoft.AspNet.Providers" version="1.1" />
+    </dependencies>
+    <references />
+  </metadata>
+</package>

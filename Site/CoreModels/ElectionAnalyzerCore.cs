@@ -6,7 +6,7 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

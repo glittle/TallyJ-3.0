@@ -28,8 +28,9 @@
 </div>
 @if (UserSession.IsKnownTeller)
 {
-    <h3 class="MakeNew">New Election?</h3>
-    <ol>
+    <h3 class="MakeNew">Preparing a New Election?</h3>
+    <div class="Comment">Three options:</div>
+    <ul class="MakeNewList">
         <li>Start a 
             <button type="button" class="btn btn-warning btn-mini" id="btnCreate">New Election</button>
         </li>
@@ -37,10 +38,9 @@
         <form name="formLoadFile" id="formLoadFile">
           <label for="loadFile">Load a previous Election from saved file:</label>
           <input id="loadFile" name="loadFile" type="file" />
-          @*        <button type="button" id="btnUpload2">Load Now</button>*@
         </form>
       </li>
       <li><a href="@Url.Action("ImportV1", "Setup")">Import files</a> from TallyJ version 1.</li>
-    </ol>
+    </ul>
 
 }

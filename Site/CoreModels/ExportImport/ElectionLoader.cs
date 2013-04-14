@@ -14,7 +14,7 @@ using System.Xml.Schema;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels.ExportImport
 {

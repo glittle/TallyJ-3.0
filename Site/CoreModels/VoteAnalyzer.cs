@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code;
-using TallyJ.EF;
+using TallyJ.Models;
 using System.Linq;
 
 namespace TallyJ.CoreModels

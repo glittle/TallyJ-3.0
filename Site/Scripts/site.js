@@ -623,6 +623,7 @@ function ShowStatusFailed(msg, keepTime) {
     }
 
     if (!msgShown) {
+        ResetStatusDisplay();
         ShowStatusDisplay(text, delayBeforeShow, keepTime, true);
     }
 

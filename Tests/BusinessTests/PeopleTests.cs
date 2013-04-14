@@ -5,7 +5,7 @@ using TallyJ.Code;
 
 using TallyJ.CoreModels;
 using TallyJ.Code.Helpers;
-using TallyJ.EF;
+using TallyJ.Models;
 using Tests.Support;
 
 namespace Tests.BusinessTests

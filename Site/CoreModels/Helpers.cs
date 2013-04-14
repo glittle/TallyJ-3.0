@@ -1,7 +1,7 @@
 using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

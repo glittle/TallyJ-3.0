@@ -153,7 +153,7 @@
     <Build Include="Security\TallyJSite.sql" />
     <Build Include="tj\Functions\HasMatch.sql" />
     <Build Include="tj\Stored Procedures\EraseElectionContents.sql" />
-    <Build Include="tj\Stored Procedures\SqlSearch.sql" />
+    <None Include="tj\Stored Procedures\SqlSearch.sql" />
     <Build Include="tj\Stored Procedures\CurrentRowVersion.sql" />
     <Build Include="tj\Stored Procedures\CloneElection.sql" />
     <Build Include="tj\Stored Procedures\UpdateVoteStatus.sql" />

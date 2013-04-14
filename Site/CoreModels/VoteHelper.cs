@@ -2,7 +2,7 @@ using System;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using TallyJ.Code;
-using TallyJ.EF;
+using TallyJ.Models;
 
 
 namespace Tests.BusinessTests

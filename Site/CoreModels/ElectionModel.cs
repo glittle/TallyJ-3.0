@@ -7,7 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {
@@ -456,7 +456,7 @@ namespace TallyJ.CoreModels
       }
       catch (Exception e)
       {
-        var logger = LogManager.GetCurrentClassLogger();
+        var logger = NLog.LogManager.GetCurrentClassLogger();
         logger.ErrorException("Reading VisibleElections", e);
 
         return new List<vElectionListInfo>();

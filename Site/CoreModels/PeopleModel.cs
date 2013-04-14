@@ -8,7 +8,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {
@@ -43,8 +43,8 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var single = Db.CurrentRowVersion().Single();
-        return single != null ? single.Value : 0;
+        var single = Db.CurrentRowVersion();
+        return single != null ? single : 0;
       }
     }
 

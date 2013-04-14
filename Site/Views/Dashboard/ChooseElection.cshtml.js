@@ -92,7 +92,7 @@ var HomeIndexPage = function () {
             return;
         }
 
-        ShowStatusDisplay("Loading election...");
+        ShowStatusDisplay("Loading election...", 0, 2 * 60 * 1000);
 
         var form = $('#formLoadFile');
         var frameId = 'tempUploadFrame';
@@ -275,9 +275,9 @@ var HomeIndexPage = function () {
 
         var btn = $(this);
         var row = btn.parents('.Election');
-        var name = btn.parent().find('b').text();
+        var name = btn.parents('.Detail').find('b').text();
 
-        if (!confirm('Completely delete election: {0}?'.filledWith(name))) {
+        if (!confirm('Completely delete election this election?\n\n  {0}\n\n'.filledWith(name))) {
             return;
         }
 
@@ -352,7 +352,7 @@ var HomeIndexPage = function () {
 
         setTimeout(function () {
             target.toggleClass('justloaded', 'slow');
-        }, 3000);
+        }, 10000);
     };
 
 

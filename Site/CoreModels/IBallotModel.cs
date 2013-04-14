@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

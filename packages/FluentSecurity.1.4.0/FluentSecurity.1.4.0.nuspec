@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>FluentSecurity</id>
+    <version>1.4.0</version>
+    <title>FluentSecurity</title>
+    <authors>Kristoffer Ahl</authors>
+    <owners>Kristoffer Ahl</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>https://github.com/kristofferahl/FluentSecurity</projectUrl>
+    <iconUrl>https://nugetgallery.blob.core.windows.net/icons/FluentSecurity.1.4.0.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluent security configuration for ASP.NET MVC</description>
+    <summary>Fluent security configuration for ASP.NET MVC</summary>
+    <tags>asp.net mvc .net40 security</tags>
+    <references>
+      <reference file="FluentSecurity.dll" />
+    </references>
+  </metadata>
+</package>

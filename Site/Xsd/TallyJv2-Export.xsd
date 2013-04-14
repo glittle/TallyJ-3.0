@@ -90,7 +90,7 @@
                             <xs:element minOccurs="0" maxOccurs="unbounded" name="ballot">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element maxOccurs="unbounded" name="vote">
+                                        <xs:element maxOccurs="unbounded" name="vote" minOccurs="0">
                                             <xs:complexType>
                                                 <xs:attribute name="StatusCode" type="xs:string" use="required" />
                                                 <xs:attribute name="PersonGuid" type="xs:string" use="optional" />

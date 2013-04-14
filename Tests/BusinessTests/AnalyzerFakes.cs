@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
 using TallyJ.Code;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace Tests.BusinessTests
 {

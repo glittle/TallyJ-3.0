@@ -1,8 +1,7 @@
 using System.Web.Mvc;
 using TallyJ.Code.Data;
 using TallyJ.Code.UnityRelated;
-using TallyJ.EF;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.Code
 {

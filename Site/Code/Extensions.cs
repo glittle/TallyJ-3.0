@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.Code
 {
@@ -282,7 +282,13 @@ namespace TallyJ.Code
     }
 
 
-    /// <summary>
+      public static object ForSqlParameter(this string input)
+      {
+          if (input == null) return DBNull.Value;
+          return input;
+      }
+
+      /// <summary>
     ///     Use the input string as the format with string.Format
     /// </summary>
     public static string FilledWith(this string input, params object[] values)

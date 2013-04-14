@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

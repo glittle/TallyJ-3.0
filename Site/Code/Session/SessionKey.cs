@@ -4,6 +4,7 @@ namespace TallyJ.Code.Session
 	{
 	  public const string CurrentBallotId = "CurrentBallotId";
 
+	  public const string CurrentElection = "CurrentElection";
 	  public const string CurrentComputer = "CurrentComputer";
 	  public const string CurrentLocation = "CurrentLocation";
 	  public const string CurrentElectionGuid = "ElectionGuid";

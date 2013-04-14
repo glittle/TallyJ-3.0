@@ -3,7 +3,7 @@ using System.Data.EntityClient;
 using System.Data.Metadata.Edm;
 using System.Data.SqlClient;
 using System.Reflection;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.Code.Data
 {
@@ -22,6 +22,8 @@ namespace TallyJ.Code.Data
           return _tallyJ2Entities;
         }
 
+        return _tallyJ2Entities = new TallyJ2dContext();
+
         var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 
         var connection = new SqlConnection(cnString);
@@ -30,7 +32,6 @@ namespace TallyJ.Code.Data
           new[] { typeof(SqlSearch_Result).Assembly }
           );
 
-        
         var entityConnection = new EntityConnection(workspace, connection);
 
         return _tallyJ2Entities = new TallyJ2dContext(entityConnection);

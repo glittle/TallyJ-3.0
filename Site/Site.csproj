@@ -75,28 +75,30 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\dotless.1.3.1.0\lib\dotless.Core.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.5.0.0-rc\lib\net40\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\Other\Enyim.Caching.dll</HintPath>
     </Reference>
-    <Reference Include="FluentSecurity">
-      <HintPath>..\packages\FluentSecurity.1.3.0\lib\FluentSecurity.dll</HintPath>
+    <Reference Include="FluentSecurity, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FluentSecurity.1.4.0\lib\FluentSecurity.dll</HintPath>
     </Reference>
     <Reference Include="Krystalware.SlickUpload">
       <HintPath>..\packages\Other\Krystalware.SlickUpload.dll</HintPath>
     </Reference>
-    <Reference Include="le_nlog">
-      <HintPath>..\packages\le_nlog.1.4\lib\4.0\le_nlog.dll</HintPath>
+    <Reference Include="le_nlog, Version=2.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\le_nlog.2.1.7\lib\Net40\le_nlog.dll</HintPath>
     </Reference>
     <Reference Include="LinqKit">
       <HintPath>..\packages\Other\LinqKit.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO">
       <HintPath>..\packages\CsvReader\LumenWorks.Framework.IO.dll</HintPath>
@@ -104,37 +106,48 @@
     <Reference Include="MemcachedProviders">
       <HintPath>..\packages\Other\MemcachedProviders.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Core">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.1.0.0-alpha2\lib\net40\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.1.0.1\lib\net40\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Hosting.AspNet">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Hosting.AspNet.1.0.0-alpha2\lib\net45\Microsoft.AspNet.SignalR.Hosting.AspNet.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.0.1\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Hosting.Common">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Hosting.Common.1.0.0-alpha2\lib\net40\Microsoft.AspNet.SignalR.Hosting.Common.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.1.0.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.1.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Configuration">
-      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\MicrosoftWebInfrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Optimization">
       <HintPath>..\packages\Microsoft.Web.Optimization.0.1\lib\net40\Microsoft.Web.Optimization.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=2.0.1.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.2.0.1.2\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -151,41 +164,46 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\AspNetWebPagesCore.2.0.10906.0\lib\net40\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\AspNetMvc.4.0.10906.0\lib\net40\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Providers">
-      <HintPath>..\packages\System.Web.Providers.1.0.1\lib\Net40\System.Web.Providers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\AspNetWebPagesCore.2.0.10906.0\lib\net40\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\AspNetWebPagesCore.2.0.10906.0\lib\net40\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\AspNetWebPagesCore.2.0.10906.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\AspNetWebPagesCore.2.0.10906.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Providers.Core.1.2\lib\net40\System.Web.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20715.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Unity.Mvc3">
-      <HintPath>..\packages\Unity.Mvc3.1.1\lib\Unity.Mvc3.dll</HintPath>
+    <Reference Include="Unity.Mvc3, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.Mvc3.1.2\lib\net40\Unity.Mvc3.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -252,91 +270,6 @@
     <Compile Include="CoreModels\ExportImport\ElectionExporter.cs" />
     <Compile Include="CoreModels\ExportImport\LocalExtensions.cs" />
     <Compile Include="CoreModels\FrontDeskHub.cs" />
-    <Compile Include="EF\Ballot.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\CloneElection_Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Computer.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\C_Log.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Election.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\ImportFile.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\JoinElectionUser.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Location.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\MainData.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MainData.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Message.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Model1.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Model1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Partials\BallotRelated.cs" />
-    <Compile Include="EF\Partials\Election.cs" />
-    <Compile Include="EF\Partials\Functions.cs" />
-    <Compile Include="EF\Partials\IHasElectionGuid.cs" />
-    <Compile Include="EF\Partials\Person.cs" />
-    <Compile Include="EF\Partials\SerializableClasses.cs" />
-    <Compile Include="EF\Partials\TallyJ2Entities.cs" />
-    <Compile Include="EF\Person.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\ResultSummary.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\ResultTie.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\SqlSearch_Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Teller.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\User.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\vBallotInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\vElectionListInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\vImportFileInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\vLocationInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\Vote.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="CoreModels\BallotAnalyzer.cs" />
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
@@ -469,12 +402,6 @@
     <Content Include="Images\LogoSq.png" />
     <Compile Include="CoreModels\ElectionsListViewModel.cs" />
     <Compile Include="Controllers\SetupController.cs" />
-    <Compile Include="EF\vResultInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EF\vVoteInfo.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -486,6 +413,67 @@
     <Compile Include="CoreModels\SetupModel.cs" />
     <Compile Include="CoreModels\ElectionAnalyzerSingleName.cs" />
     <Compile Include="CoreModels\TellerModel.cs" />
+    <Compile Include="Migrations\201304140246416_InitialMigrations.cs" />
+    <Compile Include="Migrations\201304140246416_InitialMigrations.Designer.cs">
+      <DependentUpon>201304140246416_InitialMigrations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Ballot.cs" />
+    <Compile Include="Models\BaseEntity.cs" />
+    <Compile Include="Models\Mapping\BallotMap.cs" />
+    <Compile Include="Models\Mapping\ComputerMap.cs" />
+    <Compile Include="Models\Mapping\C_LogMap.cs" />
+    <Compile Include="Models\Mapping\ElectionMap.cs" />
+    <Compile Include="Models\Mapping\ImportFileMap.cs" />
+    <Compile Include="Models\Mapping\LocationMap.cs" />
+    <Compile Include="Models\Mapping\MessageMap.cs" />
+    <Compile Include="Models\Mapping\PersonMap.cs" />
+    <Compile Include="Models\Mapping\ResultMap.cs" />
+    <Compile Include="Models\Mapping\ResultSummaryMap.cs" />
+    <Compile Include="Models\Mapping\ResultTieMap.cs" />
+    <Compile Include="Models\Mapping\TellerMap.cs" />
+    <Compile Include="Models\Mapping\UserMap.cs" />
+    <Compile Include="Models\Mapping\vBallotInfoMap.cs" />
+    <Compile Include="Models\Mapping\vElectionListInfoMap.cs" />
+    <Compile Include="Models\Mapping\vImportFileInfoMap.cs" />
+    <Compile Include="Models\Mapping\vLocationInfoMap.cs" />
+    <Compile Include="Models\Mapping\VoteMap.cs" />
+    <Compile Include="Models\Mapping\vResultInfoMap.cs" />
+    <Compile Include="Models\Mapping\vVoteInfoMap.cs" />
+    <Compile Include="Models\Mapping\JoinElectionUserMap.cs" />
+    <Compile Include="Models\Persistance\IRepository.cs" />
+    <Compile Include="Models\Persistance\EntityFrameworkRepository.cs" />
+    <Compile Include="Models\Procs\CloneElection_Result.cs" />
+    <Compile Include="Models\Computer.cs" />
+    <Compile Include="Models\C_Log.cs" />
+    <Compile Include="Models\Election.cs" />
+    <Compile Include="Models\ImportFile.cs" />
+    <Compile Include="Models\JoinElectionUser.cs" />
+    <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Models\Partials\BallotRelated.cs" />
+    <Compile Include="Models\Partials\Election.cs" />
+    <Compile Include="Models\Partials\Functions.cs" />
+    <Compile Include="Models\Partials\IHasElectionGuid.cs" />
+    <Compile Include="Models\Partials\Person.cs" />
+    <Compile Include="Models\Partials\SerializableClasses.cs" />
+    <Compile Include="Models\Partials\TallyJ2Entities.cs" />
+    <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\Procs\StoredProcedures.cs" />
+    <Compile Include="Models\Result.cs" />
+    <Compile Include="Models\ResultSummary.cs" />
+    <Compile Include="Models\ResultTie.cs" />
+    <Compile Include="Models\Procs\SqlSearch_Result.cs" />
+    <Compile Include="Models\TallyJ2dContext.cs" />
+    <Compile Include="Models\Teller.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\vBallotInfo.cs" />
+    <Compile Include="Models\vElectionListInfo.cs" />
+    <Compile Include="Models\vImportFileInfo.cs" />
+    <Compile Include="Models\vLocationInfo.cs" />
+    <Compile Include="Models\Vote.cs" />
+    <Compile Include="Models\vResultInfo.cs" />
+    <Compile Include="Models\vVoteInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\bootstrap\css\accordion.less" />
     <Content Include="Content\bootstrap\css\alerts.less" />
@@ -528,20 +516,32 @@
     <Content Include="Content\bootstrap\css\utilities.less" />
     <Content Include="Content\bootstrap\css\variables.less" />
     <Content Include="Content\bootstrap\css\wells.less" />
-    <None Include="Scripts\jquery-1.9.0.intellisense.js" />
+    <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Context.tt" />
+    <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Entity.tt" />
+    <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Mapping.tt" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\jquery-migrate.js" />
-    <Content Include="Scripts\jquery-1.9.0.js" />
-    <Content Include="Scripts\jquery-1.9.0.min.js" />
-    <Content Include="Scripts\jquery-ui-1.10.0.js" />
-    <Content Include="Scripts\jquery-ui-1.10.0.min.js" />
-    <Content Include="Scripts\jquery.signalR-1.0.0-alpha2.js" />
-    <Content Include="Scripts\jquery.signalR-1.0.0-alpha2.min.js" />
+    <Content Include="Scripts\jquery-ui-1.10.2.js" />
+    <Content Include="Scripts\jquery-ui-1.10.2.min.js" />
+    <Content Include="Scripts\jquery.signalR-1.0.1.js" />
+    <Content Include="Scripts\jquery.signalR-1.0.1.min.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-2.2.1.debug.js" />
+    <Content Include="Scripts\knockout-2.2.1.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Unity.Mvc3.README.txt" />
     <Content Include="Views\Dashboard\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
@@ -581,13 +581,6 @@
     <Content Include="Scripts\jquery.qtip.js" />
     <Content Include="Scripts\jquery.qtip.min.css" />
     <Content Include="Scripts\jquery.qtip.min.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\knockout-1.3.0beta.debug.js" />
-    <Content Include="Scripts\knockout-1.3.0beta.js" />
-    <Content Include="Scripts\modernizr-2.0.6-development-only.js" />
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\superfish.css" />
@@ -767,23 +760,7 @@
     <Content Include="Views\Before\RollCall.cshtml" />
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\Ballots\Reconcile.cshtml" />
-    <EntityDeploy Include="EF\MainData.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MainData.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="EF\MainData.edmx.diagram">
-      <DependentUpon>MainData.edmx</DependentUpon>
-    </Content>
-    <Content Include="EF\Model1.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model1.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="EF\Model1.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model1.cs</LastGenOutput>
-    </Content>
     <Content Include="Download\open\sampleCommunity.csv" />
-    <Content Include="Scripts\jquery-1.9.0.min.map" />
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -800,7 +777,9 @@
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Start\" />
+    <EmbeddedResource Include="Migrations\201304140246416_InitialMigrations.resx">
+      <DependentUpon>201304140246416_InitialMigrations.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

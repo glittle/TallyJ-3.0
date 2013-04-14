@@ -5,7 +5,7 @@ using TallyJ.Code.Enumerations;
 
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
-using TallyJ.EF;
+using TallyJ.Models;
 using Tests.Support;
 using TallyJ.Code;
 using System.Linq;

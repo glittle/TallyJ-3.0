@@ -3,7 +3,7 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {
@@ -48,8 +48,8 @@ namespace TallyJ.CoreModels
                                         info.ElectionGuid,
                                         DateOfElection =
                                             info.DateOfElection.HasValue
-                                                ? info.DateOfElection.AsString("yyyy MMMM d")
-                                                : "[No Date]",
+                                                ? info.DateOfElection.AsString("yyyy-MMM-dd")
+                                                : "",
                                         IsCurrent = isCurrent,
                                         // Locations = isCurrent ? locations : null,
                                         Type = ElectionTypeEnum.TextFor(info.ElectionType),

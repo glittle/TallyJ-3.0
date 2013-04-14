@@ -1,6 +1,6 @@
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels.Helper
 {
@@ -16,7 +16,7 @@ namespace TallyJ.CoreModels.Helper
                  person.LastName.CleanedForSearching(),
                  person.OtherNames.CleanedForSearching(),
                  person.OtherLastNames.CleanedForSearching(),
-                 person.OtherInfo.CleanedForSearching(),
+                 //person.OtherInfo.CleanedForSearching(),
                }.JoinedAsString(WordSeparator, true)
         .Replace(" ", WordSeparator)
         .ToLower();
@@ -30,7 +30,7 @@ namespace TallyJ.CoreModels.Helper
                                       person.LastName.GenerateDoubleMetaphone(),
                                       person.OtherNames.GenerateDoubleMetaphone(),
                                       person.OtherLastNames.GenerateDoubleMetaphone(),
-                                      person.OtherInfo.GenerateDoubleMetaphone(),
+                                      //person.OtherInfo.GenerateDoubleMetaphone(),
                                     }
                                     .JoinedAsString(WordSeparator, true)
                                     .Replace(" ", WordSeparator)

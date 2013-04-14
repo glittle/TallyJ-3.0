@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.Code.Resources
 {

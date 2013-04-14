@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using LumenWorks.Framework.IO.Csv;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

@@ -1,6 +1,6 @@
 using System;
 using System.Web;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {

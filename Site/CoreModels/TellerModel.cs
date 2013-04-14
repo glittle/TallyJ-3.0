@@ -7,7 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using System.Linq;
-using TallyJ.EF;
+using TallyJ.Models;
 
 
 namespace TallyJ.CoreModels

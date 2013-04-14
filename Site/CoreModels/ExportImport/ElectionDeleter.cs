@@ -5,7 +5,7 @@ using System.Transactions;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.EF;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels.ExportImport
 {
