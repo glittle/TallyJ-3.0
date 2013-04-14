@@ -98,7 +98,7 @@ var ReconcilePageFunc = function () {
                 (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
                 (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
                 (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
-                (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)).bold()
+                (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold()
             ].join(' &nbsp; &nbsp; '));
 
         //        html.push(template.filledWith({ className: 'SubTotal', name: 'Absentee Ballots', count: subTotal }));

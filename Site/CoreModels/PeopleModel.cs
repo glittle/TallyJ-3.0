@@ -44,7 +44,7 @@ namespace TallyJ.CoreModels
       get
       {
         var single = Db.CurrentRowVersion();
-        return single != null ? single : 0;
+        return single;
       }
     }
 

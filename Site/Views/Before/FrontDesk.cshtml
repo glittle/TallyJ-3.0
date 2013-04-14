@@ -20,6 +20,6 @@
   </ol>
 </div>
 <div id="search"></div>
-<div id="Main" class="@(Model.PeopleForFrontDesk().Any(p=>p.Area.HasContent()) ? "WithArea" : "")">
+<div id="Main" class="@(ContextItems.LocationModel.HasLocations ? "WithArea " : "" + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "" : "NoCallIn"))">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
 </div>

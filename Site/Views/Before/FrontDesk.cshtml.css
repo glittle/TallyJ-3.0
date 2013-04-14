@@ -12,15 +12,15 @@ p
     clear: both;
     border: 2px solid transparent;
 }
-.Voter:hover
+.Voter div.Btn:hover 
 {
-    border-color: #00ff00;
+    border-color: #80ff80;
 }
 .Voter.KeyMatch {
     background-color: #ffff99;
 }
 .Voter.KeyMatch.Focused {
-    background-color: #00ff00;
+    border-color: #00ff00;
 }
 .Btn
 {
@@ -72,5 +72,8 @@ p
     padding: 3px 2em 3px 4px;
     background-color: #8dc63e;
     font-weight: bold;
+    display: none;
+}
+.NoCallIn div.CalledIn {
     display: none;
 }

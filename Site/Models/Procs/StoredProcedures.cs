@@ -27,9 +27,10 @@ namespace TallyJ.Models
 
         public virtual long CurrentRowVersion()
         {
-            return Database.ExecuteSqlCommand("tj.CurrentRowVersion");
+//            return Database.ExecuteSqlCommand("tj.CurrentRowVersion");
 
-
+            var x = Database.SqlQuery<long>("select cast(@@DbTs as bigint)");
+            return x.First();
 //            return ((IObjectContextAdapter) this).ObjectContext.ExecuteFunction<long?>("CurrentRowVersion");
         }
 

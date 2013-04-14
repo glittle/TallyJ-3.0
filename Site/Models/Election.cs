@@ -27,5 +27,6 @@ namespace TallyJ.Models
         public byte[] C_RowVersion { get; set; }
         public Nullable<bool> ListForPublic { get; set; }
         public Nullable<bool> ShowAsTest { get; set; }
+        public Nullable<bool> UseCallInButton { get; set; }
     }
 }

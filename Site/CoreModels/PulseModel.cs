@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Resources;
@@ -7,76 +6,75 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.CoreModels
 {
-  public class PulseModel : DataConnectedModel
-  {
-    private readonly UrlHelper _urlHelper;
-    private readonly PulseInfo _infoFromClient;
-
-    public PulseModel(Controller controller, PulseInfo infoFromClient = null)
+    public class PulseModel : DataConnectedModel
     {
-      _urlHelper = controller.Url;
-      _infoFromClient = infoFromClient;
-    }
-    public PulseModel(UrlHelper urlHelper, PulseInfo infoFromClient = null)
-    {
-      _urlHelper = urlHelper;
-      _infoFromClient = infoFromClient;
-    }
+        private readonly PulseInfo _infoFromClient;
+        private readonly UrlHelper _urlHelper;
 
-    // properties expected:
-    //  Active  -- is this computer active in an election?
-    //  PulseSeconds -- seconds to delay before next pulse
-    //  VersionNum -- last version in db
-
-    public JsonResult ProcessPulseJson()
-    {
-      var result = Pulse();
-
-      return result.AsJsonResult(JsonRequestBehavior.AllowGet);
-    }
-
-    public object Pulse()
-    {
-      var result2 = new Dictionary<string, object>();
-      var isStillAllowed = new ComputerModel().ProcessPulse();
-
-      new ElectionModel().ProcessPulse();
-      var statusChanged = false;
-
-      if (_infoFromClient != null)
-      {
-        statusChanged = _infoFromClient.Status != UserSession.CurrentElectionStatus;
-
-        switch (_infoFromClient.Context)
+        public PulseModel(Controller controller, PulseInfo infoFromClient = null)
         {
-          case "BeforeRollCall":
-            var rollcall = new RollCallModel();
-            long newStamp;
-            result2.Add("MorePeople", rollcall.GetMorePeople(_infoFromClient.Stamp, out newStamp));
-            result2.Add("NewStamp", newStamp);
-            break;
+            _urlHelper = controller.Url;
+            _infoFromClient = infoFromClient;
         }
-      }
 
-      var newStatus = statusChanged
-                              ? new
-                              {
-                                QuickLinks = new MenuHelper(_urlHelper).QuickLinks(),
-                                Name = UserSession.CurrentElectionStatusName,
-                                Code = UserSession.CurrentElectionStatus,
-                              }
-                              : null;
-                         //VersionNum = new Random().Next(1, 100),
+        public PulseModel(UrlHelper urlHelper, PulseInfo infoFromClient = null)
+        {
+            _urlHelper = urlHelper;
+            _infoFromClient = infoFromClient;
+        }
 
-      if (newStatus != null)
-      {
-        result2.Add("NewStatus", newStatus);
-      }
-      result2.Add("Active", isStillAllowed);
-      result2.Add("PulseSeconds", isStillAllowed ? 0 : 60); // if 0, client will use its current pulse number
-      
-      return result2;
+        // properties expected:
+        //  Active  -- is this computer active in an election?
+        //  PulseSeconds -- seconds to delay before next pulse
+        //  VersionNum -- last version in db
 
+        public JsonResult ProcessPulseJson()
+        {
+            var result = Pulse();
+            return result.AsJsonResult(JsonRequestBehavior.AllowGet);
+        }
+
+        public object Pulse()
+        {
+            var result2 = new Dictionary<string, object>();
+
+            var isStillAllowed = new ComputerModel().ProcessPulse();
+            new ElectionModel().ProcessPulse();
+            
+            var statusChanged = false;
+
+            if (_infoFromClient != null)
+            {
+                statusChanged = _infoFromClient.Status != UserSession.CurrentElectionStatus;
+
+                switch (_infoFromClient.Context)
+                {
+                    case "BeforeRollCall":
+                        var rollcall = new RollCallModel();
+                        long newStamp;
+                        result2.Add("MorePeople", rollcall.GetMorePeople(_infoFromClient.Stamp, out newStamp));
+                        result2.Add("NewStamp", newStamp);
+                        break;
+                }
+            }
+
+            var newStatus = statusChanged
+                                ? new
+                                    {
+                                        QuickLinks = new MenuHelper(_urlHelper).QuickLinks(),
+                                        Name = UserSession.CurrentElectionStatusName,
+                                        Code = UserSession.CurrentElectionStatus,
+                                    }
+                                : null;
+
+            if (newStatus != null)
+            {
+                result2.Add("NewStatus", newStatus);
+            }
+            result2.Add("Active", isStillAllowed);
+            result2.Add("PulseSeconds", isStillAllowed ? 0 : 60); // if 0, client will use its current pulse number
+
+            return result2;
+        }
     }
-  }
 }

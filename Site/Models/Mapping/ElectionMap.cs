@@ -72,6 +72,7 @@ namespace TallyJ.Models.Mapping
             this.Property(t => t.C_RowVersion).HasColumnName("_RowVersion");
             this.Property(t => t.ListForPublic).HasColumnName("ListForPublic");
             this.Property(t => t.ShowAsTest).HasColumnName("ShowAsTest");
+            this.Property(t => t.UseCallInButton).HasColumnName("UseCallInButton");
         }
     }
 }
