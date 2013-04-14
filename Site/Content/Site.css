@@ -5955,8 +5955,9 @@ body.AuthKnown .CurrentElectionName {
   margin-top: 9px;
 }
 .ShowMasterMenu {
-  float: right;
-  margin-top: 20px;
+  margin-left: 15px;
+  color: #999;
+  font-style: italic;
 }
 section.featured.empty {
   height: 1.2em;
@@ -5966,6 +5967,13 @@ section.features.bottom a {
 }
 #MasterMenu {
   display: none;
+  top: 2%;
+  width: 400px;
+  left: 70%;
+}
+#MasterMenu .modal-body {
+  max-height: none;
+  overflow-y: auto;
 }
 #MasterMenu section.features a {
   text-decoration: none;
@@ -5993,6 +6001,9 @@ section.features.bottom a {
   margin-bottom: 15px;
   margin-left: 38px;
 }
+#MasterMenu #mmHeader {
+  font-size: 15.400000000000002px;
+}
 #MasterMenu .mmSection {
   margin: 0 0 15px 0;
 }
@@ -6003,11 +6014,12 @@ section.features.bottom a {
   color: #555555;
   padding: 0;
   line-height: 120%;
+  margin: 0 0 2px 0;
 }
 #MasterMenu .mmSection a {
-  line-height: normal;
+  line-height: 1.3;
   text-decoration: none;
-  padding-left: 20px;
+  margin-left: 30px;
   display: block;
 }
 #MasterMenu .mmSection a:link,
@@ -6021,7 +6033,10 @@ section.features.bottom a {
 #MasterMenu .mmSection a.Featured {
   font-weight: bold;
   color: #333333;
-  font-size: 17.5px;
+  font-size: 14px;
+}
+#MasterMenu .mmSection a.NotStarted {
+  font-size: 9.799999999999999px;
 }
 #MasterMenu .mmSection .featuresTitle {
   margin: -5px 0 0 -17px;

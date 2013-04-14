@@ -6,6 +6,7 @@
     border-spacing: 0;
     border: 1px solid #8DC63E;
     border-radius: 3px;
+    max-width: 600px;
 }
 .More
 {
@@ -15,10 +16,15 @@ div.More h3
 {
     margin: 0 0 5px 0;
 }
+table.Demographics td, table.Demographics td label {
+    font-size: 94%;
+}
 table.More th, table.Demographics th
 {
     text-align: right;
     padding-right: 10px;
+    white-space: nowrap;
+    vertical-align: top;
 }
 
 table.More th, table.More td

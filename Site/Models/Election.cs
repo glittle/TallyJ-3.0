@@ -28,5 +28,6 @@ namespace TallyJ.Models
         public Nullable<bool> ListForPublic { get; set; }
         public Nullable<bool> ShowAsTest { get; set; }
         public Nullable<bool> UseCallInButton { get; set; }
+        public Nullable<bool> HidePreBallotPages { get; set; }
     }
 }

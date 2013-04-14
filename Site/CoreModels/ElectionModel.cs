@@ -227,7 +227,8 @@ namespace TallyJ.CoreModels
                                            election.ListForPublic,
                                            election.ShowAsTest,
                                            election.ElectionPasscode,
-                                           election.UseCallInButton
+                                           election.UseCallInButton,
+                                           election.HidePreBallotPages
                                        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
