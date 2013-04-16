@@ -46,10 +46,10 @@ namespace Tests.BusinessTests
 
       fakes.ResultSummaries.Count.ShouldEqual(1);
       var resultSummary = fakes.ResultSummaries[0];
-      resultSummary.DroppedOffBallots.ShouldEqual(1);
-      resultSummary.MailedInBallots.ShouldEqual(10);
-      resultSummary.CalledInBallots.ShouldEqual(0);
-      resultSummary.InPersonBallots.ShouldEqual(17);
+      resultSummary.EnvelopesDroppedOff.ShouldEqual(1);
+      resultSummary.EnvelopesMailedIn.ShouldEqual(10);
+      resultSummary.EnvelopesCalledIn.ShouldEqual(0);
+      resultSummary.EnvelopesInPerson.ShouldEqual(17);
       resultSummary.NumEligibleToVote.ShouldEqual(51);
 
       fakes.Ballots.Count.ShouldEqual(28);

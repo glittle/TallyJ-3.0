@@ -25,10 +25,7 @@
       The results are not available yet.
     </p>
     <p>
-      They will be available when the head teller releases them.
-    </p>
-    <p>
-      This page will automatically show them when they are available.
+      They will show here when the head teller approves the results.
     </p>
     <p>
       Current status: <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
@@ -46,7 +43,7 @@
           <table id="totalCounts">
             <thead>
               <tr>
-                <th colspan="2">Ballot Information
+                <th colspan="2">Ballot Statistics
                 </th>
               </tr>
             </thead>
@@ -65,7 +62,7 @@
               </td>
             </tr>
             <tr>
-              <td class="Left">Particpation Rate
+              <td class="Left">Participation Rate
               </td>
               <td class="numberCell">
                 <span data-name="Participation"></span>%
@@ -74,7 +71,7 @@
             @if (!UserSession.CurrentElection.IsSingleNameElection)
             {
               <tr>
-                <td class="Left">Invalid Ballots
+                <td class="Left">Spoiled Ballots
                 </td>
                 <td class="numberCell">
                   <span data-name="TotalInvalidBallots"></span>
@@ -82,7 +79,7 @@
               </tr>
             }
             <tr>
-              <td class="Left">Invalid Votes
+              <td class="Left">Spoiled Votes
               </td>
               <td class="numberCell">
                 <span data-name="TotalInvalidVotes"></span>

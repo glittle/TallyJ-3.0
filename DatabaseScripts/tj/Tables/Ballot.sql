@@ -16,12 +16,15 @@
 );
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Ballot]
     ON [tj].[Ballot]([BallotGuid] ASC);
 
 
 GO
+
 CREATE
 /*
 
@@ -29,7 +32,7 @@ Purpose: Remove ResultSummary when a Ballot is touched
 
 
 */
-TRIGGER tj.Ballot_ClearResultSummary ON tj.Ballot
+TRIGGER [tj].[Ballot_ClearResultSummary] ON [tj].[Ballot]
 FOR INSERT, UPDATE, DELETE
 AS
 
@@ -37,6 +40,7 @@ AS
    from ResultSummary rs
      join Location l on l.ElectionGuid = rs.ElectionGuid
 	 join (select LocationGuid from inserted union select LocationGuid from deleted) id on id.LocationGuid = l.LocationGuid
+   where rs.ResultType != 'M'
 GO
 GRANT UPDATE
     ON OBJECT::[tj].[Ballot] TO [TallyJSite]

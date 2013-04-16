@@ -262,16 +262,17 @@ namespace TallyJ.CoreModels.ExportImport
                     rs.ResultType,
                     rs.NumVoters,
                     rs.NumEligibleToVote,
-                    rs.BallotsReceived,
-                    rs.InPersonBallots,
-                    rs.DroppedOffBallots,
-                    rs.MailedInBallots,
-                    rs.CalledInBallots,
+                    rs.NumBallotsEntered,
+                    rs.EnvelopesInPerson,
+                    rs.EnvelopesDroppedOff,
+                    rs.EnvelopesMailedIn,
+                    rs.EnvelopesCalledIn,
                     rs.BallotsNeedingReview,
                     rs.SpoiledBallots,
                     rs.SpoiledVotes,
                     rs.TotalVotes,
-                    rs.UseOnReports
+                    rs.UseOnReports,
+                    rs.SpoiledManualBallots
                 }).ToList();
         }
 

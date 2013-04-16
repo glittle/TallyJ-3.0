@@ -19,7 +19,7 @@ namespace TallyJ.Models
         }
 
         public TallyJ2dContext()
-            : base("Name=TallyJ2dContext")
+            : base("Name=MainConnection")
         {
         }
 
@@ -42,7 +42,7 @@ namespace TallyJ.Models
         public DbSet<vElectionListInfo> vElectionListInfoes { get; set; }
         public DbSet<vImportFileInfo> vImportFileInfoes { get; set; }
         public DbSet<vLocationInfo> vLocationInfoes { get; set; }
-        public DbSet<vResultInfo> vResultInfoes { get; set; }
+//        public DbSet<vResultInfo> vResultInfoes { get; set; }
         public DbSet<vVoteInfo> vVoteInfoes { get; set; }
 
         private void ConfigureModel(DbModelBuilder modelBuilder)
@@ -86,7 +86,7 @@ namespace TallyJ.Models
             modelBuilder.Configurations.Add(new vElectionListInfoMap());
             modelBuilder.Configurations.Add(new vImportFileInfoMap());
             modelBuilder.Configurations.Add(new vLocationInfoMap());
-            modelBuilder.Configurations.Add(new vResultInfoMap());
+            //modelBuilder.Configurations.Add(new vResultInfoMap());
             modelBuilder.Configurations.Add(new vVoteInfoMap());
         
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dContext, Migrations.Configuration>());

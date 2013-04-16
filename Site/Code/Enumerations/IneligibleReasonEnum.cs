@@ -32,7 +32,7 @@ namespace TallyJ.Code.Enumerations
     
     public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"In an unknown language");
     public static readonly IneligibleReasonEnum Unreadable_Not_a_complete_name = new IneligibleReasonEnum("86DDBE4A-841D-E111-A7FB-002269C41D11", GroupName.Unreadable,"Not a complete name");
-    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
+//    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
     public static readonly IneligibleReasonEnum Unreadable_Writing_illegible = new IneligibleReasonEnum("CD27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Writing is illegible");
 
     static IneligibleReasonEnum()
@@ -53,7 +53,7 @@ namespace TallyJ.Code.Enumerations
       Add(Unidentifiable_Multiple_people_with_identical_name);
       Add(Unidentifiable_Name_is_a_mix_of_multiple_people);
 
-      Add(Unreadable_Vote_is_blank);
+//      Add(Unreadable_Vote_is_blank);
       Add(Unreadable_Writing_illegible);
       Add(Unreadable_Not_a_complete_name);
       Add(Unreadable_In_another_language_not_translatable);

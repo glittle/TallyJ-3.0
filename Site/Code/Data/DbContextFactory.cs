@@ -24,17 +24,17 @@ namespace TallyJ.Code.Data
 
         return _tallyJ2Entities = new TallyJ2dContext();
 
-        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
-
-        var connection = new SqlConnection(cnString);
-        var workspace = new MetadataWorkspace(
-          new[] { "res://*/" },
-          new[] { typeof(SqlSearch_Result).Assembly }
-          );
-
-        var entityConnection = new EntityConnection(workspace, connection);
-
-        return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
+//        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+//
+//        var connection = new SqlConnection(cnString);
+//        var workspace = new MetadataWorkspace(
+//          new[] { "res://*/" },
+//          new[] { typeof(SqlSearch_Result).Assembly }
+//          );
+//
+//        var entityConnection = new EntityConnection(workspace, connection);
+//
+//        return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
       }
     }
 

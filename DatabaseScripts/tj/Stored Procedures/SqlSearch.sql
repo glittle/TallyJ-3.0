@@ -1,4 +1,4 @@
-﻿ALTER
+﻿CREATE
 /*
 
 Name: SqlSearch
@@ -199,12 +199,12 @@ AS
 	 join byScore s on s.RowId = h.RowId and s.PassNum = h.PassNum
    where s.RowNum = 1
 
-
   set @MoreExactMatchesFound = case when (select COUNT(*) from #results where PassNum = 300) > @MaxToReturn then 1 else 0 end 
-  
-  select RowId [PersonId]
+
+
+	select RowId [PersonId]
 			, _FullName [FullName]
-			, res.IneligibleReasonGuid [Ineligible]
+            , res.IneligibleReasonGuid [Ineligible]
 			, res.PassGroup [MatchType]
 			, res.CanReceiveVotes
 			--, case when ROW_NUMBER() over (partition by PassNum order by Votes desc) = 1 

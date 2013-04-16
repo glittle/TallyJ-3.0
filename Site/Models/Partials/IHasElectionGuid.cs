@@ -1,35 +1,38 @@
 ﻿using System;
-using System.Data.Objects.DataClasses;
 
 namespace TallyJ.Models
 {
-  public interface IHasElectionGuid
-  {
-     Guid ElectionGuid { get; set; }
-  }
-
-  public partial class Election : IHasElectionGuid {}
-  public partial class Location : IHasElectionGuid {}
-  public partial class Person : IHasElectionGuid {}
-  //public partial class Computer : IHasElectionGuid {}
-  public partial class Teller : IHasElectionGuid {}
-  public partial class Result : IHasElectionGuid {}
-  public partial class ResultSummary : IHasElectionGuid
-  {
-    /// <Summary>Total of all collected</Summary>
-    public int TotalBallotsCollected
+    public interface IHasElectionGuid
     {
-      get
-      {
-        return InPersonBallots.GetValueOrDefault()
-               + DroppedOffBallots.GetValueOrDefault()
-               + MailedInBallots.GetValueOrDefault()
-               + CalledInBallots.GetValueOrDefault();
-      }
+        Guid ElectionGuid { get; set; }
     }
-  }
-  public partial class Message : IHasElectionGuid {}
 
+    public partial class Election : IHasElectionGuid
+    {
+    }
 
-  
+    public partial class Location : IHasElectionGuid
+    {
+    }
+
+    public partial class Person : IHasElectionGuid
+    {
+    }
+
+    //public partial class Computer : IHasElectionGuid {}
+    public partial class Teller : IHasElectionGuid
+    {
+    }
+
+    public partial class Result : IHasElectionGuid
+    {
+    }
+
+    public partial class Message : IHasElectionGuid
+    {
+    }
+
+    public partial class ResultSummary : IHasElectionGuid
+    {
+    }
 }

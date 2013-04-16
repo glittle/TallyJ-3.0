@@ -1,24 +1,4 @@
 ﻿<div>
-    <div id="Ballots" data-name="All Ballots">
-        <div class="body">
-            <h1>
-                All Ballots Cast</h1>
-            <div class="list">
-                {^rows}
-            </div>
-        </div>
-        <div class="row">
-            <div class="Ballot BallotSpoiled{Spoiled}">
-                <div>
-                    {C_BallotCode} ({StatusCode})</div>
-                <div>
-                    {^rows2} &nbsp;</div>
-            </div>
-        </div>
-        <div class="row2">
-            <span class="Vote VoteSpoiled{Spoiled}"><span class="Person">{PersonFullNameFL}</span>
-                <span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>
-    </div>
     <div id="SimpleResults" data-name="Tellers' Report (Simple)">
         <div class="body">
             <h1>
@@ -39,7 +19,7 @@
                         Number of ballots cast in person
                     </td>
                     <td>
-                        {InPersonBallots}
+                        {EnvelopesInPerson}
                     </td>
                 </tr>
                 <tr class="rpt1Detail">
@@ -47,7 +27,7 @@
                         Number of ballots received by mail
                     </td>
                     <td>
-                        {MailedInBallots}
+                        {EnvelopesMailedIn}
                     </td>
                 </tr>
                 <tr class="rpt1Detail">
@@ -55,15 +35,15 @@
                         Number of hand-delivered ballots
                     </td>
                     <td>
-                        {DroppedOffBallots}
+                        {EnvelopesDroppedOff}
                     </td>
                 </tr>
-                <tr class="rpt1Detail {#(0{CalledInBallots}==0 ? 'Hidden' : '')}">
+                <tr class="rpt1Detail {#(0{EnvelopesCalledIn}==0 ? 'Hidden' : '')}">
                     <td>
                         Number of phoned-in ballots
                     </td>
                     <td>
-                        {CalledInBallots}
+                        {EnvelopesCalledIn}
                     </td>
                 </tr>
                 <tr class="rpt1Total">
@@ -71,15 +51,7 @@
                         Total number of ballots received
                     </td>
                     <td>
-                        {TotalBallotsCollected}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Total number of ballots counted
-                    </td>
-                    <td>
-                        {BallotsReceived}
+                        {SumOfEnvelopesCollected}
                     </td>
                 </tr>
                 <tr>
@@ -121,7 +93,27 @@
                 <span>{Rank}</span><span>{Name}</span><span>{BahaiId}</span><span>{VoteCountPlus}</span></div>
         </div>
     </div>
-    <div id="AllReceivingVotesByVote" data-name="Full Tellers' Report (all who were voted for)">
+    <div id="Ballots" data-name="All Ballots">
+        <div class="body">
+            <h1>
+                All Ballots Cast</h1>
+            <div class="list">
+                {^rows}
+            </div>
+        </div>
+        <div class="row">
+            <div class="Ballot BallotSpoiled{Spoiled}">
+                <div>
+                    {C_BallotCode} ({StatusCode})</div>
+                <div>
+                    {^rows2} &nbsp;</div>
+            </div>
+        </div>
+        <div class="row2">
+            <span class="Vote VoteSpoiled{Spoiled}"><span class="Person">{PersonFullNameFL}</span>
+                <span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>
+    </div>
+    <div id="AllReceivingVotesByVote" data-name="All who were voted for, by Votes">
         <div class="body">
             <h1>
                 Full Tellers' Report</h1>
@@ -137,7 +129,7 @@
                 {PersonName} <span class="small1">({VoteCount})</span></div>
         </div>
     </div>
-    <div id="AllReceivingVotes" data-name="All who were voted for, by name">
+    <div id="AllReceivingVotes" data-name="All who were voted for, by Name">
         <div class="body">
             <h1>
                 Names of every individual who was voted for</h1>

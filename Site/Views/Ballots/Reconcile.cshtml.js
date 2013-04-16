@@ -21,8 +21,15 @@ var ReconcilePageFunc = function () {
         $('#locations').change(changeLocation);
 
         processBallots(publicInterface.ballots);
+        showOld(publicInterface.oldEnvelopes);
     };
 
+    var showOld = function(list) {
+        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>{Method} &nbsp; #{EnvNum}</span>"}</div>'.filledWithEach(extend(list));
+        $('#lists').append('<div><h3>{0}: {1}</h3><div class="Names oldEnv">{^2}</div></div>'.filledWith(
+            'Un-used Envelopes', list.length, ballotList));
+    };
+    
     var changeLocation = function () {
         var newLocation = $(this).val();
         if (newLocation != local.currentLocation) {
@@ -71,7 +78,7 @@ var ReconcilePageFunc = function () {
 
             var sortedBallots = local.sortedBallots[method] || null;
             if (sortedBallots) {
-                var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(extend(sortedBallots));
+                var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(sortedBallots);
                 host.append('<div data-method={0}><h3>{1}: {2}</h3><div class=Names>{^3}</div></div>'.filledWith(
                     method, methodName, sortedBallots.length, ballotList));
 
@@ -119,6 +126,7 @@ var ReconcilePageFunc = function () {
         if (!ballots) return null;
         $.each(ballots, function () {
             //this.WhenText = FormatDate(this.When, ' ', true, true);
+            this.Method = this.VotingMethod == 'P' ? 'In Person' : this.VotingMethod;
         });
         return ballots;
     };

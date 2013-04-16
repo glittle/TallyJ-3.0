@@ -6,18 +6,16 @@
     ViewBag.Message = "Review the results";
 
     ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-
     ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
 }
-<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
-<script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
 <button type="button" id="btnRefresh" class="btn">
     Re-run Analysis</button>
+<div class="overallWarning">Issues highlighted in red below must be resolved before accurate reports can be made.</div>
 <div id="InitialMsg">
     Analyzing all ballots...
 </div>
 <div class="LeftHalf">
-@*    <div class="float-left">
+    @*    <div class="float-left">
         <b>Election Status</b> (set by head teller)<br />
         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
@@ -27,48 +25,207 @@
         Show "full report" with all votes on report screens?</label>* @
     </div>*@
     <table id="totalCounts" class="float-left">
-        <caption>
-            Counts</caption>
-        <tr>
-            <td>
-                Voters Registered
-            </td>
-            <td>
-                <span data-name="TotalBallotsCollected"></span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Ballots Entered
-            </td>
-            <td>
-                <span data-name="NumBallots"></span>
-            </td>
-        </tr>
-        <tr id="trCountMismatch">
-            <td>
-                Warning:
-            </td>
-            <td>
-                Count of voters registered and ballots entered should match!
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Spoiled Ballots
-            </td>
-            <td>
-                <span data-name="TotalInvalidBallots"></span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Spoiled Votes
-            </td>
-            <td>
-                <span data-name="TotalInvalidVotes"></span>
-            </td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Counts</th>
+                <td>Calculated
+                </td>
+                <td>Manual
+                </td>
+                <td>Final
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <button class="btn btn-mini btnSaveManualCounts" type="button">Save Manual Values</button>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Eligible Voters
+                </td>
+                <td>
+                    <span class="Calc" data-name="NumEligibleToVote"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="NumEligibleToVote" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="NumEligibleToVote"></span>
+                </td>
+            </tr>
+
+        </tbody>
+        <tbody class="ballotCounts">
+            <tr>
+                <th colspan="4">Total Envelopes Received (before opening)
+                </th>
+            </tr>
+            <tr>
+                <td>Envelopes - In Person
+                </td>
+                <td>
+                    <span class="Calc" data-name="EnvelopesInPerson"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="EnvelopesInPerson" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="EnvelopesInPerson"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Envelopes - Dropped Off
+                </td>
+                <td>
+                    <span class="Calc" data-name="EnvelopesDroppedOff"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="EnvelopesDroppedOff" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="EnvelopesDroppedOff"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Envelopes - Mailed In
+                </td>
+                <td>
+                    <span class="Calc" data-name="EnvelopesMailedIn"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="EnvelopesMailedIn" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="EnvelopesMailedIn"></span>
+                </td>
+            </tr>
+            @if (UserSession.CurrentElection.UseCallInButton.AsBoolean())
+            {
+                <tr>
+                    <td>Envelopes - Called In
+                    </td>
+                    <td>
+                        <span class="Calc" data-name="EnvelopesCalledIn"></span>
+                    </td>
+                    <td>
+                        <input class="Manual" data-name="EnvelopesCalledIn" type="number" min="0">
+                    </td>
+                    <td>
+                        <span class="Final" data-name="EnvelopesCalledIn"></span>
+                    </td>
+                </tr>
+            }
+            <tr class="totalBallots">
+                <td>Total Envelopes
+                </td>
+                <td>
+                    <span class="Calc" data-name="SumOfEnvelopesCollected"></span>
+                </td>
+                <td>
+                    <span class="Manual" data-name="SumOfEnvelopesCollected"></span>
+                </td>
+                <td class="IfMismatch">
+                    <span class="Final" data-name="SumOfEnvelopesCollected"></span>
+                </td>
+            </tr>
+            @*<tr>
+                <td>Total Voters
+                </td>
+                <td>
+                    <span class="Calc" data-name="NumVoters"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="NumVoters" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="NumVoters"></span>
+                </td>
+            </tr>*@
+        </tbody>
+        <tbody>
+            <tr>
+                <th colspan="4">Total Ballots Processed (after opening envelopes)
+                </th>
+            </tr>
+        </tbody>
+        <tbody class="ballotCounts">
+            <tr>
+                <td>Ballots Entered in TallyJ
+                </td>
+                <td>
+                    <span class="Calc" data-name="NumBallotsEntered"></span>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Spoiled Ballots Not Entered<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
+                </td>
+                <td></td>
+                <td>
+                    <input class="Manual" data-name="SpoiledManualBallots" type="number" min="0">
+                </td>
+                <td></td>
+            </tr>
+            <tr class="totalBallots">
+                <td>Total Ballots
+                </td>
+                <td>
+                    <span class="Calc" data-name="NumBallotsWithManual"></span>
+                </td>
+                <td></td>
+                <td class="IfMismatch">
+                    <span class="Final" data-name="NumBallotsWithManual"></span>
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr id="trCountMismatch">
+                <td colspan="4">Warning:
+                    Totals of envelopes and ballots do not match!
+                </td>
+            </tr>
+            <tr>
+                <td>Spoiled Ballots 
+                </td>
+                <td>
+                    <span class="Calc" data-name="SpoiledBallots"></span>
+                </td>
+                <td>
+                    <span class="Manual" data-name="SpoiledManualBallots"></span>
+                </td>
+                <td>
+                    <span class="Final" data-name="SpoiledBallots"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Spoiled Votes
+                </td>
+                <td>
+                    <span class="Calc" data-name="SpoiledVotes"></span>
+                </td>
+                <td></td>
+                <td>
+                    <span class="Final" data-name="SpoiledVotes"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Ballots Needing Review
+                </td>
+                <td>
+                    <span class="Calc" data-name="BallotsNeedingReview"></span>
+                </td>
+                <td></td>
+                <td>
+                    <span class="Final" data-name="BallotsNeedingReview"></span>
+                </td>
+            </tr>
+        </tbody>
     </table>
     <div class="Clear">
     </div>
@@ -77,67 +234,64 @@
             Full Voting Results</caption>
         <thead>
             <tr>
-                <th>
-                    Rank
+                <th>Rank
                 </th>
-                <th class="PersonColumn">
-                    Person
+                <th class="PersonColumn">Person
                 </th>
-                <th>
-                    Votes
+                <th>Votes
                 </th>
-                <th>
-                    Close?
+                <th>Close?
                 </th>
-                <th>
-                    Tied?
+                <th>Tied?
                 </th>
             </tr>
         </thead>
         <tbody id="mainBody">
             <tr class="{ClassName}">
-                <td>
-                  {Rank}
+                <td>{Rank}
                 </td>
-                <td class="Left">
-                    {PersonName}
+                <td class="Left">{PersonName}
                   <div class="ChartLine" data-value="{VoteCount}"></div>
-                  <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
+                    <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
                 </td>
-                <td>
-                    {VoteDisplay}
+                <td>{VoteDisplay}
                 </td>
-                <td>
-                    {^CloseUpDown}
+                <td>{^CloseUpDown}
                 </td>
-                <td>
-                    {TieVote}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table id="invalids">
-        <caption>
-            These ballots need attention before results can be determined</caption>
-        <tbody id="invalidsBody">
-            <tr>
-                <td>
-                    {^Ballot} - {Status}
+                <td>{TieVote}
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
 <div class="RightHalf">
+    <table id="invalids">
+        <caption>
+            These ballots need attention before results can be determined</caption>
+        <tbody id="invalidsBody">
+            <tr>
+                <td>{^Ballot} - {Status}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="instructions">
+        <caption>
+            Instructions</caption>
+        <tr>
+            <td>If there are any errors shown in red, they need to be resolved.
+                Once all are resolved, and the results are approved by the head teller, set the "Election Status" to "Show Reports" to enable use of the
+                "Display Teller's Report" page without warnings being shown.
+            </td>
+        </tr>
+    </table>
     <table id="HasCloseVote">
         <caption>
             Review Needed</caption>
         <tr>
-            <td>
-                Some results are very close to a <span>tie</span><span class="HasTie">, or are actually
+            <td>Some results are very close to a <span>tie</span><span class="HasTie">, or are actually
                     tied</span>. A careful review is recommended to ensure that each of the ballots
-                has been entered correctly. If there are still tied votes after a review, then a
-                tie-break vote may be required, as described below.
+                has been entered correctly. 
             </td>
         </tr>
     </table>
@@ -146,11 +300,9 @@
             Tie Analysis</caption>
         <tbody id="tieResultsBody">
             <tr class="{rowClass}">
-                <td class="TieBreakGroup">
-                    {^TieBreakGroup}
+                <td class="TieBreakGroup">{^TieBreakGroup}
                 </td>
-                <td>
-                    {^Conclusion} {^People} {^Buttons}
+                <td>{^Conclusion} {^People} {^Buttons}
                 </td>
             </tr>
         </tbody>

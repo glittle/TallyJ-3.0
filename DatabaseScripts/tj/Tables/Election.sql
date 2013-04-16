@@ -21,8 +21,12 @@
     [_RowVersion]         ROWVERSION       NOT NULL,
     [ListForPublic]       BIT              NULL,
     [ShowAsTest]          BIT              NULL,
+    [UseCallInButton]     BIT              NULL,
+    [HidePreBallotPages]  BIT              NULL,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
 
 
 GO
@@ -31,6 +35,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Election]
 
 
 GO
+
 CREATE
 /*
 
@@ -38,7 +43,7 @@ Purpose: Remove ResultSummary when a Ballot is touched
 
 
 */
-TRIGGER tj.Election_ClearResultSummary ON tj.Election
+TRIGGER [tj].[Election_ClearResultSummary] ON [tj].[Election]
 FOR UPDATE
 AS
    if( 
@@ -51,6 +56,7 @@ AS
 	   delete from rs
 	   from ResultSummary rs
 		 join inserted id on id.ElectionGuid = rs.ElectionGuid
+	   where rs.ResultType != 'M'
    end
 GO
 GRANT UPDATE

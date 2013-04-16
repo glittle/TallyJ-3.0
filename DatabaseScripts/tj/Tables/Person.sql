@@ -33,6 +33,8 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Person_1]
     ON [tj].[Person]([PersonGuid] ASC);
@@ -65,4 +67,10 @@ GRANT DELETE
 GO
 CREATE NONCLUSTERED INDEX [IX_Person]
     ON [tj].[Person]([ElectionGuid] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_PersonElection]
+    ON [tj].[Person]([ElectionGuid] ASC)
+    INCLUDE([_RowId], [CombinedInfo], [CombinedSoundCodes]);
 

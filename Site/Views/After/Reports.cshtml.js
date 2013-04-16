@@ -71,13 +71,19 @@ var ReportsPage = function () {
         }
     };
 
+    var warningMsg = 'Warning: There are unresolved issues that may affect this report. This report may be incomplete and/or showing wrong information.';
+    
     var doReportResults1 = function (code) {
         var info = local.reportInfo;
 
         var reportDef = local.templatesRaw.find('#' + code);
 
-        var bodyInfo = $.extend({}, info.Info);
-        
+        var bodyInfo = $.extend({}, info.Info, info.Info.Final);
+
+        if (!info.Ready) {
+            $('#Status').text(warningMsg).show();
+        }
+
         var rowTemplate = reportDef.find('.result1row').html();
         
         bodyInfo.result1rows = rowTemplate.filledWithEach(info.People);
@@ -90,6 +96,10 @@ var ReportsPage = function () {
 
     var doReportListStyle1 = function (code) {
         var info = local.reportInfo;
+
+        if (!info.Ready) {
+            $('#Status').text(warningMsg).show();
+        }
 
         var reportDef = local.templatesRaw.find('#' + code);
         var rows = expandRows(info, reportDef.find('.row2').html());

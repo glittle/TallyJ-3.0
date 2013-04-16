@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -10,21 +11,12 @@ using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {
-    public interface IAnalyzerFakes
-    {
-        ResultSummary ResultSummary { get; }
-        Result RemoveResult(Result input);
-        Result AddResult(Result arg);
-        int SaveChanges();
-        ResultTie RemoveResultTie(ResultTie arg);
-        ResultTie AddResultTie(ResultTie arg);
-    }
-
-    public abstract class ElectionAnalyzerCore : DataConnectedModel, IElectionAnalyzer
+    public abstract class ElectionAnalyzerCore : DataConnectedModel
     {
         private const int ThresholdForCloseVote = 3;
 
         private readonly Func<Result, Result> _addResult;
+        private readonly Func<ResultSummary, ResultSummary> _addResultSummary;
         private readonly Func<ResultTie, ResultTie> _addResultTie;
         private readonly Func<Result, Result> _deleteResult;
         private readonly Func<ResultTie, ResultTie> _deleteResultTie;
@@ -33,7 +25,7 @@ namespace TallyJ.CoreModels
         private List<Ballot> _ballots;
         private Election _election;
         private List<Person> _people;
-        private ResultSummary _resultSummary;
+        private List<ResultSummary> _resultSummaries;
         private List<ResultTie> _resultTies;
         private List<Result> _results;
         private List<vVoteInfo> _voteinfos;
@@ -48,15 +40,16 @@ namespace TallyJ.CoreModels
                                        List<vVoteInfo> voteinfos)
         {
             _election = election;
-            _resultSummary = fakes.ResultSummary;
             _resultTies = new List<ResultTie>();
             _results = new List<Result>();
+            _resultSummaries = new List<ResultSummary> {fakes.ResultSummaryManual};
             _people = people;
             _ballots = ballots;
             _voteinfos = voteinfos;
             _votes = voteinfos.Select(vi => new Vote {C_RowId = vi.VoteId}).ToList();
             _deleteResult = fakes.RemoveResult;
             _addResult = fakes.AddResult;
+            _addResultSummary = fakes.AddResultSummary;
             _saveChanges = fakes.SaveChanges;
             _deleteResultTie = fakes.RemoveResultTie;
             _addResultTie = fakes.AddResultTie;
@@ -66,6 +59,10 @@ namespace TallyJ.CoreModels
         {
             _election = election;
         }
+
+        public ResultSummary ResultSummaryCalc { get; private set; }
+        public ResultSummary ResultSummaryFinal { get; private set; }
+        public ResultSummary ResultSummaryManual { get; private set; }
 
         protected BallotAnalyzer BallotAnalyzer
         {
@@ -94,6 +91,16 @@ namespace TallyJ.CoreModels
         protected Func<Result, Result> AddResult
         {
             get { return _addResult ?? Db.Results.Add; }
+        }
+
+        /// <Summary>Add this result to the datastore</Summary>
+        protected Func<ResultSummary, ResultSummary> AddResultSummary
+        {
+            get
+            {
+                if (_addResultSummary != null) return _addResultSummary;
+                return Db.ResultSummaries.Add;
+            }
         }
 
         /// <Summary>Add this resultTie to the datastore</Summary>
@@ -169,29 +176,18 @@ namespace TallyJ.CoreModels
             }
         }
 
-        /// <Summary>Current Results records</Summary>
-        public ResultSummary ResultSummaryAuto
+        public List<ResultSummary> ResultSummaries
         {
             get
             {
-                if (_resultSummary != null)
-                {
-                    return _resultSummary;
-                }
+                if (_resultSummaries != null) return _resultSummaries;
 
-                _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == TargetElection.ElectionGuid);
-
-                if (_resultSummary == null)
-                {
-                    _resultSummary = new ResultSummary
-                        {
-                            ElectionGuid = TargetElection.ElectionGuid,
-                            ResultType = ResultType.Automatic
-                        };
-                    Db.ResultSummaries.Add(_resultSummary);
-                }
-
-                return _resultSummary;
+                var list = new[] { ResultType.Manual, ResultType.Calculated, ResultType.Final };
+                return _resultSummaries = Db.ResultSummaries
+                                            .Where(
+                                                r => r.ElectionGuid == TargetElection.ElectionGuid
+                                                     && list.Contains(r.ResultType))
+                                            .ToList();
             }
         }
 
@@ -216,19 +212,23 @@ namespace TallyJ.CoreModels
         {
             get
             {
-                if (_resultSummary != null)
+                if (ResultSummaryFinal != null)
                 {
                     return true;
                 }
 
-                _resultSummary = Db.ResultSummaries.SingleOrDefault(rs => rs.ElectionGuid == TargetElection.ElectionGuid);
+                ResultSummaryFinal =
+                    Db.ResultSummaries.FirstOrDefault(
+                        rs => rs.ElectionGuid == TargetElection.ElectionGuid && rs.ResultType == ResultType.Final);
 
-                return _resultSummary != null;
+                return ResultSummaryFinal != null;
             }
         }
 
         /// <Summary>In the Core, do some common results generation</Summary>
-        public virtual ResultSummary GenerateResults()
+        public abstract ResultSummary AnalyzeEverything();
+
+        public void PrepareResultSummaryCalc()
         {
             // first refresh all votes and ballots
             if (VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes))
@@ -240,17 +240,103 @@ namespace TallyJ.CoreModels
             // clear any existing results
             Results.ForEach(ResetValues);
 
-            var summary = ResultSummaryAuto;
-
-            UpdateSummaryFromPeopleRecords(summary);
-
-            return summary;
+            GetOrCreateResultSummaries();
+            FillCalcSummary();
         }
+
+        /// <summary>
+        ///     Load the Calc and Final summaries
+        /// </summary>
+        public void GetOrCreateResultSummaries()
+        {
+            if (ResultSummaryCalc != null && ResultSummaryFinal != null)
+            {
+                return;
+            }
+
+            // check each on on its own
+            if (ResultSummaryCalc == null)
+            {
+                ResultSummaryCalc = ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Calculated);
+                if (ResultSummaryCalc == null)
+                {
+                    ResultSummaryCalc = new ResultSummary
+                        {
+                            ElectionGuid = TargetElection.ElectionGuid,
+                            ResultType = ResultType.Calculated
+                        };
+                    AddResultSummary(ResultSummaryCalc);
+                    ResultSummaries.Insert(0, ResultSummaryCalc);
+                }
+            }
+
+            if (ResultSummaryFinal == null)
+            {
+                ResultSummaryFinal = ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Final);
+                if (ResultSummaryFinal == null)
+                {
+                    ResultSummaryFinal = new ResultSummary
+                        {
+                            ElectionGuid = TargetElection.ElectionGuid,
+                            ResultType = ResultType.Final
+                        };
+                    AddResultSummary(ResultSummaryFinal);
+                    ResultSummaries.Insert(0, ResultSummaryFinal);
+                }
+            }
+            //try
+            //{
+            //    SaveChanges();
+            //}
+            //catch (DbEntityValidationException ex)
+            //{
+            //    var msgs = new List<string>();
+            //    foreach (var msg in ex.EntityValidationErrors.Where(v => !v.IsValid).Select(validationResult =>
+            //        {
+            //            var err = validationResult.ValidationErrors.First();
+            //            return "{0}: {1}".FilledWith(err.PropertyName, err.ErrorMessage);
+            //        }).Where(msg => !msgs.Contains(msg)))
+            //    {
+            //        msgs.Add(msg);
+            //    }
+            //    throw new ApplicationException("Unable to save: " + msgs.JoinedAsString("; "));
+            //}
+
+        }
+
+        ///// <Summary>Current Results records.  If not available in memory or DB, make an empty one</Summary>
+        //public ResultSummary ResultSummaryFinal
+        //{
+        //    get
+        //    {
+        //        if (ResultSummaryFinal == null)
+        //        {
+        //            ResultSummaryFinal = Db.ResultSummaries.FirstOrDefault(rs => rs.ElectionGuid == TargetElection.ElectionGuid && rs.ResultType == ResultType.Final);
+        //            if (ResultSummaryFinal == null)
+        //            {
+        //                return new ResultSummary();
+        //            }
+        //        }
+        //        return ResultSummaryFinal;
+        //    }
+        //}
 
         #endregion
 
-        protected void DoFinalAnalysis(ResultSummary summary)
+        public void FinalizeSummaries()
         {
+            CombineCalcAndManualSummaries();
+
+            ResultSummaryFinal.UseOnReports = ResultSummaryFinal.BallotsNeedingReview == 0
+                                              && ResultTies.All(rt => rt.IsResolved.AsBoolean())
+                                              && ResultSummaryFinal.NumBallotsWithManual == ResultSummaryFinal.SumOfEnvelopesCollected;
+
+            SaveChanges();
+        }
+
+        protected void DoAnalysisForTies()
+        {
+
             // remove any results no longer needed
             Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => RemoveResult(r));
 
@@ -262,10 +348,6 @@ namespace TallyJ.CoreModels
 
             AnalyzeForTies();
 
-            summary.UseOnReports = summary.BallotsNeedingReview == 0
-                                       && ResultTies.All(rt => rt.IsResolved.AsBoolean());
-
-            SaveChanges();
         }
 
         /// <Summary>Assign an ordinal rank number to all results. Ties are NOT reflected in rank number. If there is a tie, they are sorted "randomly".</Summary>
@@ -508,15 +590,69 @@ namespace TallyJ.CoreModels
             result.VoteCount = null;
         }
 
-        protected void UpdateSummaryFromPeopleRecords(ResultSummary summary)
+        protected void FillCalcSummary()
         {
-            summary.NumEligibleToVote = People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBoolean());
-            summary.NumVoters = People.Count(p => p.VotingMethod.HasContent());
+            ResultSummaryCalc.NumVoters = People.Count(p => p.VotingMethod.HasContent());
+            ResultSummaryCalc.NumEligibleToVote =
+                People.Count(p => !p.IneligibleReasonGuid.HasValue && p.CanVote.AsBoolean());
 
-            summary.InPersonBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
-            summary.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
-            summary.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
-            summary.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
+            ResultSummaryCalc.EnvelopesInPerson = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
+            ResultSummaryCalc.EnvelopesMailedIn = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
+            ResultSummaryCalc.EnvelopesDroppedOff = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
+            ResultSummaryCalc.EnvelopesCalledIn = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
+        }
+
+        /// <summary>
+        ///     Combine the automatic count with any values saved into a "Manual" result summary record
+        /// </summary>
+        public void CombineCalcAndManualSummaries()
+        {
+            var manualInput = ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual)
+                              ?? new ResultSummary();
+
+            ResultSummaryFinal.BallotsNeedingReview = ResultSummaryCalc.BallotsNeedingReview;
+
+            ResultSummaryFinal.NumBallotsEntered = manualInput.NumBallotsEntered.HasValue
+                                                     ? manualInput.NumBallotsEntered.Value
+                                                     : ResultSummaryCalc.NumBallotsEntered.GetValueOrDefault();
+
+            ResultSummaryFinal.EnvelopesCalledIn = manualInput.EnvelopesCalledIn.HasValue
+                                                     ? manualInput.EnvelopesCalledIn.Value
+                                                     : ResultSummaryCalc.EnvelopesCalledIn.GetValueOrDefault();
+
+            ResultSummaryFinal.EnvelopesDroppedOff = manualInput.EnvelopesDroppedOff.HasValue
+                                                       ? manualInput.EnvelopesDroppedOff.Value
+                                                       : ResultSummaryCalc.EnvelopesDroppedOff.GetValueOrDefault();
+
+            ResultSummaryFinal.EnvelopesInPerson = manualInput.EnvelopesInPerson.HasValue
+                                                     ? manualInput.EnvelopesInPerson.Value
+                                                     : ResultSummaryCalc.EnvelopesInPerson.GetValueOrDefault();
+
+            ResultSummaryFinal.EnvelopesMailedIn = manualInput.EnvelopesMailedIn.HasValue
+                                                     ? manualInput.EnvelopesMailedIn.Value
+                                                     : ResultSummaryCalc.EnvelopesMailedIn.GetValueOrDefault();
+
+            ResultSummaryFinal.NumEligibleToVote = manualInput.NumEligibleToVote.HasValue
+                                                       ? manualInput.NumEligibleToVote.Value
+                                                       : ResultSummaryCalc.NumEligibleToVote.GetValueOrDefault();
+
+            ResultSummaryFinal.NumVoters = manualInput.NumVoters.HasValue
+                                               ? manualInput.NumVoters.Value
+                                               : ResultSummaryCalc.NumVoters.GetValueOrDefault();
+
+            ResultSummaryFinal.SpoiledManualBallots = manualInput.SpoiledManualBallots;
+
+            // add manual to calculcated
+            ResultSummaryFinal.SpoiledBallots = manualInput.SpoiledBallots.HasValue
+                                        ? manualInput.SpoiledBallots.Value
+                                        : ResultSummaryCalc.SpoiledBallots.GetValueOrDefault()
+                                        + manualInput.SpoiledManualBallots.GetValueOrDefault();
+
+            ResultSummaryFinal.SpoiledVotes = ResultSummaryCalc.SpoiledVotes;
+
+            //ResultSummaryFinal.TotalVotes = manualInput.TotalVotes.HasValue
+            //                                    ? manualInput.TotalVotes.Value
+            //                                    : ResultSummaryCalc.TotalVotes.GetValueOrDefault();
         }
     }
 }

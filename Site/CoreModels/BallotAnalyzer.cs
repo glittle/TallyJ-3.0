@@ -119,7 +119,7 @@ namespace TallyJ.CoreModels
       }
 
       // check counts
-      var numVotes = voteInfos.Count(v => v.VoteIneligibleReasonGuid != IneligibleReasonEnum.Unreadable_Vote_is_blank);
+      var numVotes = voteInfos.Count();
 
       if (numVotes == 0)
       {

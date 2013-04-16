@@ -15,6 +15,7 @@ var AnalyzePage = function () {
     };
 
     var preparePage = function () {
+        site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots Not Entered', text: 'It is best if every ballot is entered into TallyJ, even if it is spoiled.  However, if some spoiled ballots were not entered into TallyJ, enter the number here. ' });
 
         $('#btnRefresh').click(function () {
             runAnalysis(false);
@@ -38,6 +39,7 @@ var AnalyzePage = function () {
         //        });
 
         $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
+        $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
 
         var tableBody = $('#mainBody');
         settings.rowTemplate = tableBody.html();
@@ -68,6 +70,7 @@ var AnalyzePage = function () {
 
     var runAnalysis = function (firstLoad) {
         ShowStatusDisplay('Analyzing ballots...');
+        $('body').removeClass('notReady');
         $('.LeftHalf, .RightHalf').fadeOut();
 
         CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
@@ -76,6 +79,7 @@ var AnalyzePage = function () {
     var showInfo = function (info, firstLoad) {
         var votesTable = $('table.Main');
         var invalidsTable = $('table#invalids');
+        var instructionsTable = $('table#instructions');
         var table;
 
         settings.info = info;
@@ -90,6 +94,7 @@ var AnalyzePage = function () {
             table = votesTable;
             votesTable.show();
             invalidsTable.hide();
+            instructionsTable.show();
 
             $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info.Votes)));
             showTies(info);
@@ -112,7 +117,7 @@ var AnalyzePage = function () {
 
                 var groupMax = 0;
                 var currentGroup = '';
-                $('.ChartLineTie').each(function() {
+                $('.ChartLineTie').each(function () {
                     var item = $(this);
                     var value = item.data('value');
                     if (value) {
@@ -123,10 +128,10 @@ var AnalyzePage = function () {
                         }
                         item.css('background-color', '#013d{0}0'.filledWith(group));
                         item.animate({
-                                width: (value / groupMax * 100) + '%'
-                            }, {
-                                duration: 2000
-                            });
+                            width: (value / groupMax * 100) + '%'
+                        }, {
+                            duration: 2000
+                        });
                     }
                 });
 
@@ -141,96 +146,128 @@ var AnalyzePage = function () {
             table = invalidsTable;
             votesTable.hide();
             invalidsTable.show();
+            instructionsTable.hide();
             $('#chart').hide();
 
             $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
         }
 
-        $('#totalCounts').find('span[data-name]').each(function () {
-            var span = $(this);
-            var value = info[span.data('name')];
-            span.text(value);
-        });
-        $('#trCountMismatch').toggle(info.BallotCountMismatch);
- 
+        fillValues('Calc', info.ResultsCalc);
+        fillValues('Manual', info.ResultsManual);
+        fillValues('Final', info.ResultsFinal);
+        highlightValueIssues();
+
         table.show();
         $('.LeftHalf, .RightHalf').fadeIn();
 
     };
 
-    var showChart = function (votes) {
-        var numToElect = settings.info.NumToElect;
-        var numExtra = settings.info.NumExtra;
+    var highlightValueIssues = function () {
+        $('#totalCounts tr').each(function () {
+            var row = $(this);
+            var calc = row.find('span.Calc');
+            var calcText = calc.text();
 
-        var maxToShow = (numToElect + numExtra) * 1.5;
+            var finalValue = row.find('span.Final');
 
-        var getVoteCounts = function (ties) {
-            var determineColor = function (item, i) {
-                if (ties) {
-                    return 'blue';
-                }
-                if (i < numToElect) {
-                    return 'green';
-                }
-                else if (i < numToElect + numExtra) {
-                    return 'orange';
-                }
-                else {
-                    return '#ccc';
-                }
-            };
-
-
-            return $.map(votes.slice(0, maxToShow), function (item, i) {
-                return {
-                    name: (i + 1), //TODO: name not showing?
-                    color: determineColor(item, i),
-                    y: item.VoteCount
-                };
-            });
-        };
-
-        var getNames = function () {
-            return $.map(votes.slice(0, maxToShow), function (item, i) {
-                return item.Rank;
-            });
-        };
-
-
-        settings.chart = new Highcharts.Chart({
-            chart: {
-                renderTo: 'chart',
-                type: 'bar'
-            },
-            title: {
-                text: 'Votes Received'
-            },
-            legend: {
-                enabled: false
-            },
-            xAxis: {
-                categories: getNames()
-            },
-            yAxis: {
-                title: {
-                    text: 'Votes'
-                }
-            },
-            series: [{
-                name: 'Votes',
-                data: getVoteCounts()
-            }, {
-                name: 'Tied',
-                data: getVoteCounts(true)
-            }],
-            tooltip: {
-                formatter: function () {
-                    var s = 'Position {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
-                    return s;
-                }
-            }
+            finalValue.toggleClass('changed', calcText != '' && calcText != finalValue.text());
         });
+        $('#totalCounts').toggleClass('mismatch', settings.info.ResultsFinal.NumBallotsWithManual != settings.info.ResultsFinal.SumOfEnvelopesCollected);
+        $('body').toggleClass('ready', settings.info.ResultsFinal.UseOnReports);
+        $('body').toggleClass('notReady', !settings.info.ResultsFinal.UseOnReports);
     };
+
+    var fillValues = function (name, results) {
+        $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
+            var span = $(this);
+            var value = results[span.data('name')];
+            span.text(value || '');
+        });
+        $('#totalCounts').find('input.{0}[data-name]'.filledWith(name)).each(function () {
+            var input = $(this);
+            var value = results[input.data('name')];
+            input.val(value);
+        });
+
+    };
+
+    //var showChart = function (votes) {
+
+    //<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
+    //<script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
+
+    //    var numToElect = settings.info.NumToElect;
+    //    var numExtra = settings.info.NumExtra;
+
+    //    var maxToShow = (numToElect + numExtra) * 1.5;
+
+    //    var getVoteCounts = function (ties) {
+    //        var determineColor = function (item, i) {
+    //            if (ties) {
+    //                return 'blue';
+    //            }
+    //            if (i < numToElect) {
+    //                return 'green';
+    //            }
+    //            else if (i < numToElect + numExtra) {
+    //                return 'orange';
+    //            }
+    //            else {
+    //                return '#ccc';
+    //            }
+    //        };
+
+
+    //        return $.map(votes.slice(0, maxToShow), function (item, i) {
+    //            return {
+    //                name: (i + 1), //TODO: name not showing?
+    //                color: determineColor(item, i),
+    //                y: item.VoteCount
+    //            };
+    //        });
+    //    };
+
+    //    var getNames = function () {
+    //        return $.map(votes.slice(0, maxToShow), function (item, i) {
+    //            return item.Rank;
+    //        });
+    //    };
+
+
+    //    settings.chart = new Highcharts.Chart({
+    //        chart: {
+    //            renderTo: 'chart',
+    //            type: 'bar'
+    //        },
+    //        title: {
+    //            text: 'Votes Received'
+    //        },
+    //        legend: {
+    //            enabled: false
+    //        },
+    //        xAxis: {
+    //            categories: getNames()
+    //        },
+    //        yAxis: {
+    //            title: {
+    //                text: 'Votes'
+    //            }
+    //        },
+    //        series: [{
+    //            name: 'Votes',
+    //            data: getVoteCounts()
+    //        }, {
+    //            name: 'Tied',
+    //            data: getVoteCounts(true)
+    //        }],
+    //        tooltip: {
+    //            formatter: function () {
+    //                var s = 'Position {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
+    //                return s;
+    //            }
+    //        }
+    //    });
+    //};
 
     var expandInvalids = function (needReview) {
         $.each(needReview, function () {
@@ -271,7 +308,7 @@ var AnalyzePage = function () {
             $.each(items, function () {
                 var tie = this;
                 if (!tie.TieBreakRequired) {
-                    tie.Conclusion = 'This tie does not need to be resolved, because it does not affect who is elected.';
+                    tie.Conclusion = 'This tie does not affect the election results.';
                 }
                 else {
                     var firstPara;
@@ -284,7 +321,8 @@ var AnalyzePage = function () {
                     }
                     tie.Conclusion = firstPara
                         + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below. (A secondary tie between people after the first {0} does not matter.)</p>'
-                            .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie);
+                            .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
+                        + '<p>If minority status can resolve this tie, simply enter vote numbers here to indicate who is given preference.</p>';
                     var list = $.map(votes, function (v) {
                         return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
                     });
@@ -293,7 +331,7 @@ var AnalyzePage = function () {
                         if (a.PersonName > b.PersonName) return 1;
                         return 0;
                     }));
-                    tie.Buttons = '<button class="btn btn-mini btnSaveTieCounts" type=button>Save Counts & Re-run Analysis</button>';
+                    tie.Buttons = '<button class="btn btn-mini btn-primary btnSaveTieCounts" type=button>Save Counts & Re-run Analysis</button>';
                 }
             });
             return items;
@@ -308,6 +346,32 @@ var AnalyzePage = function () {
             tbody.html(settings.tieResultRowTemplate.filledWithEach(addConclusions(groups)));
             settings.hasTie = true;
         }
+
+    };
+
+    var saveManualCounts = function () {
+        var form = {
+            C_RowId: settings.info.ResultsManual.C_RowId
+        };
+
+        $('#totalCounts').find('input.Manual[data-name]').each(function () {
+            var input = $(this);
+            if (input.attr('readonly') == 'readonly') return;
+            form[input.data('name')] = input.val();
+        });
+
+        ShowStatusDisplay("Saving...");
+        CallAjaxHandler(publicInterface.controllerUrl + '/SaveManual', form, function (info) {
+            ResetStatusDisplay();
+            if (info.Saved) {
+                fillValues('Manual', settings.info.ResultsManual = info.ResultsManual);
+                fillValues('Final', settings.info.ResultsFinal = info.ResultsFinal);
+                highlightValueIssues();
+                ShowStatusSuccess('Saved');
+            } else {
+                ShowStatusSuccess(info.Message);
+            }
+        });
 
     };
 

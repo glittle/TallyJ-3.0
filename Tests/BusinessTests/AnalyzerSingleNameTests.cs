@@ -78,7 +78,7 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results;
 
@@ -155,15 +155,14 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, voteinfos, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
 
       ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
       ballots[1].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
 
-      var summary = model.ResultSummaryAuto;
-      summary.TotalVotes.ShouldEqual(125);
+      var summary = model.ResultSummaryFinal;
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(54);
       summary.BallotsNeedingReview.ShouldEqual(1);
@@ -222,7 +221,7 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, voteInfos, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
       var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
@@ -233,9 +232,9 @@ namespace Tests.BusinessTests
       resultTies[0].NumInTie.ShouldEqual(3);
 
 
-      var summary = model.ResultSummaryAuto;
+      var summary = model.ResultSummaryFinal;
       summary.BallotsNeedingReview.ShouldEqual(1);
-      summary.TotalVotes.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
+      summary.NumBallotsWithManual.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(27+27);
 
@@ -302,7 +301,7 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
 
@@ -359,7 +358,7 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
 
@@ -418,7 +417,7 @@ namespace Tests.BusinessTests
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
 
-      model.GenerateResults();
+      model.AnalyzeEverything();
 
       var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
 

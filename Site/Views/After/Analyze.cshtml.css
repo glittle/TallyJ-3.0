@@ -4,7 +4,7 @@
     margin-bottom: 30px;
 }
 
-thead th {
+thead th, thead td {
     border-bottom: 1px solid #000;
 }
 
@@ -58,11 +58,13 @@ tr.SectionO {
     width: 59%;
     margin-right: 2%;
     float: left;
+    display: none;
 }
 
 .RightHalf {
     width: 38%;
     float: left;
+    display: none;
 }
 
 #chart {
@@ -71,17 +73,19 @@ tr.SectionO {
     margin-left: 4px;
 }
 
-table#totalCounts {
-}
 
 table.Main, table#invalids {
     display: none;
+    clear: right;
+}
+table#invalids {
+    width: 100%;
+    margin-top: 35px;
 }
 
 table caption {
     font-weight: bold;
-    font-size: 120%;
-    white-space: nowrap;
+    font-size: 110%;
     text-align: left;
 }
 
@@ -108,8 +112,28 @@ td.Left {
     margin-bottom: 50px;
 }
 
+
+table#totalCounts tr {
+    height: 24px;
+}
+table#totalCounts th{
+    text-align: left;
+}
+table#totalCounts td {
+    text-align: center;
+    min-width: 75px;
+    margin: 0 2px;
+    padding: 0 5px;
+}
 #totalCounts tr td:first-child {
     padding-right: 30px;
+    text-align: left;
+}
+#totalCounts tr.totalBallots td {
+    border-top: solid 1px grey;
+}
+#totalCounts tbody.ballotCounts td {
+    background-color: #d9d9d9;
 }
 
 #tieResultsBody td {
@@ -169,10 +193,37 @@ input.TieBreakCount {
 
 #trCountMismatch {
     display: none;
-    color: red;
 }
-
-#totalCounts tr#trCountMismatch td:first-child {
+table#totalCounts tr#trCountMismatch td {
     text-align: right;
     padding-right: 5px;
+    color: red;
+    font-weight: bold;
+}
+#totalCounts.mismatch .IfMismatch {
+    background-color: red;
+    font-weight: bold;
+}
+#totalCounts.mismatch #trCountMismatch {
+    display: table-row;
+}
+
+
+input.Manual {
+    text-align: center;
+    width: 60px;
+}
+span.Final.changed {
+    font-weight: bold;
+}
+.overallWarning {
+    color: red;
+    font-weight: bold;
+    font-size: 105%;
+    margin: 10px 0 25px 0;
+    text-align: center;
+    display: none;
+}
+body.notReady .overallWarning {
+    display: block;
 }

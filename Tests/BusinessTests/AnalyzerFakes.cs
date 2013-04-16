@@ -8,41 +8,52 @@ using TallyJ.Models;
 
 namespace Tests.BusinessTests
 {
-  
-  public class AnalyzerFakes : IAnalyzerFakes
-  {
-    private int _rowCounter;
 
-    public ResultSummary ResultSummary
+    public class AnalyzerFakes : IAnalyzerFakes
     {
-      get { return new ResultSummary {ResultType = ResultType.Automatic}; }
-    }
+        private int _rowCounter;
+        private ResultSummary _resultSummaryManual;
 
-    public Result RemoveResult(Result input)
-    {
-      throw new ApplicationException("Should not be called in tests!");
-    }
+        public ResultSummary ResultSummaryManual
+        {
+            get
+            {
+                return _resultSummaryManual ?? (_resultSummaryManual = new ResultSummary { ResultType = ResultType.Manual });
+            }
+            set { _resultSummaryManual = value; }
+        }
 
-    public Result AddResult(Result arg)
-    {
-      arg.C_RowId = ++_rowCounter;
-      return arg;
-    }
+        public Result RemoveResult(Result input)
+        {
+            throw new ApplicationException("Should not be called in tests!");
+        }
 
-    public int SaveChanges()
-    {
-      return 0;
-    }
+        public Result AddResult(Result arg)
+        {
+            arg.C_RowId = ++_rowCounter;
+            return arg;
+        }
 
-    public ResultTie RemoveResultTie(ResultTie arg)
-    {
-      throw new ApplicationException("Should not be called in tests!");
-    }
+        public ResultSummary AddResultSummary(ResultSummary arg)
+        {
+            arg.C_RowId = ++_rowCounter;
+            return arg;
+        }
 
-    public ResultTie AddResultTie(ResultTie arg)
-    {
-      arg.C_RowId = ++_rowCounter;
-      return arg;
+        public int SaveChanges()
+        {
+            return 0;
+        }
+
+        public ResultTie RemoveResultTie(ResultTie arg)
+        {
+            throw new ApplicationException("Should not be called in tests!");
+        }
+
+        public ResultTie AddResultTie(ResultTie arg)
+        {
+            arg.C_RowId = ++_rowCounter;
+            return arg;
+        }
     }
-  }
 }

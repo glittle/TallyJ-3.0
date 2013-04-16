@@ -14,7 +14,10 @@
 );
 
 
+
+
 GO
+
 CREATE
 /*
 
@@ -22,7 +25,7 @@ Purpose: Remove ResultSummary when a Vote is touched
 
 
 */
-TRIGGER tj.Vote_ClearResultSummary ON tj.Vote
+TRIGGER [tj].[Vote_ClearResultSummary] ON [tj].[Vote]
 FOR INSERT, UPDATE, DELETE
 AS
 
@@ -31,6 +34,7 @@ AS
      join Location l on l.ElectionGuid = rs.ElectionGuid
 	 join Ballot b on b.LocationGuid = l.LocationGuid
 	 join (select BallotGuid from inserted union select BallotGuid from deleted) id on id.BallotGuid = b.BallotGuid
+   where rs.ResultType != 'M'
 GO
 GRANT UPDATE
     ON OBJECT::[tj].[Vote] TO [TallyJSite]
@@ -53,4 +57,15 @@ GO
 GRANT DELETE
     ON OBJECT::[tj].[Vote] TO [TallyJSite]
     AS [dbo];
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_VotePerson]
+    ON [tj].[Vote]([PersonGuid] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_VoteBallot]
+    ON [tj].[Vote]([BallotGuid] ASC)
+    INCLUDE([_RowId], [PositionOnBallot], [PersonGuid], [StatusCode], [InvalidReasonGuid], [SingleNameElectionCount], [PersonCombinedInfo]);
 

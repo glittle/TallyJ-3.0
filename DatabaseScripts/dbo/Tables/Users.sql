@@ -9,6 +9,8 @@
 );
 
 
+
+
 GO
 GRANT UPDATE
     ON OBJECT::[dbo].[Users] TO [TallyJSite]
@@ -31,4 +33,9 @@ GO
 GRANT DELETE
     ON OBJECT::[dbo].[Users] TO [TallyJSite]
     AS [dbo];
+
+
+GO
+CREATE NONCLUSTERED INDEX [IDX_UserName]
+    ON [dbo].[Users]([UserName] ASC);
 

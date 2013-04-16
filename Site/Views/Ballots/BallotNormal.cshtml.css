@@ -31,10 +31,12 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 }
-.nameList li:hover
-{
+.nameList li:hover {
+    background-color: #ddffcf;
+    background-color: rgba(204, 255, 190, 0.5);
     border-color: #ddd;
 }
+
 .nameList li.selected
 {
     background-color: #c1f1b4;
@@ -77,6 +79,8 @@
 }
 .ballotList div:hover
 {
+    background-color: #ddffcf;
+    background-color: rgba(204, 255, 190, 0.5);
     border-color: #ddd;
 }
 .ballotList div.selected
@@ -336,6 +340,7 @@ div.heading
 .VoteHost
 {
     background-color: #eeffd6;
+    margin: 2px 0;
 }
 .ExtraVote
 {

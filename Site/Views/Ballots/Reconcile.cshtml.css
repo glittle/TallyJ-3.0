@@ -60,3 +60,6 @@ tr.Total td {
 h3 {
     margin: 1.2em 0 .2em 0;
 }
+.oldEnv div span:first-child {
+    text-decoration: line-through;
+}

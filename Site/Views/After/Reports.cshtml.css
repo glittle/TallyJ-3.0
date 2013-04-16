@@ -54,7 +54,7 @@ div.chooser
     padding: 0;
     font-size: 140%;
 }
-#report p.Comment {
+p.Comment {
     font-size: 80%;
     color: #999;
 }
@@ -83,6 +83,7 @@ div.chooser
     font-size: 120%;
     color: red;
     float: left;
+    width: 700px;
 }
 .VoteSpoiledtrue {
     color: red;
@@ -163,7 +164,9 @@ div.result1 div span {
 div.result1 div span:nth-child(2) {
     text-align: left;
 }
-
+.btnPrint {
+    margin-bottom: 10px;
+}
 
 
 @media print

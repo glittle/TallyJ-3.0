@@ -16,6 +16,7 @@ using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Targets;
 using TallyJ.Code;
+using TallyJ.Code.Data;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
@@ -53,30 +54,30 @@ namespace TallyJ
                   configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
 
                   // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
-                  configuration.ForAllControllers().Ignore();
+                  configuration.ForAllControllers().DenyAnonymousAccess();
 
-                  //configuration.For<PublicController>().Ignore();
+                  configuration.For<PublicController>().Ignore();
 
 
-                  //configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
+                  configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
 
-                  //configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-                  //configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+                  configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
+                  configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
 
-                  //configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
+                  configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
 
-                  //configuration.For<DashboardController>().DenyAnonymousAccess();
+                  configuration.For<DashboardController>().DenyAnonymousAccess();
 
-                  //configuration.For<ElectionsController>().DenyAnonymousAccess();
+                  configuration.For<ElectionsController>().DenyAnonymousAccess();
 
-                  //configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
+                  configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
 
-                  //configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
-                  //configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
+                  configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
+                  configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
 
-                  ////configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
-                  //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
-                  //configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
+                  //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
+                  configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
+                  configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
               });
 
 
@@ -208,6 +209,14 @@ namespace TallyJ
         {
             base.Init();
             BeginRequest += OnBeginRequest;
+            EndRequest += OnEndRequest;
+            
+        }
+
+        private void OnEndRequest(object sender, EventArgs eventArgs)
+        {
+            var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+            db.Dispose();
         }
 
         private void OnBeginRequest(object sender, EventArgs e)

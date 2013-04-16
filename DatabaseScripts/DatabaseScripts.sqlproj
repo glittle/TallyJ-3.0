@@ -119,10 +119,6 @@
     <None Include="Schema Comparisons\AppHb to Project.scmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Debug.publish.xml" />
-    <None Include="Release.publish.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\Roles.sql" />
@@ -146,17 +142,15 @@
     <Build Include="tj\Views\vLocationInfo.sql" />
     <Build Include="tj\Views\_vUserElectionList.sql" />
     <Build Include="tj\Views\vVoteInfo.sql" />
-    <Build Include="tj\Views\vResultInfo.sql" />
     <Build Include="tj\Views\vImportFileInfo.sql" />
     <Build Include="tj\Views\vElectionListInfo.sql" />
     <Build Include="tj\Views\vBallotInfo.sql" />
     <Build Include="Security\TallyJSite.sql" />
     <Build Include="tj\Functions\HasMatch.sql" />
     <Build Include="tj\Stored Procedures\EraseElectionContents.sql" />
-    <Build Include="tj\Stored Procedures\SqlSearch.sql" />
-    <Build Include="tj\Stored Procedures\CurrentRowVersion.sql" />
     <Build Include="tj\Stored Procedures\CloneElection.sql" />
     <Build Include="tj\Stored Procedures\UpdateVoteStatus.sql" />
     <Build Include="Security\tj.sql" />
+    <Build Include="tj\Stored Procedures\SqlSearch.sql" />
   </ItemGroup>
 </Project>

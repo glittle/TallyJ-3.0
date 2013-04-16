@@ -7,10 +7,4 @@ namespace TallyJ.CoreModels.Helper
     public const string JuniorYouth = "JY";
     public const string Child = "C";
   }
-
-  public class ResultType
-  {
-    public const string Automatic = "A";
-    public const string Manual = "M";
-  }
 }

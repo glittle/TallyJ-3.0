@@ -33,7 +33,7 @@ namespace TallyJ.Code
       return data.GetType()
         .GetProperties(attr)
         .Where(
-          property => property.CanRead && wantedNames.Contains(property.Name) && !namesNotWanted.Contains(property.Name))
+          property => property.CanRead && (wantedNames==null || wantedNames.Contains(property.Name)) && !namesNotWanted.Contains(property.Name))
         .ToDictionary(property => property.Name, property => property.GetValue(data, null));
     }
 

@@ -16,30 +16,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8" />
     @RenderPage("Headers.cshtml")
     <title>TallyJ - @(currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? ViewBag.Title)
     </title>
-    <link rel="shortcut icon" href="@Url.Content("~/Images/favicon.ico")">
-    <link rel="publisher" href="https://plus.google.com/109176504285792009711">
-    <script type="text/javascript">
 
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-1312528-6']);
-        _gaq.push(['_trackPageview']);
-
-        (function () {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            try {
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            } catch (e) {
-
-            }
-        })();
-
-    </script>
 </head>
 <body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") @AuthLevel">
     <header>
@@ -237,15 +217,17 @@
                         </script>
                     </li>*@
                     <li><a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
-                        class="facebook" title="Go to the TallyJ Support page"></a></li>
+                           class="facebook" title="Go to the TallyJ Support page"></a></li>
                     <li><a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
-                        title="View news from #TallyJ_Bahai"></a></li>
+                           title="View news from #TallyJ_Bahai"></a></li>
                     <li><a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
-                        href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;"></a></li>
+                           href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;"></a></li>
                 </ul>
             </div>
         </div>
     </footer>
+    @RenderPage("Footer.cshtml")
+
     @ContextItems.GetJavascriptForPage()
 </body>
 </html>

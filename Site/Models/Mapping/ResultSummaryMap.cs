@@ -24,15 +24,16 @@ namespace TallyJ.Models.Mapping
             this.Property(t => t.UseOnReports).HasColumnName("UseOnReports");
             this.Property(t => t.NumVoters).HasColumnName("NumVoters");
             this.Property(t => t.NumEligibleToVote).HasColumnName("NumEligibleToVote");
-            this.Property(t => t.MailedInBallots).HasColumnName("MailedInBallots");
-            this.Property(t => t.DroppedOffBallots).HasColumnName("DroppedOffBallots");
-            this.Property(t => t.InPersonBallots).HasColumnName("InPersonBallots");
+            this.Property(t => t.EnvelopesMailedIn).HasColumnName("MailedInBallots");
+            this.Property(t => t.EnvelopesDroppedOff).HasColumnName("DroppedOffBallots");
+            this.Property(t => t.EnvelopesInPerson).HasColumnName("InPersonBallots");
             this.Property(t => t.SpoiledBallots).HasColumnName("SpoiledBallots");
             this.Property(t => t.SpoiledVotes).HasColumnName("SpoiledVotes");
             this.Property(t => t.TotalVotes).HasColumnName("TotalVotes");
-            this.Property(t => t.BallotsReceived).HasColumnName("BallotsReceived");
+            this.Property(t => t.NumBallotsEntered).HasColumnName("BallotsReceived");
             this.Property(t => t.BallotsNeedingReview).HasColumnName("BallotsNeedingReview");
-            this.Property(t => t.CalledInBallots).HasColumnName("CalledInBallots");
+            this.Property(t => t.EnvelopesCalledIn).HasColumnName("CalledInBallots");
+            this.Property(t => t.SpoiledManualBallots).HasColumnName("SpoiledManualBallots");
         }
     }
 }

@@ -14,9 +14,12 @@
     [BallotsReceived]      INT              NULL,
     [BallotsNeedingReview] INT              NULL,
     [CalledInBallots]      INT              NULL,
+    [SpoiledManualBallots] INT              NULL,
     CONSTRAINT [PK_ResultSummary] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_ResultSummary_Election1] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 GO

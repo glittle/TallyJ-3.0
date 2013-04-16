@@ -184,8 +184,8 @@ namespace TallyJ.Code.Resources
             var hasElection = UserSession.CurrentElectionGuid != Guid.Empty;
 
             // false tests
-            if (node.GetAttribute("requireElection") == "true" && !hasElection) return false;
-            if (UserSession.CurrentElection.HidePreBallotPages.AsBoolean() && node.GetAttribute("isPreBallot") == "true") return false;
+            if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
+            if (hasElection && UserSession.CurrentElection.HidePreBallotPages.AsBoolean() && node.GetAttribute("isPreBallot") == "true") return false;
 
             // true tests
             if (role == "*" || role.HasNoContent()) return true;

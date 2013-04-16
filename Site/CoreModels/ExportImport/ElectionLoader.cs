@@ -124,9 +124,6 @@ namespace TallyJ.CoreModels.ExportImport
           // Elements to be imported...
 
           // election
-          // resultSummary - not imported. Included in export for reporting.
-          // result - not imported. Included in export for reporting.
-          // resultTie - not imported. Included in export for reporting.
           // teller
           // user - not imported. Current user becomes owner of imported election
           // person
@@ -134,7 +131,10 @@ namespace TallyJ.CoreModels.ExportImport
                // ballot
                     // vote
                // log 
-          // reason - not imported - embedded in the application. Included in export for reporting
+            // resultSummary
+            // result
+            // resultTie
+            // reason - not imported - embedded in the application. Included in export for reporting
 
           LoadElectionInfo();
 
@@ -143,6 +143,8 @@ namespace TallyJ.CoreModels.ExportImport
           LoadPeople();
           
           LoadLocationsEtc();
+
+            LoadResultInfo();
 
           Db.SaveChanges();
 
@@ -171,7 +173,8 @@ namespace TallyJ.CoreModels.ExportImport
       return true;
     }
 
-    private void LoadElectionInfo()
+     
+      private void LoadElectionInfo()
     {
       var electionNode = _xmlRoot.SelectSingleNode("t:election", _nsm) as XmlElement;
 
@@ -290,7 +293,41 @@ namespace TallyJ.CoreModels.ExportImport
       Db.People.Add(person);
     }
 
-    private void LoadLocationsEtc()
+    private void LoadResultInfo()
+    {
+        var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
+        if (nodes != null)
+            foreach (XmlElement element in nodes)
+            {
+                var resultSummary = new ResultSummary();
+                element.CopyAttributeValuesTo(resultSummary);
+                resultSummary.ElectionGuid = _electionGuid;
+                Db.ResultSummaries.Add(resultSummary);
+            }
+        
+        nodes = _xmlRoot.SelectNodes("t:result", _nsm);
+        if (nodes != null)
+            foreach (XmlElement element in nodes)
+            {
+                var result = new Models.Result();
+                element.CopyAttributeValuesTo(result);
+                result.ElectionGuid = _electionGuid;
+                UpdateGuidFromMapping(result, v => v.PersonGuid);
+                Db.Results.Add(result);
+            }
+
+        nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
+        if (nodes != null)
+            foreach (XmlElement element in nodes)
+            {
+                var resultTie = new ResultTie();
+                element.CopyAttributeValuesTo(resultTie);
+                resultTie.ElectionGuid = _electionGuid;
+                Db.ResultTies.Add(resultTie);
+            }
+    }
+
+      private void LoadLocationsEtc()
     {
       var locationsXml = _xmlRoot.SelectNodes("t:location", _nsm);
 

@@ -208,7 +208,7 @@ namespace TallyJ.CoreModels
                          count = v.SingleNameElectionCount,
                          pid = v.PersonId,
                          pos = v.PositionOnBallot,
-                         name = v.PersonFullName,
+                         name = v.PersonFullNameFL,
                          changed = !Equals(v.PersonCombinedInfo, v.PersonCombinedInfoInVote),
                          invalid = v.VoteIneligibleReasonGuid,
                          ineligible = VoteHelperLocal.IneligibleToReceiveVotes(v.PersonIneligibleReasonGuid, v.CanReceiveVotes)

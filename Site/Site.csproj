@@ -273,6 +273,8 @@
     <Compile Include="CoreModels\BallotAnalyzer.cs" />
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
+    <Compile Include="CoreModels\Helper\ResultType.cs" />
+    <Compile Include="CoreModels\IAnalyzerFakes.cs" />
     <Compile Include="CoreModels\ImportV1\ImportV1Base.cs" />
     <Compile Include="CoreModels\ImportV1\ImportV1Community.cs" />
     <Compile Include="CoreModels\ImportV1\ImportV1Election.cs" />
@@ -417,6 +419,14 @@
     <Compile Include="Migrations\201304140246416_InitialMigrations.Designer.cs">
       <DependentUpon>201304140246416_InitialMigrations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304160649341_Removed view.cs" />
+    <Compile Include="Migrations\201304160649341_Removed view.Designer.cs">
+      <DependentUpon>201304160649341_Removed view.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201304160804346_Remove invalid reason for blank vote.cs" />
+    <Compile Include="Migrations\201304160804346_Remove invalid reason for blank vote.Designer.cs">
+      <DependentUpon>201304160804346_Remove invalid reason for blank vote.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Ballot.cs" />
     <Compile Include="Models\BaseEntity.cs" />
@@ -441,6 +451,8 @@
     <Compile Include="Models\Mapping\vResultInfoMap.cs" />
     <Compile Include="Models\Mapping\vVoteInfoMap.cs" />
     <Compile Include="Models\Mapping\JoinElectionUserMap.cs" />
+    <Compile Include="Models\Partials\ResultSummary.cs" />
+    <Compile Include="Models\Partials\ExtraQueries.cs" />
     <Compile Include="Models\Persistance\IRepository.cs" />
     <Compile Include="Models\Persistance\EntityFrameworkRepository.cs" />
     <Compile Include="Models\Procs\CloneElection_Result.cs" />
@@ -552,6 +564,7 @@
     <Content Include="Views\Public\Home.cshtml.less">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Shared\Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
@@ -779,6 +792,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201304140246416_InitialMigrations.resx">
       <DependentUpon>201304140246416_InitialMigrations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304160649341_Removed view.resx">
+      <DependentUpon>201304160649341_Removed view.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304160804346_Remove invalid reason for blank vote.resx">
+      <DependentUpon>201304160804346_Remove invalid reason for blank vote.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

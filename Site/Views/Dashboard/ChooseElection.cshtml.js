@@ -259,6 +259,8 @@ var HomeIndexPage = function () {
         var btn = $(this);
         var guid = btn.parents('.Election').data('guid');
 
+        ShowStatusDisplay("Preparing export file...", 0, 2 * 60 * 1000);
+
         //var oldText = btn.text();
 
         btn.addClass('active');
