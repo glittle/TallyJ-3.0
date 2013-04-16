@@ -207,6 +207,7 @@ namespace TallyJ.CoreModels
                     Ties = ties,
                     NumToElect = _election.NumberToElect,
                     NumExtra = _election.NumberExtra,
+                    ShowCalledIn = _election.UseCallInButton,
                     ResultsManual =
                         (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
                             .GetPropertiesExcept(null, new[] { "ElectionGuid" }),

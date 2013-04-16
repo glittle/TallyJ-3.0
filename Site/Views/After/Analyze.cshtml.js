@@ -11,7 +11,8 @@ var AnalyzePage = function () {
         tieResultRowTemplate: '',
         chart: null,
         hasCloseVote: false,
-        hasTie: false
+        hasTie: false,
+        calledInTotal: 0
     };
 
     var preparePage = function () {
@@ -69,9 +70,10 @@ var AnalyzePage = function () {
     };
 
     var runAnalysis = function (firstLoad) {
-        ShowStatusDisplay('Analyzing ballots...');
+        ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
         $('body').removeClass('notReady');
         $('.LeftHalf, .RightHalf').fadeOut();
+        $('#InitialMsg').show();
 
         CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
     };
@@ -152,25 +154,29 @@ var AnalyzePage = function () {
             $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
         }
 
+        settings.calledInTotal = 0;
         fillValues('Calc', info.ResultsCalc);
         fillValues('Manual', info.ResultsManual);
         fillValues('Final', info.ResultsFinal);
-        highlightValueIssues();
+        summarizeCounts();
 
         table.show();
         $('.LeftHalf, .RightHalf').fadeIn();
 
     };
 
-    var highlightValueIssues = function () {
+    var summarizeCounts = function () {
+        $('#calledIn').toggle(settings.calledInTotal > 0 || settings.info.ShowCalledIn);
         $('#totalCounts tr').each(function () {
             var row = $(this);
-            var calc = row.find('span.Calc');
-            var calcText = calc.text();
+            var calcSpan = row.find('span.Calc');
+            var calcText = calcSpan.text();
 
-            var finalValue = row.find('span.Final');
-
-            finalValue.toggleClass('changed', calcText != '' && calcText != finalValue.text());
+            var finalSpan = row.find('span.Final');
+            var finalText = finalSpan.text();
+            
+            finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
+            calcSpan.toggleClass('changed', finalText != '' && calcText != finalText);
         });
         $('#totalCounts').toggleClass('mismatch', settings.info.ResultsFinal.NumBallotsWithManual != settings.info.ResultsFinal.SumOfEnvelopesCollected);
         $('body').toggleClass('ready', settings.info.ResultsFinal.UseOnReports);
@@ -178,6 +184,9 @@ var AnalyzePage = function () {
     };
 
     var fillValues = function (name, results) {
+        if (results.EnvelopesCalledIn) {
+            settings.calledInTotal += results.EnvelopesCalledIn;
+        }
         $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
             var span = $(this);
             var value = results[span.data('name')];
@@ -331,7 +340,7 @@ var AnalyzePage = function () {
                         if (a.PersonName > b.PersonName) return 1;
                         return 0;
                     }));
-                    tie.Buttons = '<button class="btn btn-mini btn-primary btnSaveTieCounts" type=button>Save Counts & Re-run Analysis</button>';
+                    tie.Buttons = '<button class="btn btn-mini btnSaveTieCounts" type=button>Save Counts & Re-run Analysis</button>';
                 }
             });
             return items;
@@ -366,7 +375,7 @@ var AnalyzePage = function () {
             if (info.Saved) {
                 fillValues('Manual', settings.info.ResultsManual = info.ResultsManual);
                 fillValues('Final', settings.info.ResultsFinal = info.ResultsFinal);
-                highlightValueIssues();
+                summarizeCounts();
                 ShowStatusSuccess('Saved');
             } else {
                 ShowStatusSuccess(info.Message);

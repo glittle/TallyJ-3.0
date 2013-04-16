@@ -216,6 +216,11 @@ input.Manual {
 span.Final.changed {
     font-weight: bold;
 }
+span.Calc.changed {
+    color: #888;
+    padding: 0 4px;
+    text-decoration: line-through;
+}
 .overallWarning {
     color: red;
     font-weight: bold;
@@ -226,4 +231,7 @@ span.Final.changed {
 }
 body.notReady .overallWarning {
     display: block;
+}
+#body {
+    min-height: 500px;
 }

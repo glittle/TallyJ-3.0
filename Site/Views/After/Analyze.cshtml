@@ -62,7 +62,7 @@
         </tbody>
         <tbody class="ballotCounts">
             <tr>
-                <th colspan="4">Total Envelopes Received (before opening)
+                <th colspan="4">Total Envelopes Received
                 </th>
             </tr>
             <tr>
@@ -104,31 +104,26 @@
                     <span class="Final" data-name="EnvelopesMailedIn"></span>
                 </td>
             </tr>
-            @if (UserSession.CurrentElection.UseCallInButton.AsBoolean())
-            {
-                <tr>
-                    <td>Envelopes - Called In
-                    </td>
-                    <td>
-                        <span class="Calc" data-name="EnvelopesCalledIn"></span>
-                    </td>
-                    <td>
-                        <input class="Manual" data-name="EnvelopesCalledIn" type="number" min="0">
-                    </td>
-                    <td>
-                        <span class="Final" data-name="EnvelopesCalledIn"></span>
-                    </td>
-                </tr>
-            }
+            <tr id="calledIn">
+                <td>Envelopes - Called In
+                </td>
+                <td>
+                    <span class="Calc" data-name="EnvelopesCalledIn"></span>
+                </td>
+                <td>
+                    <input class="Manual" data-name="EnvelopesCalledIn" type="number" min="0">
+                </td>
+                <td>
+                    <span class="Final" data-name="EnvelopesCalledIn"></span>
+                </td>
+            </tr>
             <tr class="totalBallots">
                 <td>Total Envelopes
                 </td>
                 <td>
                     <span class="Calc" data-name="SumOfEnvelopesCollected"></span>
                 </td>
-                <td>
-                    <span class="Manual" data-name="SumOfEnvelopesCollected"></span>
-                </td>
+                <td></td>
                 <td class="IfMismatch">
                     <span class="Final" data-name="SumOfEnvelopesCollected"></span>
                 </td>
@@ -214,17 +209,6 @@
                     <span class="Final" data-name="SpoiledVotes"></span>
                 </td>
             </tr>
-            <tr>
-                <td>Ballots Needing Review
-                </td>
-                <td>
-                    <span class="Calc" data-name="BallotsNeedingReview"></span>
-                </td>
-                <td></td>
-                <td>
-                    <span class="Final" data-name="BallotsNeedingReview"></span>
-                </td>
-            </tr>
         </tbody>
     </table>
     <div class="Clear">
@@ -280,8 +264,9 @@
             Instructions</caption>
         <tr>
             <td>If there are any errors shown in red, they need to be resolved.
-                Once all are resolved, and the results are approved by the head teller, set the "Election Status" to "Show Reports" to enable use of the
-                "Display Teller's Report" page without warnings being shown.
+                Once all are resolved, and the results are approved by the head teller, set 
+                the "Election Status" to "Show Reports" to enable the "Display Teller's Report" page 
+                and other reports.
             </td>
         </tr>
     </table>
