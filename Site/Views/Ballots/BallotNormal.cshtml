@@ -43,18 +43,18 @@
       <li><a href="#tabNameSearch">Add to Ballot</a></li>
     </ul>
     <div id="tabNameSearch">
-      <div class="float-right">
-        <span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
-          Add na<u>m</u>e not in list</button>
-        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
-          Add a spoi<u>l</u>ed line</button>
-      </div>
+
       <div class="heading">
         Add votes to Ballot # <span class="ballotCode"></span>
       </div>
-      <div class="float-left">
+      <div class="float-right">
+        @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
+        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
+          Add na<u>m</u>e not in list</button>*@
+        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
+        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
+          Add a spoi<u>l</u>ed line</button>
+      </div>      <div class="float-left">
         <div>
           Search for a <u>p</u>erson:
         </div>
@@ -130,6 +130,8 @@
     Start <u>N</u>ew Ballot</button>
   <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
     Delete this empty ballot</button>
+  <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if vote lines and numbers appear to be wrong.">
+    Clean Up Ballot</button>
   <div class="review">
     <label for="cbReview">
       If this ballot needs review by the head teller, tick here</label><input type="checkbox" id="cbReview" />

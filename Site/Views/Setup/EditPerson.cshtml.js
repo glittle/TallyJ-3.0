@@ -8,13 +8,14 @@ var EditPersonPage = function () {
         hostPanel: null
     };
 
-    var startNewPerson = function (panel) {
+    var startNewPerson = function (panel, ineligible) {
         applyValues(panel, {
-            C_RowId: -1
+            C_RowId: -1,
+            IneligibleReasonGuid: ineligible,
         });
     };
     var applyValues = function (panel, person) {
-        if (panel && panel != null) {
+        if (panel) {
             local.hostPanel = panel;
         }
         else {
@@ -86,7 +87,7 @@ var EditPersonPage = function () {
         $('#ddlIneligible').html(prepareReasons());
 
         site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {
-            startNewPerson($(data));
+            startNewPerson($(data.panelSelector), data.ineligible);
         });
 
         site.qTips.push({ selector: '#qTipFName', title: 'First Name', text: 'These are the main names for this person. Both first and last name must be filled in.' });
