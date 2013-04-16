@@ -57,6 +57,7 @@ namespace TallyJ
                   configuration.ForAllControllers().DenyAnonymousAccess();
 
                   configuration.For<PublicController>().Ignore();
+                  configuration.For<AccountController>().Ignore();
 
 
                   configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
@@ -76,7 +77,7 @@ namespace TallyJ
                   configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
 
                   //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
-                  configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
+                  //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
                   configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
               });
 
