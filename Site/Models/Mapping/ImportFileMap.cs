@@ -20,6 +20,12 @@ namespace TallyJ.Models.Mapping
             this.Property(t => t.FileType)
                 .HasMaxLength(10);
 
+            this.Property(t => t.FileSize)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+            
+            this.Property(t => t.HasContent)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+
             // Table & Column Mappings
             this.ToTable("ImportFile", "tj");
             this.Property(t => t.C_RowId).HasColumnName("_RowId");
