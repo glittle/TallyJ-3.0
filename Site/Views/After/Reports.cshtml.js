@@ -71,7 +71,8 @@ var ReportsPage = function () {
         }
     };
 
-    var warningMsg = 'Warning: There are unresolved issues that may affect this report. This report may be incomplete and/or showing wrong information.';
+    var warningMsg = '<p>Warning: There are unresolved issues that may affect this report.</p>'
+                   + '<p>Warning: This report may be incomplete and/or showing wrong information.</p>';
     
     var doReportResults1 = function (code) {
         var info = local.reportInfo;
@@ -81,7 +82,7 @@ var ReportsPage = function () {
         var bodyInfo = $.extend({}, info.Info, info.Info.Final);
 
         if (!info.Ready) {
-            $('#Status').text(warningMsg).show();
+            $('#Status').html(warningMsg).show();
         }
 
         var rowTemplate = reportDef.find('.result1row').html();
@@ -98,7 +99,7 @@ var ReportsPage = function () {
         var info = local.reportInfo;
 
         if (!info.Ready) {
-            $('#Status').text(warningMsg).show();
+            $('#Status').html(warningMsg).show();
         }
 
         var reportDef = local.templatesRaw.find('#' + code);

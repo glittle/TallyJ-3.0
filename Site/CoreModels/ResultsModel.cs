@@ -50,11 +50,12 @@ namespace TallyJ.CoreModels
                 //currentElection.ShowFullReport.AsBool() ? 99999 : 
                 var numToShow = CurrentElection.NumberToElect.AsInt();
                 var numExtra = CurrentElection.NumberExtra.AsInt();
-//                var numForChart = (numToShow + numExtra) * 2;
+                //                var numForChart = (numToShow + numExtra) * 2;
 
                 var reportVotes =
                     Db.Results.Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
-                      .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, PersonName = p.C_FullNameFL })
+                      .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid,
+                            (r, p) => new {r, PersonName = p.C_FullNameFL})
                       .OrderBy(g => g.r.Rank)
                       .Take(numToShow + numExtra);
 
@@ -81,19 +82,18 @@ namespace TallyJ.CoreModels
                 return new
                     {
                         ReportVotes =
-                            reportVotes.Select(g => new { g.PersonName, g.r.VoteCount, g.r.TieBreakCount, g.r.Section }),
+                            reportVotes.Select(g => new {g.PersonName, g.r.VoteCount, g.r.TieBreakCount, g.r.Section}),
                         NumBallots = resultSummaryFinal.NumBallotsWithManual,
                         resultSummaryFinal.TotalVotes,
                         TotalInvalidVotes = resultSummaryFinal.SpoiledVotes,
                         TotalInvalidBallots = resultSummaryFinal.SpoiledBallots,
                         resultSummaryFinal.NumEligibleToVote,
+                        resultSummaryFinal.EnvelopesMailedIn,
+                        resultSummaryFinal.EnvelopesInPerson,
+                        resultSummaryFinal.EnvelopesDroppedOff,
+                        resultSummaryFinal.EnvelopesCalledIn,
                         resultSummaryFinal.NumVoters,
-                        Participation =
-                            resultSummaryFinal.NumEligibleToVote.AsInt() == 0
-                                ? 0
-                                : Math.Round(
-                                    (resultSummaryFinal.NumBallotsWithManual.AsInt() * 100D) /
-                                    resultSummaryFinal.NumEligibleToVote.AsInt(), 0),
+                        Participation = resultSummaryFinal.PercentParticipation,
                         Status = tallyStatus,
                         StatusText = ElectionTallyStatusEnum.TextFor(tallyStatus)
                     }.AsJsonResult();
@@ -117,7 +117,7 @@ namespace TallyJ.CoreModels
 
                 var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
                                           .Join(locations, vi => vi.LocationId, l => l.C_RowId,
-                                                (vi, location) => new { vi, location })
+                                                (vi, location) => new {vi, location})
                                           .Select(x => new
                                               {
                                                   x.vi.LocationId,
@@ -134,7 +134,7 @@ namespace TallyJ.CoreModels
 
                 var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
                                            .Join(locations, b => b.LocationGuid, l => l.LocationGuid,
-                                                 (b, location) => new { b, location })
+                                                 (b, location) => new {b, location})
                                            .Select(x => new
                                                {
                                                    LocationId = x.location.C_RowId,
@@ -152,13 +152,13 @@ namespace TallyJ.CoreModels
                         NeedReview = needReview.Concat(needReview2).Distinct(),
                         ResultsManual =
                             (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
-                             new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                             new ResultSummary()).GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                         ResultsCalc =
                             resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
-                                           .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                                           .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                         ResultsFinal =
                             resultSummaries.First(rs => rs.ResultType == ResultType.Final)
-                                           .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                                           .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                     };
             }
 
@@ -167,7 +167,7 @@ namespace TallyJ.CoreModels
             var vResultInfos =
                 Db.Results
                   .Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
-                  .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, PersonName = p.C_FullNameFL })
+                  .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new {r, PersonName = p.C_FullNameFL})
                   .OrderBy(g => g.r.Rank)
                   .Select(g => new
                       {
@@ -210,13 +210,13 @@ namespace TallyJ.CoreModels
                     ShowCalledIn = _election.UseCallInButton,
                     ResultsManual =
                         (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
-                            .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                            .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                     ResultsCalc =
                         resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
-                                       .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                                       .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                     ResultsFinal =
                         resultSummaries.First(rs => rs.ResultType == ResultType.Final)
-                                       .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                                       .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                 };
         }
 
@@ -270,7 +270,7 @@ namespace TallyJ.CoreModels
                 case "AllReceivingVotes":
                 case "AllReceivingVotesByVote":
                     var rows = Db.Results.Where(r => r.ElectionGuid == CurrentElection.ElectionGuid)
-                           .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
+                                 .Join(Db.People, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new {r, p});
                     if (code == "AllReceivingVotes")
                     {
                         rows = rows.OrderBy(g => g.p.C_FullNameFL);
@@ -295,7 +295,7 @@ namespace TallyJ.CoreModels
                     {
                         return new
                             {
-                                Status = "Results not available",
+                                Status = "Results not available. Please view 'Analyze' page first.",
                                 ElectionStatus = CurrentElection.TallyStatus,
                                 ElectionStatusText = ElectionTallyStatusEnum.TextFor(CurrentElection.TallyStatus)
                             }.AsJsonResult();
@@ -310,7 +310,7 @@ namespace TallyJ.CoreModels
                                    .Join(Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid),
                                          r => r.PersonGuid,
                                          p => p.PersonGuid,
-                                         (result1, person) => new { person, result1 })
+                                         (result1, person) => new {person, result1})
                                    .ToList();
 
                     return new
@@ -334,12 +334,7 @@ namespace TallyJ.CoreModels
                             Info = new
                                 {
                                     Name = UserSession.CurrentElectionName,
-                                    Final = summary,
-                                    Pct =
-                                        summary.NumEligibleToVote.GetValueOrDefault() == 0
-                                            ? 0
-                                            : Math.Round(100.0 * summary.NumBallotsEntered.GetValueOrDefault() /
-                                                         summary.NumEligibleToVote.GetValueOrDefault())
+                                    Final = summary
                                 },
                             Status = "ok",
                             ElectionStatus = CurrentElection.TallyStatus,
@@ -348,7 +343,7 @@ namespace TallyJ.CoreModels
                         }.AsJsonResult();
 
                 default:
-                    return new { Status = "Unknown report" }.AsJsonResult();
+                    return new {Status = "Unknown report"}.AsJsonResult();
             }
 
             return new
@@ -447,10 +442,10 @@ namespace TallyJ.CoreModels
                     ResultsManual =
                         (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
                          new ResultSummary())
-                            .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                            .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                     ResultsFinal =
                         resultSummaries.First(rs => rs.ResultType == ResultType.Final)
-                                       .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+                                       .GetPropertiesExcept(null, new[] {"ElectionGuid"}),
                 }.AsJsonResult();
         }
     }

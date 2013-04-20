@@ -67,10 +67,16 @@ footer {
 
     .Voter span {
         font-size: 26pt;
-        color: #777;
-        padding: 0 3px;
+        color: #999;
+        padding: 0 35px 0 0;
         margin-top: -6pt;
         display: block;
+    }
+
+    .Voter span span {
+        margin-left: 20px;
+        display: inline-block;
+        color: #333;
     }
 
 .Nav {

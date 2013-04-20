@@ -74,6 +74,7 @@ namespace TallyJ.Models.Mapping
             this.Property(t => t.ShowAsTest).HasColumnName("ShowAsTest");
             this.Property(t => t.UseCallInButton).HasColumnName("UseCallInButton");
             this.Property(t => t.HidePreBallotPages).HasColumnName("HidePreBallotPages");
+            this.Property(t => t.MaskVotingMethod).HasColumnName("MaskVotingMethod");
         }
     }
 }

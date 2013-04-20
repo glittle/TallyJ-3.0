@@ -56,6 +56,7 @@ var SetupIndexPage = function () {
     site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations or polling stations, add names for each location here.  For most elections, only one location should be used.  Erase a name to remove it. (Mailed-in ballots are NOT a location.)' });
     site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
+    site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
     //site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
@@ -222,7 +223,7 @@ var SetupIndexPage = function () {
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
       if (info.Election) {
         applyValues(info.Election);
-        $('.CurrentElectionName').text(info.Election.Name);
+        $('.CurrentElectionName').text(info.displayName);
       }
       ResetStatusDisplay();
       ShowStatusSuccess(info.Status);

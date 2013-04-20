@@ -427,6 +427,10 @@
     <Compile Include="Migrations\201304160804346_Remove invalid reason for blank vote.Designer.cs">
       <DependentUpon>201304160804346_Remove invalid reason for blank vote.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304201642587_New columns.cs" />
+    <Compile Include="Migrations\201304201642587_New columns.Designer.cs">
+      <DependentUpon>201304201642587_New columns.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Ballot.cs" />
     <Compile Include="Models\BaseEntity.cs" />
@@ -798,6 +802,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201304160804346_Remove invalid reason for blank vote.resx">
       <DependentUpon>201304160804346_Remove invalid reason for blank vote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304201642587_New columns.resx">
+      <DependentUpon>201304201642587_New columns.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

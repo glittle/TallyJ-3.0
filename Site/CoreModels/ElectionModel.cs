@@ -228,7 +228,8 @@ namespace TallyJ.CoreModels
                                            election.ShowAsTest,
                                            election.ElectionPasscode,
                                            election.UseCallInButton,
-                                           election.HidePreBallotPages
+                                           election.HidePreBallotPages,
+                                           election.MaskVotingMethod
                                        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
@@ -261,11 +262,14 @@ namespace TallyJ.CoreModels
                     new ResultsModel().GenerateResults();
                 }
 
+                var displayName = UserSession.CurrentElectionDisplayNameAndInfo;
+
                 return new
                          {
                              Status = "Saved",
                              // TODO 2011-11-20 Glen Little: Return entire election?
-                             Election = election
+                             Election = election,
+                             displayName
                          }.AsJsonResult();
             }
 

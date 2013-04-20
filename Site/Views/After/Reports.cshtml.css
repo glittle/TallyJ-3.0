@@ -141,6 +141,9 @@ table.resultInfo tr.rpt1Total td:nth-child(2) {
 table.resultInfo tr.rpt1Detail td:nth-child(2) {
     border-bottom: none;
 }
+tr.rpt1Detail.Warning {
+    color: red;
+}
 table.resultInfo tr td:nth-child(2) {
     text-align: right;
     border-bottom: 1px solid #000;

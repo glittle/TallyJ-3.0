@@ -54,12 +54,20 @@
                         {SumOfEnvelopesCollected}
                     </td>
                 </tr>
-                <tr>
+                <tr class="rpt1Detail Warning {#(+{SumOfEnvelopesCollected}==+{NumBallotsWithManual} ? 'Hidden' : '')}">
+                    <td>
+                        Total number of ballots processed
+                    </td>
+                    <td>
+                        {NumBallotsWithManual}
+                    </td>
+                </tr>
+                <tr class="rpt1Detail">
                     <td>
                         Percentage of participation
                     </td>
                     <td>
-                        {Pct}%
+                        {PercentParticipation}%
                     </td>
                 </tr>
                 <tr class="rpt1Detail">
@@ -70,7 +78,7 @@
                         {SpoiledBallots}
                     </td>
                 </tr>
-                <tr>
+                <tr class="rpt1Detail">
                     <td>
                         Number of spoiled votes
                     </td>
@@ -93,10 +101,12 @@
                 <span>{Rank}</span><span>{Name}</span><span>{BahaiId}</span><span>{VoteCountPlus}</span></div>
         </div>
     </div>
-    <div id="Ballots" data-name="All Ballots">
+    <div id="Ballots" data-name="All Ballots for Review">
         <div class="body">
             <h1>
                 All Ballots Cast</h1>
+            <p class="Comment">
+                This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.</p>
             <div class="list">
                 {^rows}
             </div>
@@ -119,7 +129,7 @@
                 Full Tellers' Report</h1>
             <p class="Comment">
                 "If the assembled friends choose to have a full Tellers’ Report including the names
-                of all who are voted for and the number of votes received, this is acceptable."</p>
+                of all who are voted for and the number of votes received, this is acceptable."  (Spoiled votes and names on spoiled ballots are not included.)</p>
             <div class="list">
                 {^rows}
             </div>
@@ -135,7 +145,7 @@
                 Names of every individual who was voted for</h1>
             <p class="Comment">
                 "If the assembled friends choose to have a full Tellers’ Report including the names
-                of all who are voted for and the number of votes received, this is acceptable."</p>
+                of all who are voted for and the number of votes received, this is acceptable." (Spoiled votes and names on spoiled ballots are not included.)</p>
             <div class="list">
                 {^rows}
             </div>

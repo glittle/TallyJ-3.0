@@ -1,7 +1,22 @@
-﻿namespace TallyJ.Models
+﻿using System;
+using TallyJ.Code;
+
+namespace TallyJ.Models
 {
     public partial class ResultSummary
     {
+        public int PercentParticipation
+        {
+            get
+            {
+                return NumEligibleToVote.AsInt() == 0
+                                    ? 0
+                                    : Math.Round(
+                                        (NumBallotsWithManual.AsInt() * 100D) /
+                                        NumEligibleToVote.AsInt(), 0).AsInt();
+            }
+        }
+
         /// <Summary>Total of all collected</Summary>
         public int? SumOfEnvelopesCollected
         {

@@ -80,9 +80,8 @@ namespace TallyJ.CoreModels
                          {
                            PersonId = p.C_RowId,
                            FullName = p.C_FullNameFL,
-                           VotingMethod = includeAbsentees ? VotingMethodEnum.PresentAbsentTextFor(p.VotingMethod) : "",
-                           Pos = ++i,
-                           EnvNum = p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson ? null : p.EnvNum
+                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(UserSession.CurrentElection, p) : "",
+                           Pos = ++i
                          });
     }
 
