@@ -13,17 +13,17 @@ namespace TallyJ.CoreModels
         {
             get
             {
-//                var locationModel = ContextItems.LocationModel;
-//                var locations = locationModel.Locations
-//                                             .OrderBy(l => l.SortOrder)
-//                                             .Select(
-//                                                 l =>
-//                                                 new
-//                                                     {
-//                                                         l.Name,
-//                                                         l.C_RowId,
-//                                                         IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid
-//                                                     });
+                //                var locationModel = ContextItems.LocationModel;
+                //                var locations = locationModel.Locations
+                //                                             .OrderBy(l => l.SortOrder)
+                //                                             .Select(
+                //                                                 l =>
+                //                                                 new
+                //                                                     {
+                //                                                         l.Name,
+                //                                                         l.C_RowId,
+                //                                                         IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid
+                //                                                     });
 
                 return
                     MyElections()
@@ -70,7 +70,7 @@ namespace TallyJ.CoreModels
                 return Db
                     .vElectionListInfoes
                     .SelectMany(e => Db.JoinElectionUsers.Where(j => j.UserId == userGuid),
-                                (e, j) => new {e, j})
+                                (e, j) => new { e, j })
                     .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
                     .Select(joined => joined.e);
             }
@@ -81,7 +81,7 @@ namespace TallyJ.CoreModels
                 return Db.vElectionListInfoes.Where(e => e.ElectionGuid == currentElection.ElectionGuid);
             }
 
-            return null;
+            return Db.vElectionListInfoes.Where(e => false);
         }
     }
 }

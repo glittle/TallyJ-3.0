@@ -32,7 +32,8 @@ namespace TallyJ.Models.Mapping
                 .IsRequired()
                 .IsFixedLength()
                 .HasMaxLength(8)
-                .IsRowVersion();
+                .IsRowVersion()
+                .IsConcurrencyToken(false);
 
             this.Property(t => t.LocationId)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);

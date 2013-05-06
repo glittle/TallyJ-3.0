@@ -11,7 +11,7 @@
       <page title="Edit People's Names" featureWhen="NotStarted, NamesReady, Tallying" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
       <page title="Front Desk Registration" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
-      <page title="Reconcile Counts" featureWhen="NamesReady" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
+      <page title="Reconcile Counts" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
     </group>
     <group title="Tallying" longtitle="Tallying ballots" showTitleInPage="false">
       <page title="Enter Ballots" featureWhen="TieBreakNeeded, Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>

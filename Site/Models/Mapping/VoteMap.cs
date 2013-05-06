@@ -19,7 +19,8 @@ namespace TallyJ.Models.Mapping
                 .IsRequired()
                 .IsFixedLength()
                 .HasMaxLength(8)
-                .IsRowVersion();
+                .IsRowVersion()
+                .IsConcurrencyToken(false);
 
             // Table & Column Mappings
             this.ToTable("Vote", "tj");

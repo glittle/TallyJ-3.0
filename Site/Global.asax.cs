@@ -32,10 +32,12 @@ namespace TallyJ
     {
         protected void Application_Start()
         {
-            ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
+            //ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
 
             DependencyResolver.SetResolver(new UnityDependencyResolver(UnityInstance.Container));
 
+            ViewEngines.Engines.Clear();
+            ViewEngines.Engines.Add(new RazorViewEngine());
 
             FixUpConnectionString();
 

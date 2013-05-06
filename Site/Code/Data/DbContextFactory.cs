@@ -7,37 +7,42 @@ using TallyJ.Models;
 
 namespace TallyJ.Code.Data
 {
-  public class DbContextFactory : IDbContextFactory
-  {
-    private TallyJ2dContext _tallyJ2Entities;
-
-    #region IDbContextFactory Members
-
-    public TallyJ2dContext DbContext
+    public class DbContextFactory : IDbContextFactory
     {
-      get
-      {
-        if (_tallyJ2Entities != null)
+        private TallyJ2dContext _tallyJ2Entities;
+
+        #region IDbContextFactory Members
+
+        public TallyJ2dContext DbContext
         {
-          return _tallyJ2Entities;
+            get
+            {
+                if (_tallyJ2Entities != null)
+                {
+                    return _tallyJ2Entities;
+                }
+
+                _tallyJ2Entities = new TallyJ2dContext();
+
+                _tallyJ2Entities.Configuration.ValidateOnSaveEnabled = true;
+
+                return _tallyJ2Entities;
+
+
+                //        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+                //
+                //        var connection = new SqlConnection(cnString);
+                //        var workspace = new MetadataWorkspace(
+                //          new[] { "res://*/" },
+                //          new[] { typeof(SqlSearch_Result).Assembly }
+                //          );
+                //
+                //        var entityConnection = new EntityConnection(workspace, connection);
+                //
+                //        return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
+            }
         }
 
-        return _tallyJ2Entities = new TallyJ2dContext();
-
-//        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
-//
-//        var connection = new SqlConnection(cnString);
-//        var workspace = new MetadataWorkspace(
-//          new[] { "res://*/" },
-//          new[] { typeof(SqlSearch_Result).Assembly }
-//          );
-//
-//        var entityConnection = new EntityConnection(workspace, connection);
-//
-//        return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
-      }
+        #endregion
     }
-
-    #endregion
-  }
 }

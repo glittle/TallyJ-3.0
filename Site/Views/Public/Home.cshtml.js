@@ -76,7 +76,7 @@ var HomeIndexPage = function () {
             return false;
 
         }
-        statusSpan.addClass('active').removeClass('error').text('Attempting to join...');
+        statusSpan.addClass('active').removeClass('error').text('Checking...');
 
         var form = {
             election: electionCode,
