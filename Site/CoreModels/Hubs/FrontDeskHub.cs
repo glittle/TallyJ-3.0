@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
 using TallyJ.Code.Session;
 
-namespace TallyJ.CoreModels
+namespace TallyJ.CoreModels.Hubs
 {
   public class FrontDeskHub : Hub
   {
