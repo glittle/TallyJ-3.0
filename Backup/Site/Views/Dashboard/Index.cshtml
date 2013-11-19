@@ -1,0 +1,37 @@
+﻿@using System.Xml
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model ElectionsListViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+<div class="PullInstructions">
+  <ol>
+    <li>Shown here are the main sections and pages of TallyJ.</li>
+    <li class="ifAuthKnownLI">Pages with <span class="TipKnown"></span> are available only to you and tellers who have their own login account.</li>
+    <li>Pages with <span class="TipProjector"></span> are designed to be used with a projector for display at the front of the room.</li>
+    <li>After reading these instructions at the top of a page, you can click on "Hide Instructions" just above, to hide them.</li>
+  </ol>
+</div>
+@foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
+{
+  <section class="features">
+    <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
+    @foreach (var child in item.ChildNodes
+                            .Cast<XmlNode>()
+                            .Where(n=>n.NodeType==XmlNodeType.Element)
+                            .Cast<XmlElement>()
+                            .Where(c=>c.GetAttribute("showOnDashboard").DefaultTo("true")=="true"))
+    {
+        <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
+            <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">
+                <h3>
+                    @child.GetAttribute("title")</h3>
+                <p>
+                    @child.GetAttribute("desc")</p>
+            </section></a>
+    }
+    <div class="Clear">
+    </div>
+  </section>
+}

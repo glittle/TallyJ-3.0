@@ -1,0 +1,46 @@
+﻿@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model ElectionsListViewModel
+@{
+    ViewBag.Title = "Choose an Election";
+    ViewBag.Message = "Select or create an election";
+
+    ContextItems.AddJavascriptForPage("url1", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("url2", "chooseElectionPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
+    var electionsInfo = Model.MyElectionsInfo.ToList();
+    ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
+    TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
+}
+@section featured {
+    <section class="featured empty">
+    </section>
+}
+@*<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>*@
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+@if (electionsInfo.Count() > 0)
+{
+    <h3>Your Elections</h3>
+}<div id="ElectionList">
+</div>
+@if (UserSession.IsKnownTeller)
+{
+    <h3 class="MakeNew">Preparing a New Election?</h3>
+    <div class="Comment">Three options:</div>
+    <ul class="MakeNewList">
+        <li>Start a 
+            <button type="button" class="btn btn-warning btn-mini" id="btnCreate">New Election</button>
+        </li>
+      <li>
+        <form name="formLoadFile" id="formLoadFile">
+          <label for="loadFile">Load a previous Election from saved file:</label>
+          <input id="loadFile" name="loadFile" type="file" />
+        </form>
+      </li>
+      <li><a href="@Url.Action("ImportV1", "Setup")">Import files</a> from TallyJ version 1.</li>
+    </ul>
+
+}

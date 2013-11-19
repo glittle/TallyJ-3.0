@@ -1,7 +1,6 @@
 using TallyJ.Code.Data;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Models;
-using TallyJ.Models;
 
 namespace TallyJ.Code
 {

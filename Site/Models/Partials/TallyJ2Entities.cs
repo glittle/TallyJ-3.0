@@ -1,7 +1,6 @@
 ﻿using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.EntityClient;
 
 namespace TallyJ.Models
 {

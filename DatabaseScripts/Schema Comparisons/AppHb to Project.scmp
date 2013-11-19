@@ -2,15 +2,15 @@
 <SchemaComparison>
   <Version>10</Version>
   <SourceModelProvider>
-    <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=7c5562a1-0a9d-4afe-8c93-9feb002e2352.sqlserver.sequelizer.com;Initial Catalog=db7c5562a10a9d4afe8c939feb002e2352;User ID=kmbpyjlvswfyjrff;Pooling=False;MultipleActiveResultSets=False;Packet Size=4096;Application Name="Microsoft SQL Server Data Tools, Schema Compare"</ConnectionString>
-    </ConnectionBasedModelProvider>
-  </SourceModelProvider>
-  <TargetModelProvider>
     <ProjectBasedModelProvider>
       <ProjectGuid>{318a3641-8822-4b4e-9848-80c3538a03d7}</ProjectGuid>
       <Name>DatabaseScripts</Name>
     </ProjectBasedModelProvider>
+  </SourceModelProvider>
+  <TargetModelProvider>
+    <ConnectionBasedModelProvider>
+      <ConnectionString>Data Source=7c5562a1-0a9d-4afe-8c93-9feb002e2352.sqlserver.sequelizer.com;Initial Catalog=db7c5562a10a9d4afe8c939feb002e2352;Persist Security Info=True;User ID=kmbpyjlvswfyjrff;Pooling=False;MultipleActiveResultSets=False;Packet Size=4096;Application Name="Microsoft SQL Server Data Tools, Schema Compare"</ConnectionString>
+    </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
     <SchemaCompareSettingsService>
@@ -305,6 +305,10 @@
         <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>RunDeploymentPlanExecutors</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>AllowDropBlockingAssemblies</Name>
         <Value>False</Value>
       </PropertyElementName>
@@ -399,4 +403,15 @@
     <ZoomLevel>100</ZoomLevel>
     <Filter>Equals_Objects,Not_Supported_Deploy</Filter>
   </SchemaCompareViewSettings>
+  <ExcludedSourceElements />
+  <ExcludedTargetElements>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=10.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>__MigrationHistory</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlPrimaryKeyConstraint, Microsoft.Data.Tools.Schema.Sql, Version=10.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>PK_dbo.__MigrationHistory</Name>
+    </SelectedItem>
+  </ExcludedTargetElements>
 </SchemaComparison>

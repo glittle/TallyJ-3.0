@@ -1,0 +1,111 @@
+﻿.content-wrapper {
+    width: 100%;
+}
+
+header,
+footer {
+    display: none;
+}
+
+.main-content {
+    background-image: none;
+    padding: 0;
+}
+
+.Main {
+    overflow: hidden;
+}
+
+.TopLine {
+    background-position: right center;
+    background-image: url(../../Images/LogoSm.png);
+    width: 100px;
+    height: 60pt;
+    z-index: 3;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-repeat: no-repeat;
+}
+
+.NowVoting {
+    height: 130pt;
+    width: 100%;
+    xbackground-color: #fff;
+    z-index: 0;
+    position: fixed;
+    top: 50pt;
+    left: 0;
+}
+
+.NextUp {
+    height: 50pt;
+    font-size: 20pt;
+    z-index: 10;
+    color: #013d7a;
+    position: fixed;
+    top: 183pt;
+    left: 20pt;
+}
+
+.Voter {
+    position: relative;
+    z-index: 2;
+    background-color: #efeeef;
+    text-align: center;
+    padding: .2em 3px .3em 3px;
+    font-size: 55pt; /* 50 for most, 60 for Petpetua */
+}
+
+    .Voter.Current {
+        background-color: white;
+    }
+
+    .Voter.Other {
+        background-color: #efeeef;
+    }
+
+    .Voter span {
+        font-size: 26pt;
+        color: #999;
+        padding: 0 35px 0 0;
+        margin-top: -6pt;
+        display: block;
+    }
+
+    .Voter span span {
+        margin-left: 20px;
+        display: inline-block;
+        color: #333;
+    }
+
+.Nav {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    text-align: right;
+    z-index: 10;
+    opacity: 0.01;
+}
+
+    .Nav.Show, .Nav:hover {
+        opacity: 1;
+    }
+
+@media only screen and (max-width: 800px) {
+    .Voter {
+        font-size: 36pt;
+    }
+    .Voter span {
+        margin-top: -2pt;
+        font-size: 18pt;
+    }
+
+    .Voter.Current {
+        background-color: white;
+    }
+
+    .Voter.Other {
+        background-color: #efeeef;
+    }
+}

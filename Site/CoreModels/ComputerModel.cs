@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
-using System.Data.Objects;
-using System.Data.Objects.SqlClient;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Web;
 using TallyJ.Code;
@@ -39,7 +38,7 @@ namespace TallyJ.CoreModels
 
             var now = DateTime.Now;
             var oldComputers =
-              Db.Computers.Where(c => SqlFunctions.DateDiff("n", c.LastContact.Value, now) > maxMinutesOfNoContact);
+              Db.Computers.Where(c => c.LastContact == null || SqlFunctions.DateDiff("n", c.LastContact.Value, now) > maxMinutesOfNoContact);
 
             foreach (var oldComputer in oldComputers)
             {

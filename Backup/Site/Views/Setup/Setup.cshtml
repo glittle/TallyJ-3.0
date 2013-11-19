@@ -1,0 +1,184 @@
+﻿@model SetupModel
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+  ViewBag.Title = "Election Setup";
+  ViewBag.Message = "Who, What, When and Where!";
+
+  ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
+  ContextItems.AddJavascriptForPage("setupIndexPage.Tellers={0};".FilledWith(Model.TellersJson));
+  ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
+  ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
+}
+<div class="PullInstructions">
+  <ol>
+    <li>Here is where you set up your election, especially configuring the type of election.</li>
+    <li>Carefully choose the Type and Variation of the Election, then if appropriate, the number
+            of names to be put on each ballot and how many to report for those with the next
+            highest number of votes.</li>
+    <li>After you have read these instructions, you may click on the word "Instructions"
+            above the box to hide them or to show them again.</li>
+  </ol>
+</div>
+<table class="Demographics">
+  <tr>
+    <th></th>
+    <td>
+      <button type="button" id="btnSave" class="btn btn-success" accesskey="S">
+        <u>S</u>ave Changes</button>
+    </td>
+  </tr>
+  <tr>
+    <th>Name<span class="ui-icon ui-icon-info" id="qTipName"></span>
+    </th>
+    <td>
+      <input type="text" id="txtName" data-name="Name">
+    </td>
+  </tr>
+  <tr>
+    <th>Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
+      <label for="cbShowAsTest">
+        Show this as a Test election in my list of elections.</label>
+    </td>
+  </tr>
+  <tr class="electionDetailT">
+    <th>Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
+    </th>
+    <td>
+      <select id="ddlType" data-name="ElectionType">
+        @ElectionTypeEnum.ForHtmlSelect()
+      </select>
+      <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked"></span></span>
+    </td>
+  </tr>
+  <tr class="electionDetail">
+    <th>Variation<span class="ui-icon ui-icon-info" id="qTipVariation"></span>
+    </th>
+    <td>
+      <select id="ddlMode" data-name="ElectionMode">
+        @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
+                                            {
+                                              {"B"," id=modeB"}
+                                            })
+        @*                <option value="N">Normal Election</option>
+                <option value="T">Tie-Break</option>
+                <option value="B" id="modeB">By-election</option>
+*@
+      </select>
+    </td>
+  </tr>
+  <tr class="electionDetail">
+    <th>Spaces on Ballot<span class="ui-icon ui-icon-info" id="qTipNum"></span>
+    </th>
+    <td>
+      <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
+    </td>
+  </tr>
+  <tr class="electionDetail">
+    <th>Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
+    </th>
+    <td>
+      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
+    </td>
+  </tr>
+  <tr class="electionDetail">
+    <th>Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
+    </th>
+    <td>
+      <select id="ddlCanVote" data-name="CanVote">
+        <option value="A">Everyone on the list</option>
+        <option value="N">Named delegates</option>
+      </select>
+    </td>
+  </tr>
+  <tr class="electionDetailB">
+    <th>Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
+    </th>
+    <td>
+      <select id="ddlCanReceive" data-name="CanReceive">
+        <option value="A">Everyone on the list</option>
+        <option value="N">Named individuals</option>
+      </select>
+      @*<button type="button" id="btnResetList">
+            Update Records</button><span class="ui-icon ui-icon-info" id="qTipReset"></span>*@
+    </td>
+  </tr>
+  <tr>
+    <th>Convenor<span class="ui-icon ui-icon-info" id="qTipConvenor"></span>
+    </th>
+    <td>
+      <input type="text" id="txtConvenor" data-name="Convenor">
+    </td>
+  </tr>
+  <tr>
+    <th>Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+    </th>
+    <td>
+      <input type="date" id="txtDate" data-name="DateOfElection">
+      <span class="ui-icon ui-icon-info" id="qTipDate2"></span>
+    </td>
+  </tr>
+  <tr>
+    <th>Allow Tellers Access?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="chkList" data-name="ListForPublic" />
+      <label for="chkList">Show on Home Page?</label>
+      (Required to allow tellers to connect)
+    </td>
+  </tr>
+  <tr>
+    <th>Access Code for Tellers<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+    </th>
+    <td>
+      <input type="text" data-name="ElectionPasscode" maxlength="50" />
+    </td>
+  </tr>
+  <tr>
+    <th>Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="chkCalled" data-name="UseCallInButton" />
+      <label for="chkCalled">Show "Called In" button on Front Desk?</label>
+    </td>
+  </tr>
+  <tr>
+    <th>Hide Pre-Ballot Pages?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="chkPreBallot" data-name="HidePreBallotPages" />
+      <label for="chkPreBallot">If you will not be using the Front Desk and Roll Call pages, you can hide them.</label>
+    </td>
+  </tr>
+  <tr>
+    <th>Mask Voting Method?<span class="ui-icon ui-icon-info" id="qTipMask"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="chkMask" data-name="MaskVotingMethod" />
+      <label for="chkMask">Show "Envelope" instead of "Mailed in" and "Dropped Off"</label>
+    </td>
+  </tr>
+</table>
+<div class="More Locations">
+  <h3>Locations</h3>
+  <div id="locationList">
+  </div>
+  <button type="button" id="btnAddLocation" class="btn btn-small btn-info">
+    Add Location</button>
+  <span class="ui-icon ui-icon-info" id="qTipLocation"></span>
+  <h3 class="TellerTitle">Tellers using computers <span class="ui-icon ui-icon-info" id="qTipTellers"></span></h3>
+  <div id="tellersList">
+    <i>(Filled by tellers as needed)</i>
+  </div>
+</div>
+<div class="More">
+  <p class="techInfo" title="Technical information">
+    Internal code: <span data-name="ElectionGuid"></span>
+  </p>
+</div>

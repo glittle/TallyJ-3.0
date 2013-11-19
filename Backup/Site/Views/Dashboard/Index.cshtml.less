@@ -1,0 +1,127 @@
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+section.feature h3 {
+    font-size: @baseFontSize * 1.2;
+	line-height: normal;
+}
+
+section.features a {
+    text-decoration: none;
+    cursor: pointer;
+    color: @textColor;
+
+    &:hover h3 {
+        color: @tallyJGreen;
+    }
+
+    section {
+        border: 2px solid transparent;
+    }
+
+    &:hover.Featured section {
+        border: 2px solid #ddd;
+    }
+
+    &:hover.NotFeatured section {
+        border: 1px solid #ddd;
+    }
+
+    &:active section {
+        border: 2px solid #8dc63e;
+    }
+}
+
+hgroup.title a {
+    float: right;
+    color: #013d7a;
+    text-decoration: none;
+}
+
+    hgroup.title a:hover {
+        text-decoration: underline;
+    }
+
+section.todo h3, section.todo {
+    color: #ccc;
+}
+
+section.features {
+    padding-left: 20px;
+    padding-right: 10px;
+    margin-bottom: 15px;
+    margin-left: 38px;
+}
+
+.featuresTitle {
+    margin: -5px 0 0px -17px;
+    color: #bbb;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 23px;
+}
+
+.Projector h3 {
+    background-position: right 4px;
+    background-image: url('../../Images/SlideProjector.gif');
+    background-repeat: no-repeat;
+}
+
+.Role-known h3 {
+    background-position: right 4px;
+    background-image: url('../../Images/keys.png');
+    background-repeat: no-repeat;
+}
+
+.TipKnown {
+    background-image: url('../../Images/keys.png');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.TipProjector {
+    background-image: url('../../Images/SlideProjector.gif');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.Featured section.feature {
+}
+
+.NotFeatured h3 {
+    color: @grayLight;
+}
+
+.NotFeatured section.feature {
+    background-image: none;
+    height: 45px;
+    padding: 10px 15px 20px 10px;
+    border: solid #ccc thin;
+}
+
+section.features p {
+	color: @tallyJBlue;
+}
+.NotFeatured p {
+    display: none;
+}
+
+/*
+.NotFeatured:hover p {
+    display: block;
+}
+.NotFeatured:hover section.feature {
+    background-image: url('../../Images/Blank.png');
+    height: 133px;
+    padding: 10px 15px 10px 10px;
+}
+.NotFeatured:hover h3 {
+    xfont-weight: bold;
+}
+*/
+.h2 {
+    margin-top: 10px;
+}

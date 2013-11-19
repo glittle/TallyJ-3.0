@@ -1,0 +1,192 @@
+﻿ul {
+    padding-left: 10px;
+}
+div.chooser
+{
+    width: 200px;
+    padding: 2px;
+    float: left;
+    background-color: cornsilk;
+}
+.chooser button {
+    margin-left: 25px;
+}
+.chooser ul {
+    list-style: decimal;
+}
+.chooser ul li a {
+    text-decoration: none;
+}
+.chooser ul li:hover a {
+    color: blue;
+}
+.chooser ul li {
+    margin-left: -10px;
+}
+.chooser h1 {
+    font-size: 14pt;
+    font-weight: normal;
+    margin: 0 0 0 4px;
+}
+.status {
+    color: red;
+    font-size: 110%;
+    font-weight: bold;
+}
+#report
+{
+    border: outset 3px gainsboro;
+    float: left;
+    width: 735px;
+    padding: 0 3pt 6pt 3pt;
+    margin-left: 5px;
+    font-size: 13pt;
+    padding: 5px;
+    height: 100%;
+}
+#report h1 {
+    margin: 0 0 4pt 0;
+    padding: 0;
+    font-size: 120%;
+}
+#report h2 {
+    margin: 6pt 0 4pt 0;
+    padding: 0;
+    font-size: 140%;
+}
+p.Comment {
+    font-size: 80%;
+    color: #999;
+}
+
+#report > div.row
+{
+    display: table-row;
+}
+#report > div.row > div
+{
+    display: table-cell;
+    padding: 3px 5px 3px 8px;
+}
+
+#report .Col2
+{
+    width: 49%;
+    float: left;
+    display: inline-block;
+}
+.small1 {
+    font-size: 80%;
+}
+#Status {
+    margin: 12px;
+    font-size: 120%;
+    color: red;
+    float: left;
+    width: 700px;
+}
+.VoteSpoiledtrue {
+    color: red;
+}
+.VoteSpoiledtrue .Person {
+    text-decoration: line-through;
+}
+.Ballot {
+    font-size: 10pt;
+    margin-top: 3px;
+ }
+.BallotSpoiledtrue,
+.BallotSpoiledtrue div,
+.BallotSpoiledtrue span
+{
+    text-decoration: line-through;
+    color: red;
+}
+
+.Ballot > div {
+    margin-left: 100px;
+}
+.Ballot > div:first-child {
+    float: left;
+    margin-left: 0;
+    width: 95px;
+}
+.Ballot .Vote {
+    display: inline-block;
+    white-space: normal;
+}
+.Ballot .Vote .Person 
+{
+    white-space: inherit;
+}
+  .Ballot .Vote .Invalid
+  {
+  }
+.Ballot .Vote .Invalid {
+    color: red;
+    font-style: italic;
+    font-size: 90%;
+}
+
+table.resultInfo tr td {
+    padding: 3px 7px;
+}
+table.resultInfo tr td:nth-child(1) {
+    padding-right: 15px;
+}
+table.resultInfo tr.rpt1Total td:nth-child(2) {
+    border-top: 1px double #000;
+    border-bottom: none;
+}
+table.resultInfo tr.rpt1Detail td:nth-child(2) {
+    border-bottom: none;
+}
+tr.rpt1Detail.Warning {
+    color: red;
+}
+table.resultInfo tr td:nth-child(2) {
+    text-align: right;
+    border-bottom: 1px solid #000;
+    padding-left: 25px;
+    padding-right: 12px;
+}
+
+div.result1 {
+    display: table;
+    margin-left: 10px;
+}
+div.result1 div {
+    display: table-row;
+}
+div.result1 div span {
+    display: table-cell;
+    text-align: center;
+    border: 1px solid gray;
+    padding: 3px 10px;
+}
+div.result1 div span:nth-child(2) {
+    text-align: left;
+}
+.btnPrint {
+    margin-bottom: 10px;
+}
+
+
+@media print
+{
+    header, .chooser, footer
+    {
+        display: none;
+    }
+    #report
+    {
+        border: none;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+.Hidden {
+    display: none;
+}

@@ -1,8 +1,3 @@
-using System.Configuration;
-using System.Data.EntityClient;
-using System.Data.Metadata.Edm;
-using System.Data.SqlClient;
-using System.Reflection;
 using TallyJ.Models;
 
 namespace TallyJ.Code.Data

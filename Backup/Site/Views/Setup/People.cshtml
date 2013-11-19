@@ -1,0 +1,47 @@
+﻿@model SetupModel
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+  ViewBag.Title = "People";
+  ViewBag.Message = "The community";
+
+  ContextItems.AddJavascriptForPage("url", "peoplePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(Model.NumberOfPeople));
+}
+<script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<div class="PullInstructions">
+  <ol>
+    <li>To edit the information for a person, use this page.</li>
+    <li>Search for any person by typing a part of their name in the input box below, then
+            press Enter when their name is highlighted. Use the Up and Down keys to move through
+            the list of matched names.</li>
+    <li>If this is a tie-break election, each of the people who can be voted for in the tie break must have "Can be voted for in this Tie-Break election?" checked.</li>
+  </ol>
+</div>
+<div class="float-left">
+  <span id="more"></span>
+  <label class="searchlabel" for="txtSearch">Search for a <u>p</u>erson:</label>
+
+  <input id="txtSearch" class="input-medium" accesskey="P" autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span> <span id="action"></span>
+  <button id="btnAddNew" class="btn btn-success btn-mini" type="button" accesskey="N">
+    Add <u>N</u>ew Person</button>
+  <ul id="nameList">
+  </ul>
+  @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
+  {
+    <div>
+      <button id="btnListTied" type="button">Search for who can be voted for in this Tie-Break election</button>
+    </div>
+  }
+  @if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
+  {
+    <div>
+      <button id="btnListVoters" type="button">Search for who can vote in this election</button>
+    </div>
+  }
+
+</div>
+<div id="editPanel">
+  @RenderPage("EditPerson.cshtml")
+</div>

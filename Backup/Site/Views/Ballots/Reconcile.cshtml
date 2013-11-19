@@ -1,0 +1,34 @@
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model PeopleModel
+@{
+    ContextItems.AddJavascriptForPage("pageUrl", "reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("ballotList", "reconcilePage.ballots={0};".FilledWith(Model.BallotSources().SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("oldEnvelopes", "reconcilePage.oldEnvelopes={0};".FilledWith(Model.OldEnvelopes().SerializedAsJsonString()));
+}
+<div class="PullInstructions">
+  <ol>
+    <li>This page should be used before the ballot envelopes are opened.</li>
+    <li>When shown, names are listed according to when the person or ballot was registered. This may assist tellers in remembering what happened at the Front Desk.</li>
+    <li>Once the counts of ballot envelopes matches what is shown below, the envelopes can
+      be mixed together, then opened and tallied.</li>
+  </ol>
+</div>
+@if(ContextItems.LocationModel.HasLocations)
+{
+  <div>
+    Showing who voted at:
+    <select id="locations">
+      <option value="-1">[All Locations]</option>
+      @Model.GetLocationOptions()
+    </select>
+  </div>
+}
+<div class="Totals Count">
+  <div id="Totals"></div>
+</div>
+<button type="button" id="btnShowNames" class="btn btn-info">
+    Show Details</button>
+<div id="lists">
+</div>

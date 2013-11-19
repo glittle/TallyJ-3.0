@@ -10,7 +10,6 @@ namespace TallyJ.CoreModels
   {
     private readonly bool _forBallot;
     private readonly bool _everyoneCanReceiveVotes;
-    private readonly Election _election;
     private Guid? _notInTieBreakGuidNullable;
     private Guid _notInTieBreakGuid;
 

@@ -23,8 +23,11 @@
     [ShowAsTest]          BIT              NULL,
     [UseCallInButton]     BIT              NULL,
     [HidePreBallotPages]  BIT              NULL,
+    [MaskVotingMethod]    BIT              NULL,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
 
 
 
