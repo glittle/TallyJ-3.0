@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/fileuploader.js" />
-
-var ImportV1Page = function () {
+﻿var ImportV1Page = function () {
     var local = {
         uploadListBody: null,
         uploadListTemplate: '',

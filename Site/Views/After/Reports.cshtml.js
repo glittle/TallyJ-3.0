@@ -1,8 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/highcharts.js" />
-
-var ReportsPage = function () {
+﻿var ReportsPage = function () {
     var local = {
         refreshTimeout: null,
         reportInfo: null,

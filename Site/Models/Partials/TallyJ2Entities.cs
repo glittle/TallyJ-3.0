@@ -4,7 +4,7 @@ using System.Data.Entity.Infrastructure;
 
 namespace TallyJ.Models
 {
-    public partial class TallyJ2dContext : DbContext, IDbContext
+    public partial class TallyJ2dContext
   {
     public TallyJ2dContext(DbConnection connection)
       : base(connection, true)

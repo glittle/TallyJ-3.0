@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/jquery-ui-1.8.16.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-
-var ReconcilePageFunc = function () {
+﻿var ReconcilePageFunc = function () {
     var local = {
         ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>',
         sortedBallots: {},
@@ -26,7 +21,7 @@ var ReconcilePageFunc = function () {
 
     var showOld = function (list) {
         if (!list.length) return;
-        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>{Method} &nbsp; #{EnvNum}</span>"}</div>'.filledWithEach(extend(list));
+        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>{Method} &nbsp; #{EnvNum}</span>"}</div>'.filledWithEach(extend(list));
         $('#lists').append('<div><h3>{0}: {1}</h3><div class="Names oldEnv">{^2}</div></div>'.filledWith(
             'Un-used Envelopes', list.length, ballotList));
     };
@@ -79,7 +74,7 @@ var ReconcilePageFunc = function () {
 
             var sortedBallots = local.sortedBallots[method] || null;
             if (sortedBallots) {
-                var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" (T)")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(sortedBallots);
+                var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(sortedBallots);
                 host.append('<div data-method={0}><h3>{1}: {2}</h3><div class=Names>{^3}</div></div>'.filledWith(
                     method, methodName, sortedBallots.length, ballotList));
 
@@ -102,8 +97,8 @@ var ReconcilePageFunc = function () {
 
         $('#Totals').html([
                 'Total: {total}'.filledWith(totals),
-                'Absent: {absent}'.filledWith(totals),
                 (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
+                //'Absent: {absent}'.filledWith(totals),
                 (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
                 (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
                 (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold()

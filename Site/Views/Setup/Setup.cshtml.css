@@ -22,7 +22,7 @@ table.Demographics td, table.Demographics td label {
 table.More th, table.Demographics th
 {
     text-align: right;
-    padding-right: 10px;
+    padding: 5px 10px 5px 0;
     white-space: nowrap;
     vertical-align: top;
 }

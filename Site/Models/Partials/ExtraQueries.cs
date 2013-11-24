@@ -2,7 +2,7 @@
 
 namespace TallyJ.Models
 {
-    public partial class TallyJ2dContext : DbContext, IDbContext
+    public partial class TallyJ2dContext
     {
     }
 }

@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="EditPerson.cshtml.js" />
-
-var PeoplePage = function () {
+﻿var PeoplePage = function () {
     var local = {
         People: [],
         peopleHelper: null,

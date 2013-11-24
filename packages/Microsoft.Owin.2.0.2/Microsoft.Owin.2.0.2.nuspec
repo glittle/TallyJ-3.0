@@ -10,7 +10,7 @@
     <projectUrl>http://katanaproject.codeplex.com/</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Provides a set of helper types and abstractions for simplifying the creation of OWIN components.</description>
-    <tags>Microsoft OWIN</tags>
+    <tags>Microsoft OWIN Katana</tags>
     <dependencies>
       <dependency id="Owin" version="1.0" />
     </dependencies>

@@ -22,13 +22,15 @@
     [EnvNum]               INT              NULL,
     [_RowVersion]          ROWVERSION       NOT NULL,
     [_FullName]            AS               ((((([LastName]+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+', ')+coalesce([FirstName],''))+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
+    [_RowVersionInt]       AS               (CONVERT([bigint],[_RowVersion],0)),
     [_FullNameFL]          AS               ((((coalesce([FirstName]+' ','')+[LastName])+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
     [TellerAtKeyboard]     UNIQUEIDENTIFIER NULL,
     [TellerAssisting]      UNIQUEIDENTIFIER NULL,
-    [_RowVersionInt]       AS               (CONVERT([bigint],[_RowVersion],0)),
     CONSTRAINT [PK_Person] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Person_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 

@@ -37,10 +37,9 @@ namespace TallyJ.CoreModels
             const int maxMinutesOfNoContact = 5;
 
             var now = DateTime.Now;
-            var oldComputers =
-              Db.Computers.Where(c => c.LastContact == null || SqlFunctions.DateDiff("n", c.LastContact.Value, now) > maxMinutesOfNoContact);
+            var computers = Db.Computers.ToList();
 
-            foreach (var oldComputer in oldComputers)
+            foreach (var oldComputer in computers.Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
             {
                 Db.Computers.Remove(oldComputer);
             }

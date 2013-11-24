@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/fileuploader.js" />
-
-var ImportCsvPage = function () {
+﻿var ImportCsvPage = function () {
     var local = {
         uploadListBody: null,
         uploadListTemplate: '',

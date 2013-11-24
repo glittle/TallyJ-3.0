@@ -81,11 +81,9 @@ namespace TallyJ
                 });
 
 
-            //AreaRegistration.RegisterAllAreas();
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterGeneralRoutes(RouteTable.Routes);
-
         }
 
         private void SetupEnvironment()
@@ -202,7 +200,6 @@ namespace TallyJ
         public static void RegisterGeneralRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
             routes.IgnoreRoute("{*favicon}", new {favicon = @"(.*/)?favicon.ico(/.*)?"});
         }
 

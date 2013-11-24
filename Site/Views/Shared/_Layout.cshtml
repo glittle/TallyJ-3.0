@@ -66,7 +66,7 @@
                     @if (UserSession.CurrentElection != null)
                     {
                         <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
-                            <span>Election Status:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Only head teller may change election status")" data-state="@UserSession.CurrentElectionStatus">
+                            <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Only head teller may change election status")" data-state="@UserSession.CurrentElectionStatus">
                                 @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection)
                             </ol>
                         </div>@*
@@ -78,9 +78,9 @@
                         </select>
                     </div>*@
                         <div class="QuickLinks2">
-                            Common Pages<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
+                            Pages<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span
                                 id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
-                            <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Jump to any page ...</a>
+                            <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>
                         </div>
 @*                    <ul class="QuickLinks">
                         <li>Pages <span class="ui-icon QuickLinkIcon"></span>

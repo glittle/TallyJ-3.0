@@ -13,6 +13,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Site", "Site\Site.csproj", "{A444CE75-8087-4828-BCE5-87A82752E0EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A444CE75-8087-4828-BCE5-87A82752E0EC} = {A444CE75-8087-4828-BCE5-87A82752E0EC}
+	EndProjectSection
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DatabaseScripts", "DatabaseScripts\DatabaseScripts.sqlproj", "{318A3641-8822-4B4E-9848-80C3538A03D7}"
 EndProject

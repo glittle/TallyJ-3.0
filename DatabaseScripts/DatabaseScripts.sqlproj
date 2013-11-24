@@ -116,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Schema Comparisons\Local to Project.scmp" />
-    <None Include="Schema Comparisons\AppHb to Project.scmp" />
+    <None Include="Schema Comparisons\Local to AppHb.scmp" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />
@@ -152,5 +152,6 @@
     <Build Include="tj\Stored Procedures\UpdateVoteStatus.sql" />
     <Build Include="Security\tj.sql" />
     <Build Include="tj\Stored Procedures\SqlSearch.sql" />
+    <Build Include="dbo\Tables\__MigrationHistory.sql" />
   </ItemGroup>
 </Project>
