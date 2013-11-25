@@ -13,7 +13,6 @@ namespace Tests.BusinessTests
   [TestClass]
   public class PeopleTests
   {
-    PeopleSearchModel _model;
     IEnumerable<Person> _testGroup;
 
     [TestInitialize]

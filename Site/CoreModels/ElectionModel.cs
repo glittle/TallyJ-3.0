@@ -201,7 +201,7 @@ namespace TallyJ.CoreModels
             return election;
         }
 
-        /// <Summary>Saves changes to this electoin</Summary>
+        /// <Summary>Saves changes to this election</Summary>
         public JsonResult SaveElection(Election electionFromBrowser)
         {
             var election = Db.Elections.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);

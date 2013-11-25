@@ -6,3 +6,6 @@
 #btnSave {
     margin-top: 20px;
 }
+.personEdit .topLine td {
+    background-color: #ddd;
+}

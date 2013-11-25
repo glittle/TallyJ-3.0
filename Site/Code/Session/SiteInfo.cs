@@ -1,11 +1,27 @@
 using System;
 using System.Configuration;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.Providers.Entities;
 
 namespace TallyJ.Code.Session
 {
-	/// <summary>
+    public enum HostMode
+    {
+        Iis,
+        AppHarbor,
+                SelfHostCassini,
+        GlenDev,
+        Unknown
+    }
+
+    public enum DataSource
+    {
+        SharedSql,
+        SingleElectionXml
+    }
+
+    /// <summary>
 	///   Information about this web site
 	/// </summary>
 	public class SiteInfo
@@ -42,10 +58,50 @@ namespace TallyJ.Code.Session
 		/// </remarks>
 		public string CurrentEnvironment
 		{
-			get { return ConfigurationManager.AppSettings["Environment"].DefaultTo(""); }
+		    get
+		    {
+		        return ConfigurationManager.AppSettings["Environment"].DefaultTo("");
+		    }
 		}
 
-	  public string ServerName
+        /// <summary>
+        /// Data source for this instance
+        /// </summary>
+        public DataSource CurrentDataSource
+        {
+            get
+            {
+                return CurrentHostMode == HostMode.SelfHostCassini ? DataSource.SingleElectionXml : DataSource.SharedSql;
+            }
+        }
+
+        /// <summary>
+        /// Host mode for this instance
+        /// </summary>
+        public HostMode CurrentHostMode
+        {
+            get
+            {
+                if (HttpContext.Current != null && HttpContext.Current.Server.MachineName.ToUpper() == "SUNLAP008")
+                {
+                    return HostMode.GlenDev;
+                }
+                
+                HostMode answer;
+                if (Enum.TryParse(CurrentEnvironment, true, out answer))
+                {
+                    return answer;
+                }
+
+                //if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "TallyJCore")
+                //{
+                //    return HostMode.SelfHostCassini;
+                //}
+                return HostMode.Iis;
+            }
+        }
+
+        public string ServerName
 	  {
       get { return Environment.MachineName; }
 	  }

@@ -11,7 +11,7 @@ using TallyJ.Models.Mapping;
 
 namespace TallyJ.Models
 {
-    public partial class TallyJ2dContext : DbContext
+    public partial class TallyJ2dContext : DbContext, IDbContext
     {
         static TallyJ2dContext()
         {

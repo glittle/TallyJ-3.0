@@ -1,8 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/highcharts/highcharts.js" />
-
-var AnalyzePage = function () {
+﻿var AnalyzePage = function () {
     var settings = {
         rowTemplate: '',
         info: {},

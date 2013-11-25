@@ -2,20 +2,19 @@
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
-    ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
-    TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
+  ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
+  TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
-    <div class="TopLine"></div>
-    <div class="NowVoting">
-    </div>
-    <div class="NextUp"></div>
-    <div class="Nav">
-      <button id="btnReturn" type="button">
-        Return to Dashboard</button>
-        <div>Press F11 for full-screen</div>
-        <div>Press Up/Down/Space/Home/PgUp/PgDn to move names.</div>
-    </div>
-    @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters()).AsRawHtml()
+  <div class="TopLine"></div>
+  <div class="NowVoting">
+  </div>
+  <div class="NextUp"></div>
+  <div class="Nav Show">
+    <button id="btnReturn" type="button">Show Menu</button>
+    <div>Press F11 for full-screen</div>
+    <div>Press Up/Down/Space/Home/PgUp/PgDn to move names.</div>
+  </div>
+  @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters()).AsRawHtml()
 </div>

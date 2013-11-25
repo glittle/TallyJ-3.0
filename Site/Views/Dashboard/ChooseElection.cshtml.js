@@ -1,8 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/fileuploader.js" />
-
-var HomeIndexPage = function () {
+﻿var HomeIndexPage = function () {
     var local = {
         uploader: null
     };

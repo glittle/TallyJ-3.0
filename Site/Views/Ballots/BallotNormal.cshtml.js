@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/jquery-ui-1.8.16.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-
-var BallotNormalPageFunc = function () {
+﻿var BallotNormalPageFunc = function () {
     var temp1 = '{StatusCodeText}{BallotStatusText} <span class="SpoiledCount HideZero{SpoiledCount}"> ({SpoiledCount} spoiled)<span>';
     var local = {
         People: [],

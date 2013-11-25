@@ -1,8 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-
-var EditPersonPage = function () {
+﻿var EditPersonPage = function () {
     var local = {
         inputField: null,
         hostPanel: null

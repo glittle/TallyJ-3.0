@@ -1,9 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/PeopleHelper.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-/// <reference path="../../Scripts/jquery.signalR-1.0.0-alpha2.min.js" />
-
-var FrontDeskPage = function () {
+﻿var FrontDeskPage = function () {
     var local = {
         currentSearch: '',
         currentTop: 0,

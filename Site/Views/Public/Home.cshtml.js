@@ -1,8 +1,4 @@
-﻿/// <reference path="../../Scripts/site.js" />
-/// <reference path="../../Scripts/jquery.qtip.js" />
-/// <reference path="../../Scripts/jquery-1.7.1.js" />
-
-var HomeIndexPage = function () {
+﻿var HomeIndexPage = function () {
     var localSettings = {
     };
 

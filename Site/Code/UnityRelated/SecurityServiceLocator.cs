@@ -22,5 +22,10 @@ namespace TallyJ.Code.UnityRelated
       return (new RequireElectionPolicyViolationHandler().Handle(null));
 
     }
+
+    public ActionResult HandleSecurityFor(string controllerName, string actionName, ISecurityContext securityContext)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

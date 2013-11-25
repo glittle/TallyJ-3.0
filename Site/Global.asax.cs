@@ -10,9 +10,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using FluentSecurity;
-using Microsoft.AspNet.SignalR;
-using Microsoft.Practices.ServiceLocation;
-using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Targets;
 using TallyJ.Code;
@@ -21,7 +18,9 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers;
+using TallyJ.Models;
 using Unity.Mvc3;
+using Configuration = TallyJ.Migrations.Configuration;
 
 namespace TallyJ
 {
@@ -39,58 +38,65 @@ namespace TallyJ
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new RazorViewEngine());
 
-            FixUpConnectionString();
-
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<Models.TallyJ2dContext, Migrations.Configuration>());
+            SetupEnvironment();
 
             Bootstrapper.Initialise();
 
             SecurityConfigurator.Configure(
-              configuration =>
-              {
-                  // http://www.fluentsecurity.net/getting-started
+                configuration =>
+                {
+                    // http://www.fluentsecurity.net/getting-started
 
-                  // Let Fluent Security know how to get the authentication status of the current user
-                  configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
+                    // Let Fluent Security know how to get the authentication status of the current user
+                    configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
 
-                  configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
+                    configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
 
-                  // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
-                  configuration.ForAllControllers().DenyAnonymousAccess();
+                    // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
+                    configuration.ForAllControllers().DenyAnonymousAccess();
 
-                  configuration.For<PublicController>().Ignore();
-                  configuration.For<AccountController>().Ignore();
-
-
-                  configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
-
-                  configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-                  configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
-
-                  configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
-
-                  configuration.For<DashboardController>().DenyAnonymousAccess();
-
-                  configuration.For<ElectionsController>().DenyAnonymousAccess();
-
-                  configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
-
-                  configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
-                  configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
-
-                  //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
-                  //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
-                  configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
-              });
+                    configuration.For<PublicController>().Ignore();
+                    configuration.For<AccountController>().Ignore();
 
 
-            //AreaRegistration.RegisterAllAreas();
+                    configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
 
-            // Register the default hubs route: ~/signalr/hubs
-            RouteTable.Routes.MapHubs();
+                    configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
+                    configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+
+                    configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
+
+                    configuration.For<DashboardController>().DenyAnonymousAccess();
+
+                    configuration.For<ElectionsController>().DenyAnonymousAccess();
+
+                    configuration.For<PeopleController>().AddPolicy(new RequireElectionPolicy());
+
+                    configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
+                    configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
+
+                    //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
+                    //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
+                    configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
+                });
+
+
 
             RegisterGlobalFilters(GlobalFilters.Filters);
-            RegisterRoutes(RouteTable.Routes);
+            RegisterGeneralRoutes(RouteTable.Routes);
+        }
+
+        private void SetupEnvironment()
+        {
+            var siteInfo = new SiteInfo();
+            if (siteInfo.CurrentDataSource == DataSource.SharedSql)
+            {
+                FixUpConnectionString();
+                Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dContext, Configuration>());
+            }
+
+            RegisterDefaultRoute(RouteTable.Routes, 
+                siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
             ConfigureNLog();
         }
@@ -146,10 +152,10 @@ namespace TallyJ
                 if (dbEntityValidation != null)
                 {
                     var msg = dbEntityValidation.EntityValidationErrors
-                      .Select(eve => eve.ValidationErrors
-                                       .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
-                                       .JoinedAsString("; "))
-                      .JoinedAsString("; ");
+                        .Select(eve => eve.ValidationErrors
+                            .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
+                            .JoinedAsString("; "))
+                        .JoinedAsString("; ");
                     logger.Debug(msg);
                     msgs.Add(msg);
                 }
@@ -157,7 +163,8 @@ namespace TallyJ
                 ex = ex.InnerException;
             }
 
-            logger.FatalException("Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
+            logger.FatalException(
+                "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
 
             var url = siteInfo.RootUrl;
             Response.Write(String.Format("Server Error: {0}", msgs.JoinedAsString("\r\n")));
@@ -178,7 +185,7 @@ namespace TallyJ
         {
             var cnString = ConfigurationManager.ConnectionStrings["MainConnection"];
 
-            var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
+            var fi = typeof (ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
             fi.SetValue(cnString, false);
 
             cnString.ConnectionString = cnString.ConnectionString + ";MultipleActiveResultSets=True";
@@ -190,22 +197,24 @@ namespace TallyJ
             filters.Add(new HandleErrorAttribute());
         }
 
-        public static void RegisterRoutes(RouteCollection routes)
+        public static void RegisterGeneralRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute("{*favicon}", new {favicon = @"(.*/)?favicon.ico(/.*)?"});
+        }
 
-            routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
-
+        public static void RegisterDefaultRoute(RouteCollection routes, string controllerName)
+        {
             routes.MapRoute(
-              "Default", // Route name
-              "{controller}/{action}/{id}", // URL with parameters
-              new
+                "Default", // Route name
+                "{controller}/{action}/{id}", // URL with parameters
+                new
                 {
-                    controller = "Public",
+                    controller = controllerName,
                     action = "Index",
                     id = UrlParameter.Optional
                 } // Parameter defaults
-              );
+                );
         }
 
         public override void Init()
@@ -213,7 +222,6 @@ namespace TallyJ
             base.Init();
             BeginRequest += OnBeginRequest;
             EndRequest += OnEndRequest;
-            
         }
 
         private void OnEndRequest(object sender, EventArgs eventArgs)
@@ -232,7 +240,5 @@ namespace TallyJ
                 Context.RewritePath(newUrl);
             }
         }
-
-
     }
 }
