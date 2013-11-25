@@ -45,6 +45,4 @@ GRANT DELETE
     AS [dbo];
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Supplied by remote computer', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'Computer', @level2type = N'COLUMN', @level2name = N'ComputerInternalCode';
 

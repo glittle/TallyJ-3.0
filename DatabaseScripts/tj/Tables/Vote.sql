@@ -9,9 +9,11 @@
     [_RowVersion]             ROWVERSION       NOT NULL,
     [PersonCombinedInfo]      NVARCHAR (MAX)   NULL,
     CONSTRAINT [PK_Vote] PRIMARY KEY CLUSTERED ([_RowId] ASC),
-    CONSTRAINT [FK_Vote_Ballot] FOREIGN KEY ([BallotGuid]) REFERENCES [tj].[Ballot] ([BallotGuid]),
+    CONSTRAINT [FK_Vote_Ballot] FOREIGN KEY ([BallotGuid]) REFERENCES [tj].[Ballot] ([BallotGuid]) ON DELETE CASCADE,
     CONSTRAINT [FK_Vote_Person1] FOREIGN KEY ([PersonGuid]) REFERENCES [tj].[Person] ([PersonGuid])
 );
+
+
 
 
 

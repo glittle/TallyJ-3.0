@@ -310,61 +310,61 @@ namespace TallyJ.CoreModels
             return true;
         }
 
-        public JsonResult Copy(Guid guidOfElectionToCopy)
-        {
-            if (UserSession.IsGuestTeller)
-            {
-                return new
-                         {
-                             Success = false,
-                             Message = "Not authorized"
-                         }.AsJsonResult();
-            }
+        //public JsonResult Copy(Guid guidOfElectionToCopy)
+        //{
+        //    if (UserSession.IsGuestTeller)
+        //    {
+        //        return new
+        //                 {
+        //                     Success = false,
+        //                     Message = "Not authorized"
+        //                 }.AsJsonResult();
+        //    }
 
-            var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
-            if (election == null)
-            {
-                return new
-                         {
-                             Success = false,
-                             Message = "Not found"
-                         }.AsJsonResult();
-            }
+        //    var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
+        //    if (election == null)
+        //    {
+        //        return new
+        //                 {
+        //                     Success = false,
+        //                     Message = "Not found"
+        //                 }.AsJsonResult();
+        //    }
 
-            // copy in SQL
-            var result = Db.CloneElection(election.ElectionGuid, UserSession.LoginId).SingleOrDefault();
-            if (result == null)
-            {
-                return new
-                         {
-                             Success = false,
-                             Message = "Unable to copy"
-                         }.AsJsonResult();
-            }
-            if (!result.Success.AsBoolean())
-            {
-                return new
-                         {
-                             Success = false,
-                             Message = "Sorry: " + result.Message
-                         }.AsJsonResult();
-            }
-            election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
-            if (election == null)
-            {
-                return new
-                         {
-                             Success = false,
-                             Message = "New election not found"
-                         }.AsJsonResult();
-            }
-            UserSession.CurrentElection = election;
-            return new
-                     {
-                         Success = true,
-                         election.ElectionGuid
-                     }.AsJsonResult();
-        }
+        //    // copy in SQL
+        //    var result = Db.CloneElection(election.ElectionGuid, UserSession.LoginId).SingleOrDefault();
+        //    if (result == null)
+        //    {
+        //        return new
+        //                 {
+        //                     Success = false,
+        //                     Message = "Unable to copy"
+        //                 }.AsJsonResult();
+        //    }
+        //    if (!result.Success.AsBoolean())
+        //    {
+        //        return new
+        //                 {
+        //                     Success = false,
+        //                     Message = "Sorry: " + result.Message
+        //                 }.AsJsonResult();
+        //    }
+        //    election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
+        //    if (election == null)
+        //    {
+        //        return new
+        //                 {
+        //                     Success = false,
+        //                     Message = "New election not found"
+        //                 }.AsJsonResult();
+        //    }
+        //    UserSession.CurrentElection = election;
+        //    return new
+        //             {
+        //                 Success = true,
+        //                 election.ElectionGuid
+        //             }.AsJsonResult();
+        //}
 
         public JsonResult Create()
         {

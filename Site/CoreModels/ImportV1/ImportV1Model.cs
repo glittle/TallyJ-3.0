@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Models;
@@ -265,7 +266,7 @@ namespace TallyJ.CoreModels
             }
           }
 
-          EraseElectionContents(currentElection);
+          Election.EraseBallotsAndResults(currentElection.ElectionGuid);
 
           importer = new ImportV1Election(Db, file, xml
                                           , currentElection
@@ -292,12 +293,6 @@ namespace TallyJ.CoreModels
       resultsModel.GenerateResults();
 
       return importer.SendSummary();
-    }
-
-    /// <Summary>Totally erase all tally information</Summary>
-    public void EraseElectionContents(Election election)
-    {
-      Db.EraseElectionContents(election.ElectionGuid, true, UserSession.LoginId);
     }
 
     private static XmlDocument GetXmlDoc(ImportFile file)

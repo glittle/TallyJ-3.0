@@ -24,7 +24,7 @@ namespace TallyJ.CoreModels.ExportImport
             _election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
 
             var logger = new LogHelper(_electionGuid);
-            logger.Add("Export to file started");
+            logger.Add("Save to file started");
 
             if (_election == null) return null;
 

@@ -194,7 +194,7 @@ namespace TallyJ.Controllers
     {
       new LogHelper().Add("Deleted all ballots and people");
 
-      new ImportV1Model().EraseElectionContents(UserSession.CurrentElection);
+      Election.EraseBallotsAndResults(UserSession.CurrentElectionGuid);
 
       return new PeopleModel().DeleteAllPeople();
     }

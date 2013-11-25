@@ -148,9 +148,6 @@
     <Build Include="tj\Views\vBallotInfo.sql" />
     <Build Include="Security\TallyJSite.sql" />
     <Build Include="tj\Functions\HasMatch.sql" />
-    <Build Include="tj\Stored Procedures\EraseElectionContents.sql" />
-    <Build Include="tj\Stored Procedures\CloneElection.sql" />
-    <Build Include="tj\Stored Procedures\UpdateVoteStatus.sql" />
     <Build Include="Security\tj.sql" />
     <Build Include="tj\Stored Procedures\SqlSearch.sql" />
     <Build Include="dbo\Tables\__MigrationHistory.sql" />

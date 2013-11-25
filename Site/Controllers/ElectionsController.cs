@@ -33,12 +33,12 @@ namespace TallyJ.Controllers
       return new {Selected = false}.AsJsonResult();
     }
 
-    [ForAuthenticatedTeller]
-    public JsonResult CopyElection(Guid guid)
-    {
-      var model = new ElectionModel();
-      return model.Copy(guid);
-    }
+//    [ForAuthenticatedTeller]
+//    public JsonResult CopyElection(Guid guid)
+//    {
+//      var model = new ElectionModel();
+//      return model.Copy(guid);
+//    }
 
     [ForAuthenticatedTeller]
     public JsonResult UpdateElectionStatus(string status)

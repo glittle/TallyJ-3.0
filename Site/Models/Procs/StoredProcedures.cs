@@ -27,32 +27,29 @@ namespace TallyJ.Models
 
         public virtual long CurrentRowVersion()
         {
-//            return Database.ExecuteSqlCommand("tj.CurrentRowVersion");
-
             var x = Database.SqlQuery<long>("select cast(@@DbTs as bigint)");
             return x.First();
-//            return ((IObjectContextAdapter) this).ObjectContext.ExecuteFunction<long?>("CurrentRowVersion");
         }
 
-        public virtual int EraseElectionContents(Guid? electionGuidToClear, bool? eraseTallyContent, string byLoginId)
-        {
-            var electionGuidToClearParameter = electionGuidToClear.HasValue
-                                                   ? new SqlParameter("ElectionGuidToClear", electionGuidToClear)
-                                                   : new SqlParameter("ElectionGuidToClear", SqlDbType.UniqueIdentifier);
+        //public virtual int EraseElectionContents(Guid? electionGuidToClear, bool? eraseTallyContent, string byLoginId)
+        //{
+        //    var electionGuidToClearParameter = electionGuidToClear.HasValue
+        //                                           ? new SqlParameter("ElectionGuidToClear", electionGuidToClear)
+        //                                           : new SqlParameter("ElectionGuidToClear", SqlDbType.UniqueIdentifier);
 
-            var eraseTallyContentParameter = eraseTallyContent.HasValue
-                                                 ? new SqlParameter("EraseTallyContent", eraseTallyContent)
-                                                 : new SqlParameter("EraseTallyContent", SqlDbType.Bit);
+        //    var eraseTallyContentParameter = eraseTallyContent.HasValue
+        //                                         ? new SqlParameter("EraseTallyContent", eraseTallyContent)
+        //                                         : new SqlParameter("EraseTallyContent", SqlDbType.Bit);
 
-            var byLoginIdParameter = byLoginId != null
-                                         ? new SqlParameter("ByLoginId", byLoginId)
-                                         : new SqlParameter("ByLoginId", SqlDbType.VarChar);
+        //    var byLoginIdParameter = byLoginId != null
+        //                                 ? new SqlParameter("ByLoginId", byLoginId)
+        //                                 : new SqlParameter("ByLoginId", SqlDbType.VarChar);
 
-            return Database.ExecuteSqlCommand("EraseElectionContents",
-                                              electionGuidToClearParameter,
-                                              eraseTallyContentParameter,
-                                              byLoginIdParameter);
-        }
+        //    return Database.ExecuteSqlCommand("tj.EraseElectionContents",
+        //                                      electionGuidToClearParameter,
+        //                                      eraseTallyContentParameter,
+        //                                      byLoginIdParameter);
+        //}
 
         public virtual IEnumerable<SqlSearch_Result> SqlSearch(Guid election, string term1, string term2, string sound1,
                                                                string sound2, int maxToReturn,
@@ -91,18 +88,18 @@ namespace TallyJ.Models
             return results;
         }
 
-        public virtual int UpdateVoteStatus(int? voteRowId, string statusCode)
-        {
-            var voteRowIdParameter = voteRowId.HasValue
-                                         ? new SqlParameter("VoteRowId", voteRowId)
-                                         : new SqlParameter("VoteRowId", SqlDbType.Int);
+        //public virtual int UpdateVoteStatus(int? voteRowId, string statusCode)
+        //{
+        //    var voteRowIdParameter = voteRowId.HasValue
+        //                                 ? new SqlParameter("VoteRowId", voteRowId)
+        //                                 : new SqlParameter("VoteRowId", SqlDbType.Int);
 
-            var statusCodeParameter = statusCode != null
-                                          ? new SqlParameter("StatusCode", statusCode)
-                                          : new SqlParameter("StatusCode", SqlDbType.VarChar);
+        //    var statusCodeParameter = statusCode != null
+        //                                  ? new SqlParameter("StatusCode", statusCode)
+        //                                  : new SqlParameter("StatusCode", SqlDbType.VarChar);
 
-            return Database.ExecuteSqlCommand("UpdateVoteStatus", voteRowIdParameter,
-                                              statusCodeParameter);
-        }
+        //    return Database.ExecuteSqlCommand("UpdateVoteStatus", voteRowIdParameter,
+        //                                      statusCodeParameter);
+        //}
     }
 }

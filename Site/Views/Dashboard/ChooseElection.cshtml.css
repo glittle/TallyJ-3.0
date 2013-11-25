@@ -74,7 +74,7 @@ button.active {
 }
 
 .MakeNewList li {
-    margin-bottom: 7px;
+    margin-bottom: 14px;
 }
 
 .TestElection {
@@ -111,9 +111,14 @@ button.active {
         margin-left: 37px;
     }
 
-.Comment {
+div.Comment {
     color: #666;
     font-size: 90%;
     font-style: italic;
     margin: -10px 0px 9px 0px;
+}
+li.Comment {
+    color: #666;
+    font-size: 90%;
+    font-style: italic;
 }

@@ -154,10 +154,6 @@ table.Main td.Left,
     float: right;
 }
 
-.Hidden {
-    display: none;
-}
-
 #Status {
     font-weight: bold;
 }
