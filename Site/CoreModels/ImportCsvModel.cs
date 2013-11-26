@@ -257,7 +257,7 @@ namespace TallyJ.CoreModels
         throw new ApplicationException("Mapping not defined");
       }
 
-      var currentPeople = Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid).ToList();
+      var currentPeople = Person.AllPeopleCached.ToList();
       var personModel = new PeopleModel();
 
       var rowsProcessed = 0;

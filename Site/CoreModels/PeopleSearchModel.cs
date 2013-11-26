@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
+using TallyJ.Models;
 
 namespace TallyJ.CoreModels
 {
@@ -54,6 +56,48 @@ namespace TallyJ.CoreModels
                 }
                 .AsJsonResult();
         }
+
+        public JsonResult Search2(string nameToFind, bool includeMatches, bool forBallot)
+        {
+          const int max = 45;
+
+          var currentPeople = Person.AllPeopleCached;
+          
+          var parts = nameToFind.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+
+          var term1 = parts[0];
+          var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
+
+          string term2 = null;
+          string metaphone2 = null;
+          if (parts.Length > 1)
+          {
+            term2 = parts[1];
+            metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
+          }
+
+          bool moreFound;
+          var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
+                                     out moreFound);
+
+          var voteHelper = new VoteHelper(forBallot);
+
+          return new
+          {
+            People = results
+                .Select(r => new
+                {
+                  Id = r.PersonId,
+                  Name = r.FullName,
+                  Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
+                  r.BestMatch,
+                  r.MatchType
+                }),
+            MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
+          }
+              .AsJsonResult();
+        }
+
 
         //public JsonResult Search_Old(string nameToFind, bool includeMatches)
         //{

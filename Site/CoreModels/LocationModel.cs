@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _locations ?? (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
+        return _locations ?? (_locations = Location.AllLocationsCached.ToList());
       }
     }
 
@@ -130,6 +130,8 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
+      Location.DropCachedLocations();
+
       return new
       {
         Saved = true,
@@ -147,17 +149,21 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
+      Location.DropCachedLocations();
+
       return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult EditLocation(int id, string text)
     {
       var location = Locations.SingleOrDefault(l => l.C_RowId == id);
+      var changed = false;
 
       if (location == null)
       {
         location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
         Db.Locations.Add(location);
+        changed = true;
       }
 
       int locationId;
@@ -175,6 +181,7 @@ namespace TallyJ.CoreModels
           {
             Db.Locations.Remove(location);
             Db.SaveChanges();
+            changed = true;
 
             status = "Deleted";
             success = true;
@@ -199,6 +206,7 @@ namespace TallyJ.CoreModels
       {
         location.Name = text;
         Db.SaveChanges();
+        changed = true;
 
         status = "Saved";
         locationId = location.C_RowId;
@@ -211,6 +219,11 @@ namespace TallyJ.CoreModels
         locationId = 0;
         success = true;
         locationText = "";
+      }
+
+      if (changed)
+      {
+        Location.DropCachedLocations();
       }
 
       return new

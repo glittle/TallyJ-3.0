@@ -23,7 +23,7 @@ namespace TallyJ.Models
       db.ResultSummaries.Delete(r => r.ElectionGuid == electionGuid);
 
       // delete ballots in all locations... cascading will delete votes
-      db.Ballots.Delete(b => db.Locations.Where(l => l.ElectionGuid == electionGuid).Select(l => l.LocationGuid).Contains(b.LocationGuid));
+      db.Ballots.Delete(b => Location.AllLocationsCached.Select(l => l.LocationGuid).Contains(b.LocationGuid));
     }
 
   }

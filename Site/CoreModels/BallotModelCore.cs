@@ -49,7 +49,7 @@ namespace TallyJ.CoreModels
       SetAsCurrentBallot(ballotId);
 
       var ballotInfo = GetCurrentBallotInfo();
-      var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+      var location = Location.AllLocationsCached.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       SessionKey.CurrentLocation.SetInSession(location);
 
@@ -274,7 +274,7 @@ namespace TallyJ.CoreModels
 
       var invalidReasonGuid = DetermineInvalidReasonGuid(invalidReason);
 
-      var person = Db.People.SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == currentElectionGuid);
+      var person = Person.AllPeopleCached.SingleOrDefault(p => p.C_RowId == personId);
 
       var ok = person != null || invalidReasonGuid != Guid.Empty;
 

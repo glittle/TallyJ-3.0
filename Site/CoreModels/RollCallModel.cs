@@ -36,10 +36,9 @@ namespace TallyJ.CoreModels
       }
     }
 
-    private IQueryable<Person> PeopleInCurrentElectionQuery()
+    private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
-      var peopleInCurrentElection =
-        Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
+      var peopleInCurrentElection = Person.AllPeopleCached;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
       peopleInCurrentElection = IncludeAbsentees

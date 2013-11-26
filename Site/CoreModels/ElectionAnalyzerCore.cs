@@ -114,9 +114,7 @@ namespace TallyJ.CoreModels
         {
             get
             {
-                return _people ?? (_people = Db.People
-                                               .Where(p => p.ElectionGuid == TargetElection.ElectionGuid)
-                                               .ToList());
+                return _people ?? (_people = Person.AllPeopleCached.ToList());
             }
         }
 
@@ -157,9 +155,7 @@ namespace TallyJ.CoreModels
             {
                 return _ballots ?? (_ballots = Db.Ballots
                                                  .Where(
-                                                     b =>
-                                                     Db.Locations.Where(
-                                                         l => l.ElectionGuid == TargetElection.ElectionGuid).
+                                                     b => Location.AllLocationsCached.
                                                         Select(l => l.LocationGuid).Contains(b.LocationGuid))
                                                  .ToList());
             }

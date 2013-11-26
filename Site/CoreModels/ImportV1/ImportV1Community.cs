@@ -107,6 +107,11 @@ namespace TallyJ.CoreModels
 
       _db.SaveChanges();
 
+      if (_peopleAdded > 0)
+      {
+        Person.DropCachedPeople();
+      }
+
       ImportSummaryMessage = "Imported {0} {1}.".FilledWith(_peopleAdded, _peopleAdded.Plural("people", "person"));
       if (_alreadyLoaded > 0)
       {

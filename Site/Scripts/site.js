@@ -604,11 +604,13 @@ function ShowStatusFailed(msg, keepTime) {
     } else {
       LogMessage(msg);
       text = '(' + msg.status + ') ' + msg.statusText + ': ';
-      var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);
-      if (matches !== null) {
-        text = text + matches[1];
-      } else {
-        text = text + msg.responseText;
+      if (msg.responseText) {
+        var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);
+        if (matches !== null) {
+          text = text + matches[1];
+        } else {
+          text = text + msg.responseText;
+        }
       }
     }
   } else {

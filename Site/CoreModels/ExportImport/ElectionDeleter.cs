@@ -85,6 +85,12 @@ namespace TallyJ.CoreModels.ExportImport
 
           transaction.Complete();
 
+          if (_electionGuid == UserSession.CurrentElectionGuid)
+          {
+            Person.DropCachedPeople();
+            Location.DropCachedLocations();
+          }
+
           return new
           {
             Deleted = true

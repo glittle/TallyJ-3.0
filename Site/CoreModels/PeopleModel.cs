@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     private Election _election;
 
     private List<Location> _locations;
-    private IQueryable<Person> _people;
+    private IEnumerable<Person> _people;
     private List<Person> _peopleforFrontDesk;
 
     public PeopleModel()
@@ -65,26 +65,23 @@ namespace TallyJ.CoreModels
       get
       {
         return _locations ??
-               (_locations = Db.Locations.Where(l => l.ElectionGuid == CurrentElectionGuid).ToList());
+               (_locations = Location.AllLocationsCached.ToList());
       }
     }
 
-    private IQueryable<Person> PeopleInElectionQuery
+    private IEnumerable<Person> PeopleInElectionQuery
     {
       get
       {
-        return _people ??
-               (_people = Db.People.Where(l => l.ElectionGuid == CurrentElectionGuid));
+        return _people ?? (_people = Person.AllPeopleCached);
       }
     }
 
-    public IQueryable<Person> PeopleInCurrentElection(bool onlyIfCanVote = false, bool includeIneligible = true)
+    public IEnumerable<Person> PeopleInCurrentElection(bool onlyIfCanVote = false, bool includeIneligible = true)
     {
       {
         return PeopleInElectionQuery
-            .Where(p => p.ElectionGuid == CurrentElectionGuid)
-            .Where(
-                p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
+            .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
             .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
       }
     }
@@ -136,7 +133,6 @@ namespace TallyJ.CoreModels
     ///     Set person's flag based on what is default for this election
     /// </summary>
     /// <param name="person"> </param>
-    /// <param name="election"> </param>
     public void ResetInvolvementFlags(Person person)
     {
       //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
@@ -193,9 +189,8 @@ namespace TallyJ.CoreModels
 
     public JsonResult SavePerson(Person personFromInput)
     {
-      var savedPerson =
-          PeopleInCurrentElection()
-              .SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId && p.ElectionGuid == CurrentElectionGuid);
+      var savedPerson = PeopleInCurrentElection().SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
+      var changed = false;
 
       if (savedPerson == null)
       {
@@ -212,8 +207,10 @@ namespace TallyJ.CoreModels
               PersonGuid = Guid.NewGuid(),
               ElectionGuid = CurrentElectionGuid
             };
+
         ResetInvolvementFlags(savedPerson);
         Db.People.Add(savedPerson);
+        changed = true;
       }
 
       if (personFromInput.IneligibleReasonGuid == Guid.Empty)
@@ -234,7 +231,8 @@ namespace TallyJ.CoreModels
             personFromInput.Area,
           }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
-      var changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields);
+
+      changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields) || changed;
 
       // these two may not be present, depending on the election type
       const string all = ElectionModel.CanVoteOrReceive.All;
@@ -257,6 +255,8 @@ namespace TallyJ.CoreModels
         SetCombinedInfos(savedPerson);
 
         Db.SaveChanges();
+
+        Person.DropCachedPeople();
       }
 
       return new
@@ -437,8 +437,7 @@ namespace TallyJ.CoreModels
         return new { Message = "Invalid type" }.AsJsonResult();
       }
 
-      var person =
-          Db.People.SingleOrDefault(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowId == personId);
+      var person = Person.AllPeopleCached.SingleOrDefault(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowId == personId);
       if (person == null)
       {
         return new { Message = "Unknown person" }.AsJsonResult();
@@ -486,7 +485,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        people = Db.People
+        people = Person.AllPeopleCached
                    .Where(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
                    .ToList();
       }

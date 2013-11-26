@@ -50,13 +50,4 @@ namespace Tests.BusinessTests
       people.OtherNames.ShouldEqual("Paul");
     }
   }
-
-  public class FakeDataContext : TallyJ2dContext
-  {
-    public override int SaveChanges()
-    {
-      // okay
-      return 0;
-    }
-  }
 }
