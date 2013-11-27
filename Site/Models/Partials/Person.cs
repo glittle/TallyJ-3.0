@@ -32,7 +32,9 @@ namespace TallyJ.Models
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        return db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid).FromCache(null, new[] { "AllPeople" + UserSession.CurrentElectionGuid });
+        var currentElectionGuid = UserSession.CurrentElectionGuid;
+
+        return db.People.Where(p => p.ElectionGuid == currentElectionGuid).FromCache(null, new[] { "AllPeople" + currentElectionGuid });
       }
     }
 

@@ -15,7 +15,7 @@ namespace TallyJ.Code.Resources
     {
       get
       {
-        return _tellers ?? (_tellers = Db.Tellers.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
+        return _tellers ?? (_tellers = Teller.AllTellersCached.ToList());
       }
     }
 

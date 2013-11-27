@@ -332,6 +332,7 @@
       <DependentUpon>201311240617115_Nov23.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Partials\Location.cs" />
+    <Compile Include="Models\Partials\Teller.cs" />
     <Compile Include="OwinStartup.cs" />
     <Content Include="Content\bootstrap\css\variables.css">
       <DependentUpon>variables.less</DependentUpon>

@@ -69,7 +69,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    private IEnumerable<Person> PeopleInElectionQuery
+    private IEnumerable<Person> PeopleInElection
     {
       get
       {
@@ -77,10 +77,10 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public IEnumerable<Person> PeopleInCurrentElection(bool onlyIfCanVote = false, bool includeIneligible = true)
+    public IEnumerable<Person> PeopleInElectionFiltered(bool onlyIfCanVote = false, bool includeIneligible = true)
     {
       {
-        return PeopleInElectionQuery
+        return PeopleInElection
             .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
             .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
       }
@@ -92,7 +92,7 @@ namespace TallyJ.CoreModels
     /// </summary>
     public void ResetInvolvementFlags()
     {
-      foreach (var person in PeopleInElectionQuery)
+      foreach (var person in PeopleInElection)
       {
         ResetInvolvementFlags(person);
       }
@@ -148,7 +148,7 @@ namespace TallyJ.CoreModels
     public JsonResult DetailsFor(int personId)
     {
       var person =
-          PeopleInElectionQuery.SingleOrDefault(p => p.C_RowId == personId);
+          PeopleInElection.SingleOrDefault(p => p.C_RowId == personId);
 
       if (person == null)
       {
@@ -189,28 +189,32 @@ namespace TallyJ.CoreModels
 
     public JsonResult SavePerson(Person personFromInput)
     {
-      var savedPerson = PeopleInCurrentElection().SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
+      var personInDatastore = PeopleInElectionFiltered().SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
       var changed = false;
 
-      if (savedPerson == null)
+      if (personInDatastore == null)
       {
         if (personFromInput.C_RowId != -1)
         {
           return new
-              {
-                Status = "Unknown ID"
-              }.AsJsonResult();
+          {
+            Status = "Unknown ID"
+          }.AsJsonResult();
         }
 
-        savedPerson = new Person
-            {
-              PersonGuid = Guid.NewGuid(),
-              ElectionGuid = CurrentElectionGuid
-            };
+        personInDatastore = new Person
+        {
+          PersonGuid = Guid.NewGuid(),
+          ElectionGuid = CurrentElectionGuid
+        };
 
-        ResetInvolvementFlags(savedPerson);
-        Db.People.Add(savedPerson);
+        ResetInvolvementFlags(personInDatastore);
+        Db.People.Add(personInDatastore);
         changed = true;
+      }
+      else
+      {
+        Db.People.Attach(personInDatastore);
       }
 
       if (personFromInput.IneligibleReasonGuid == Guid.Empty)
@@ -232,37 +236,37 @@ namespace TallyJ.CoreModels
           }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
-      changed = personFromInput.CopyPropertyValuesTo(savedPerson, editableFields) || changed;
+      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
 
       // these two may not be present, depending on the election type
       const string all = ElectionModel.CanVoteOrReceive.All;
       var canReceiveVotes = personFromInput.CanReceiveVotes.GetValueOrDefault(CurrentElection.CanReceive == all);
-      if (savedPerson.CanReceiveVotes != canReceiveVotes)
+      if (personInDatastore.CanReceiveVotes != canReceiveVotes)
       {
-        savedPerson.CanReceiveVotes = canReceiveVotes;
+        personInDatastore.CanReceiveVotes = canReceiveVotes;
         changed = true;
       }
 
       var canVote = personFromInput.CanVote.GetValueOrDefault(CurrentElection.CanVote == all);
-      if (savedPerson.CanVote != canVote)
+      if (personInDatastore.CanVote != canVote)
       {
-        savedPerson.CanVote = canVote;
+        personInDatastore.CanVote = canVote;
         changed = true;
       }
 
       if (changed)
       {
-        SetCombinedInfos(savedPerson);
+        SetCombinedInfos(personInDatastore);
 
         Db.SaveChanges();
 
-        Person.DropCachedPeople();
+        // Person.DropCachedPeople();
       }
 
       return new
           {
             Status = "Saved",
-            Person = PersonForEdit(savedPerson),
+            Person = PersonForEdit(personInDatastore),
             OnFile = Db.People.Count(p => p.ElectionGuid == CurrentElectionGuid)
           }.AsJsonResult();
     }
@@ -276,18 +280,16 @@ namespace TallyJ.CoreModels
     /// <Summary>People to tbe listed on Front Desk page. Called more than once, so separated out</Summary>
     public List<Person> PeopleForFrontDesk()
     {
-      return _peopleforFrontDesk ?? (_peopleforFrontDesk = PeopleInCurrentElection(true).ToList());
+      return _peopleforFrontDesk ?? (_peopleforFrontDesk = PeopleInElectionFiltered(true).ToList());
     }
 
     public IEnumerable<object> OldEnvelopes()
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
-      var tellers = Db.Tellers
-                      .Where(t => t.ElectionGuid == CurrentElectionGuid)
-                      .ToDictionary(t => t.TellerGuid, t => t.Name);
+      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
 
-      var ballotSources = PeopleInCurrentElection() // start with everyone
+      var ballotSources = PeopleInElectionFiltered() // start with everyone
           .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson))
           .ToList()
           .OrderBy(p => p.EnvNum)
@@ -315,11 +317,9 @@ namespace TallyJ.CoreModels
                                            .Select(l => l.LocationGuid)
                                            .Single();
       var timeOffset = UserSession.TimeOffsetServerAhead;
-      var tellers =
-          Db.Tellers.Where(t => t.ElectionGuid == CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
-                                                                                    t => t.Name);
+      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
 
-      var ballotSources = PeopleInCurrentElection() // start with everyone
+      var ballotSources = PeopleInElectionFiltered() // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
           .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
           .ToList()
@@ -371,9 +371,7 @@ namespace TallyJ.CoreModels
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
       var showLocations = locations.Count > 1;
-      var tellers =
-          Db.Tellers.Where(t => t.ElectionGuid == CurrentElectionGuid).ToDictionary(t => t.TellerGuid,
-                                                                                    t => t.Name);
+      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
       return people
@@ -437,12 +435,15 @@ namespace TallyJ.CoreModels
         return new { Message = "Invalid type" }.AsJsonResult();
       }
 
-      var person = Person.AllPeopleCached.SingleOrDefault(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowId == personId);
+      var currentElectionGuid = CurrentElectionGuid;
+
+      var person = Person.AllPeopleCached.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
       {
         return new { Message = "Unknown person" }.AsJsonResult();
       }
 
+      Db.People.Attach(person);
 
       if (person.VotingMethod == voteType)
       {
@@ -464,7 +465,7 @@ namespace TallyJ.CoreModels
             // create a new env number
 
             // get election from DB, not session, as we need to update it now
-            var election = new ElectionModel().GetFreshFromDb(CurrentElectionGuid);
+            var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
             var nextNum = election.LastEnvNum.AsInt() + 1;
 
             person.EnvNum = nextNum;
@@ -476,6 +477,7 @@ namespace TallyJ.CoreModels
       person.TellerAtKeyboard = UserSession.GetCurrentTeller(1);
       person.TellerAssisting = UserSession.GetCurrentTeller(2);
 
+
       Db.SaveChanges();
 
       List<Person> people;
@@ -486,7 +488,7 @@ namespace TallyJ.CoreModels
       else
       {
         people = Person.AllPeopleCached
-                   .Where(p => p.ElectionGuid == CurrentElectionGuid && p.C_RowVersionInt > lastRowVersion)
+                   .Where(p => p.C_RowVersionInt > lastRowVersion)
                    .ToList();
       }
 
