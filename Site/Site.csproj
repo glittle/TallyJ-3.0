@@ -304,6 +304,7 @@
     <Compile Include="CoreModels\PulseInfo.cs" />
     <Compile Include="CoreModels\ResultHelper.cs" />
     <Compile Include="CoreModels\RollCallModel.cs" />
+    <Compile Include="CoreModels\SearchResult.cs" />
     <Compile Include="CoreModels\UploadProvider.cs" />
     <Compile Include="CoreModels\VoteAnalyzer.cs" />
     <Compile Include="CoreModels\VoteHelper.cs" />
@@ -333,6 +334,7 @@
     </Compile>
     <Compile Include="Models\Partials\Location.cs" />
     <Compile Include="Models\Partials\Teller.cs" />
+    <Compile Include="Models\Partials\Vote.cs" />
     <Compile Include="OwinStartup.cs" />
     <Content Include="Content\bootstrap\css\variables.css">
       <DependentUpon>variables.less</DependentUpon>

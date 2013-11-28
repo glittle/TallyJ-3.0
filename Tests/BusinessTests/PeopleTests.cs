@@ -86,7 +86,8 @@ namespace Tests.BusinessTests
                                   person.OtherNames,
                                   person.OtherLastNames,
                                   person.OtherInfo,
-                                }.JoinedAsString(" ").ToLower();
+                                }.JoinedAsString(" ").ToLower()
+                                .ReplacePunctuation(' ');
         person.CombinedSoundCodes = new[]
                                    {
                                      person.FirstName.GenerateDoubleMetaphone(),

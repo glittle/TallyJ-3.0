@@ -109,8 +109,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Only to be done before an election</Summary>
     public void SetCombinedInfoAtStart(Person person)
     {
-      person.CombinedInfoAtStart =
-          person.CombinedInfo = person.MakeCombinedInfo();
+      person.CombinedInfoAtStart = person.CombinedInfo = person.MakeCombinedInfo();
 
       person.UpdateCombinedSoundCodes();
     }
@@ -382,7 +381,7 @@ namespace TallyJ.CoreModels
               {
                 PersonId = p.C_RowId,
                 FullName = p.C_FullName,
-                NameLower = p.C_FullName.WithoutDiacritics(true).Replace("\"", "\\\""),
+                NameLower = p.C_FullName.WithoutDiacritics(true).ReplacePunctuation(' ').Replace("\"", "\\\""),
                 p.Area,
                 VotedAt = new[]
                             {

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using TallyJ.CoreModels;
 using TallyJ.Models;
 
 namespace TallyJ.Code
@@ -515,11 +517,11 @@ namespace TallyJ.Code
           );
     }
 
-    public static string CleanedForSearching(this string input)
-    {
-      if (input.HasNoContent()) return "";
-      return Regex.Replace(input, @"[^\w\.\'\- ]", "");
-    }
+    //public static string CleanedForSearching(this string input)
+    //{
+    //  if (input.HasNoContent()) return "";
+    //  return Regex.Replace(input, @"[^\w\.\'\- ]", "");
+    //}
 
     /// <Summary>Prepare to be embedded into a javascript string</Summary>
     public static string CleanedForJavascriptStrings(this string input)
@@ -698,6 +700,45 @@ namespace TallyJ.Code
       var withoutDiacritics = sb.ToString().Normalize(NormalizationForm.FormC);
 
       return toLower ? withoutDiacritics.ToLowerInvariant() : withoutDiacritics;
+    }
+
+    /// <summary>
+    /// Simple convert of <see cref="Person"/> to <see cref="SqlSearch_Result"/> 
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="matchType"></param>
+    /// <returns></returns>
+    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType = 0)
+    {
+      return input.Select(p => p.AsSerachResult(matchType));
+    }
+
+    public static SearchResult AsSerachResult(this Person p, int matchType)
+    {
+      return new SearchResult
+      {
+        PersonId = p.C_RowId,
+        PersonGuid = p.PersonGuid,
+        FullName = p.C_FullName,
+        CanReceiveVotes = p.CanReceiveVotes,
+        Ineligible = p.IneligibleReasonGuid,
+        BestMatch = 0, // count of votes
+        MatchType = matchType
+      };
+    }
+
+    /// <summary>
+    /// Replace non-characters with <param name="sep"></param>
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="sep">Character to use</param>
+    /// <returns></returns>
+    public static string ReplacePunctuation(this string input, char sep)
+    {
+      var array = input.ToCharArray();
+
+      return new string(array.Select(c => char.IsLetterOrDigit(c) ? c : sep) // remove all punctuation
+                             .ToArray());
     }
   }
 }

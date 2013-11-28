@@ -264,6 +264,18 @@ namespace Tests.FrameworkTests
       "Üzbek, tienne".WithoutDiacritics(true).ShouldEqual("uzbek, tienne");
     }
 
+    [TestMethod]
+    public void ReplacePunctuation_Test()
+    {
+      const char sep = '$';
+
+      "".ReplacePunctuation(sep).ShouldEqual("");
+      "a b".ReplacePunctuation(sep).ShouldEqual("a$b");
+      "ab".ReplacePunctuation(sep).ShouldEqual("ab");
+      "a-b!".ReplacePunctuation(sep).ShouldEqual("a$b$");
+      "o'conner".ReplacePunctuation(sep).ShouldEqual("o$conner");
+      "ab==123".ReplacePunctuation(sep).ShouldEqual("ab$$123");
+    }
 
   }
 

@@ -6,35 +6,39 @@ namespace TallyJ.CoreModels.Helper
 {
   public static class PersonHelper
   {
-    public const string WordSeparator = "^";
+    public const string WordSeparator = " ";
 
     public static string MakeCombinedInfo(this Person person)
     {
       return new[]
-               {
-                 person.FirstName.CleanedForSearching(),
-                 person.LastName.CleanedForSearching(),
-                 person.OtherNames.CleanedForSearching(),
-                 person.OtherLastNames.CleanedForSearching(),
-                 //person.OtherInfo.CleanedForSearching(),
-               }.JoinedAsString(WordSeparator, true)
-        .Replace(" ", WordSeparator)
-        .ToLower();
+      {
+        person.FirstName,
+        person.LastName,
+        person.OtherNames,
+        person.OtherLastNames,
+        // additional - for searching
+        person.Area,
+        person.OtherInfo
+      }
+        .JoinedAsString(WordSeparator, true)
+        .ReplacePunctuation(WordSeparator[0])
+        .WithoutDiacritics(true);
     }
 
     public static void UpdateCombinedSoundCodes(this Person person)
     {
       person.CombinedSoundCodes = new[]
-                                    {
-                                      person.FirstName.GenerateDoubleMetaphone(),
-                                      person.LastName.GenerateDoubleMetaphone(),
-                                      person.OtherNames.GenerateDoubleMetaphone(),
-                                      person.OtherLastNames.GenerateDoubleMetaphone(),
-                                      //person.OtherInfo.GenerateDoubleMetaphone(),
-                                    }
-                                    .JoinedAsString(WordSeparator, true)
-                                    .Replace(" ", WordSeparator)
-                                    .ToLower();
+      {
+        person.FirstName,
+        person.LastName,
+        person.OtherNames,
+        person.OtherLastNames,
+        // additional - for searching
+        person.Area,
+        person.OtherInfo
+      }
+        .GenerateDoubleMetaphone(" ")
+        .ToLower();
     }
   }
 }
