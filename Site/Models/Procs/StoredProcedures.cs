@@ -51,42 +51,42 @@ namespace TallyJ.Models
         //                                      byLoginIdParameter);
         //}
 
-        public virtual IEnumerable<SqlSearch_Result> SqlSearch(Guid election, string term1, string term2, string sound1,
-                                                               string sound2, int maxToReturn,
-                                                               out bool moreFound)
-        {
-            var electionParameter = new SqlParameter("Election", election);
-
-            var term1Parameter = new SqlParameter("Term1", term1.ForSqlParameter());
-
-            var term2Parameter = new SqlParameter("Term2", term2.ForSqlParameter());
-
-            var sound1Parameter = new SqlParameter("Sound1", sound1.ForSqlParameter());
-
-            var sound2Parameter = new SqlParameter("Sound2", sound2.ForSqlParameter());
-
-            var maxToReturnParameter = new SqlParameter("MaxToReturn", maxToReturn);
-
-            var moreExactMatchesFound = new SqlParameter("MoreExactMatchesFound", SqlDbType.Bit)
-                {
-                    Direction = ParameterDirection.Output
-                };
-
-            var results =
-                Database.SqlQuery<SqlSearch_Result>(
-                    "exec tj.SqlSearch @Election, @Term1, @Term2, @Sound1, @Sound2, @MaxToReturn, @MoreExactMatchesFound out",
-                    electionParameter,
-                    term1Parameter,
-                    term2Parameter,
-                    sound1Parameter,
-                    sound2Parameter,
-                    maxToReturnParameter,
-                    moreExactMatchesFound).ToList();
-
-            moreFound = (bool) moreExactMatchesFound.Value;
-
-            return results;
-        }
+//        public virtual IEnumerable<SqlSearch_Result> SqlSearch(Guid election, string term1, string term2, string sound1,
+//                                                               string sound2, int maxToReturn,
+//                                                               out bool moreFound)
+//        {
+//            var electionParameter = new SqlParameter("Election", election);
+//
+//            var term1Parameter = new SqlParameter("Term1", term1.ForSqlParameter());
+//
+//            var term2Parameter = new SqlParameter("Term2", term2.ForSqlParameter());
+//
+//            var sound1Parameter = new SqlParameter("Sound1", sound1.ForSqlParameter());
+//
+//            var sound2Parameter = new SqlParameter("Sound2", sound2.ForSqlParameter());
+//
+//            var maxToReturnParameter = new SqlParameter("MaxToReturn", maxToReturn);
+//
+//            var moreExactMatchesFound = new SqlParameter("MoreExactMatchesFound", SqlDbType.Bit)
+//                {
+//                    Direction = ParameterDirection.Output
+//                };
+//
+//            var results =
+//                Database.SqlQuery<SqlSearch_Result>(
+//                    "exec tj.SqlSearch @Election, @Term1, @Term2, @Sound1, @Sound2, @MaxToReturn, @MoreExactMatchesFound out",
+//                    electionParameter,
+//                    term1Parameter,
+//                    term2Parameter,
+//                    sound1Parameter,
+//                    sound2Parameter,
+//                    maxToReturnParameter,
+//                    moreExactMatchesFound).ToList();
+//
+//            moreFound = (bool) moreExactMatchesFound.Value;
+//
+//            return results;
+//        }
 
         //public virtual int UpdateVoteStatus(int? voteRowId, string statusCode)
         //{

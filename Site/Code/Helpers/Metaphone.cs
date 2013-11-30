@@ -64,16 +64,17 @@ namespace TallyJ.Code.Helpers
     public static string GenerateDoubleMetaphone(this IEnumerable<string> self, string sep)
     {
       return self
-        .Select(s => s.ReplacePunctuation(' ').GenerateDoubleMetaphoneInternal())
+        .Where(s => s.HasContent())
+        .Select(s => s.ReplacePunctuation(' ').Replace(" ", "").GenerateDoubleMetaphoneInternal())
         .JoinedAsString(sep, true);
     }
 
     public static IEnumerable<string> GenerateDoubleMetaphoneArray(this IEnumerable<string> self)
     {
-      return self.Select(s => s.ReplacePunctuation(' ').GenerateDoubleMetaphoneInternal());
+      return self.Select(s => s.ReplacePunctuation(' ').Replace(" ", "").GenerateDoubleMetaphoneInternal());
     }
 
-    private static string GenerateDoubleMetaphoneInternal(this string self)
+    public static string GenerateDoubleMetaphoneInternal(this string self)
     {
       var length = self.Length;
 

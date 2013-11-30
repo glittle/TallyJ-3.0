@@ -22,8 +22,9 @@ namespace TallyJ.Models
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        return db.Votes
-          .Join(Ballot.AllBallotsCached, v => v.BallotGuid, b => b.BallotGuid, (v, b) => v)
+        var allBallotGuids = Ballot.AllBallotsCached.Select(b=>b.BallotGuid).ToList();
+
+        return db.Votes.Where(v => allBallotGuids.Contains(v.BallotGuid))
           .FromCache(null, new[] { "AllVotes" + UserSession.CurrentElectionGuid });
       }
     }

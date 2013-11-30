@@ -18,7 +18,8 @@ namespace TallyJ.CoreModels.Helper
         person.OtherLastNames,
         // additional - for searching
         person.Area,
-        person.OtherInfo
+        person.OtherInfo,
+        person.BahaiId
       }
         .JoinedAsString(WordSeparator, true)
         .ReplacePunctuation(WordSeparator[0])
@@ -37,8 +38,7 @@ namespace TallyJ.CoreModels.Helper
         person.Area,
         person.OtherInfo
       }
-        .GenerateDoubleMetaphone(" ")
-        .ToLower();
+        .GenerateDoubleMetaphone(" ");
     }
   }
 }

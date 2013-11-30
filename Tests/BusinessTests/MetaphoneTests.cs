@@ -15,6 +15,12 @@ namespace Tests.BusinessTests
 
       "Mehri".GenerateDoubleMetaphone().ShouldEqual("Mary".GenerateDoubleMetaphone());
 
+      "Glenn".GenerateDoubleMetaphone().ShouldEqual("Glen".GenerateDoubleMetaphone());
+      
+      "Tom".GenerateDoubleMetaphone().ShouldEqual("Thom".GenerateDoubleMetaphone());
+
+      "Shervin".GenerateDoubleMetaphone().ShouldEqual("Sherwin".GenerateDoubleMetaphone());
+
     }
 
     [TestMethod]

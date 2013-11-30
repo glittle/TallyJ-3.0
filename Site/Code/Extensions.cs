@@ -703,7 +703,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Simple convert of <see cref="Person"/> to <see cref="SqlSearch_Result"/> 
+    /// Simple convert of <see cref="Person"/> to <see cref="SearchResult"/> 
     /// </summary>
     /// <param name="input"></param>
     /// <param name="matchType"></param>
@@ -715,13 +715,18 @@ namespace TallyJ.Code
 
     public static SearchResult AsSerachResult(this Person p, int matchType)
     {
+      var name = p.C_FullName
+                 + p.BahaiId.SurroundContentWith(" (", ")")
+                 + p.Area.SurroundContentWith(" (", ")");
+
       return new SearchResult
       {
         PersonId = p.C_RowId,
         PersonGuid = p.PersonGuid,
-        FullName = p.C_FullName,
+        FullName = name,
         CanReceiveVotes = p.CanReceiveVotes,
         Ineligible = p.IneligibleReasonGuid,
+        RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
         BestMatch = 0, // count of votes
         MatchType = matchType
       };

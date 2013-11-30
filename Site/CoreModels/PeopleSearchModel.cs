@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Web.Mvc;
-using NLog.Targets;
+using System.Web.Providers.Entities;
+using System.Web.UI.WebControls.WebParts;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
-using TallyJ.CoreModels.Helper;
 using TallyJ.Models;
 
 namespace TallyJ.CoreModels
@@ -20,45 +19,45 @@ namespace TallyJ.CoreModels
     //{
     //  get { return _people; }
     //}
-
-    public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
-    {
-      const int max = 45;
-
-      var parts = nameToFind.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
-
-      var term1 = parts[0];
-      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
-
-      string term2 = null;
-      string metaphone2 = null;
-      if (parts.Length > 1)
-      {
-        term2 = parts[1];
-        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
-      }
-
-      bool moreFound;
-      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
-        out moreFound);
-
-      var voteHelper = new VoteHelper(forBallot);
-
-      return new
-      {
-        People = results
-          .Select(r => new
-          {
-            Id = r.PersonId,
-            Name = r.FullName,
-            Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
-            r.BestMatch,
-            r.MatchType
-          }),
-        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
-      }
-        .AsJsonResult();
-    }
+//
+//    public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
+//    {
+//      const int max = 45;
+//
+//      var parts = nameToFind.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
+//
+//      var term1 = parts[0];
+//      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
+//
+//      string term2 = null;
+//      string metaphone2 = null;
+//      if (parts.Length > 1)
+//      {
+//        term2 = parts[1];
+//        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
+//      }
+//
+//      bool moreFound;
+//      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
+//        out moreFound);
+//
+//      var voteHelper = new VoteHelper(forBallot);
+//
+//      return new
+//      {
+//        People = results
+//          .Select(r => new
+//          {
+//            Id = r.PersonId,
+//            Name = r.FullName,
+//            Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
+//            r.BestMatch,
+//            r.MatchType
+//          }),
+//        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
+//      }
+//        .AsJsonResult();
+//    }
 
     public JsonResult Search2(string nameToFind, bool includeMatches, bool forBallot)
     {
@@ -66,16 +65,16 @@ namespace TallyJ.CoreModels
 
       var personList = Person.AllPeopleCached.ToList();
 
-      IEnumerable<SearchResult> results;
+      List<SearchResult> results;
       var moreFound = false;
 
       switch (nameToFind)
       {
         case "~~Voters~~":
-          results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults();
+          results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults().ToList();
           break;
         case "~~Tied~~":
-          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults();
+          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults().ToList();
           break;
         default:
 
@@ -95,19 +94,20 @@ namespace TallyJ.CoreModels
             r.BestMatch,
             r.MatchType
           }),
-        MoreFound = moreFound ? "More than {0} matches".FilledWith(max) : ""
+        MoreFound = moreFound ? "More than {0} matches".FilledWith(max) : "",
+        LastRowVersion = results.Count == 0 ? 0 : results.Max(p=>p.RowVersion)
       }
         .AsJsonResult();
     }
 
-    private IEnumerable<SearchResult> GetRankedResults(List<Person> people, string nameToFind, int max, out bool moreFound)
+    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, string nameToFind, int max,
+      out bool moreFound)
     {
-      moreFound = false;// need to set
+      moreFound = false; // need to set
 
-      var terms = nameToFind.WithoutDiacritics(true).ReplacePunctuation(' ').Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-      var metas = terms.GenerateDoubleMetaphoneArray().ToArray();
+      var terms = MakeTerms(nameToFind);
+      var metas = MakeMetas(terms);
 
-      var numTerms = terms.Count();
       var matched = new List<SearchResult>();
 
       foreach (var person in people)
@@ -131,57 +131,95 @@ namespace TallyJ.CoreModels
       }
 
       var allVotesCached = Vote.AllVotesCached.ToList();
+      var isSingleNameElection = UserSession.CurrentElection.IsSingleNameElection;
+
       foreach (var result in matched)
       {
-        result.BestMatch = allVotesCached.Count(v => v.PersonGuid == result.PersonGuid);
+        result.BestMatch = isSingleNameElection 
+          ? allVotesCached.Where(v => v.PersonGuid == result.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt() 
+          : allVotesCached.Count(v => v.PersonGuid == result.PersonGuid);
       }
 
-      return matched.OrderBy(m => m.MatchType).ThenBy(m => m.FullName);
+      return matched.OrderBy(m => m.MatchType).ThenBy(m => m.FullName).ToList();
     }
 
-    private int DetermineMatch(Person person, string[] terms, string[] metas)
+    /// <summary>
+    ///   Test this person for the terms and metas.
+    /// </summary>
+    /// <param name="person"></param>
+    /// <param name="terms">Each term in the list must start with a space</param>
+    /// <param name="metas">Each meta in the list must start with a space</param>
+    /// <returns></returns>
+    public int DetermineMatch(Person person, string[] terms, string[] metas)
     {
-      var targets = " " + person.CombinedInfo;
-      var numTerms = terms.Length;
-      var matches = 0;
-      var matched = new List<int>();
-
-      for (var i = 0; i < numTerms; i++)
+      AssertAtRuntime.That(terms[0][0] == ' ', "invalid term");
+      if (person.CombinedInfo.HasNoContent()
+          || person.CombinedSoundCodes.HasNoContent()
+          || person.CombinedInfo.Contains("^") 
+          || person.CombinedSoundCodes.Contains("^"))
       {
-        var where = targets.IndexOf(" " + terms[i], StringComparison.Ordinal);
-        if (!matched.Contains(where))
-        {
-          matches++;
-          matched.Add(where);
-        }
+        new PeopleModel().SetCombinedInfos(person);
+        // adjusted person is not saved... could add in future
       }
 
-      if (matches == numTerms)
+      if (AllTermsFound(terms, person.CombinedInfo))
       {
         return 1;
       }
 
-      var numMetas = metas.Length;
-      matched.Clear();
-      matches = 0;
-      var sounds = " " + person.CombinedSoundCodes;
-
-      for (var i = 0; i < numMetas; i++)
-      {
-        var where = sounds.IndexOf(" " + metas[i], StringComparison.Ordinal);
-        if (!matched.Contains(where))
-        {
-          matches++;
-          matched.Add(where);
-        }
-      }
-
-      if (matches == numMetas)
+      if (AllTermsFound(metas, person.CombinedSoundCodes, true))
       {
         return 2;
       }
 
       return 0;
+    }
+
+    public bool AllTermsFound(string[] terms, string targets, bool soundMatching = false)
+    {
+      var matches = 0;
+      Dictionary<string, int> matchedPositions = null;
+      var adjusted = " " + targets + (soundMatching ? " " : "");
+
+      foreach (var t in terms)
+      {
+        var start = 0;
+        if (matchedPositions != null && matchedPositions.ContainsKey(t))
+        {
+          start = matchedPositions[t] + 1;
+        }
+
+        var where = adjusted.IndexOf(t, start,
+          soundMatching ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+        if (where == -1) continue;
+
+        // found a match
+        matches++;
+
+        if (matchedPositions == null)
+        {
+          matchedPositions = new Dictionary<string, int>();
+        }
+
+        matchedPositions[t] = where;
+      }
+      return matches == terms.Length;
+    }
+
+    public string[] MakeTerms(string nameToFind)
+    {
+      return
+        nameToFind.WithoutDiacritics(true)
+          .ReplacePunctuation(' ')
+          .Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)
+          .Select(s => " " + s)
+          .ToArray();
+    }
+
+    public string[] MakeMetas(string[] terms)
+    {
+      return terms.GenerateDoubleMetaphoneArray().Select(s => " " + s + " ").ToArray();
     }
 
 
@@ -299,8 +337,5 @@ namespace TallyJ.CoreModels
 
     //  return list1;
     //}
-
   }
-
-
 }

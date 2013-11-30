@@ -11,7 +11,7 @@ namespace TallyJ.Models
 {
   public interface IBallotBase
   {
-    System.Guid BallotGuid { get; set; }
+    Guid BallotGuid { get; set; }
     string StatusCode { get; set; }
   }
 
@@ -28,9 +28,10 @@ namespace TallyJ.Models
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        return db.Ballots
-          .Join(Location.AllLocationsCached, b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
-          .FromCache(null, new[] { "AllBallots" + UserSession.CurrentElectionGuid });
+        var locationGuids = Location.AllLocationsCached.Select(l => l.LocationGuid).ToList();
+
+        return db.Ballots.Where(b => locationGuids.Contains(b.LocationGuid))
+          .FromCache(null, new[] {"AllBallots" + UserSession.CurrentElectionGuid});
       }
     }
 
@@ -43,10 +44,9 @@ namespace TallyJ.Models
 
       CacheManager.Current.Expire("AllBallots" + UserSession.CurrentElectionGuid);
     }
- 
   }
+
   public partial class vBallotInfo : IBallotBase
   {
-
   }
 }

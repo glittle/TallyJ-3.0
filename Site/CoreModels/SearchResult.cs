@@ -11,5 +11,6 @@ namespace TallyJ.CoreModels
     public Nullable<int> MatchType { get; set; }
     public Nullable<bool> CanReceiveVotes { get; set; }
     public int BestMatch { get; set; }
+    public long RowVersion { get; set; }
   }
 }

@@ -415,7 +415,8 @@ namespace TallyJ.CoreModels
     public Ballot CurrentRawBallot()
     {
       var ballotId = SessionKey.CurrentBallotId.FromSession(0);
-      return Db.Ballots.Single(b => b.C_RowId == ballotId);
+      return Ballot.AllBallotsCached.Single(b => b.C_RowId == ballotId);
+//      return Db.Ballots.Single(b => b.C_RowId == ballotId);
     }
 
     public List<Vote> CurrentVotes()

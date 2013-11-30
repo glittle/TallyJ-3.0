@@ -51,7 +51,7 @@
         }
         if (currentType == 0) currentType = personInfo.MatchType;
         var classes = [];
-        classes.push('Match' + personInfo.MatchType)
+        classes.push('Match' + personInfo.MatchType);
         if (personInfo.MatchType != currentType) {
           currentType = personInfo.MatchType;
           classes.push('First');
