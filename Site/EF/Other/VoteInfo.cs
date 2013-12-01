@@ -45,6 +45,8 @@ namespace TallyJ.EF
       // mostly for testing
     }
 
+    public bool? ValidationResult { get; set; }
+
     public int VoteId { get; set; }
     public string VoteStatusCode { get; set; }
     public int? SingleNameElectionCount { get; set; }

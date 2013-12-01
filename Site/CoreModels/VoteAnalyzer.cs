@@ -12,10 +12,14 @@ namespace TallyJ.CoreModels
     /// <Summary>Is this Vote valid?</Summary>
     public static bool VoteIsValid(VoteInfo voteInfo)
     {
-      return !voteInfo.VoteIneligibleReasonGuid.HasValue
-             && !voteInfo.PersonIneligibleReasonGuid.HasValue
-             && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
-             && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
+      if (!voteInfo.ValidationResult.HasValue)
+      {
+        voteInfo.ValidationResult = !voteInfo.VoteIneligibleReasonGuid.HasValue
+               && !voteInfo.PersonIneligibleReasonGuid.HasValue
+               && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
+               && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
+      }
+      return voteInfo.ValidationResult.Value;
     }
 
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>

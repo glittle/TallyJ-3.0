@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels
 
                 // get existing result record for this person, if available
                 var result =
-                  Results.SingleOrDefault(r => r.ElectionGuid == electionGuid || r.PersonGuid == voteInfo.PersonGuid);
+                  Results.SingleOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
                 if (result == null)
                 {
                   result = new Result
