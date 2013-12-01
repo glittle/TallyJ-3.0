@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using LumenWorks.Framework.IO.Csv;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -71,7 +71,7 @@ namespace TallyJ.CoreModels
 
       new ImportHelper().ExtraProcessingIfMultipartEncoded(record);
 
-      Db.ImportFiles.Add(record);
+      Db.ImportFile.Add(record);
       Db.SaveChanges();
 
       rowId = record.C_RowId;
@@ -85,7 +85,7 @@ namespace TallyJ.CoreModels
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
-      return Db.vImportFileInfoes
+      return Db.ImportFile
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
         .Where(vi => vi.FileType == FileTypeCsv)
         .OrderByDescending(vi => vi.UploadTime)
@@ -107,8 +107,8 @@ namespace TallyJ.CoreModels
     public ActionResult DeleteFile(int id)
     {
       var targetFile = new ImportFile { C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid };
-      Db.ImportFiles.Attach(targetFile);
-      Db.ImportFiles.Remove(targetFile);
+      Db.ImportFile.Attach(targetFile);
+      Db.ImportFile.Remove(targetFile);
       Db.SaveChanges();
 
       new LogHelper().Add("Deleted file #" + id);
@@ -127,7 +127,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult CopyMap(int from, int to)
     {
-      var files = Db.ImportFiles.Where(fi => fi.ElectionGuid == UserSession.CurrentElectionGuid
+      var files = Db.ImportFile.Where(fi => fi.ElectionGuid == UserSession.CurrentElectionGuid
                                              && (fi.C_RowId == from || fi.C_RowId == to)).ToList();
       if (files.Count != 2)
       {
@@ -146,7 +146,7 @@ namespace TallyJ.CoreModels
     public JsonResult ReadFields(int rowId)
     {
       var importFile =
-        Db.ImportFiles.SingleOrDefault(
+        Db.ImportFile.SingleOrDefault(
           fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == rowId);
       if (importFile == null)
       {
@@ -211,7 +211,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult SaveMapping(int id, List<string> mapping)
     {
-      var fileInfo = Db.ImportFiles.SingleOrDefault(
+      var fileInfo = Db.ImportFile.SingleOrDefault(
         fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == id);
       if (fileInfo == null)
       {
@@ -230,7 +230,7 @@ namespace TallyJ.CoreModels
     public JsonResult Import(int rowId)
     {
       var file =
-        Db.ImportFiles.SingleOrDefault(
+        Db.ImportFile.SingleOrDefault(
           fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == rowId);
       if (file == null)
       {
@@ -332,7 +332,7 @@ namespace TallyJ.CoreModels
           personModel.SetCombinedInfoAtStart(person);
           personModel.ResetInvolvementFlags(person);
 
-          Db.People.Add(person);
+          Db.Person.Add(person);
 
           if (peopleAdded == 1 || peopleAdded % 100 == 0)
           {
@@ -371,7 +371,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult SaveCodePage(int id, int codepage)
     {
-      var fileInfo = Db.ImportFiles.SingleOrDefault(
+      var fileInfo = Db.ImportFile.SingleOrDefault(
         fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == id);
       if (fileInfo == null)
       {

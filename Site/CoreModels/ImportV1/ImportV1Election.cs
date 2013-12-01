@@ -6,7 +6,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.CoreModels.Helper;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     private readonly Action<Vote> _storeVote;
     private int _ballotsLoaded;
 
-    public ImportV1Election(TallyJ2dContext db, ImportFile file, XmlDocument xml,
+    public ImportV1Election(TallyJ2dEntities db, ImportFile file, XmlDocument xml,
       Election election,
       Location location,
       Action<Ballot> storeBallot,
@@ -212,10 +212,10 @@ namespace TallyJ.CoreModels
         ElectionGuid = _election.ElectionGuid,
         ResultType = ResultType.Manual,
         NumEligibleToVote = manualCountsXml.GetAttribute("AdultsInCommunity").AsInt(),
-        EnvelopesMailedIn = manualCountsXml.GetAttribute("MailedInBallots").AsInt(),
-        EnvelopesCalledIn = 0,
-        EnvelopesDroppedOff = manualCountsXml.GetAttribute("DroppedOffBallots").AsInt(),
-        EnvelopesInPerson = manualCountsXml.GetAttribute("VotedInPerson").AsInt()
+        MailedInBallots = manualCountsXml.GetAttribute("MailedInBallots").AsInt(),
+        CalledInBallots = 0,
+        DroppedOffBallots = manualCountsXml.GetAttribute("DroppedOffBallots").AsInt(),
+        InPersonBallots = manualCountsXml.GetAttribute("VotedInPerson").AsInt()
       };
 
 

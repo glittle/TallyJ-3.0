@@ -1,6 +1,6 @@
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Helper
 {

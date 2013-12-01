@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
         }
 
         public ElectionAnalyzerSingleName(IAnalyzerFakes fakes, Election election,
-                                      List<vVoteInfo> voteinfos, List<Ballot> ballots,
+                                      List<VoteInfo> voteinfos, List<Ballot> ballots,
                                       List<Person> people)
             : base(fakes, election, people, ballots, voteinfos)
         {
@@ -26,7 +26,7 @@ namespace TallyJ.CoreModels
         }
 
         //public ElectionAnalyzerSingleName(Election election, ResultSummary resultSummary, List<Result> results,
-        //                                  List<vVoteInfo> voteinfos, List<Ballot> ballots, Func<Result, Result> deleteResult,
+        //                                  List<VoteInfo> voteinfos, List<Ballot> ballots, Func<Result, Result> deleteResult,
         //                                  Func<Result, Result> addResult
         //                                  , Func<int> saveChanges, List<Person> people)
         //  : base(election, resultSummary, results, people, ballots, voteinfos, deleteResult, addResult, saveChanges)
@@ -38,7 +38,7 @@ namespace TallyJ.CoreModels
             PrepareResultSummaryCalc();
 
             // for single name elections, # votes = # ballots
-            ResultSummaryCalc.NumBallotsEntered
+            ResultSummaryCalc.BallotsReceived
               = ResultSummaryCalc.NumVoters
               = ResultSummaryCalc.TotalVotes
               = VoteInfos.Sum(vi => vi.SingleNameElectionCount).AsInt();
@@ -56,19 +56,21 @@ namespace TallyJ.CoreModels
             // clear any existing results
             Results.ForEach(ResetValues);
 
+            var electionGuid = TargetElection.ElectionGuid;
+
             // collect only valid votes
-            foreach (var vVoteInfo in VoteInfos.Where(VoteAnalyzer.VoteIsValid))
+            foreach (var VoteInfo in VoteInfos.Where(VoteAnalyzer.VoteIsValid))
             {
-                var voteInfo = vVoteInfo;
+                var voteInfo = VoteInfo;
 
                 // get existing result record for this person, if available
                 var result =
-                  Results.SingleOrDefault(r => r.C_RowId == voteInfo.ResultId || r.PersonGuid == voteInfo.PersonGuid);
+                  Results.SingleOrDefault(r => r.ElectionGuid == electionGuid || r.PersonGuid == voteInfo.PersonGuid);
                 if (result == null)
                 {
-                    result = new Result
+                  result = new Result
                                {
-                                   ElectionGuid = TargetElection.ElectionGuid,
+                                   ElectionGuid = electionGuid,
                                    PersonGuid = voteInfo.PersonGuid.AsGuid()
                                };
                     ResetValues(result);

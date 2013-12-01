@@ -31,7 +31,7 @@ namespace TallyJ.Controllers
       {
         if (isSingle)
         {
-          ballotModel.GetCurrentBallotInfo();
+          ballotModel.GetCurrentBallot();
         }
       }
       else

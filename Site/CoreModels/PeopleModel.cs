@@ -10,7 +10,7 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -182,7 +182,7 @@ namespace TallyJ.CoreModels
             person.OtherLastNames,
             person.OtherNames,
             person.Area,
-            person.C_FullName
+            C_FullName = person.FullName
           };
     }
 
@@ -208,12 +208,12 @@ namespace TallyJ.CoreModels
         };
 
         ResetInvolvementFlags(personInDatastore);
-        Db.People.Add(personInDatastore);
+        Db.Person.Add(personInDatastore);
         changed = true;
       }
       else
       {
-        Db.People.Attach(personInDatastore);
+        Db.Person.Attach(personInDatastore);
       }
 
       if (personFromInput.IneligibleReasonGuid == Guid.Empty)
@@ -266,7 +266,7 @@ namespace TallyJ.CoreModels
           {
             Status = "Saved",
             Person = PersonForEdit(personInDatastore),
-            OnFile = Db.People.Count(p => p.ElectionGuid == CurrentElectionGuid)
+            OnFile = Db.Person.Count(p => p.ElectionGuid == CurrentElectionGuid)
           }.AsJsonResult();
     }
 
@@ -295,7 +295,7 @@ namespace TallyJ.CoreModels
           .Select(p => new
               {
                 PersonId = p.C_RowId,
-                p.C_FullName,
+                C_FullName = p.FullName,
                 VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
@@ -327,7 +327,7 @@ namespace TallyJ.CoreModels
           .Select(p => new
               {
                 PersonId = p.C_RowId,
-                p.C_FullName,
+                C_FullName = p.FullName,
                 VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
@@ -380,8 +380,8 @@ namespace TallyJ.CoreModels
           .Select(p => new
               {
                 PersonId = p.C_RowId,
-                FullName = p.C_FullName,
-                NameLower = p.C_FullName.WithoutDiacritics(true).ReplacePunctuation(' ').Replace("\"", "\\\""),
+                FullName = p.FullName,
+                NameLower = p.FullName.WithoutDiacritics(true).ReplacePunctuation(' ').Replace("\"", "\\\""),
                 p.Area,
                 VotedAt = new[]
                             {
@@ -442,7 +442,7 @@ namespace TallyJ.CoreModels
         return new { Message = "Unknown person" }.AsJsonResult();
       }
 
-      Db.People.Attach(person);
+      Db.Person.Attach(person);
 
       if (person.VotingMethod == voteType)
       {
@@ -507,7 +507,7 @@ namespace TallyJ.CoreModels
       int rows;
       try
       {
-        rows = Db.People.Delete(p => p.ElectionGuid == CurrentElectionGuid);
+        rows = Db.Person.Delete(p => p.ElectionGuid == CurrentElectionGuid);
       }
       catch (SqlException)
       {

@@ -7,7 +7,7 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 
 using TallyJ.CoreModels.Helper;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -50,10 +50,10 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Update the Ballot status of this ballot, based on these Votes.</Summary>
     /// <param name="ballot">The Ballot or vBallotInfo to check and update.</param>
-    /// <param name="currentVoteInfos"> </param>
+    /// <param name="currentVotes"> </param>
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
     /// <returns>Returns the updated status code</returns>
-    public BallotStatusWithSpoilCount UpdateBallotStatus(IBallotBase ballot, List<vVoteInfo> currentVoteInfos)
+    public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes)
     {
       if (IsSingleNameElection)
       {
@@ -71,13 +71,13 @@ namespace TallyJ.CoreModels
 
 
       //double check:
-      currentVoteInfos.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
+      currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
 
       //var currentVotes = currentVoteInfos.AsVotes().ToList();
 
       string ballotStatus;
       int spoiledCount;
-      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVoteInfos, out ballotStatus, out spoiledCount))
+      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out ballotStatus, out spoiledCount))
       {
         ballot.StatusCode = ballotStatus;
         SaveChangesToDatastore();
@@ -92,11 +92,11 @@ namespace TallyJ.CoreModels
     /// <Summary>Review the votes, and determine if the containing ballot's status code should change</Summary>
     /// <param name="currentStatusCode"> The current status code </param>
     /// <param name="votes">  </param>
-    /// <param name="voteInfos"> All the votes on this ballot</param>
+    /// <param name="votes"> All the votes on this ballot</param>
     /// <param name="statusCode"> The new status code </param>
     /// <param name="spoiledCount"> </param>
     /// <returns> True if the new status code is different from the current status code </returns>
-    public bool DetermineStatusFromVotesList(string currentStatusCode, List<vVoteInfo> voteInfos, out string statusCode, out int spoiledCount)
+    public bool DetermineStatusFromVotesList(string currentStatusCode, List<VoteInfo> votes, out string statusCode, out int spoiledCount)
     {
       spoiledCount = 0;
 
@@ -112,14 +112,14 @@ namespace TallyJ.CoreModels
         return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
       }
 
-      var needsReview = voteInfos.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      var needsReview = votes.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
       if (needsReview)
       {
         return StatusChanged(BallotStatusEnum.Review, currentStatusCode, out statusCode);
       }
 
       // check counts
-      var numVotes = voteInfos.Count();
+      var numVotes = votes.Count();
 
       if (numVotes == 0)
       {
@@ -137,12 +137,12 @@ namespace TallyJ.CoreModels
       }
 
       // find duplicates
-      if (voteInfos.Any(vote => voteInfos.Count(v => v.PersonGuid.HasValue && v.PersonGuid == vote.PersonGuid) > 1))
+      if (votes.Any(vote => votes.Count(v => v.PersonGuid.HasValue && v.PersonGuid == vote.PersonGuid) > 1))
       {
         return StatusChanged(BallotStatusEnum.Dup, currentStatusCode, out statusCode);
       }
 
-      spoiledCount = voteInfos.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      spoiledCount = votes.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
 
       return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
     }
@@ -158,7 +158,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Run <see cref="UpdateBallotStatus"/> on each of these Ballots, updating the database if needed</Summary>
     /// <param name="ballots">The list of Ballot records to update</param>
     /// <param name="voteInfos">All the Votes that are on all these Ballots.</param>
-    public void UpdateAllBallotStatuses(List<Ballot> ballots, List<vVoteInfo> voteInfos)
+    public void UpdateAllBallotStatuses(List<Ballot> ballots, List<VoteInfo> voteInfos)
     {
       ballots.ForEach(b =>
                         {

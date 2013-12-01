@@ -7,7 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -196,7 +196,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     public Election GetFreshFromDb(Guid electionGuid)
     {
-      var election = Db.Elections.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+      var election = Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
       UserSession.CurrentElection = election;
       return election;
     }
@@ -204,7 +204,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
     {
-      var election = Db.Elections.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
+      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
       if (election != null)
       {
         var currentType = election.ElectionType;
@@ -282,7 +282,7 @@ namespace TallyJ.CoreModels
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
-      var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == wantedElectionGuid);
+      var election = Db.Election.SingleOrDefault(e => e.ElectionGuid == wantedElectionGuid);
       if (election == null)
       {
         return false;
@@ -320,7 +320,7 @@ namespace TallyJ.CoreModels
     //                 }.AsJsonResult();
     //    }
 
-    //    var election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
+    //    var election = Db.Election.SingleOrDefault(e => e.ElectionGuid == guidOfElectionToCopy);
     //    if (election == null)
     //    {
     //        return new
@@ -348,7 +348,7 @@ namespace TallyJ.CoreModels
     //                     Message = "Sorry: " + result.Message
     //                 }.AsJsonResult();
     //    }
-    //    election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
+    //    election = Db.Election.SingleOrDefault(e => e.ElectionGuid == result.NewElectionGuid);
     //    if (election == null)
     //    {
     //        return new
@@ -393,7 +393,7 @@ namespace TallyJ.CoreModels
         CanVote = CanVoteOrReceive.All,
         CanReceive = CanVoteOrReceive.All
       };
-      Db.Elections.Add(election);
+      Db.Election.Add(election);
       Db.SaveChanges();
 
       new ElectionStatusSharer().SetStateFor(election);
@@ -403,7 +403,7 @@ namespace TallyJ.CoreModels
         ElectionGuid = election.ElectionGuid,
         UserId = UserSession.UserGuid
       };
-      Db.JoinElectionUsers.Add(join);
+      Db.JoinElectionUser.Add(join);
 
 
       var mainLocation = new Location
@@ -413,7 +413,7 @@ namespace TallyJ.CoreModels
         ElectionGuid = election.ElectionGuid,
         SortOrder = 1
       };
-      Db.Locations.Add(mainLocation);
+      Db.Location.Add(mainLocation);
 
       Db.SaveChanges();
 
@@ -441,7 +441,7 @@ namespace TallyJ.CoreModels
       var election = UserSession.CurrentElection;
       if (election.TallyStatus != status)
       {
-        Db.Elections.Attach(election);
+        Db.Election.Attach(election);
 
         election.TallyStatus = status;
 
@@ -451,13 +451,13 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public IEnumerable<vElectionListInfo> VisibleElections()
+    public IEnumerable<Election> VisibleElections()
     {
       // this is first hit on the database on the home page... need special logging
       try
       {
         var electionsWithCode =
-          Db.vElectionListInfoes.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
+          Db.Election.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
         return
           electionsWithCode.Where(
             e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
@@ -467,7 +467,7 @@ namespace TallyJ.CoreModels
         var logger = LogManager.GetCurrentClassLogger();
         logger.ErrorException("Reading VisibleElections", e);
 
-        return new List<vElectionListInfo>();
+        return new List<Election>();
       }
     }
 
@@ -490,7 +490,7 @@ namespace TallyJ.CoreModels
       var election = UserSession.CurrentElection;
       if (election.ShowFullReport != showFullReport)
       {
-        Db.Elections.Attach(election);
+        Db.Election.Attach(election);
 
         election.ShowFullReport = showFullReport;
 
@@ -505,7 +505,7 @@ namespace TallyJ.CoreModels
       if (UserSession.IsKnownTeller)
       {
         var election = UserSession.CurrentElection;
-        Db.Elections.Attach(election);
+        Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
 
@@ -537,7 +537,7 @@ namespace TallyJ.CoreModels
 
       if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
-        Db.Elections.Attach(election);
+        Db.Election.Attach(election);
         var listedForPublicAsOf = DateTime.Now;
         election.ListedForPublicAsOf = listedForPublicAsOf;
         try

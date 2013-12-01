@@ -6,7 +6,7 @@ using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 using Membership = System.Web.Security.Membership;
 
 namespace TallyJ.Code.Session
@@ -100,7 +100,7 @@ namespace TallyJ.Code.Session
                 var election = SessionKey.CurrentElection.FromSession<Election>(null);
                 if (election == null && CurrentElectionGuid != Guid.Empty)
                 {
-                    CurrentElection = election = UnityInstance.Resolve<IDbContextFactory>().DbContext.Elections.First(e => e.ElectionGuid == CurrentElectionGuid);
+                    CurrentElection = election = UnityInstance.Resolve<IDbContextFactory>().DbContext.Election.First(e => e.ElectionGuid == CurrentElectionGuid);
                 }
                 return election;
             }

@@ -18,9 +18,9 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers;
-using TallyJ.Models;
+using TallyJ.EF;
 using Unity.Mvc3;
-using Configuration = TallyJ.Migrations.Configuration;
+//using Configuration = TallyJ.Migrations.Configuration;
 
 namespace TallyJ
 {
@@ -92,7 +92,7 @@ namespace TallyJ
             if (siteInfo.CurrentDataSource == DataSource.SharedSql)
             {
                 FixUpConnectionString();
-                Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dContext, Configuration>());
+                // Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dEntities, Configuration>());
             }
 
             RegisterDefaultRoute(RouteTable.Routes, 

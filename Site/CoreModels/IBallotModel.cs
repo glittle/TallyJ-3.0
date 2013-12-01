@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public interface IBallotModel
   {
     /// <Summary>Current Ballot... could be null</Summary>
-    vBallotInfo GetCurrentBallotInfo();
+    Ballot GetCurrentBallot();
 
     void SetAsCurrentBallot(int ballotId);
 
@@ -25,6 +25,6 @@ namespace TallyJ.CoreModels
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);
-    object BallotInfoForJs(vBallotInfo b);
+    object BallotInfoForJs(Ballot b);
   }
 }

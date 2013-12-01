@@ -140,16 +140,8 @@
     <Build Include="tj\Tables\Election.sql" />
     <Build Include="tj\Tables\Computer.sql" />
     <Build Include="tj\Tables\Ballot.sql" />
-    <Build Include="tj\Views\vLocationInfo.sql" />
-    <Build Include="tj\Views\_vUserElectionList.sql" />
-    <Build Include="tj\Views\vVoteInfo.sql" />
-    <Build Include="tj\Views\vImportFileInfo.sql" />
-    <Build Include="tj\Views\vElectionListInfo.sql" />
-    <Build Include="tj\Views\vBallotInfo.sql" />
     <Build Include="Security\TallyJSite.sql" />
-    <Build Include="tj\Functions\HasMatch.sql" />
     <Build Include="Security\tj.sql" />
-    <Build Include="tj\Stored Procedures\SqlSearch.sql" />
     <Build Include="dbo\Tables\__MigrationHistory.sql" />
   </ItemGroup>
   <ItemGroup>

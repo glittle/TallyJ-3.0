@@ -1,8 +1,8 @@
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace Tests.BusinessTests
 {
-  public class FakeDataContext : TallyJ2dContext
+  public class FakeDataContext : TallyJ2dEntities
   {
     public override bool IsFaked
     {

@@ -7,8 +7,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
-using TallyJ.Models;
-using TallyJ.Models.Persistance;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -90,7 +89,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult Download(int id)
     {
-      var fullFile = Db.ImportFiles.SingleOrDefault(f => f.ElectionGuid == UserSession.CurrentElectionGuid && f.C_RowId == id);
+      var fullFile = Db.ImportFile.SingleOrDefault(f => f.ElectionGuid == UserSession.CurrentElectionGuid && f.C_RowId == id);
 
       if (fullFile != null)
       {

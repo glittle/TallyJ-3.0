@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.Code
 {
@@ -662,21 +662,21 @@ namespace TallyJ.Code
       }
     }
 
-    public static IEnumerable<Vote> AsVotes(this IEnumerable<vVoteInfo> inputs)
-    {
-      return inputs.Select(vVoteInfo => new Vote
-          {
-            C_RowId = vVoteInfo.VoteId,
-            BallotGuid = vVoteInfo.BallotGuid,
-            C_RowVersion = null,
-            InvalidReasonGuid = vVoteInfo.VoteIneligibleReasonGuid,
-            PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
-            PersonGuid = vVoteInfo.PersonGuid,
-            PositionOnBallot = vVoteInfo.PositionOnBallot,
-            SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
-            StatusCode = vVoteInfo.VoteStatusCode
-          });
-    }
+//    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
+//    {
+//      return inputs.Select(VoteInfo => new Vote
+//          {
+//            C_RowId = VoteInfo.VoteId,
+//            BallotGuid = VoteInfo.BallotGuid,
+//            C_RowVersion = null,
+//            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
+//            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
+//            PersonGuid = VoteInfo.PersonGuid,
+//            PositionOnBallot = VoteInfo.PositionOnBallot,
+//            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
+//            StatusCode = VoteInfo.VoteStatusCode
+//          });
+//    }
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>
@@ -715,7 +715,7 @@ namespace TallyJ.Code
 
     public static SearchResult AsSerachResult(this Person p, int matchType)
     {
-      var name = p.C_FullName
+      var name = p.FullName
                  + p.BahaiId.SurroundContentWith(" (", ")")
                  + p.Area.SurroundContentWith(" (", ")");
 
@@ -744,6 +744,15 @@ namespace TallyJ.Code
 
       return new string(array.Select(c => char.IsLetterOrDigit(c) ? c : sep) // remove all punctuation
                              .ToArray());
+    }
+
+
+    public static IEnumerable<TResult> LeftOuterJoin<TSource, TInner, TKey, TResult>(this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey, Func<TSource, TInner, TResult> res)
+    {
+      return from f in source
+             join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
+             from result in g.DefaultIfEmpty()
+             select res.Invoke(f, result);
     }
   }
 }

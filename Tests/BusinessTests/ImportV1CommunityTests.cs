@@ -2,7 +2,7 @@ using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests

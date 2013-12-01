@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.EF;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 
@@ -20,31 +22,35 @@ namespace TallyJ.CoreModels
         var now = DateTime.Now;
         var currentElectionGuid = UserSession.CurrentElectionGuid;
 
+        var votes = Vote.AllVotesCached;
+        var ballots = Ballot.AllBallotsCached;
+        var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
+
         return
           new
             {
-              Locations = Db.vLocationInfoes
-                .Where(li => li.ElectionGuid == currentElectionGuid)
-                .OrderBy(li => li.SortOrder)
-                .ThenBy(li => li.ComputerCode)
-                .ThenBy(li => li.C_RowId)
+              ComputerInfo = Location.AllLocationsCached
+                .LeftOuterJoin(Db.Computer, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+                .OrderBy(g => g.l.SortOrder)
+                .ThenBy(g => g.c.ComputerCode)
+                .ThenBy(g => g.l.C_RowId)
                 .ToList()
-                .Select(li => new
+                .Select(g => new
                                 {
-                                  li.BallotsAtComputer,
-                                  li.BallotsAtLocation,
-                                  li.BallotsCollected,
-                                  li.ComputerCode,
-                                  li.ContactInfo,
-                                  li.Name,
-                                  TallyStatus = LocationStatusEnum.TextFor(li.TallyStatus),
-                                  li.TellerName,
-                                  MinutesOld = li.LastContact.HasValue ? ((now - li.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
-                                  LocationId = li.C_RowId
+                                  BallotsAtComputer = BallotModelCore.BallotCount(g.l.LocationGuid, g.c.ComputerCode, isSingleName),
+                                  BallotsAtLocation = BallotModelCore.BallotCount(g.l.LocationGuid, isSingleName),
+                                  g.l.BallotsCollected,
+                                  g.c.ComputerCode,
+                                  g.l.ContactInfo,
+                                  g.l.Name,
+                                  TallyStatus = LocationStatusEnum.TextFor(g.l.TallyStatus),
+                                  TellerName = g.c.GetTellerName(),
+                                  MinutesOld = g.c.LastContact.HasValue ? ((now - g.c.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
+                                  LocationId = g.l.C_RowId
                                 })
                                 ,
-              Ballots = Db.vBallotInfoes
-                .Where(bi => bi.ElectionGuid == currentElectionGuid  && (bi.StatusCode == BallotStatusEnum.Review || bi.VotesChanged > 0))
+              Ballots = new List<BallotInfo>()
+                .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.VotesChanged > 0)
                 .OrderBy(bi => bi.C_RowId)
                 .ToList()
                 .Select(bi =>

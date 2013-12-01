@@ -7,7 +7,7 @@ using System.Web.UI.WebControls.WebParts;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {

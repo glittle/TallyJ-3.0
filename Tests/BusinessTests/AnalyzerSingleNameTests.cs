@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
@@ -60,20 +60,20 @@ namespace Tests.BusinessTests
                           {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
                       };
 
-      var votes = new List<vVoteInfo>
+      var votes = new List<VoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 33},
-                      new vVoteInfo {SingleNameElectionCount = 5},
-                      new vVoteInfo {SingleNameElectionCount = 2},
+                      new VoteInfo {SingleNameElectionCount = 33},
+                      new VoteInfo {SingleNameElectionCount = 5},
+                      new VoteInfo {SingleNameElectionCount = 2},
                     };
-      foreach (var vVoteInfo in votes)
+      foreach (var VoteInfo in votes)
       {
-        vVoteInfo.BallotGuid = ballotGuid;
-        vVoteInfo.PersonGuid = personGuid; // all for one person in this test
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        VoteInfo.BallotGuid = ballotGuid;
+        VoteInfo.PersonGuid = personGuid; // all for one person in this test
+        VoteInfo.ElectionGuid = electionGuid;
+        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
+        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -126,16 +126,16 @@ namespace Tests.BusinessTests
                           {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok}
                       };
 
-      var voteinfos = new List<vVoteInfo>
+      var voteinfos = new List<VoteInfo>
                     {
                       // TODO 2012-03-24 Glen Little: Needs attention... these test are for normal elections, not single name...
-                      new vVoteInfo {SingleNameElectionCount = 33},
-                      new vVoteInfo {SingleNameElectionCount = 5},
-                      new vVoteInfo {SingleNameElectionCount = 2},
-                      new vVoteInfo {SingleNameElectionCount = 4},
-                      new vVoteInfo {SingleNameElectionCount = 27},
-                      new vVoteInfo {SingleNameElectionCount = 27},
-                      new vVoteInfo {SingleNameElectionCount = 27},
+                      new VoteInfo {SingleNameElectionCount = 33},
+                      new VoteInfo {SingleNameElectionCount = 5},
+                      new VoteInfo {SingleNameElectionCount = 2},
+                      new VoteInfo {SingleNameElectionCount = 4},
+                      new VoteInfo {SingleNameElectionCount = 27},
+                      new VoteInfo {SingleNameElectionCount = 27},
+                      new VoteInfo {SingleNameElectionCount = 27},
                     };
       var rowId = 1;
       foreach (var voteInfo in voteinfos)
@@ -194,15 +194,15 @@ namespace Tests.BusinessTests
                           {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
                       };
 
-      var voteInfos = new List<vVoteInfo>
+      var voteInfos = new List<VoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 33, BallotGuid = ballots[0].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
-                      new vVoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
+                      new VoteInfo {SingleNameElectionCount = 33, BallotGuid = ballots[0].BallotGuid},
+                      new VoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
+                      new VoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
+                      new VoteInfo {SingleNameElectionCount = 5, BallotGuid = ballots[0].BallotGuid},
+                      new VoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},
+                      new VoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
+                      new VoteInfo {SingleNameElectionCount = 27, BallotGuid = ballots[1].BallotGuid},// spoiled
                     };
       var rowId = 1;
       foreach (var voteInfo in voteInfos)
@@ -284,19 +284,19 @@ namespace Tests.BusinessTests
                         new Ballot
                           {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
                       };
-      var votes = new List<vVoteInfo>
+      var votes = new List<VoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 33, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 5, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 33, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 5, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var vVoteInfo in votes)
+      foreach (var VoteInfo in votes)
       {
-        vVoteInfo.BallotGuid = ballotGuid;
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        VoteInfo.BallotGuid = ballotGuid;
+        VoteInfo.ElectionGuid = electionGuid;
+        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
+        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -341,19 +341,19 @@ namespace Tests.BusinessTests
                         new Ballot
                           {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
                       };
-      var votes = new List<vVoteInfo>
+      var votes = new List<VoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var vVoteInfo in votes)
+      foreach (var VoteInfo in votes)
       {
-        vVoteInfo.BallotGuid = ballotGuid;
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        VoteInfo.BallotGuid = ballotGuid;
+        VoteInfo.ElectionGuid = electionGuid;
+        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
+        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -400,19 +400,19 @@ namespace Tests.BusinessTests
                         new Ballot
                           {LocationGuid = location.LocationGuid, BallotGuid = ballotGuid, StatusCode = BallotStatusEnum.Ok}
                       };
-      var votes = new List<vVoteInfo>
+      var votes = new List<VoteInfo>
                     {
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
-                      new vVoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
+                      new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var vVoteInfo in votes)
+      foreach (var VoteInfo in votes)
       {
-        vVoteInfo.BallotGuid = ballotGuid;
-        vVoteInfo.ElectionGuid = electionGuid;
-        vVoteInfo.PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote = "zz";
-        vVoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        vVoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        VoteInfo.BallotGuid = ballotGuid;
+        VoteInfo.ElectionGuid = electionGuid;
+        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
+        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);

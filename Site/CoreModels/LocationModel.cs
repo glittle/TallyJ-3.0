@@ -7,7 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 
 namespace TallyJ.CoreModels
@@ -97,7 +97,7 @@ namespace TallyJ.CoreModels
       //{
       //  return null;
       //}
-      //var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+      //var location = Db.Location.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       return LocationInfoForJson(UserSession.CurrentLocation);
     }
@@ -105,9 +105,7 @@ namespace TallyJ.CoreModels
     public object LocationInfoForJson(Location location)
     {
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
-      var sum = isSingleName
-                  ? Db.vVoteInfoes.Where(vi => vi.LocationId == location.C_RowId).Sum(vi => vi.SingleNameElectionCount)
-                  : Db.vBallotInfoes.Count(b => b.LocationId == location.C_RowId);
+      var sum = BallotModelCore.BallotCount(location.LocationGuid, isSingleName);
 
       return new
                {
@@ -124,7 +122,7 @@ namespace TallyJ.CoreModels
     public JsonResult UpdateNumCollected(int numCollected)
     {
       var location = UserSession.CurrentLocation;
-      Db.Locations.Attach(location);
+      Db.Location.Attach(location);
 
       location.BallotsCollected = numCollected;
 
@@ -143,7 +141,7 @@ namespace TallyJ.CoreModels
     public JsonResult UpdateLocationInfo(string info)
     {
       var location = UserSession.CurrentLocation;
-      Db.Locations.Attach(location);
+      Db.Location.Attach(location);
 
       location.ContactInfo = info;
 
@@ -162,7 +160,7 @@ namespace TallyJ.CoreModels
       if (location == null)
       {
         location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
-        Db.Locations.Add(location);
+        Db.Location.Add(location);
         changed = true;
       }
 
@@ -176,10 +174,10 @@ namespace TallyJ.CoreModels
         if (Locations.Count() > 1)
         {
           // delete existing if we can
-          var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
+          var used = Db.Ballot.Any(b => b.LocationGuid == location.LocationGuid);
           if (!used)
           {
-            Db.Locations.Remove(location);
+            Db.Location.Remove(location);
             Db.SaveChanges();
             changed = true;
 

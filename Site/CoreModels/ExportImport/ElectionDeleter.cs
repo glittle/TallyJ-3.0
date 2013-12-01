@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels.ExportImport
 {
@@ -20,7 +20,7 @@ namespace TallyJ.CoreModels.ExportImport
 
     public ActionResult Delete()
     {
-      var target = Db.Elections.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
+      var target = Db.Election.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
       if (target == null)
       {
         return new
@@ -32,7 +32,7 @@ namespace TallyJ.CoreModels.ExportImport
       var electionName = target.Name;
 
       var user = Db.Users.SingleOrDefault(u => u.UserName == UserSession.LoginId);
-      if (user == null || !Db.JoinElectionUsers.Any(j => j.ElectionGuid == _electionGuid && j.UserId == user.UserId))
+      if (user == null || !Db.JoinElectionUser.Any(j => j.ElectionGuid == _electionGuid && j.UserId == user.UserId))
       {
         return new
           {
@@ -72,14 +72,14 @@ namespace TallyJ.CoreModels.ExportImport
 
           Election.EraseBallotsAndResults(_electionGuid);
 
-          Db.Computers.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Locations.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.People.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Tellers.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.JoinElectionUsers.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.ImportFiles.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Messages.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Elections.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Computer.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Location.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Person.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Teller.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.JoinElectionUser.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.ImportFile.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Message.Delete(x => x.ElectionGuid == _electionGuid);
+          Db.Election.Delete(x => x.ElectionGuid == _electionGuid);
 
           new LogHelper().Add("Deleted election '{0}' ({1})".FilledWith(electionName, _electionGuid));
 

@@ -7,7 +7,7 @@ using TallyJ.Code;
 
 namespace TallyJ.Models
 {
-    public partial class TallyJ2dContext
+    public partial class TallyJ2dEntities
     {
         public virtual IEnumerable<CloneElection_Result> CloneElection(Guid? sourceElection, string byLoginId)
         {

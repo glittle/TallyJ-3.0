@@ -4,7 +4,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -60,14 +60,14 @@ namespace TallyJ.CoreModels
       var after = new List<Person>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person { C_RowId = 0 - numBlanksBefore, C_FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        before.Add(new Person { C_RowId = 0 - numBlanksBefore, FullName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person { C_RowId = firstBlankAfter + offset++, C_FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        after.Add(new Person { C_RowId = firstBlankAfter + offset++, FullName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksAfter--;
       }
       var i = 0;
@@ -78,7 +78,7 @@ namespace TallyJ.CoreModels
           .Select(p => new
                          {
                            PersonId = p.C_RowId,
-                           FullName = p.C_FullNameFL,
+                           FullName = p.FullNameFL,
                            VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(UserSession.CurrentElection, p) : "",
                            Pos = ++i
                          });

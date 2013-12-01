@@ -1,14 +1,15 @@
-using TallyJ.Models;
+using TallyJ.EF;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Data
 {
     public class DbContextFactory : IDbContextFactory
     {
-        private TallyJ2dContext _tallyJ2Entities;
+      private TallyJ2dEntities _tallyJ2Entities;
 
         #region IDbContextFactory Members
 
-        public TallyJ2dContext DbContext
+        public TallyJ2dEntities DbContext
         {
             get
             {
@@ -17,7 +18,7 @@ namespace TallyJ.Code.Data
                     return _tallyJ2Entities;
                 }
 
-                _tallyJ2Entities = new TallyJ2dContext();
+                _tallyJ2Entities = new TallyJ2dEntities();
 
                 _tallyJ2Entities.Configuration.ValidateOnSaveEnabled = true;
 
@@ -34,7 +35,7 @@ namespace TallyJ.Code.Data
                 //
                 //        var entityConnection = new EntityConnection(workspace, connection);
                 //
-                //        return _tallyJ2Entities = new TallyJ2dContext(entityConnection);
+                //        return _tallyJ2Entities = new TallyJ2dEntities(entityConnection);
             }
         }
 

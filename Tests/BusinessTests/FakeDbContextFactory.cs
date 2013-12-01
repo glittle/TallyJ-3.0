@@ -1,11 +1,12 @@
 using TallyJ.Code.Data;
-using TallyJ.Models;
+using TallyJ.EF;
+using TallyJ.EF;
 
 namespace Tests.BusinessTests
 {
   public class FakeDbContextFactory : IDbContextFactory
   {
-    public TallyJ2dContext DbContext
+    public TallyJ2dEntities DbContext
     {
       get { return new FakeDataContext(); }
     }

@@ -6,7 +6,7 @@ using TallyJ.Code;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using System.Linq;
-using TallyJ.Models;
+using TallyJ.EF;
 
 
 namespace TallyJ.CoreModels
@@ -58,7 +58,7 @@ namespace TallyJ.CoreModels
           if (thisTeller != null)
           {
             thisTeller.UsingComputerCode = "";
-            Db.Computers.Attach(UserSession.CurrentComputer);
+            Db.Computer.Attach(UserSession.CurrentComputer);
             switch (num)
             {
               case 1:
@@ -91,9 +91,9 @@ namespace TallyJ.CoreModels
                            Name = newName,
                            UsingComputerCode = UserSession.CurrentComputerCode,
                          };
-          Db.Tellers.Add(teller);
+          Db.Teller.Add(teller);
 
-          Db.Computers.Attach(UserSession.CurrentComputer);
+          Db.Computer.Attach(UserSession.CurrentComputer);
           switch (num)
           {
             case 1:
@@ -122,7 +122,7 @@ namespace TallyJ.CoreModels
             UserSession.SetCurrentTeller(num, thisTeller.TellerGuid);
             thisTeller.UsingComputerCode = UserSession.CurrentComputerCode;
 
-            Db.Computers.Attach(UserSession.CurrentComputer);
+            Db.Computer.Attach(UserSession.CurrentComputer);
             switch (num)
             {
               case 1:
@@ -153,7 +153,7 @@ namespace TallyJ.CoreModels
 
       try
       {
-        Db.Tellers.Remove(thisTeller);
+        Db.Teller.Remove(thisTeller);
         Db.SaveChanges();
       }
       catch (Exception ex)

@@ -3,7 +3,7 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -13,7 +13,7 @@ namespace TallyJ.CoreModels
         {
             get
             {
-                //                var locationModel = ContextItems.LocationModel;
+              //                var locationModel = ContextItems.LocationModel;
                 //                var locations = locationModel.Locations
                 //                                             .OrderBy(l => l.SortOrder)
                 //                                             .Select(
@@ -25,21 +25,26 @@ namespace TallyJ.CoreModels
                 //                                                         IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid
                 //                                                     });
 
-                return
-                    MyElections()
-                        .OrderByDescending(e => e.DateOfElection)
-                        .Select(e => new
-                            {
-                                e.Name,
-                                e.ElectionGuid,
-                                e.DateOfElection,
-                                e.ElectionType,
-                                e.ElectionMode,
-                                e.ShowAsTest,
-                                e.NumVoters
-                            })
-                        .ToList()
-                        .Select(info =>
+              var list = MyElections()
+                .OrderByDescending(e => e.DateOfElection)
+                .Select(e => new
+                {
+                  e.Name,
+                  e.ElectionGuid,
+                  e.DateOfElection,
+                  e.ElectionType,
+                  e.ElectionMode,
+                  e.ShowAsTest
+                })
+                .ToList();
+
+              var electionGuids = list.Select(e => e.ElectionGuid).ToList();
+
+              var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
+                                  .GroupBy(p => p.ElectionGuid)
+                                  .Select(g=>new { ElectionGuid = g.Key, Num = g.Count()});
+              
+              return list.Select(info =>
                             {
                                 var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
                                 return new
@@ -56,20 +61,20 @@ namespace TallyJ.CoreModels
                                         Mode =
                                             ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
                                         IsTest = info.ShowAsTest.AsBoolean(),
-                                        info.NumVoters
+                                        NumVoters = personCount.Single(c=>c.ElectionGuid== info.ElectionGuid).Num
                                     };
                             });
             }
         }
 
-        private IQueryable<vElectionListInfo> MyElections()
+        private IQueryable<Election> MyElections()
         {
             if (UserSession.IsKnownTeller)
             {
                 var userGuid = UserSession.UserGuid;
                 return Db
-                    .vElectionListInfoes
-                    .SelectMany(e => Db.JoinElectionUsers.Where(j => j.UserId == userGuid),
+                    .Election
+                    .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
                                 (e, j) => new { e, j })
                     .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
                     .Select(joined => joined.e);
@@ -78,10 +83,10 @@ namespace TallyJ.CoreModels
             var currentElection = UserSession.CurrentElection;
             if (UserSession.IsGuestTeller && currentElection != null)
             {
-                return Db.vElectionListInfoes.Where(e => e.ElectionGuid == currentElection.ElectionGuid);
+                return Db.Election.Where(e => e.ElectionGuid == currentElection.ElectionGuid);
             }
 
-            return Db.vElectionListInfoes.Where(e => false);
+            return Db.Election.Where(e => false);
         }
     }
 }

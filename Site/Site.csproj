@@ -165,8 +165,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -328,13 +330,72 @@
     <Compile Include="CoreModels\PeopleSearchModel.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
-    <Compile Include="Migrations\201311240617115_Nov23.cs" />
-    <Compile Include="Migrations\201311240617115_Nov23.Designer.cs">
-      <DependentUpon>201311240617115_Nov23.cs</DependentUpon>
+    <Compile Include="EF\Ballot.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Partials\Location.cs" />
-    <Compile Include="Models\Partials\Teller.cs" />
-    <Compile Include="Models\Partials\Vote.cs" />
+    <Compile Include="EF\Computer.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\C_Log.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\DbContextGen.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbContextGen.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\DbContextGen.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\DbModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Election.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ImportFile.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\JoinElectionUser.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Location.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Message.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Other\BallotInfo.cs" />
+    <Compile Include="EF\Other\VoteInfo.cs" />
+    <Compile Include="EF\Person.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Result.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ResultSummary.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\ResultTie.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Teller.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Users.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Vote.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Partials\Ballot.cs" />
+    <Compile Include="EF\Partials\Location.cs" />
+    <Compile Include="EF\Partials\Teller.cs" />
+    <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="OwinStartup.cs" />
     <Content Include="Content\bootstrap\css\variables.css">
       <DependentUpon>variables.less</DependentUpon>
@@ -445,65 +506,13 @@
     <Compile Include="CoreModels\SetupModel.cs" />
     <Compile Include="CoreModels\ElectionAnalyzerSingleName.cs" />
     <Compile Include="CoreModels\TellerModel.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Ballot.cs" />
-    <Compile Include="Models\BaseEntity.cs" />
-    <Compile Include="Models\Mapping\BallotMap.cs" />
-    <Compile Include="Models\Mapping\ComputerMap.cs" />
-    <Compile Include="Models\Mapping\C_LogMap.cs" />
-    <Compile Include="Models\Mapping\ElectionMap.cs" />
-    <Compile Include="Models\Mapping\ImportFileMap.cs" />
-    <Compile Include="Models\Mapping\LocationMap.cs" />
-    <Compile Include="Models\Mapping\MessageMap.cs" />
-    <Compile Include="Models\Mapping\PersonMap.cs" />
-    <Compile Include="Models\Mapping\ResultMap.cs" />
-    <Compile Include="Models\Mapping\ResultSummaryMap.cs" />
-    <Compile Include="Models\Mapping\ResultTieMap.cs" />
-    <Compile Include="Models\Mapping\TellerMap.cs" />
-    <Compile Include="Models\Mapping\UserMap.cs" />
-    <Compile Include="Models\Mapping\vBallotInfoMap.cs" />
-    <Compile Include="Models\Mapping\vElectionListInfoMap.cs" />
-    <Compile Include="Models\Mapping\vImportFileInfoMap.cs" />
-    <Compile Include="Models\Mapping\vLocationInfoMap.cs" />
-    <Compile Include="Models\Mapping\VoteMap.cs" />
-    <Compile Include="Models\Mapping\vResultInfoMap.cs" />
-    <Compile Include="Models\Mapping\vVoteInfoMap.cs" />
-    <Compile Include="Models\Mapping\JoinElectionUserMap.cs" />
-    <Compile Include="Models\Partials\ResultSummary.cs" />
-    <Compile Include="Models\Partials\ExtraQueries.cs" />
-    <Compile Include="Models\Persistance\IRepository.cs" />
-    <Compile Include="Models\Persistance\EntityFrameworkRepository.cs" />
-    <Compile Include="Models\Procs\CloneElection_Result.cs" />
-    <Compile Include="Models\Computer.cs" />
-    <Compile Include="Models\C_Log.cs" />
-    <Compile Include="Models\Election.cs" />
-    <Compile Include="Models\ImportFile.cs" />
-    <Compile Include="Models\JoinElectionUser.cs" />
-    <Compile Include="Models\Location.cs" />
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Models\Partials\BallotRelated.cs" />
-    <Compile Include="Models\Partials\Election.cs" />
-    <Compile Include="Models\Partials\Functions.cs" />
-    <Compile Include="Models\Partials\IHasElectionGuid.cs" />
-    <Compile Include="Models\Partials\Person.cs" />
-    <Compile Include="Models\Partials\SerializableClasses.cs" />
-    <Compile Include="Models\Partials\TallyJ2Entities.cs" />
-    <Compile Include="Models\Person.cs" />
-    <Compile Include="Models\Procs\StoredProcedures.cs" />
-    <Compile Include="Models\Result.cs" />
-    <Compile Include="Models\ResultSummary.cs" />
-    <Compile Include="Models\ResultTie.cs" />
-    <Compile Include="Models\Procs\SqlSearch_Result.cs" />
-    <Compile Include="Models\TallyJ2dContext.cs" />
-    <Compile Include="Models\Teller.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\vBallotInfo.cs" />
-    <Compile Include="Models\vElectionListInfo.cs" />
-    <Compile Include="Models\vImportFileInfo.cs" />
-    <Compile Include="Models\vLocationInfo.cs" />
-    <Compile Include="Models\Vote.cs" />
-    <Compile Include="Models\vResultInfo.cs" />
-    <Compile Include="Models\vVoteInfo.cs" />
+    <Compile Include="EF\Partials\ResultSummary.cs" />
+    <Compile Include="EF\Partials\BallotRelated.cs" />
+    <Compile Include="EF\Partials\Election.cs" />
+    <Compile Include="EF\Partials\IHasElectionGuid.cs" />
+    <Compile Include="EF\Partials\Person.cs" />
+    <Compile Include="EF\Partials\Computer.cs" />
+    <Compile Include="EF\Partials\TallyJ2Entities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\bootstrap\css\accordion.less" />
     <Content Include="Content\bootstrap\css\alerts.less" />
@@ -549,6 +558,23 @@
     <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Context.tt" />
     <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Entity.tt" />
     <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Mapping.tt" />
+    <EntityDeploy Include="EF\DbModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>DbModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="EF\DbModel.edmx.diagram">
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="EF\DbContextGen.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbContextGen.Context.cs</LastGenOutput>
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="EF\DbContextGen.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbContextGen.cs</LastGenOutput>
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -804,11 +830,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201311240617115_Nov23.resx">
-      <DependentUpon>201311240617115_Nov23.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

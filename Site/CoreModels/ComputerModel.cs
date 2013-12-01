@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels
                                  BrowserInfo = HttpContext.Current.Request.Browser.Type
                              };
 
-            Db.Computers.Add(computer);
+            Db.Computer.Add(computer);
             Db.SaveChanges();
 
             SessionKey.CurrentComputer.SetInSession(computer);
@@ -37,11 +37,11 @@ namespace TallyJ.CoreModels
             const int maxMinutesOfNoContact = 5;
 
             var now = DateTime.Now;
-            var computers = Db.Computers.ToList();
+            var computers = Db.Computer.ToList();
 
             foreach (var oldComputer in computers.Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
             {
-                Db.Computers.Remove(oldComputer);
+                Db.Computer.Remove(oldComputer);
             }
             Db.SaveChanges();
         }
@@ -51,14 +51,14 @@ namespace TallyJ.CoreModels
         {
             var computer = UserSession.CurrentComputer ?? CreateComputerRecordForMe();
 
-            Db.Computers.Attach(computer);
+            Db.Computer.Attach(computer);
 
             computer.ElectionGuid = electionGuid;
             computer.LocationGuid = null;
             SessionKey.CurrentLocation.SetInSession<Location>(null);
 
             computer.ComputerCode = DetermineNextFreeComputerCode(
-              Db.Computers
+              Db.Computer
                 .Where(c => c.ElectionGuid == electionGuid)
                 .Select(c => c.ComputerCode)
                 //--> 
@@ -91,7 +91,7 @@ namespace TallyJ.CoreModels
             var computer = UserSession.CurrentComputer;
             if (computer.ElectionGuid.HasValue)
             {
-                Db.Computers.Attach(computer);
+                Db.Computer.Attach(computer);
                 computer.LocationGuid = location.LocationGuid;
                 computer.LastContact = DateTime.Now;
                 Db.SaveChanges();
@@ -104,7 +104,7 @@ namespace TallyJ.CoreModels
             {
                 // for single name elections, only have one ballot per computer per location. (But if altered from a normal election to a single name election, may have multiple.)
                 var ballotId =
-                  Db.Ballots.Where(
+                  Db.Ballot.Where(
                     b => b.LocationGuid == location.LocationGuid && b.ComputerCode == computer.ComputerCode)
                     .Select(b => b.C_RowId).FirstOrDefault();
                 if (ballotId != 0)
@@ -169,7 +169,7 @@ namespace TallyJ.CoreModels
             {
                 return false;
             }
-            Db.Computers.Attach(computer);
+            Db.Computer.Attach(computer);
 
             var lastContact = DateTime.Now;
             computer.LastContact = lastContact;

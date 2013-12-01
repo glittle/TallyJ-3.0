@@ -4,7 +4,7 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels.ExportImport
 {
@@ -21,28 +21,28 @@ namespace TallyJ.CoreModels.ExportImport
         public Exporter Export()
         {
             // collect all the info
-            _election = Db.Elections.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
+            _election = Db.Election.SingleOrDefault(e => e.ElectionGuid == _electionGuid);
 
             var logger = new LogHelper(_electionGuid);
             logger.Add("Save to file started");
 
             if (_election == null) return null;
 
-            var locations = Db.Locations.Where(l => l.ElectionGuid == _electionGuid);
-            var computers = Db.Computers.Where(c => c.ElectionGuid == _electionGuid);
+            var locations = Db.Location.Where(l => l.ElectionGuid == _electionGuid);
+            var computers = Db.Computer.Where(c => c.ElectionGuid == _electionGuid);
 
-            var people = Db.People.Where(p => p.ElectionGuid == _electionGuid);
-            var tellers = Db.Tellers.Where(t => t.ElectionGuid == _electionGuid);
-            var results = Db.Results.Where(r => r.ElectionGuid == _electionGuid);
-            var resultSummaries = Db.ResultSummaries.Where(r => r.ElectionGuid == _electionGuid);
-            var resultTies = Db.ResultTies.Where(r => r.ElectionGuid == _electionGuid);
+            var people = Db.Person.Where(p => p.ElectionGuid == _electionGuid);
+            var tellers = Db.Teller.Where(t => t.ElectionGuid == _electionGuid);
+            var results = Db.Result.Where(r => r.ElectionGuid == _electionGuid);
+            var resultSummaries = Db.ResultSummary.Where(r => r.ElectionGuid == _electionGuid);
+            var resultTies = Db.ResultTie.Where(r => r.ElectionGuid == _electionGuid);
             var logs = Db.C_Log.Where(log => log.ElectionGuid == _electionGuid);
 
-            var joinElectionUsers = Db.JoinElectionUsers.Where(j => j.ElectionGuid == _electionGuid);
+            var joinElectionUsers = Db.JoinElectionUser.Where(j => j.ElectionGuid == _electionGuid);
             var users = Db.Users.Where(u => joinElectionUsers.Select(j => j.UserId).Contains(u.UserId));
 
-            var ballots = Db.Ballots.Where(b => locations.Select(l => l.LocationGuid).Contains(b.LocationGuid));
-            var votes = Db.Votes.Where(v => ballots.Select(b => b.BallotGuid).Contains(v.BallotGuid));
+            var ballots = Db.Ballot.Where(b => locations.Select(l => l.LocationGuid).Contains(b.LocationGuid));
+            var votes = Db.Vote.Where(v => ballots.Select(b => b.BallotGuid).Contains(v.BallotGuid));
 
             var site = new SiteInfo();
 
@@ -74,7 +74,7 @@ namespace TallyJ.CoreModels.ExportImport
             return new Exporter(blob, "TallyJ2", exportName);
         }
 
-        private IList ExportUsers(IQueryable<User> users)
+        private IList ExportUsers(IQueryable<Users> users)
         {
             return users.OrderBy(u => u.UserName)
                         .ToList()
@@ -262,11 +262,11 @@ namespace TallyJ.CoreModels.ExportImport
                     rs.ResultType,
                     rs.NumVoters,
                     rs.NumEligibleToVote,
-                    rs.NumBallotsEntered,
-                    rs.EnvelopesInPerson,
-                    rs.EnvelopesDroppedOff,
-                    rs.EnvelopesMailedIn,
-                    rs.EnvelopesCalledIn,
+                    NumBallotsEntered = rs.BallotsReceived,
+                    EnvelopesInPerson = rs.InPersonBallots,
+                    EnvelopesDroppedOff = rs.DroppedOffBallots,
+                    EnvelopesMailedIn = rs.MailedInBallots,
+                    EnvelopesCalledIn = rs.CalledInBallots,
                     rs.BallotsNeedingReview,
                     rs.SpoiledBallots,
                     rs.SpoiledVotes,
