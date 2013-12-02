@@ -97,12 +97,13 @@ namespace TallyJ.Code.Session
         {
             get
             {
-                var election = SessionKey.CurrentElection.FromSession<Election>(null);
-                if (election == null && CurrentElectionGuid != Guid.Empty)
-                {
-                    CurrentElection = election = UnityInstance.Resolve<IDbContextFactory>().DbContext.Election.First(e => e.ElectionGuid == CurrentElectionGuid);
-                }
-                return election;
+              return Election.ThisElectionCached;
+//                var election = SessionKey.CurrentElection.FromSession<Election>(null);
+//                if (election == null && CurrentElectionGuid != Guid.Empty)
+//                {
+//                    CurrentElection = election = UnityInstance.Resolve<IDbContextFactory>().DbContext.Election.First(e => e.ElectionGuid == CurrentElectionGuid);
+//                }
+//                return election;
             }
             set
             {

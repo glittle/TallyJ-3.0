@@ -22,9 +22,9 @@ namespace TallyJ.EF
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        var allBallotGuids = Ballot.AllBallotsCached.Select(b=>b.BallotGuid).ToList();
-
-        return db.Vote.Where(v => allBallotGuids.Contains(v.BallotGuid))
+        return db.Vote
+          .Join(db.Ballot, v => v.BallotGuid, b => b.BallotGuid, (v, b) => new { v, b })
+          .Join(db.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), g => g.b.LocationGuid, l => l.LocationGuid, (g, l) => g.v)
           .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "AllVotes" + UserSession.CurrentElectionGuid });
       }
     }

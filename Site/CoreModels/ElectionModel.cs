@@ -196,102 +196,95 @@ namespace TallyJ.CoreModels
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     public Election GetFreshFromDb(Guid electionGuid)
     {
-      var election = Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
-      UserSession.CurrentElection = election;
-      return election;
+      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
     }
 
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
     {
-      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
-      if (election != null)
+      //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
+      var election = Election.ThisElectionCached;
+      Db.Election.Attach(election);
+
+      var currentType = election.ElectionType;
+      var currentMode = election.ElectionMode;
+      var currentCan = election.CanVote;
+      var currentReceive = election.CanReceive;
+
+      // List of fields to allow edit from setup page
+      var editableFields = new
       {
-        var currentType = election.ElectionType;
-        var currentMode = election.ElectionMode;
-        var currentCan = election.CanVote;
-        var currentReceive = election.CanReceive;
-
-        // List of fields to allow edit from setup page
-        var editableFields = new
-        {
-          election.Name,
-          election.DateOfElection,
-          election.Convenor,
-          election.ElectionType,
-          election.ElectionMode,
-          election.NumberToElect,
-          election.NumberExtra,
-          election.CanVote,
-          election.CanReceive,
-          election.ListForPublic,
-          election.ShowAsTest,
-          election.ElectionPasscode,
-          election.UseCallInButton,
-          election.HidePreBallotPages,
-          election.MaskVotingMethod
-        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
+        election.Name,
+        election.DateOfElection,
+        election.Convenor,
+        election.ElectionType,
+        election.ElectionMode,
+        election.NumberToElect,
+        election.NumberExtra,
+        election.CanVote,
+        election.CanReceive,
+        election.ListForPublic,
+        election.ShowAsTest,
+        election.ElectionPasscode,
+        election.UseCallInButton,
+        election.HidePreBallotPages,
+        election.MaskVotingMethod
+      }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
-        var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
+      var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
-        //var isSingleNameElection = election.NumberToElect.AsInt() == 1;
-        //if (election.IsSingleNameElection != isSingleNameElection)
-        //{
-        //  election.IsSingleNameElection = isSingleNameElection;
-        //  changed = true;
-        //}
+      //var isSingleNameElection = election.NumberToElect.AsInt() == 1;
+      //if (election.IsSingleNameElection != isSingleNameElection)
+      //{
+      //  election.IsSingleNameElection = isSingleNameElection;
+      //  changed = true;
+      //}
 
-        if (changed)
-        {
-          Db.SaveChanges();
-          UserSession.CurrentElection = election;
-        }
-
-        if (currentMode != election.ElectionMode
-            || currentType != election.ElectionType
-            || currentCan != election.CanVote
-            || currentReceive != election.CanReceive
-          )
-        {
-          // reset flags
-          new PeopleModel().ResetInvolvementFlags();
-          Db.SaveChanges();
-
-          // update analysis
-          new ResultsModel().GenerateResults();
-        }
-
-        var displayName = UserSession.CurrentElectionDisplayNameAndInfo;
-
-        return new
-        {
-          Status = "Saved",
-          // TODO 2011-11-20 Glen Little: Return entire election?
-          Election = election,
-          displayName
-        }.AsJsonResult();
+      if (changed)
+      {
+        Db.SaveChanges();
+        UserSession.CurrentElection = election;
       }
+
+      if (currentMode != election.ElectionMode
+          || currentType != election.ElectionType
+          || currentCan != election.CanVote
+          || currentReceive != election.CanReceive
+        )
+      {
+        // reset flags
+        new PeopleModel().ResetInvolvementFlags();
+        Db.SaveChanges();
+
+        // update analysis
+        new ResultsModel().GenerateResults();
+      }
+
+      var displayName = UserSession.CurrentElectionDisplayNameAndInfo;
 
       return new
       {
-        Status = "Unknown ID"
+        Status = "Saved",
+        // TODO 2011-11-20 Glen Little: Return entire election?
+        Election = election,
+        displayName
       }.AsJsonResult();
     }
 
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
-      var election = Db.Election.SingleOrDefault(e => e.ElectionGuid == wantedElectionGuid);
-      if (election == null)
+      var exists = Db.Election.Any(e => e.ElectionGuid == wantedElectionGuid);
+      if (!exists)
       {
         return false;
       }
 
-      UserSession.CurrentElection = election;
+      UserSession.CurrentElectionGuid = wantedElectionGuid;
 
       var computerModel = new ComputerModel();
-      computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
+      computerModel.AddCurrentComputerIntoElection(wantedElectionGuid);
 
       var firstLocation = Location.AllLocationsCached.OrderBy(l => l.SortOrder).FirstOrDefault();
       // default to top location
@@ -396,6 +389,9 @@ namespace TallyJ.CoreModels
       Db.Election.Add(election);
       Db.SaveChanges();
 
+      UserSession.CurrentElectionGuid = election.ElectionGuid;
+      Election.DropCachedElection();
+      
       new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
@@ -419,8 +415,6 @@ namespace TallyJ.CoreModels
 
       Location.DropCachedLocations();
 
-      UserSession.CurrentElection = election;
-
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
       computerModel.AddCurrentComputerIntoLocation(mainLocation.C_RowId);
@@ -438,7 +432,7 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      var election = UserSession.CurrentElection;
+      var election = Election.ThisElectionCached;
       if (election.TallyStatus != status)
       {
         Db.Election.Attach(election);
@@ -487,7 +481,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult UpdateElectionShowAllJson(bool showFullReport)
     {
-      var election = UserSession.CurrentElection;
+      var election = Election.ThisElectionCached;
       if (election.ShowFullReport != showFullReport)
       {
         Db.Election.Attach(election);
@@ -497,14 +491,14 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
       }
 
-      return new {Saved = true}.AsJsonResult();
+      return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
     {
       if (UserSession.IsKnownTeller)
       {
-        var election = UserSession.CurrentElection;
+        var election = Election.ThisElectionCached;
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
@@ -512,17 +506,17 @@ namespace TallyJ.CoreModels
         election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
 
         Db.SaveChanges();
-        return new {Saved = true}.AsJsonResult();
+        return new { Saved = true }.AsJsonResult();
       }
 
-      return new {Saved = false}.AsJsonResult();
+      return new { Saved = false }.AsJsonResult();
     }
 
     /// <Summary>Do any processing for the election</Summary>
     /// <returns> True if the status changed </returns>
     public bool ProcessPulse()
     {
-      var election = UserSession.CurrentElection;
+      var election = Election.ThisElectionCached;
 
       if (election == null) return false;
 

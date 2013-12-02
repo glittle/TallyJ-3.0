@@ -5,6 +5,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.ExportImport;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -58,6 +59,20 @@ namespace TallyJ.Controllers
     {
       var model = new ElectionExporter(guid);
       return model.Export();
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult ResetCache()
+    {
+      // wipe cached results - this wipes for everyone looking at this election
+      Ballot.DropCachedBallots();
+      Election.DropCachedElection();
+      Location.DropCachedLocations();
+      Person.DropCachedPeople();
+      Teller.DropCachedTellers();
+      Vote.DropCachedVotes();
+
+      return true.AsJsonResult(JsonRequestBehavior.AllowGet);
     }
 
     [ForAuthenticatedTeller]

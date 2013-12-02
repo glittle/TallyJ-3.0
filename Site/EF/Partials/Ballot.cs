@@ -11,7 +11,8 @@ namespace TallyJ.EF
 {
   public partial class Ballot
   {
-    public long RowVersionInt {
+    public long RowVersionInt
+    {
       get
       {
         return BitConverter.ToInt64(C_RowVersion, 0);
@@ -29,9 +30,8 @@ namespace TallyJ.EF
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        var locationGuids = Location.AllLocationsCached.Select(l => l.LocationGuid).ToList();
-
-        return db.Ballot.Where(b => locationGuids.Contains(b.LocationGuid))
+        return db.Ballot
+          .Join(db.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
           .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "AllBallots" + UserSession.CurrentElectionGuid });
       }
     }

@@ -210,6 +210,8 @@ namespace TallyJ.CoreModels
         ResetInvolvementFlags(personInDatastore);
         Db.Person.Add(personInDatastore);
         changed = true;
+
+        Person.DropCachedPeople(); // drop when add/removing an entry
       }
       else
       {
@@ -259,14 +261,14 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        // Person.DropCachedPeople();
+        Person.DropCachedPeople();
       }
 
       return new
           {
             Status = "Saved",
             Person = PersonForEdit(personInDatastore),
-            OnFile = Db.Person.Count(p => p.ElectionGuid == CurrentElectionGuid)
+            OnFile = Person.AllPeopleCached.Count()
           }.AsJsonResult();
     }
 
