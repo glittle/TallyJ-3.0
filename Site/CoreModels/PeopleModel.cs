@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     private Election _election;
 
     private List<Location> _locations;
-    private IEnumerable<Person> _people;
+    private List<Person> _people;
     private List<Person> _peopleforFrontDesk;
 
     public PeopleModel()
@@ -69,11 +69,11 @@ namespace TallyJ.CoreModels
       }
     }
 
-    private IEnumerable<Person> PeopleInElection
+    private List<Person> PeopleInElection
     {
       get
       {
-        return _people ?? (_people = Person.AllPeopleCached);
+        return _people ?? (_people = new PeopleCacher().AllForThisElection);
       }
     }
 
@@ -209,9 +209,11 @@ namespace TallyJ.CoreModels
 
         ResetInvolvementFlags(personInDatastore);
         Db.Person.Add(personInDatastore);
+
+        PeopleInElection.Add(personInDatastore);
+
         changed = true;
 
-        Person.DropCachedPeople(); // drop when add/removing an entry
       }
       else
       {
@@ -261,14 +263,14 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        Person.DropCachedPeople();
+        new PeopleCacher().UpdateCache(PeopleInElection);
       }
 
       return new
           {
             Status = "Saved",
             Person = PersonForEdit(personInDatastore),
-            OnFile = Person.AllPeopleCached.Count()
+            OnFile = new PeopleCacher().AllForThisElection.Count()
           }.AsJsonResult();
     }
 
@@ -438,7 +440,7 @@ namespace TallyJ.CoreModels
 
       var currentElectionGuid = CurrentElectionGuid;
 
-      var person = Person.AllPeopleCached.SingleOrDefault(p => p.C_RowId == personId);
+      var person = new PeopleCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
       {
         return new { Message = "Unknown person" }.AsJsonResult();
@@ -466,7 +468,10 @@ namespace TallyJ.CoreModels
             // create a new env number
 
             // get election from DB, not session, as we need to update it now
-            var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
+            //var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
+            var election = Election.ThisElectionCached;
+            Db.Election.Attach(election);
+
             var nextNum = election.LastEnvNum.AsInt() + 1;
 
             person.EnvNum = nextNum;
@@ -488,7 +493,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        people = Person.AllPeopleCached
+        people = new PeopleCacher().AllForThisElection
                    .Where(p => p.C_RowVersionInt > lastRowVersion)
                    .ToList();
       }

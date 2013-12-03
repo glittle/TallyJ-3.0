@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels
         var now = DateTime.Now;
         var currentElectionGuid = UserSession.CurrentElectionGuid;
 
-        var votes = Vote.AllVotesCached;
+        var votes = new VoteCacher().AllForThisElection;
         var ballots = Ballot.AllBallotsCached;
         var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
 

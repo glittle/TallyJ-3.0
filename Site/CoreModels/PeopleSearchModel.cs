@@ -63,7 +63,7 @@ namespace TallyJ.CoreModels
     {
       const int max = 45;
 
-      var personList = Person.AllPeopleCached.ToList();
+      var personList = new PeopleCacher().AllForThisElection.ToList();
 
       List<SearchResult> results;
       var moreFound = false;
@@ -130,7 +130,7 @@ namespace TallyJ.CoreModels
         return matched;
       }
 
-      var allVotesCached = Vote.AllVotesCached.ToList();
+      var allVotesCached = new VoteCacher().AllForThisElection.ToList();
       var isSingleNameElection = UserSession.CurrentElection.IsSingleNameElection;
 
       foreach (var result in matched)

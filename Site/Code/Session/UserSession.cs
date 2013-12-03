@@ -97,7 +97,8 @@ namespace TallyJ.Code.Session
         {
             get
             {
-              return Election.ThisElectionCached;
+              return CurrentElectionGuid.HasContent() ? Election.ThisElectionCached : null;
+
 //                var election = SessionKey.CurrentElection.FromSession<Election>(null);
 //                if (election == null && CurrentElectionGuid != Guid.Empty)
 //                {
@@ -105,7 +106,7 @@ namespace TallyJ.Code.Session
 //                }
 //                return election;
             }
-            set
+          set
             {
                 SessionKey.CurrentElection.SetInSession(value);
                 CurrentElectionGuid = value.ElectionGuid;

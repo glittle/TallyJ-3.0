@@ -117,7 +117,7 @@ namespace TallyJ.CoreModels
         {
             get
             {
-                return _people ?? (_people = Person.AllPeopleCached.ToList());
+                return _people ?? (_people = new PeopleCacher().AllForThisElection.ToList());
             }
         }
 
@@ -190,8 +190,8 @@ namespace TallyJ.CoreModels
             {
                 if (_voteinfos != null) return _voteinfos;
 
-               return _voteinfos = Vote.AllVotesCached
-                 .LeftOuterJoin(Person.AllPeopleCached, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
+               return _voteinfos = new VoteCacher().AllForThisElection
+                 .LeftOuterJoin(new PeopleCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, Ballot.AllBallotsCached.Single(b=>b.BallotGuid==g.v.BallotGuid), UserSession.CurrentLocation, g.p))
                  .ToList();
 //

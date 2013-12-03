@@ -194,10 +194,10 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
-    public Election GetFreshFromDb(Guid electionGuid)
-    {
-      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
-    }
+//    public Election GetFreshFromDb(Guid electionGuid)
+//    {
+//      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+//    }
 
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
@@ -391,7 +391,7 @@ namespace TallyJ.CoreModels
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
       Election.DropCachedElection();
-      
+
       new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
@@ -516,33 +516,37 @@ namespace TallyJ.CoreModels
     /// <returns> True if the status changed </returns>
     public bool ProcessPulse()
     {
+      if (!UserSession.CurrentElectionGuid.HasContent())
+      {
+        return false;
+      }
       var election = Election.ThisElectionCached;
-
-      if (election == null) return false;
 
       var sharer = new ElectionStatusSharer();
       var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
       var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
       if (someoneElseChangedTheStatus)
       {
-        election = GetFreshFromDb(election.ElectionGuid);
+        //election = GetFreshFromDb(election.ElectionGuid);
         sharer.SetStateFor(election);
       }
 
       if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
         Db.Election.Attach(election);
+
         var listedForPublicAsOf = DateTime.Now;
         election.ListedForPublicAsOf = listedForPublicAsOf;
+
         try
         {
           Db.SaveChanges();
         }
         catch (Exception ex)
         {
-          election = GetFreshFromDb(election.ElectionGuid);
-          election.ListedForPublicAsOf = listedForPublicAsOf;
-          Db.SaveChanges();
+          //          election = GetFreshFromDb(election.ElectionGuid);
+          //          election.ListedForPublicAsOf = listedForPublicAsOf;
+          //          Db.SaveChanges();
         }
       }
 

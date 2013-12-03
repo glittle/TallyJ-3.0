@@ -68,9 +68,9 @@ namespace TallyJ.Controllers
       Ballot.DropCachedBallots();
       Election.DropCachedElection();
       Location.DropCachedLocations();
-      Person.DropCachedPeople();
+      new PeopleCacher().DropCached();
       Teller.DropCachedTellers();
-      Vote.DropCachedVotes();
+      new VoteCacher().DropCached();
 
       return true.AsJsonResult(JsonRequestBehavior.AllowGet);
     }

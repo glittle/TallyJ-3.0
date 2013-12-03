@@ -44,7 +44,8 @@ namespace TallyJ.CoreModels
       if (!IsFaked)
       {
         Ballot.DropCachedBallots();
-        Person.DropCachedPeople();
+        new PeopleCacher().DropCached();
+        
         Location.DropCachedLocations();
       }
 

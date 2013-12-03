@@ -60,7 +60,7 @@ namespace TallyJ.CoreModels
 
       ImportSummaryMessage = "Imported {0} ballot{1}.".FilledWith(_ballotsLoaded, _ballotsLoaded.Plural());
 
-      Person.DropCachedPeople();
+      new PeopleCacher().DropCached();
 
       _logHelper.Add("Imported v1 election file #" + _file.C_RowId + ": " + ImportSummaryMessage);
     }

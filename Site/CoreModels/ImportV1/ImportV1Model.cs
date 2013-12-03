@@ -236,7 +236,7 @@ namespace TallyJ.CoreModels
       var logHelper = new LogHelper();
 
       ImportV1Base importer;
-      var currentPeople = Person.AllPeopleCached.ToList();
+      var currentPeople = new PeopleCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
 
 

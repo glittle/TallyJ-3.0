@@ -67,31 +67,31 @@ namespace TallyJ.EF
       public object RegistrationTime { get; set; }
     }
 
-    /// <summary>
-    /// Get all people for this election
-    /// </summary>
-    public static IEnumerable<Person> AllPeopleCached
-    {
-      get
-      {
-        var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+    ///// <summary>
+    ///// Get all people for this election
+    ///// </summary>
+    //public static IEnumerable<Person> AllPeopleCached
+    //{
+    //  get
+    //  {
+    //    var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
 
-        if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
+    //    if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        var currentElectionGuid = UserSession.CurrentElectionGuid;
+    //    var currentElectionGuid = UserSession.CurrentElectionGuid;
 
-        return db.Person.Where(p => p.ElectionGuid == currentElectionGuid).FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "AllPeople" + currentElectionGuid });
-      }
-    }
+    //    return db.Person.Where(p => p.ElectionGuid == currentElectionGuid).FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "AllPeople" + currentElectionGuid });
+    //  }
+    //}
 
-    /// <summary>
-    /// Drop the cache of people for this election
-    /// </summary>
-    public static void DropCachedPeople()
-    {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
+    ///// <summary>
+    ///// Drop the cache of people for this election
+    ///// </summary>
+    //public static void DropCachedPeople()
+    //{
+    //  if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
 
-      CacheManager.Current.Expire("AllPeople" + UserSession.CurrentElectionGuid);
-    }
+    //  CacheManager.Current.Expire("AllPeople" + UserSession.CurrentElectionGuid);
+    //}
   }
 }

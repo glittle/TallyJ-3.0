@@ -87,7 +87,7 @@ namespace TallyJ.CoreModels.ExportImport
 
           if (_electionGuid == UserSession.CurrentElectionGuid)
           {
-            Person.DropCachedPeople();
+            new PeopleCacher().DropCached();
             Location.DropCachedLocations();
           }
 

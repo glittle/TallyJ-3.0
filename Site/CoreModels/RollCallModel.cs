@@ -38,12 +38,12 @@ namespace TallyJ.CoreModels
 
     private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
-      var peopleInCurrentElection = Person.AllPeopleCached;
+      var peopleInCurrentElection = new PeopleCacher().AllForThisElection;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
       peopleInCurrentElection = IncludeAbsentees
-                                  ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod))
-                                  : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson);
+                                  ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod)).ToList()
+                                  : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
       return peopleInCurrentElection;
     }
 

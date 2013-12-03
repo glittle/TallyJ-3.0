@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels
 
     public override object BallotInfoForJs(Ballot b)
     {
-      var spoiled = Vote.AllVotesCached.Where(v => v.BallotGuid == b.BallotGuid).Count(v => v.InvalidReasonGuid != null);
+      var spoiled = new VoteCacher().AllForThisElection.Where(v => v.BallotGuid == b.BallotGuid).Count(v => v.InvalidReasonGuid != null);
       return new
       {
         Id = b.C_RowId,
