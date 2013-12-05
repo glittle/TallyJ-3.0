@@ -64,8 +64,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _locations ??
-               (_locations = Location.AllLocationsCached.ToList());
+        return _locations ?? (_locations = new LocationCacher().AllForThisElection);
       }
     }
 
@@ -73,7 +72,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _people ?? (_people = new PeopleCacher().AllForThisElection);
+        return _people ?? (_people = new PersonCacher().AllForThisElection);
       }
     }
 
@@ -81,7 +80,7 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-            .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value && p.IneligibleReasonGuid == null))
+            .Where(p => !onlyIfCanVote || ((!p.CanVote.HasValue || p.CanVote.Value) && p.IneligibleReasonGuid == null))
             .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
       }
     }
@@ -263,14 +262,14 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        new PeopleCacher().UpdateCache(PeopleInElection);
+        new PersonCacher().ReplaceCache(PeopleInElection);
       }
 
       return new
           {
             Status = "Saved",
             Person = PersonForEdit(personInDatastore),
-            OnFile = new PeopleCacher().AllForThisElection.Count()
+            OnFile = new PersonCacher().AllForThisElection.Count()
           }.AsJsonResult();
     }
 
@@ -290,7 +289,7 @@ namespace TallyJ.CoreModels
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
-      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
+      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
 
       var ballotSources = PeopleInElectionFiltered() // start with everyone
           .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson))
@@ -320,7 +319,7 @@ namespace TallyJ.CoreModels
                                            .Select(l => l.LocationGuid)
                                            .Single();
       var timeOffset = UserSession.TimeOffsetServerAhead;
-      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
+      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
 
       var ballotSources = PeopleInElectionFiltered() // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
@@ -374,7 +373,7 @@ namespace TallyJ.CoreModels
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
       var showLocations = locations.Count > 1;
-      var tellers = Teller.AllTellersCached.ToDictionary(t => t.TellerGuid, t => t.Name);
+      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
       return people
@@ -440,7 +439,7 @@ namespace TallyJ.CoreModels
 
       var currentElectionGuid = CurrentElectionGuid;
 
-      var person = new PeopleCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+      var person = new PersonCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
       {
         return new { Message = "Unknown person" }.AsJsonResult();
@@ -493,7 +492,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        people = new PeopleCacher().AllForThisElection
+        people = new PersonCacher().AllForThisElection
                    .Where(p => p.C_RowVersionInt > lastRowVersion)
                    .ToList();
       }
@@ -525,6 +524,8 @@ namespace TallyJ.CoreModels
                 }.
                 AsJsonResult();
       }
+
+      new PersonCacher().DropCached();
 
       return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }

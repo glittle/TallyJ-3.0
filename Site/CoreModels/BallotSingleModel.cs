@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
 
     public override object BallotInfoForJs(Ballot b)
     {
-      var loc = Location.AllLocationsCached.Single(l => l.LocationGuid == b.LocationGuid);
+      var loc = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == b.LocationGuid);
       return new
                {
                  Id = b.C_RowId,

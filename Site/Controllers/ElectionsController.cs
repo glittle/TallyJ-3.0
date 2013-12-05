@@ -65,12 +65,8 @@ namespace TallyJ.Controllers
     public JsonResult ResetCache()
     {
       // wipe cached results - this wipes for everyone looking at this election
-      Ballot.DropCachedBallots();
-      Election.DropCachedElection();
-      Location.DropCachedLocations();
-      new PeopleCacher().DropCached();
-      Teller.DropCachedTellers();
-      new VoteCacher().DropCached();
+      
+      CacherBase.DropAllCachesForThisElection();
 
       return true.AsJsonResult(JsonRequestBehavior.AllowGet);
     }

@@ -38,7 +38,7 @@ namespace TallyJ.CoreModels
 
     private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
-      var peopleInCurrentElection = new PeopleCacher().AllForThisElection;
+      var peopleInCurrentElection = new PersonCacher().AllForThisElection;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
       peopleInCurrentElection = IncludeAbsentees
@@ -60,14 +60,14 @@ namespace TallyJ.CoreModels
       var after = new List<Person>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person { C_RowId = 0 - numBlanksBefore, FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        before.Add(new Person { C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person { C_RowId = firstBlankAfter + offset++, FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        after.Add(new Person { C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksAfter--;
       }
       var i = 0;

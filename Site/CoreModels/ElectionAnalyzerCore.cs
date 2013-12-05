@@ -117,7 +117,7 @@ namespace TallyJ.CoreModels
         {
             get
             {
-                return _people ?? (_people = new PeopleCacher().AllForThisElection.ToList());
+                return _people ?? (_people = new PersonCacher().AllForThisElection.ToList());
             }
         }
 
@@ -146,7 +146,7 @@ namespace TallyJ.CoreModels
 
                 var voteIds = VoteInfos.Select(vi => vi.VoteId).ToList();
 
-                return _votes = Db.Vote.Where(v => voteIds.Contains(v.C_RowId)).ToList();
+                return _votes = new VoteCacher().AllForThisElection.Where(v => voteIds.Contains(v.C_RowId)).ToList();
             }
         }
 
@@ -154,7 +154,7 @@ namespace TallyJ.CoreModels
 
         public List<Ballot> Ballots
         {
-            get { return _ballots ?? (_ballots = Ballot.AllBallotsCached.ToList()); }
+            get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection.ToList()); }
         }
 
         /// <Summary>Current Results records</Summary>
@@ -191,8 +191,8 @@ namespace TallyJ.CoreModels
                 if (_voteinfos != null) return _voteinfos;
 
                return _voteinfos = new VoteCacher().AllForThisElection
-                 .LeftOuterJoin(new PeopleCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
-                 .Select(g => new VoteInfo(g.v, Ballot.AllBallotsCached.Single(b=>b.BallotGuid==g.v.BallotGuid), UserSession.CurrentLocation, g.p))
+                 .LeftOuterJoin(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
+                 .Select(g => new VoteInfo(g.v, new BallotCacher().AllForThisElection.Single(b=>b.BallotGuid==g.v.BallotGuid), UserSession.CurrentLocation, g.p))
                  .ToList();
 //
 //                else

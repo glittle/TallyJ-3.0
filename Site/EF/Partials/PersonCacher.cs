@@ -3,7 +3,7 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.EF
 {
-  public class PeopleCacher : CacherBase<Person>
+  public class PersonCacher : CacherBase<Person>
   {
     protected override IQueryable<Person> MainQuery(TallyJ2dEntities db)
     {

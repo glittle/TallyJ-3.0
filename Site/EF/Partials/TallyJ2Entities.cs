@@ -26,7 +26,7 @@ namespace TallyJ.EF
 
     public long CurrentRowVersion()
     {
-      return Database.SqlQuery<int>("select convert(bigint, @@DBTS)").First();
+      return Database.SqlQuery<long>("select convert(bigint, @@DBTS)").First();
     }
   }
 

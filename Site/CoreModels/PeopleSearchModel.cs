@@ -63,7 +63,7 @@ namespace TallyJ.CoreModels
     {
       const int max = 45;
 
-      var personList = new PeopleCacher().AllForThisElection.ToList();
+      var personList = new PersonCacher().AllForThisElection.ToList();
 
       List<SearchResult> results;
       var moreFound = false;

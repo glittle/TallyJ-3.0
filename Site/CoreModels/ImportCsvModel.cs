@@ -257,7 +257,7 @@ namespace TallyJ.CoreModels
         throw new ApplicationException("Mapping not defined");
       }
 
-      var currentPeople = new PeopleCacher().AllForThisElection.ToList();
+      var currentPeople = new PersonCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
 
       var rowsProcessed = 0;
@@ -349,6 +349,8 @@ namespace TallyJ.CoreModels
       file.ProcessingStatus = "Imported";
 
       Db.SaveChanges();
+
+      new PersonCacher().DropCached();
 
       var result = "Processed {0} row{1}. Added {2} {3}.".FilledWith(rowsProcessed, rowsProcessed.Plural(), peopleAdded,
                                                                      peopleAdded.Plural("people", "person"));

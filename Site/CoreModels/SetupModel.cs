@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
 
     public int NumberOfPeople
     {
-      get { return Db.Person.Count(p => p.ElectionGuid == UserSession.CurrentElectionGuid); }
+      get { return new PersonCacher().AllForThisElection.Count(); }
     }
 
     public string LocationsJson
@@ -79,7 +79,7 @@ namespace TallyJ.CoreModels
 
     public bool HasBallots
     {
-      get { return Ballot.AllBallotsCached.Any(); }
+      get { return new BallotCacher().AllForThisElection.Any(); }
     }
 
     public string InvalidReasonsJsonString()

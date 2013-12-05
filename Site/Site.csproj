@@ -369,8 +369,15 @@
     </Compile>
     <Compile Include="EF\Other\BallotInfo.cs" />
     <Compile Include="EF\Other\VoteInfo.cs" />
-    <Compile Include="EF\Partials\PeopleCacher.cs" />
+    <Compile Include="EF\Partials\BallotCacher.cs" />
+    <Compile Include="EF\Partials\ComputerCacher.cs" />
+    <Compile Include="EF\Partials\ElectionCacher.cs" />
+    <Compile Include="EF\Partials\IIndexedEntity.cs" />
+    <Compile Include="EF\Partials\LocationCacher.cs" />
+    <Compile Include="EF\Partials\PersonCacher.cs" />
     <Compile Include="EF\Partials\CacherBase.cs" />
+    <Compile Include="EF\Partials\TellerCacher.cs" />
+    <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="EF\Person.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
@@ -578,7 +585,6 @@
     <Compile Include="CoreModels\ElectionAnalyzerSingleName.cs" />
     <Compile Include="CoreModels\TellerModel.cs" />
     <Compile Include="EF\Partials\ResultSummary.cs" />
-    <Compile Include="EF\Partials\BallotRelated.cs" />
     <Compile Include="EF\Partials\Election.cs" />
     <Compile Include="EF\Partials\IHasElectionGuid.cs" />
     <Compile Include="EF\Partials\Person.cs" />

@@ -23,14 +23,14 @@ namespace TallyJ.CoreModels
         var currentElectionGuid = UserSession.CurrentElectionGuid;
 
         var votes = new VoteCacher().AllForThisElection;
-        var ballots = Ballot.AllBallotsCached;
+        var ballots = new BallotCacher().AllForThisElection;
         var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
 
         return
           new
             {
-              ComputerInfo = Location.AllLocationsCached
-                .LeftOuterJoin(Db.Computer, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+              ComputerInfo = new LocationCacher().AllForThisElection
+                .LeftOuterJoin(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(g => g.l.SortOrder)
                 .ThenBy(g => g.c.ComputerCode)
                 .ThenBy(g => g.l.C_RowId)

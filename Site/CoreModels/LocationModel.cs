@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _locations ?? (_locations = Location.AllLocationsCached.ToList());
+        return _locations ?? (_locations = new LocationCacher().AllForThisElection);
       }
     }
 
@@ -128,7 +128,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      Location.DropCachedLocations();
+      new LocationCacher().ReplaceAndSaveCache(location);
 
       return new
       {
@@ -147,7 +147,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      Location.DropCachedLocations();
+      new LocationCacher().ReplaceAndSaveCache(location);
 
       return new { Saved = true }.AsJsonResult();
     }
@@ -179,7 +179,7 @@ namespace TallyJ.CoreModels
           {
             Db.Location.Remove(location);
             Db.SaveChanges();
-            changed = true;
+            new LocationCacher().RemoveAndSaveCache(location);
 
             status = "Deleted";
             success = true;
@@ -203,7 +203,6 @@ namespace TallyJ.CoreModels
       else if (text.HasContent())
       {
         location.Name = text;
-        Db.SaveChanges();
         changed = true;
 
         status = "Saved";
@@ -221,7 +220,8 @@ namespace TallyJ.CoreModels
 
       if (changed)
       {
-        Location.DropCachedLocations();
+        Db.SaveChanges();
+        new LocationCacher().ReplaceAndSaveCache(location);
       }
 
       return new

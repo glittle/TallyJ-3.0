@@ -9,13 +9,11 @@ namespace TallyJ.Code.Resources
 {
   public class TellerHelper : DataConnectedModel
   {
-    private IEnumerable<Teller> _tellers;
-
     public IEnumerable<Teller> Tellers
     {
       get
       {
-        return _tellers ?? (_tellers = Teller.AllTellersCached.ToList());
+        return new TellerCacher().AllForThisElection;
       }
     }
 
@@ -29,11 +27,6 @@ namespace TallyJ.Code.Resources
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
         .JoinedAsString()
         .SurroundWith("<option value='0'>(Select teller...)</option>", "<option value='-1'>+ Add teller name</option>");
-    }
-
-    public void RefreshTellerList()
-    {
-      _tellers = null;
     }
   }
 }

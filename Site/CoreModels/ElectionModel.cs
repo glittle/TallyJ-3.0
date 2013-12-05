@@ -286,7 +286,7 @@ namespace TallyJ.CoreModels
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(wantedElectionGuid);
 
-      var firstLocation = Location.AllLocationsCached.OrderBy(l => l.SortOrder).FirstOrDefault();
+      var firstLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
       // default to top location
       if (firstLocation != null)
       {
@@ -410,10 +410,8 @@ namespace TallyJ.CoreModels
         SortOrder = 1
       };
       Db.Location.Add(mainLocation);
-
       Db.SaveChanges();
-
-      Location.DropCachedLocations();
+      new LocationCacher().AddAndSaveCache(mainLocation);
 
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);

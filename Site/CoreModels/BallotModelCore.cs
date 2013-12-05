@@ -33,7 +33,7 @@ namespace TallyJ.CoreModels
       SetAsCurrentBallot(ballotId);
 
       var ballotInfo = GetCurrentBallot();
-      var location = Location.AllLocationsCached.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+      var location = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       SessionKey.CurrentLocation.SetInSession(location);
 
@@ -53,7 +53,7 @@ namespace TallyJ.CoreModels
     public bool SortVotes(List<int> ids)
     {
       var ballotGuid = CurrentRawBallot().BallotGuid;
-      var votes = Db.Vote
+      var votes = new VoteCacher().AllForThisElection
         .Where(v => v.BallotGuid == ballotGuid)
         .ToList();
 
@@ -103,12 +103,11 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      Db.Ballot.Attach(ballot);
+      new BallotCacher().RemoveAndSaveCache(ballot);
 
+      Db.Ballot.Attach(ballot);
       Db.Ballot.Remove(ballot);
       Db.SaveChanges();
-
-      Ballot.DropCachedBallots();
 
       return new
       {
@@ -122,6 +121,8 @@ namespace TallyJ.CoreModels
     {
       var ballot = CurrentRawBallot();
 
+      Db.Ballot.Attach(ballot);
+
       ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
 
       var ballotAnalyzer = new BallotAnalyzer();
@@ -129,7 +130,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      Ballot.DropCachedBallots();
+      new BallotCacher().ReplaceAndSaveCache(ballot);
 
       return new
       {
@@ -148,7 +149,7 @@ namespace TallyJ.CoreModels
       }
 
       // learn about the one wanted
-      var ballotInfo = Ballot.AllBallotsCached.SingleOrDefault(b => b.C_RowId == ballotId);
+      var ballotInfo = new BallotCacher().AllForThisElection.SingleOrDefault(b => b.C_RowId == ballotId);
 
       if (ballotInfo == null)
       {
@@ -237,7 +238,7 @@ namespace TallyJ.CoreModels
           return new { Updated = false, Error = "Invalid vote/ballot id" }.AsJsonResult();
         }
 
-        var person1 = new PeopleCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+        var person1 = new PersonCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
 
         Db.Vote.Attach(vote);
 
@@ -247,14 +248,14 @@ namespace TallyJ.CoreModels
         DetermineInvalidReasonGuid(invalidReason, vote);
 
         Db.SaveChanges();
-        new VoteCacher().DropCached();
 
+        new VoteCacher().ReplaceAndSaveCache(vote);
 
         var ballotAnalyzer = new BallotAnalyzer();
         var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosForCurrentBallot());
         var sum = BallotCount(ballot.LocationGuid, isSingleName);
 
-        Ballot.DropCachedBallots();
+        new BallotCacher().ReplaceAndSaveCache(ballot);
         
         return new
         {
@@ -270,7 +271,7 @@ namespace TallyJ.CoreModels
 
       var invalidReasonGuid = DetermineInvalidReasonGuid(invalidReason);
 
-      var person = new PeopleCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+      var person = new PersonCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
 
       var ok = person != null || invalidReasonGuid != Guid.Empty;
 
@@ -303,14 +304,15 @@ namespace TallyJ.CoreModels
         Db.Vote.Add(vote);
         Db.SaveChanges();
 
-        new VoteCacher().DropCached();
+        new VoteCacher().AddAndSaveCache(vote);
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(CurrentRawBallot(), VoteInfosForCurrentBallot());
+        var rawBallot = CurrentRawBallot();
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(rawBallot, VoteInfosForCurrentBallot());
 
         var sum = BallotCount(ballot.LocationGuid, isSingleName);
 
-        Ballot.DropCachedBallots();
+        new BallotCacher().ReplaceAndSaveCache(rawBallot);
 
         return new
         {
@@ -330,29 +332,29 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteVote(int vid)
     {
-      var vote = Db.Vote.SingleOrDefault(v => v.C_RowId == vid);
+      var vote = new VoteCacher().AllForThisElection.SingleOrDefault(v => v.C_RowId == vid);
       if (vote == null)
       {
         return new { Message = "Not found" }.AsJsonResult();
       }
+
+      new VoteCacher().RemoveAndSaveCache(vote);
+
       Db.Vote.Attach(vote);
       Db.Vote.Remove(vote);
-
       Db.SaveChanges();
 
       UpdateVotePositions(vote.BallotGuid);
-
-      new VoteCacher().DropCached();
 
       var ballotAnalyzer = new BallotAnalyzer();
       var ballot = CurrentRawBallot();
       var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosForCurrentBallot());
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
-      var location = Location.AllLocationsCached.Single(l => l.LocationGuid == ballot.LocationGuid);
+      var location = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
       var sum = BallotCount(location.LocationGuid, isSingleName);
 
-      Ballot.DropCachedBallots();
+      new BallotCacher().ReplaceAndSaveCache(ballot);
 
       return new
       {
@@ -372,7 +374,7 @@ namespace TallyJ.CoreModels
       int sum;
       if (isSingleName)
       {
-        var allBallotGuids = Ballot.AllBallotsCached.Where(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode)
+        var allBallotGuids = new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode)
           .Select(b => b.BallotGuid).ToList();
 
         sum = new VoteCacher().AllForThisElection.Where(v => allBallotGuids.Contains(v.BallotGuid))
@@ -380,7 +382,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        sum = Ballot.AllBallotsCached.Count(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode);
+        sum = new BallotCacher().AllForThisElection.Count(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode);
       }
       return sum;
     }
@@ -390,7 +392,7 @@ namespace TallyJ.CoreModels
       int sum;
       if (isSingleName)
       {
-        var allBallotGuids = Ballot.AllBallotsCached.Where(b => b.LocationGuid == locationGuid)
+        var allBallotGuids = new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == locationGuid)
           .Select(b => b.BallotGuid).ToList();
 
         sum = new VoteCacher().AllForThisElection.Where(v => allBallotGuids.Contains(v.BallotGuid))
@@ -398,7 +400,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        sum = Ballot.AllBallotsCached.Count(b => b.LocationGuid == locationGuid);
+        sum = new BallotCacher().AllForThisElection.Count(b => b.LocationGuid == locationGuid);
       }
       return sum;
     }
@@ -441,7 +443,7 @@ namespace TallyJ.CoreModels
 
     public object CurrentBallotsInfoList()
     {
-      var ballots = Ballot.AllBallotsCached
+      var ballots = new BallotCacher().AllForThisElection
         .Where(b => b.LocationGuid == UserSession.CurrentLocationGuid)
         .OrderBy(b => b.ComputerCode)
         .ThenBy(b => b.BallotNumAtComputer)
@@ -456,7 +458,7 @@ namespace TallyJ.CoreModels
       var createIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
 
-      var ballot = Ballot.AllBallotsCached.SingleOrDefault(b => b.C_RowId == currentBallotId);
+      var ballot = new BallotCacher().AllForThisElection.SingleOrDefault(b => b.C_RowId == currentBallotId);
 
       if (ballot == null && createIfNeeded)
       {
@@ -474,7 +476,7 @@ namespace TallyJ.CoreModels
     public Ballot CurrentRawBallot()
     {
       var ballotId = SessionKey.CurrentBallotId.FromSession(0);
-      return Ballot.AllBallotsCached.Single(b => b.C_RowId == ballotId);
+      return new BallotCacher().AllForThisElection.Single(b => b.C_RowId == ballotId);
       //      return Db.Ballot.Single(b => b.C_RowId == ballotId);
     }
 
@@ -486,7 +488,7 @@ namespace TallyJ.CoreModels
       {
         return new List<Vote>();
       }
-      return Db.Vote.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
+      return new VoteCacher().AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
     }
 
     public List<VoteInfo> VoteInfosForCurrentBallot()
@@ -505,7 +507,7 @@ namespace TallyJ.CoreModels
     {
       return new VoteCacher().AllForThisElection
                  .Where(v => v.BallotGuid == ballot.BallotGuid)
-                 .LeftOuterJoin(new PeopleCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
+                 .LeftOuterJoin(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, ballot, UserSession.CurrentLocation, g.p))
                  .ToList();
     }
@@ -523,7 +525,7 @@ namespace TallyJ.CoreModels
 
     private void UpdateVotePositions(Guid ballotGuid)
     {
-      var votes = Db.Vote
+      var votes = new VoteCacher().AllForThisElection
         .Where(v => v.BallotGuid == ballotGuid)
         .OrderBy(v => v.PositionOnBallot)
         .ToList();
@@ -559,7 +561,7 @@ namespace TallyJ.CoreModels
 
     public string NewBallotsJsonString(long lastRowVersion)
     {
-      var ballots = Ballot.AllBallotsCached
+      var ballots = new BallotCacher().AllForThisElection
         .Where(b => b.RowVersionInt > lastRowVersion)
         .ToList();
 

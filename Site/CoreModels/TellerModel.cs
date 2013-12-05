@@ -51,6 +51,8 @@ namespace TallyJ.CoreModels
 
       var thisTeller = helper.Tellers.SingleOrDefault(t => t.C_RowId == tellerId);
 
+      var currentComputer = UserSession.CurrentComputer;
+
       switch (tellerId)
       {
         case 0:
@@ -58,16 +60,20 @@ namespace TallyJ.CoreModels
           if (thisTeller != null)
           {
             thisTeller.UsingComputerCode = "";
-            Db.Computer.Attach(UserSession.CurrentComputer);
+            Db.Computer.Attach(currentComputer);
             switch (num)
             {
               case 1:
-                UserSession.CurrentComputer.Teller1 = null;
+                currentComputer.Teller1 = null;
                 break;
               case 2:
-                UserSession.CurrentComputer.Teller2 = null;
+                currentComputer.Teller2 = null;
                 break;
             }
+
+            new TellerCacher().ReplaceAndSaveCache(thisTeller);
+            new ComputerCacher().ReplaceAndSaveCache(currentComputer);
+
             Db.SaveChanges();
           }
           return new { Saved = true };
@@ -93,20 +99,22 @@ namespace TallyJ.CoreModels
                          };
           Db.Teller.Add(teller);
 
-          Db.Computer.Attach(UserSession.CurrentComputer);
+          Db.Computer.Attach(currentComputer);
           switch (num)
           {
             case 1:
-              UserSession.CurrentComputer.Teller1 = teller.TellerGuid;
+              currentComputer.Teller1 = teller.TellerGuid;
               break;
             case 2:
-              UserSession.CurrentComputer.Teller2 = teller.TellerGuid;
+              currentComputer.Teller2 = teller.TellerGuid;
               break;
           }
 
           Db.SaveChanges();
           UserSession.SetCurrentTeller(num, teller.TellerGuid);
-          helper.RefreshTellerList();
+
+          new TellerCacher().AddAndSaveCache(teller);
+          new ComputerCacher().ReplaceAndSaveCache(currentComputer);
 
           return new
                    {
@@ -122,18 +130,21 @@ namespace TallyJ.CoreModels
             UserSession.SetCurrentTeller(num, thisTeller.TellerGuid);
             thisTeller.UsingComputerCode = UserSession.CurrentComputerCode;
 
-            Db.Computer.Attach(UserSession.CurrentComputer);
+            Db.Computer.Attach(currentComputer);
             switch (num)
             {
               case 1:
-                UserSession.CurrentComputer.Teller1 = thisTeller.TellerGuid;
+                currentComputer.Teller1 = thisTeller.TellerGuid;
                 break;
               case 2:
-                UserSession.CurrentComputer.Teller2 = thisTeller.TellerGuid;
+                currentComputer.Teller2 = thisTeller.TellerGuid;
                 break;
             }
 
             Db.SaveChanges();
+
+            new TellerCacher().ReplaceAndSaveCache(thisTeller);
+            new ComputerCacher().ReplaceAndSaveCache(currentComputer);
           }
           return new { Saved = true };
       }
@@ -148,7 +159,7 @@ namespace TallyJ.CoreModels
 
       if (thisTeller == null)
       {
-        return new {Deleted=false, Error="Not found"};
+        return new { Deleted = false, Error = "Not found" };
       }
 
       try
@@ -160,6 +171,8 @@ namespace TallyJ.CoreModels
       {
         return new { Deleted = false, Error = ex.Message };
       }
+
+      new TellerCacher().RemoveAndSaveCache(thisTeller);
 
       return new { Deleted = true };
 

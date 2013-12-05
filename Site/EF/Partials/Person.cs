@@ -13,7 +13,7 @@ using TallyJ.Code.UnityRelated;
 namespace TallyJ.EF
 {
   [MetadataType(typeof(PersonMetadata))]
-  public partial class Person
+  public partial class Person : IIndexedForCaching
   {
     //public long RowVersionInt {
     //  get
@@ -22,27 +22,20 @@ namespace TallyJ.EF
     //  }
     //}
 
-    private string _fullName;
     public string FullName {
       get
       {
-        if (_fullName != null)
-        {
-          return _fullName;
-        }
         // ((((([LastName]+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+', ')+coalesce([FirstName],''))
         // +coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')',''))
-        return _fullName = new[]
+        return new[]
         {
           LastName,
           OtherLastNames.SurroundContentWith(" [", "]"),
-          ", ",
-          FirstName,
+          FirstName.SurroundContentWith(", ", ""),
           OtherNames.SurroundContentWith(" [", "]"),
           OtherInfo.SurroundContentWith(" (", ")")
         }.JoinedAsString("", true);
       }
-      set { _fullName = value; }
     }
     
     public string FullNameFL {

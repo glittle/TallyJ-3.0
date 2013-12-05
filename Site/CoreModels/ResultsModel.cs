@@ -54,7 +54,7 @@ namespace TallyJ.CoreModels
 
         var reportVotes =
             Db.Result.Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
-              .Join(new PeopleCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
+              .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
                     (r, p) => new { r, PersonName = p.FullNameFL })
               .OrderBy(g => g.r.Rank)
               .Take(numToShow + numExtra);
@@ -113,7 +113,7 @@ namespace TallyJ.CoreModels
       // don't show any details if review is needed
       if (resultSummaryFinal.BallotsNeedingReview != 0)
       {
-        var locations = Location.AllLocationsCached.ToList();
+        var locations = new LocationCacher().AllForThisElection;
 
         var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
                                   .Join(locations, vi => vi.LocationId, l => l.C_RowId,
@@ -167,7 +167,7 @@ namespace TallyJ.CoreModels
       var vResultInfos =
           Db.Result
             .Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
-            .Join(new PeopleCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, PersonName = p.FullNameFL })
+            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, PersonName = p.FullNameFL })
             .OrderBy(g => g.r.Rank)
             .Select(g => new
                 {
@@ -242,7 +242,7 @@ namespace TallyJ.CoreModels
       switch (code)
       {
         case "Ballots":
-          var ballots = Ballot.AllBallotsCached.ToList();
+          var ballots = new BallotCacher().AllForThisElection.ToList();
           var votes = new VoteCacher().AllForThisElection.ToList();
           data = ballots
               .OrderBy(b => b.ComputerCode)
@@ -270,7 +270,7 @@ namespace TallyJ.CoreModels
         case "AllReceivingVotes":
         case "AllReceivingVotesByVote":
           var rows = Db.Result.Where(r => r.ElectionGuid == CurrentElection.ElectionGuid)
-                       .Join(new PeopleCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
+                       .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
           if (code == "AllReceivingVotes")
           {
             rows = rows.OrderBy(g => g.p.FullNameFL);
@@ -307,7 +307,7 @@ namespace TallyJ.CoreModels
                          .OrderBy(r => r.Rank)
                          .Take(currentElection.NumberToElect.AsInt() + currentElection.NumberExtra.AsInt())
                          .ToList()
-                         .Join(new PeopleCacher().AllForThisElection.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid),
+                         .Join(new PersonCacher().AllForThisElection.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid),
                                r => r.PersonGuid,
                                p => p.PersonGuid,
                                (result1, person) => new { person, result1 })

@@ -236,7 +236,7 @@ namespace TallyJ.CoreModels
       var logHelper = new LogHelper();
 
       ImportV1Base importer;
-      var currentPeople = new PeopleCacher().AllForThisElection.ToList();
+      var currentPeople = new PersonCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
 
 
@@ -259,7 +259,7 @@ namespace TallyJ.CoreModels
           var currentLocation = UserSession.CurrentLocation;
           if (currentLocation == null)
           {
-            currentLocation = Location.AllLocationsCached.OrderBy(l => l.SortOrder).FirstOrDefault();
+            currentLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
             if (currentLocation == null)
             {
               throw new ApplicationException("An election must have a Location before importing.");

@@ -10,7 +10,7 @@ using TallyJ.Code.UnityRelated;
 namespace TallyJ.EF
 {
   [Serializable]
-  public partial class Election
+  public partial class Election : IIndexedForCaching
   {
     public bool IsSingleNameElection
     {
@@ -27,7 +27,7 @@ namespace TallyJ.EF
       db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid);
 
       // delete ballots in all locations... cascading will delete votes
-      db.Ballot.Delete(b => Location.AllLocationsCached.Select(l => l.LocationGuid).Contains(b.LocationGuid));
+      db.Ballot.Delete(b => new LocationCacher().AllForThisElection.Select(l => l.LocationGuid).Contains(b.LocationGuid));
     }
 
 

@@ -12,7 +12,7 @@ namespace TallyJ.CoreModels
     {
       var computerCode = UserSession.CurrentComputerCode;
 
-      var nextBallotNum = 1 + Ballot.AllBallotsCached.Where(b => b.ComputerCode == computerCode)
+      var nextBallotNum = 1 + new BallotCacher().AllForThisElection.Where(b => b.ComputerCode == computerCode)
                                 .OrderByDescending(b => b.BallotNumAtComputer)
                                 .Take(1)
                                 .Select(b => b.BallotNumAtComputer)
