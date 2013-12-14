@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return ContextItems.LocationModel.Locations
+        return ContextItems.LocationModel.MyLocations
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new

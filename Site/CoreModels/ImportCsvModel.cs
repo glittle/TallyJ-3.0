@@ -350,7 +350,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new PersonCacher().DropCached();
+      new PersonCacher().DropThisCache();
 
       var result = "Processed {0} row{1}. Added {2} {3}.".FilledWith(rowsProcessed, rowsProcessed.Plural(), peopleAdded,
                                                                      peopleAdded.Plural("people", "person"));

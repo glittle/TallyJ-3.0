@@ -54,10 +54,10 @@ namespace TallyJ.EF
     }
 
     /// <summary>
-    ///   Find the item by matching the _RowId, then replace it with this one
+    ///   Find the item by matching the _RowId (if found), remove it, then replace it with this one
     /// </summary>
     /// <param name="replacementItem"></param>
-    public void ReplaceAndSaveCache(T replacementItem)
+    public void UpdateItemAndSaveCache(T replacementItem)
     {
       var list = AllForThisElection;
 
@@ -69,31 +69,36 @@ namespace TallyJ.EF
 
       list.Add(replacementItem);
 
-      ReplaceCache(list);
+      ReplaceEntireCache(list);
     }
 
     /// <summary>
     ///   Find the item by matching the _RowId, then replace it with this one
     /// </summary>
     /// <param name="itemToRemove"></param>
-    public void RemoveAndSaveCache(T itemToRemove)
+    public void RemoveItemAndSaveCache(T itemToRemove)
     {
       var list = AllForThisElection;
+      var removed = false;
 
-      var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId);
-      foreach (var item in oldItems.ToList())
+      var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId).ToList();
+      foreach (var item in oldItems)
       {
         list.Remove(item);
+        removed = true;
       }
 
-      ReplaceCache(list);
+      if (removed)
+      {
+        ReplaceEntireCache(list);
+      }
     }
 
     /// <summary>
     ///   Put the (modified) List back into the cache
     /// </summary>
     /// <param name="listFromCache"></param>
-    public void ReplaceCache(List<T> listFromCache)
+    public void ReplaceEntireCache(List<T> listFromCache)
     {
       var key = new CacheKey(MainQuery(CurrentDb).GetCacheKey(),
         new[] { CacheKey, UserSession.CurrentElectionGuid.ToString() });
@@ -107,7 +112,7 @@ namespace TallyJ.EF
     /// </summary>
     /// <param name="newItem"></param>
     /// <returns></returns>
-    public T AddAndSaveCache(T newItem)
+    public T AddItemAndSaveCache(T newItem)
     {
       var list = AllForThisElection;
 
@@ -115,7 +120,7 @@ namespace TallyJ.EF
       AssertAtRuntime.That(newItem.C_RowId != 0, "Can't add if id is 0");
 
       list.Add(newItem);
-      ReplaceCache(list);
+      ReplaceEntireCache(list);
       return newItem;
     }
 
@@ -124,7 +129,7 @@ namespace TallyJ.EF
     ///   <typeparam name="T"></typeparam>
     ///   for this election
     /// </summary>
-    public void DropCached()
+    public void DropThisCache()
     {
       if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
       CacheManager.Current.Expire(CacheKey);

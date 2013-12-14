@@ -235,12 +235,17 @@ namespace TallyJ.Code
       return input;
     }
 
+    public static Guid? AsNullableGuid(this string input)
+    {
+      var guid = input.AsGuid();
+      if (guid == Guid.Empty) return null;
+
+      return guid;
+    }
+
     public static IEnumerable<int> AsInts(this IEnumerable<string> input)
     {
-      foreach (var s in input)
-      {
-        yield return s.AsInt();
-      }
+      return input.Select(s => s.AsInt());
     }
 
     public static int AsInt(this object input)
@@ -747,7 +752,7 @@ namespace TallyJ.Code
     }
 
 
-    public static IEnumerable<TResult> LeftOuterJoin<TSource, TInner, TKey, TResult>(this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey, Func<TSource, TInner, TResult> res)
+    public static IEnumerable<TResult> JoinMatchingOrNull<TSource, TInner, TKey, TResult>(this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey, Func<TSource, TInner, TResult> res)
     {
       return from f in source
              join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g

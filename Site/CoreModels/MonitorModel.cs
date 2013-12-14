@@ -30,7 +30,7 @@ namespace TallyJ.CoreModels
           new
             {
               ComputerInfo = new LocationCacher().AllForThisElection
-                .LeftOuterJoin(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+                .Join(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(g => g.l.SortOrder)
                 .ThenBy(g => g.c.ComputerCode)
                 .ThenBy(g => g.l.C_RowId)

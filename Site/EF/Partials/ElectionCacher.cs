@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using EntityFramework.Caching;
+using EntityFramework.Extensions;
 using TallyJ.Code.Session;
 
 namespace TallyJ.EF
@@ -9,5 +13,15 @@ namespace TallyJ.EF
     {
       return db.Election.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
     }
+
+    public Election CurrentElection
+    {
+      get
+      {
+        return AllForThisElection.First();
+      }
+    }
+
+
   }
 }

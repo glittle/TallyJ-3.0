@@ -37,7 +37,7 @@ namespace TallyJ.CoreModels
             e.ShowAsTest
           });
 
-        var personCount = new PersonCacher().AllForThisElection
+        var personCount = Db.Person
                         .Join(list, p => p.ElectionGuid, x => x.ElectionGuid, (p, x) => p)
           .GroupBy(p => p.ElectionGuid)
           .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })

@@ -13,51 +13,52 @@ namespace TallyJ.CoreModels
 {
   public class PeopleSearchModel : DataConnectedModel
   {
+    private bool _savePeopleNeeded;
     // private readonly IQueryable<Person> _people;
 
     //private IQueryable<Person> People
     //{
     //  get { return _people; }
     //}
-//
-//    public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
-//    {
-//      const int max = 45;
-//
-//      var parts = nameToFind.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
-//
-//      var term1 = parts[0];
-//      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
-//
-//      string term2 = null;
-//      string metaphone2 = null;
-//      if (parts.Length > 1)
-//      {
-//        term2 = parts[1];
-//        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
-//      }
-//
-//      bool moreFound;
-//      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
-//        out moreFound);
-//
-//      var voteHelper = new VoteHelper(forBallot);
-//
-//      return new
-//      {
-//        People = results
-//          .Select(r => new
-//          {
-//            Id = r.PersonId,
-//            Name = r.FullName,
-//            Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
-//            r.BestMatch,
-//            r.MatchType
-//          }),
-//        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
-//      }
-//        .AsJsonResult();
-//    }
+    //
+    //    public JsonResult Search(string nameToFind, bool includeMatches, bool forBallot)
+    //    {
+    //      const int max = 45;
+    //
+    //      var parts = nameToFind.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
+    //
+    //      var term1 = parts[0];
+    //      var metaphone1 = term1.GenerateDoubleMetaphone().DefaultTo("_");
+    //
+    //      string term2 = null;
+    //      string metaphone2 = null;
+    //      if (parts.Length > 1)
+    //      {
+    //        term2 = parts[1];
+    //        metaphone2 = term2.GenerateDoubleMetaphone().DefaultTo("_");
+    //      }
+    //
+    //      bool moreFound;
+    //      var results = Db.SqlSearch(UserSession.CurrentElectionGuid, term1, term2, metaphone1, metaphone2, max,
+    //        out moreFound);
+    //
+    //      var voteHelper = new VoteHelper(forBallot);
+    //
+    //      return new
+    //      {
+    //        People = results
+    //          .Select(r => new
+    //          {
+    //            Id = r.PersonId,
+    //            Name = r.FullName,
+    //            Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
+    //            r.BestMatch,
+    //            r.MatchType
+    //          }),
+    //        MoreFound = moreFound ? "More than {0} exact matches".FilledWith(max) : ""
+    //      }
+    //        .AsJsonResult();
+    //    }
 
     public JsonResult Search2(string nameToFind, bool includeMatches, bool forBallot)
     {
@@ -70,6 +71,9 @@ namespace TallyJ.CoreModels
 
       switch (nameToFind)
       {
+        case "~~All~~":
+          results = personList.AsSearchResults().ToList();
+          break;
         case "~~Voters~~":
           results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults().ToList();
           break;
@@ -83,6 +87,12 @@ namespace TallyJ.CoreModels
       }
       var voteHelper = new VoteHelper(forBallot);
 
+      if (_savePeopleNeeded)
+      {
+        Db.SaveChanges();
+        new PersonCacher().ReplaceEntireCache(personList);
+      }
+
       return new
       {
         People = results
@@ -95,7 +105,7 @@ namespace TallyJ.CoreModels
             r.MatchType
           }),
         MoreFound = moreFound ? "More than {0} matches".FilledWith(max) : "",
-        LastRowVersion = results.Count == 0 ? 0 : results.Max(p=>p.RowVersion)
+        LastRowVersion = results.Count == 0 ? 0 : results.Max(p => p.RowVersion)
       }
         .AsJsonResult();
     }
@@ -135,8 +145,8 @@ namespace TallyJ.CoreModels
 
       foreach (var result in matched)
       {
-        result.BestMatch = isSingleNameElection 
-          ? allVotesCached.Where(v => v.PersonGuid == result.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt() 
+        result.BestMatch = isSingleNameElection
+          ? allVotesCached.Where(v => v.PersonGuid == result.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
           : allVotesCached.Count(v => v.PersonGuid == result.PersonGuid);
       }
 
@@ -155,9 +165,11 @@ namespace TallyJ.CoreModels
       AssertAtRuntime.That(terms[0][0] == ' ', "invalid term");
       if (person.CombinedInfo.HasNoContent()
           || person.CombinedSoundCodes.HasNoContent()
-          || person.CombinedInfo.Contains("^") 
+          || person.CombinedInfo.Contains("^")
           || person.CombinedSoundCodes.Contains("^"))
       {
+        Db.Person.Attach(person);
+        _savePeopleNeeded = true;
         new PeopleModel().SetCombinedInfos(person);
         // adjusted person is not saved... could add in future
       }
@@ -212,7 +224,7 @@ namespace TallyJ.CoreModels
       return
         nameToFind.WithoutDiacritics(true)
           .ReplacePunctuation(' ')
-          .Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)
+          .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
           .Select(s => " " + s)
           .ToArray();
     }

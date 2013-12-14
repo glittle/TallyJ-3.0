@@ -191,7 +191,7 @@ namespace TallyJ.CoreModels
                 if (_voteinfos != null) return _voteinfos;
 
                return _voteinfos = new VoteCacher().AllForThisElection
-                 .LeftOuterJoin(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
+                 .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, new BallotCacher().AllForThisElection.Single(b=>b.BallotGuid==g.v.BallotGuid), UserSession.CurrentLocation, g.p))
                  .ToList();
 //

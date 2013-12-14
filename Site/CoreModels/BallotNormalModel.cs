@@ -23,14 +23,15 @@ namespace TallyJ.CoreModels
 
     public override object BallotInfoForJs(Ballot b)
     {
-      var spoiled = new VoteCacher().AllForThisElection.Where(v => v.BallotGuid == b.BallotGuid).Count(v => v.InvalidReasonGuid != null);
+      var votes = VoteInfosForBallot(b);
+      var spoiledCount = votes.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
       return new
       {
         Id = b.C_RowId,
         Code = b.C_BallotCode,
         b.StatusCode,
         StatusCodeText = BallotStatusEnum.TextFor(b.StatusCode),
-        SpoiledCount = spoiled
+        SpoiledCount = spoiledCount
       };
     }
   }

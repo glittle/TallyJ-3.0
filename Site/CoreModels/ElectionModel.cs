@@ -203,7 +203,9 @@ namespace TallyJ.CoreModels
     public JsonResult SaveElection(Election electionFromBrowser)
     {
       //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
-      var election = Election.ThisElectionCached;
+      var electionCacher = new ElectionCacher();
+
+      var election = electionCacher.CurrentElection;
       Db.Election.Attach(election);
 
       var currentType = election.ElectionType;
@@ -234,17 +236,11 @@ namespace TallyJ.CoreModels
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
-      //var isSingleNameElection = election.NumberToElect.AsInt() == 1;
-      //if (election.IsSingleNameElection != isSingleNameElection)
-      //{
-      //  election.IsSingleNameElection = isSingleNameElection;
-      //  changed = true;
-      //}
-
       if (changed)
       {
         Db.SaveChanges();
-        UserSession.CurrentElection = election;
+
+        electionCacher.UpdateItemAndSaveCache(election);
       }
 
       if (currentMode != election.ElectionMode
@@ -256,6 +252,8 @@ namespace TallyJ.CoreModels
         // reset flags
         new PeopleModel().ResetInvolvementFlags();
         Db.SaveChanges();
+
+        new PersonCacher().DropThisCache();
 
         // update analysis
         new ResultsModel().GenerateResults();
@@ -284,13 +282,13 @@ namespace TallyJ.CoreModels
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
       var computerModel = new ComputerModel();
-      computerModel.AddCurrentComputerIntoElection(wantedElectionGuid);
+      computerModel.AddCurrentComputerIntoCurrentElection();
 
       var firstLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
       // default to top location
       if (firstLocation != null)
       {
-        computerModel.AddCurrentComputerIntoLocation(firstLocation.C_RowId);
+        computerModel.MoveCurrentComputerIntoLocation(firstLocation.C_RowId);
       }
 
       var message = UserSession.IsGuestTeller
@@ -386,12 +384,12 @@ namespace TallyJ.CoreModels
         CanVote = CanVoteOrReceive.All,
         CanReceive = CanVoteOrReceive.All
       };
+      
       Db.Election.Add(election);
       Db.SaveChanges();
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
-      Election.DropCachedElection();
-
+      
       new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
@@ -411,11 +409,11 @@ namespace TallyJ.CoreModels
       };
       Db.Location.Add(mainLocation);
       Db.SaveChanges();
-      new LocationCacher().AddAndSaveCache(mainLocation);
+      new LocationCacher().AddItemAndSaveCache(mainLocation);
 
       var computerModel = new ComputerModel();
-      computerModel.AddCurrentComputerIntoElection(election.ElectionGuid);
-      computerModel.AddCurrentComputerIntoLocation(mainLocation.C_RowId);
+      computerModel.AddCurrentComputerIntoCurrentElection();
+      computerModel.MoveCurrentComputerIntoLocation(mainLocation.C_RowId);
 
       return new
       {
@@ -430,7 +428,8 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      var election = Election.ThisElectionCached;
+      var electionCacher = new ElectionCacher();
+      var election = electionCacher.CurrentElection;
       if (election.TallyStatus != status)
       {
         Db.Election.Attach(election);
@@ -438,6 +437,8 @@ namespace TallyJ.CoreModels
         election.TallyStatus = status;
 
         Db.SaveChanges();
+
+        electionCacher.UpdateItemAndSaveCache(election);
 
         new ElectionStatusSharer().SetStateFor(election);
       }
@@ -479,7 +480,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult UpdateElectionShowAllJson(bool showFullReport)
     {
-      var election = Election.ThisElectionCached;
+      var electionCacher = new ElectionCacher();
+
+      var election = electionCacher.CurrentElection;
       if (election.ShowFullReport != showFullReport)
       {
         Db.Election.Attach(election);
@@ -487,6 +490,8 @@ namespace TallyJ.CoreModels
         election.ShowFullReport = showFullReport;
 
         Db.SaveChanges();
+
+        electionCacher.UpdateItemAndSaveCache(election);
       }
 
       return new { Saved = true }.AsJsonResult();
@@ -496,14 +501,19 @@ namespace TallyJ.CoreModels
     {
       if (UserSession.IsKnownTeller)
       {
-        var election = Election.ThisElectionCached;
+        var electionCacher = new ElectionCacher();
+
+        var election = electionCacher.CurrentElection;
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
 
         election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
 
-        Db.SaveChanges();
+Db.SaveChanges();
+
+        electionCacher.UpdateItemAndSaveCache(election);
+
         return new { Saved = true }.AsJsonResult();
       }
 
@@ -518,7 +528,9 @@ namespace TallyJ.CoreModels
       {
         return false;
       }
-      var election = Election.ThisElectionCached;
+      var electionCacher = new ElectionCacher();
+
+      var election = electionCacher.CurrentElection;
 
       var sharer = new ElectionStatusSharer();
       var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
@@ -531,21 +543,24 @@ namespace TallyJ.CoreModels
 
       if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
       {
-        Db.Election.Attach(election);
+        //Db.Election.Attach(election);
 
+        // don't bother setting this to the database
         var listedForPublicAsOf = DateTime.Now;
         election.ListedForPublicAsOf = listedForPublicAsOf;
 
-        try
-        {
-          Db.SaveChanges();
-        }
-        catch (Exception ex)
-        {
-          //          election = GetFreshFromDb(election.ElectionGuid);
-          //          election.ListedForPublicAsOf = listedForPublicAsOf;
-          //          Db.SaveChanges();
-        }
+        electionCacher.UpdateItemAndSaveCache(election);
+
+//        try
+//        {
+//          Db.SaveChanges();
+//        }
+//        catch (Exception ex)
+//        {
+//          //          election = GetFreshFromDb(election.ElectionGuid);
+//          //          election.ListedForPublicAsOf = listedForPublicAsOf;
+//          //          Db.SaveChanges();
+//        }
       }
 
       return someoneElseChangedTheStatus;

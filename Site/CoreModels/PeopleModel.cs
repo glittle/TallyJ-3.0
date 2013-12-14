@@ -93,6 +93,7 @@ namespace TallyJ.CoreModels
     {
       foreach (var person in PeopleInElection)
       {
+        Db.Person.Attach(person);
         ResetInvolvementFlags(person);
       }
       Db.SaveChanges();
@@ -262,7 +263,7 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        new PersonCacher().ReplaceCache(PeopleInElection);
+        new PersonCacher().ReplaceEntireCache(PeopleInElection);
       }
 
       return new
@@ -340,17 +341,17 @@ namespace TallyJ.CoreModels
           .ToList();
 
       var location = ContextItems.LocationModel.HasLocations && forLocationGuid.HasContent()
-                         ? Locations.Single(l => l.LocationGuid == forLocationGuid)
-                         : Locations.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
+                         ? new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
+                         : new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
 
       if (location.BallotsCollected.AsInt() == 0)
       {
         location.BallotsCollected = ballotSources.Count;
         Db.SaveChanges();
 
-        if (location.LocationGuid == UserSession.CurrentLocationGuid)
+        if (location.LocationGuid != UserSession.CurrentLocationGuid)
         {
-          UserSession.CurrentLocation = location;
+          UserSession.CurrentLocationGuid = location.LocationGuid;
         }
       }
 
@@ -468,10 +469,11 @@ namespace TallyJ.CoreModels
 
             // get election from DB, not session, as we need to update it now
             //var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
-            var election = Election.ThisElectionCached;
-            Db.Election.Attach(election);
+            var election = new ElectionCacher().CurrentElection;
 
             var nextNum = election.LastEnvNum.AsInt() + 1;
+
+            Db.Election.Attach(election);
 
             person.EnvNum = nextNum;
             election.LastEnvNum = nextNum;
@@ -481,7 +483,6 @@ namespace TallyJ.CoreModels
 
       person.TellerAtKeyboard = UserSession.GetCurrentTeller(1);
       person.TellerAssisting = UserSession.GetCurrentTeller(2);
-
 
       Db.SaveChanges();
 
@@ -525,7 +526,7 @@ namespace TallyJ.CoreModels
                 AsJsonResult();
       }
 
-      new PersonCacher().DropCached();
+      new PersonCacher().DropThisCache();
 
       return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }

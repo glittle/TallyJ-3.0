@@ -5,6 +5,7 @@ using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Web;
 using TallyJ.Code;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -12,93 +13,101 @@ namespace TallyJ.CoreModels
 {
   public class ComputerModel : DataConnectedModel
   {
-    public Computer CreateComputerRecordForMe()
+    public Computer CreateComputerForMe(Guid electionGuid)
     {
       ClearOutOldComputerRecords();
 
       var computer = new Computer
                        {
-                         ShadowElectionGuid = Guid.NewGuid(),
+                         ElectionGuid = electionGuid,
                          LastContact = DateTime.Now,
                          BrowserInfo = HttpContext.Current.Request.Browser.Type
                        };
 
-      Db.Computer.Add(computer);
-      Db.SaveChanges();
-
-      new ComputerCacher().AddAndSaveCache(computer);
-
-      //TODO: remove from session - just keep Guid
-      SessionKey.CurrentComputer.SetInSession(computer);
-
       return computer;
     }
 
-    /// <Summary>Remove all computer records (only for this election) that are not active</Summary>
+    /// <Summary>Remove all computer records (for all elections) that are not active</Summary>
     private void ClearOutOldComputerRecords()
     {
       const int maxMinutesOfNoContact = 5;
+      var computerCacher = new ComputerCacher();
 
       var now = DateTime.Now;
-      var computers = new ComputerCacher().AllForThisElection;
 
-      foreach (var oldComputer in computers.Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
+      foreach (var oldComputer in Db.Computer.Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
       {
         Db.Computer.Remove(oldComputer);
-        computers.Remove(oldComputer);
+
+        computerCacher.RemoveItemAndSaveCache(oldComputer);
       }
-      
+
       Db.SaveChanges();
-      new ComputerCacher().ReplaceCache(computers);
+
     }
 
     /// <Summary>Add computer into election, with unique computer code</Summary>
-    public void AddCurrentComputerIntoElection(Guid electionGuid)
+    public void AddCurrentComputerIntoCurrentElection()
     {
-      var computer = UserSession.CurrentComputer ?? CreateComputerRecordForMe();
-
-      Db.Computer.Attach(computer);
-
-      computer.ElectionGuid = electionGuid;
-      computer.LocationGuid = null;
-      SessionKey.CurrentLocation.SetInSession<Location>(null);
+      var electionGuid = UserSession.CurrentElectionGuid;
 
       var computerCacher = new ComputerCacher();
+
+      Computer computer = null;
+      var currentComputerId = UserSession.CurrentComputerId;
+
+      if (currentComputerId > 0)
+      {
+        // change this computer
+        computer = new ComputerCacher().AllForThisElection.FirstOrDefault(c => c.C_RowId == currentComputerId);
+        if (computer != null)
+        {
+          Db.Computer.Attach(computer);
+        }
+      }
+
+      if (computer == null)
+      {
+        // make new
+        computer = CreateComputerForMe(electionGuid);
+        Db.Computer.Add(computer);
+      }
+
+      computer.LocationGuid = new LocationCacher().AllForThisElection.First().LocationGuid;
 
       computer.ComputerCode = DetermineNextFreeComputerCode(computerCacher.AllForThisElection.Select(c => c.ComputerCode)
           .Distinct()
           .OrderBy(s => s)
           .ToList());
 
-      SessionKey.CurrentComputer.SetInSession(computer);
-      computerCacher.ReplaceAndSaveCache(computer);
-
       Db.SaveChanges();
+
+      computerCacher.UpdateItemAndSaveCache(computer);
     }
 
     /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
-    public bool AddCurrentComputerIntoLocation(int id)
+    public bool MoveCurrentComputerIntoLocation(int locationId)
     {
-      var location =
-        ContextItems.LocationModel.Locations.SingleOrDefault(
-          l => l.C_RowId == id);
+      var location = new LocationCacher().AllForThisElection.SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
-        SessionKey.CurrentLocation.SetInSession<Location>(null);
+        SessionKey.CurrentLocationGuid.SetInSession<Location>(null);
         return false;
       }
 
       var computer = UserSession.CurrentComputer;
-      if (computer.ElectionGuid.HasValue)
-      {
-        Db.Computer.Attach(computer);
-        computer.LocationGuid = location.LocationGuid;
-        computer.LastContact = DateTime.Now;
-        Db.SaveChanges();
-        new ComputerCacher().ReplaceAndSaveCache(computer);
-      }
-      SessionKey.CurrentLocation.SetInSession(location);
+      AssertAtRuntime.That(computer != null, "code missing");
+      if (computer == null) return false;
+
+      Db.Computer.Attach(computer);
+      computer.LocationGuid = location.LocationGuid;
+      computer.LastContact = DateTime.Now;
+      Db.SaveChanges();
+
+      new ComputerCacher().UpdateItemAndSaveCache(computer);
+
+      SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 
       // reset ballot #
       SessionKey.CurrentBallotId.SetInSession(0);
@@ -108,6 +117,7 @@ namespace TallyJ.CoreModels
         var ballotId =
           new BallotCacher().AllForThisElection.Where(
             b => b.LocationGuid == location.LocationGuid && b.ComputerCode == computer.ComputerCode)
+            .OrderBy(b => b.BallotNumAtComputer)
             .Select(b => b.C_RowId).FirstOrDefault();
         if (ballotId != 0)
         {
@@ -176,19 +186,19 @@ namespace TallyJ.CoreModels
       var lastContact = DateTime.Now;
       computer.LastContact = lastContact;
 
-      new ComputerCacher().ReplaceAndSaveCache(computer);
+      new ComputerCacher().UpdateItemAndSaveCache(computer);
 
-//      try
-//      {
-//        Db.SaveChanges();
-//      }
-//      catch (DbUpdateConcurrencyException ex)
-//      {
-//        ((IObjectContextAdapter)Db).ObjectContext.Detach(computer);
-//        // if this computer has been inactive, its computer record may have been removed
-//        CreateComputerRecordForMe();
-//        AddCurrentComputerIntoElection(UserSession.CurrentElectionGuid);
-//      }
+      //      try
+      //      {
+      //        Db.SaveChanges();
+      //      }
+      //      catch (DbUpdateConcurrencyException ex)
+      //      {
+      //        ((IObjectContextAdapter)Db).ObjectContext.Detach(computer);
+      //        // if this computer has been inactive, its computer record may have been removed
+      //        CreateComputerRecordForMe();
+      //        AddCurrentComputerIntoElection(UserSession.CurrentElectionGuid);
+      //      }
 
       if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
       {

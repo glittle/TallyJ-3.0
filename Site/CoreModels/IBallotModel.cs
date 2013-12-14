@@ -15,7 +15,7 @@ namespace TallyJ.CoreModels
     int NextBallotNumAtComputer();
     object CurrentBallotInfo();
     IEnumerable<object> CurrentVotesForJs();
-    JsonResult SaveVote(int personId, int voteId, int count, Guid invalid);
+    JsonResult SaveVote(int personId, int voteId, int count, Guid? invalid);
     JsonResult DeleteVote(int vid);
     string InvalidReasonsByIdJsonString();
     string InvalidReasonsByGuidJsonString();

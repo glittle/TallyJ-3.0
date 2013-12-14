@@ -25,7 +25,7 @@ namespace TallyJ.Controllers
       {
         return new
                  {
-                   Locations = ContextItems.LocationModel.Locations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
+                   Locations = ContextItems.LocationModel.MyLocations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
                    Selected = true,
                    ElectionName = UserSession.CurrentElectionName,
                    Pulse = new PulseModel(this).Pulse()

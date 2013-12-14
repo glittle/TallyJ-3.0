@@ -29,33 +29,5 @@ namespace TallyJ.EF
       // delete ballots in all locations... cascading will delete votes
       db.Ballot.Delete(b => new LocationCacher().AllForThisElection.Select(l => l.LocationGuid).Contains(b.LocationGuid));
     }
-
-
-
-    /// <summary>
-    /// Get all people for this election
-    /// </summary>
-    public static Election ThisElectionCached
-    {
-      get
-      {
-        var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-
-        if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
-
-        var currentElectionGuid = UserSession.CurrentElectionGuid;
-
-        return db.Election.Where(p => p.ElectionGuid == currentElectionGuid).FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "ThisElection" + currentElectionGuid }).First();
-      }
-    }
-    /// <summary>
-    /// Drop the cache of people for this election
-    /// </summary>
-    public static void DropCachedElection()
-    {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
-
-      CacheManager.Current.Expire("ThisElection" + UserSession.CurrentElectionGuid);
-    }
   }
 }

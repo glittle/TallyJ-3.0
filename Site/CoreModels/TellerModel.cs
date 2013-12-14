@@ -71,8 +71,8 @@ namespace TallyJ.CoreModels
                 break;
             }
 
-            new TellerCacher().ReplaceAndSaveCache(thisTeller);
-            new ComputerCacher().ReplaceAndSaveCache(currentComputer);
+            new TellerCacher().UpdateItemAndSaveCache(thisTeller);
+            new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
 
             Db.SaveChanges();
           }
@@ -113,8 +113,8 @@ namespace TallyJ.CoreModels
           Db.SaveChanges();
           UserSession.SetCurrentTeller(num, teller.TellerGuid);
 
-          new TellerCacher().AddAndSaveCache(teller);
-          new ComputerCacher().ReplaceAndSaveCache(currentComputer);
+          new TellerCacher().AddItemAndSaveCache(teller);
+          new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
 
           return new
                    {
@@ -143,8 +143,8 @@ namespace TallyJ.CoreModels
 
             Db.SaveChanges();
 
-            new TellerCacher().ReplaceAndSaveCache(thisTeller);
-            new ComputerCacher().ReplaceAndSaveCache(currentComputer);
+            new TellerCacher().UpdateItemAndSaveCache(thisTeller);
+            new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
           }
           return new { Saved = true };
       }
@@ -172,7 +172,7 @@ namespace TallyJ.CoreModels
         return new { Deleted = false, Error = ex.Message };
       }
 
-      new TellerCacher().RemoveAndSaveCache(thisTeller);
+      new TellerCacher().RemoveItemAndSaveCache(thisTeller);
 
       return new { Deleted = true };
 
