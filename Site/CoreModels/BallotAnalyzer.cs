@@ -101,7 +101,7 @@ namespace TallyJ.CoreModels
       spoiledCount = 0;
 
       // if under review, don't change that status
-      if (currentStatusCode == BallotStatusEnum.Review)
+      if (currentStatusCode == BallotStatusEnum.Review || currentStatusCode==BallotStatusEnum.Verify)
       {
         statusCode = currentStatusCode;
         return false;
@@ -112,10 +112,10 @@ namespace TallyJ.CoreModels
         return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
       }
 
-      var needsReview = votes.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
-      if (needsReview)
+      var needsVerification = votes.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      if (needsVerification)
       {
-        return StatusChanged(BallotStatusEnum.Review, currentStatusCode, out statusCode);
+        return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);
       }
 
       // check counts
@@ -169,7 +169,7 @@ namespace TallyJ.CoreModels
 
     public bool BallotNeedsReview(Ballot ballot)
     {
-      return ballot.StatusCode == BallotStatusEnum.Review;
+      return ballot.StatusCode == BallotStatusEnum.Review || ballot.StatusCode==BallotStatusEnum.Verify;
     }
   }
 }

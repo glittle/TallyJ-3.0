@@ -469,7 +469,7 @@ namespace TallyJ.CoreModels
 
             // get election from DB, not session, as we need to update it now
             //var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
-            var election = new ElectionCacher().CurrentElection;
+            var election = UserSession.CurrentElection;
 
             var nextNum = election.LastEnvNum.AsInt() + 1;
 

@@ -194,10 +194,10 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
-//    public Election GetFreshFromDb(Guid electionGuid)
-//    {
-//      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
-//    }
+    //    public Election GetFreshFromDb(Guid electionGuid)
+    //    {
+    //      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+    //    }
 
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
@@ -205,7 +205,7 @@ namespace TallyJ.CoreModels
       //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
       var electionCacher = new ElectionCacher();
 
-      var election = electionCacher.CurrentElection;
+      var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
 
       var currentType = election.ElectionType;
@@ -384,12 +384,12 @@ namespace TallyJ.CoreModels
         CanVote = CanVoteOrReceive.All,
         CanReceive = CanVoteOrReceive.All
       };
-      
+
       Db.Election.Add(election);
       Db.SaveChanges();
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
-      
+
       new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
@@ -429,7 +429,7 @@ namespace TallyJ.CoreModels
       }
 
       var electionCacher = new ElectionCacher();
-      var election = electionCacher.CurrentElection;
+      var election = UserSession.CurrentElection;
       if (election.TallyStatus != status)
       {
         Db.Election.Attach(election);
@@ -444,25 +444,25 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public IEnumerable<Election> VisibleElections()
-    {
-      // this is first hit on the database on the home page... need special logging
-      try
-      {
-        var electionsWithCode =
-          Db.Election.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
-        return
-          electionsWithCode.Where(
-            e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
-      }
-      catch (Exception e)
-      {
-        var logger = LogManager.GetCurrentClassLogger();
-        logger.ErrorException("Reading VisibleElections", e);
-
-        return new List<Election>();
-      }
-    }
+    //    public IEnumerable<Election> VisibleElections()
+    //    {
+    //      // this is first hit on the database on the home page... need special logging
+    //      try
+    //      {
+    //        var electionsWithCode =
+    //          Db.Election.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
+    //        return
+    //          electionsWithCode.Where(
+    //            e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
+    //      }
+    //      catch (Exception e)
+    //      {
+    //        var logger = LogManager.GetCurrentClassLogger();
+    //        logger.ErrorException("Reading VisibleElections", e);
+    //
+    //        return new List<Election>();
+    //      }
+    //    }
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
@@ -482,7 +482,7 @@ namespace TallyJ.CoreModels
     {
       var electionCacher = new ElectionCacher();
 
-      var election = electionCacher.CurrentElection;
+      var election = UserSession.CurrentElection;
       if (election.ShowFullReport != showFullReport)
       {
         Db.Election.Attach(election);
@@ -503,14 +503,14 @@ namespace TallyJ.CoreModels
       {
         var electionCacher = new ElectionCacher();
 
-        var election = electionCacher.CurrentElection;
+        var election = UserSession.CurrentElection;
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
 
         election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
 
-Db.SaveChanges();
+        Db.SaveChanges();
 
         electionCacher.UpdateItemAndSaveCache(election);
 
@@ -528,9 +528,8 @@ Db.SaveChanges();
       {
         return false;
       }
-      var electionCacher = new ElectionCacher();
 
-      var election = electionCacher.CurrentElection;
+      var election = UserSession.CurrentElection;
 
       var sharer = new ElectionStatusSharer();
       var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
@@ -549,18 +548,19 @@ Db.SaveChanges();
         var listedForPublicAsOf = DateTime.Now;
         election.ListedForPublicAsOf = listedForPublicAsOf;
 
+        var electionCacher = new ElectionCacher();
         electionCacher.UpdateItemAndSaveCache(election);
 
-//        try
-//        {
-//          Db.SaveChanges();
-//        }
-//        catch (Exception ex)
-//        {
-//          //          election = GetFreshFromDb(election.ElectionGuid);
-//          //          election.ListedForPublicAsOf = listedForPublicAsOf;
-//          //          Db.SaveChanges();
-//        }
+        //        try
+        //        {
+        //          Db.SaveChanges();
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //          //          election = GetFreshFromDb(election.ElectionGuid);
+        //          //          election.ListedForPublicAsOf = listedForPublicAsOf;
+        //          //          Db.SaveChanges();
+        //        }
       }
 
       return someoneElseChangedTheStatus;

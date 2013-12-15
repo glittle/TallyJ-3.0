@@ -70,18 +70,22 @@ namespace TallyJ.CoreModels
         after.Add(new Person { C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksAfter--;
       }
+      var currentElection = UserSession.CurrentElection;
       var i = 0;
       return
         before.Concat(people
                         .OrderBy(p => p.LastName)
                         .ThenBy(p => p.FirstName)).Concat(after)
-          .Select(p => new
+          .Select(p =>
+          {
+            return new
                          {
                            PersonId = p.C_RowId,
                            FullName = p.FullNameFL,
-                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(UserSession.CurrentElection, p) : "",
+                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "",
                            Pos = ++i
-                         });
+                         };
+          });
     }
 
     public object GetMorePeople(long stamp, out long newStamp)

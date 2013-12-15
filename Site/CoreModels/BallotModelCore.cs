@@ -370,30 +370,35 @@ namespace TallyJ.CoreModels
 
 
 
-    public static int BallotCount(Guid locationGuid, string computerCode, bool isSingleName)
+    public static int BallotCount(Guid locationGuid, string computerCode, bool isSingleName, List<Ballot> ballots = null, List<Vote> votes = null)
     {
       int sum;
+      ballots = ballots ?? new BallotCacher().AllForThisElection;
+
       if (isSingleName)
       {
-        var allBallotGuids = new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode)
+        var allBallotGuids = ballots.Where(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode)
           .Select(b => b.BallotGuid).ToList();
 
-        sum = new VoteCacher().AllForThisElection.Where(v => allBallotGuids.Contains(v.BallotGuid))
+        votes = votes ?? new VoteCacher().AllForThisElection;
+        sum = votes.Where(v => allBallotGuids.Contains(v.BallotGuid))
           .Sum(vi => vi.SingleNameElectionCount).AsInt();
       }
       else
       {
-        sum = new BallotCacher().AllForThisElection.Count(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode);
+        sum = ballots.Count(b => b.LocationGuid == locationGuid && b.ComputerCode == computerCode);
       }
       return sum;
     }
 
-    public static int BallotCount(Guid locationGuid, bool isSingleName)
+    public static int BallotCount(Guid locationGuid, bool isSingleName, List<Ballot> ballots = null )
     {
       int sum;
+      ballots = ballots ?? new BallotCacher().AllForThisElection;
+
       if (isSingleName)
       {
-        var allBallotGuids = new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == locationGuid)
+        var allBallotGuids = ballots.Where(b => b.LocationGuid == locationGuid)
           .Select(b => b.BallotGuid).ToList();
 
         sum = new VoteCacher().AllForThisElection.Where(v => allBallotGuids.Contains(v.BallotGuid))
@@ -401,7 +406,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        sum = new BallotCacher().AllForThisElection.Count(b => b.LocationGuid == locationGuid);
+        sum = ballots.Count(b => b.LocationGuid == locationGuid);
       }
       return sum;
     }

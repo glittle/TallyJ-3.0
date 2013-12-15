@@ -367,7 +367,6 @@
     <Compile Include="EF\Message.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\Other\BallotInfo.cs" />
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
     <Compile Include="EF\Partials\ComputerCacher.cs" />
@@ -376,6 +375,7 @@
     <Compile Include="EF\Partials\LocationCacher.cs" />
     <Compile Include="EF\Partials\PersonCacher.cs" />
     <Compile Include="EF\Partials\CacherBase.cs" />
+    <Compile Include="EF\Partials\PublicElection.cs" />
     <Compile Include="EF\Partials\TellerCacher.cs" />
     <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="EF\Person.cs">

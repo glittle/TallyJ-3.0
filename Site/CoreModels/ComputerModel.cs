@@ -35,7 +35,7 @@ namespace TallyJ.CoreModels
 
       var now = DateTime.Now;
 
-      foreach (var oldComputer in Db.Computer.Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
+      foreach (var oldComputer in Db.Computer.ToList().Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
       {
         Db.Computer.Remove(oldComputer);
 
@@ -59,7 +59,7 @@ namespace TallyJ.CoreModels
       if (currentComputerId > 0)
       {
         // change this computer
-        computer = new ComputerCacher().AllForThisElection.FirstOrDefault(c => c.C_RowId == currentComputerId);
+        computer = computerCacher.GetById(currentComputerId);
         if (computer != null)
         {
           Db.Computer.Attach(computer);
@@ -81,6 +81,8 @@ namespace TallyJ.CoreModels
           .ToList());
 
       Db.SaveChanges();
+
+      UserSession.CurrentComputerId = computer.C_RowId;
 
       computerCacher.UpdateItemAndSaveCache(computer);
     }

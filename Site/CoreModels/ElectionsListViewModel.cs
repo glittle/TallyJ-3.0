@@ -67,26 +67,27 @@ namespace TallyJ.CoreModels
       }
     }
 
-    private IQueryable<Election> MyElections()
+    private IEnumerable<Election> MyElections()
     {
       if (UserSession.IsKnownTeller)
       {
         var userGuid = UserSession.UserGuid;
         return Db
-            .Election
-            .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
-                        (e, j) => new { e, j })
-            .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
-            .Select(joined => joined.e);
+          .Election
+          .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
+            (e, j) => new {e, j})
+          .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
+          .Select(joined => joined.e)
+          .ToList();
       }
 
       var currentElection = UserSession.CurrentElection;
       if (UserSession.IsGuestTeller && currentElection != null)
       {
-        return Db.Election.Where(e => e.ElectionGuid == currentElection.ElectionGuid);
+        return new List<Election> {currentElection};
       }
 
-      return Db.Election.Where(e => false);
+      return new List<Election>();
     }
   }
 }

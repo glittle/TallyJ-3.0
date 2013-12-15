@@ -17,7 +17,7 @@ namespace TallyJ.CoreModels
     {
       var model = new ElectionModel();
 
-      var desiredElection = model.VisibleElections().SingleOrDefault(e => e.C_RowId == electionId
+      var desiredElection = new ElectionCacher().PublicElections.SingleOrDefault(e => e.C_RowId == electionId
                                                               && e.ElectionPasscode == secretCode);
 
       if (desiredElection == null)
@@ -28,14 +28,12 @@ namespace TallyJ.CoreModels
                  }.AsJsonResult();
       }
 
-
       var fakeUserName = HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
 
       FormsAuthentication.SetAuthCookie(fakeUserName, false);
       UserSession.ProcessLogin();
 
       UserSession.IsGuestTeller = true;
-
 
       model.JoinIntoElection(desiredElection.ElectionGuid);
 
@@ -49,7 +47,7 @@ namespace TallyJ.CoreModels
     {
       var helper = new TellerHelper();
 
-      var thisTeller = helper.Tellers.SingleOrDefault(t => t.C_RowId == tellerId);
+      var thisTeller = new TellerCacher().GetById(tellerId);
 
       var currentComputer = UserSession.CurrentComputer;
 
@@ -153,9 +151,7 @@ namespace TallyJ.CoreModels
 
     public object DeleteTeller(int tellerId)
     {
-      var helper = new TellerHelper();
-
-      var thisTeller = helper.Tellers.SingleOrDefault(t => t.C_RowId == tellerId);
+      var thisTeller = new TellerCacher().GetById(tellerId);
 
       if (thisTeller == null)
       {

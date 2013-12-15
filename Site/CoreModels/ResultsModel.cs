@@ -301,7 +301,7 @@ namespace TallyJ.CoreModels
                 }.AsJsonResult();
           }
 
-          var currentElection = UserSession.CurrentElection;
+          var currentElection = CurrentElection;
           var result = Db.Result
                          .Where(r => r.ElectionGuid == UserSession.CurrentElectionGuid)
                          .OrderBy(r => r.Rank)

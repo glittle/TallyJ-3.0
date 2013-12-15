@@ -28,11 +28,20 @@ namespace TallyJ.EF
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
-    protected virtual string CacheKey
+    protected virtual string CacheKeyRaw
     {
       get { return typeof(T).Name + UserSession.CurrentElectionGuid; }
     }
 
+    /// <summary>
+    /// Get a single <typeparamref name="T"/> by Id. If not found, returns null
+    /// </summary>
+    /// <param name="rowId"></param>
+    /// <returns></returns>
+    public T GetById(int rowId)
+    {
+      return AllForThisElection.FirstOrDefault(t => t.C_RowId == rowId);
+    }
 
     public List<T> AllForThisElection
     {
@@ -42,11 +51,43 @@ namespace TallyJ.EF
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        return MainQuery(db)
-          .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)),
-            new[] { CacheKey, UserSession.CurrentElectionGuid.ToString() });
+        CacheKey internalCacheKey;
+
+        var allForThisElection = MainQuery(db)
+          .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)),
+            new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
+
+
+        if (typeof(T) == typeof(Election))
+        {
+          RegisterElectionCacheKey(internalCacheKey);
+        }
+
+        return allForThisElection;
       }
     }
+
+    protected const string ElectionKeys = "ElectionKeys";
+
+    private void RegisterElectionCacheKey(CacheKey electionCacheKey)
+    {
+      var cacheManager = Locator.Current.Resolve<CacheManager>();
+
+      var list =
+        cacheManager.GetOrAdd(ElectionKeys, new List<CacheKey>(), CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60))) as
+          List<CacheKey>;
+      if (list == null)
+      {
+        return;
+      }
+      
+      if (!list.Exists(k => k.Key == electionCacheKey.Key))
+      {
+        list.Add(electionCacheKey);
+        cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)));
+      }
+    }
+
 
     private TallyJ2dEntities CurrentDb
     {
@@ -100,8 +141,8 @@ namespace TallyJ.EF
     /// <param name="listFromCache"></param>
     public void ReplaceEntireCache(List<T> listFromCache)
     {
-      var key = new CacheKey(MainQuery(CurrentDb).GetCacheKey(),
-        new[] { CacheKey, UserSession.CurrentElectionGuid.ToString() });
+      var key = new CacheKey(MainQuery(CurrentDb).GetCacheKey(), 
+        new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
 
       Locator.Current.Resolve<CacheManager>()
         .Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)));
@@ -132,7 +173,7 @@ namespace TallyJ.EF
     public void DropThisCache()
     {
       if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
-      CacheManager.Current.Expire(CacheKey);
+      CacheManager.Current.Expire(CacheKeyRaw);
     }
 
     protected abstract IQueryable<T> MainQuery(TallyJ2dEntities db);

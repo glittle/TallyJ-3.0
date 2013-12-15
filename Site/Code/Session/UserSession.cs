@@ -97,7 +97,16 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return CurrentElectionGuid.HasContent() ? new ElectionCacher().CurrentElection : null;
+        var current = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        if (current != null)
+        {
+          return current;
+        }
+
+        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.First() : null;
+
+        HttpContext.Current.Items[ItemKey.CurrentElection] = currentElection;
+        return currentElection;
       }
     }
 
@@ -179,7 +188,7 @@ namespace TallyJ.Code.Session
       get
       {
         var currentComputerId = CurrentComputerId;
-        return currentComputerId == 0 ? null : new ComputerCacher().AllForThisElection.FirstOrDefault(c => c.C_RowId == currentComputerId);
+        return currentComputerId == 0 ? null : new ComputerCacher().GetById(currentComputerId);
       }
     }
 
