@@ -83,7 +83,7 @@
 
     $('#btnRefreshBallotCount').on('click', changeLocationStatus);
     $('#btnRefreshBallotList').on('click', startToRefreshBallotList);
-    $('#btnRefreshBallot').on('click', function () { loadBallot('B' + local.ballotId); });
+    $('#btnRefreshBallot').on('click', function () { loadBallot('B' + local.ballotId, true); });
 
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
@@ -977,11 +977,11 @@
     loadBallot(el.id);
   };
 
-  var loadBallot = function (ballotId) {
+  var loadBallot = function (ballotId, refresh) {
     if (ballotId.substr(0, 1) == 'B') {
       ballotId = ballotId.substr(1);
     }
-    CallAjaxHandler(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId }, showBallot);
+    CallAjaxHandler(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId, refresh: refresh || false }, showBallot);
   };
 
   var nameClick = function (ev) {

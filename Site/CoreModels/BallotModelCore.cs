@@ -28,11 +28,11 @@ namespace TallyJ.CoreModels
 
     #region IBallotModel Members
 
-    public object SwitchToBallotAndGetInfo(int ballotId)
+    public object SwitchToBallotAndGetInfo(int ballotId, bool refresh)
     {
       SetAsCurrentBallot(ballotId);
 
-      var ballotInfo = GetCurrentBallot();
+      var ballotInfo = GetCurrentBallot(refresh);
 
       SessionKey.CurrentLocationGuid.SetInSession(ballotInfo.LocationGuid);
 
@@ -459,16 +459,27 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Current Ballot... could be null</Summary>
-    public Ballot GetCurrentBallot()
+    public Ballot GetCurrentBallot(bool refresh = false)
     {
       var createIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
 
-      var ballot = new BallotCacher().AllForThisElection.SingleOrDefault(b => b.C_RowId == currentBallotId);
+      var ballotCacher = new BallotCacher();
+
+      var ballot = ballotCacher.GetById(currentBallotId);
 
       if (ballot == null && createIfNeeded)
       {
         ballot = CreateAndRegisterBallot();
+      }
+      else
+      {
+        if (refresh)
+        {
+          Db.Ballot.Attach(ballot);
+          new BallotAnalyzer().UpdateBallotStatus(ballot, VoteInfosForCurrentBallot());
+          ballotCacher.UpdateItemAndSaveCache(ballot);
+        }
       }
 
       return ballot;

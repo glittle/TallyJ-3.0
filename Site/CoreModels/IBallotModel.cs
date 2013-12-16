@@ -8,7 +8,7 @@ namespace TallyJ.CoreModels
   public interface IBallotModel
   {
     /// <Summary>Current Ballot... could be null</Summary>
-    Ballot GetCurrentBallot();
+    Ballot GetCurrentBallot(bool refresh = false);
 
     void SetAsCurrentBallot(int ballotId);
 
@@ -20,7 +20,7 @@ namespace TallyJ.CoreModels
     string InvalidReasonsByIdJsonString();
     string InvalidReasonsByGuidJsonString();
     object CurrentBallotsInfoList();
-    object SwitchToBallotAndGetInfo(int ballotId);
+    object SwitchToBallotAndGetInfo(int ballotId, bool refresh);
     bool SortVotes(List<int> ids);
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();

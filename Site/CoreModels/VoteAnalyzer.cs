@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using TallyJ.Code.Enumerations;
+using System.Linq;
 using TallyJ.Code;
 using TallyJ.EF;
-using System.Linq;
 
 namespace TallyJ.CoreModels
 {
@@ -15,9 +14,9 @@ namespace TallyJ.CoreModels
       if (!voteInfo.ValidationResult.HasValue)
       {
         voteInfo.ValidationResult = !voteInfo.VoteIneligibleReasonGuid.HasValue
-               && !voteInfo.PersonIneligibleReasonGuid.HasValue
-               && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
-               && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
+                                    && !voteInfo.PersonIneligibleReasonGuid.HasValue
+                                    && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
+                                    && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
       }
       return voteInfo.ValidationResult.Value;
     }
@@ -37,27 +36,29 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Update statuses... return true if any were updated</Summary>
-    public static bool UpdateAllStatuses(List<VoteInfo> voteInfos, List<Vote> votes)
+    public static void UpdateAllStatuses(List<VoteInfo> voteInfos, List<Vote> votes, Action<DbAction, Vote> voteSaver)
     {
-      var changeMade = false;
       voteInfos.ForEach(delegate(VoteInfo info)
-                          {
-                            var oldStatus = info.VoteStatusCode;
-                            var newStatus = info.VoteIneligibleReasonGuid.HasValue
-                                              ? VoteHelper.VoteStatusCode.Spoiled
-                                              : info.PersonCombinedInfo.HasContent() &&
-                                                info.PersonCombinedInfo != info.PersonCombinedInfoInVote
-                                                  ? VoteHelper.VoteStatusCode.Changed
-                                                  : VoteHelper.VoteStatusCode.Ok;
-                            if (newStatus == oldStatus) return;
+      {
+        var oldStatus = info.VoteStatusCode;
+        var newStatus = info.VoteIneligibleReasonGuid.HasValue
+          ? VoteHelper.VoteStatusCode.Spoiled
+          : info.PersonCombinedInfo.HasContent() &&
+            info.PersonCombinedInfo != info.PersonCombinedInfoInVote
+            ? VoteHelper.VoteStatusCode.Changed
+            : VoteHelper.VoteStatusCode.Ok;
+        if (newStatus == oldStatus) return;
 
-                            // update both the VoteInfo and the Vote
-                            info.VoteStatusCode = newStatus;
-                            votes.Single(v => v.C_RowId == info.VoteId).StatusCode = newStatus;
+        // update both the VoteInfo and the Vote
+        info.VoteStatusCode = newStatus;
+        var vote = votes.Single(v => v.C_RowId == info.VoteId);
 
-                            changeMade = true;
-                          });
-      return changeMade;
+        voteSaver(DbAction.Attach, vote);
+
+        vote.StatusCode = newStatus;
+
+        voteSaver(DbAction.Save, vote);
+      });
     }
   }
 

@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels
      
         ResultSummary AnalyzeEverything();
         
-        void GetOrCreateResultSummaries();
+        void PrepareResultSummaries();
         
         void FinalizeSummaries();
     }

@@ -34,12 +34,8 @@ namespace TallyJ.CoreModels
 
     public override ResultSummary AnalyzeEverything()
     {
-      if (!IsFaked)
-      {
-        CacherBase.DropAllCachesForThisElection();
-      }
-
-      PrepareResultSummaryCalc();
+      
+      PrepareForAnalysis();
 
       // for single name elections, # votes = # ballots
       ResultSummaryCalc.BallotsReceived
@@ -57,10 +53,11 @@ namespace TallyJ.CoreModels
         VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi)).Sum(
           vi => vi.SingleNameElectionCount).AsInt();
 
+      // vote == ballot for this election
       ResultSummaryCalc.BallotsNeedingReview = VoteInfos.Count(VoteAnalyzer.VoteNeedReview);
 
       // clear any existing results
-      Results.ForEach(ResetValues);
+      Results.ForEach(InitializeSomeProperties);
 
       var electionGuid = TargetElection.ElectionGuid;
 
@@ -79,7 +76,7 @@ namespace TallyJ.CoreModels
             ElectionGuid = electionGuid,
             PersonGuid = voteInfo.PersonGuid.AsGuid()
           };
-          ResetValues(result);
+          InitializeSomeProperties(result);
           Results.Add(result);
           AddResult(result);
         }

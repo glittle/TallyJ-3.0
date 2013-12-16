@@ -41,19 +41,14 @@ namespace TallyJ.CoreModels
 
     public override ResultSummary AnalyzeEverything()
     {
-      if (!IsFaked)
-      {
-        CacherBase.DropAllCachesForThisElection();
-      }
-
-      PrepareResultSummaryCalc();
+      PrepareForAnalysis();
 
       ResultSummaryCalc.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
 
       ResultSummaryCalc.BallotsReceived = Ballots.Count;
       ResultSummaryCalc.TotalVotes = ResultSummaryCalc.BallotsReceived * TargetElection.NumberToElect;
 
-      var invalidBallotGuids = Ballots.Where(b => b.StatusCode != "Ok").Select(b => b.BallotGuid).ToList();
+      var invalidBallotGuids = Ballots.Where(b => b.StatusCode != BallotStatusEnum.Ok).Select(b => b.BallotGuid).ToList();
 
       ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
       ResultSummaryCalc.SpoiledVotes =
@@ -65,9 +60,9 @@ namespace TallyJ.CoreModels
       foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
       {
         var ballotGuid = ballot.BallotGuid;
-        foreach (var VoteInfo in VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
+        foreach (var voteInfoRaw in VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
         {
-          var voteInfo = VoteInfo;
+          var voteInfo = voteInfoRaw;
 
           // get existing result record for this person, if available
           var result =
@@ -79,8 +74,8 @@ namespace TallyJ.CoreModels
                          ElectionGuid = electionGuid,
                          PersonGuid = voteInfo.PersonGuid.AsGuid()
                        };
-            ResetValues(result);
-            Results.Add(result);
+            InitializeSomeProperties(result);
+            
             AddResult(result);
           }
 

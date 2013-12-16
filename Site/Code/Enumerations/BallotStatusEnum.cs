@@ -18,6 +18,7 @@ namespace TallyJ.Code.Enumerations
     {
       Add(Ok);
       Add(Review);
+      Add(Verify);
       Add(TooMany);
       Add(TooFew);
       Add(Dup);

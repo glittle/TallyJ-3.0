@@ -71,9 +71,9 @@ namespace TallyJ.Controllers
       return CurrentBallotModel.SetNeedsReview(needs);
     }
 
-    public JsonResult SwitchToBallot(int ballotId)
+    public JsonResult SwitchToBallot(int ballotId, bool refresh)
     {
-      return CurrentBallotModel.SwitchToBallotAndGetInfo(ballotId).AsJsonResult();
+      return CurrentBallotModel.SwitchToBallotAndGetInfo(ballotId, refresh).AsJsonResult();
     }
 
     public JsonResult UpdateLocationStatus(int id, string status)

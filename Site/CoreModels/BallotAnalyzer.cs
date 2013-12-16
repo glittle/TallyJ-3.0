@@ -6,14 +6,14 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 
-using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public class BallotAnalyzer : DataConnectedModel
   {
-    private Func<int> _saveChangesToDatastore;
+    public Action<DbAction, Ballot> BallotSaver { get; set; }
+    //private Func<int> _saveChangesToDatastore;
 
     /// <Summary>Create using current election to know number of votes needed</Summary>
     public BallotAnalyzer()
@@ -27,22 +27,21 @@ namespace TallyJ.CoreModels
     public BallotAnalyzer(int? votesNeededOnBallot, Func<int> saveChangesToDatastore, bool isSingleNameElection)
     {
       VotesNeededOnBallot = votesNeededOnBallot.AsInt();
-      SaveChangesToDatastore = saveChangesToDatastore;
       IsSingleNameElection = isSingleNameElection;
     }
 
-    public BallotAnalyzer(Election election, Func<int> saveChangesToDatastore)
+    public BallotAnalyzer(Election election, Action<DbAction, Ballot> ballotSaver)
     {
+      BallotSaver = ballotSaver;
       IsSingleNameElection = election.IsSingleNameElection;
       VotesNeededOnBallot = election.NumberToElect.AsInt();
-      SaveChangesToDatastore = saveChangesToDatastore;
     }
 
-    private Func<int> SaveChangesToDatastore
-    {
-      get { return _saveChangesToDatastore ?? (_saveChangesToDatastore = Db.SaveChanges); }
-      set { _saveChangesToDatastore = value; }
-    }
+//    private Func<int> SaveChangesToDatastore
+//    {
+//      get { return _saveChangesToDatastore ?? (_saveChangesToDatastore = Db.SaveChanges); }
+//      set { _saveChangesToDatastore = value; }
+//    }
 
     public bool IsSingleNameElection { get; set; }
 
@@ -50,7 +49,6 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Update the Ballot status of this ballot, based on these Votes.</Summary>
     /// <param name="ballot">The Ballot or vBallotInfo to check and update.</param>
-    /// <param name="currentVotes"> </param>
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
     /// <returns>Returns the updated status code</returns>
     public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes)
@@ -59,8 +57,11 @@ namespace TallyJ.CoreModels
       {
         if (ballot.StatusCode != BallotStatusEnum.Ok)
         {
+          BallotSaver(DbAction.Attach, ballot);
+          
           ballot.StatusCode = BallotStatusEnum.Ok;
-          SaveChangesToDatastore();
+          
+          BallotSaver(DbAction.Save, ballot);
         }
         return new BallotStatusWithSpoilCount
           {
@@ -73,25 +74,24 @@ namespace TallyJ.CoreModels
       //double check:
       currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
 
-      //var currentVotes = currentVoteInfos.AsVotes().ToList();
-
-      string ballotStatus;
+      string newStatus;
       int spoiledCount;
-      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out ballotStatus, out spoiledCount))
+      
+      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount))
       {
-        ballot.StatusCode = ballotStatus;
-        SaveChangesToDatastore();
+        BallotSaver(DbAction.Attach, ballot);
+        ballot.StatusCode = newStatus;
+        BallotSaver(DbAction.Save, ballot);
       }
       return new BallotStatusWithSpoilCount
         {
-          Status = BallotStatusEnum.Parse(ballotStatus), 
+          Status = BallotStatusEnum.Parse(newStatus), 
           SpoiledCount = spoiledCount
         };
     }
 
     /// <Summary>Review the votes, and determine if the containing ballot's status code should change</Summary>
     /// <param name="currentStatusCode"> The current status code </param>
-    /// <param name="votes">  </param>
     /// <param name="votes"> All the votes on this ballot</param>
     /// <param name="statusCode"> The new status code </param>
     /// <param name="spoiledCount"> </param>
@@ -101,7 +101,7 @@ namespace TallyJ.CoreModels
       spoiledCount = 0;
 
       // if under review, don't change that status
-      if (currentStatusCode == BallotStatusEnum.Review || currentStatusCode==BallotStatusEnum.Verify)
+      if (currentStatusCode == BallotStatusEnum.Review)
       {
         statusCode = currentStatusCode;
         return false;
@@ -167,7 +167,12 @@ namespace TallyJ.CoreModels
                         });
     }
 
-    public bool BallotNeedsReview(Ballot ballot)
+    /// <summary>
+    /// Needs review or verification
+    /// </summary>
+    /// <param name="ballot"></param>
+    /// <returns></returns>
+    public static bool BallotNeedsReview(Ballot ballot)
     {
       return ballot.StatusCode == BallotStatusEnum.Review || ballot.StatusCode==BallotStatusEnum.Verify;
     }

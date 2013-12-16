@@ -376,6 +376,11 @@
     <Compile Include="EF\Partials\PersonCacher.cs" />
     <Compile Include="EF\Partials\CacherBase.cs" />
     <Compile Include="EF\Partials\PublicElection.cs" />
+    <Compile Include="EF\Partials\Result.cs" />
+    <Compile Include="EF\Partials\ResultCacher.cs" />
+    <Compile Include="EF\Partials\ResultSummaryCacher.cs" />
+    <Compile Include="EF\Partials\ResultTie.cs" />
+    <Compile Include="EF\Partials\ResultTieCacher.cs" />
     <Compile Include="EF\Partials\TellerCacher.cs" />
     <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="EF\Person.cs">
