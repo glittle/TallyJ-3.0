@@ -47,105 +47,87 @@ namespace TallyJ.CoreModels
     {
       var helper = new TellerHelper();
 
-      var thisTeller = new TellerCacher().GetById(tellerId);
+      var tellerCacher = new TellerCacher();
+      var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
+      Db.Computer.Attach(currentComputer);
 
-      switch (tellerId)
+      if (tellerId == 0)
       {
-        case 0:
-          UserSession.SetCurrentTeller(num, null);
-          if (thisTeller != null)
-          {
-            thisTeller.UsingComputerCode = "";
-            Db.Computer.Attach(currentComputer);
-            switch (num)
-            {
-              case 1:
-                currentComputer.Teller1 = null;
-                break;
-              case 2:
-                currentComputer.Teller2 = null;
-                break;
-            }
+        UserSession.SetCurrentTeller(num, null);
 
-            new TellerCacher().UpdateItemAndSaveCache(thisTeller);
-            new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
+        switch (num)
+        {
+          case 1:
+            currentComputer.Teller1 = null;
+            break;
+          case 2:
+            currentComputer.Teller2 = null;
+            break;
+        }
 
-            Db.SaveChanges();
-          }
-          return new { Saved = true };
+        Db.SaveChanges();
+        computerCacher.UpdateItemAndSaveCache(currentComputer);
 
-        case -1:
-          // add new
-
-          // check for existing
-          var matchedTeller = helper.Tellers.FirstOrDefault(t => t.Name == newName);
-          if (matchedTeller != null)
-          {
-            UserSession.SetCurrentTeller(num, matchedTeller.TellerGuid);
-            return new { Saved = true };
-          }
-
-          // add the new one
-          var teller = new Teller
-                         {
-                           ElectionGuid = UserSession.CurrentElectionGuid,
-                           TellerGuid = Guid.NewGuid(),
-                           Name = newName,
-                           UsingComputerCode = UserSession.CurrentComputerCode,
-                         };
-          Db.Teller.Add(teller);
-
-          Db.Computer.Attach(currentComputer);
-          switch (num)
-          {
-            case 1:
-              currentComputer.Teller1 = teller.TellerGuid;
-              break;
-            case 2:
-              currentComputer.Teller2 = teller.TellerGuid;
-              break;
-          }
-
-          Db.SaveChanges();
-          UserSession.SetCurrentTeller(num, teller.TellerGuid);
-
-          new TellerCacher().AddItemAndSaveCache(teller);
-          new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
-
-          return new
-                   {
-                     Saved = true,
-                     Selected = teller.C_RowId,
-                     TellerList = helper.GetTellerOptions(num)
-                   };
-
-        default:
-          // use existing
-          if (thisTeller != null)
-          {
-            UserSession.SetCurrentTeller(num, thisTeller.TellerGuid);
-            thisTeller.UsingComputerCode = UserSession.CurrentComputerCode;
-
-            Db.Computer.Attach(currentComputer);
-            switch (num)
-            {
-              case 1:
-                currentComputer.Teller1 = thisTeller.TellerGuid;
-                break;
-              case 2:
-                currentComputer.Teller2 = thisTeller.TellerGuid;
-                break;
-            }
-
-            Db.SaveChanges();
-
-            new TellerCacher().UpdateItemAndSaveCache(thisTeller);
-            new ComputerCacher().UpdateItemAndSaveCache(currentComputer);
-          }
-          return new { Saved = true };
+        return new {Saved = true};
       }
+
+      Teller teller;
+
+      if (tellerId == -1)
+      {
+        // add new
+        // check for existing
+        teller =
+          tellerCacher.AllForThisElection.FirstOrDefault(t => t.Name.Equals(newName, StringComparison.OrdinalIgnoreCase));
+        if (teller == null)
+        {
+          // add the new one
+          teller = new Teller
+          {
+            ElectionGuid = UserSession.CurrentElectionGuid,
+            TellerGuid = Guid.NewGuid(),
+            Name = newName,
+            UsingComputerCode = UserSession.CurrentComputerCode,
+          };
+          Db.Teller.Add(teller);
+        }
+      }
+      else
+      {
+        // using existing
+        teller = tellerCacher.GetById(tellerId);
+        if (teller == null)
+        {
+          return new { Saved = false };
+        }
+        Db.Teller.Attach(teller);
+      }
+
+      switch (num)
+      {
+        case 1:
+          currentComputer.Teller1 = teller.TellerGuid;
+          break;
+        case 2:
+          currentComputer.Teller2 = teller.TellerGuid;
+          break;
+      }
+
+      Db.SaveChanges();
+
+      UserSession.SetCurrentTeller(num, teller.TellerGuid);
+
+      tellerCacher.UpdateItemAndSaveCache(teller);
+      computerCacher.UpdateItemAndSaveCache(currentComputer);
+
+      return new
+      {
+        Saved = true,
+        Selected = teller.C_RowId,
+        TellerList = helper.GetTellerOptions(num)
+      };
 
     }
 

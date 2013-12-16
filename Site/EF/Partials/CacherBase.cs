@@ -95,12 +95,15 @@ namespace TallyJ.EF
     }
 
     /// <summary>
-    ///   Find the item by matching the _RowId (if found), remove it, then replace it with this one
+    /// Find the item by matching the _RowId (if found), remove it, then replace it with this one. 
+    /// Can be used to Add or Update
     /// </summary>
     /// <param name="replacementItem"></param>
     public void UpdateItemAndSaveCache(T replacementItem)
     {
       var list = AllForThisElection;
+      
+      AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
       var oldItems = list.Where(i => i.C_RowId == replacementItem.C_RowId);
       foreach (var item in oldItems.ToList())
@@ -153,17 +156,17 @@ namespace TallyJ.EF
     /// </summary>
     /// <param name="newItem"></param>
     /// <returns></returns>
-    public T AddItemAndSaveCache(T newItem)
-    {
-      var list = AllForThisElection;
+    //public T AddItemAndSaveCache(T newItem)
+    //{
+    //  var list = AllForThisElection;
 
-      AssertAtRuntime.That(!list.Exists(i => i.C_RowId == newItem.C_RowId), "Can't add existing item");
-      AssertAtRuntime.That(newItem.C_RowId != 0, "Can't add if id is 0");
+    //  AssertAtRuntime.That(!list.Exists(i => i.C_RowId == newItem.C_RowId), "Can't add existing item");
+    //  AssertAtRuntime.That(newItem.C_RowId != 0, "Can't add if id is 0");
 
-      list.Add(newItem);
-      ReplaceEntireCache(list);
-      return newItem;
-    }
+    //  list.Add(newItem);
+    //  ReplaceEntireCache(list);
+    //  return newItem;
+    //}
 
     /// <summary>
     ///   Drop the cache of

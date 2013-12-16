@@ -305,7 +305,7 @@ namespace TallyJ.CoreModels
         Db.Vote.Add(vote);
         Db.SaveChanges();
 
-        new VoteCacher().AddItemAndSaveCache(vote);
+        new VoteCacher().UpdateItemAndSaveCache(vote);
 
         var ballotAnalyzer = new BallotAnalyzer();
         var rawBallot = CurrentRawBallot();

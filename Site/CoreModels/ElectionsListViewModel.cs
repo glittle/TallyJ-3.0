@@ -35,10 +35,11 @@ namespace TallyJ.CoreModels
             e.ElectionType,
             e.ElectionMode,
             e.ShowAsTest
-          });
+          }).ToList();
 
-        var personCount = Db.Person
-                        .Join(list, p => p.ElectionGuid, x => x.ElectionGuid, (p, x) => p)
+        var electionGuids = list.Select(e => e.ElectionGuid).ToList();
+
+        var personCount = Db.Person.Where(p=>electionGuids.Contains(p.ElectionGuid))
           .GroupBy(p => p.ElectionGuid)
           .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
           .ToList();

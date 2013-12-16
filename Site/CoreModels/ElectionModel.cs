@@ -409,7 +409,7 @@ namespace TallyJ.CoreModels
       };
       Db.Location.Add(mainLocation);
       Db.SaveChanges();
-      new LocationCacher().AddItemAndSaveCache(mainLocation);
+      new LocationCacher().UpdateItemAndSaveCache(mainLocation);
 
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoCurrentElection();

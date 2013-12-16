@@ -64,8 +64,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var tellerHelper = new TellerHelper();
-        return tellerHelper.Tellers
+        return new TellerCacher().AllForThisElection
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
