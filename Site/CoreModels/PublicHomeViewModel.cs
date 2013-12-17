@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using NLog;
 using TallyJ.Code;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -12,7 +13,7 @@ namespace TallyJ.CoreModels
     public HtmlString VisibleElectionsOptions()
     {
       const string template = "<option value=\"{0}\">{1}</option>";
-      var visibleElections = new ElectionModel().VisibleElections();
+      var visibleElections = new ElectionCacher().PublicElections;
       var listing = visibleElections.OrderBy(e => e.Name).Select(x => template.FilledWith(x.C_RowId, x.Name)).JoinedAsString();
       return listing
         .DefaultTo(template.FilledWith(0, "(Sorry, no elections are active right now.)"))

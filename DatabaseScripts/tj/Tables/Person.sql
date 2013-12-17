@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[Person] (
     [_RowId]               INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]         UNIQUEIDENTIFIER NOT NULL,
-    [PersonGuid]           UNIQUEIDENTIFIER CONSTRAINT [DF_Person_PersonGuid] DEFAULT (newsequentialid()) NOT NULL,
+    [PersonGuid]           UNIQUEIDENTIFIER CONSTRAINT [DF_Person_PersonGuid] DEFAULT (CONVERT([uniqueidentifier],CONVERT([binary](10),newid(),0)+CONVERT([binary](6),getdate(),0),0)) NOT NULL,
     [LastName]             NVARCHAR (50)    NOT NULL,
     [FirstName]            NVARCHAR (50)    NULL,
     [OtherLastNames]       NVARCHAR (100)   NULL,

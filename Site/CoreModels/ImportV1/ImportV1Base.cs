@@ -5,13 +5,13 @@ using System.Xml;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.CoreModels.Helper;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public abstract class ImportV1Base
   {
-    protected readonly TallyJ2dContext _db;
+    protected readonly TallyJ2dEntities _db;
     protected readonly ImportFile _file;
     protected readonly XmlDocument _xmlDoc;
 
@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Base for Importing V1.</Summary>
     /// <remarks>Need list of people to merge into.</remarks>
-    protected ImportV1Base(TallyJ2dContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    protected ImportV1Base(TallyJ2dEntities db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
     {
       _db = db;
       _file = file;

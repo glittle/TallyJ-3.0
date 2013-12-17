@@ -3,7 +3,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -14,14 +14,14 @@ namespace TallyJ.CoreModels
 
     public int NumberOfPeople
     {
-      get { return Db.People.Count(p => p.ElectionGuid == UserSession.CurrentElectionGuid); }
+      get { return new PersonCacher().AllForThisElection.Count(); }
     }
 
     public string LocationsJson
     {
       get
       {
-        return ContextItems.LocationModel.Locations
+        return ContextItems.LocationModel.MyLocations
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
@@ -64,8 +64,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var tellerHelper = new TellerHelper();
-        return tellerHelper.Tellers
+        return new TellerCacher().AllForThisElection
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
@@ -79,7 +78,7 @@ namespace TallyJ.CoreModels
 
     public bool HasBallots
     {
-      get { return Db.vBallotInfoes.Any(b => b.ElectionGuid == UserSession.CurrentElectionGuid); }
+      get { return new BallotCacher().AllForThisElection.Any(); }
     }
 
     public string InvalidReasonsJsonString()

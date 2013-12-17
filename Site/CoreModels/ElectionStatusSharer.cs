@@ -1,7 +1,7 @@
 using System;
 using System.Web;
 using System.Web.Caching;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {

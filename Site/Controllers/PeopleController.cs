@@ -30,7 +30,7 @@ namespace TallyJ.Controllers
       }
 
       var model = new PeopleSearchModel();
-      return model.Search(search, includeMatches, forBallot);
+      return model.Search2(search, includeMatches, forBallot);
     }
 
     public JsonResult GetDetail(int id)

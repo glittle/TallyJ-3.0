@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {

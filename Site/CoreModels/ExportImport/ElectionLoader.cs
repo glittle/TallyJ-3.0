@@ -14,7 +14,7 @@ using System.Xml.Schema;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels.ExportImport
 {
@@ -187,7 +187,7 @@ namespace TallyJ.CoreModels.ExportImport
           = Guid.NewGuid();
 
       var newName = _election.Name;
-      var matching = Db.Elections.Where(e => e.Name == newName || e.Name.StartsWith(newName)).ToList();
+      var matching = Db.Election.Where(e => e.Name == newName || e.Name.StartsWith(newName)).ToList();
       if (matching.Any())
       {
         if (matching.All(e => e.Name != newName))
@@ -202,7 +202,7 @@ namespace TallyJ.CoreModels.ExportImport
         }
       }
 
-      Db.Elections.Add(_election);
+      Db.Election.Add(_election);
       Db.SaveChanges();
 
       // set current person as owner
@@ -211,7 +211,7 @@ namespace TallyJ.CoreModels.ExportImport
           ElectionGuid = _electionGuid,
           UserId = UserSession.UserGuid
         };
-      Db.JoinElectionUsers.Add(join);
+      Db.JoinElectionUser.Add(join);
       Db.SaveChanges();
     }
 
@@ -248,7 +248,7 @@ namespace TallyJ.CoreModels.ExportImport
 
       //Debugger.Log(3, "Teller", "Teller={0}\n".FilledWith(teller.TellerGuid));
 
-      Db.Tellers.Add(teller);
+      Db.Teller.Add(teller);
     }
 
     private void LoadPeople()
@@ -290,7 +290,7 @@ namespace TallyJ.CoreModels.ExportImport
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
 
-      Db.People.Add(person);
+      Db.Person.Add(person);
     }
 
     private void LoadResultInfo()
@@ -302,18 +302,18 @@ namespace TallyJ.CoreModels.ExportImport
                 var resultSummary = new ResultSummary();
                 element.CopyAttributeValuesTo(resultSummary);
                 resultSummary.ElectionGuid = _electionGuid;
-                Db.ResultSummaries.Add(resultSummary);
+                Db.ResultSummary.Add(resultSummary);
             }
         
         nodes = _xmlRoot.SelectNodes("t:result", _nsm);
         if (nodes != null)
             foreach (XmlElement element in nodes)
             {
-                var result = new Models.Result();
+                var result = new EF.Result();
                 element.CopyAttributeValuesTo(result);
                 result.ElectionGuid = _electionGuid;
                 UpdateGuidFromMapping(result, v => v.PersonGuid);
-                Db.Results.Add(result);
+                Db.Result.Add(result);
             }
 
         nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
@@ -323,7 +323,7 @@ namespace TallyJ.CoreModels.ExportImport
                 var resultTie = new ResultTie();
                 element.CopyAttributeValuesTo(resultTie);
                 resultTie.ElectionGuid = _electionGuid;
-                Db.ResultTies.Add(resultTie);
+                Db.ResultTie.Add(resultTie);
             }
     }
 
@@ -355,7 +355,7 @@ namespace TallyJ.CoreModels.ExportImport
         = newGuid;
       location.ElectionGuid = _electionGuid;
 
-      Db.Locations.Add(location);
+      Db.Location.Add(location);
       Db.SaveChanges();
 
       var computersXml = locationXml.SelectNodes("t:computer", _nsm);
@@ -404,7 +404,7 @@ namespace TallyJ.CoreModels.ExportImport
       computer.ElectionGuid = _electionGuid;
       computer.LocationGuid = locationGuid;
 
-      Db.Computers.Add(computer);
+      Db.Computer.Add(computer);
     }
 
     private void LoadBallotAndVotes(XmlElement ballotXml, Guid locationGuid)
@@ -418,7 +418,7 @@ namespace TallyJ.CoreModels.ExportImport
       UpdateGuidFromMapping(ballot, b => b.TellerAssisting);
       UpdateGuidFromMapping(ballot, b => b.TellerAtKeyboard);
 
-      Db.Ballots.Add(ballot);
+      Db.Ballot.Add(ballot);
       Db.SaveChanges();
 
       var votesXml = ballotXml.SelectNodes("t:vote", _nsm);
@@ -445,11 +445,11 @@ namespace TallyJ.CoreModels.ExportImport
 
       if (vote.PersonGuid.AsGuid().HasContent())
       {
-        var person = Db.People.Single(p => p.ElectionGuid == _electionGuid && p.PersonGuid == vote.PersonGuid);
+        var person = Db.Person.Single(p => p.ElectionGuid == _electionGuid && p.PersonGuid == vote.PersonGuid);
         vote.PersonCombinedInfo = person.CombinedInfo;
       }
 
-      Db.Votes.Add(vote);
+      Db.Vote.Add(vote);
     }
 
     private void LoadLog(XmlElement logXml, Guid locationGuid)

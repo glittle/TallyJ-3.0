@@ -34,13 +34,13 @@
     //        });
 
     $('#btnReturn').click(function () {
-      //location.href = site.rootUrl + 'Dashboard';
       var isShowing = $('header').is(':visible');
       $('header').toggle(!isShowing);
 
       isShowing = !isShowing;
       $(this).text(isShowing ? 'Hide Menu' : 'Show Menu');
       $('.Nav').toggleClass('Show', isShowing);
+      window.scrollTo(0,0);
       return false;
     });
   };

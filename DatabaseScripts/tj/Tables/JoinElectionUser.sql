@@ -33,6 +33,4 @@ GRANT DELETE
     AS [dbo];
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'No cascade. Must ensure at least one exists', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'JoinElectionUser', @level2type = N'CONSTRAINT', @level2name = N'FK_JoinElectionUser_Election';
 

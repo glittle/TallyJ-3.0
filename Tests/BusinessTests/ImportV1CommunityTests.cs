@@ -2,7 +2,7 @@ using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
@@ -48,15 +48,6 @@ namespace Tests.BusinessTests
       people.LastName.ShouldEqual("Accorti");
       people.FirstName.ShouldEqual("Pónt");
       people.OtherNames.ShouldEqual("Paul");
-    }
-  }
-
-  public class FakeDataContext : TallyJ2dContext
-  {
-    public override int SaveChanges()
-    {
-      // okay
-      return 0;
     }
   }
 }

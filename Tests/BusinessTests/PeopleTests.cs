@@ -5,7 +5,8 @@ using TallyJ.Code;
 
 using TallyJ.CoreModels;
 using TallyJ.Code.Helpers;
-using TallyJ.Models;
+using TallyJ.CoreModels.Helper;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
@@ -31,13 +32,91 @@ namespace Tests.BusinessTests
       //_model = new PeopleSearchModel(_testGroup.AsQueryable());
     }
 
-    //[TestMethod]
-    //public void SearchTest_FirstName()
-    //{
-    //  var result = _model.InnerSearch("b", 5, false);
-    //  result.Count.ShouldEqual(2);
-    //  result[0].FirstName.ShouldEqual("Bb");
-    //}
+    [TestMethod]
+    public void Search_TestTerms()
+    {
+      var model = new PeopleSearchModel();
+      model.AllTermsFound(new []{" glen"}, "glen").ShouldEqual(true);
+      model.AllTermsFound(new []{" glen"}, "aglen").ShouldEqual(false);
+      model.AllTermsFound(new []{" glen"}, "aglen glen").ShouldEqual(true);
+      model.AllTermsFound(new []{" glen"}, "aglen glen glen").ShouldEqual(true); // 1 term only matches one
+
+      model.AllTermsFound(new[] { " glen", " glen" }, "glen").ShouldEqual(false);
+      model.AllTermsFound(new[] { " glen", " glen" }, "aglen").ShouldEqual(false);
+      model.AllTermsFound(new[] { " glen", " glen" }, "aglen glen").ShouldEqual(false);
+      model.AllTermsFound(new[] { " glen", " glen" }, "aglen glen glen").ShouldEqual(true); // 2 terms match two
+
+    }
+
+    [TestMethod]
+    public void Search_TestPersonSimple()
+    {
+      var pm = new PeopleModel();
+      var p = new Person {FirstName = "Aa", LastName = "Zz"};
+      pm.SetCombinedInfos(p);
+
+      var psm = new PeopleSearchModel();
+
+      // okay
+      var terms = psm.MakeTerms("a");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("aa");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("a z");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("  a   z   "); // extra spaces have no impact
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("z a");  // order doesn't matter
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+
+
+      // miss
+      terms = psm.MakeTerms("b");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(0);
+
+    }
+
+    [TestMethod]
+    public void Search_TestPerson1()
+    {
+      var pm = new PeopleModel();
+      var p = new Person { FirstName = "Glen", LastName = "Little", BahaiId = "23680", OtherLastNames = "Miller"};
+      pm.SetCombinedInfos(p);
+
+      var psm = new PeopleSearchModel();
+
+      // okay
+      var terms = psm.MakeTerms("gl li");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("glen");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("g m l");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("236");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+      terms = psm.MakeTerms("mil gle");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+
+
+
+      // miss
+      terms = psm.MakeTerms("gln");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(0);
+
+
+      // sound match
+      terms = psm.MakeTerms("glenn");
+      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(2);
+    }
 
 
     //  TODO:
@@ -86,7 +165,8 @@ namespace Tests.BusinessTests
                                   person.OtherNames,
                                   person.OtherLastNames,
                                   person.OtherInfo,
-                                }.JoinedAsString(" ").ToLower();
+                                }.JoinedAsString(" ").ToLower()
+                                .ReplacePunctuation(' ');
         person.CombinedSoundCodes = new[]
                                    {
                                      person.FirstName.GenerateDoubleMetaphone(),
@@ -98,7 +178,5 @@ namespace Tests.BusinessTests
         yield return person;
       }
     }
-
-
   }
 }

@@ -2,6 +2,19 @@
     overflow-y: scroll;
 }
 
+/* overrides to fix UI */
+.ui-tabs-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.ui-tabs-nav li {
+  display: inline-block;
+  padding: 0 6px 0 6px;
+}
+
 .div1 {
     width: 414px;
 }
@@ -374,10 +387,6 @@ input.changing {
 
 .ballotList li:hover {
     background-color: #cfc;
-}
-
-#tabBallots {
-    background-color: #efeeef;
 }
 
 #btnRefreshBallotList {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.CoreModels;
-using TallyJ.Models;
+using TallyJ.EF;
 using Tests.Support;
 
 namespace Tests.BusinessTests
@@ -110,11 +110,11 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void CorrectNumberOfVotes_Test()
         {
-            var voteInfos = new List<vVoteInfo>
+            var voteInfos = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -130,12 +130,12 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooManyNumberOfVotes_Test()
         {
-            var voteInfos = new List<vVoteInfo>
+            var voteInfos = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -151,12 +151,12 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooManyNumberOfVotesWithBlank_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-//                      new vVoteInfo {VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+//                      new VoteInfo {VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -172,12 +172,12 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooManyNumberOfVotesWithIneligible_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -193,12 +193,12 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooManyNumberOfVotesWithSpoiled_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -214,10 +214,10 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooFewNumberOfVotes_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -232,9 +232,9 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void SingleIneligible_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo
+                    new VoteInfo
                         {
                             VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Not_a_complete_name,
                             SingleNameElectionCount = 4
@@ -253,7 +253,7 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void EmptyNumberOfVotes_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
                 };
 
@@ -270,11 +270,11 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void TooFewNumberOfVotesWithBlank_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-//                      new vVoteInfo {VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+//                      new VoteInfo {VoteIneligibleReasonGuid = IneligibleReasonEnum.Unreadable_Vote_is_blank},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -291,9 +291,9 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void KeepReviewStatus_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -305,11 +305,11 @@ namespace Tests.BusinessTests
             newStatus.ShouldEqual(BallotStatusEnum.Review);
 
 
-            votes = new List<vVoteInfo>
+            votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             model.DetermineStatusFromVotesList(BallotStatusEnum.Review, votes, out newStatus, out spoiledCount)
@@ -322,13 +322,13 @@ namespace Tests.BusinessTests
         {
             var dupPersonGuid = Guid.NewGuid();
 
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = dupPersonGuid},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = dupPersonGuid},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = dupPersonGuid},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = dupPersonGuid},
                 };
 
             var model = new BallotAnalyzer(5, _fakes.SaveChanges, false);
@@ -346,14 +346,14 @@ namespace Tests.BusinessTests
         {
             var dupPersonGuid = Guid.NewGuid();
 
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = dupPersonGuid},
-                    new vVoteInfo {PersonGuid = dupPersonGuid},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = dupPersonGuid},
+                    new VoteInfo {PersonGuid = dupPersonGuid},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(5, _fakes.SaveChanges, false);
@@ -371,11 +371,11 @@ namespace Tests.BusinessTests
         {
             var dupPersonGuid = Guid.NewGuid();
 
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonIneligibleReasonGuid = Guid.NewGuid()},
-                    new vVoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
-                    new vVoteInfo {PersonIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {VoteIneligibleReasonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonIneligibleReasonGuid = Guid.NewGuid()},
                 };
 
             var model = new BallotAnalyzer(3, _fakes.SaveChanges, false);
@@ -392,9 +392,9 @@ namespace Tests.BusinessTests
         [TestMethod]
         public void HasDuplicates2_KeepStatusCode_Test()
         {
-            var votes = new List<vVoteInfo>
+            var votes = new List<VoteInfo>
                 {
-                    new vVoteInfo {PersonGuid = Guid.NewGuid()},
+                    new VoteInfo {PersonGuid = Guid.NewGuid()},
                 };
 
 

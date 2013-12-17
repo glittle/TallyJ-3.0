@@ -8,6 +8,7 @@ namespace TallyJ.Code.Enumerations
   {
     public static readonly BallotStatusEnum Ok = new BallotStatusEnum("Ok", "Ok");
     public static readonly BallotStatusEnum Review = new BallotStatusEnum("Review", "Needs Review");
+    public static readonly BallotStatusEnum Verify = new BallotStatusEnum("Verify", "Needs Verification");
     public static readonly BallotStatusEnum TooMany = new BallotStatusEnum("TooMany", "Too Many");
     public static readonly BallotStatusEnum TooFew = new BallotStatusEnum("TooFew", "Too Few");
     public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicate names");
@@ -17,6 +18,7 @@ namespace TallyJ.Code.Enumerations
     {
       Add(Ok);
       Add(Review);
+      Add(Verify);
       Add(TooMany);
       Add(TooFew);
       Add(Dup);
@@ -52,7 +54,7 @@ namespace TallyJ.Code.Enumerations
     /// <Summary>Find the status that matches this string. If not found, default to something... use Review needed.</Summary>
     public static BallotStatusEnum Parse(string code)
     {
-      return BaseItems.SingleOrDefault(i => i.Value == code) ?? Review;
+      return BaseItems.SingleOrDefault(i => i.Value == code) ?? Verify;
     }
   }
 }

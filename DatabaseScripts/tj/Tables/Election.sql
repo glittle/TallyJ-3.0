@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [tj].[Election] (
     [_RowId]              INT              IDENTITY (1, 1) NOT NULL,
-    [ElectionGuid]        UNIQUEIDENTIFIER CONSTRAINT [DF_Election_ElectionGuid] DEFAULT (newsequentialid()) NOT NULL,
+    [ElectionGuid]        UNIQUEIDENTIFIER CONSTRAINT [DF_Election_ElectionGuid] DEFAULT (CONVERT([uniqueidentifier],CONVERT([binary](10),newid(),0)+CONVERT([binary](6),getdate(),0),0)) NOT NULL,
     [Name]                NVARCHAR (150)   NOT NULL,
     [Convenor]            NVARCHAR (150)   NULL,
     [DateOfElection]      DATETIME2 (0)    NULL,
@@ -85,6 +85,4 @@ GRANT DELETE
     AS [dbo];
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'For tie-breaks, etc.', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'Election', @level2type = N'COLUMN', @level2name = N'LinkedElectionKind';
 

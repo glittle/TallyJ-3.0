@@ -7,8 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
-
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -17,17 +16,20 @@ namespace TallyJ.CoreModels
     private List<Location> _locations;
 
     /// <Summary>List of Locations</Summary>
-    public List<Location> Locations
+    public List<Location> MyLocations
     {
-      get
-      {
-        return _locations ?? (_locations = Db.Locations.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid).ToList());
-      }
+      get { return _locations ?? (_locations = new LocationCacher().AllForThisElection); }
     }
 
     public string ShowDisabled
     {
-      get { return Locations.Count == 1 ? " disabled" : ""; }
+      get { return MyLocations.Count == 1 ? " disabled" : ""; }
+    }
+
+    /// <Summary>Does this election have more than one location?</Summary>
+    public bool HasLocations
+    {
+      get { return MyLocations.Count > 1; }
     }
 
     public HtmlString GetLocationOptions()
@@ -39,7 +41,7 @@ namespace TallyJ.CoreModels
         selected = currentLocation.C_RowId;
       }
 
-      return Locations
+      return MyLocations
         .OrderBy(l => l.SortOrder)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
@@ -53,35 +55,34 @@ namespace TallyJ.CoreModels
       return currentMenu.ShowLocationSelection && HasLocations;
     }
 
-    /// <Summary>Does this election have more than one location?</Summary>
-    public bool HasLocations
-    {
-      get { return Locations.Count > 1; }
-    }
-
     public JsonResult UpdateStatus(int locationId, string status)
     {
-      var location = Locations.SingleOrDefault(l => l.C_RowId == locationId);
+      var locationCacher = new LocationCacher();
+
+      var location = MyLocations.SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
         return new
-            {
-              Saved = false
-            }.AsJsonResult();
+        {
+          Saved = false
+        }.AsJsonResult();
       }
 
-      location.TallyStatus = status;
+      if (location.TallyStatus != status)
+      {
+        Db.Location.Attach(location);
+        location.TallyStatus = status;
+        Db.SaveChanges();
 
-      Db.SaveChanges();
-
-      SessionKey.CurrentLocation.SetInSession(location);
+        locationCacher.UpdateItemAndSaveCache(location);
+      }
 
       return new
-               {
-                 Saved = true,
-                 Location = LocationInfoForJson(location)
-               }.AsJsonResult();
+      {
+        Saved = true,
+        Location = LocationInfoForJson(location)
+      }.AsJsonResult();
     }
 
     public string CurrentBallotLocationJsonString()
@@ -91,13 +92,12 @@ namespace TallyJ.CoreModels
 
     public object CurrentBallotLocationInfo()
     {
-
       //var ballotInfo = BallotModelFactory.GetForCurrentElection().GetCurrentBallotInfo();
       //if (ballotInfo == null)
       //{
       //  return null;
       //}
-      //var location = Db.Locations.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
+      //var location = Db.Location.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
       return LocationInfoForJson(UserSession.CurrentLocation);
     }
@@ -105,30 +105,30 @@ namespace TallyJ.CoreModels
     public object LocationInfoForJson(Location location)
     {
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
-      var sum = isSingleName
-                  ? Db.vVoteInfoes.Where(vi => vi.LocationId == location.C_RowId).Sum(vi => vi.SingleNameElectionCount)
-                  : Db.vBallotInfoes.Count(b => b.LocationId == location.C_RowId);
+      var sum = BallotModelCore.BallotCount(location.LocationGuid, isSingleName);
 
       return new
-               {
-                 Id = location.C_RowId,
-                 TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
-                 TallyStatusCode = location.TallyStatus,
-                 location.ContactInfo,
-                 location.BallotsCollected,
-                 location.Name,
-                 BallotsEntered = sum
-               };
+      {
+        Id = location.C_RowId,
+        TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
+        TallyStatusCode = location.TallyStatus,
+        location.ContactInfo,
+        location.BallotsCollected,
+        location.Name,
+        BallotsEntered = sum
+      };
     }
 
     public JsonResult UpdateNumCollected(int numCollected)
     {
       var location = UserSession.CurrentLocation;
-      Db.Locations.Attach(location);
+      Db.Location.Attach(location);
 
       location.BallotsCollected = numCollected;
 
       Db.SaveChanges();
+
+      new LocationCacher().UpdateItemAndSaveCache(location);
 
       return new
       {
@@ -141,40 +141,50 @@ namespace TallyJ.CoreModels
     public JsonResult UpdateLocationInfo(string info)
     {
       var location = UserSession.CurrentLocation;
-      Db.Locations.Attach(location);
+      Db.Location.Attach(location);
 
       location.ContactInfo = info;
 
       Db.SaveChanges();
+
+      new LocationCacher().UpdateItemAndSaveCache(location);
 
       return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult EditLocation(int id, string text)
     {
-      var location = Locations.SingleOrDefault(l => l.C_RowId == id);
+      var locationCacher = new LocationCacher();
+
+      var location = locationCacher.AllForThisElection.SingleOrDefault(l => l.C_RowId == id);
+      var changed = false;
 
       if (location == null)
       {
         location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
-        Db.Locations.Add(location);
+        Db.Location.Add(location);
+        changed = true;
       }
+
+      Db.Location.Attach(location);
 
       int locationId;
       string locationText;
       string status;
       var success = false;
 
-      if (text.HasNoContent() && location.C_RowId != 0)
+      if (text.HasNoContent() && location.C_RowId > 0)
       {
-        if (Locations.Count() > 1)
+        // don't delete last location
+        if (MyLocations.Count() > 1)
         {
           // delete existing if we can
-          var used = Db.Ballots.Any(b => b.LocationGuid == location.LocationGuid);
+          var used = new BallotCacher().AllForThisElection.Any(b => b.LocationGuid == location.LocationGuid);
           if (!used)
           {
-            Db.Locations.Remove(location);
+            Db.Location.Remove(location);
             Db.SaveChanges();
+            locationCacher.RemoveItemAndSaveCache(location);
 
             status = "Deleted";
             success = true;
@@ -189,7 +199,8 @@ namespace TallyJ.CoreModels
           }
         }
         else
-        { // only one
+        {
+          // only one
           status = "At least one location is required";
           locationId = location.C_RowId;
           locationText = location.Name;
@@ -198,7 +209,7 @@ namespace TallyJ.CoreModels
       else if (text.HasContent())
       {
         location.Name = text;
-        Db.SaveChanges();
+        changed = true;
 
         status = "Saved";
         locationId = location.C_RowId;
@@ -207,44 +218,58 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        status= "Nothing to save";
+        status = "Nothing to save";
         locationId = 0;
         success = true;
         locationText = "";
       }
 
+      if (changed)
+      {
+        Db.SaveChanges();
+        locationCacher.UpdateItemAndSaveCache(location);
+      }
+
       return new
-               {
-                 // returns 0 if deleted or not created
-                 Id = locationId,
-                 Text = locationText,
-                 Success = success,
-                 Status = status
-               }.AsJsonResult();
+      {
+        // returns 0 if deleted or not created
+        Id = locationId,
+        Text = locationText,
+        Success = success,
+        Status = status
+      }.AsJsonResult();
     }
 
     public JsonResult SortLocations(List<int> idList)
     {
       //var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
-      var locations = Locations.Where(l => idList.Contains(l.C_RowId)).ToList();
+      var locationCacher = new LocationCacher();
+
+      var locations = locationCacher.AllForThisElection.Where(l => idList.Contains(l.C_RowId)).ToList();
 
       var sortOrder = 1;
       foreach (var id in idList)
       {
+        var newOrder = sortOrder++;
+
         var location = locations.SingleOrDefault(l => l.C_RowId == id);
-        if (location != null)
+
+        if (location != null && location.SortOrder != newOrder)
         {
-          location.SortOrder = sortOrder++;
+          Db.Location.Attach(location);
+          location.SortOrder = newOrder;
+
+          locationCacher.UpdateItemAndSaveCache(location);
         }
       }
 
       Db.SaveChanges();
 
       return new
-               {
-                 Saved = true
-               }.AsJsonResult();
+      {
+        Saved = true
+      }.AsJsonResult();
     }
   }
 }

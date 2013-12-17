@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
         ResultSummary ResultSummaryFinal { get; }
 
         /// <Summary>Current VoteInfo records</Summary>
-        List<vVoteInfo> VoteInfos { get; }
+        List<VoteInfo> VoteInfos { get; }
 
         /// <Summary>Indicate if the results are available, or need to be generated</Summary>
         bool IsResultAvailable { get; }
@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels
      
         ResultSummary AnalyzeEverything();
         
-        void GetOrCreateResultSummaries();
+        void PrepareResultSummaries();
         
         void FinalizeSummaries();
     }

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using TallyJ.Models;
+using TallyJ.CoreModels;
+using TallyJ.EF;
 
 namespace TallyJ.Code
 {
@@ -233,12 +235,17 @@ namespace TallyJ.Code
       return input;
     }
 
+    public static Guid? AsNullableGuid(this string input)
+    {
+      var guid = input.AsGuid();
+      if (guid == Guid.Empty) return null;
+
+      return guid;
+    }
+
     public static IEnumerable<int> AsInts(this IEnumerable<string> input)
     {
-      foreach (var s in input)
-      {
-        yield return s.AsInt();
-      }
+      return input.Select(s => s.AsInt());
     }
 
     public static int AsInt(this object input)
@@ -425,7 +432,7 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static T FromSession<T>(this string input, T defaultValue)
     {
-      if (HttpContext.Current.Session == null) return defaultValue;
+      if (HttpContext.Current == null || HttpContext.Current.Session == null) return defaultValue;
       try
       {
         var value = HttpContext.Current.Session[input];
@@ -515,11 +522,11 @@ namespace TallyJ.Code
           );
     }
 
-    public static string CleanedForSearching(this string input)
-    {
-      if (input.HasNoContent()) return "";
-      return Regex.Replace(input, @"[^\w\.\'\- ]", "");
-    }
+    //public static string CleanedForSearching(this string input)
+    //{
+    //  if (input.HasNoContent()) return "";
+    //  return Regex.Replace(input, @"[^\w\.\'\- ]", "");
+    //}
 
     /// <Summary>Prepare to be embedded into a javascript string</Summary>
     public static string CleanedForJavascriptStrings(this string input)
@@ -660,21 +667,21 @@ namespace TallyJ.Code
       }
     }
 
-    public static IEnumerable<Vote> AsVotes(this IEnumerable<vVoteInfo> inputs)
-    {
-      return inputs.Select(vVoteInfo => new Vote
-          {
-            C_RowId = vVoteInfo.VoteId,
-            BallotGuid = vVoteInfo.BallotGuid,
-            C_RowVersion = null,
-            InvalidReasonGuid = vVoteInfo.VoteIneligibleReasonGuid,
-            PersonCombinedInfo = vVoteInfo.PersonCombinedInfoInVote,
-            PersonGuid = vVoteInfo.PersonGuid,
-            PositionOnBallot = vVoteInfo.PositionOnBallot,
-            SingleNameElectionCount = vVoteInfo.SingleNameElectionCount,
-            StatusCode = vVoteInfo.VoteStatusCode
-          });
-    }
+//    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
+//    {
+//      return inputs.Select(VoteInfo => new Vote
+//          {
+//            C_RowId = VoteInfo.VoteId,
+//            BallotGuid = VoteInfo.BallotGuid,
+//            C_RowVersion = null,
+//            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
+//            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
+//            PersonGuid = VoteInfo.PersonGuid,
+//            PositionOnBallot = VoteInfo.PositionOnBallot,
+//            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
+//            StatusCode = VoteInfo.VoteStatusCode
+//          });
+//    }
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>
@@ -698,6 +705,59 @@ namespace TallyJ.Code
       var withoutDiacritics = sb.ToString().Normalize(NormalizationForm.FormC);
 
       return toLower ? withoutDiacritics.ToLowerInvariant() : withoutDiacritics;
+    }
+
+    /// <summary>
+    /// Simple convert of <see cref="Person"/> to <see cref="SearchResult"/> 
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="matchType"></param>
+    /// <returns></returns>
+    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType = 0)
+    {
+      return input.Select(p => p.AsSerachResult(matchType));
+    }
+
+    public static SearchResult AsSerachResult(this Person p, int matchType)
+    {
+      var name = p.FullName
+                 + p.BahaiId.SurroundContentWith(" (", ")")
+                 + p.Area.SurroundContentWith(" (", ")");
+
+      return new SearchResult
+      {
+        PersonId = p.C_RowId,
+        PersonGuid = p.PersonGuid,
+        FullName = name,
+        CanReceiveVotes = p.CanReceiveVotes,
+        Ineligible = p.IneligibleReasonGuid,
+        RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
+        BestMatch = 0, // count of votes
+        MatchType = matchType
+      };
+    }
+
+    /// <summary>
+    /// Replace non-characters with <param name="sep"></param>
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="sep">Character to use</param>
+    /// <returns></returns>
+    public static string ReplacePunctuation(this string input, char sep)
+    {
+      var array = input.ToCharArray();
+
+      return new string(array.Select(c => char.IsLetterOrDigit(c) ? c : sep) // remove all punctuation
+                             .ToArray());
+    }
+
+
+    public static IEnumerable<TResult> JoinMatchingOrNull<TSource, TInner, TKey, TResult>(this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey, Func<TSource, TInner, TResult> res)
+    {
+      return from f in source
+             join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
+             from result in g.DefaultIfEmpty()
+             select res.Invoke(f, result);
     }
   }
 }

@@ -25,6 +25,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -51,20 +53,37 @@ namespace TallyJ.Code.Helpers
         return "";
       }
 
-      var words = self.Split(new[] { ',', '-', '\'', '"', ' ', '.', '(', ')', '[', ']' },
-                             StringSplitOptions.RemoveEmptyEntries);
-      return words.Select(s => s.Trim())
-        .Where(s => s.HasContent())
+
+      return self
+        .ReplacePunctuation(' ')
+        .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
         .Select(s => s.GenerateDoubleMetaphoneInternal())
         .JoinedAsString(" ", true);
     }
 
-    private static string GenerateDoubleMetaphoneInternal(this string self)
+    public static string GenerateDoubleMetaphone(this IEnumerable<string> self, string sep)
     {
+      return self
+        .Where(s => s.HasContent())
+        .Select(s => s.ReplacePunctuation(' ').Replace(" ", "").GenerateDoubleMetaphoneInternal())
+        .JoinedAsString(sep, true);
+    }
+
+    public static IEnumerable<string> GenerateDoubleMetaphoneArray(this IEnumerable<string> self)
+    {
+      return self.Select(s => s.ReplacePunctuation(' ').Replace(" ", "").GenerateDoubleMetaphoneInternal());
+    }
+
+    public static string GenerateDoubleMetaphoneInternal(this string self)
+    {
+      var length = self.Length;
+
+      if (length == 0) return "";
+
       var metaphoneData = new MetaphoneData();
       var current = 0;
 
-      var last = self.Length - 1; //zero based index
+      var last = length - 1; //zero based index
 
       var workingString = self.ToUpperInvariant() + "     ";
 
@@ -87,7 +106,7 @@ namespace TallyJ.Code.Helpers
 
       while ((metaphoneData.PrimaryLength < 4) || (metaphoneData.SecondaryLength < 4))
       {
-        if (current >= self.Length)
+        if (current >= length)
         {
           break;
         }
@@ -541,7 +560,7 @@ namespace TallyJ.Code.Helpers
             if (workingString[current + 1] == 'L')
             {
               //spanish e.g. 'cabrillo', 'gallegos'
-              if (((current == (self.Length - 3)) && StringAt(workingString, (current - 1), "ILLO", "ILLA", "ALLE"))
+              if (((current == (length - 3)) && StringAt(workingString, (current - 1), "ILLO", "ILLA", "ALLE"))
                   ||
                   ((StringAt(workingString, (last - 1), "AS", "OS") || StringAt(workingString, last, "A", "O")) &&
                    StringAt(workingString, (current - 1), "ALLE")))
