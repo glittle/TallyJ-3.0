@@ -19,25 +19,12 @@ namespace TallyJ.CoreModels
                                   List<Person> people)
       : base(fakes, election, people, ballots, voteinfos)
     {
-      //_locationInfos = locationInfos;
     }
 
     public ElectionAnalyzerNormal(Election election)
       : base(election)
     {
     }
-
-    //private List<vLocationInfo> _locationInfos;
-    ///// <Summary>Current location records</Summary>
-    //public List<vLocationInfo> LocationInfos
-    //{
-    //  get
-    //  {
-    //    return _locationInfos ?? (_locationInfos = Db.vLocationInfoes
-    //                                                 .Where(r => r.ElectionGuid == CurrentElection.ElectionGuid)
-    //                                                 .ToList());
-    //  }
-    //}
 
     public override ResultSummary AnalyzeEverything()
     {
@@ -56,10 +43,11 @@ namespace TallyJ.CoreModels
 
       var electionGuid = TargetElection.ElectionGuid;
 
-      // collect only valid votes
+      // collect only valid ballots
       foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
       {
         var ballotGuid = ballot.BallotGuid;
+        // collect only valid votes
         foreach (var voteInfoRaw in VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
         {
           var voteInfo = voteInfoRaw;
@@ -76,7 +64,7 @@ namespace TallyJ.CoreModels
                        };
             InitializeSomeProperties(result);
             
-            AddResult(result);
+            ResultSaver(DbAction.Add, result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;
@@ -84,9 +72,8 @@ namespace TallyJ.CoreModels
         }
       }
 
-      DoAnalysisForTies();
+      FinalizeResultsAndTies();
       FinalizeSummaries();
-
 
       return ResultSummaryFinal;
     }

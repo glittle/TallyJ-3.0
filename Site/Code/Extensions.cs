@@ -432,7 +432,7 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static T FromSession<T>(this string input, T defaultValue)
     {
-      if (HttpContext.Current.Session == null) return defaultValue;
+      if (HttpContext.Current == null || HttpContext.Current.Session == null) return defaultValue;
       try
       {
         var value = HttpContext.Current.Session[input];

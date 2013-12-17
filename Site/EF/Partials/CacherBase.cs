@@ -117,7 +117,7 @@ namespace TallyJ.EF
     }
 
     /// <summary>
-    ///   Find the item by matching the _RowId, then replace it with this one
+    ///   Find the item by matching the _RowId, remove if found
     /// </summary>
     /// <param name="itemToRemove"></param>
     public void RemoveItemAndSaveCache(T itemToRemove)

@@ -53,7 +53,7 @@ namespace TallyJ.CoreModels
         //                var numForChart = (numToShow + numExtra) * 2;
 
         var reportVotes =
-          Db.Result.Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
+          new ResultCacher().AllForThisElection
             .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
               (r, p) => new { r, PersonName = p.FullNameFL })
             .OrderBy(g => g.r.Rank)
@@ -168,8 +168,7 @@ namespace TallyJ.CoreModels
 
       var vResultInfos =
         // TODO 2012-01-21 Glen Little: Could return fewer columns for non-tied results
-        Db.Result
-          .Where(ri => ri.ElectionGuid == CurrentElection.ElectionGuid)
+        new ResultCacher().AllForThisElection
           .OrderBy(r => r.Rank)
           .ToList()
           .Select(r => new
@@ -190,7 +189,7 @@ namespace TallyJ.CoreModels
             r.VoteCount
           }).ToList();
 
-      var ties = Db.ResultTie.Where(rt => rt.ElectionGuid == CurrentElection.ElectionGuid)
+      var ties = new ResultTieCacher().AllForThisElection
         .OrderBy(rt => rt.TieBreakGroup)
         .Select(rt => new
         {
@@ -241,10 +240,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var summary =
-        Db.ResultSummary.SingleOrDefault(
-          rs =>
-            rs.ElectionGuid == CurrentElection.ElectionGuid && rs.ResultType == ResultType.Final);
+      var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       object data;
@@ -252,7 +248,7 @@ namespace TallyJ.CoreModels
       {
         case "Ballots":
           var ballots = new BallotCacher().AllForThisElection.ToList();
-          var votes = new VoteCacher().AllForThisElection.ToList();
+          // var votes = new VoteCacher().AllForThisElection.ToList();
           data = ballots
             .OrderBy(b => b.ComputerCode)
             .ThenBy(b => b.BallotNumAtComputer)
@@ -279,8 +275,8 @@ namespace TallyJ.CoreModels
         case "AllReceivingVotes":
         case "AllReceivingVotesByVote":
           var electionGuid = CurrentElection.ElectionGuid;
-          var rows = Db.Result.Where(r => r.ElectionGuid == electionGuid)
-            .Join(Db.Person.Where(p=> p.ElectionGuid== electionGuid), r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
+          var rows = new ResultCacher().AllForThisElection
+            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
           if (code == "AllReceivingVotes")
           {
             rows = rows.OrderBy(g => g.p.FullNameFL);
@@ -312,8 +308,7 @@ namespace TallyJ.CoreModels
             }.AsJsonResult();
           }
 
-          var result = Db.Result
-            .Where(r => r.ElectionGuid == currentElection.ElectionGuid)
+          var result = new ResultCacher().AllForThisElection
             .OrderBy(r => r.Rank)
             .Take(currentElection.NumberToElect.AsInt() + currentElection.NumberExtra.AsInt())
             .ToList()
@@ -378,15 +373,19 @@ namespace TallyJ.CoreModels
           Value = parts[1].AsInt()
         };
       }).ToList();
+
       var resultsIds = countItems.Select(ci => ci.ResultId).ToArray();
 
-      var results =
-        Db.Result.Where(r => resultsIds.Contains(r.C_RowId) && r.ElectionGuid == CurrentElection.ElectionGuid)
-          .ToList();
+      var resultCacher = new ResultCacher();
+      var results = resultCacher.AllForThisElection.Where(r => resultsIds.Contains(r.C_RowId)).ToList();
 
       foreach (var result in results)
       {
+        Db.Result.Attach(result);
+
         result.TieBreakCount = countItems.Single(ci => ci.ResultId == result.C_RowId).Value;
+
+        resultCacher.UpdateItemAndSaveCache(result);
       }
 
       Db.SaveChanges();
@@ -402,9 +401,8 @@ namespace TallyJ.CoreModels
       ResultSummary resultSummary = null;
       if (manualResultsFromBrowser.C_RowId != 0)
       {
-        resultSummary = Db.ResultSummary.FirstOrDefault(rs =>
+        resultSummary = new ResultSummaryCacher().AllForThisElection.FirstOrDefault(rs =>
           rs.C_RowId == manualResultsFromBrowser.C_RowId
-          && rs.ElectionGuid == UserSession.CurrentElectionGuid
           && rs.ResultType == ResultType.Manual);
       }
       if (resultSummary == null)
@@ -440,6 +438,8 @@ namespace TallyJ.CoreModels
       }
 
       Db.SaveChanges();
+      
+      new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
 
       _analyzer.PrepareResultSummaries();
       _analyzer.FinalizeSummaries();

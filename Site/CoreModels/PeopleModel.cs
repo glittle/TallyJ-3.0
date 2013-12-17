@@ -477,6 +477,8 @@ namespace TallyJ.CoreModels
 
             person.EnvNum = nextNum;
             election.LastEnvNum = nextNum;
+
+            new ElectionCacher().UpdateItemAndSaveCache(election);
           }
         }
       }
@@ -485,6 +487,8 @@ namespace TallyJ.CoreModels
       person.TellerAssisting = UserSession.GetCurrentTeller(2);
 
       Db.SaveChanges();
+
+      new PersonCacher().UpdateItemAndSaveCache(person);
 
       List<Person> people;
       if (lastRowVersion == 0)

@@ -16,6 +16,7 @@ namespace TallyJ.CoreModels
 {
   public enum DbAction
   {
+    Add,
     Attach,
     Save,
     AttachAndRemove
@@ -40,6 +41,7 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
+    private int tempRowId = -1;
 
     protected ElectionAnalyzerCore()
     {
@@ -77,22 +79,17 @@ namespace TallyJ.CoreModels
     public ResultSummary ResultSummaryFinal { get; private set; }
     public ResultSummary ResultSummaryManual { get; private set; }
 
-    //protected BallotAnalyzer BallotAnalyzer
+    /// <Summary>Remove this result from the datastore</Summary>
+    //protected Func<Result, Result> RemoveResult
     //{
-    //  get { return _ballotAnalyzer ?? (_ballotAnalyzer = new BallotAnalyzer(TargetElection, SaveChanges)); }
+    //  get { return _deleteResult ?? Db.Result.Remove; }
     //}
 
-    /// <Summary>Remove this result from the datastore</Summary>
-    protected Func<Result, Result> RemoveResult
-    {
-      get { return _deleteResult ?? Db.Result.Remove; }
-    }
-
-    /// <Summary>Remove this result from the datastore</Summary>
-    protected Func<ResultTie, ResultTie> RemoveResultTie
-    {
-      get { return _deleteResultTie ?? Db.ResultTie.Remove; }
-    }
+    ///// <Summary>Remove this result from the datastore</Summary>
+    //protected Func<ResultTie, ResultTie> RemoveResultTie
+    //{
+    //  get { return _deleteResultTie ?? ResultTieSaver(DbAction.AttachAndRemove,  Db.ResultTie.Remove; }
+    //}
 
     /// <Summary>Save all datastore changes</Summary>
     protected Func<int> SaveChanges
@@ -100,41 +97,6 @@ namespace TallyJ.CoreModels
       get { return _saveChanges ?? Db.SaveChanges; }
     }
 
-    /// <Summary>Add this result to the datastore</Summary>
-    protected void AddResult(Result result)
-    {
-      Results.Add(result);
-      if (_addResult != null)
-      {
-        _addResult(result);
-      }
-      else
-      {
-        Db.Result.Add(result);
-        new ResultCacher().UpdateItemAndSaveCache(result);
-      }
-    }
-
-    /// <Summary>Add this result to the datastore</Summary>
-    protected void AddResultSummary(ResultSummary resultSummary)
-    {
-      ResultSummaries.Add(resultSummary);
-      if (_addResultSummary != null)
-      {
-        _addResultSummary(resultSummary);
-      }
-      else
-      {
-        Db.ResultSummary.Add(resultSummary);
-        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
-      }
-    }
-
-    /// <Summary>Add this resultTie to the datastore</Summary>
-    protected Func<ResultTie, ResultTie> AddResultTie
-    {
-      get { return _addResultTie ?? Db.ResultTie.Add; }
-    }
 
     protected void VoteSaver(DbAction action, Vote vote)
     {
@@ -151,7 +113,6 @@ namespace TallyJ.CoreModels
           if (!IsFaked)
           {
             new VoteCacher().UpdateItemAndSaveCache(vote);
-            Db.SaveChanges();
           }
           break;
 
@@ -160,72 +121,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    protected void ResultSummarySaver(DbAction action, ResultSummary resultSummary)
-    {
-      switch (action)
-      {
-        case DbAction.Attach:
-          if (!IsFaked)
-          {
-            Db.ResultSummary.Attach(resultSummary);
-          }
-          break;
 
-        case DbAction.Save:
-          if (!IsFaked)
-          {
-            new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
-            Db.SaveChanges();
-          }
-          break;
-
-        case DbAction.AttachAndRemove:
-          if (!IsFaked)
-          {
-            new ResultSummaryCacher().RemoveItemAndSaveCache(resultSummary);
-            Db.ResultSummary.Attach(resultSummary);
-            Db.ResultSummary.Remove(resultSummary);
-            Db.SaveChanges();
-          }
-          break;
-
-        default:
-          throw new ArgumentOutOfRangeException("action");
-      }
-    }
-    protected void ResultSaver(DbAction action, Result result)
-    {
-      switch (action)
-      {
-        case DbAction.Attach:
-          if (!IsFaked)
-          {
-            Db.Result.Attach(result);
-          }
-          break;
-
-        case DbAction.Save:
-          if (!IsFaked)
-          {
-            new ResultCacher().UpdateItemAndSaveCache(result);
-            Db.SaveChanges();
-          }
-          break;
-
-        case DbAction.AttachAndRemove:
-          if (!IsFaked)
-          {
-            new ResultCacher().RemoveItemAndSaveCache(result);
-            Db.Result.Attach(result);
-            Db.Result.Remove(result);
-            Db.SaveChanges();
-          }
-          break;
-
-        default:
-          throw new ArgumentOutOfRangeException("action");
-      }
-    }
     protected void BallotSaver(DbAction action, Ballot ballot)
     {
       switch (action)
@@ -241,7 +137,6 @@ namespace TallyJ.CoreModels
           if (!IsFaked)
           {
             new BallotCacher().UpdateItemAndSaveCache(ballot);
-            Db.SaveChanges();
           }
           break;
 
@@ -249,6 +144,161 @@ namespace TallyJ.CoreModels
           throw new ArgumentOutOfRangeException("action");
       }
     }
+
+    protected void ResultSaver(DbAction action, Result result)
+    {
+      switch (action)
+      {
+        case DbAction.Add:
+          result.C_RowId = tempRowId--;
+          if (!IsFaked)
+          {
+            Db.Result.Add(result);
+            new ResultCacher().UpdateItemAndSaveCache(result);
+          }
+          else
+          {
+            _addResult(result);
+          }
+          break;
+
+        case DbAction.Attach:
+          if (!IsFaked)
+          {
+            Db.Result.Attach(result);
+          }
+          break;
+
+        case DbAction.Save:
+          if (!IsFaked)
+          {
+            new ResultCacher().UpdateItemAndSaveCache(result);
+          }
+          break;
+
+        case DbAction.AttachAndRemove:
+          if (!IsFaked)
+          {
+            new ResultCacher().RemoveItemAndSaveCache(result);
+            Db.Result.Attach(result);
+            Db.Result.Remove(result);
+          }
+          break;
+
+        default:
+          throw new ArgumentOutOfRangeException("action");
+      }
+    }
+
+    /// <Summary>Add this result to the datastore</Summary>
+//    protected void AddResultSummary(ResultSummary resultSummary)
+//    {
+//      ResultSummaries.Add(resultSummary);
+//      if (_addResultSummary != null)
+//      {
+//        _addResultSummary(resultSummary);
+//      }
+//      else
+//      {
+//        resultSummary.C_RowId = tempRowId--;
+//        Db.ResultSummary.Add(resultSummary);
+//        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+//      }
+//    }
+
+
+    protected void ResultSummarySaver(DbAction action, ResultSummary resultSummary)
+    {
+      switch (action)
+      {
+        case DbAction.Add:
+          resultSummary.C_RowId = tempRowId--;
+          if (!IsFaked)
+          {
+            Db.ResultSummary.Add(resultSummary);
+            new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+          }
+          else
+          {
+            _addResultSummary(resultSummary);
+          }
+          break;
+
+        case DbAction.Attach:
+          if (!IsFaked)
+          {
+            Db.ResultSummary.Attach(resultSummary);
+          }
+          break;
+
+        case DbAction.Save:
+          if (!IsFaked)
+          {
+            new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+          }
+          break;
+
+        case DbAction.AttachAndRemove:
+          if (!IsFaked)
+          {
+            new ResultSummaryCacher().RemoveItemAndSaveCache(resultSummary);
+            Db.ResultSummary.Attach(resultSummary);
+            Db.ResultSummary.Remove(resultSummary);
+          }
+          break;
+
+        default:
+          throw new ArgumentOutOfRangeException("action");
+      }
+    }
+
+    /// <Summary>Add this resultTie to the datastore</Summary>
+    //protected Func<ResultTie, ResultTie> AddResultTie
+    //{
+    //  get { return _addResultTie ?? Db.ResultTie.Add; }
+    //}
+
+    protected void ResultTieSaver(DbAction action, ResultTie resultTie)
+    {
+      switch (action)
+      {
+        case DbAction.Add:
+          if (!IsFaked)
+          {
+            resultTie.C_RowId = tempRowId--;
+            Db.ResultTie.Add(resultTie);
+            new ResultTieCacher().UpdateItemAndSaveCache(resultTie);
+          }
+          break;
+
+        case DbAction.Attach:
+          if (!IsFaked)
+          {
+            Db.ResultTie.Attach(resultTie);
+          }
+          break;
+
+        case DbAction.Save:
+          if (!IsFaked)
+          {
+            new ResultTieCacher().UpdateItemAndSaveCache(resultTie);
+          }
+          break;
+
+        case DbAction.AttachAndRemove:
+          if (!IsFaked && resultTie.C_RowId > 0)
+          {
+            new ResultTieCacher().RemoveItemAndSaveCache(resultTie);
+            Db.ResultTie.Attach(resultTie);
+            Db.ResultTie.Remove(resultTie);
+          }
+          break;
+
+        default:
+          throw new ArgumentOutOfRangeException("action");
+      }
+    }
+
 
     /// <Summary>Current Results records</Summary>
     public List<Person> People
@@ -346,18 +396,17 @@ namespace TallyJ.CoreModels
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
 
       // clear any existing results
+      var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
-        var electionGuid = TargetElection.ElectionGuid;
         Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
-
-        // attach results, but don't save yet
-        Results.ForEach(delegate(Result result)
-        {
-          ResultSaver(DbAction.Attach, result);
-          InitializeSomeProperties(result);
-        });
       }
+      // attach results, but don't save yet
+      Results.ForEach(delegate(Result result)
+      {
+        ResultSaver(DbAction.Attach, result);
+        InitializeSomeProperties(result);
+      });
 
       PrepareResultSummaries();
 
@@ -386,7 +435,7 @@ namespace TallyJ.CoreModels
                 ResultType = ResultType.Calculated
               };
 
-          AddResultSummary(ResultSummaryCalc);
+          ResultSummarySaver(DbAction.Add, ResultSummaryCalc);
         }
       }
 
@@ -400,7 +449,7 @@ namespace TallyJ.CoreModels
                 ElectionGuid = TargetElection.ElectionGuid,
                 ResultType = ResultType.Final
               };
-          AddResultSummary(ResultSummaryFinal);
+          ResultSummarySaver(DbAction.Add, ResultSummaryFinal);
         }
       }
     }
@@ -418,15 +467,14 @@ namespace TallyJ.CoreModels
       SaveChanges();
     }
 
-    protected void DoAnalysisForTies()
+    protected void FinalizeResultsAndTies()
     {
 
       // remove any results no longer needed
-      Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => RemoveResult(r));
+      Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => ResultSaver(DbAction.AttachAndRemove, r));
 
       // remove any existing Tie info
-      ResultTies.ForEach(rt => RemoveResultTie(rt));
-      ResultTies.Clear();
+      ResultTies.ToList().ForEach(rt => ResultTieSaver(DbAction.AttachAndRemove, rt));
 
       DetermineOrderAndSections();
 
@@ -520,8 +568,7 @@ namespace TallyJ.CoreModels
               TieBreakGroup = code
             };
 
-        ResultTies.Add(resultTie);
-        AddResultTie(resultTie);
+        ResultTieSaver(DbAction.Add, resultTie);
 
         AnalyzeTieGroup(resultTie, Results.Where(r => r.TieBreakGroup == code).OrderBy(r => r.Rank).ToList());
       }

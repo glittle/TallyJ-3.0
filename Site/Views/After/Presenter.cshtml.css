@@ -82,7 +82,6 @@ th:first-child {
 
 tr.FirstExtra td {
     border-top: double 3px #999;
-    background-color: #ddd;
 }
 
 tr.Extra {

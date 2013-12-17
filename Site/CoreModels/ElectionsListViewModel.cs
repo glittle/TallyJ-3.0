@@ -73,8 +73,7 @@ namespace TallyJ.CoreModels
       if (UserSession.IsKnownTeller)
       {
         var userGuid = UserSession.UserGuid;
-        return Db
-          .Election
+        return Db.Election
           .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
             (e, j) => new {e, j})
           .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
