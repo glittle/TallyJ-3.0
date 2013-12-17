@@ -116,8 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Schema Comparisons\Local to Project.scmp" />
-    <None Include="Schema Comparisons\Local to AppHb.scmp" />
+    <None Include="Schema Comparisons\Project to AppHb - Live.scmp" />
     <None Include="Schema Comparisons\AppHb to Project.scmp" />
+    <None Include="Schema Comparisons\Project to AppHb - UAT.scmp" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />

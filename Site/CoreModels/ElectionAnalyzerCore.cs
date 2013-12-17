@@ -52,9 +52,10 @@ namespace TallyJ.CoreModels
                                    List<VoteInfo> voteinfos)
     {
       _election = election;
-      _resultTies = new List<ResultTie>();
-      _results = new List<Result>();
-      _resultSummaries = new List<ResultSummary> { fakes.ResultSummaryManual };
+      _resultTies = fakes.ResultTies;
+      _results = fakes.Results;
+      _resultSummaries = fakes.ResultSummaries;
+      _resultSummaries.Add(fakes.ResultSummaryManual);
       _people = people;
       _ballots = ballots;
       _voteinfos = voteinfos;
@@ -268,6 +269,10 @@ namespace TallyJ.CoreModels
             resultTie.C_RowId = tempRowId--;
             Db.ResultTie.Add(resultTie);
             new ResultTieCacher().UpdateItemAndSaveCache(resultTie);
+          }
+          else
+          {
+            _addResultTie(resultTie);
           }
           break;
 
