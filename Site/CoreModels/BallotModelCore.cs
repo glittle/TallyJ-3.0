@@ -591,7 +591,7 @@ namespace TallyJ.CoreModels
 
     private object BallotsInfoList(List<Ballot> ballots)
     {
-      var maxRowVersion = ballots.Max(b => b.RowVersionInt);
+      var maxRowVersion = ballots.Count == 0 ? 0 : ballots.Max(b => b.RowVersionInt);
 
       return new
       {
