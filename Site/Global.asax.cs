@@ -166,7 +166,8 @@ namespace TallyJ
           "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
 
       var url = siteInfo.RootUrl;
-      Response.Write(String.Format("Server Error: {0}", msgs.JoinedAsString("\r\n")));
+      // add  /* */  because this is sometimes written onto the end of a Javascript file!!
+      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
       {
         //Response.Write("Error on site");
