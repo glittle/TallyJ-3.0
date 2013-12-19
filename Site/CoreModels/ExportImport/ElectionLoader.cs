@@ -38,7 +38,9 @@ namespace TallyJ.CoreModels.ExportImport
 
         var success = LoadXmlToDatabase();
 
-        var analyzer = new ResultsModel(_election);
+        new ElectionModel().JoinIntoElection(_electionGuid);
+
+        var analyzer = new ResultsModel();
         analyzer.GenerateResults();
 
         return success
@@ -115,7 +117,7 @@ namespace TallyJ.CoreModels.ExportImport
     {
       _guidMap = new Dictionary<Guid, Guid>();
 
-//      using (var transaction = new TransactionScope())
+      //      using (var transaction = new TransactionScope())
       {
         try
         {
@@ -128,23 +130,23 @@ namespace TallyJ.CoreModels.ExportImport
           // user - not imported. Current user becomes owner of imported election
           // person
           // location
-               // ballot
-                    // vote
-               // log 
-            // resultSummary
-            // result
-            // resultTie
-            // reason - not imported - embedded in the application. Included in export for reporting
+          // ballot
+          // vote
+          // log 
+          // resultSummary
+          // result
+          // resultTie
+          // reason - not imported - embedded in the application. Included in export for reporting
 
           LoadElectionInfo();
 
           LoadTellers();
-          
+
           LoadPeople();
-          
+
           LoadLocationsEtc();
 
-            LoadResultInfo();
+          LoadResultInfo();
 
           Db.SaveChanges();
 
@@ -167,14 +169,14 @@ namespace TallyJ.CoreModels.ExportImport
           throw new LoaderException("Unable to save: " + msgs.JoinedAsString("; "));
         }
 
-//        transaction.Complete();
+        //        transaction.Complete();
       }
 
       return true;
     }
 
-     
-      private void LoadElectionInfo()
+
+    private void LoadElectionInfo()
     {
       var electionNode = _xmlRoot.SelectSingleNode("t:election", _nsm) as XmlElement;
 
@@ -275,7 +277,7 @@ namespace TallyJ.CoreModels.ExportImport
       // need to map Guid to new Guid
       var person = new Person();
       personXml.CopyAttributeValuesTo(person);
-      
+
       _peopleModel.ResetInvolvementFlags(person);
       person.UpdateCombinedSoundCodes();
 
@@ -295,39 +297,39 @@ namespace TallyJ.CoreModels.ExportImport
 
     private void LoadResultInfo()
     {
-        var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
-        if (nodes != null)
-            foreach (XmlElement element in nodes)
-            {
-                var resultSummary = new ResultSummary();
-                element.CopyAttributeValuesTo(resultSummary);
-                resultSummary.ElectionGuid = _electionGuid;
-                Db.ResultSummary.Add(resultSummary);
-            }
-        
-        nodes = _xmlRoot.SelectNodes("t:result", _nsm);
-        if (nodes != null)
-            foreach (XmlElement element in nodes)
-            {
-                var result = new EF.Result();
-                element.CopyAttributeValuesTo(result);
-                result.ElectionGuid = _electionGuid;
-                UpdateGuidFromMapping(result, v => v.PersonGuid);
-                Db.Result.Add(result);
-            }
+      var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
+      if (nodes != null)
+        foreach (XmlElement element in nodes)
+        {
+          var resultSummary = new ResultSummary();
+          element.CopyAttributeValuesTo(resultSummary);
+          resultSummary.ElectionGuid = _electionGuid;
+          Db.ResultSummary.Add(resultSummary);
+        }
 
-        nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
-        if (nodes != null)
-            foreach (XmlElement element in nodes)
-            {
-                var resultTie = new ResultTie();
-                element.CopyAttributeValuesTo(resultTie);
-                resultTie.ElectionGuid = _electionGuid;
-                Db.ResultTie.Add(resultTie);
-            }
+      nodes = _xmlRoot.SelectNodes("t:result", _nsm);
+      if (nodes != null)
+        foreach (XmlElement element in nodes)
+        {
+          var result = new EF.Result();
+          element.CopyAttributeValuesTo(result);
+          result.ElectionGuid = _electionGuid;
+          UpdateGuidFromMapping(result, v => v.PersonGuid);
+          Db.Result.Add(result);
+        }
+
+      nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
+      if (nodes != null)
+        foreach (XmlElement element in nodes)
+        {
+          var resultTie = new ResultTie();
+          element.CopyAttributeValuesTo(resultTie);
+          resultTie.ElectionGuid = _electionGuid;
+          Db.ResultTie.Add(resultTie);
+        }
     }
 
-      private void LoadLocationsEtc()
+    private void LoadLocationsEtc()
     {
       var locationsXml = _xmlRoot.SelectNodes("t:location", _nsm);
 
@@ -350,7 +352,7 @@ namespace TallyJ.CoreModels.ExportImport
       // reset Guid to a new guid
       var newGuid = Guid.NewGuid();
 
-      var locationGuid 
+      var locationGuid
         = location.LocationGuid
         = newGuid;
       location.ElectionGuid = _electionGuid;
@@ -465,7 +467,7 @@ namespace TallyJ.CoreModels.ExportImport
 
     private void UpdateGuidFromMapping<T, T2>(T obj, Expression<Func<T, T2>> action)
     {
-      var prop = ((MemberExpression) action.Body).Member as PropertyInfo;
+      var prop = ((MemberExpression)action.Body).Member as PropertyInfo;
       var oldValue = prop.GetValue(obj, null) as Guid?;
 
       if (oldValue.HasValue && oldValue.Value != Guid.Empty)
@@ -478,7 +480,7 @@ namespace TallyJ.CoreModels.ExportImport
         }
         else
         {
-          throw new LoaderException("Mapped Guid not found for {0}: {1}".FilledWith(obj.GetType().Name, oldGuid));
+          throw new LoaderException("Mapped Guid not found for {0}.{1}: {2}".FilledWith(obj.GetType().Name, prop.Name, oldGuid));
         }
       }
     }

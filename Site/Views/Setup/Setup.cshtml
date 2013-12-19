@@ -22,7 +22,7 @@
       highest number of votes.
     </li>
     <li>
-      After you have read these instructions, you may click on the word "Instructions"
+      After you have read these instructions, you may click on "Hide Instructions"
       above the box to hide them or to show them again.
     </li>
   </ol>
@@ -152,10 +152,10 @@
   </tr>
   <tr>
     <th>
-      Access Code for Tellers<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+      
     </th>
     <td>
-      <input type="text" data-name="ElectionPasscode" maxlength="50" />
+      <span class="accessCode">Access Code</span><span class="ui-icon ui-icon-info" id="qTipAccess"></span><input type="text" data-name="ElectionPasscode" maxlength="50" />
     </td>
   </tr>
   <tr>
@@ -182,7 +182,7 @@
     </th>
     <td>
       <input type="checkbox" id="chkMask" data-name="MaskVotingMethod" />
-      <label for="chkMask">Show "Envelope" instead of "Mailed in" and "Dropped Off"</label>
+      <label for="chkMask">Show "Envelope" instead of specific methods</label>
     </td>
   </tr>
 </table>
@@ -190,7 +190,7 @@
   <h3>Locations</h3>
   <div id="locationList">
   </div>
-  <button type="button" id="btnAddLocation" class="btn btn-small btn-info">
+  <button type="button" id="btnAddLocation" class="btn btn-small">
     Add Location
   </button>
   <span class="ui-icon ui-icon-info" id="qTipLocation"></span>

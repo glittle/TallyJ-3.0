@@ -142,18 +142,18 @@ namespace TallyJ.CoreModels
 
       try
       {
+        Db.Teller.Attach(thisTeller);
         Db.Teller.Remove(thisTeller);
         Db.SaveChanges();
+
+        new TellerCacher().RemoveItemAndSaveCache(thisTeller);
       }
       catch (Exception ex)
       {
         return new { Deleted = false, Error = ex.Message };
       }
 
-      new TellerCacher().RemoveItemAndSaveCache(thisTeller);
-
       return new { Deleted = true };
-
     }
   }
 }

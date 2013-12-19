@@ -19,7 +19,12 @@ namespace TallyJ.CoreModels
 
     public long LastVersionNum
     {
-      get { return PeopleInCurrentElection().Max(p => p.C_RowVersionInt).AsLong(); }
+      get
+      {
+        var peopleInCurrentElection = PeopleInCurrentElection();
+
+        return peopleInCurrentElection.Count == 0 ? 0 : peopleInCurrentElection.Max(p => p.C_RowVersionInt).AsLong();
+      }
     }
 
     public bool IncludeAbsentees { get; set; }

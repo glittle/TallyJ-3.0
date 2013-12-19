@@ -66,14 +66,15 @@ namespace Tests.BusinessTests
                       new VoteInfo {SingleNameElectionCount = 5},
                       new VoteInfo {SingleNameElectionCount = 2},
                     };
-      foreach (var VoteInfo in votes)
+      foreach (var voteInfo in votes)
       {
-        VoteInfo.BallotGuid = ballotGuid;
-        VoteInfo.PersonGuid = personGuid; // all for one person in this test
-        VoteInfo.ElectionGuid = electionGuid;
-        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
-        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.BallotGuid = ballotGuid;
+        voteInfo.PersonGuid = personGuid; // all for one person in this test
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -147,6 +148,7 @@ namespace Tests.BusinessTests
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
         voteInfo.BallotGuid = ballot1Guid;
         voteInfo.PersonGuid = Guid.NewGuid();
+        voteInfo.PersonCanReceiveVotes = true;
       }
       voteinfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
       voteinfos[4].BallotStatusCode = "TooFew";
@@ -213,6 +215,7 @@ namespace Tests.BusinessTests
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
         voteInfo.PersonGuid = Guid.NewGuid();
+        voteInfo.PersonCanReceiveVotes = true;
       }
       voteInfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
       voteInfos[4].BallotStatusCode = "TooFew"; // will be reset to Okay
@@ -290,13 +293,14 @@ namespace Tests.BusinessTests
                       new VoteInfo {SingleNameElectionCount = 5, PersonGuid = Guid.NewGuid()},
                       new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var VoteInfo in votes)
+      foreach (var voteInfo in votes)
       {
-        VoteInfo.BallotGuid = ballotGuid;
-        VoteInfo.ElectionGuid = electionGuid;
-        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
-        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.BallotGuid = ballotGuid;
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -347,13 +351,14 @@ namespace Tests.BusinessTests
                       new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
                       new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var VoteInfo in votes)
+      foreach (var voteInfo in votes)
       {
-        VoteInfo.BallotGuid = ballotGuid;
-        VoteInfo.ElectionGuid = electionGuid;
-        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
-        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.BallotGuid = ballotGuid;
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
@@ -406,13 +411,14 @@ namespace Tests.BusinessTests
                       new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
                       new VoteInfo {SingleNameElectionCount = 10, PersonGuid = Guid.NewGuid()},
                     };
-      foreach (var VoteInfo in votes)
+      foreach (var voteInfo in votes)
       {
-        VoteInfo.BallotGuid = ballotGuid;
-        VoteInfo.ElectionGuid = electionGuid;
-        VoteInfo.PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote = "zz";
-        VoteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        VoteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.BallotGuid = ballotGuid;
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);

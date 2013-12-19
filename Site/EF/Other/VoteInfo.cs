@@ -1,11 +1,13 @@
 ﻿using System;
+using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 
 namespace TallyJ.EF
 {
   public class VoteInfo
   {
-    public VoteInfo(Vote vote, Ballot ballot, Location location, Person person)
+    public VoteInfo(Vote vote, Election election, Ballot ballot, Location location, Person person)
     {
       VoteId = vote.C_RowId;
       SingleNameElectionCount = vote.SingleNameElectionCount;
@@ -34,11 +36,13 @@ namespace TallyJ.EF
         PersonFullName = person.FullName;
         PersonCombinedInfo = person.CombinedInfo;
         PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
-        CanReceiveVotes = person.CanReceiveVotes;
+        CanReceiveVotes = election.ElectionMode != ElectionModeEnum.Tie || person.CanReceiveVotes.AsBoolean();
         PersonGuid = person.PersonGuid;
       }
 
     }
+
+    public bool PersonCanReceiveVotes { get; set; }
 
     public VoteInfo()
     {

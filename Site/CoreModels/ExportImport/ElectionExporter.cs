@@ -253,13 +253,13 @@ namespace TallyJ.CoreModels.ExportImport
           rt.NumInTie,
           rt.IsResolved,
           rt.TieBreakRequired,
-          NumToElect = rt.NumToElect == 0 ? null : (int?) rt.NumToElect,
+          NumToElect = rt.NumToElect == 0 ? null : (int?)rt.NumToElect,
         }).ToList();
     }
 
     private IList ExportResultSummaries(IQueryable<ResultSummary> resultSummaries)
     {
-      return resultSummaries.Select(rs => new
+      return resultSummaries.OrderBy(rs => rs.ResultType).Select(rs => new
       {
         rs.ResultType,
         rs.NumVoters,
