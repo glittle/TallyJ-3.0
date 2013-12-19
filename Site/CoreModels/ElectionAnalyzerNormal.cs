@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
@@ -9,14 +8,13 @@ namespace TallyJ.CoreModels
 {
   public class ElectionAnalyzerNormal : ElectionAnalyzerCore, IElectionAnalyzer
   {
-
     public ElectionAnalyzerNormal()
     {
     }
 
     public ElectionAnalyzerNormal(IAnalyzerFakes fakes, Election election,
-                                  List<VoteInfo> voteinfos, List<Ballot> ballots,
-                                  List<Person> people)
+      List<VoteInfo> voteinfos, List<Ballot> ballots,
+      List<Person> people)
       : base(fakes, election, people, ballots, voteinfos)
     {
     }
@@ -33,13 +31,16 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
 
       ResultSummaryCalc.BallotsReceived = Ballots.Count;
-      ResultSummaryCalc.TotalVotes = ResultSummaryCalc.BallotsReceived * TargetElection.NumberToElect;
+      ResultSummaryCalc.TotalVotes = ResultSummaryCalc.BallotsReceived*TargetElection.NumberToElect;
 
-      var invalidBallotGuids = Ballots.Where(b => b.StatusCode != BallotStatusEnum.Ok).Select(b => b.BallotGuid).ToList();
+      var invalidBallotGuids =
+        Ballots.Where(b => b.StatusCode != BallotStatusEnum.Ok).Select(b => b.BallotGuid).ToList();
 
       ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
       ResultSummaryCalc.SpoiledVotes =
-        VoteInfos.Count(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi));
+        VoteInfos.Count(
+          vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
+      ;
 
       var electionGuid = TargetElection.ElectionGuid;
 
@@ -48,7 +49,9 @@ namespace TallyJ.CoreModels
       {
         var ballotGuid = ballot.BallotGuid;
         // collect only valid votes
-        foreach (var voteInfoRaw in VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
+        foreach (
+          var voteInfoRaw in
+            VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
         {
           var voteInfo = voteInfoRaw;
 
@@ -58,13 +61,13 @@ namespace TallyJ.CoreModels
           if (result == null)
           {
             result = new Result
-                       {
-                         ElectionGuid = electionGuid,
-                         PersonGuid = voteInfo.PersonGuid.AsGuid()
-                       };
+            {
+              ElectionGuid = electionGuid,
+              PersonGuid = voteInfo.PersonGuid.AsGuid()
+            };
             InitializeSomeProperties(result);
-            
-            ResultSaver(DbAction.Add, result);
+
+            _savers.ResultSaver(DbAction.Add, result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;

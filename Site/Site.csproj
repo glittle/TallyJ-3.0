@@ -304,6 +304,7 @@
     <Compile Include="CoreModels\PulseInfo.cs" />
     <Compile Include="CoreModels\ResultHelper.cs" />
     <Compile Include="CoreModels\RollCallModel.cs" />
+    <Compile Include="CoreModels\Savers.cs" />
     <Compile Include="CoreModels\SearchResult.cs" />
     <Compile Include="CoreModels\UploadProvider.cs" />
     <Compile Include="CoreModels\VoteAnalyzer.cs" />

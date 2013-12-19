@@ -281,6 +281,8 @@ namespace TallyJ.CoreModels
 
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
+      CacherBase.DropAllCachesForThisElection();
+
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoCurrentElection();
 
@@ -530,6 +532,10 @@ namespace TallyJ.CoreModels
       }
 
       var election = UserSession.CurrentElection;
+      if (election == null)
+      {
+        return false;
+      }
 
       var sharer = new ElectionStatusSharer();
       var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);

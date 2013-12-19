@@ -11,14 +11,14 @@
       <page title="Edit People's Names" featureWhen="NotStarted, NamesReady, Tallying" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
       <page title="Front Desk Registration" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
-      <page title="Reconcile Counts" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
+      <page title="Count Envelopes" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
     </group>
     <group title="Tallying" longtitle="Tallying ballots" showTitleInPage="false">
       <page title="Enter Ballots" featureWhen="TieBreakNeeded, Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying" controller="After" action="Monitor" requireElection="true" role="known" desc="Centrally monitor progress of tellers."></page>
     </group>
     <group title="Review and Report" longtitle="Review then share the news!" showTitleInPage="false">
-      <page title="Analyze Ballots" featureWhen="TieBreakNeeded, Reviewing" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
+      <page title="Analyze Ballots" featureWhen="Tallying, TieBreakNeeded, Reviewing" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
       <page title="Detailed Reports" featureWhen="TieBreakNeeded, Reviewing, Report" controller="After" action="Reports" requireElection="true" role="known" desc="Generate election reports."></page>
       <page title="Display Tellers' Report" featureWhen="Reviewing, Report" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
       <!--<page title="Export Data" controller="Setup" action="Export" requireElection="true" role="known" desc="Download election data to a local file."></page>-->

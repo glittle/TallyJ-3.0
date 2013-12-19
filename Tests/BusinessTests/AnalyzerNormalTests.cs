@@ -74,6 +74,7 @@ namespace Tests.BusinessTests
         voteInfo.BallotGuid = ballots.Select(b => b.BallotGuid).First();
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -93,6 +94,65 @@ namespace Tests.BusinessTests
       result2.VoteCount.ShouldEqual(1);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Top);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
+      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+    [TestMethod]
+    public void Ballot_TwoPeople_AllSpoiled()
+    {
+      var electionGuid = Guid.NewGuid();
+      var election = new Election
+      {
+        ElectionGuid = electionGuid,
+        NumberToElect = 2,
+        NumberExtra = 0,
+        CanReceive = ElectionModel.CanVoteOrReceive.All
+      };
+
+      var personGuid = Guid.NewGuid();
+
+      var ballots = new List<Ballot>
+      {
+        new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
+      };
+      var votes = new List<VoteInfo>
+      {
+        new VoteInfo {VoteId = -1, PersonGuid = personGuid, VoteIneligibleReasonGuid = Guid.NewGuid()},
+        new VoteInfo {VoteId = -2, PersonGuid = Guid.NewGuid(), VoteIneligibleReasonGuid = Guid.NewGuid()},
+      };
+      foreach (var voteInfo in votes)
+      {
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotGuid = ballots.Select(b => b.BallotGuid).First();
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+      }
+
+      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results;
+      results.Count.ShouldEqual(0);
+
+      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
+      votes[0].VoteStatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Spoiled);
+      votes[1].VoteStatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Spoiled);
+
+      var spoiledCount = votes.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      spoiledCount.ShouldEqual(2);
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
@@ -207,6 +267,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = ballots.Single(b => b.BallotGuid == voteInfo.BallotGuid).StatusCode;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -272,6 +333,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = ballots.Single(b => b.BallotGuid == voteInfo.BallotGuid).StatusCode;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
       _fakes.ResultSummaryManual = new ResultSummary
       {
@@ -356,6 +418,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -449,6 +512,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -533,6 +597,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -635,6 +700,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
@@ -760,6 +826,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
         voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
       }
 
       var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);

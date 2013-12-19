@@ -271,21 +271,29 @@
   var deleteElection = function () {
     if (publicInterface.isGuest) return;
 
+
     var btn = $(this);
     var row = btn.parents('.Election');
     var name = btn.parents('.Detail').find('b').text();
 
+    btn.addClass('active');
+    row.addClass('deleting');
+
+    ShowStatusDisplay('Deleting...', 0);
+
     if (!confirm('Completely delete election this election?\n\n  {0}\n\n'.filledWith(name))) {
+      btn.removeClass('active');
+      row.removeClass('deleting');
+      ResetStatusDisplay();
       return;
     }
+
 
     var form =
         {
           guid: row.data('guid')
         };
 
-    btn.addClass('active');
-    row.addClass('deleting');
     CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
       btn.removeClass('active');
       if (info.Deleted) {

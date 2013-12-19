@@ -103,7 +103,13 @@ namespace TallyJ.Code.Session
           return current;
         }
 
-        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.First() : null;
+        // even if have valid guid, may be null if election was just deleted
+        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.FirstOrDefault() : null;
+
+        if (currentElection == null)
+        {
+          CurrentElectionGuid = Guid.Empty;
+        }
 
         HttpContext.Current.Items[ItemKey.CurrentElection] = currentElection;
         return currentElection;

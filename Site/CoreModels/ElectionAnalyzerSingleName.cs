@@ -34,7 +34,7 @@ namespace TallyJ.CoreModels
 
     public override ResultSummary AnalyzeEverything()
     {
-      
+
       PrepareForAnalysis();
 
       // for single name elections, # votes = # ballots
@@ -50,7 +50,7 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
 
       ResultSummaryCalc.SpoiledVotes =
-        VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi)).Sum(
+        VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode!=VoteHelper.VoteStatusCode.Ok).Sum(
           vi => vi.SingleNameElectionCount).AsInt();
 
       // vote == ballot for this election
@@ -62,10 +62,8 @@ namespace TallyJ.CoreModels
       var electionGuid = TargetElection.ElectionGuid;
 
       // collect only valid votes
-      foreach (var VoteInfo in VoteInfos.Where(VoteAnalyzer.VoteIsValid))
+      foreach (var voteInfo in VoteInfos.Where(vi => vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
       {
-        var voteInfo = VoteInfo;
-
         // get existing result record for this person, if available
         var result =
           Results.SingleOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
@@ -77,7 +75,7 @@ namespace TallyJ.CoreModels
             PersonGuid = voteInfo.PersonGuid.AsGuid()
           };
           InitializeSomeProperties(result);
-          ResultSaver(DbAction.Add, result);
+          _savers.ResultSaver(DbAction.Add, result);
         }
 
         var voteCount = result.VoteCount.AsInt() + voteInfo.SingleNameElectionCount;

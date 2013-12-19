@@ -68,7 +68,7 @@ namespace TallyJ.Controllers
       
       CacherBase.DropAllCachesForThisElection();
 
-      return true.AsJsonResult(JsonRequestBehavior.AllowGet);
+      return "Cache cleared.".AsJsonResult(JsonRequestBehavior.AllowGet);
     }
 
     [ForAuthenticatedTeller]
