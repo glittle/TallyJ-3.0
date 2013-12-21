@@ -24,7 +24,7 @@ namespace TallyJ.CoreModels
     public override object BallotInfoForJs(Ballot b)
     {
       var votes = VoteInfosForBallot(b);
-      var spoiledCount = votes.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      var spoiledCount = votes.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
       return new
       {
         Id = b.C_RowId,

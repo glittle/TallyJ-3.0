@@ -55,7 +55,7 @@ namespace TallyJ.CoreModels
       var ballotGuid = CurrentRawBallot().BallotGuid;
 
       var allVotes = voteCacher.AllForThisElection;
-      
+
       var votes = allVotes.Where(v => v.BallotGuid == ballotGuid);
 
       var position = 1;
@@ -207,7 +207,7 @@ namespace TallyJ.CoreModels
           name = vi.PersonFullNameFL,
           changed = !Equals(vi.PersonCombinedInfo, vi.PersonCombinedInfoInVote),
           invalid = vi.VoteIneligibleReasonGuid,
-          ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.CanReceiveVotes)
+          ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)
         });
     }
 
@@ -251,6 +251,10 @@ namespace TallyJ.CoreModels
 
         DetermineInvalidReasonGuid(invalidReason, vote);
 
+        vote.StatusCode =
+          VoteAnalyzer.DetermineStatus(new VoteInfo(vote, UserSession.CurrentElection, ballot,
+            UserSession.CurrentLocation, person1));
+
         Db.SaveChanges();
 
 
@@ -262,7 +266,7 @@ namespace TallyJ.CoreModels
         var sum = BallotCount(ballot.LocationGuid, isSingleName);
 
         new BallotCacher().UpdateItemAndSaveCache(ballot);
-        
+
         return new
         {
           Updated = true,
@@ -393,7 +397,7 @@ namespace TallyJ.CoreModels
       return sum;
     }
 
-    public static int BallotCount(Guid locationGuid, bool isSingleName, List<Ballot> ballots = null )
+    public static int BallotCount(Guid locationGuid, bool isSingleName, List<Ballot> ballots = null)
     {
       int sum;
       ballots = ballots ?? new BallotCacher().AllForThisElection;
@@ -481,9 +485,10 @@ namespace TallyJ.CoreModels
           Db.Ballot.Attach(ballot);
 
           var voteInfos = VoteInfosFor(ballot);
-          
+
           new BallotAnalyzer().UpdateBallotStatus(ballot, voteInfos, true);
           ballotCacher.UpdateItemAndSaveCache(ballot);
+          Db.SaveChanges();
         }
       }
 
@@ -529,6 +534,7 @@ namespace TallyJ.CoreModels
                  .Where(v => v.BallotGuid == ballot.BallotGuid)
                  .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, UserSession.CurrentElection, ballot, UserSession.CurrentLocation, g.p))
+                 .OrderBy(vi => vi.PositionOnBallot)
                  .ToList();
     }
 

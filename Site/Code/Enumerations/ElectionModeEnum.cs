@@ -19,8 +19,8 @@ namespace TallyJ.Code.Enumerations
 
     private bool _blankForDisplay;
 
-    public ElectionModeEnum(string key, string display, bool blankForDisplay = false)
-      : base(key, display)
+    public ElectionModeEnum(string value, string displayText, bool blankForDisplay = false)
+      : base(value, displayText)
     {
       _blankForDisplay = blankForDisplay;
     }
