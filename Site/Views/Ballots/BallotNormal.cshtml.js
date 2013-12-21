@@ -981,7 +981,12 @@
     if (ballotId.substr(0, 1) == 'B') {
       ballotId = ballotId.substr(1);
     }
-    CallAjaxHandler(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId, refresh: refresh || false }, showBallot);
+    CallAjaxHandler(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId, refresh: refresh || false }, function(info) {
+      if (refresh) {
+        startToRefreshBallotList();
+      }
+      showBallot(info);
+    });
   };
 
   var nameClick = function (ev) {

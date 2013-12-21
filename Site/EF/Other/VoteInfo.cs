@@ -24,7 +24,7 @@ namespace TallyJ.EF
 
       //Location
       LocationId = location.C_RowId;
-      LocationTallyStatus = location.TallyStatus;
+      //LocationTallyStatus = location.TallyStatus;
       ElectionGuid = location.ElectionGuid;
 
       if (person != null)
@@ -33,24 +33,20 @@ namespace TallyJ.EF
 
         PersonId = person.C_RowId;
         PersonFullNameFL = person.FullNameFL;
-        PersonFullName = person.FullName;
+        //PersonFullName = person.FullName;
         PersonCombinedInfo = person.CombinedInfo;
         PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
-        CanReceiveVotes = election.ElectionMode != ElectionModeEnum.Tie || person.CanReceiveVotes.AsBoolean();
+        PersonCanReceiveVotes = election.ElectionMode != ElectionModeEnum.Tie || person.CanReceiveVotes.AsBoolean();
         PersonGuid = person.PersonGuid;
       }
-
     }
-
-    public bool PersonCanReceiveVotes { get; set; }
 
     public VoteInfo()
     {
       // mostly for testing
     }
 
-    public bool? ValidationResult { get; set; }
-
+    public bool PersonCanReceiveVotes { get; set; }
     public int VoteId { get; set; }
     public string VoteStatusCode { get; set; }
     public int? SingleNameElectionCount { get; set; }
@@ -61,9 +57,8 @@ namespace TallyJ.EF
     public string PersonCombinedInfo { get; set; }
     public Guid? PersonGuid { get; set; }
     public int? PersonId { get; set; }
-    public string PersonFullName { get; set; }
+    //public string PersonFullName { get; set; }
     public string PersonFullNameFL { get; set; }
-    public bool? CanReceiveVotes { get; set; }
     public Guid? PersonIneligibleReasonGuid { get; set; }
 
     public Guid BallotGuid { get; set; }
@@ -71,7 +66,7 @@ namespace TallyJ.EF
     public string BallotStatusCode { get; set; }
     public string C_BallotCode { get; set; }
     public int LocationId { get; set; }
-    public string LocationTallyStatus { get; set; }
+    //public string LocationTallyStatus { get; set; }
     public Guid ElectionGuid { get; set; }
   }
 }

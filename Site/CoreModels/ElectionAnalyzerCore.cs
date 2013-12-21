@@ -71,7 +71,7 @@ namespace TallyJ.CoreModels
     protected ElectionAnalyzerCore(Election election)
     {
       _election = election;
-      _savers=new Savers();
+      _savers = new Savers();
     }
 
     public ResultSummary ResultSummaryCalc { get; private set; }
@@ -360,6 +360,7 @@ namespace TallyJ.CoreModels
         return _voteinfos = new VoteCacher().AllForThisElection
           .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
           .Select(g => new VoteInfo(g.v, TargetElection, new BallotCacher().AllForThisElection.Single(b => b.BallotGuid == g.v.BallotGuid), UserSession.CurrentLocation, g.p))
+          .OrderBy(vi => vi.PositionOnBallot)
           .ToList();
       }
     }
