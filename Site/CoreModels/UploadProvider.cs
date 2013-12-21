@@ -6,18 +6,18 @@ using Krystalware.SlickUpload.Storage;
 using TallyJ.Code.Data;
 using TallyJ.Code.UnityRelated;
 
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public class UploadProvider : UploadStreamProviderBase
   {
-    private TallyJ2dContext _db;
+    private TallyJ2dEntities _db;
 
     /// <summary>
     ///     Access to the database
     /// </summary>
-    protected TallyJ2dContext Db
+    protected TallyJ2dEntities Db
     {
       get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
     }
@@ -64,7 +64,7 @@ namespace TallyJ.CoreModels
                        ProcessingStatus = "Imported"
                      };
 
-      Db.ImportFiles.Add(record);
+      Db.ImportFile.Add(record);
       Db.SaveChanges();
 
       return null;

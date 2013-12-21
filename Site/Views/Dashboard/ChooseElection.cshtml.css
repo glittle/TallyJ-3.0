@@ -9,11 +9,11 @@
     }
 
     .Election.deleting {
-        background-color: rgb(255, 98, 98);
+        background-color: rgb(255, 178, 178);
     }
 
     .Election.justloaded {
-        background-color: rgb(98, 255, 98);
+        background-color: rgb(178,255,178);
     }
 
 .Detail i {
@@ -74,7 +74,7 @@ button.active {
 }
 
 .MakeNewList li {
-    margin-bottom: 7px;
+    margin-bottom: 14px;
 }
 
 .TestElection {
@@ -111,9 +111,14 @@ button.active {
         margin-left: 37px;
     }
 
-.Comment {
+div.Comment {
     color: #666;
     font-size: 90%;
     font-style: italic;
     margin: -10px 0px 9px 0px;
+}
+li.Comment {
+    color: #666;
+    font-size: 90%;
+    font-style: italic;
 }

@@ -63,41 +63,42 @@ namespace TallyJ.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            
-            ConfigureModel(modelBuilder);
+          modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
-            modelBuilder.Configurations.Add(new UserMap());
-            modelBuilder.Configurations.Add(new C_LogMap());
-            modelBuilder.Configurations.Add(new BallotMap());
-            modelBuilder.Configurations.Add(new ComputerMap());
-            modelBuilder.Configurations.Add(new ElectionMap());
-            modelBuilder.Configurations.Add(new ImportFileMap());
-            modelBuilder.Configurations.Add(new JoinElectionUserMap());
-            modelBuilder.Configurations.Add(new LocationMap());
-            modelBuilder.Configurations.Add(new MessageMap());
-            modelBuilder.Configurations.Add(new PersonMap());
-            modelBuilder.Configurations.Add(new ResultMap());
-            modelBuilder.Configurations.Add(new ResultSummaryMap());
-            modelBuilder.Configurations.Add(new ResultTieMap());
-            modelBuilder.Configurations.Add(new TellerMap());
-            modelBuilder.Configurations.Add(new VoteMap());
-            modelBuilder.Configurations.Add(new vBallotInfoMap());
-            modelBuilder.Configurations.Add(new vElectionListInfoMap());
-            modelBuilder.Configurations.Add(new vImportFileInfoMap());
-            modelBuilder.Configurations.Add(new vLocationInfoMap());
-            //modelBuilder.Configurations.Add(new vResultInfoMap());
-            modelBuilder.Configurations.Add(new vVoteInfoMap());
-        
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dContext, Migrations.Configuration>());
+          ConfigureModel(modelBuilder);
 
-            //var mg = new DbMigrator(new Migrations.Configuration());
-            //var scriptor = new MigratorScriptingDecorator(mg);
-            //string script = scriptor.ScriptUpdate(sourceMigration: null, targetMigration: null);
-            //throw new Exception(script);
+          modelBuilder.Configurations.Add(new UserMap());
+          modelBuilder.Configurations.Add(new C_LogMap());
+          modelBuilder.Configurations.Add(new BallotMap());
+          modelBuilder.Configurations.Add(new ComputerMap());
+          modelBuilder.Configurations.Add(new ElectionMap());
+          modelBuilder.Configurations.Add(new ImportFileMap());
+          modelBuilder.Configurations.Add(new JoinElectionUserMap());
+          modelBuilder.Configurations.Add(new LocationMap());
+          modelBuilder.Configurations.Add(new MessageMap());
+          modelBuilder.Configurations.Add(new PersonMap());
+          modelBuilder.Configurations.Add(new ResultMap());
+          modelBuilder.Configurations.Add(new ResultSummaryMap());
+          modelBuilder.Configurations.Add(new ResultTieMap());
+          modelBuilder.Configurations.Add(new TellerMap());
+          modelBuilder.Configurations.Add(new VoteMap());
+          modelBuilder.Configurations.Add(new vBallotInfoMap());
+          modelBuilder.Configurations.Add(new vElectionListInfoMap());
+          modelBuilder.Configurations.Add(new vImportFileInfoMap());
+          modelBuilder.Configurations.Add(new vLocationInfoMap());
+          //modelBuilder.Configurations.Add(new vResultInfoMap());
+          modelBuilder.Configurations.Add(new vVoteInfoMap());
 
-            base.OnModelCreating(modelBuilder);
+          Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dContext, Migrations.Configuration>());
+
+          //var mg = new DbMigrator(new Migrations.Configuration());
+          //var scriptor = new MigratorScriptingDecorator(mg);
+          //string script = scriptor.ScriptUpdate(sourceMigration: null, targetMigration: null);
+          //throw new Exception(script);
+
+          base.OnModelCreating(modelBuilder);
 
         }
+    
     }
 }

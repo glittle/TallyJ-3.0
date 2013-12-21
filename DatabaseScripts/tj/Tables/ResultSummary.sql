@@ -46,22 +46,4 @@ GRANT DELETE
     AS [dbo];
 
 
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'How many could have voted?', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'ResultSummary', @level2type = N'COLUMN', @level2name = N'NumEligibleToVote';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'How many voted?', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'ResultSummary', @level2type = N'COLUMN', @level2name = N'NumVoters';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Must choose to use Auto or Manual', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'ResultSummary', @level2type = N'COLUMN', @level2name = N'UseOnReports';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Auto, Manual', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'ResultSummary', @level2type = N'COLUMN', @level2name = N'ResultType';
-
-
-GO
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'ResultSummary', @level2type = N'COLUMN', @level2name = N'ElectionGuid';
 

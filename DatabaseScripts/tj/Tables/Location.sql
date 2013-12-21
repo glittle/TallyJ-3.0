@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[Location] (
     [_RowId]           INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]     UNIQUEIDENTIFIER NOT NULL,
-    [LocationGuid]     UNIQUEIDENTIFIER CONSTRAINT [DF_Location_LocationGuid] DEFAULT (newsequentialid()) NOT NULL,
+    [LocationGuid]     UNIQUEIDENTIFIER CONSTRAINT [DF_Location_LocationGuid] DEFAULT (CONVERT([uniqueidentifier],CONVERT([binary](10),newid(),0)+CONVERT([binary](6),getdate(),0),0)) NOT NULL,
     [Name]             NVARCHAR (50)    NOT NULL,
     [ContactInfo]      NVARCHAR (250)   NULL,
     [Long]             VARCHAR (50)     NULL,

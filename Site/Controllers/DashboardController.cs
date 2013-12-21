@@ -37,7 +37,7 @@ namespace TallyJ.Controllers
 
     public JsonResult ChooseLocation(int id)
     {
-      return new {Selected = new ComputerModel().AddCurrentComputerIntoLocation(id)}.AsJsonResult();
+      return new {Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id)}.AsJsonResult();
     }
 
 

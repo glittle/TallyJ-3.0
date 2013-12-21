@@ -6,14 +6,14 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 
-using TallyJ.CoreModels.Helper;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
   public class BallotAnalyzer : DataConnectedModel
   {
-    private Func<int> _saveChangesToDatastore;
+    public Action<DbAction, Ballot> BallotSaver { get; set; }
+    //private Func<int> _saveChangesToDatastore;
 
     /// <Summary>Create using current election to know number of votes needed</Summary>
     public BallotAnalyzer()
@@ -21,28 +21,29 @@ namespace TallyJ.CoreModels
       var currentElection = UserSession.CurrentElection;
       VotesNeededOnBallot = currentElection.NumberToElect.AsInt();
       IsSingleNameElection = currentElection.IsSingleNameElection;
+      BallotSaver = new Savers().BallotSaver;
     }
 
     /// <Summary>For testing</Summary>
-    public BallotAnalyzer(int? votesNeededOnBallot, Func<int> saveChangesToDatastore, bool isSingleNameElection)
+    public BallotAnalyzer(int? votesNeededOnBallot, bool isSingleNameElection)
     {
       VotesNeededOnBallot = votesNeededOnBallot.AsInt();
-      SaveChangesToDatastore = saveChangesToDatastore;
       IsSingleNameElection = isSingleNameElection;
+      BallotSaver = new Savers(true).BallotSaver;
     }
 
-    public BallotAnalyzer(Election election, Func<int> saveChangesToDatastore)
+    public BallotAnalyzer(Election election, Action<DbAction, Ballot> ballotSaver)
     {
+      BallotSaver = ballotSaver;
       IsSingleNameElection = election.IsSingleNameElection;
       VotesNeededOnBallot = election.NumberToElect.AsInt();
-      SaveChangesToDatastore = saveChangesToDatastore;
     }
 
-    private Func<int> SaveChangesToDatastore
-    {
-      get { return _saveChangesToDatastore ?? (_saveChangesToDatastore = Db.SaveChanges); }
-      set { _saveChangesToDatastore = value; }
-    }
+    //    private Func<int> SaveChangesToDatastore
+    //    {
+    //      get { return _saveChangesToDatastore ?? (_saveChangesToDatastore = Db.SaveChanges); }
+    //      set { _saveChangesToDatastore = value; }
+    //    }
 
     public bool IsSingleNameElection { get; set; }
 
@@ -50,17 +51,20 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Update the Ballot status of this ballot, based on these Votes.</Summary>
     /// <param name="ballot">The Ballot or vBallotInfo to check and update.</param>
-    /// <param name="currentVoteInfos"> </param>
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
+    /// <param name="refreshVoteStatus"></param>
     /// <returns>Returns the updated status code</returns>
-    public BallotStatusWithSpoilCount UpdateBallotStatus(IBallotBase ballot, List<vVoteInfo> currentVoteInfos)
+    public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes, bool refreshVoteStatus)
     {
       if (IsSingleNameElection)
       {
         if (ballot.StatusCode != BallotStatusEnum.Ok)
         {
+          BallotSaver(DbAction.Attach, ballot);
+
           ballot.StatusCode = BallotStatusEnum.Ok;
-          SaveChangesToDatastore();
+
+          BallotSaver(DbAction.Save, ballot);
         }
         return new BallotStatusWithSpoilCount
           {
@@ -71,34 +75,38 @@ namespace TallyJ.CoreModels
 
 
       //double check:
-      currentVoteInfos.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
+      currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
 
-      //var currentVotes = currentVoteInfos.AsVotes().ToList();
-
-      string ballotStatus;
-      int spoiledCount;
-      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVoteInfos, out ballotStatus, out spoiledCount))
+      if (refreshVoteStatus)
       {
-        ballot.StatusCode = ballotStatus;
-        SaveChangesToDatastore();
+        VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher().AllForThisElection, new Savers().VoteSaver);
+      }
+
+      string newStatus;
+      int spoiledCount;
+
+      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount))
+      {
+        BallotSaver(DbAction.Attach, ballot);
+        ballot.StatusCode = newStatus;
+        BallotSaver(DbAction.Save, ballot);
       }
       return new BallotStatusWithSpoilCount
         {
-          Status = BallotStatusEnum.Parse(ballotStatus), 
+          Status = BallotStatusEnum.Parse(newStatus),
           SpoiledCount = spoiledCount
         };
     }
 
     /// <Summary>Review the votes, and determine if the containing ballot's status code should change</Summary>
     /// <param name="currentStatusCode"> The current status code </param>
-    /// <param name="votes">  </param>
     /// <param name="voteInfos"> All the votes on this ballot</param>
     /// <param name="statusCode"> The new status code </param>
     /// <param name="spoiledCount"> </param>
     /// <returns> True if the new status code is different from the current status code </returns>
-    public bool DetermineStatusFromVotesList(string currentStatusCode, List<vVoteInfo> voteInfos, out string statusCode, out int spoiledCount)
+    public bool DetermineStatusFromVotesList(string currentStatusCode, List<VoteInfo> voteInfos, out string statusCode, out int spoiledCount)
     {
-      spoiledCount = 0;
+      spoiledCount = voteInfos.Count(v => v.VoteStatusCode == VoteHelper.VoteStatusCode.Spoiled);
 
       // if under review, don't change that status
       if (currentStatusCode == BallotStatusEnum.Review)
@@ -112,10 +120,10 @@ namespace TallyJ.CoreModels
         return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
       }
 
-      var needsReview = voteInfos.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
-      if (needsReview)
+      var needsVerification = voteInfos.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      if (needsVerification)
       {
-        return StatusChanged(BallotStatusEnum.Review, currentStatusCode, out statusCode);
+        return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);
       }
 
       // check counts
@@ -142,8 +150,6 @@ namespace TallyJ.CoreModels
         return StatusChanged(BallotStatusEnum.Dup, currentStatusCode, out statusCode);
       }
 
-      spoiledCount = voteInfos.Count(v => v.VoteIneligibleReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
-
       return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
     }
 
@@ -158,18 +164,23 @@ namespace TallyJ.CoreModels
     /// <Summary>Run <see cref="UpdateBallotStatus"/> on each of these Ballots, updating the database if needed</Summary>
     /// <param name="ballots">The list of Ballot records to update</param>
     /// <param name="voteInfos">All the Votes that are on all these Ballots.</param>
-    public void UpdateAllBallotStatuses(List<Ballot> ballots, List<vVoteInfo> voteInfos)
+    public void UpdateAllBallotStatuses(List<Ballot> ballots, List<VoteInfo> voteInfos)
     {
-      ballots.ForEach(b =>
+      ballots.ToList().ForEach(b =>
                         {
                           var vVoteInfos = voteInfos.Where(vi => vi.BallotGuid == b.BallotGuid).ToList();
-                          UpdateBallotStatus(b, vVoteInfos);
+                          UpdateBallotStatus(b, vVoteInfos, false);
                         });
     }
 
-    public bool BallotNeedsReview(Ballot ballot)
+    /// <summary>
+    /// Needs review or verification
+    /// </summary>
+    /// <param name="ballot"></param>
+    /// <returns></returns>
+    public static bool BallotNeedsReview(Ballot ballot)
     {
-      return ballot.StatusCode == BallotStatusEnum.Review;
+      return ballot.StatusCode == BallotStatusEnum.Review || ballot.StatusCode == BallotStatusEnum.Verify;
     }
   }
 }

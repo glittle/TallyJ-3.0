@@ -5,10 +5,13 @@
 
 .tabs
 {
-    min-height: 300px;
 }
 
 /* overrides to fix UI */
+.ui-tabs-panel {
+  padding: 3px 2px 5px 5px;
+}
+
 .ui-tabs-nav {
   list-style: none;
   padding: 0;
@@ -368,10 +371,6 @@ div.heading
 .ballotList li:hover
 {
     background-color: #cfc;
-}
-#tabBallots
-{
-    background-color: #efeeef;
 }
 #btnRefreshBallotList
 {

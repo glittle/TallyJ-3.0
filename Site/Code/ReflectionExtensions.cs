@@ -186,7 +186,6 @@ namespace TallyJ.Code
       foreach (var attrib in
         incoming.Attributes
           .Cast<XmlAttribute>()
-          //.Where(valuePair => propertyNames.Contains(valuePair.Key) && target.GetPropertyType(valuePair.Key)!=null)
           .Where(attrib =>
             {
               var currentValue = target.GetPropertyValue(attrib.Name);

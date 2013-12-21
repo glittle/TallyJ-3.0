@@ -16,7 +16,7 @@ namespace TallyJ.Controllers
       if (locationId != 0 && (UserSession.CurrentLocation == null || locationId != UserSession.CurrentLocation.C_RowId))
       {
         // switch to location, if allowed
-        var switched = new ComputerModel().AddCurrentComputerIntoLocation(locationId);
+        var switched = new ComputerModel().MoveCurrentComputerIntoLocation(locationId);
         if (!switched)
         {
           return RedirectToAction("ChooseElection", "Dashboard");
@@ -31,7 +31,7 @@ namespace TallyJ.Controllers
       {
         if (isSingle)
         {
-          ballotModel.GetCurrentBallotInfo();
+          ballotModel.GetCurrentBallot();
         }
       }
       else
@@ -57,7 +57,7 @@ namespace TallyJ.Controllers
 
     public JsonResult SaveVote(int pid, int vid, int count, string invalid)
     {
-      var invalidGuid = invalid.AsGuid();
+      var invalidGuid = invalid.AsNullableGuid();
       return CurrentBallotModel.SaveVote(pid, vid, count, invalidGuid);
     }
 
@@ -71,9 +71,9 @@ namespace TallyJ.Controllers
       return CurrentBallotModel.SetNeedsReview(needs);
     }
 
-    public JsonResult SwitchToBallot(int ballotId)
+    public JsonResult SwitchToBallot(int ballotId, bool refresh)
     {
-      return CurrentBallotModel.SwitchToBallotAndGetInfo(ballotId).AsJsonResult();
+      return CurrentBallotModel.SwitchToBallotAndGetInfo(ballotId, refresh).AsJsonResult();
     }
 
     public JsonResult UpdateLocationStatus(int id, string status)

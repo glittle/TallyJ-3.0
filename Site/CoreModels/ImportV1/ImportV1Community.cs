@@ -5,7 +5,7 @@ using System.Xml;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.Code;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -15,7 +15,7 @@ namespace TallyJ.CoreModels
     int _nonAdults = 0;
     int _alreadyLoaded = 0;
 
-    public ImportV1Community(TallyJ2dContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    public ImportV1Community(TallyJ2dEntities db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
       : base(db, file, xml, people, addPerson, logHelper)
     {
     }
@@ -106,6 +106,11 @@ namespace TallyJ.CoreModels
       _file.ProcessingStatus = "Imported";
 
       _db.SaveChanges();
+
+      if (_peopleAdded > 0)
+      {
+        new PersonCacher().DropThisCache();
+      }
 
       ImportSummaryMessage = "Imported {0} {1}.".FilledWith(_peopleAdded, _peopleAdded.Plural("people", "person"));
       if (_alreadyLoaded > 0)

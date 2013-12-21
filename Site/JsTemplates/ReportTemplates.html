@@ -19,7 +19,7 @@
                         Number of ballots cast in person
                     </td>
                     <td>
-                        {EnvelopesInPerson}
+                        {InPersonBallots}
                     </td>
                 </tr>
                 <tr class="rpt1Detail">
@@ -27,7 +27,7 @@
                         Number of ballots received by mail
                     </td>
                     <td>
-                        {EnvelopesMailedIn}
+                        {MailedInBallots}
                     </td>
                 </tr>
                 <tr class="rpt1Detail">
@@ -35,15 +35,15 @@
                         Number of hand-delivered ballots
                     </td>
                     <td>
-                        {EnvelopesDroppedOff}
+                        {DroppedOffBallots}
                     </td>
                 </tr>
-                <tr class="rpt1Detail {#(0{EnvelopesCalledIn}==0 ? 'Hidden' : '')}">
+                <tr class="rpt1Detail {#(0{CalledInBallots}==0 ? 'Hidden' : '')}">
                     <td>
                         Number of phoned-in ballots
                     </td>
                     <td>
-                        {EnvelopesCalledIn}
+                        {CalledInBallots}
                     </td>
                 </tr>
                 <tr class="rpt1Total">

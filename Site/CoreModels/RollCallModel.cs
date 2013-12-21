@@ -4,7 +4,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -19,7 +19,12 @@ namespace TallyJ.CoreModels
 
     public long LastVersionNum
     {
-      get { return PeopleInCurrentElection().Max(p => p.C_RowVersionInt).AsLong(); }
+      get
+      {
+        var peopleInCurrentElection = PeopleInCurrentElection();
+
+        return peopleInCurrentElection.Count == 0 ? 0 : peopleInCurrentElection.Max(p => p.C_RowVersionInt).AsLong();
+      }
     }
 
     public bool IncludeAbsentees { get; set; }
@@ -36,15 +41,14 @@ namespace TallyJ.CoreModels
       }
     }
 
-    private IQueryable<Person> PeopleInCurrentElectionQuery()
+    private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
-      var peopleInCurrentElection =
-        Db.People.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
+      var peopleInCurrentElection = new PersonCacher().AllForThisElection;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
       peopleInCurrentElection = IncludeAbsentees
-                                  ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod))
-                                  : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson);
+                                  ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod)).ToList()
+                                  : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
       return peopleInCurrentElection;
     }
 
@@ -61,28 +65,32 @@ namespace TallyJ.CoreModels
       var after = new List<Person>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person { C_RowId = 0 - numBlanksBefore, C_FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        before.Add(new Person { C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person { C_RowId = firstBlankAfter + offset++, C_FullName = "&nbsp;", VotingMethod = "&nbsp;" });
+        after.Add(new Person { C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "&nbsp;" });
         numBlanksAfter--;
       }
+      var currentElection = UserSession.CurrentElection;
       var i = 0;
       return
         before.Concat(people
                         .OrderBy(p => p.LastName)
                         .ThenBy(p => p.FirstName)).Concat(after)
-          .Select(p => new
+          .Select(p =>
+          {
+            return new
                          {
                            PersonId = p.C_RowId,
-                           FullName = p.C_FullNameFL,
-                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(UserSession.CurrentElection, p) : "",
+                           FullName = p.FullNameFL,
+                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "",
                            Pos = ++i
-                         });
+                         };
+          });
     }
 
     public object GetMorePeople(long stamp, out long newStamp)

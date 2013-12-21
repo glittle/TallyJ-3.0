@@ -6,9 +6,10 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -158,7 +159,7 @@ namespace TallyJ.CoreModels
         return e.Message;
       }
 
-      Db.ImportFiles.Add(record);
+      Db.ImportFile.Add(record);
       Db.SaveChanges();
 
       rowId = record.C_RowId;
@@ -172,7 +173,7 @@ namespace TallyJ.CoreModels
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
-      return Db.vImportFileInfoes
+      return Db.ImportFile
         .Where(vi => vi.ElectionGuid == UserSession.CurrentElectionGuid)
         .Where(vi => vi.FileType == FileTypeV1Community || vi.FileType == FileTypeV1Election)
         .OrderByDescending(vi => vi.UploadTime)
@@ -194,8 +195,8 @@ namespace TallyJ.CoreModels
     public ActionResult DeleteFile(int id)
     {
       var targetFile = new ImportFile { C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid };
-      Db.ImportFiles.Attach(targetFile);
-      Db.ImportFiles.Remove(targetFile);
+      Db.ImportFile.Attach(targetFile);
+      Db.ImportFile.Remove(targetFile);
       Db.SaveChanges();
 
       new LogHelper().Add("Deleted file #" + id);
@@ -217,7 +218,7 @@ namespace TallyJ.CoreModels
     {
       var currentElectionGuid = UserSession.CurrentElectionGuid;
       var file =
-        Db.ImportFiles.SingleOrDefault(
+        Db.ImportFile.SingleOrDefault(
           fi => fi.ElectionGuid == currentElectionGuid && fi.C_RowId == rowId);
 
       if (file == null)
@@ -235,7 +236,7 @@ namespace TallyJ.CoreModels
       var logHelper = new LogHelper();
 
       ImportV1Base importer;
-      var currentPeople = Db.People.Where(p => p.ElectionGuid == currentElectionGuid).ToList();
+      var currentPeople = new PersonCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
 
 
@@ -248,7 +249,7 @@ namespace TallyJ.CoreModels
                                                {
                                                  personModel.SetCombinedInfoAtStart(person);
                                                  person.ElectionGuid = currentElectionGuid;
-                                                 Db.People.Add(person);
+                                                 Db.Person.Add(person);
                                                }
                                            , logHelper);
           break;
@@ -258,27 +259,27 @@ namespace TallyJ.CoreModels
           var currentLocation = UserSession.CurrentLocation;
           if (currentLocation == null)
           {
-            currentLocation = Db.Locations.OrderBy(l => l.SortOrder).FirstOrDefault(l => l.ElectionGuid == currentElection.ElectionGuid);
+            currentLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
             if (currentLocation == null)
             {
               throw new ApplicationException("An election must have a Location before importing.");
             }
           }
 
-          EraseElectionContents(currentElection);
+          Election.EraseBallotsAndResults(currentElection.ElectionGuid);
 
           importer = new ImportV1Election(Db, file, xml
                                           , currentElection
                                           , currentLocation
-                                          , ballot => Db.Ballots.Add(ballot)
-                                          , vote => Db.Votes.Add(vote)
+                                          , ballot => Db.Ballot.Add(ballot)
+                                          , vote => Db.Vote.Add(vote)
                                           , currentPeople
                                           , person =>
                                               {
                                                 personModel.SetCombinedInfoAtStart(person);
-                                                Db.People.Add(person);
+                                                Db.Person.Add(person);
                                               }
-                                          , summary => Db.ResultSummaries.Add(summary)
+                                          , summary => Db.ResultSummary.Add(summary)
                                           , logHelper
             );
           break;
@@ -292,12 +293,6 @@ namespace TallyJ.CoreModels
       resultsModel.GenerateResults();
 
       return importer.SendSummary();
-    }
-
-    /// <Summary>Totally erase all tally information</Summary>
-    public void EraseElectionContents(Election election)
-    {
-      Db.EraseElectionContents(election.ElectionGuid, true, UserSession.LoginId);
     }
 
     private static XmlDocument GetXmlDoc(ImportFile file)

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[Teller] (
     [_RowId]            INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]      UNIQUEIDENTIFIER NOT NULL,
-    [TellerGuid]        UNIQUEIDENTIFIER CONSTRAINT [DF_Teller_TellerGuid] DEFAULT (newsequentialid()) NOT NULL,
+    [TellerGuid]        UNIQUEIDENTIFIER CONSTRAINT [DF_Teller_TellerGuid] DEFAULT (CONVERT([uniqueidentifier],CONVERT([binary](10),newid(),0)+CONVERT([binary](6),getdate(),0),0)) NOT NULL,
     [Name]              NVARCHAR (50)    NOT NULL,
     [UsingComputerCode] VARCHAR (2)      NULL,
     [IsHeadTeller]      BIT              NULL,

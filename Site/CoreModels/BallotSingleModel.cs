@@ -1,5 +1,6 @@
+using System.Linq;
 using TallyJ.Code.Enumerations;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -11,17 +12,18 @@ namespace TallyJ.CoreModels
       return 1;
     }
 
-    public override object BallotInfoForJs(vBallotInfo b)
+    public override object BallotInfoForJs(Ballot b)
     {
+      var loc = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == b.LocationGuid);
       return new
                {
                  Id = b.C_RowId,
                  Code = b.C_BallotCode,
                  Status = BallotStatusEnum.TextFor(b.StatusCode),
-                 Location = b.LocationName,
-                 LocationSort = b.LocationSortOrder,
-                 b.LocationId,
-                 TallyStatus = ElectionTallyStatusEnum.TextFor(b.TallyStatus)
+                 Location = loc.Name,
+                 LocationSort = loc.SortOrder,
+                 LocationId = loc.C_RowId,
+                 TallyStatus = ElectionTallyStatusEnum.TextFor(loc.TallyStatus)
                };
     }
   }

@@ -2,7 +2,7 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
@@ -12,8 +12,7 @@ namespace TallyJ.CoreModels
     {
       var computerCode = UserSession.CurrentComputerCode;
 
-      var nextBallotNum = 1 + Db.vBallotInfoes.Where(b => b.ElectionGuid == UserSession.CurrentElectionGuid
-                                                     && b.ComputerCode == computerCode)
+      var nextBallotNum = 1 + new BallotCacher().AllForThisElection.Where(b => b.ComputerCode == computerCode)
                                 .OrderByDescending(b => b.BallotNumAtComputer)
                                 .Take(1)
                                 .Select(b => b.BallotNumAtComputer)
@@ -22,15 +21,17 @@ namespace TallyJ.CoreModels
       return nextBallotNum;
     }
 
-    public override object BallotInfoForJs(vBallotInfo b)
+    public override object BallotInfoForJs(Ballot b)
     {
+      var votes = VoteInfosForBallot(b);
+      var spoiledCount = votes.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
       return new
       {
         Id = b.C_RowId,
         Code = b.C_BallotCode,
         b.StatusCode,
         StatusCodeText = BallotStatusEnum.TextFor(b.StatusCode),
-        b.SpoiledCount
+        SpoiledCount = spoiledCount
       };
     }
   }

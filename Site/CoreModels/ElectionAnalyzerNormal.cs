@@ -1,92 +1,84 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
-    public class ElectionAnalyzerNormal : ElectionAnalyzerCore, IElectionAnalyzer
+  public class ElectionAnalyzerNormal : ElectionAnalyzerCore, IElectionAnalyzer
+  {
+    public ElectionAnalyzerNormal()
     {
-
-        public ElectionAnalyzerNormal()
-        {
-        }
-
-        public ElectionAnalyzerNormal(IAnalyzerFakes fakes, Election election,
-                                      List<vVoteInfo> voteinfos, List<Ballot> ballots,
-                                      List<Person> people)
-            : base(fakes, election, people, ballots, voteinfos)
-        {
-            //_locationInfos = locationInfos;
-        }
-
-        public ElectionAnalyzerNormal(Election election)
-            : base(election)
-        {
-        }
-
-        //private List<vLocationInfo> _locationInfos;
-        ///// <Summary>Current location records</Summary>
-        //public List<vLocationInfo> LocationInfos
-        //{
-        //  get
-        //  {
-        //    return _locationInfos ?? (_locationInfos = Db.vLocationInfoes
-        //                                                 .Where(r => r.ElectionGuid == CurrentElection.ElectionGuid)
-        //                                                 .ToList());
-        //  }
-        //}
-
-        public override ResultSummary AnalyzeEverything()
-        {
-            PrepareResultSummaryCalc();
-
-            ResultSummaryCalc.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
-
-            ResultSummaryCalc.NumBallotsEntered = Ballots.Count;
-            ResultSummaryCalc.TotalVotes = ResultSummaryCalc.NumBallotsEntered * TargetElection.NumberToElect;
-
-            var invalidBallotGuids = Ballots.Where(b => b.StatusCode != "Ok").Select(b => b.BallotGuid).ToList();
-
-            ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
-            ResultSummaryCalc.SpoiledVotes =
-              VoteInfos.Count(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && VoteAnalyzer.IsNotValid(vi));
-
-            // collect only valid votes
-            foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
-            {
-                var ballotGuid = ballot.BallotGuid;
-                foreach (var vVoteInfo in VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && VoteAnalyzer.VoteIsValid(vi)))
-                {
-                    var voteInfo = vVoteInfo;
-
-                    // get existing result record for this person, if available
-                    var result =
-                      Results.SingleOrDefault(r => r.C_RowId == voteInfo.ResultId || r.PersonGuid == voteInfo.PersonGuid);
-                    if (result == null)
-                    {
-                        result = new Result
-                                   {
-                                       ElectionGuid = TargetElection.ElectionGuid,
-                                       PersonGuid = voteInfo.PersonGuid.AsGuid()
-                                   };
-                        ResetValues(result);
-                        Results.Add(result);
-                        AddResult(result);
-                    }
-
-                    var voteCount = result.VoteCount.AsInt() + 1;
-                    result.VoteCount = voteCount;
-                }
-            }
-
-            DoAnalysisForTies();
-            FinalizeSummaries();
-
-
-            return ResultSummaryFinal;
-        }
     }
+
+    public ElectionAnalyzerNormal(IAnalyzerFakes fakes, Election election,
+      List<VoteInfo> voteinfos, List<Ballot> ballots,
+      List<Person> people)
+      : base(fakes, election, people, ballots, voteinfos)
+    {
+    }
+
+    public ElectionAnalyzerNormal(Election election)
+      : base(election)
+    {
+    }
+
+    public override ResultSummary AnalyzeEverything()
+    {
+      PrepareForAnalysis();
+
+      ResultSummaryCalc.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
+
+      ResultSummaryCalc.BallotsReceived = Ballots.Count;
+      ResultSummaryCalc.TotalVotes = ResultSummaryCalc.BallotsReceived*TargetElection.NumberToElect;
+
+      var invalidBallotGuids =
+        Ballots.Where(b => b.StatusCode != BallotStatusEnum.Ok).Select(b => b.BallotGuid).ToList();
+
+      ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
+      ResultSummaryCalc.SpoiledVotes =
+        VoteInfos.Count(
+          vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
+      ;
+
+      var electionGuid = TargetElection.ElectionGuid;
+
+      // collect only valid ballots
+      foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
+      {
+        var ballotGuid = ballot.BallotGuid;
+        // collect only valid votes
+        foreach (
+          var voteInfoRaw in
+            VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
+        {
+          var voteInfo = voteInfoRaw;
+
+          // get existing result record for this person, if available
+          var result =
+            Results.SingleOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
+          if (result == null)
+          {
+            result = new Result
+            {
+              ElectionGuid = electionGuid,
+              PersonGuid = voteInfo.PersonGuid.AsGuid()
+            };
+            InitializeSomeProperties(result);
+
+            _savers.ResultSaver(DbAction.Add, result);
+          }
+
+          var voteCount = result.VoteCount.AsInt() + 1;
+          result.VoteCount = voteCount;
+        }
+      }
+
+      FinalizeResultsAndTies();
+      FinalizeSummaries();
+
+      return ResultSummaryFinal;
+    }
+  }
 }

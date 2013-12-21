@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Web;
-using TallyJ.Models;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Enumerations
 {
