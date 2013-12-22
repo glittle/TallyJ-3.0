@@ -26,81 +26,20 @@
     <li>Duplicate names will be noticed and marked.</li>
     @if (ContextItems.LocationModel.HasLocations)
     {
-      <li>Be sure to update the Location Status to indicate the status of
+      <li>
+        Be sure to update the Location Status to indicate the status of
         your counting process, and the Contact Info in case the head teller needs to contact
-        you. </li>
+        you.
+      </li>
     }
   </ol>
 </div>
 <div class="float-left div1">
-  <div id="tabs" class="tabs">
-    <ul>
-      @if (ContextItems.LocationModel.HasLocations)
-      {
-        <li><a href="#tabLocation"><span>Location Status</span></a> </li>
-      }
-      <li><a href="#tabBallots"><span>Ballots<span id="collectedVsEnteredTitle"></span></span></a></li>
-      <li><a href="#tabNameSearch"><span>Add to Ballot</span></a></li>
-    </ul>
-    <div id="tabNameSearch">
-
-      <div class="heading">
-        Add votes to Ballot # <span class="ballotCode"></span>
-      </div>
-      <div class="float-right">
-        @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-        <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
-          Add na<u>m</u>e not in list</button>*@
-        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
-          Add a spoi<u>l</u>ed vote</button>
-      </div>      <div class="float-left">
-        <div>
-          Search for a <u>p</u>erson:
-        </div>
-        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
-        <div class="action">
-          <span id="action"></span><span id="more"></span>
-        </div>
-      </div>
-      <div class="actionHolder Clear">
-        <div class="tip1">
-          Use &uarr; &darr; keys to move in the list. Press Enter when found.
-        </div>
-      </div>
-      <ul id="nameList" class="nameList">
-      </ul>
-      <div class="Clear5">
-      </div>
-    </div>
-    <div id="tabBallots" class="locationInfo">
-      @if (ContextItems.LocationModel.HasLocations)
-      {
-        <div class="heading">
-          Ballots at Location: <span data-name="Name"></span>
-        </div>
-      }
-      <div>
-        Ballots to enter:
-                <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
-      </div>
-      <div>
-        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success" accesskey="N">
-          Start <u>N</u>ew Ballot</button>
-        Ballots entered so far: <span id="lblNumEntered" class="lblNumEntered"></span>
-      </div>
-      <h5>Ballots</h5>
-      <div id="ballotList" class="ballotList">
-      </div>
-      <button type="button" id="btnRefreshBallotList" class="btn btn-info">
-        Refresh</button>
-    </div>
+  <div id="accordion">
     @if (ContextItems.LocationModel.HasLocations)
     {
-      <div id="tabLocation" class="locationInfo">
-        <div class="heading">
-          Location Status
-        </div>
+      <h3>Location Status</h3>
+      <div class="locationInfo">
         <div>
           <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
             @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
@@ -114,6 +53,65 @@
         </div>
       </div>
     }
+    <h3><span>Ballots<span id="collectedVsEnteredTitle"></span></span></h3>
+    <div id="tabBallots" class="locationInfo">
+      <div class="float-right">
+        <button type="button" id="btnRefreshBallotList" class="btn btn-mini">
+          Refresh
+        </button>
+      </div>
+      @if (ContextItems.LocationModel.HasLocations)
+      {
+        <div class="heading">
+          Ballots at Location: <span data-name="Name"></span>
+        </div>
+      }
+      <div class="ballotDiv1">
+        Ballots to enter:
+        <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
+      </div>
+      <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right" accesskey="N">
+        Start <u>N</u>ew Ballot
+      </button>
+      <div>
+        Ballots entered so far: <span id="lblNumEntered" class="lblNumEntered"></span>
+      </div>
+      <h5>Ballots</h5>
+      <div id="ballotList" class="ballotList">
+      </div>
+    </div>
+    <h3><span>Add to Ballot</span></h3>
+    <div id="tabNameSearch">
+      <div class="heading">
+        Add votes to Ballot # <span class="ballotCode"></span>
+      </div>
+      <div class="float-right">
+        @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
+          <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
+            Add na<u>m</u>e not in list</button>*@
+        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
+        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
+          Add a spoi<u>l</u>ed vote
+        </button>
+      </div>
+      <div class="float-left">
+        <div>
+          Search for a <u>p</u>erson:
+        </div>
+        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
+      </div>
+      <div class="action float-left">
+        <span id="action"></span><span id="more"></span>
+      </div>
+      <div class="actionHolder Clear">
+        <div class="tip1">
+          Use &uarr; &darr; keys to move in the list. Press Enter when found.
+        </div>
+      </div>
+      <ul id="nameList" class="nameList"></ul>
+      <div class="Clear5">
+      </div>
+    </div>
   </div>
 </div>
 <div id="votesPanel" class="votesPanel">
@@ -126,20 +124,27 @@
   <div id="votesList">
   </div>
   <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
-    accesskey="N" tabindex="2">
-    Start <u>N</u>ew Ballot</button>
+          accesskey="N" tabindex="2">
+    Start <u>N</u>ew Ballot
+  </button>
   <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
-    Delete this empty ballot</button>
+    Delete this empty ballot
+  </button>
   <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if vote lines and numbers appear to be wrong.">
-    Clean Up Ballot</button>
+    Clean Up Ballot
+  </button>
   <div class="review">
     <label for="cbReview">
-      If this ballot needs review by the head teller, tick here</label><input type="checkbox" id="cbReview" />
+      If this ballot needs review by the head teller, tick here
+    </label><input type="checkbox" id="cbReview" />
   </div>
 </div>
 <div id="addMissingPanel" class="votesPanel">
-  <h3>Adding Name Not in List
-        <button id="btnCancelAddMissing" type="button" class="btn btn-mini btn-warning">
-          Cancel</button></h3>
+  <h3>
+    Adding Name Not in List
+    <button id="btnCancelAddMissing" type="button" class="btn btn-mini btn-warning">
+      Cancel
+    </button>
+  </h3>
   @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
 </div>
