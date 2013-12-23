@@ -65,6 +65,7 @@ namespace TallyJ.CoreModels
       const int max = 45;
 
       var personList = new PersonCacher().AllForThisElection.ToList();
+      var voteHelper = new VoteHelper(forBallot);
 
       List<SearchResult> results;
       var moreFound = false;
@@ -72,20 +73,18 @@ namespace TallyJ.CoreModels
       switch (nameToFind)
       {
         case "~~All~~":
-          results = personList.AsSearchResults().ToList();
+          results = personList.AsSearchResults(0, voteHelper).ToList();
           break;
         case "~~Voters~~":
-          results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults().ToList();
+          results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults(0, voteHelper).ToList();
           break;
         case "~~Tied~~":
-          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults().ToList();
+          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults(0, voteHelper).ToList();
           break;
         default:
-
-          results = GetRankedResults(personList, nameToFind, max, out moreFound);
+          results = GetRankedResults(personList, nameToFind, max, voteHelper, out moreFound);
           break;
       }
-      var voteHelper = new VoteHelper(forBallot);
 
       if (_savePeopleNeeded)
       {
@@ -98,11 +97,12 @@ namespace TallyJ.CoreModels
         People = results
           .Select(r => new
           {
-            Id = r.PersonId,
-            Name = r.FullName,
-            Ineligible = voteHelper.IneligibleToReceiveVotes(r.Ineligible, r.CanReceiveVotes),
+            r.Id,
+            r.Name,
+            r.Ineligible,
             r.BestMatch,
-            r.MatchType
+            r.MatchType,
+            r.Extra
           }),
         MoreFound = moreFound ? "More than {0} matches".FilledWith(max) : "",
         LastRowVersion = results.Count == 0 ? 0 : results.Max(p => p.RowVersion)
@@ -110,8 +110,7 @@ namespace TallyJ.CoreModels
         .AsJsonResult();
     }
 
-    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, string nameToFind, int max,
-      out bool moreFound)
+    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, string nameToFind, int max, VoteHelper voteHelper, out bool moreFound)
     {
       moreFound = false; // need to set
 
@@ -133,7 +132,7 @@ namespace TallyJ.CoreModels
         var matchType = DetermineMatch(person, terms, metas);
         if (matchType > 0)
         {
-          matched.Add(person.AsSerachResult(matchType));
+          matched.Add(person.AsSearchResult(matchType, voteHelper));
         }
 
         if (matched.Count > max)
@@ -158,7 +157,7 @@ namespace TallyJ.CoreModels
           : allVotesCached.Count(v => v.PersonGuid == result.PersonGuid);
       }
 
-      return matched.OrderBy(m => m.MatchType).ThenBy(m => m.FullName).ToList();
+      return matched.OrderBy(m => m.MatchType).ThenBy(m => m.Name).ToList();
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using TallyJ.EF;
-using TallyJ.EF;
 
 namespace TallyJ.Code.Data
 {
