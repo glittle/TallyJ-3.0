@@ -1,10 +1,8 @@
-﻿.div1
-{
-    width: 400px;
+﻿.div1 {
+  width: 330px;
 }
 
-.tabs
-{
+.tabs {
 }
 
 /* overrides to fix UI */
@@ -19,382 +17,419 @@
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.ui-tabs-nav li {
-  display: inline-block;
-  padding: 0 6px 0 6px;
+
+  .ui-tabs-nav li {
+    display: inline-block;
+    padding: 0 6px 0 6px;
+  }
+
+.nameList {
+  height: 300px;
+  margin: 0;
+  width: 300px;
+  border: solid 1px #999;
+  padding: 4px;
+  line-height: 1.5;
+  overflow: auto;
+  position: relative;
 }
 
-.nameList
-{
-    margin: 0 0 10px 0;
-    height: 400px;
-    width: 350px;
-    border: solid 1px #999;
-    padding: 4px;
-    font-size: 110%;
-    line-height: 1.5;
-    overflow: auto;
-    position: relative;
-}
-.nameList u
-{
+  .nameList u {
     text-decoration: none;
-}
-.nameList li
-{
+  }
+
+  .nameList li {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
-}
-.nameList li:hover {
-    background-color: #ddffcf;
-    background-color: rgba(204, 255, 190, 0.5);
-    border-color: #ddd;
-}
+  }
 
-.nameList li.selected
-{
-    background-color: #c1f1b4;
-    border-color: #999;
-}
-.nameList .InvalidName
-{
+    .nameList li:hover {
+      background-color: #ddffcf;
+      background-color: rgba(204, 255, 190, 0.5);
+      border-color: #ddd;
+    }
+
+    .nameList li.selected {
+      background-color: #c1f1b4;
+      border-color: #999;
+    }
+
+  .nameList .InvalidName {
     text-decoration: line-through;
-}
-.nameList .Match2,
-  .nameList .Match4
-  {
+  }
+
+  .nameList .Match2,
+  .nameList .Match4 {
     background-color: #efeeef;
     font-style: italic;
   }
-.nameList .First
-{
+
+  .nameList .First {
     padding: 3px 0 3px 0;
     border-top: 3px double #ccc;
     width: 100%;
     display: block;
+  }
+
+.ballotList {
+  overflow: auto;
+  padding: 0px 15px 30px 15px;
+  max-height: 300px;
 }
 
-.ballotList
-{
-    overflow: auto;
-    padding: 2px;
-    height: 250px;
-}
-.ballotList div
-{
+  .ballotList div {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
-}
-.ballotList div span
-{
-    color: #666;
-}
-.ballotList div:hover
-{
-    background-color: #ddffcf;
-    background-color: rgba(204, 255, 190, 0.5);
-    border-color: #ddd;
-}
-.ballotList div.selected
-{
-    background-color: #c1f1b4;
-    border-color: #999;
-}
+  }
+
+    .ballotList div span {
+      color: #666;
+    }
+
+    .ballotList div:hover {
+      background-color: #ddffcf;
+      background-color: rgba(204, 255, 190, 0.5);
+      border-color: #ddd;
+    }
+
+    .ballotList div.selected {
+      background-color: #c1f1b4;
+      border-color: #999;
+    }
 
 
 
-.action
-{
-    font-size: 11px;
-    min-width: 100px;
-    display: block;
-}
-.actionHolder
-{
-    margin-top: -5px;
-    margin-bottom: 5px;
+.action {
+  font-size: 11px;
+  min-width: 100px;
+  display: block;
+  margin-left: 3px;
 }
 
-.tip1
-{
-    color: #aaa;
-    font-size: 10px;
-    display: inline-block;
+.actionHolder {
+  margin-top: -5px;
+  margin-bottom: 5px;
 }
-span.ZZdelaying
-{
-    background-color: #f8f541;
+
+.tip1 {
+  color: #aaa;
+  font-size: 10px;
+  display: inline-block;
 }
-span.ZZsearching
-{
-    background-color: #f1c1b4;
+
+span.ZZdelaying {
+  background-color: #f8f541;
 }
-input.ZZdelaying
-{
-    background-color: #fffebf;
+
+span.ZZsearching {
+  background-color: #f1c1b4;
 }
-input.ZZsearching
-{
-    background-color: #ffe8e2;
+
+input.ZZdelaying {
+  background-color: #fffebf;
 }
-.votesPanel
-{
-    margin-left: 15px;
-    float: left;
-    width: 530px;
+
+input.ZZsearching {
+  background-color: #ffe8e2;
 }
-.ui-icon-arrow-2-n-s
-{
-    display: inline-block;
-    margin-left: 15px;
-    cursor: ns-resize;
-    visibility: hidden;
+
+.votesPanel {
+  margin-left: 15px;
+  float: left;
+  width: 530px;
 }
-.ui-icon-trash
-{
-    display: inline-block;
-    margin-left: 7px;
-    cursor: pointer;
-    visibility: hidden;
+
+.ui-icon-arrow-2-n-s {
+  display: inline-block;
+  margin-left: 15px;
+  cursor: ns-resize;
+  visibility: hidden;
 }
-.InvalidName
-{
-    text-decoration: line-through;
+
+.ui-icon-trash {
+  display: inline-block;
+  margin-left: 7px;
+  cursor: pointer;
+  visibility: hidden;
 }
-span.Vote
-{
-    width: 60px;
-    display: inline-block;
-    text-align: right;
-    margin-right: 9px;
+
+.InvalidName {
+  text-decoration: line-through;
 }
-input.Vote
-{
-    width: 60px;
-    margin-right: 5px;
-    text-align: right;
+
+span.Vote {
+  width: 60px;
+  display: inline-block;
+  text-align: right;
+  margin-right: 9px;
 }
-.titleDiv
-{
-    font-weight: bold;
-    font-size: 12pt;
-    border-bottom: 1px solid #ccc;
-    padding-right: 4px;
+
+input.Vote {
+  width: 60px;
+  margin-right: 5px;
+  text-align: right;
 }
-.titleDiv div
-{
+
+.titleDiv {
+  font-weight: bold;
+  font-size: 12pt;
+  border-bottom: 1px solid #ccc;
+  padding-right: 4px;
+}
+
+  .titleDiv div {
     margin: -3px 0 0 0;
-}
-button.smallButton
-{
-    font-size: 12px;
-    font-family: "Segoe UI" , Verdana, Helvetica, Sans-Serif;
-}
-.Valid .Invalid
-{
-    display: none;
-}
-.InvalidP .InvalidCustom, .InvalidC .InvalidPerson
-{
-    display: none;
-}
-.InvalidP div.InvalidPerson
-{
-    color: #e80c4d;
-    margin: 0 0 0 117px;
+  }
+
+button.smallButton {
+  font-size: 12px;
+  font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
 }
 
-select.Invalid
-{
-    vertical-align: top;
-    color: #e80c4d;
-}
-.VoteHost .ui-icon
-{
-    visibility: visible;
-    float: right;
-    margin: 5px 10px 0 10px;
-    z-index: 1;
+.Valid .Invalid,
+.Valid .Duplicate  {
+  display: none;
 }
 
-.VoteHost span.Name
-{
-    display: none;
-    font-size: 14pt;
-    padding: 0 9px 0 0;
-}
-.VoteHost.InvalidP span.Name
-{
-    display: inline;
-    font-size: 1em;
-    text-decoration: line-through;
-}
-.VoteHost.Valid span.Name
-{
-    display: inline;
-}
-.InvalidBallot, .Ineligible, span.Invalid
-{
-    color: #e80c4d;
-    font-weight: bold;
-    margin-left: 22px;
-}
-.Ok
-{
-    color: #0ce84d;
-}
-.Confirmed
-{
-    font-weight: bold;
-}
-.NotConfirmed
-{
-    opacity: .5;
+.InvalidP .InvalidCustom, .InvalidC .InvalidPerson {
+  display: none;
 }
 
-.txtContact
-{
-    width: 260px;
-}
-div.heading
-{
-    font-weight: bold;
-    margin: 0 0 4px 0;
-}
-.ui-widget
-{
-    font-size: .85em;
-}
-.ui-helper-reset
-{
-    font-size: 12px;
+.InvalidP div.InvalidPerson {
+  color: #e80c4d;
+  margin: 0 0 0 117px;
 }
 
-.ChangedMessage
-{
-    display: none;
+select.Invalid {
+  vertical-align: top;
+  color: #e80c4d;
 }
-.Changedtrue .ChangedMessage
-{
-    display: block;
-    color: #e80c4d;
-    margin-left: 70px;
-    padding-bottom: 5px;
+
+.VoteHost .ui-icon {
+  visibility: visible;
+  float: right;
+  margin: 5px 10px 0 10px;
+  z-index: 1;
 }
-.Changedtrue
-{
-    border: 1px solid red;
-    background-color: #ffcccc;
+
+.VoteHost span.Name {
+  display: none;
+  font-size: 14pt;
+  padding: 0 9px 0 0;
+  text-indent: -20px;
+  margin-left: 20px;
 }
-.txtNumCollected
-{
-    width: 40px;
-    text-align: right;
-    margin-right: 5px;
+
+.VoteHost.InvalidP span.Name {
+  display: inline;
+  font-size: 1em;
+  text-decoration: line-through;
 }
-.lblNumEntered
-{
+
+.VoteHost.Valid span.Name {
+  display: inline-block;
 }
-.countsBad, .countsGood, .countsNeutral
-{
-    margin: 4px 0 3px 0;
+
+.NameInfo {
+  white-space: normal;
+  width: 400px;
+  display: inline-block;
 }
-.countsBad
-{
-    color: red;
+
+.InvalidBallot, .Ineligible, span.Invalid {
+  color: #e80c4d;
+  font-weight: bold;
 }
-.countsGood
-{
-    color: green;
+
+.Ok {
+  color: #0ce84d;
 }
-#votesList
-{
-    padding-top: 5px;
-    margin-bottom: 20px;
+
+.Confirmed {
+  font-weight: bold;
 }
-.VoteNum
-{
-    display: inline-block;
-    width: 20px;
-    text-align: right;
-    margin-right: 12px;
-    font-size: 80%;
-    color: #aaa;
+
+.NotConfirmed {
+  opacity: .5;
 }
-.InUse
-{
-    color: #f6941e; 
+
+.txtContact {
+  width: 260px;
 }
-.titleDiv .ballotStatus
-{
-    padding-right: 20px;
-    vertical-align: top;
-    font-size: 16pt;
+
+div.heading {
+  font-weight: bold;
+  margin: 0 0 4px 0;
 }
-.titleDiv .ballotCode
-{
-    padding-left: 3px;
-    font-size: 16pt;
+
+.ui-widget {
+  font-size: .85em;
 }
+
+.ui-helper-reset {
+  font-size: 12px;
+}
+
+.ChangedMessage {
+  display: none;
+}
+
+.Changedtrue .ChangedMessage {
+  display: block;
+  color: #e80c4d;
+  margin-left: 70px;
+  padding-bottom: 5px;
+}
+
+.Changedtrue {
+  border: 1px solid red;
+  background-color: #ffcccc;
+}
+
+.txtNumCollected {
+  width: 40px;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.lblNumEntered {
+}
+
+.countsBad, .countsGood, .countsNeutral {
+  margin: 4px 0 3px 0;
+}
+
+.countsBad {
+  color: red;
+}
+
+.countsGood {
+  color: green;
+}
+
+#votesList {
+  padding-top: 5px;
+  margin-bottom: 20px;
+  max-height: 400px;
+  overflow: auto;
+  width: 550px;
+  position: relative;
+}
+
+@media screen and (min-height: 900px) {
+  #votesList {
+    max-height: 9999px;
+  }
+}
+
+.VoteNum {
+  display: inline-block;
+  width: 20px;
+  text-align: right;
+  margin-right: 12px;
+  font-size: 80%;
+  color: #aaa;
+  vertical-align: top;
+  margin-top: 3px;
+}
+
+.InUse {
+  color: #f6941e;
+}
+
+.titleDiv .ballotStatus {
+  padding-right: 20px;
+  vertical-align: top;
+  font-size: 16pt;
+}
+
+.titleDiv .ballotCode {
+  padding-left: 3px;
+  font-size: 16pt;
+}
+
 .duplicateVote .Name {
-    color: #e80c4d;
-}
-.duplicateVote .Duplicate
-{
-    color: #e80c4d;
-    margin-right: 2px;
-    font-weight: bold;
-    display: inline-block;
-    font-size: 1em;
-    margin-left: 25px;
+  color: #e80c4d;
 }
 
-.VoteHost
-{
-    background-color: #eeffd6;
-    margin: 2px 0;
+.duplicateVote .Duplicate {
+  color: #e80c4d;
+  margin-right: 2px;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 1em;
 }
-.ExtraVote
-{
-    border-top: 1px solid black;
-    margin-top: 5px;
+
+.VoteHost {
+  background-color: #eeffd6;
+  margin: 2px 0;
 }
-.ExtraVote, .ExtraVotes
-{
-    background-color: #ffe3c2;
-    line-height: 1.2;
+
+.ExtraVote {
+  border-top: 1px solid black;
+  margin-top: 5px;
 }
-.ballotList li:hover
-{
-    background-color: #cfc;
+
+.ExtraVote, .ExtraVotes {
+  background-color: #ffe3c2;
+  line-height: 1.2;
 }
-#btnRefreshBallotList
-{
-    margin: 14px 0 -3px 0;
+
+.ballotList li:hover {
+  background-color: #cfc;
 }
-#btnAddMissing
-{
-    float: right;
+
+#btnRefreshBallotList {
 }
-.review 
-{
-    margin-top: 1em;
+
+#btnAddMissing {
+  float: right;
 }
+
+.review {
+  margin-top: 1em;
+}
+
 #addMissingPanel {
-    display: none;   
+  display: none;
 }
+
 h5 {
-    margin-top: 1em;
+  margin-top: 1em;
 }
+
 span.HideZero,
 span.HideZero0 {
-    display: none;
+  display: none;
 }
+
 .SpoiledCount {
-    display: inline-block;
-    margin-left: 15px;
+  display: inline-block;
+  margin-left: 15px;
+}
+
+#ddlLocationStatus {
+  margin: 0 0 10px 5px;
+}
+
+.ui-accordion-header {
+  line-height: 110%;
+  font-weight: bold;
+  font-size: 12pt;
+  padding: 4px 4px 4px 4px;
+  margin: 3px 0 0 0;
+  cursor: pointer;
+}
+
+.ui-accordion-content {
+  border-top: none;
+  padding: 10px 4px 6px 6px;
+}
+
+.ballotDiv1 {
+  margin: 2px 0 5px 0;
 }

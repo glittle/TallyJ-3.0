@@ -115,10 +115,18 @@ namespace TallyJ.CoreModels
     {
       moreFound = false; // need to set
 
+      var matched = new List<SearchResult>();
+
       var terms = MakeTerms(nameToFind);
+
+      if (terms.Length == 0 || (terms.Length==1 && terms[0].HasNoContent()))
+      {
+        return matched;
+      }
+      
+      
       var metas = MakeMetas(terms);
 
-      var matched = new List<SearchResult>();
 
       foreach (var person in people)
       {

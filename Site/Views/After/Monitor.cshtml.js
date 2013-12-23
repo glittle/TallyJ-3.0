@@ -173,7 +173,7 @@
 
       if (this.BallotsCollected) {
         var pct = Math.floor(this.BallotsAtLocation / this.BallotsCollected * 100);
-        this.BallotsReport = '<br>{0} of {1} ({2}%)'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
+        this.BallotsReport = '{0} of {1} ({2}%)'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
         if (pct > 100) {
           this.BallotsReport = '<span class=error>{^0}</span>'.filledWith(this.BallotsReport);
         }

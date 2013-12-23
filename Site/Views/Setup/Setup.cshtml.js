@@ -112,7 +112,7 @@
     };
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function(info) {
-      if (info.success) {
+      if (info.Success) {
         ShowStatusSuccess(info.Status);
       } else {
         ShowStatusFailed(info.Status);
