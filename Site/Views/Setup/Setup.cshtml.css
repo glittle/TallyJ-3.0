@@ -14,7 +14,7 @@
 }
 div.More h3
 {
-    margin: 0 0 5px 0;
+    margin: 0;
 }
 table.Demographics td, table.Demographics td label {
     font-size: 94%;
@@ -103,4 +103,7 @@ button.Primary
 }
 .accessCode {
   padding-left: 29px;
+}
+#btnAddLocation {
+  margin-top: 2px;
 }

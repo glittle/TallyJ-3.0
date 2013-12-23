@@ -106,7 +106,7 @@ namespace TallyJ.CoreModels
     /// <returns> True if the new status code is different from the current status code </returns>
     public bool DetermineStatusFromVotesList(string currentStatusCode, List<VoteInfo> voteInfos, out string statusCode, out int spoiledCount)
     {
-      spoiledCount = voteInfos.Count(v => v.VoteStatusCode == VoteHelper.VoteStatusCode.Spoiled);
+      spoiledCount = voteInfos.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
 
       // if under review, don't change that status
       if (currentStatusCode == BallotStatusEnum.Review)
