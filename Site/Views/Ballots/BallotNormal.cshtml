@@ -80,28 +80,28 @@
       <div id="ballotList" class="ballotList">
       </div>
     </div>
-    <h3><span>Add to Ballot</span></h3>
+    <h3><span>Add to Ballot <span class="ballotCode"></span></span></h3>
     <div id="tabNameSearch">
+      <div class="action float-right">
+        <span id="action"></span><span id="more"></span>
+      </div>
       <div class="heading">
         Add votes to Ballot # <span class="ballotCode"></span>
+      </div>
+      <div>
+        Search for a <u>p</u>erson:
       </div>
       <div class="float-right">
         @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
           <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
             Add na<u>m</u>e not in list</button>*@
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-info spoiledBtn float-right">
+        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-warn spoiledBtn float-right">
           Add a spoi<u>l</u>ed vote
         </button>
       </div>
       <div class="float-left">
-        <div>
-          Search for a <u>p</u>erson:
-        </div>
         <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
-      </div>
-      <div class="action float-left">
-        <span id="action"></span><span id="more"></span>
       </div>
       <div class="actionHolder Clear">
         <div class="tip1">

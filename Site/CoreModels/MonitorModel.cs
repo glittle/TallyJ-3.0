@@ -29,21 +29,21 @@ namespace TallyJ.CoreModels
           new
             {
               Locations = locations
-                .Join(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+                .JoinMatchingOrNull(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(g => g.l.SortOrder)
-                .ThenBy(g => g.c.ComputerCode)
+                .ThenBy(g => g.c == null ? "" : g.c.ComputerCode)
                 .ThenBy(g => g.l.C_RowId)
                 .Select(g => new
                                 {
-                                  BallotsAtComputer = BallotModelCore.BallotCount(g.l.LocationGuid, g.c.ComputerCode, isSingleName, ballots),
+                                  BallotsAtComputer = g.c == null ? "" : BallotModelCore.BallotCount(g.l.LocationGuid, g.c.ComputerCode, isSingleName, ballots).ToString(),
                                   BallotsAtLocation = BallotModelCore.BallotCount(g.l.LocationGuid, isSingleName, ballots),
                                   g.l.BallotsCollected,
-                                  g.c.ComputerCode,
+                                  ComputerCode = g.c == null ? "" : g.c.ComputerCode,
                                   g.l.ContactInfo,
                                   g.l.Name,
                                   TallyStatus = LocationStatusEnum.TextFor(g.l.TallyStatus),
-                                  Teller = g.c.GetTellerNames(),
-                                  MinutesOld = g.c.LastContact.HasValue ? ((now - g.c.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
+                                  Teller = g.c == null ? null : g.c.GetTellerNames(),
+                                  MinutesOld = g.c != null && g.c.LastContact.HasValue ? ((now - g.c.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
                                   LocationId = g.l.C_RowId
                                 })
                                 ,

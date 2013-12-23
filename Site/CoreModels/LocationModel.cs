@@ -161,12 +161,18 @@ namespace TallyJ.CoreModels
 
       if (location == null)
       {
-        location = new Location { ElectionGuid = UserSession.CurrentElectionGuid, LocationGuid = Guid.NewGuid() };
+        location = new Location
+        {
+          ElectionGuid = UserSession.CurrentElectionGuid,
+          LocationGuid = Guid.NewGuid()
+        };
         Db.Location.Add(location);
         changed = true;
       }
-
-      Db.Location.Attach(location);
+      else
+      {
+        Db.Location.Attach(location);
+      }
 
       int locationId;
       string locationText;
@@ -208,26 +214,27 @@ namespace TallyJ.CoreModels
       }
       else if (text.HasContent())
       {
-        location.Name = text;
-        changed = true;
+        locationText = location.Name = text;
+        locationId = location.C_RowId; // may be 0 if new
 
+        changed = true;
         status = "Saved";
-        locationId = location.C_RowId;
-        locationText = location.Name;
-        success = true;
       }
       else
       {
         status = "Nothing to save";
         locationId = 0;
-        success = true;
         locationText = "";
+        success = true;
       }
 
       if (changed)
       {
         Db.SaveChanges();
+
+        locationId = location.C_RowId;
         locationCacher.UpdateItemAndSaveCache(location);
+        success = true;
       }
 
       return new

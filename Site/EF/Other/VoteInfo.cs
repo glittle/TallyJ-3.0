@@ -2,6 +2,7 @@
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
+using TallyJ.CoreModels;
 
 namespace TallyJ.EF
 {
@@ -44,6 +45,7 @@ namespace TallyJ.EF
     public VoteInfo()
     {
       // mostly for testing
+      VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
     }
 
     public bool PersonCanReceiveVotes { get; set; }

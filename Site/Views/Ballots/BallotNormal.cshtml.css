@@ -1,5 +1,5 @@
 ﻿.div1 {
-  width: 400px;
+  width: 330px;
 }
 
 .tabs {
@@ -24,12 +24,11 @@
   }
 
 .nameList {
-  margin: 0 0 10px 0;
-  height: 400px;
-  width: 350px;
+  height: 300px;
+  margin: 0;
+  width: 300px;
   border: solid 1px #999;
   padding: 4px;
-  font-size: 110%;
   line-height: 1.5;
   overflow: auto;
   position: relative;
@@ -191,7 +190,8 @@ button.smallButton {
   font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
 }
 
-.Valid .Invalid {
+.Valid .Invalid,
+.Valid .Duplicate  {
   display: none;
 }
 
@@ -220,6 +220,8 @@ select.Invalid {
   display: none;
   font-size: 14pt;
   padding: 0 9px 0 0;
+  text-indent: -20px;
+  margin-left: 20px;
 }
 
 .VoteHost.InvalidP span.Name {
@@ -229,13 +231,18 @@ select.Invalid {
 }
 
 .VoteHost.Valid span.Name {
-  display: inline;
+  display: inline-block;
+}
+
+.NameInfo {
+  white-space: normal;
+  width: 400px;
+  display: inline-block;
 }
 
 .InvalidBallot, .Ineligible, span.Invalid {
   color: #e80c4d;
   font-weight: bold;
-  margin-left: 22px;
 }
 
 .Ok {
@@ -307,6 +314,16 @@ div.heading {
 #votesList {
   padding-top: 5px;
   margin-bottom: 20px;
+  max-height: 400px;
+  overflow: auto;
+  width: 550px;
+  position: relative;
+}
+
+@media screen and (min-height: 900px) {
+  #votesList {
+    max-height: 9999px;
+  }
 }
 
 .VoteNum {
@@ -316,6 +333,8 @@ div.heading {
   margin-right: 12px;
   font-size: 80%;
   color: #aaa;
+  vertical-align: top;
+  margin-top: 3px;
 }
 
 .InUse {
@@ -343,7 +362,6 @@ div.heading {
   font-weight: bold;
   display: inline-block;
   font-size: 1em;
-  margin-left: 25px;
 }
 
 .VoteHost {
@@ -397,6 +415,7 @@ span.HideZero0 {
 #ddlLocationStatus {
   margin: 0 0 10px 5px;
 }
+
 .ui-accordion-header {
   line-height: 110%;
   font-weight: bold;
@@ -410,6 +429,7 @@ span.HideZero0 {
   border-top: none;
   padding: 10px 4px 6px 6px;
 }
+
 .ballotDiv1 {
   margin: 2px 0 5px 0;
 }
