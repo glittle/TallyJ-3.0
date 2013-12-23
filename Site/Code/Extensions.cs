@@ -712,25 +712,22 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"></param>
     /// <param name="matchType"></param>
+    /// <param name="voteHelper"></param>
     /// <returns></returns>
-    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType = 0)
+    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType, VoteHelper voteHelper)
     {
-      return input.Select(p => p.AsSerachResult(matchType));
+      return input.Select(p => p.AsSearchResult(matchType, voteHelper));
     }
 
-    public static SearchResult AsSerachResult(this Person p, int matchType)
+    public static SearchResult AsSearchResult(this Person p, int matchType, VoteHelper voteHelper)
     {
-      var name = p.FullName
-                 + p.BahaiId.SurroundContentWith(" (", ")")
-                 + p.Area.SurroundContentWith(" (", ")");
-
       return new SearchResult
       {
-        PersonId = p.C_RowId,
+        Id = p.C_RowId,
         PersonGuid = p.PersonGuid,
-        FullName = name,
+        Name = p.FullNameFL + p.BahaiId.SurroundContentWith(" (", ")") + p.Area.SurroundContentWith(" (", ")"),
         CanReceiveVotes = p.CanReceiveVotes,
-        Ineligible = p.IneligibleReasonGuid,
+        Ineligible = voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes),
         RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
         BestMatch = 0, // count of votes
         MatchType = matchType
