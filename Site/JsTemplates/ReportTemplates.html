@@ -107,18 +107,18 @@
                 All Ballots Cast</h1>
             <p class="Comment">
                 This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.</p>
-            <div class="list">
-                {^rows}
-            </div>
+          <table class="list">
+              {^rows}
+          </table>
         </div>
-        <div class="row">
-            <div class="Ballot BallotSpoiled{Spoiled}">
-                <div>
-                    {C_BallotCode} ({StatusCode})</div>
-                <div>
-                    {^rows2} &nbsp;</div>
-            </div>
-        </div>
+        <table class="row">
+            <tr class="Ballot BallotSpoiled{Spoiled}">
+                <td>
+                    {C_BallotCode} ({StatusCode})</td>
+                <td>
+                    {^rows2} &nbsp;</td>
+            </tr>
+        </table>
         <div class="row2">
             <span class="Vote VoteSpoiled{Spoiled}"><span class="Person">{PersonFullNameFL}</span>
                 <span class="Invalid">{VoteInvalidReasonDesc}</span></span></div>

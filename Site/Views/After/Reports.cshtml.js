@@ -32,24 +32,28 @@
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, code);
     };
 
-    var showInfo = function (info, code) {
-        ResetStatusDisplay();
+    var showInfo = function(info, code) {
+      ResetStatusDisplay();
 
-        local.reportInfo = info;
+      local.reportInfo = info;
 
-        if (info.Status != 'ok') {
-            $('#Status').text(info.Status).show();
-            local.reportHolder.hide();
-            return;
-        }
+      if (info.Status != 'ok') {
+        $('#Status').text(info.Status).show();
+        local.reportHolder.hide();
+        return;
+      }
 
-        $('#Status').hide();
+      $('#Status').hide();
 
-        if (info.ElectionStatus != 'Report') {
-            local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
-        }
+      if (info.ElectionStatus != 'Report') {
+        local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
+      }
 
+      if (info.Html) {
+        local.reportHolder.removeClass().addClass('Report' + code).fadeIn().html(info.Html);
+      } else {
         processData(code, info);
+      }
     };
 
     var processData = function (code) {

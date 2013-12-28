@@ -85,31 +85,41 @@ p.Comment {
     float: left;
     width: 700px;
 }
-.VoteSpoiledtrue {
+.VoteSpoiledTrue {
     color: red;
 }
-.VoteSpoiledtrue .Person {
+.VoteSpoiledTrue .Person {
     text-decoration: line-through;
+}
+table.Ballots {
+  border-collapse: collapse;
+}
+table.Ballots td {
+  border: 1px solid #ccc;
+  vertical-align: top;
+}
+table.Ballots td:first-child {
+  white-space: nowrap;
+}
+.Count {
+  font-weight: bold;
 }
 .Ballot {
     font-size: 10pt;
     margin-top: 3px;
  }
-.BallotSpoiledtrue,
-.BallotSpoiledtrue div,
-.BallotSpoiledtrue span
+.BallotSpoiledTrue,
+.BallotSpoiledTrue div,
+.BallotSpoiledTrue span
 {
     text-decoration: line-through;
     color: red;
 }
 
 .Ballot > div {
-    margin-left: 100px;
+    display: table-cell;
 }
 .Ballot > div:first-child {
-    float: left;
-    margin-left: 0;
-    width: 95px;
 }
 .Ballot .Vote {
     display: inline-block;
@@ -119,9 +129,6 @@ p.Comment {
 {
     white-space: inherit;
 }
-  .Ballot .Vote .Invalid
-  {
-  }
 .Ballot .Vote .Invalid {
     color: red;
     font-style: italic;

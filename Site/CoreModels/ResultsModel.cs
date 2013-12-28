@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
@@ -238,37 +240,54 @@ namespace TallyJ.CoreModels
       return _analyzer.IsResultAvailable ? GetCurrentResults() : null;
     }
 
-    public JsonResult GetReportData(string code)
+    public JsonResult GetReportData(string code, ControllerContext view)
     {
       var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
-      object data;
+      object data = null;
+      var html = "";
       switch (code)
       {
         case "Ballots":
-          var ballots = new BallotCacher().AllForThisElection.ToList();
-          // var votes = new VoteCacher().AllForThisElection.ToList();
-          data = ballots
-            .OrderBy(b => b.ComputerCode)
-            .ThenBy(b => b.BallotNumAtComputer)
-            .Select(b => new
-            {
-              b.C_BallotCode,
-              b.StatusCode,
-              Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-              Rows2 = BallotModelCore.VoteInfosForBallot(b)
-                .OrderBy(v => v.PositionOnBallot)
-                .Select(v => new
-                {
-                  v.PersonFullNameFL,
-                  Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
-                  VoteInvalidReasonDesc =
-                    IneligibleReasonEnum.DescriptionFor(
-                      v.VoteIneligibleReasonGuid.AsGuid()).
-                      SurroundContentWith("[", "]")
-                })
-            });
+          //html = RenderPartialExtensions.RenderPartial(new HtmlHelper(view.ParentActionViewContext, null), "BallotsReport");
+          //html = new HtmlHelper(view.ParentActionViewContext, null).Partial("BallotsReport", new ViewDataDictionary());
+          html = MvcViewRenderer.RenderRazorViewToString("~/Views/After/BallotsReport.cshtml", null);
+
+//          var ballots = new BallotCacher().AllForThisElection;
+//          var locations = new LocationCacher().AllForThisElection;
+//
+//          data = ballots
+//            .OrderBy(b =>
+//            {
+//              var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
+//              return location == null ? "" : location.Name;
+//            })
+//            .ThenBy(b => b.ComputerCode)
+//            .ThenBy(b => b.BallotNumAtComputer)
+//            .Select(b =>
+//            {
+//              var location = locations.FirstOrDefault(l=>l.LocationGuid==b.LocationGuid);
+//              var locName = locations.Count > 1 && location != null ? location.Name : "";
+//              return new
+//                           {
+//                             C_BallotCode = locName.HasContent() ? locName + " " + b.C_BallotCode : b.C_BallotCode,
+//                             b.StatusCode,
+//                             Spoiled = b.StatusCode != BallotStatusEnum.Ok,
+//                             Rows2 = BallotModelCore.VoteInfosForBallot(b)
+//                               .OrderBy(v => v.PositionOnBallot)
+//                               .Select(v => new
+//                               {
+//                                 v.PersonFullNameFL,
+//                                 Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+//                                 VoteInvalidReasonDesc =
+//                                   IneligibleReasonEnum.DescriptionFor(
+//                                     v.VoteIneligibleReasonGuid.AsGuid()).
+//                                     SurroundContentWith("[", "]")
+//                               })
+//                           };
+//            })
+//            .OrderBy(x => x.C_BallotCode);
 
           break;
 
@@ -354,6 +373,7 @@ namespace TallyJ.CoreModels
       return new
       {
         Rows = data,
+        Html = html,
         Status = "ok",
         Ready = readyForReports,
         ElectionStatus = CurrentElection.TallyStatus,
@@ -418,11 +438,11 @@ namespace TallyJ.CoreModels
       var editableFields = new
       {
         resultSummary.BallotsNeedingReview,
-        NumBallotsEntered = resultSummary.BallotsReceived,
-        EnvelopesCalledIn = resultSummary.CalledInBallots,
-        EnvelopesDroppedOff = resultSummary.DroppedOffBallots,
-        EnvelopesInPerson = resultSummary.InPersonBallots,
-        EnvelopesMailedIn = resultSummary.MailedInBallots,
+        resultSummary.BallotsReceived,
+        resultSummary.CalledInBallots,
+        resultSummary.DroppedOffBallots,
+        resultSummary.InPersonBallots,
+        resultSummary.MailedInBallots,
         resultSummary.NumEligibleToVote,
         resultSummary.SpoiledManualBallots,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
