@@ -414,6 +414,11 @@ function ProcessPulseResult(info) {
   if (!info) {
     return;
   }
+  //if (info === false) {
+  //  // logged out
+  //  top.location.href = GetRootUrl();
+  //  return;
+  //}
   if (info.NewStamp) {
     site.lastVersionNum = info.NewStamp;
   }
@@ -469,7 +474,8 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
   };
 
   if (form) {
-    options.data = form; //  JoinProperties(form);
+    options.data = form;
+    // options.contentType = "application/x-www-form-urlencoded";
   }
   if (waitForResponse) {
     options.async = false;
