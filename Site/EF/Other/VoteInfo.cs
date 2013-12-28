@@ -33,8 +33,7 @@ namespace TallyJ.EF
         AssertAtRuntime.That(person.PersonGuid == vote.PersonGuid);
 
         PersonId = person.C_RowId;
-        PersonFullNameFL = person.FullNameFL + person.BahaiId.SurroundContentWith(" (", ")") + person.Area.SurroundContentWith(" (", ")");
-        //PersonFullName = person.FullName;
+        PersonFullNameFL = person.FullNameAndArea;
         PersonCombinedInfo = person.CombinedInfo;
         PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
         PersonCanReceiveVotes = election.ElectionMode != ElectionModeEnum.Tie || person.CanReceiveVotes.AsBoolean();

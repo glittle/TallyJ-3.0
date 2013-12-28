@@ -2,7 +2,8 @@
   width: 330px;
 }
 
-.tabs {
+#votesPanel, .div1 {
+  display:none;
 }
 
 /* overrides to fix UI */

@@ -31,12 +31,12 @@
 
   var preparePage = function () {
     tabNum = publicInterface.HasLocations ? {
-      ballot: 2,
-      ballots: 1,
+      ballotEdit: 2,
+      ballotListing: 1,
       location: 0
     } : {
-      ballot: 1,
-      ballots: 0,
+      ballotEdit: 1,
+      ballotListing: 0,
     };
 
     local.tabList = $('#accordion');
@@ -125,6 +125,9 @@
     });
 
     showBallot(publicInterface);
+
+    $('#votesPanel, .div1').show();
+
   };
 
   var changeLocation = function () {
@@ -170,13 +173,22 @@
 
   };
 
+  var showBallotTab = function() {
+    local.tabList.accordion('option', 'active', tabNum.ballotEdit);
+    local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+  };
+
+  var hideBallotTab = function() {
+    local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
+  };
+
   var newBallot = function () {
     // disable on click...
     $('.NewBallotBtns').prop('disabled', true);
 
     CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
       showBallot(info);
-      local.tabList.accordion('option', 'active', tabNum.ballot);
+      showBallotTab();
       local.inputField.focus().val('').change();
       local.nameList.html('');
       $('.NewBallotBtns').prop('disabled', false);
@@ -266,7 +278,7 @@
       $('.ballotCode').text(ballot.Code);
       $('#ballotStatus').text(ballot.StatusCode);
 
-      local.tabList.accordion('option', 'active', tabNum.ballot);
+      // showBallotTab();
 
       local.votesNeeded = ballotInfo.NumNeeded;
       local.ballotStatus = ballot.StatusCode;
@@ -277,8 +289,9 @@
 
       updateStatusDisplay(ballot);
 
-      local.tabList.find('h3').eq(tabNum.ballot).show().next().show();
-      local.tabList.accordion('option', 'active', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
+      var toShow = ballot.StatusCode == 'TooFew' ? tabNum.ballotEdit : tabNum.ballotListing;
+      local.tabList.find('h3').eq(toShow).show().next().show();
+      local.tabList.accordion('option', 'active', toShow);
 
       highlightBallotInList();
 
@@ -286,8 +299,8 @@
       $('.ballotCode').text('');
 
       $('#votesPanel').css('visibility', 'hidden');
-      local.tabList.accordion('option', 'active', tabNum.ballots);
-      local.tabList.find('h3').eq(tabNum.ballot).hide().next().hide();
+      local.tabList.accordion('option', 'active', tabNum.ballotListing);
+      hideBallotTab();
       local.btnDeleteBallot.prop('disabled', true);
     }
 
@@ -557,7 +570,7 @@
     };
 
     if (invalidId) {
-      invalids.data('invalid  ', invalidId);
+      invalids.data('invalid', invalidId);
       for (var i = 0; i < local.votes.length; i++) {
         var vote = local.votes[i];
         if (vote.vid == voteId) {
@@ -618,7 +631,7 @@
         local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
 
         if (info.BallotStatus == 'Ok') {
-          local.tabList.accordion('option', 'active', tabNum.ballots);
+          local.tabList.accordion('option', 'active', tabNum.ballotListing);
           $('#btnNewBallot2').effect('highlight', null, 1500);
         }
 
@@ -673,7 +686,7 @@
         updateStatusInList(info);
 
         if (info.BallotStatus == 'Ok') {
-          local.tabList.accordion('option', 'active', tabNum.ballots);
+          local.tabList.accordion('option', 'active', tabNum.ballotListing);
         }
 
         if (info.Location) {

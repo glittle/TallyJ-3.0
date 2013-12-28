@@ -17,7 +17,7 @@ namespace TallyJ.CoreModels.Helper
         person.OtherNames,
         person.OtherLastNames,
         // additional - for searching
-        person.Area,
+        //person.Area,
         person.OtherInfo,
         person.BahaiId
       }

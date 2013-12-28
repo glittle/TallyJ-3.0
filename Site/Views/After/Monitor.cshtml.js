@@ -8,7 +8,7 @@
 
   var preparePage = function () {
     var tableBody = $('#mainBody');
-    settings.rowTemplateMain = '<tr class="{ClassName}">' + tableBody.children().eq(0).html() + '</tr>';
+    settings.rowTemplateMain = '<tr class="{ClassName}">' + tableBody.children().eq(0).html() + '</tr>{^DetailRow}';
     settings.rowTemplateExtra = '<tr class="Extra {ClassName}">' + tableBody.children().eq(1).html() + '</tr>';
 
     var ballotTableBody = $('#ballotsBody');
@@ -87,9 +87,10 @@
       var span = $(this);
       span.data('startTime', startTime);
     });
+    updateAutoMinutes();
     settings.autoMinutesTimeout = setInterval(function () {
       updateAutoMinutes();
-    }, 15 * 1000);
+    }, 12 * 1000);
   };
 
   var updateAutoMinutes = function () {
@@ -100,9 +101,24 @@
         var startTime = span.data('startTime');
         var now = new Date();
         var ms = now.getTime() - startTime.getTime();
-        span.text(Math.round(ms / 1000 / 6 + start * 10) / 10);
+        var seconds = Math.floor(ms / 1000 + start);
+        var txt = '';
+        if (seconds > 59) {
+          var minutes = Math.floor(seconds / 60);
+          seconds = seconds - minutes * 60;
+          txt = minutes + ':' + padRight(seconds);
+        }
+        else{
+          txt = '0:' + padRight(seconds);
+        }
+        span.html(' (' + txt + ' ago)');
       }
     });
+  };
+
+  var padRight = function(num) {
+    var s = num.toString();
+    return ('0' + s).substr(-2);
   };
 
   var setAutoRefresh = function (ev) {
@@ -156,49 +172,50 @@
 
       this.Btn = '<a target=L{LocationId} class=ZoomIn title=View href="../Ballots?l={LocationId}"><span class="ui-icon ui-icon-zoomin"></span></a>'.filledWith(this);
 
-      if (this.Name != lastName) {
-        if (last != null) {
-          last.rows = rows;
-          rows = 0;
-        }
-
-        count++;
-        this.ClassName = count % 2 == 0 ? 'Even' : 'Odd';
-        lastName = this.Name;
-        last = this;
-      } else {
-        this.Extra = true;
-        this.ClassName = last.ClassName;
+      if (last != null) {
+        last.rows = rows;
+        rows = 0;
       }
+
+      count++;
+      this.ClassName = count % 2 == 0 ? 'Even' : 'Odd';
+      lastName = this.Name;
+      last = this;
+      //      } else {
+      //        this.Extra = true;
+      //        this.ClassName = last.ClassName;
+      //      }
 
       if (this.BallotsCollected) {
         var pct = Math.floor(this.BallotsAtLocation / this.BallotsCollected * 100);
-        this.BallotsReport = '{0} of {1} ({2}%)'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
+        this.BallotsReport = '{2}%'.filledWith(this.BallotsAtLocation, this.BallotsCollected, pct); // ' of {0} ({1} to go)'.filledWith(this.BallotsCollected, this.BallotsCollected - this.Ballots);
         if (pct > 100) {
           this.BallotsReport = '<span class=error>{^0}</span>'.filledWith(this.BallotsReport);
         }
       } else {
-        if (this.BallotsAtLocation) {
-          this.BallotsReport = '{0} entered'.filledWith(this.BallotsAtLocation); // ' entered';
-        }
+        this.BallotsReport = '-';
       }
       if (!this.TallyStatus) {
-        this.TallyStatus = '(status not set)';
+        this.TallyStatus = '-';
       }
+      LogMessage(this.BallotCodes.length);
+      if (this.BallotCodes.length) {
+        var detailRow = '<table class=compList><thead><tr><th>Code</th><th>Ballots</th><th>Current Tellers</th></tr></thead><tbody>{^0}</tbody></table>';
+
+        $.each(this.BallotCodes, function () {
+          this.TellerInfo = '{Tellers} <span class="minutesOld" data-start="{SecondsOld}"></span><br>'.filledWithEach(this.Computers);
+        });
+
+        this.ComputerList = detailRow.filledWith(settings.rowTemplateExtra.filledWithEach(this.BallotCodes));
+      }
+
     });
 
     if (last != null) {
       last.rows = rows + 1;
     }
-
-    $.each(locations, function () {
-      if (this.Extra) {
-        html.push(settings.rowTemplateExtra.filledWith(this));
-      }
-      else {
-        html.push(settings.rowTemplateMain.filledWith(this));
-      }
-    });
+    LogMessage(settings.rowTemplateMain);
+    html.push(settings.rowTemplateMain.filledWithEach(locations));
 
     return html.join('');
   };

@@ -62,9 +62,10 @@ namespace TallyJ.CoreModels
 
     public JsonResult Search2(string nameToFind, bool includeMatches, bool forBallot)
     {
-      const int max = 45;
+      const int max = 30;
 
       var personList = new PersonCacher().AllForThisElection.ToList();
+      var voteList = new VoteCacher().AllForThisElection.ToList();
       var voteHelper = new VoteHelper(forBallot);
 
       List<SearchResult> results;
@@ -82,7 +83,7 @@ namespace TallyJ.CoreModels
           results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults(0, voteHelper).ToList();
           break;
         default:
-          results = GetRankedResults(personList, nameToFind, max, voteHelper, out moreFound);
+          results = GetRankedResults(personList, voteList, nameToFind, max, voteHelper, out moreFound);
           break;
       }
 
@@ -90,6 +91,7 @@ namespace TallyJ.CoreModels
       {
         Db.SaveChanges();
         new PersonCacher().ReplaceEntireCache(personList);
+        new VoteCacher().ReplaceEntireCache(voteList);
       }
 
       return new
@@ -110,7 +112,7 @@ namespace TallyJ.CoreModels
         .AsJsonResult();
     }
 
-    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, string nameToFind, int max, VoteHelper voteHelper, out bool moreFound)
+    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, List<Vote> voteList, string nameToFind, int max, VoteHelper voteHelper, out bool moreFound)
     {
       moreFound = false; // need to set
 
@@ -129,7 +131,7 @@ namespace TallyJ.CoreModels
 
       foreach (var person in people)
       {
-        var matchType = DetermineMatch(person, terms, metas);
+        var matchType = DetermineMatch(person, voteList, terms, metas);
         if (matchType > 0)
         {
           matched.Add(person.AsSearchResult(matchType, voteHelper));
@@ -147,14 +149,13 @@ namespace TallyJ.CoreModels
         return matched;
       }
 
-      var allVotesCached = new VoteCacher().AllForThisElection.ToList();
       var isSingleNameElection = UserSession.CurrentElection.IsSingleNameElection;
 
       foreach (var result in matched)
       {
         result.BestMatch = isSingleNameElection
-          ? allVotesCached.Where(v => v.PersonGuid == result.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
-          : allVotesCached.Count(v => v.PersonGuid == result.PersonGuid);
+          ? voteList.Where(v => v.PersonGuid == result.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
+          : voteList.Count(v => v.PersonGuid == result.PersonGuid);
       }
 
       return matched.OrderBy(m => m.MatchType).ThenBy(m => m.Name).ToList();
@@ -164,10 +165,11 @@ namespace TallyJ.CoreModels
     ///   Test this person for the terms and metas.
     /// </summary>
     /// <param name="person"></param>
+    /// <param name="voteList"></param>
     /// <param name="terms">Each term in the list must start with a space</param>
     /// <param name="metas">Each meta in the list must start with a space</param>
     /// <returns></returns>
-    public int DetermineMatch(Person person, string[] terms, string[] metas)
+    public int DetermineMatch(Person person, List<Vote> voteList, string[] terms, string[] metas)
     {
       AssertAtRuntime.That(terms[0][0] == ' ', "invalid term");
       if (person.CombinedInfo.HasNoContent()
@@ -175,10 +177,7 @@ namespace TallyJ.CoreModels
           || person.CombinedInfo.Contains("^")
           || person.CombinedSoundCodes.Contains("^"))
       {
-        Db.Person.Attach(person);
-        _savePeopleNeeded = true;
-        new PeopleModel().SetCombinedInfos(person);
-        // adjusted person is not saved... could add in future
+        AutoFix(person, voteList);
       }
 
       if (AllTermsFound(terms, person.CombinedInfo))
@@ -224,6 +223,31 @@ namespace TallyJ.CoreModels
         matchedPositions[t] = where;
       }
       return matches == terms.Length;
+    }
+
+    public void AutoFix(Person person, List<Vote> voteList)
+    {
+      var oldCombined = person.CombinedInfo;
+      var oldSounds = person.CombinedSoundCodes;
+
+      Db.Person.Attach(person);
+      new PeopleModel().SetCombinedInfos(person);
+
+      if (person.CombinedInfo == oldCombined && person.CombinedSoundCodes == oldSounds)
+      {
+        return;
+      }
+
+      _savePeopleNeeded = true;
+      
+      foreach (var vote in voteList.Where(v=>v.PersonGuid==person.PersonGuid))
+      {
+        if (vote.PersonCombinedInfo == oldCombined)
+        {
+          Db.Vote.Attach(vote);
+          vote.PersonCombinedInfo = person.CombinedInfo;
+        }
+      }
     }
 
     public string[] MakeTerms(string nameToFind)

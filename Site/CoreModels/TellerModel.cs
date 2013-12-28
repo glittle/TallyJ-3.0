@@ -51,7 +51,17 @@ namespace TallyJ.CoreModels
       var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
-      Db.Computer.Attach(currentComputer);
+      if (currentComputer == null)
+      {
+        var computerModel = new ComputerModel();
+        computerModel.AddCurrentComputerIntoCurrentElection();
+
+        currentComputer = UserSession.CurrentComputer;
+      }
+      else
+      {
+        Db.Computer.Attach(currentComputer);
+      }
 
       if (tellerId == 0)
       {
