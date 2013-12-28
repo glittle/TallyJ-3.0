@@ -24,36 +24,43 @@ namespace TallyJ.CoreModels
         var ballots = new BallotCacher().AllForThisElection;
         var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
         var locations = new LocationCacher().AllForThisElection;
+        var votes = new VoteCacher().AllForThisElection;
 
         return
           new
             {
               Locations = locations
-                .JoinMatchingOrNull(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
-                .OrderBy(g => g.l.SortOrder)
-                .ThenBy(g => g.c == null ? "" : g.c.ComputerCode)
-                .ThenBy(g => g.l.C_RowId)
-                .Select(g => new
+                //.JoinMatchingOrNull(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+                .OrderBy(l => l.SortOrder)
+                .ThenBy(l => l.Name)
+                .ThenBy(l => l.C_RowId)
+                .Select(l => new
                                 {
-                                  BallotsAtComputer = g.c == null ? "" : BallotModelCore.BallotCount(g.l.LocationGuid, g.c.ComputerCode, isSingleName, ballots).ToString(),
-                                  BallotsAtLocation = BallotModelCore.BallotCount(g.l.LocationGuid, isSingleName, ballots),
-                                  g.l.BallotsCollected,
-                                  ComputerCode = g.c == null ? "" : g.c.ComputerCode,
-                                  g.l.ContactInfo,
-                                  g.l.Name,
-                                  TallyStatus = LocationStatusEnum.TextFor(g.l.TallyStatus),
-                                  Teller = g.c == null ? null : g.c.GetTellerNames(),
-                                  MinutesOld = g.c != null && g.c.LastContact.HasValue ? ((now - g.c.LastContact.Value).TotalSeconds / 60).ToString("0.0") : "",
-                                  LocationId = g.l.C_RowId
+                                  BallotsAtLocation = BallotModelCore.BallotCount(l.LocationGuid, isSingleName, ballots),
+                                  l.BallotsCollected,
+                                  l.ContactInfo,
+                                  l.Name,
+                                  TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
+                                  LocationId = l.C_RowId,
+                                  BallotCodes = ballots.Where(b=>b.LocationGuid==l.LocationGuid).GroupBy(b => b.ComputerCode)
+                                    .Select(g => new
+                                    {
+                                      ComputerCode = g.Key,
+                                      BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots).ToString(),
+                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.LocationGuid == l.LocationGuid && c.ComputerCode == g.Key)
+                                         .Select(c => new
+                                         {
+                                           Tellers = c.GetTellerNames(),
+                                           SecondsOld = c.LastContact.HasValue ? ((now - c.LastContact.Value).TotalSeconds).ToString("0") : "",
+                                         })
+
+                                    })
                                 })
                                 ,
-              Ballots = ballots//.Select(b=>new BallotInfo(b, null))
+              Ballots = ballots
                 .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.StatusCode == BallotStatusEnum.Verify)
                 .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, l })
-//                .JoinMatchingOrNull(tellers, g => g.b.TellerAtKeyboard, t => t.TellerGuid, (g, t) => new { g.b, g.l, TellerAtKeyboardName = t == null ? null : t.Name })
-//                .JoinMatchingOrNull(tellers, g => g.b.TellerAssisting, t => t.TellerGuid, (g, t) => new { g.b, g.l, g.TellerAtKeyboardName, TellerAssistingName = t == null ? null : t.Name })
                 .OrderBy(g => g.b.C_RowId)
-                //.ToList()
                 .Select(g =>
                 new
                   {

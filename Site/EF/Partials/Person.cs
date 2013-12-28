@@ -37,7 +37,11 @@ namespace TallyJ.EF
         }.JoinedAsString("", true);
       }
     }
-    
+
+    public string FullNameAndArea {
+      get { return FullNameFL + Area.SurroundContentWith(" (", ")"); }
+    }
+
     public string FullNameFL {
       get
       {

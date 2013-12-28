@@ -12,57 +12,68 @@
 <table class="Main">
   <thead>
     <tr>
-      <th>
+      <th rowspan="2">
         Location
       </th>
-      <th>
+      <th colspan="3">
         Ballots
       </th>
-      <th>
+      <th rowspan="2">
         Status
       </th>
-      <th>
+      @*<th rowspan="2">
         @(UserSession.CurrentElection.IsSingleNameElection ? "Group" : "Computer")
-      </th>
-      <th>
-        # Ballots
+      </th>*@
+      @*<th>
+        Ballots
       </th>
       <th>
         Minutes Ago
       </th>
       <th>
         Tellers
+      </th>*@
+      <th rowspan="2">
+        @(UserSession.CurrentElection.IsSingleNameElection ? "Groups" : "Computers")
+      </th>
+      <th rowspan="2">
+        Contact Info
+      </th>
+    </tr>
+    <tr>
+      <th>
+        %
       </th>
       <th>
-        Contact Info
+        Counted
+      </th>
+      <th>
+        Entered
       </th>
     </tr>
   </thead>
   <tbody id="mainBody" class="Hidden">
     <tr>
-      <th rowspan="{rows}">
+      <th>
         {^Name} {^Btn}
       </th>
-      <td rowspan="{rows}">
+      <td>
         {^BallotsReport}
       </td>
-      <td rowspan="{rows}">
+      <td>
+        {^BallotsCollected}
+      </td>
+      <td>
+        {^BallotsAtLocation}
+      </td>
+      <td>
         {^TallyStatus}
       </td>
       <td>
-        {ComputerCode}
+        {^ComputerList}
       </td>
       <td>
-        {BallotsAtComputer}
-      </td>
-      <td>
-        <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
-      </td>
-      <td>
-        {Teller}
-      </td>
-      <td rowspan="{rows}">
-        {ContactInfo}
+        {^ContactInfo}
       </td>
     </tr>
     <tr>
@@ -73,10 +84,7 @@
         {BallotsAtComputer}
       </td>
       <td>
-        <span class="minutesOld" data-start="{MinutesOld}">{MinutesOld}</span>
-      </td>
-      <td>
-        {Tellers}
+        {^TellerInfo}
       </td>
     </tr>
   </tbody>

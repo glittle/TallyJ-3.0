@@ -1,47 +1,64 @@
-﻿table
-{
-    border-collapse: separate;
-    border-spacing: 0px 0px;
-}
-thead th
-{
-    border-bottom: 1px solid #000;
+﻿.ui-icon {
+  display: inline-block;
 }
 
-tr th:first-child
-{
-    text-align: left;
-    vertical-align: top;
-    padding-right: 5px;
-}
-td
-{
-    text-align: center;
-    vertical-align: top;
-    min-width: 100px;
-    padding: 2px 7px;
-    border-left: 1px solid #e0e0e0;
+table {
+  border-collapse: separate;
+  border-spacing: 0px 0px;
 }
 
-tr.Odd {
-    background-color: #eaeaea;
-}
-tr.Odd td {
-    border-left: 1px solid #d0d0d0;
+.Main > thead th {
+  border-bottom: 1px solid #000;
+  padding: 2px 7px;
 }
 
-tr.Extra td {
+tbody th {
+  padding: 2px 7px;
+  text-align: left;
+  vertical-align: top;
 }
+
+#mainBody > tr > td {
+  text-align: center;
+  vertical-align: top;
+  padding: 2px 7px;
+  border-left: 1px solid #e0e0e0;
+}
+
+#mainBody > tr.Odd {
+  background-color: #eaeaea;
+}
+
+table.compList {
+  width: 100%;
+}
+
+  table.compList thead th {
+    font-weight: normal;
+    font-style: italic;
+    color: #999;
+    font-size: 80%;
+    white-space: nowrap;
+  }
+
 
 .AutoButtons {
-    margin-top: 20px;
+  margin-top: 20px;
 }
+
 .Rows {
-    display: none;
+  display: none;
 }
+
 .ZoomIn {
-    display: inline-block;
+  display: inline-block;
 }
+
 .Ballots {
-    margin-top: 2em;
+  margin-top: 2em;
+}
+
+.minutesOld {
+  color: #999;
+  font-size: 80%;
 }

@@ -53,31 +53,32 @@ namespace Tests.BusinessTests
     {
       var pm = new PeopleModel();
       var p = new Person {FirstName = "Aa", LastName = "Zz"};
+      var votes = new List<Vote>();
       pm.SetCombinedInfos(p);
 
       var psm = new PeopleSearchModel();
 
       // okay
       var terms = psm.MakeTerms("a");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("aa");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("a z");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("  a   z   "); // extra spaces have no impact
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("z a");  // order doesn't matter
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
 
 
       // miss
       terms = psm.MakeTerms("b");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(0);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(0);
 
     }
 
@@ -85,37 +86,38 @@ namespace Tests.BusinessTests
     public void Search_TestPerson1()
     {
       var pm = new PeopleModel();
-      var p = new Person { FirstName = "Glen", LastName = "Little", BahaiId = "23680", OtherLastNames = "Miller"};
+      var votes = new List<Vote>();
+      var p = new Person { FirstName = "Glen", LastName = "Little", BahaiId = "23680", OtherLastNames = "Miller" };
       pm.SetCombinedInfos(p);
 
       var psm = new PeopleSearchModel();
 
       // okay
       var terms = psm.MakeTerms("gl li");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("glen");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("g m l");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("236");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
       terms = psm.MakeTerms("mil gle");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(1);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(1);
 
 
 
       // miss
       terms = psm.MakeTerms("gln");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(0);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(0);
 
 
       // sound match
       terms = psm.MakeTerms("glenn");
-      psm.DetermineMatch(p, terms, psm.MakeMetas(terms)).ShouldEqual(2);
+      psm.DetermineMatch(p, votes, terms, psm.MakeMetas(terms)).ShouldEqual(2);
     }
 
 

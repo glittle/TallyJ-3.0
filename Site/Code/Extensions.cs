@@ -725,7 +725,7 @@ namespace TallyJ.Code
       {
         Id = p.C_RowId,
         PersonGuid = p.PersonGuid,
-        Name = p.FullNameFL + p.BahaiId.SurroundContentWith(" (", ")") + p.Area.SurroundContentWith(" (", ")"),
+        Name = p.FullNameAndArea,
         CanReceiveVotes = p.CanReceiveVotes,
         Ineligible = voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes),
         RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
