@@ -665,6 +665,9 @@
     <None Include="EntityFramework.Extended\Audit\Audit.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Reports\VotesByName.cshtml" />
+    <Content Include="Reports\VotesByNum.cshtml" />
+    <Content Include="Reports\Main.cshtml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -906,7 +909,7 @@
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\Ballots\Reconcile.cshtml" />
     <Content Include="Download\open\sampleCommunity.csv" />
-    <Content Include="Views\After\BallotsReport.cshtml" />
+    <Content Include="Reports\Ballots.cshtml" />
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>

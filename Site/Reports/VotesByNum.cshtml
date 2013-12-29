@@ -1,0 +1,57 @@
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+
+@{
+  var people = new ResultCacher().AllForThisElection
+            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
+            .OrderByDescending(g => g.r.VoteCount)
+            .ThenBy(g => g.p.FullNameFL)
+            .Select(g => new
+                          {
+                            PersonName = g.p.FullNameFL,
+                            g.r.VoteCount
+                          });
+}
+<style>
+  .Votes {
+    -webkit-column-width: 15em;
+    -moz-column-width: 15em;
+    -ms-column-width: 15em;
+    -o-column-width: 15em;
+    column-width: 15em;
+    -webkit-column-gap: 1em;
+    -moz-column-gap: 1em;
+    -ms-column-gap: 1em;
+    -o-column-gap: 1em;
+    column-gap: 1em;
+    -webkit-column-rule-width: 4px;
+    -moz-column-rule-width: 4px;
+    -ms-column-rule-width: 4px;
+    -o-column-rule-width: 4px;
+    column-rule-width: 4px;
+  }
+
+  .person {
+    text-indent: -2em;
+    margin-left: 2em;
+  }
+</style>
+<div class="body">
+  <h1>Full Tellers' Report</h1>
+  <p class="Comment">
+    "If the assembled friends choose to have a full Tellers’ Report including the names
+    of all who are voted for and the number of votes received, this is acceptable."  (Spoiled votes and names on spoiled ballots are not included.)
+  </p>
+  <div class="Votes">
+    @foreach (var person in people)
+    {
+      <div class="person">
+        <span class="small1">@person.VoteCount - </span>
+        <span class="name">@person.PersonName</span>
+      </div>
+    }
+  </div>
+</div>

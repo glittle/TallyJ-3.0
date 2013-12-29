@@ -240,131 +240,41 @@ namespace TallyJ.CoreModels
       return _analyzer.IsResultAvailable ? GetCurrentResults() : null;
     }
 
-    public JsonResult GetReportData(string code, ControllerContext view)
+    public JsonResult GetReportData(string code)
     {
       var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
-      object data = null;
+      var status = "ok";
+      var electionStatus = CurrentElection.TallyStatus;
+
       var html = "";
       switch (code)
       {
         case "Ballots":
-          //html = RenderPartialExtensions.RenderPartial(new HtmlHelper(view.ParentActionViewContext, null), "BallotsReport");
-          //html = new HtmlHelper(view.ParentActionViewContext, null).Partial("BallotsReport", new ViewDataDictionary());
-          html = MvcViewRenderer.RenderRazorViewToString("~/Views/After/BallotsReport.cshtml", null);
-
-//          var ballots = new BallotCacher().AllForThisElection;
-//          var locations = new LocationCacher().AllForThisElection;
-//
-//          data = ballots
-//            .OrderBy(b =>
-//            {
-//              var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
-//              return location == null ? "" : location.Name;
-//            })
-//            .ThenBy(b => b.ComputerCode)
-//            .ThenBy(b => b.BallotNumAtComputer)
-//            .Select(b =>
-//            {
-//              var location = locations.FirstOrDefault(l=>l.LocationGuid==b.LocationGuid);
-//              var locName = locations.Count > 1 && location != null ? location.Name : "";
-//              return new
-//                           {
-//                             C_BallotCode = locName.HasContent() ? locName + " " + b.C_BallotCode : b.C_BallotCode,
-//                             b.StatusCode,
-//                             Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-//                             Rows2 = BallotModelCore.VoteInfosForBallot(b)
-//                               .OrderBy(v => v.PositionOnBallot)
-//                               .Select(v => new
-//                               {
-//                                 v.PersonFullNameFL,
-//                                 Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
-//                                 VoteInvalidReasonDesc =
-//                                   IneligibleReasonEnum.DescriptionFor(
-//                                     v.VoteIneligibleReasonGuid.AsGuid()).
-//                                     SurroundContentWith("[", "]")
-//                               })
-//                           };
-//            })
-//            .OrderBy(x => x.C_BallotCode);
-
+          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/Ballots.cshtml");
           break;
 
         case "AllReceivingVotes":
+          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/VotesByName.cshtml");
+          break;
+
         case "AllReceivingVotesByVote":
-          var electionGuid = CurrentElection.ElectionGuid;
-          var rows = new ResultCacher().AllForThisElection
-            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p });
-          if (code == "AllReceivingVotes")
-          {
-            rows = rows.OrderBy(g => g.p.FullNameFL);
-          }
-          else
-          {
-            rows = rows.OrderByDescending(g => g.r.VoteCount)
-              .ThenBy(g => g.p.FullNameFL);
-          }
-          data = rows.Select(g =>
-            new
-            {
-              PersonName = g.p.FullNameFL,
-              g.r.VoteCount
-            }
-            );
+          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/VotesByNum.cshtml");
           break;
 
         case "SimpleResults":
           var currentElection = CurrentElection;
-
           if (summary == null)
           {
-            return new
-            {
-              Status = "Results not available. Please view 'Analyze' page first.",
-              ElectionStatus = currentElection.TallyStatus,
-              ElectionStatusText = ElectionTallyStatusEnum.TextFor(currentElection.TallyStatus)
-            }.AsJsonResult();
+            status = "Results not available. Please view 'Analyze' page first.";
+            electionStatus = currentElection.TallyStatus;
           }
-
-          var result = new ResultCacher().AllForThisElection
-            .OrderBy(r => r.Rank)
-            .Take(currentElection.NumberToElect.AsInt() + currentElection.NumberExtra.AsInt())
-            .ToList()
-            .Join(new PersonCacher().AllForThisElection.Where(p => p.ElectionGuid == currentElection.ElectionGuid),
-              r => r.PersonGuid,
-              p => p.PersonGuid,
-              (result1, person) => new { person, result1 })
-            .ToList();
-
-          return new
+          else
           {
-            People = result.Select(rp =>
-              new
-              {
-                Name = rp.person.FullName,
-                rp.person.BahaiId,
-                Rank = rp.result1.Section == ResultHelper.Section.Extra
-                  ? "Next " + rp.result1.RankInExtra
-                  : rp.result1.Rank.ToString(),
-                VoteCountPlus = rp.result1.VoteCount.GetValueOrDefault() +
-                                (rp.result1.TieBreakCount.GetValueOrDefault() ==
-                                 0
-                                  ? ""
-                                  : " / {0}".FilledWith(
-                                    rp.result1.TieBreakCount)),
-              }
-              ),
-            Info = new
-            {
-              currentElection.Name,
-              Final = summary
-            },
-            Status = "ok",
-            ElectionStatus = currentElection.TallyStatus,
-            Ready = readyForReports,
-            ElectionStatusText = ElectionTallyStatusEnum.TextFor(currentElection.TallyStatus)
-          }.AsJsonResult();
+            html = MvcViewRenderer.RenderRazorViewToString("~/Reports/Main.cshtml", summary);
+          }
+          break;
 
         default:
           return new { Status = "Unknown report" }.AsJsonResult();
@@ -372,12 +282,11 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        Rows = data,
         Html = html,
-        Status = "ok",
+        Status = status,
         Ready = readyForReports,
-        ElectionStatus = CurrentElection.TallyStatus,
-        ElectionStatusText = ElectionTallyStatusEnum.TextFor(CurrentElection.TallyStatus)
+        ElectionStatus = electionStatus,
+        ElectionStatusText = ElectionTallyStatusEnum.TextFor(electionStatus)
       }.AsJsonResult();
     }
 
@@ -458,7 +367,7 @@ namespace TallyJ.CoreModels
       }
 
       Db.SaveChanges();
-      
+
       new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
 
       _analyzer.PrepareResultSummaries();

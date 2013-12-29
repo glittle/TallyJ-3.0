@@ -77,13 +77,7 @@ namespace TallyJ.Controllers
         [ForAuthenticatedTeller]
         public JsonResult GetReportData(string code)
         {
-            return new ResultsModel().GetReportData(code, ControllerContext);
-        }
-
-        [ForAuthenticatedTeller]
-        public ActionResult BallotsReport()
-        {
-            return View();
+            return new ResultsModel().GetReportData(code);
         }
 
         [ForAuthenticatedTeller]

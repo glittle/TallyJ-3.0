@@ -27,7 +27,7 @@
     };
 
     var getReport = function (code) {
-        ShowStatusDisplay('Getting data...');
+        ShowStatusDisplay('Getting report...');
         local.reportHolder.fadeOut();
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, code);
     };
@@ -51,6 +51,9 @@
 
       if (info.Html) {
         local.reportHolder.removeClass().addClass('Report' + code).fadeIn().html(info.Html);
+        if (!info.Ready) {
+          $('#Status').html(warningMsg).show();
+        }
       } else {
         processData(code, info);
       }

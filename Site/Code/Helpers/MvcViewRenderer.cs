@@ -9,7 +9,7 @@ namespace TallyJ.Code.Helpers
 {
   public class MvcViewRenderer
   {
-    public static string RenderRazorViewToString(string pathToView, object model)
+    public static string RenderRazorViewToString(string pathToView, object model = null)
     {
       var path = HostingEnvironment.MapPath(pathToView);
       if(path==null)
