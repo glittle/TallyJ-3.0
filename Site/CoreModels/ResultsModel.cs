@@ -251,18 +251,6 @@ namespace TallyJ.CoreModels
       var html = "";
       switch (code)
       {
-        case "Ballots":
-          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/Ballots.cshtml");
-          break;
-
-        case "AllReceivingVotes":
-          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/VotesByName.cshtml");
-          break;
-
-        case "AllReceivingVotesByVote":
-          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/VotesByNum.cshtml");
-          break;
-
         case "SimpleResults":
           var currentElection = CurrentElection;
           if (summary == null)
@@ -277,7 +265,12 @@ namespace TallyJ.CoreModels
           break;
 
         default:
-          return new { Status = "Unknown report" }.AsJsonResult();
+          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/{0}.cshtml".FilledWith(code));
+          if (html.HasNoContent())
+          {
+            return new {Status = "Unknown report"}.AsJsonResult();
+          }
+          break;
       }
 
       return new

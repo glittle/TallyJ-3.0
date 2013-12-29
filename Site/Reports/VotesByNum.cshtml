@@ -5,15 +5,24 @@
 @using TallyJ.CoreModels
 
 @{
+  var section = ResultHelper.Section.Top;
   var people = new ResultCacher().AllForThisElection
             .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
-            .OrderByDescending(g => g.r.VoteCount)
+            .OrderBy(g => g.r.Rank)
             .ThenBy(g => g.p.FullNameFL)
-            .Select(g => new
-                          {
-                            PersonName = g.p.FullNameFL,
-                            g.r.VoteCount
-                          });
+            .Select(g =>
+            {
+              var showBreak = g.r.Section != section;
+              section = g.r.Section;
+              return new
+              {
+                PersonName = g.p.FullNameFL,
+                ShowBreak = showBreak,
+                g.r.VoteCount,
+                g.r.TieBreakCount,
+                g.r.TieBreakRequired
+              };
+            });
 }
 <style>
   .Votes {
@@ -38,9 +47,13 @@
     text-indent: -2em;
     margin-left: 2em;
   }
+  .Break {
+    border-top: 1px solid #999;
+    height: 1px;
+  }
 </style>
 <div class="body">
-  <h1>Full Tellers' Report</h1>
+  <h1 id="title"></h1>
   <p class="Comment">
     "If the assembled friends choose to have a full Tellers’ Report including the names
     of all who are voted for and the number of votes received, this is acceptable."  (Spoiled votes and names on spoiled ballots are not included.)
@@ -48,8 +61,12 @@
   <div class="Votes">
     @foreach (var person in people)
     {
+      if (person.ShowBreak)
+      {
+        <div class="Break"></div>
+      }
       <div class="person">
-        <span class="small1">@person.VoteCount - </span>
+        <span class="small1">@person.VoteCount @(person.TieBreakRequired.AsBoolean() ? " / " + person.TieBreakCount : "") - </span>
         <span class="name">@person.PersonName</span>
       </div>
     }

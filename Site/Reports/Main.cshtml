@@ -34,9 +34,6 @@
 
 </style>
 <div class="body">
-  <h1>
-    Tellers' Report
-  </h1>
   <h2>
     @currentElection.Name
   </h2>
@@ -102,7 +99,7 @@
         Percentage of participation
       </td>
       <td>
-        @Model.PercentParticipation.ToString("P0")
+        @((Model.PercentParticipation / 100.0).ToString("P0"))
       </td>
     </tr>
     <tr class="rpt1Detail">

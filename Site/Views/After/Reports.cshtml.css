@@ -35,13 +35,14 @@ div.chooser
 }
 #report
 {
+  display: none;
     border: outset 3px gainsboro;
     float: left;
     width: 735px;
     padding: 0 3pt 6pt 3pt;
     margin-left: 5px;
     font-size: 13pt;
-    padding: 5px;
+    xpadding: 5px;
     height: 100%;
 }
 #report h1 {

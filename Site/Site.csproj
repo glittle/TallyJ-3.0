@@ -668,6 +668,8 @@
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
+    <Content Include="Reports\ChangedPeople.cshtml" />
+    <None Include="Properties\PublishProfiles\Local for Distribution.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
