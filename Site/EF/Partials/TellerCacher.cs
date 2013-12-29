@@ -5,9 +5,9 @@ namespace TallyJ.EF
 {
   public class TellerCacher : CacherBase<Teller>
   {
-    protected override IQueryable<Teller> MainQuery(TallyJ2dEntities db)
+    protected override IQueryable<Teller> MainQuery()
     {
-      return db.Teller.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
+      return CurrentDb.Teller.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
     }
   }
 }

@@ -124,7 +124,7 @@
                             currentGroup = group;
                             groupMax = value;
                         }
-                        item.css('background-color', '#013d{0}0'.filledWith(group));
+                        //item.css('background-color', '#013d{0}0'.filledWith(group));
                         item.animate({
                             width: (value / groupMax * 100) + '%'
                         }, {

@@ -1,0 +1,72 @@
+﻿@using System.Web;
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+
+@{
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart)
+    .OrderBy(p => p.FullNameFL)
+    .Select(p => new
+    {
+      p.FirstName,
+      p.LastName,
+      p.OtherNames,
+      p.OtherLastNames,
+      p.OtherInfo,
+      p.BahaiId
+    });
+}
+<style>
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
+  thead td {
+    padding-left: 2px;
+    padding-right: 6px;
+  }
+  tr {
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  table.People {
+    margin: 1em;
+  }
+  table.People tbody td {
+    border-top: 1px solid #ddd;
+  }
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    This shows all people who where added or changed since the list of names was first imported.  (Unfortunately, the list does not indicate exactly which names have been changed.)
+  </p>
+  <table class="People">
+    <thead>
+      <tr>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Other First Names</td>
+        <td>Other Last Names</td>
+        <td>Other Info</td>
+        <td>Baha'i Id</td>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var p in people)
+      {
+        <tr class="person">
+          <td>@p.FirstName</td>
+          <td>@p.LastName</td>
+          <td>@p.OtherNames</td>
+          <td>@p.OtherLastNames</td>
+          <td>@p.OtherInfo</td>
+          <td>@p.BahaiId</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

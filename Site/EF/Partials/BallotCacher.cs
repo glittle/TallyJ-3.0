@@ -6,10 +6,10 @@ namespace TallyJ.EF
 {
   public class BallotCacher : CacherBase<Ballot>
   {
-    protected override IQueryable<Ballot> MainQuery(TallyJ2dEntities db)
+    protected override IQueryable<Ballot> MainQuery()
     {
-      return db.Ballot
-        .Join(db.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b);
+      return CurrentDb.Ballot
+        .Join(CurrentDb.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b);
     }
 
   }

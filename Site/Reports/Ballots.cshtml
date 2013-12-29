@@ -1,0 +1,136 @@
+﻿@using TallyJ.Code
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Session
+@using TallyJ.CoreModels
+@using TallyJ.EF
+@{
+  var ballots = new BallotCacher().AllForThisElection;
+  var locations = new LocationCacher().AllForThisElection;
+  var election = UserSession.CurrentElection;
+  var isSingleNameElection = election.IsSingleNameElection;
+
+  var data = ballots
+    .OrderBy(b =>
+    {
+      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
+      return location == null ? "" : location.Name;
+    })
+    .ThenBy(b => b.ComputerCode)
+    .ThenBy(b => b.BallotNumAtComputer)
+    .Select(b =>
+    {
+      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
+      var locName = locations.Count > 1 && location != null ? location.Name : "";
+      var locId = location == null ? 0 : location.C_RowId;
+      return new
+      {
+        C_BallotCode = locName.HasContent() ? locName + " " + b.C_BallotCode : b.C_BallotCode,
+        BallotId = b.C_RowId,
+        LocationId = locId,
+        b.StatusCode,
+        Spoiled = b.StatusCode != BallotStatusEnum.Ok,
+        Votes = BallotModelCore.VoteInfosForBallot(b)
+          .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
+          .Select(v => new
+          {
+            v.PersonFullNameFL,
+            v.SingleNameElectionCount,
+            Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+            VoteInvalidReasonDesc =
+              IneligibleReasonEnum.DescriptionFor(
+                v.VoteIneligibleReasonGuid.AsGuid()).
+                SurroundContentWith("[", "]")
+          })
+      };
+    });
+}
+<style>
+  table.Ballots td {
+    border: 1px solid #ccc;
+    vertical-align: top;
+    padding: 1px 3px 2px 5px;
+  }
+
+  table.Ballots {
+     border-collapse: collapse;
+     border-left-style: hidden;
+     border-right-style: hidden;
+     border-bottom-style: hidden;
+  }
+
+  table.Ballots td:first-child {
+     white-space: nowrap;
+  }
+
+  .Count {
+     font-weight: bold;
+     padding-left: 2px;
+  }
+
+  .Ballot {
+    font-size: 10pt;
+    margin-top: 3px;
+  }
+
+  .BallotSpoiled,
+  .BallotSpoiled div,
+  .BallotSpoiled span {
+    text-decoration: line-through;
+    color: red;
+  }
+
+  .Ballot > div { display: table-cell; }
+
+  .Ballot > div:first-child { }
+
+  .Ballot .Vote {
+    display: inline-block;
+    white-space: normal;
+  }
+
+  .Ballot .Vote .Person { white-space: inherit; }
+
+  .Ballot .Vote .Invalid {
+    color: red;
+    font-style: italic;
+    font-size: 90%;
+  }
+
+  .Spoiled { color: red; }
+
+  .Spoiled .Person { text-decoration: line-through; }
+
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.
+  </p>
+  <table class="Ballots">
+    @foreach (var ballot in data)
+{
+  <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "")">
+    <td><a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a> (@ballot.StatusCode)</td>
+    <td>
+      @foreach (var vote in ballot.Votes)
+      {
+        <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
+          @if (isSingleNameElection)
+          {
+            <span class="Person">@vote.PersonFullNameFL</span>
+            <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
+            <span class="Count">@vote.SingleNameElectionCount</span><span>; &nbsp;</span>
+          }
+          else
+          {
+            <span class="Person">@vote.PersonFullNameFL</span>
+            <span class="Invalid">@vote.VoteInvalidReasonDesc</span><span>; &nbsp;</span>
+          }
+        </span>
+      }
+    </td>
+
+  </tr>
+}
+  </table>
+</div>

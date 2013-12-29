@@ -53,7 +53,7 @@ namespace TallyJ.EF
 
         CacheKey internalCacheKey;
 
-        var allForThisElection = MainQuery(db)
+        var allForThisElection = MainQuery()
           .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)),
             new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
 
@@ -89,7 +89,7 @@ namespace TallyJ.EF
     }
 
 
-    private TallyJ2dEntities CurrentDb
+    protected TallyJ2dEntities CurrentDb
     {
       get { return UnityInstance.Resolve<IDbContextFactory>().DbContext; }
     }
@@ -144,7 +144,7 @@ namespace TallyJ.EF
     /// <param name="listFromCache"></param>
     public void ReplaceEntireCache(List<T> listFromCache)
     {
-      var key = new CacheKey(MainQuery(CurrentDb).GetCacheKey(), 
+      var key = new CacheKey(MainQuery().GetCacheKey(), 
         new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
 
       Locator.Current.Resolve<CacheManager>()
@@ -179,6 +179,6 @@ namespace TallyJ.EF
       CacheManager.Current.Expire(CacheKeyRaw);
     }
 
-    protected abstract IQueryable<T> MainQuery(TallyJ2dEntities db);
+    protected abstract IQueryable<T> MainQuery();
   }
 }
