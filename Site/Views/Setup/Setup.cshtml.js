@@ -54,6 +54,7 @@
     site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
     site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
+    site.qTips.push({ selector: '#qTipWhyMask', title: 'Masking Voting Methods', text: 'If only one or two people have used a voting method, it may be desired to mask the voting method.' });
     //site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
@@ -120,6 +121,7 @@
 
       if (info.Id == 0) {
         input.parent().remove();
+        setupLocationSortable();
       } else {
         input.val(info.Text);
         if (info.Id != form.id) {
@@ -137,6 +139,9 @@
       containment: 'parent',
       tolerance: 'pointer'
     });
+
+    var multiple = $('#locationList > div').length > 1;
+    $('#locationList .ui-icon').toggle(multiple);
   };
   var orderChanged = function (ev, ui) {
     var ids = [];

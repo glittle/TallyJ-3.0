@@ -5,9 +5,9 @@ namespace TallyJ.EF
 {
   public class ComputerCacher : CacherBase<Computer>
   {
-    protected override IQueryable<Computer> MainQuery(TallyJ2dEntities db)
+    protected override IQueryable<Computer> MainQuery()
     {
-      return db.Computer.Where(c => c.ElectionGuid == UserSession.CurrentElectionGuid);
+      return CurrentDb.Computer.Where(c => c.ElectionGuid == UserSession.CurrentElectionGuid);
     }
   }
 }

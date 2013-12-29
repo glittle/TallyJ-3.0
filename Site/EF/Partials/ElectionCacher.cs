@@ -11,9 +11,9 @@ namespace TallyJ.EF
 {
   public class ElectionCacher : CacherBase<Election>
   {
-    protected override IQueryable<Election> MainQuery(TallyJ2dEntities db)
+    protected override IQueryable<Election> MainQuery()
     {
-      return db.Election.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
+      return CurrentDb.Election.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
     }
 
     /// <summary>

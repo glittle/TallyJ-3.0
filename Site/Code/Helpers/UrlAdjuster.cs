@@ -2,10 +2,10 @@ using System.Text.RegularExpressions;
 
 namespace TallyJ.Code.Helpers
 {
-    /// <summary>
-    /// Rewrites URLs
-    /// </summary>
-    public class UrlAdjuster
+  /// <summary>
+  /// Rewrites URLs
+  /// </summary>
+  public class UrlAdjuster
     {
         private readonly Regex _rCss = new Regex(@"^(.*\.css)(-\d*)$", RegexOptions.IgnoreCase);
         private readonly Regex _rLess = new Regex(@"^(.*\.less)(-\d*)$", RegexOptions.IgnoreCase);

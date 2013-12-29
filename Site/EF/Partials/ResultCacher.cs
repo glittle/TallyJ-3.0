@@ -5,10 +5,10 @@ namespace TallyJ.EF
 {
   public class ResultCacher : CacherBase<Result>
   {
-    protected override IQueryable<Result> MainQuery(TallyJ2dEntities db)
+    protected override IQueryable<Result> MainQuery()
     {
       var currentElectionGuid = UserSession.CurrentElectionGuid;
-      return db.Result.Where(p => p.ElectionGuid == currentElectionGuid);
+      return CurrentDb.Result.Where(p => p.ElectionGuid == currentElectionGuid);
     }
   }
 }

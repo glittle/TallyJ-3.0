@@ -161,6 +161,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="RazorEngine">
+      <HintPath>..\packages\RazorEngine.3.4.0\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -243,6 +246,7 @@
     <Compile Include="Code\Enumerations\IEnumeration.cs" />
     <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
     <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
+    <Compile Include="Code\Helpers\MvcViewRenderer.cs" />
     <Compile Include="Code\Helpers\UrlAdjuster.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\LogHelper.cs" />
@@ -661,6 +665,11 @@
     <None Include="EntityFramework.Extended\Audit\Audit.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Reports\VotesByName.cshtml" />
+    <Content Include="Reports\VotesByNum.cshtml" />
+    <Content Include="Reports\Main.cshtml" />
+    <Content Include="Reports\ChangedPeople.cshtml" />
+    <None Include="Properties\PublishProfiles\Local for Distribution.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -902,6 +911,7 @@
     <Content Include="Views\After\Reports.cshtml" />
     <Content Include="Views\Ballots\Reconcile.cshtml" />
     <Content Include="Download\open\sampleCommunity.csv" />
+    <Content Include="Reports\Ballots.cshtml" />
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
