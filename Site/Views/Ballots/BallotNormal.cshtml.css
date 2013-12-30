@@ -3,7 +3,7 @@
 }
 
 #votesPanel, .div1 {
-  display:none;
+  display: none;
 }
 
 /* overrides to fix UI */
@@ -192,7 +192,7 @@ button.smallButton {
 }
 
 .Valid .Invalid,
-.Valid .Duplicate  {
+.Valid .Duplicate {
   display: none;
 }
 
@@ -433,4 +433,12 @@ span.HideZero0 {
 
 .ballotDiv1 {
   margin: 2px 0 5px 0;
+}
+
+#ballotFilter {
+  float: right;
+  width: auto;
+  clear: right;
+  margin-top: 9px;
+  font-size: 80%;
 }

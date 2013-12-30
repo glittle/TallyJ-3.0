@@ -26,10 +26,7 @@ namespace TallyJ.CoreModels
   {
     private const int ThresholdForCloseVote = 3;
 
-    private readonly Func<Result, Result> _deleteResult;
-    private readonly Func<ResultTie, ResultTie> _deleteResultTie;
     private readonly Func<int> _saveChanges;
-    private BallotAnalyzer _ballotAnalyzer;
     private List<Ballot> _ballots;
     private Election _election;
     private List<Person> _people;
@@ -38,19 +35,18 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
-    private int tempRowId = -1;
-    protected readonly Savers _savers;
+    protected readonly Savers Savers;
 
     protected ElectionAnalyzerCore()
     {
-      _savers = new Savers();
+      Savers = new Savers();
     }
 
     protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people,
                                    List<Ballot> ballots,
                                    List<VoteInfo> voteinfos)
     {
-      _savers = new Savers(fakes);
+      Savers = new Savers(fakes);
       _election = election;
       _resultTies = fakes.ResultTies;
       _results = fakes.Results;
@@ -60,9 +56,7 @@ namespace TallyJ.CoreModels
       _ballots = ballots;
       _voteinfos = voteinfos;
       _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
-      _deleteResult = fakes.RemoveResult;
       _saveChanges = fakes.SaveChanges;
-      _deleteResultTie = fakes.RemoveResultTie;
       IsFaked = true;
     }
 
@@ -71,7 +65,7 @@ namespace TallyJ.CoreModels
     protected ElectionAnalyzerCore(Election election)
     {
       _election = election;
-      _savers = new Savers();
+      Savers = new Savers();
     }
 
     public ResultSummary ResultSummaryCalc { get; private set; }
@@ -393,10 +387,10 @@ namespace TallyJ.CoreModels
       }
 
       // first refresh all votes
-      VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, _savers.VoteSaver);
+      VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, Savers.VoteSaver);
 
       // then refresh all ballots
-      var ballotAnalyzer = new BallotAnalyzer(TargetElection, _savers.BallotSaver);
+      var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
 
       // clear any existing results
@@ -408,7 +402,7 @@ namespace TallyJ.CoreModels
       // attach results, but don't save yet
       Results.ForEach(delegate(Result result)
       {
-        _savers.ResultSaver(DbAction.Attach, result);
+        Savers.ResultSaver(DbAction.Attach, result);
         InitializeSomeProperties(result);
       });
 
@@ -439,7 +433,7 @@ namespace TallyJ.CoreModels
                 ResultType = ResultType.Calculated
               };
 
-          _savers.ResultSummarySaver(DbAction.Add, ResultSummaryCalc);
+          Savers.ResultSummarySaver(DbAction.Add, ResultSummaryCalc);
         }
       }
 
@@ -453,7 +447,7 @@ namespace TallyJ.CoreModels
                 ElectionGuid = TargetElection.ElectionGuid,
                 ResultType = ResultType.Final
               };
-          _savers.ResultSummarySaver(DbAction.Add, ResultSummaryFinal);
+          Savers.ResultSummarySaver(DbAction.Add, ResultSummaryFinal);
         }
       }
     }
@@ -475,7 +469,7 @@ namespace TallyJ.CoreModels
     {
 
       // remove any results no longer needed
-      Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => _savers.ResultSaver(DbAction.AttachAndRemove, r));
+      Results.Where(r => r.VoteCount.AsInt() == 0).ToList().ForEach(r => Savers.ResultSaver(DbAction.AttachAndRemove, r));
 
       // remove any existing Tie info
       if (!IsFaked)
@@ -581,7 +575,7 @@ namespace TallyJ.CoreModels
               TieBreakGroup = code,
             };
 
-        _savers.ResultTieSaver(DbAction.Add, resultTie);
+        Savers.ResultTieSaver(DbAction.Add, resultTie);
 
         AnalyzeTieGroup(resultTie, Results.Where(r => r.TieBreakGroup == code).OrderBy(r => r.Rank).ToList());
       }

@@ -1,6 +1,7 @@
 ﻿@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.EF
 @model IBallotModel
 @{
   ViewBag.Title = "Ballots";
@@ -76,6 +77,13 @@
       <div>
         Ballots entered so far: <span id="lblNumEntered" class="lblNumEntered"></span>
       </div>
+      <select id="ballotFilter">
+        <option value="">Show All</option>
+        @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
+        {
+          <option @(UserSession.CurrentBallotFilter==code ? " selected" : "")>@code</option>
+        }
+      </select>
       <h5>Ballots</h5>
       <div id="ballotList" class="ballotList">
       </div>

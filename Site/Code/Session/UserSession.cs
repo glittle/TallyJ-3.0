@@ -181,6 +181,12 @@ namespace TallyJ.Code.Session
       set { SessionKey.CurrentLocationGuid.SetInSession(value); }
     }
 
+    public static string CurrentBallotFilter
+    {
+      get { return SessionKey.CurrentBallotFilter.FromSession(""); }
+      set { SessionKey.CurrentBallotFilter.SetInSession(value); }
+    }
+
     /// <summary>
     /// </summary>
     public static long LastVersionNum
