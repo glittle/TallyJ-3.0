@@ -1,224 +1,238 @@
 ﻿var FrontDeskPage = function () {
-    var local = {
-        currentSearch: '',
-        currentTop: 0,
-        lastSearch: 0,
-        timer: null,
-        frontDeskHub: null,
-        matches: [],
-        focusedOnMatches: false
-    };
-    var preparePage = function () {
-        $('#Main').on('click', '.Btn', voteBtnClicked);
+  var local = {
+    currentSearch: '',
+    currentTop: 0,
+    lastSearch: 0,
+    timer: null,
+    frontDeskHub: null,
+    frontDeskHubConnectionId: null,
+    hubReconnectionTime: 95000,
+    matches: [],
+    focusedOnMatches: false
+  };
+  var preparePage = function () {
+    $('#Main').on('click', '.Btn', voteBtnClicked);
 
-        $(document).keydown(processKey);
+    $(document).keydown(processKey);
 
-        setTimeout(function () {
-            $('html, body').animate({ scrollTop: 0 }, 0);
-        }, 100);
+    setTimeout(function () {
+      $('html, body').animate({ scrollTop: 0 }, 0);
+    }, 100);
 
-        // Proxy created on the fly          
-        local.frontDeskHub = $.connection.frontDeskHub;
+    // Proxy created on the fly          
+    local.frontDeskHub = $.connection.frontDeskHubCore;
 
-        // Declare a function on the chat hub so the server can invoke it          
-        local.frontDeskHub.client.updatePeople = function (info) {
-            updatePeople(info);
-        };
-
-        // Start the connection
-        $.connection.hub
-          .start()
-          .done(function () {
-              local.frontDeskHub.server.subscribe(publicInterface.electionGuid);
-          });
-
+    // Declare a local function so the server can invoke it          
+    local.frontDeskHub.client.updatePeople = function (info) {
+      updatePeople(info);
     };
 
-    var processKey = function (ev) {
-        var letter, key = ev.which;
-        if (ev.altKey) return;
-        if (ev.ctrlKey) return;
-        switch (key) {
-            case 222:
-                letter = "'";
-                break;
-            case 116: // F5
-                return;
-            default:
-                letter = String.fromCharCode(key);
-                break;
-        }
-        var doSearch = false;
+    // Start the connection
+    $.connection.hub
+      .start()
+      .done(function () {
+        local.frontDeskHubConnectionId = local.frontDeskHub.connection.id;
+        refreshHubConnection();
+      });
 
-        if (/[\w\'\-]/.test(letter)) {
-            if (!local.focusedOnMatches) {
-                local.currentSearch = local.currentSearch + letter.toLowerCase();
-                doSearch = true;
-                clearTimeout(local.timer);
-            } else {
-                handleKeyWhileFocused(ev);
-            }
-        }
-        switch (key) {
-            case 27: // esc
-                resetSearch();
-                ev.preventDefault();
-                break;
+  };
+  var resetHubConnectionTimer = function () {
+    clearTimeout(local.reconnectHubTimeout);
+    local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+  };
 
-            case 38: // up
-                local.focusedOnMatches = true;
-                handleKeyWhileFocused(ev);
-                break;
-            case 40: // down
-                local.focusedOnMatches = true;
-                handleKeyWhileFocused(ev);
-                break;
+  var refreshHubConnection = function () {
+    clearTimeout(local.reconnectHubTimeout);
+    CallAjaxHandler(publicInterface.controllerUrl + '/FrontDeskHub', { op: 'join', connId: local.frontDeskHubConnectionId }, function (info) {
+      resetHubConnectionTimer();
+    });
 
-            case 8: //backspace
-                local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
-                doSearch = true;
-                ev.preventDefault();
-                break;
+  };
+  var processKey = function (ev) {
+    var letter, key = ev.which;
+    if (ev.altKey) return;
+    if (ev.ctrlKey) return;
+    switch (key) {
+      case 222:
+        letter = "'";
+        break;
+      case 116: // F5
+        return;
+      default:
+        letter = String.fromCharCode(key);
+        break;
+    }
+    var doSearch = false;
 
-            default:
-                //LogMessage(key);
-                break;
-        }
-        if (doSearch) {
-            clearTimeout(local.timer);
-            applyFilter();
-            local.timer = setTimeout(resetSearch, 3000);
-        }
-    };
-    var resetSearch = function () {
+    if (/[\w\'\-]/.test(letter)) {
+      if (!local.focusedOnMatches) {
+        local.currentSearch = local.currentSearch + letter.toLowerCase();
+        doSearch = true;
         clearTimeout(local.timer);
-        local.matches.length = 0;
-        local.focusedOnMatches = false;
-        local.currentSearch = '';
-        local.currentTop = 0;
-        $('#search').fadeOut();
-    };
-    var handleKeyWhileFocused = function (ev) {
-        if (!local.focusedOnMatches || local.matches.length == 0) return;
-
+      } else {
+        handleKeyWhileFocused(ev);
+      }
+    }
+    switch (key) {
+      case 27: // esc
+        resetSearch();
         ev.preventDefault();
+        break;
 
-        if (local.matches.length > 1) {
-            local.matches.length = 1;
-            focusOnMatches();
-        }
+      case 38: // up
+        local.focusedOnMatches = true;
+        handleKeyWhileFocused(ev);
+        break;
+      case 40: // down
+        local.focusedOnMatches = true;
+        handleKeyWhileFocused(ev);
+        break;
 
-        var key = ev.which;
-        var currentId = local.matches[0].id;
-        var current = $('#' + currentId);
-        var moveNext;
-        if (key == 40) {
-            moveNext = current.next().attr('id');
-        } else if (key == 38) {
-            moveNext = current.prev().attr('id');
-        }
-        if (moveNext) {
-            local.matches = $('#' + moveNext);
-            focusOnMatches();
-        } else {
-            var btnCode;
-            switch (String.fromCharCode(key)) {
-                case 'I':
-                case 'P':
-                    btnCode = 'P';
-                    break;
-                case 'C':
-                    btnCode = 'C';
-                    break;
-                case 'M':
-                    btnCode = 'M';
-                    break;
-                case 'D':
-                    btnCode = 'D';
-                    break;
-                default:
-            }
-            if (btnCode) {
-                id = currentId.substr(1);
-                saveBtnClick(id, btnCode);
-            }
-        }
+      case 8: //backspace
+        local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
+        doSearch = true;
+        ev.preventDefault();
+        break;
+
+      default:
+        //LogMessage(key);
+        break;
+    }
+    if (doSearch) {
+      clearTimeout(local.timer);
+      applyFilter();
+      local.timer = setTimeout(resetSearch, 3000);
+    }
+  };
+  var resetSearch = function () {
+    clearTimeout(local.timer);
+    local.matches.length = 0;
+    local.focusedOnMatches = false;
+    local.currentSearch = '';
+    local.currentTop = 0;
+    $('#search').fadeOut();
+  };
+  var handleKeyWhileFocused = function (ev) {
+    if (!local.focusedOnMatches || local.matches.length == 0) return;
+
+    ev.preventDefault();
+
+    if (local.matches.length > 1) {
+      local.matches.length = 1;
+      focusOnMatches();
+    }
+
+    var key = ev.which;
+    var currentId = local.matches[0].id;
+    var current = $('#' + currentId);
+    var moveNext;
+    if (key == 40) {
+      moveNext = current.next().attr('id');
+    } else if (key == 38) {
+      moveNext = current.prev().attr('id');
+    }
+    if (moveNext) {
+      local.matches = $('#' + moveNext);
+      focusOnMatches();
+    } else {
+      var btnCode;
+      switch (String.fromCharCode(key)) {
+        case 'I':
+        case 'P':
+          btnCode = 'P';
+          break;
+        case 'C':
+          btnCode = 'C';
+          break;
+        case 'M':
+          btnCode = 'M';
+          break;
+        case 'D':
+          btnCode = 'D';
+          break;
+        default:
+      }
+      if (btnCode) {
+        id = currentId.substr(1);
+        saveBtnClick(id, btnCode);
+      }
+    }
+  };
+  var applyFilter = function () {
+    $('#search').fadeIn().text(local.currentSearch);
+    local.matches = $('.Voter[data-name^="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
+    focusOnMatches();
+  };
+  var focusOnMatches = function () {
+    if (!local.matches.length) {
+      local.focusedOnMatches = false;
+      return;
+    }
+    var desired = local.matches.offset().top - 100;
+
+    $('html, body').animate({ scrollTop: desired }, 150);
+
+    local.currentTop = desired;
+
+    $('.Voter').removeClass('KeyMatch Focused');
+    local.matches.addClass('KeyMatch'); //$(this).switchClass('KeyMatch', 'AfterMatch', 5000, 'linear');
+    if (local.focusedOnMatches) {
+      local.matches.addClass('Focused');
+    }
+  };
+  var voteBtnClicked = function (ev) {
+    var btn = $(ev.target);
+    var row = btn.parent();
+
+    var btnType = btn.hasClass('InPerson') ? 'P'
+        : btn.hasClass('DroppedOff') ? 'D'
+        : btn.hasClass('CalledIn') ? 'C' : 'M';
+    var pid = row.attr('id').substr(1);
+
+    saveBtnClick(pid, btnType);
+  };
+
+  var saveBtnClick = function (pid, btnType) {
+    var form = {
+      id: pid,
+      type: btnType,
+      last: publicInterface.lastRowVersion || 0
     };
-    var applyFilter = function () {
-        $('#search').fadeIn().text(local.currentSearch);
-        local.matches = $('.Voter[data-name^="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
-        focusOnMatches();
-    };
-    var focusOnMatches = function() {
-        if (!local.matches.length) {
-            local.focusedOnMatches = false;
-            return;
-        }
-        var desired = local.matches.offset().top - 100;
 
-        $('html, body').animate({ scrollTop: desired }, 150);
+    ShowStatusDisplay("Saving...");
+    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form); //, updatePeople, pid);
+  };
 
-        local.currentTop = desired;
+  var updatePeople = function (info, pid) {
+    ResetStatusDisplay();
+    if (info) {
+      if (info.PersonLines) {
+        $.each(info.PersonLines, function () {
+          var selector = '#P' + this.PersonId;
+          $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
+          if (this.PersonId != pid) {
+            $(selector).effect('highlight', {}, 5000);
+          }
+        });
+      }
+      if (info.LastRowVersion) {
+        publicInterface.lastRowVersion = info.LastRowVersion;
+      }
+    }
+  };
 
-        $('.Voter').removeClass('KeyMatch Focused');
-        local.matches.addClass('KeyMatch'); //$(this).switchClass('KeyMatch', 'AfterMatch', 5000, 'linear');
-        if (local.focusedOnMatches) {
-            local.matches.addClass('Focused');
-        }
-    };
-    var voteBtnClicked = function (ev) {
-        var btn = $(ev.target);
-        var row = btn.parent();
-
-        var btnType = btn.hasClass('InPerson') ? 'P'
-            : btn.hasClass('DroppedOff') ? 'D'
-            : btn.hasClass('CalledIn') ? 'C' : 'M';
-        var pid = row.attr('id').substr(1);
-
-        saveBtnClick(pid, btnType);
-    };
-
-    var saveBtnClick = function (pid, btnType) {
-        var form = {
-            id: pid,
-            type: btnType,
-            last: publicInterface.lastRowVersion || 0
-        };
-
-        ShowStatusDisplay("Saving...");
-        CallAjaxHandler(publicInterface.controllerUrl + '/RegisterVote', form); //, updatePeople, pid);
-    };
-
-    var updatePeople = function (info, pid) {
-        ResetStatusDisplay();
-        if (info) {
-            if (info.PersonLines) {
-                $.each(info.PersonLines, function () {
-                    var selector = '#P' + this.PersonId;
-                    $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
-                    if (this.PersonId != pid) {
-                        $(selector).effect('highlight', {}, 5000);
-                    }
-                });
-            }
-            if (info.LastRowVersion) {
-                publicInterface.lastRowVersion = info.LastRowVersion;
-            }
-        }
-    };
-
-    var publicInterface = {
-        controllerUrl: '',
-        lastRowVersion: 0,
-        electionGuid: null,
-        PreparePage: preparePage,
-        local: local
-    };
-    return publicInterface;
+  var publicInterface = {
+    controllerUrl: '',
+    lastRowVersion: 0,
+    electionGuid: null,
+    PreparePage: preparePage,
+    local: local
+  };
+  return publicInterface;
 };
 
 var frontDeskPage = FrontDeskPage();
 
 $(function () {
-    frontDeskPage.PreparePage();
+  frontDeskPage.PreparePage();
 });

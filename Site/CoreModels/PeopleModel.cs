@@ -431,14 +431,12 @@ namespace TallyJ.CoreModels
                  : "";
     }
 
-    public JsonResult RegisterVoteJson(int personId, string voteType, int lastRowVersion)
+    public JsonResult RegisterVotingMethodJson(int personId, string voteType, int lastRowVersion)
     {
       if (!VotingMethodEnum.Exists(voteType))
       {
         return new { Message = "Invalid type" }.AsJsonResult();
       }
-
-      var currentElectionGuid = CurrentElectionGuid;
 
       var person = new PersonCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
@@ -508,7 +506,7 @@ namespace TallyJ.CoreModels
             LastRowVersion
           };
 
-      FrontDeskHub.UpdateAllConnectedClients(updateInfo);
+      new FrontDeskHub().UpdateAllConnectedClients(updateInfo);
 
       return updateInfo.AsJsonResult();
     }
