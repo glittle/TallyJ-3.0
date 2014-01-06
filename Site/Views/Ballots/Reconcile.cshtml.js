@@ -21,7 +21,7 @@
 
     var showOld = function (list) {
         if (!list.length) return;
-        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>{Method} &nbsp; #{EnvNum}</span>"}</div>'.filledWithEach(extend(list));
+        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum} &nbsp; {Method}</span>"}</div>'.filledWithEach(extend(list));
         $('#lists').append('<div><h3>{0}: {1}</h3><div class="Names oldEnv">{^2}</div></div>'.filledWith(
             'Un-used Envelopes', list.length, ballotList));
     };

@@ -7,6 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
@@ -241,6 +242,8 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         electionCacher.UpdateItemAndSaveCache(election);
+
+        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
       }
 
       if (currentMode != election.ElectionMode
@@ -515,6 +518,8 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         electionCacher.UpdateItemAndSaveCache(election);
+
+        new PublicHub().ElectionsListUpdated();
 
         return new { Saved = true }.AsJsonResult();
       }

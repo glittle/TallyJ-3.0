@@ -52,15 +52,15 @@ namespace TallyJ.CoreModels
       {
         statusChanged = _infoFromClient.Status != UserSession.CurrentElectionStatus;
 
-        switch (_infoFromClient.Context)
-        {
-          case "BeforeRollCall":
-            var rollcall = new RollCallModel();
-            long newStamp;
-            result2.Add("MorePeople", rollcall.GetMorePeople(_infoFromClient.Stamp, out newStamp));
-            result2.Add("NewStamp", newStamp);
-            break;
-        }
+//        switch (_infoFromClient.Context)
+//        {
+//          case "BeforeRollCall":
+//            var rollcall = new RollCallModel();
+//            long newStamp;
+//            result2.Add("MorePeople", rollcall.GetMorePeople(_infoFromClient.Stamp, out newStamp));
+//            result2.Add("NewStamp", newStamp);
+//            break;
+//        }
       }
 
       var newStatus = statusChanged

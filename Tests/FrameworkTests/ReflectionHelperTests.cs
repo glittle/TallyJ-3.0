@@ -8,7 +8,7 @@ namespace Tests.FrameworkTests
   [TestClass]
   public class ReflectionHelperTests
   {
-    
+
     [TestMethod]
     public void GetNameForObject_Test()
     {
@@ -31,10 +31,10 @@ namespace Tests.FrameworkTests
     [TestMethod]
     public void GetNameExt_Test()
     {
-      ((TestPropertyNames)null).GetPropertyName(x=>x.D2).ShouldEqual("D2");
+      ((TestPropertyNames)null).GetPropertyName(x => x.D2).ShouldEqual("D2");
 
       var obj = new TestPropertyNames();
-      obj.GetPropertyName(x=>x.D2).ShouldEqual("D2");
+      obj.GetPropertyName(x => x.D2).ShouldEqual("D2");
     }
 
 
@@ -42,9 +42,11 @@ namespace Tests.FrameworkTests
 
   internal class TestPropertyNames
   {
+#pragma warning disable 0649
     public string S1;
     public string S2;
     public int I2;
     public DateTime D2;
+#pragma warning restore 0649
   }
 }

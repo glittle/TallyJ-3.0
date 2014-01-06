@@ -10,5 +10,10 @@ namespace TallyJ.EF
       var currentElectionGuid = UserSession.CurrentElectionGuid;
       return CurrentDb.Person.Where(p => p.ElectionGuid == currentElectionGuid);
     }
+  
+    protected override void ItemChanged()
+    {
+      new ResultSummaryCacher().VoteOrPersonChanged();
+    }
   }
 }

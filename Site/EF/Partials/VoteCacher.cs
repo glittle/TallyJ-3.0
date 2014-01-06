@@ -12,5 +12,10 @@ namespace TallyJ.EF
         .Join(CurrentDb.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), g => g.b.LocationGuid,
           l => l.LocationGuid, (g, l) => g.v);
     }
+
+    protected override void ItemChanged()
+    {
+      new ResultSummaryCacher().VoteOrPersonChanged();
+    }
   }
 }

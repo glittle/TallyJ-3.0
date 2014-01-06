@@ -32,16 +32,16 @@ namespace TallyJ.CoreModels
     {
       SetAsCurrentBallot(ballotId);
 
-      var ballotInfo = GetCurrentBallot(refresh);
+      var ballot = GetCurrentBallot(refresh);
 
-      SessionKey.CurrentLocationGuid.SetInSession(ballotInfo.LocationGuid);
+      SessionKey.CurrentLocationGuid.SetInSession(ballot.LocationGuid);
 
       return new
       {
 
         BallotInfo = new
         {
-          Ballot = BallotInfoForJs(ballotInfo),
+          Ballot = BallotInfoForJs(ballot),
           Votes = CurrentVotesForJs(),
           NumNeeded = UserSession.CurrentElection.NumberToElect
         },
@@ -151,9 +151,9 @@ namespace TallyJ.CoreModels
       }
 
       // learn about the one wanted
-      var ballotInfo = new BallotCacher().AllForThisElection.SingleOrDefault(b => b.C_RowId == ballotId);
+      var ballot = new BallotCacher().AllForThisElection.SingleOrDefault(b => b.C_RowId == ballotId);
 
-      if (ballotInfo == null)
+      if (ballot == null)
       {
         // invalid request!?
         return;
@@ -173,7 +173,7 @@ namespace TallyJ.CoreModels
       //  SessionKey.CurrentComputer.SetInSession(computer);
       //}
 
-      SessionKey.CurrentBallotId.SetInSession(ballotInfo.C_RowId);
+      SessionKey.CurrentBallotId.SetInSession(ballot.C_RowId);
     }
 
     public abstract int NextBallotNumAtComputer();
@@ -455,14 +455,26 @@ namespace TallyJ.CoreModels
 
     public object CurrentBallotsInfoList()
     {
+      var filter = UserSession.CurrentBallotFilter;
       var ballots = new BallotCacher().AllForThisElection
         .Where(b => b.LocationGuid == UserSession.CurrentLocationGuid)
+        .ToList()
+        .Where(b => filter.HasNoContent() || filter == b.ComputerCode)
         .OrderBy(b => b.ComputerCode)
         .ThenBy(b => b.BallotNumAtComputer)
         .ToList();
 
       return BallotsInfoList(ballots);
     }
+
+    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
+    public Ballot CurrentRawBallot()
+    {
+      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
+      return new BallotCacher().AllForThisElection.Single(b => b.C_RowId == ballotId);
+      //      return Db.Ballot.Single(b => b.C_RowId == ballotId);
+    }
+
 
     /// <Summary>Current Ballot... could be null</Summary>
     public Ballot GetCurrentBallot(bool refresh = false)
@@ -486,6 +498,9 @@ namespace TallyJ.CoreModels
 
           var voteInfos = VoteInfosFor(ballot);
 
+          SortVotes(voteInfos.OrderBy(vi => vi.PositionOnBallot).Select(v => v.VoteId).ToList());
+          voteInfos = VoteInfosFor(ballot);
+
           new BallotAnalyzer().UpdateBallotStatus(ballot, voteInfos, true);
           ballotCacher.UpdateItemAndSaveCache(ballot);
           Db.SaveChanges();
@@ -498,14 +513,6 @@ namespace TallyJ.CoreModels
     #endregion
 
     public abstract object BallotInfoForJs(Ballot b);
-
-    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
-    public Ballot CurrentRawBallot()
-    {
-      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
-      return new BallotCacher().AllForThisElection.Single(b => b.C_RowId == ballotId);
-      //      return Db.Ballot.Single(b => b.C_RowId == ballotId);
-    }
 
     public List<Vote> CurrentVotes()
     {
@@ -587,18 +594,18 @@ namespace TallyJ.CoreModels
       return ballot; //TODO: used to be view
     }
 
-    public string NewBallotsJsonString(long lastRowVersion)
-    {
-      var ballots = new BallotCacher().AllForThisElection
-        .Where(b => b.RowVersionInt > lastRowVersion)
-        .ToList();
-
-      return ballots.Any()
-        ? BallotsInfoList(ballots).SerializedAsJsonString()
-        : "";
-
-      //todo...
-    }
+//    public string NewBallotsJsonString(long lastRowVersion)
+//    {
+//      var ballots = new BallotCacher().AllForThisElection
+//        .Where(b => b.RowVersionInt > lastRowVersion)
+//        .ToList();
+//
+//      return ballots.Any()
+//        ? BallotsInfoList(ballots).SerializedAsJsonString()
+//        : "";
+//
+//      //todo...
+//    }
 
     private object BallotsInfoList(List<Ballot> ballots)
     {

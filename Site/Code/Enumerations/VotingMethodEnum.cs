@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net.Sockets;
 using System.Web;
 using TallyJ.EF;
 
@@ -53,7 +54,8 @@ namespace TallyJ.Code.Enumerations
             {
                 return "Envelope " + envNumText;
             }
-            return string.Format("{1} <span>{0}</span>", item.DisplayText, envNumText);
+          
+            return string.Format("{1} <span>{0}</span> {2}", item.DisplayText, envNumText, " ".PadRight(envNumText.Length).Replace(" ", "&nbsp;"));
         }
 
         public static HtmlString ForHtmlSelect(string selected = "")

@@ -37,6 +37,13 @@ namespace TallyJ.Controllers
       else
       {
         ballotModel.SetAsCurrentBallot(ballotId);
+        var ballot = ballotModel.GetCurrentBallot(false);
+
+        var filter = UserSession.CurrentBallotFilter;
+        if (filter.HasContent() && ballot != null && ballot.ComputerCode != filter)
+        {
+          UserSession.CurrentBallotFilter = ballot.ComputerCode;
+        }
       }
 
       return isSingle ? View("BallotSingle", ballotModel) : View("BallotNormal", ballotModel);
@@ -123,6 +130,12 @@ namespace TallyJ.Controllers
 
     public JsonResult RefreshBallotsList()
     {
+      return CurrentBallotModel.CurrentBallotsInfoList().AsJsonResult();
+    }
+
+    public JsonResult ChangeBallotFilter(string code)
+    {
+      UserSession.CurrentBallotFilter = code;
       return CurrentBallotModel.CurrentBallotsInfoList().AsJsonResult();
     }
 

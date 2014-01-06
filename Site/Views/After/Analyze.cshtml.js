@@ -172,7 +172,7 @@
             var finalText = finalSpan.text();
             
             finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
-            calcSpan.toggleClass('changed', finalText != '' && calcText != finalText);
+            calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
         });
         $('#totalCounts').toggleClass('mismatch', settings.info.ResultsFinal.NumBallotsWithManual != settings.info.ResultsFinal.SumOfEnvelopesCollected);
         $('body').toggleClass('ready', settings.info.ResultsFinal.UseOnReports);
@@ -186,7 +186,7 @@
         $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
             var span = $(this);
             var value = results[span.data('name')];
-            span.text(value || '');
+            span.text(value || '-');
         });
         $('#totalCounts').find('input.{0}[data-name]'.filledWith(name)).each(function () {
             var input = $(this);

@@ -181,6 +181,12 @@ namespace TallyJ.Code.Session
       set { SessionKey.CurrentLocationGuid.SetInSession(value); }
     }
 
+    public static string CurrentBallotFilter
+    {
+      get { return SessionKey.CurrentBallotFilter.FromSession(""); }
+      set { SessionKey.CurrentBallotFilter.SetInSession(value); }
+    }
+
     /// <summary>
     /// </summary>
     public static long LastVersionNum
@@ -295,7 +301,6 @@ namespace TallyJ.Code.Session
     public static void ProcessLogout()
     {
       new ComputerModel().DeleteAtLogout(CurrentComputerId);
-      HttpContext.Current.Session.Clear();
     }
 
     public static bool IsFeatured(string pageFeatureWhen)

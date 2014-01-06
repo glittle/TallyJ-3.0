@@ -258,3 +258,6 @@ body.notReady .overallWarning {
 #body {
   min-height: 500px;
 }
+#instructions li {
+  line-height: normal;
+}

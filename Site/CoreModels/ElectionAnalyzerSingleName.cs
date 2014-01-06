@@ -75,7 +75,7 @@ namespace TallyJ.CoreModels
             PersonGuid = voteInfo.PersonGuid.AsGuid()
           };
           InitializeSomeProperties(result);
-          _savers.ResultSaver(DbAction.Add, result);
+          Savers.ResultSaver(DbAction.Add, result);
         }
 
         var voteCount = result.VoteCount.AsInt() + voteInfo.SingleNameElectionCount;

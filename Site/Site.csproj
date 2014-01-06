@@ -112,11 +112,11 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.0.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.0.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.0.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.0.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -299,6 +299,10 @@
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
     <Compile Include="CoreModels\Helper\ResultType.cs" />
+    <Compile Include="CoreModels\Hubs\HubWithTracker.cs" />
+    <Compile Include="CoreModels\Hubs\RollCallHub.cs" />
+    <Compile Include="CoreModels\Hubs\PublicHub.cs" />
+    <Compile Include="CoreModels\Hubs\MainHub.cs" />
     <Compile Include="CoreModels\Hubs\FrontDeskHub.cs" />
     <Compile Include="CoreModels\IAnalyzerFakes.cs" />
     <Compile Include="CoreModels\ImportV1\ImportV1Base.cs" />
@@ -485,6 +489,12 @@
     <Compile Include="EntityFramework.Extended\Reflection\ReflectionHelper.cs" />
     <Compile Include="EntityFramework.Extended\Reflection\TypeAccessor.cs" />
     <Compile Include="OwinStartup.cs" />
+    <Content Include="Content\bootstrap\css\layouts.css">
+      <DependentUpon>layouts.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\css\layouts.min.css">
+      <DependentUpon>layouts.less</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap\css\variables.css">
       <DependentUpon>variables.less</DependentUpon>
     </Content>
@@ -588,7 +598,6 @@
     </Compile>
     <Compile Include="CoreModels\AccountModels.cs" />
     <Compile Include="CoreModels\Helper\PersonHelper.cs" />
-    <Compile Include="CoreModels\PublicHomeViewModel.cs" />
     <Compile Include="CoreModels\PulseModel.cs" />
     <Compile Include="CoreModels\ResultsModel.cs" />
     <Compile Include="CoreModels\SetupModel.cs" />
@@ -665,6 +674,7 @@
     <None Include="EntityFramework.Extended\Audit\Audit.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Images\social.png" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
@@ -680,8 +690,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.0.0.js" />
-    <Content Include="Scripts\jquery.signalR-2.0.0.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />

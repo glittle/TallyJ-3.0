@@ -1,5 +1,4 @@
 ﻿@using TallyJ.Code.Session
-@model PublicHomeViewModel
 @{
   ViewBag.Title = "TallyJ";
   ViewBag.Caption = "Welcome";
@@ -9,13 +8,13 @@
   ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
 }
 @section featured {
-  <section class="featured">
-    <div class="content-wrapper">
-      <div class="Intro">
-        <p><em>December 2013 Update:</em> Recent updates to TallyJ require some final testing! Please help by logging in and running a "test" election! The system should be stable by mid-January.</p>
-        <p>Please record any problems you find <a target="bitbucket" href="https://bitbucket.org/glen95/tallyj/issues?status=new&status=open">here</a>. The document linked above has more details.</p>
-      </div>
+  <section class="featured empty">
+  @*  <div class="content-wrapper">
+    <div class="Intro">
+      <p><em>January 2014 Update:</em> TallyJ require some final testing! Please help by logging in and running a "test" election! The system should be stable by mid-January.</p>
+      <p>Please record any problems you find <a target="bitbucket" href="https://bitbucket.org/glen95/tallyj/issues?status=new&status=open">here</a>. The document linked above has more details.</p>
     </div>
+  </div>*@
   </section>
 }
 <section class="features middle">
@@ -30,7 +29,6 @@
         </p>
         <div class="table">
           <select id="ddlElections" size="4">
-            @Model.VisibleElectionsOptions()
           </select>
           <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
         </div>
@@ -86,7 +84,7 @@
     <div class="top">
     </div>
     <h2>Log in to make an election or access your elections</h2>
-    @if (Request.IsAuthenticated)
+    @if (UserSession.IsKnownTeller)
     {
       <p class="AlreadyIn">
         You are still logged in!
@@ -94,6 +92,10 @@
       <p class="AlreadyIn">
         Go to the
         <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+      </p>
+      <p class="AlreadyIn">
+        or
+        <button type="button" class="btn" onclick="location.href='@Url.Action("LogOff", "Account")'">Log out</button>
       </p>
     }
     else

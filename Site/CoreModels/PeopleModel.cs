@@ -41,15 +41,6 @@ namespace TallyJ.CoreModels
 
     #endregion
 
-    public long LastRowVersion
-    {
-      get
-      {
-        var single = Db.CurrentRowVersion();
-        return single;
-      }
-    }
-
     private Election CurrentElection
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
@@ -264,6 +255,8 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         new PersonCacher().ReplaceEntireCache(PeopleInElection);
+
+        UpdateFrontDeskListing(personInDatastore);
       }
 
       return new
@@ -381,10 +374,11 @@ namespace TallyJ.CoreModels
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
           .ThenBy(p => p.LastName)
           .ThenBy(p => p.FirstName)
+          .ThenBy(p => p.C_RowId)
           .Select(p => new
               {
                 PersonId = p.C_RowId,
-                FullName = p.FullName,
+                p.FullName,
                 NameLower = p.FullName.WithoutDiacritics(true).ReplacePunctuation(' ').Replace("\"", "\\\""),
                 p.Area,
                 VotedAt = new[]
@@ -431,14 +425,12 @@ namespace TallyJ.CoreModels
                  : "";
     }
 
-    public JsonResult RegisterVoteJson(int personId, string voteType, int lastRowVersion)
+    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
     {
       if (!VotingMethodEnum.Exists(voteType))
       {
         return new { Message = "Invalid type" }.AsJsonResult();
       }
-
-      var currentElectionGuid = CurrentElectionGuid;
 
       var person = new PersonCacher().AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
@@ -448,12 +440,14 @@ namespace TallyJ.CoreModels
 
       Db.Person.Attach(person);
 
+      var votingMethodRemoved = false;
       if (person.VotingMethod == voteType)
       {
-        // already set this way...turn if off
+        // it is already set this way...turn if off
         person.VotingMethod = null;
         person.VotingLocationGuid = null;
         person.RegistrationTime = null;
+        votingMethodRemoved = true;
       }
       else
       {
@@ -490,27 +484,65 @@ namespace TallyJ.CoreModels
 
       new PersonCacher().UpdateItemAndSaveCache(person);
 
-      List<Person> people;
       if (lastRowVersion == 0)
       {
-        people = new List<Person> { person };
-      }
-      else
-      {
-        people = new PersonCacher().AllForThisElection
-                   .Where(p => p.C_RowVersionInt > lastRowVersion)
-                   .ToList();
+        lastRowVersion = person.C_RowVersionInt.AsLong() - 1;
       }
 
+      UpdateFrontDeskListing(person, votingMethodRemoved);
+
+      return true.AsJsonResult();
+    }
+
+    /// <summary>
+    /// Update listing for everyone updated since this version
+    /// </summary>
+    /// <param name="lastRowVersion"></param>
+    /// <param name="votingMethodRemoved"></param>
+//    public void UpdateFrontDeskListing(long lastRowVersion, bool votingMethodRemoved)
+//    {
+//      UpdateFrontDeskListing(new PersonCacher().AllForThisElection
+//          .Where(p => p.C_RowVersionInt > lastRowVersion)
+//          .ToList(), votingMethodRemoved);
+//    }
+
+    /// <summary>
+    /// Update listing for just one person
+    /// </summary>
+    /// <param name="person"></param>
+    public void UpdateFrontDeskListing(Person person)
+    {
+      UpdateFrontDeskListing(person, false);
+    }
+
+    /// <summary>
+    /// Update listing
+    /// </summary>
+    /// <param name="person">The people to update</param>
+    /// <param name="votingMethodRemoved"></param>
+    public void UpdateFrontDeskListing(Person person, bool votingMethodRemoved)
+    {
       var updateInfo = new
-          {
-            PersonLines = FrontDeskPersonLines(people),
-            LastRowVersion
-          };
+      {
+        PersonLines = FrontDeskPersonLines(new List<Person>{person}),
+        LastRowVersion = person.C_RowVersionInt
+      };
+      new FrontDeskHub().UpdateAllConnectedClients(updateInfo);
 
-      FrontDeskHub.UpdateAllConnectedClients(updateInfo);
 
-      return updateInfo.AsJsonResult();
+      var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed
+      long newStamp;
+      var rollCallModel = new RollCallModel();
+      var rollCallInfo = new
+      {
+        changed = rollCallModel.GetMorePeople(oldestStamp, out newStamp),
+        removedId = votingMethodRemoved ? person.C_RowId : 0,
+        newStamp
+      };
+      if (rollCallInfo.newStamp != 0 || rollCallInfo.removedId != 0)
+      {
+        new RollCallHub().UpdateAllConnectedClients(rollCallInfo);
+      }
     }
 
     public JsonResult DeleteAllPeople()
