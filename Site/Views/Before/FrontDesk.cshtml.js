@@ -15,9 +15,13 @@
 
     $(document).keydown(processKey);
 
-    setTimeout(function () {
-      $('html, body').animate({ scrollTop: 0 }, 0);
-    }, 100);
+    setTimeout(delayedPreparePage, 200);
+
+  };
+
+  var delayedPreparePage = function () {
+
+    $('html, body').animate({ scrollTop: 0 }, 0);
 
     // Proxy created on the fly          
     local.frontDeskHub = $.connection.frontDeskHubCore;
@@ -28,7 +32,7 @@
     };
 
     // Start the connection
-    $.connection.hub
+    local.frontDeskHub.connection
       .start()
       .done(function () {
         local.frontDeskHubConnectionId = local.frontDeskHub.connection.id;
@@ -36,6 +40,7 @@
       });
 
   };
+
   var resetHubConnectionTimer = function () {
     clearTimeout(local.reconnectHubTimeout);
     local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
@@ -43,7 +48,7 @@
 
   var refreshHubConnection = function () {
     clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/FrontDeskHub', { op: 'join', connId: local.frontDeskHubConnectionId }, function (info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: local.frontDeskHubConnectionId }, function (info) {
       resetHubConnectionTimer();
     });
 
@@ -200,7 +205,11 @@
     };
 
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form); //, updatePeople, pid);
+    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function(info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+      }
+    });
   };
 
   var updatePeople = function (info, pid) {

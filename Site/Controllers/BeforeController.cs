@@ -27,26 +27,17 @@ namespace TallyJ.Controllers
 
     public JsonResult VotingMethod(int id, string type, int last)
     {
-      return new PeopleModel().RegisterVotingMethodJson(id, type, last);
+      return new PeopleModel().RegisterVotingMethod(id, type, last);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="op"></param>
-    /// <param name="connId">The connection Id created in the browser</param>
-    /// <returns></returns>
-    public JsonResult FrontDeskHub(string op, string connId)
+    public void JoinFrontDeskHub(string connId)
     {
-      switch (op)
-      {
-        case "join":
-          new FrontDeskHub().Join(connId);
-          
-          return true.AsJsonResult();
-      }
-      
-      return null;
+      new FrontDeskHub().Join(connId);
+    }
+
+    public void JoinRollCallHub(string connId)
+    {
+      new RollCallHub().Join(connId);
     }
   }
 }

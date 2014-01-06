@@ -301,7 +301,6 @@ namespace TallyJ.Code.Session
     public static void ProcessLogout()
     {
       new ComputerModel().DeleteAtLogout(CurrentComputerId);
-      HttpContext.Current.Session.Clear();
     }
 
     public static bool IsFeatured(string pageFeatureWhen)

@@ -68,7 +68,7 @@
     <tbody class="ballotCounts">
       <tr>
         <th colspan="4">
-          Total Voters (from Front Desk)
+          Voter Counts (from Front Desk and/or manual)
         </th>
       </tr>
       <tr>
@@ -156,7 +156,7 @@
     <tbody>
       <tr>
         <th colspan="4">
-          Total Ballots Processed (after opening envelopes)
+          Ballots Processed (after opening envelopes)
         </th>
       </tr>
     </tbody>
@@ -169,17 +169,35 @@
           <span class="Calc" data-name="BallotsReceived"></span>
         </td>
         <td></td>
-        <td></td>
+        <td>
+          <span class="Final" data-name="BallotsReceived"></span>
+        </td>
       </tr>
       <tr>
         <td>
-          Spoiled Ballots Not Entered<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
+          Spoiled Ballots<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
         </td>
-        <td></td>
+        <td>
+          <span class="Calc NoChanges" data-name="SpoiledBallots"></span>
+        </td>
         <td>
           <input class="Manual" data-name="SpoiledManualBallots" type="number" min="0">
         </td>
+        <td>
+          <span class="Final" data-name="SpoiledBallots"></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Spoiled Votes
+        </td>
+        <td>
+          <span class="Calc" data-name="SpoiledVotes"></span>
+        </td>
         <td></td>
+        <td>
+          <span class="Final" data-name="SpoiledVotes"></span>
+        </td>
       </tr>
       <tr class="totalBallots">
         <td>
@@ -199,32 +217,6 @@
         <td colspan="4">
           Warning:
           Number of Voters and Ballots do not match!
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Spoiled Ballots
-        </td>
-        <td>
-          <span class="Calc" data-name="SpoiledBallots"></span>
-        </td>
-        <td>
-          <span class="Manual" data-name="SpoiledManualBallots"></span>
-        </td>
-        <td>
-          <span class="Final" data-name="SpoiledBallots"></span>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Spoiled Votes
-        </td>
-        <td>
-          <span class="Calc" data-name="SpoiledVotes"></span>
-        </td>
-        <td></td>
-        <td>
-          <span class="Final" data-name="SpoiledVotes"></span>
         </td>
       </tr>
     </tbody>
@@ -296,10 +288,15 @@
     </caption>
     <tr>
       <td>
-        If there are any errors shown in red, they need to be resolved.
-        Once all are resolved, and the results are approved by the head teller, set
-        the "Election Status" to "Show Reports" to enable the "Display Teller's Report" page
-        and other reports.
+        <ol>
+          <li>If there are any errors shown in red, they need to be resolved.</li>
+          <li>
+            Once all are resolved, review and approve the results.
+          </li>
+          <li>
+            Then set the "Election Status" to "Show Reports" to enable the "Display Teller's Report" page and other reports to be viewed.
+          </li>
+        </ol>
       </td>
     </tr>
   </table>
@@ -309,10 +306,7 @@
     </caption>
     <tr>
       <td>
-        Some results are very close to a <span>tie</span><span class="HasTie">
-          , or are actually
-          tied
-        </span>. A careful review is recommended to ensure that each of the ballots
+        Some results are very close to a <span>tie</span><span class="HasTie">, or are actually tied</span>. A careful review is recommended to ensure that each of the ballots
         has been entered correctly.
       </td>
     </tr>

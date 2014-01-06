@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.Controllers
 {
@@ -16,7 +17,7 @@ namespace TallyJ.Controllers
 
     public ActionResult Index()
     {
-      return View("Home", new PublicHomeViewModel());
+      return View("Home");
     }
 
     public ActionResult About()
@@ -69,10 +70,15 @@ namespace TallyJ.Controllers
     {
       return new
                {
-                 html = new PublicHomeViewModel().VisibleElectionsOptions().ToString()
+                 html = new ElectionsListViewModel().VisibleElectionsOptions()
                }.AsJsonResult();
     }
- 
+
+    public void PublicHub(string connId)
+    {
+      new PublicHub().Join(connId);
+    }
+
   }
 
 }

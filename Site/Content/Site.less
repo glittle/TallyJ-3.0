@@ -1,4 +1,4 @@
-﻿@import "bootstrap/css/bootstrap.less";
+@import "bootstrap/css/bootstrap.less";
 
 /*html
 {
@@ -22,7 +22,7 @@ a:link, a:visited, a:active, a:hover
 {
     color: #333;
     outline: none;
-    padding-left: 3px;
+    padding-left: 3px; 
     padding-right: 3px;
     text-decoration: underline;
 }
@@ -206,7 +206,7 @@ body.NormalMode .site-title span {
 .NormalMode .MainTop {
   display: block;
   position: relative;
-  height: 106px;
+  height: 102px;
 }
 
 .NormalMode .Version {
@@ -595,30 +595,27 @@ ul#social li {
 
 a.facebook, a.twitter, a.gplus {
   display: inline-block;
-  height: 24px;
-  width: 16px;
-}
-
-a.facebook, a.twitter {
+  height: 25px;
   width: 24px;
+  background: url("../images/social.png") no-repeat;
+  margin-top: 3px;
 }
 
 a.facebook {
-  background: url("../images/facebook.png") no-repeat;
+  background-position: -2px -2px;
 }
 
 a.gplus {
-  background: url("../images/gplus-16.png") no-repeat;
+  background-position: -34px -2px;
 }
 
 a.twitter {
-  background: url("../images/twitter.png") no-repeat;
+  background-position: -98px -2px;
 }
 
 
 
 /* Statuses */
-
 #statusDisplay, #statusDisplay2 {
   color: #000;
   background-color: #ccffbe;
@@ -695,19 +692,23 @@ a.twitter {
   display: inline-block;
   margin-left: 0px;
   color: @tallyJGreen;
-}
 
-  .ElectionState span {
+  a {
+    color: #333;
+    text-decoration: none;
+    padding: 0 4px 0 4px;
+  }
+
+  span {
     color: @tallyJGreen;
   }
 
-  .ElectionState ol {
+  ol {
     display: inline-block;
     margin: 4px 0 1px 0;
     padding: 0;
-  }
 
-    .ElectionState ol li {
+    li {
       display: inline-block;
       margin: 0 3px;
       color: #333;
@@ -724,6 +725,8 @@ a.twitter {
       -moz-border-top-left-radius: 0px;
       -moz-border-bottom-left-radius: 0px;
     }
+  }
+}
 
 body.AuthKnown .ElectionState ol li.Active_False:hover {
   cursor: pointer;
@@ -902,9 +905,8 @@ body.AuthKnown .CurrentElectionName {
 .QuickLinks2 {
   color: @tallyJGreen;
   margin: 5px 0 5px 0;
-}
 
-  .QuickLinks2 a {
+  a {
     color: #333;
     text-decoration: none;
     border: 1px solid @tallyJGreen;
@@ -913,6 +915,21 @@ body.AuthKnown .CurrentElectionName {
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
   }
+
+    a:hover {
+      background-color: #b6ff50;
+    }
+
+    a.Active {
+      color: @tallyJBlue;
+      font-weight: bold;
+      background-color: #EFEEEF;
+
+      &:hover {
+        background-color: inherit;
+      }
+    }
+}
 
 .AuthKnown .AllowChangeElectionState.bold {
   border: 1px solid @tallyJBlue;
@@ -934,19 +951,6 @@ body.AuthKnown .CurrentElectionName {
   display: none;
 }
 
-.QuickLinks2 a:hover {
-  background-color: #b6ff50;
-}
-
-.QuickLinks2 a.Active {
-  color: @tallyJBlue;
-  font-weight: bold;
-  background-color: #EFEEEF;
-}
-
-  .QuickLinks2 a.Active:hover {
-    background-color: inherit;
-  }
 
 .QuickLinks {
   margin: 5px 0 0 0;
@@ -1004,9 +1008,9 @@ body.AuthKnown .CurrentElectionName {
   margin-top: 9px;
 }
 
-.ShowMasterMenu {
-  margin-left: 15px;
-  color: #999;
+a.ShowMasterMenu {
+  margin-left: 20px;
+  color: #aaa;
   font-style: italic;
 }
 
@@ -1181,5 +1185,3 @@ section.features.bottom {
   font-size: @fontSizeLarge;
   font-family: @headingsFontFamily;
 }
-
-

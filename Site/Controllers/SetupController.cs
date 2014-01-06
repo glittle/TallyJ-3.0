@@ -13,7 +13,8 @@ namespace TallyJ.Controllers
 {
   public class SetupController : BaseController
   {
-    
+
+    [ForAuthenticatedTeller]
     public ActionResult Index()
     {
       return View("Setup", new SetupModel());
@@ -24,6 +25,7 @@ namespace TallyJ.Controllers
       return View(new SetupModel());
     }
 
+    [ForAuthenticatedTeller]
     public JsonResult SaveElection(Election election)
     {
       return new ElectionModel().SaveElection(election);

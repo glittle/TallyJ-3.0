@@ -467,6 +467,15 @@ namespace TallyJ.CoreModels
       return BallotsInfoList(ballots);
     }
 
+    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
+    public Ballot CurrentRawBallot()
+    {
+      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
+      return new BallotCacher().AllForThisElection.Single(b => b.C_RowId == ballotId);
+      //      return Db.Ballot.Single(b => b.C_RowId == ballotId);
+    }
+
+
     /// <Summary>Current Ballot... could be null</Summary>
     public Ballot GetCurrentBallot(bool refresh = false)
     {
@@ -489,6 +498,9 @@ namespace TallyJ.CoreModels
 
           var voteInfos = VoteInfosFor(ballot);
 
+          SortVotes(voteInfos.OrderBy(vi => vi.PositionOnBallot).Select(v => v.VoteId).ToList());
+          voteInfos = VoteInfosFor(ballot);
+
           new BallotAnalyzer().UpdateBallotStatus(ballot, voteInfos, true);
           ballotCacher.UpdateItemAndSaveCache(ballot);
           Db.SaveChanges();
@@ -501,14 +513,6 @@ namespace TallyJ.CoreModels
     #endregion
 
     public abstract object BallotInfoForJs(Ballot b);
-
-    /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
-    public Ballot CurrentRawBallot()
-    {
-      var ballotId = SessionKey.CurrentBallotId.FromSession(0);
-      return new BallotCacher().AllForThisElection.Single(b => b.C_RowId == ballotId);
-      //      return Db.Ballot.Single(b => b.C_RowId == ballotId);
-    }
 
     public List<Vote> CurrentVotes()
     {

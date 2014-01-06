@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNet.SignalR;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
@@ -38,11 +39,18 @@ namespace TallyJ.CoreModels.Hubs
     {
       CoreHub.Clients.Group(HubNameForCurrentElection).updatePeople(message);
     }
+
+//    public int NumAttached
+//    {
+//      get
+//      {
+//        var myHubName = GetType().Name + "Core";
+//        return !HubCounter.ConnectedIds.ContainsKey(myHubName) ? 0 : HubCounter.ConnectedIds[myHubName].Count;
+//      }
+//    }
   }
 
-  public class FrontDeskHubCore : Hub
+  public class FrontDeskHubCore : HubWithTracker
   {
-    // empty class needed for signalR use!!
-    // referenced by helper and in JavaScript
   }
 }

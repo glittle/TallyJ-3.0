@@ -252,34 +252,6 @@ function PrepareTopLocationAndTellers() {
 
 function PrepareMainMenu() {
   $('.QuickLinks').supersubs().superfish();
-
-  //  $("#MasterMenu").dialog({
-  //    autoOpen: false,
-  //    show: "blind fast",
-  //    hide: "explode",
-  //    resizable: false,
-  //    draggable: false,
-  //    modal: true,
-  //    title: 'Main Menu',
-  //    position: {
-  //      my: "right+10 top+10",
-  //      at: "right+10 top+10",
-  //      of: window
-  //    },
-  //    width: '500px'
-  //  });
-  //
-  //  $('#btnShowMasterMenu').click(function () {
-  //      $("#MasterMenu").dialog("open");
-  //      return false;
-  //  });
-
-  //    $("ul.sf-menu").supersubs({
-  //        minWidth: 12,   // minimum width of sub-menus in em units 
-  //        maxWidth: 27,   // maximum width of sub-menus in em units 
-  //        extraWidth: 1     // extra width can ensure lines don't sometimes turn over 
-  //        // due to slight rounding differences and font-family 
-  //    }).superfish();
 }
 
 function AttachHelp() {
@@ -359,6 +331,10 @@ function HasErrors(data) {
 
   if (/Internal Server Error/.test(data)) {
     ShowStatusFailed('Server Error.');
+    return true;
+  }
+  if (/Anonymous access denied/.test(data)) {
+    top.location.reload();
     return true;
   }
   if (/Server Error/.test(data)) {
@@ -506,11 +482,14 @@ String.prototype.parseJsonDateForInput = function () {
 };
 
 function JsonParse(json) {
-  if (typeof (JSON) == undefined && JSON) {
+  if (json == '') return null;
+  if (typeof (JSON) != 'undefined' && JSON) {
     //if (!!window.chrome) json = json.replace('\\', '\\\\');
     try {
       return JSON.parse(json); // if not pure JSON, may get parse error
     } catch (e) {
+      LogMessage(e);
+      LogMessage(json);
       ShowStatusFailed(e.message);
     }
   }
