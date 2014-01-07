@@ -116,6 +116,7 @@ namespace TallyJ.EF
       ReplaceEntireCache(list);
     }
 
+    
     /// <summary>
     ///   Find the item by matching the _RowId, remove if found
     /// </summary>
@@ -149,6 +150,8 @@ namespace TallyJ.EF
 
       Locator.Current.Resolve<CacheManager>()
         .Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)));
+
+      ItemChanged();
     }
 
     /// <summary>
@@ -178,6 +181,11 @@ namespace TallyJ.EF
       if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
       CacheManager.Current.Expire(CacheKeyRaw);
     }
+
+    /// <summary>
+    /// When an item has been added or changed
+    /// </summary>
+    protected virtual void ItemChanged() { }
 
     protected abstract IQueryable<T> MainQuery();
   }

@@ -32,17 +32,21 @@ namespace TallyJ.Code
 
     string Replace(IDictionary<string, object> properties, string template, string tokenPattern)
     {
-      return Regex.Replace(template, tokenPattern, delegate(Match match)
-                                                            {
-                                                              var token = match.Value;
-                                                              var key = token.Substring(1, token.Length - 2);
-                                                              if (properties.ContainsKey(key))
-                                                              {
-                                                                var value = properties[key];
-                                                                return value == null ? "" : value.ToString();
-                                                              }
-                                                              return token;
-                                                            });
+      return Regex.Replace(template, tokenPattern, match =>
+      {
+        var token = match.Value;
+        var key = token.Substring(1, token.Length - 2);
+        if (key.StartsWith("^"))
+        {
+          key = key.Substring(1); // ignore in c#
+        }
+        if (properties.ContainsKey(key))
+        {
+          var value = properties[key];
+          return value == null ? "" : value.ToString();
+        }
+        return token;
+      });
     }
 
 

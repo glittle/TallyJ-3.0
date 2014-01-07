@@ -74,13 +74,13 @@ namespace TallyJ.CoreModels
       switch (nameToFind)
       {
         case "~~All~~":
-          results = personList.AsSearchResults(0, voteHelper).ToList();
+          results = personList.OrderBy(p => p.FullName).AsSearchResults(0, voteHelper).ToList();
           break;
         case "~~Voters~~":
-          results = personList.Where(p => p.CanVote.AsBoolean()).AsSearchResults(0, voteHelper).ToList();
+          results = personList.Where(p => p.CanVote.AsBoolean()).OrderBy(p => p.FullName).AsSearchResults(0, voteHelper).ToList();
           break;
         case "~~Tied~~":
-          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).AsSearchResults(0, voteHelper).ToList();
+          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).OrderBy(p=>p.FullName).AsSearchResults(0, voteHelper).ToList();
           break;
         default:
           results = GetRankedResults(personList, voteList, nameToFind, max, voteHelper, out moreFound);

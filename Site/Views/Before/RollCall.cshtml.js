@@ -2,8 +2,13 @@
   var local = {
     currentNameNum: 1,
     currentVoterDiv: null,
+    rollCallHub: null,
+    hubReconnectionTime: 95000,
+    rollCallHubConnectionId: null,
+    reconnectHubTimeout: null,
     nameDivs: []
   };
+
   var preparePage = function () {
 
     var main = $('.Main');
@@ -11,14 +16,14 @@
 
     scrollToMe(local.nameDivs[1]);
 
-    ActivateHeartbeat(true, 15); // faster
+    // ActivateHeartbeat(true, 15); // faster
 
-    site.onbroadcast(site.broadcastCode.pulse, function (ev, info) {
-      processPulse(info);
-    });
+    //    site.onbroadcast(site.broadcastCode.pulse, function (ev, info) {
+    //      processPulse(info);
+    //    });
 
     setTimeout(function () {
-      $('.Nav').animate({ opacity: 0 }, 1500, null, function() {
+      $('.Nav').animate({ opacity: 0 }, 1500, null, function () {
         $('.Nav').removeClass('Show').css({
           opacity: ''
         });
@@ -40,19 +45,85 @@
       isShowing = !isShowing;
       $(this).text(isShowing ? 'Hide Menu' : 'Show Menu');
       $('.Nav').toggleClass('Show', isShowing);
-      window.scrollTo(0,0);
+      window.scrollTo(0, 0);
       return false;
+    });
+
+    setTimeout(delayedPreparePage, 200);
+
+  };
+
+  var delayedPreparePage = function () {
+
+    // Proxy created on the fly          
+    local.rollCallHub = $.connection.rollCallHubCore;
+
+    // Declare a local function so the server can invoke it          
+    local.rollCallHub.client.updatePeople = function (info) {
+      updatePeople(info);
+    };
+
+    // Start the connection
+    local.rollCallHub.connection
+      .start(function () {
+        local.rollCallHubConnectionId = this.id;
+      })
+      .done(function () {
+        refreshHubConnection();
+      });
+  };
+
+  var refreshHubConnection = function () {
+    clearTimeout(local.reconnectHubTimeout);
+    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: local.rollCallHubConnectionId }, function () {
+      resetHubConnectionTimer();
     });
   };
 
-  var processPulse = function (info) {
-    var people = info.MorePeople;
-    if (people) {
-      var firstBlankAtEnd = $('div.Voter#P-100');
-      firstBlankAtEnd.before(people);
+  var resetHubConnectionTimer = function () {
+    clearTimeout(local.reconnectHubTimeout);
+    local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+  };
+
+  var updatePeople = function (info) {
+    var updated = false;
+    if (info.removedId) {
+      var line = $('#P' + info.removedId);
+      if (line.length) {
+        line.remove();
+        updated = true;
+      }
+    }
+    if (info.changed) {
+      for (var i = 0; i < info.changed.length; i++) {
+        var item = info.changed[i];
+        var itemLine = $('#P' + item.PersonId);
+        var html = site.templates.RollCallLine.filledWith(item);
+
+        if (itemLine.length) {
+          if (itemLine.data('ts') != item.TS) {
+            itemLine.replaceWith(html);
+          }
+        } else {
+          var firstBlankAtEnd = $('div.Voter#P-100');
+          firstBlankAtEnd.before(html);
+        }
+        updated = true;
+      }
+    }
+    if (updated) {
       local.nameDivs = $('.Main').children('div.Voter');
     }
+    site.lastVersionNum = info.NewStamp;
   };
+  //  var processPulse = function (info) {
+  //    var people = info.MorePeople;
+  //    if (people) {
+  //      var firstBlankAtEnd = $('div.Voter#P-100');
+  //      firstBlankAtEnd.before(people);
+  //      local.nameDivs = $('.Main').children('div.Voter');
+  //    }
+  //  };
 
   var keyDown = function (ev) {
     var delta = 0;

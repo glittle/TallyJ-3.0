@@ -16,5 +16,14 @@ namespace TallyJ.Code
     {
       get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
     }
+
+    public long LastRowVersion
+    {
+      get
+      {
+        var single = Db.CurrentRowVersion();
+        return single;
+      }
+    }
   }
 }

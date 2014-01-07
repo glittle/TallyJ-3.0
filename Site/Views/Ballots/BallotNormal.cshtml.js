@@ -89,6 +89,8 @@
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
 
+    $('#ballotFilter').on('change', startToChangeBallotFilter);
+
     //        $('#btnAddMissing').on('click', addMissing);
     $('#btnCancelAddMissing').on('click', cancelAddMissing);
 
@@ -197,6 +199,14 @@
 
   var focusOnTextInput = function () {
     local.inputField.focus().select();
+  };
+
+  var startToChangeBallotFilter = function () {
+    CallAjaxHandler(publicInterface.controllerUrl + '/ChangeBallotFilter', {code: $('#ballotFilter').val()}, function (info) {
+      showBallots(info);
+      highlightBallotInList();
+      ShowStatusSuccess('Updated');
+    });
   };
 
   var startToRefreshBallotList = function () {

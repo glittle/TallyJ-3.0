@@ -52,13 +52,22 @@ namespace TallyJ.CoreModels
       return peopleInCurrentElection;
     }
 
-    public IEnumerable<object> Voters(int numBlanksBefore = 2, int numBlanksAfter = 6)
+    public IEnumerable<PersonVotingMethodInfo> Voters(int numBlanksBefore = 2, int numBlanksAfter = 6)
     {
       return PersonLines(PeopleInCurrentElection(), numBlanksBefore, numBlanksAfter, IncludeAbsentees);
     }
 
+    public class PersonVotingMethodInfo
+    {
+      public int PersonId { get; set; }
+      public string FullName { get; set; }
+      public long? TS { get; set; }
+      public string VotingMethod { get; set; }
+      public int Pos { get; set; }
+    }
+
     /// <Summary>Only those listed</Summary>
-    public IEnumerable<object> PersonLines(List<Person> people, int numBlanksBefore, int numBlanksAfter,
+    public IEnumerable<PersonVotingMethodInfo> PersonLines(List<Person> people, int numBlanksBefore, int numBlanksAfter,
                                            bool includeAbsentees)
     {
       var before = new List<Person>();
@@ -81,32 +90,24 @@ namespace TallyJ.CoreModels
         before.Concat(people
                         .OrderBy(p => p.LastName)
                         .ThenBy(p => p.FirstName)).Concat(after)
-          .Select(p =>
+          .Select(p => new PersonVotingMethodInfo
           {
-            return new
-                         {
-                           PersonId = p.C_RowId,
-                           FullName = p.FullNameFL,
-                           VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "",
-                           Pos = ++i
-                         };
+            PersonId = p.C_RowId, FullName = p.FullNameFL, TS = p.C_RowVersionInt, VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "", Pos = ++i
           });
     }
 
-    public object GetMorePeople(long stamp, out long newStamp)
+    public IEnumerable<PersonVotingMethodInfo> GetMorePeople(long stamp, out long newStamp)
     {
-      var peopleInCurrentElection = PeopleInCurrentElectionQuery().Where(p => p.C_RowVersionInt > stamp).ToList();
-      if (peopleInCurrentElection.Count == 0)
+      var newPeopleInCurrentElection = PeopleInCurrentElectionQuery().Where(p => p.C_RowVersionInt > stamp).ToList();
+      if (newPeopleInCurrentElection.Count == 0)
       {
         newStamp = 0;
         return null;
       }
 
-      newStamp = peopleInCurrentElection.Max(p => p.C_RowVersionInt).AsLong();
+      newStamp = newPeopleInCurrentElection.Max(p => p.C_RowVersionInt).AsLong();
 
-      var personLines = PersonLines(peopleInCurrentElection, 0, 0, IncludeAbsentees);
-
-      return TemplateLoader.File.RollCallLine.FilledWithEach(personLines);
+      return PersonLines(newPeopleInCurrentElection, 0, 0, IncludeAbsentees);
     }
   }
 }

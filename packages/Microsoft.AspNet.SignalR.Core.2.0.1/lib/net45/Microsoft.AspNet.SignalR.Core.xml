@@ -227,6 +227,23 @@
             The default value is 0.
             </summary>
         </member>
+        <member name="T:Microsoft.AspNet.SignalR.Infrastructure.BinaryTextWriter">
+            <summary>
+            A buffering text writer that supports writing binary directly as well
+            </summary>
+        </member>
+        <member name="T:Microsoft.AspNet.SignalR.Infrastructure.BufferTextWriter">
+            <summary>
+            TextWriter implementation over a write delegate optimized for writing in small chunks
+            we don't need to write to a long lived buffer. This saves massive amounts of memory
+            as the number of connections grows.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AspNet.SignalR.Infrastructure.IBinaryWriter">
+            <summary>
+            Implemented on anything that has the ability to write raw binary data
+            </summary>
+        </member>
         <member name="T:Microsoft.AspNet.SignalR.Infrastructure.ConnectionManager">
             <summary>
             Default <see cref="T:Microsoft.AspNet.SignalR.Infrastructure.IConnectionManager"/> implementation.
@@ -356,18 +373,6 @@
         <member name="P:Microsoft.AspNet.SignalR.GlobalHost.HubPipeline">
             <summary>
             
-            </summary>
-        </member>
-        <member name="T:Microsoft.AspNet.SignalR.Infrastructure.IBinaryWriter">
-            <summary>
-            Implemented on anything that has the ability to write raw binary data
-            </summary>
-        </member>
-        <member name="T:Microsoft.AspNet.SignalR.Infrastructure.BufferTextWriter">
-            <summary>
-            TextWriter implementation over a write delegate optimized for writing in small chunks
-            we don't need to write to a long lived buffer. This saves massive amounts of memory
-            as the number of connections grows.
             </summary>
         </member>
         <member name="T:Microsoft.AspNet.SignalR.IRequest">

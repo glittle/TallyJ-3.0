@@ -103,6 +103,7 @@ namespace TallyJ.Controllers
                 UserSession.ProcessLogout();
             }
 
+            System.Web.HttpContext.Current.Session.Clear();
             FormsAuthentication.SignOut();
 
             return RedirectToAction("Index", "Public");

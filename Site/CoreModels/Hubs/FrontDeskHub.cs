@@ -1,20 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNet.SignalR;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 
 namespace TallyJ.CoreModels.Hubs
 {
-  public class FrontDeskHub : Hub
+  public class FrontDeskHub
   {
-    public void Subscribe(Guid electionGuid)
+    private IHubContext _coreHub;
+
+    private string HubNameForCurrentElection
     {
-      Groups.Add(Context.ConnectionId, electionGuid.ToString());
+      get
+      {
+        var electionGuid = UserSession.CurrentElectionGuid;
+        AssertAtRuntime.That(electionGuid != Guid.Empty);
+
+        return electionGuid.ToString();
+      }
     }
 
-    public static void UpdateAllConnectedClients(object message)
+    private IHubContext CoreHub
     {
-      var context = GlobalHost.ConnectionManager.GetHubContext<FrontDeskHub>();
-      context.Clients.Group(UserSession.CurrentElectionGuid.ToString()).updatePeople(message);
+      get { return _coreHub ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<FrontDeskHubCore>()); }
     }
+
+    /// <summary>
+    /// Join this connection into the hub
+    /// </summary>
+    /// <param name="connectionId"></param>
+    public void Join(string connectionId)
+    {
+      CoreHub.Groups.Add(connectionId, HubNameForCurrentElection);
+    }
+
+    public void UpdateAllConnectedClients(object message)
+    {
+      CoreHub.Clients.Group(HubNameForCurrentElection).updatePeople(message);
+    }
+
+//    public int NumAttached
+//    {
+//      get
+//      {
+//        var myHubName = GetType().Name + "Core";
+//        return !HubCounter.ConnectedIds.ContainsKey(myHubName) ? 0 : HubCounter.ConnectedIds[myHubName].Count;
+//      }
+//    }
+  }
+
+  public class FrontDeskHubCore : HubWithTracker
+  {
   }
 }

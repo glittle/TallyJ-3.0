@@ -36,19 +36,20 @@ namespace TallyJ.Code.Enumerations
     {
     }
 
-    public static HtmlString ForHtmlList(Election selected)
+    public static HtmlString ForHtmlList(Election selected, bool showAll = true)
     {
       if (selected == null)
       {
         return ForHtmlList();
       }
-      return ForHtmlList(selected.TallyStatus);
+      return ForHtmlList(selected.TallyStatus, showAll);
     }
 
-    public static HtmlString ForHtmlList(string selected = "")
+    public static HtmlString ForHtmlList(string selected = "", bool showAll = true)
     {
       return
         BaseItems
+          .Where(bi => showAll || bi.Value == selected)
           .Select(bi => "<li data-state='{0}' class='Active_{2}'>{1}</li>"
                           .FilledWith(bi.Value, bi.Text, bi.Value == selected))
           .JoinedAsString()
