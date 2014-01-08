@@ -15,6 +15,11 @@
   heartbeatTimeout: null,
   timeOffsetKnown: false,
   firstPulse: null,
+  electionGuid: null,
+  mainHub: null,
+  mainHubConnectionId: null,
+  hubReconnectionTime: 95000,
+  hubReconnectionTimeout: null,
   qTips: [],
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
@@ -49,11 +54,14 @@ function Onload() {
 
   // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
-  if (site.firstPulse) {
-    ProcessPulseResult(site.firstPulse);
-  } else {
-    SendHeartbeat();
+  if (site.electionGuid) {
+    connectToMainHub();
   }
+  //  if (site.firstPulse) {
+  //    ProcessPulseResult(site.firstPulse);
+  //  } else {
+  //    SendHeartbeat();
+  //  }
 
   CheckTimeOffset();
 
@@ -82,6 +90,37 @@ function HighlightActiveLink() {
     }
   });
 }
+
+var connectToMainHub = function() {
+
+  var hub = site.mainHub = $.connection.mainHubCore;
+
+  // Declare a local function so the server can invoke it          
+  hub.client.statusChanged = function(info) {
+    site.broadcast(site.broadcastCode.electionStatusChanged, info);
+  };
+
+  // Start the connection
+  hub.connection
+    .start(function() {
+      site.mainHubConnectionId = this.id;
+    })
+    .done(function() {
+      joinMainHub();
+    });
+
+  var joinMainHub = function() {
+    clearTimeout(site.hubReconnectionTimeout);
+    CallAjaxHandler(site.rootUrl + '/Public/MainHub', { connId: site.mainHubConnectionId, electionGuid: site.electionGuid }, function(info) {
+      setHubConnectionTimer();
+    });
+  };
+
+  var setHubConnectionTimer = function() {
+    clearTimeout(site.hubReconnectionTimeout);
+    site.hubReconnectionTimeout = setTimeout(joinMainHub, local.hubReconnectionTime);
+  };
+};
 
 function PrepareQTips(doNow) {
   if (!doNow) {
@@ -175,6 +214,9 @@ function UpdateElectionStatus(ev, info) {
       $('#mmHeader').html(info.StateName);
     }
     var target = $('#electionState');
+    if (info.QuickSelector) {
+      target.html(info.QuickSelector);
+    }
     target.data('state', info.State);
     target.find('li').each(function () {
       var li = $(this);
@@ -276,9 +318,9 @@ function AttachHelp() {
   });
 
   var desired = GetFromStorage('HidePI_' + location.pathname, 'hide');
-    $('.PullInstructionsHandle').each(function () {
-      showHelp($(this), desired != 'hide', true);
-    });
+  $('.PullInstructionsHandle').each(function () {
+    showHelp($(this), desired != 'hide', true);
+  });
 
 }
 

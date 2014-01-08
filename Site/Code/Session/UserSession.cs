@@ -233,10 +233,7 @@ namespace TallyJ.Code.Session
       set
       {
         SessionKey.IsKnownTeller.SetInSession(value);
-        if (value)
-        {
-          IsGuestTeller = false;
-        }
+        IsGuestTeller = !value;
       }
     }
 

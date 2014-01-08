@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using NLog;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
@@ -194,12 +192,11 @@ namespace TallyJ.CoreModels
       return rules;
     }
 
-    /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     //    public Election GetFreshFromDb(Guid electionGuid)
     //    {
     //      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
     //    }
-
+    /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
     {
@@ -395,7 +392,7 @@ namespace TallyJ.CoreModels
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
 
-      new ElectionStatusSharer().SetStateFor(election);
+      //      new ElectionStatusSharer().SetStateFor(election);
 
       var join = new JoinElectionUser
       {
@@ -426,7 +423,7 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    public void SetTallyStatus(string status)
+    public void SetTallyStatus(Controller controller, string status)
     {
       if (UserSession.IsGuestTeller)
       {
@@ -445,7 +442,29 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new ElectionStatusSharer().SetStateFor(election);
+        //new ElectionStatusSharer().SetStateFor(election);
+        var menuHelper = new MenuHelper(controller.Url);
+        var infoForKnown = new
+        {
+          QuickLinks = menuHelper.QuickLinks(),
+          Name = UserSession.CurrentElectionStatusName,
+          State = UserSession.CurrentElectionStatus,
+        };
+
+        // should always be true... but usage could change in future
+        var currentIsKnown = UserSession.IsKnownTeller;
+        UserSession.IsKnownTeller = false;
+        menuHelper = new MenuHelper(controller.Url);
+        var infoForGuest = new
+        {
+          QuickLinks = menuHelper.QuickLinks(),
+          QuickSelector = menuHelper.StateSelectorItems().ToString(),
+          Name = UserSession.CurrentElectionStatusName,
+          State = UserSession.CurrentElectionStatus,
+        };
+        UserSession.IsKnownTeller = currentIsKnown;
+
+        new MainHub().StatusChanged(infoForKnown, infoForGuest);
       }
     }
 
@@ -471,7 +490,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
-      SetTallyStatus(status);
+      SetTallyStatus(controller, status);
 
       new LogHelper().Add("Status changed to " + status);
 
@@ -536,45 +555,51 @@ namespace TallyJ.CoreModels
         return false;
       }
 
+
+      //      var sharer = new ElectionStatusSharer();
+      //      var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
+      //      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
+      //      if (someoneElseChangedTheStatus)
+      //      {
+      //        //election = GetFreshFromDb(election.ElectionGuid);
+      //        sharer.SetStateFor(election);
+      //      }
+
+      UpdateListedForPublicTime();
+
+      //      return someoneElseChangedTheStatus;
+      return true;
+    }
+
+    /// <summary>
+    /// Should be called whenever the known teller has contacted us
+    /// </summary>
+    public static void UpdateListedForPublicTime()
+    {
+      if (!UserSession.IsKnownTeller)
+      {
+        return;
+      }
+
       var election = UserSession.CurrentElection;
-      if (election == null)
+      if (election == null || !election.ListForPublic.AsBoolean())
       {
-        return false;
+        return;
       }
 
-      var sharer = new ElectionStatusSharer();
-      var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
-      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
-      if (someoneElseChangedTheStatus)
+      // don't bother setting this to the database
+      var now = DateTime.Now;
+
+      if (now - election.ListedForPublicAsOf < 1.minutes())
       {
-        //election = GetFreshFromDb(election.ElectionGuid);
-        sharer.SetStateFor(election);
+        // don't need to update in less than a minute
+        return;
       }
 
-      if (election.ListForPublic.AsBoolean() && UserSession.IsKnownTeller)
-      {
-        //Db.Election.Attach(election);
+      election.ListedForPublicAsOf = now;
 
-        // don't bother setting this to the database
-        var listedForPublicAsOf = DateTime.Now;
-        election.ListedForPublicAsOf = listedForPublicAsOf;
-
-        var electionCacher = new ElectionCacher();
-        electionCacher.UpdateItemAndSaveCache(election);
-
-        //        try
-        //        {
-        //          Db.SaveChanges();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //          //          election = GetFreshFromDb(election.ElectionGuid);
-        //          //          election.ListedForPublicAsOf = listedForPublicAsOf;
-        //          //          Db.SaveChanges();
-        //        }
-      }
-
-      return someoneElseChangedTheStatus;
+      var electionCacher = new ElectionCacher();
+      electionCacher.UpdateItemAndSaveCache(election);
     }
 
     #region Nested type: CanVoteOrReceive

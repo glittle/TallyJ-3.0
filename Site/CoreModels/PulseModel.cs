@@ -17,11 +17,11 @@ namespace TallyJ.CoreModels
       _infoFromClient = infoFromClient;
     }
 
-    public PulseModel(UrlHelper urlHelper, PulseInfo infoFromClient = null)
-    {
-      _urlHelper = urlHelper;
-      _infoFromClient = infoFromClient;
-    }
+//    public PulseModel(UrlHelper urlHelper, PulseInfo infoFromClient = null)
+//    {
+//      _urlHelper = urlHelper;
+//      _infoFromClient = infoFromClient;
+//    }
 
     // properties expected:
     //  Active  -- is this computer active in an election?

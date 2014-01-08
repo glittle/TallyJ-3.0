@@ -31,12 +31,24 @@ namespace TallyJ.CoreModels.Hubs
     /// <param name="connectionId"></param>
     public void Join(string connectionId)
     {
-      CoreHub.Groups.Add(connectionId, HubNameForCurrentElection);
+      string group;
+      if (UserSession.IsKnownTeller)
+      {
+        group = HubNameForCurrentElection + "Known";
+      }
+      else
+      {
+        group = HubNameForCurrentElection + "Guest";
+      }
+      CoreHub.Groups.Add(connectionId, group);
+
+      ElectionModel.UpdateListedForPublicTime();
     }
 
-    public void UpdateAllConnectedClients(object message)
+    public void StatusChanged(object infoForKnown, object infoForGuest)
     {
-      CoreHub.Clients.Group(HubNameForCurrentElection).updatePeople(message);
+      CoreHub.Clients.Group(HubNameForCurrentElection + "Known").statusChanged(infoForKnown);
+      CoreHub.Clients.Group(HubNameForCurrentElection + "Guest").statusChanged(infoForGuest);
     }
   }
 
