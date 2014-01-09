@@ -4,7 +4,6 @@
     currentVoterDiv: null,
     rollCallHub: null,
     hubReconnectionTime: 95000,
-    rollCallHubConnectionId: null,
     reconnectHubTimeout: null,
     nameDivs: []
   };
@@ -56,26 +55,30 @@
   var delayedPreparePage = function () {
 
     // Proxy created on the fly          
-    local.rollCallHub = $.connection.rollCallHubCore;
+    var hub = local.rollCallHub = $.connection.rollCallHubCore;
 
     // Declare a local function so the server can invoke it          
-    local.rollCallHub.client.updatePeople = function (info) {
+    hub.client.updatePeople = function (info) {
+      LogMessage('signalR: updatePeople');
       updatePeople(info);
     };
 
+
+    site.hubJoinCommands.push(refreshHubConnection);
+
     // Start the connection
-    local.rollCallHub.connection
-      .start(function () {
-        local.rollCallHubConnectionId = this.id;
-      })
-      .done(function () {
-        refreshHubConnection();
-      });
+//    hub.connection
+//      .start()
+//      .done(function () {
+//        LogMessage(hub.connection.id);
+//        local.rollCallHubConnectionId = hub.connection.id;
+//        refreshHubConnection();
+//      });
   };
 
   var refreshHubConnection = function () {
     clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: local.rollCallHubConnectionId }, function () {
+    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
       resetHubConnectionTimer();
     });
   };
