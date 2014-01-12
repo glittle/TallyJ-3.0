@@ -7,7 +7,8 @@ table {
   border-spacing: 0px 0px;
 }
 
-.Main > thead th {
+.Main > thead th,
+.Ballots > thead th {
   border-bottom: 1px solid #000;
   padding: 2px 7px;
 }
@@ -18,14 +19,16 @@ tbody th {
   vertical-align: top;
 }
 
-#mainBody > tr > td {
+#mainBody > tr > td,
+#ballotsBody > tr > td {
   text-align: center;
   vertical-align: top;
   padding: 2px 7px;
   border-left: 1px solid #e0e0e0;
 }
 
-#mainBody > tr.Odd {
+#mainBody > tr.Odd,
+#ballotsBody > tr.Odd {
   background-color: #eaeaea;
 }
 
@@ -60,6 +63,9 @@ table.compList {
 
 .minutesOld {
   color: #999;
+  font-size: 80%;
+}
+.tellers {
   font-size: 80%;
 }
 .AccessCode {

@@ -8,6 +8,8 @@ namespace TallyJ.EF
   [Serializable]
   public partial class Computer : IIndexedForCaching
   {
+    public string AuthLevel { get; set; }
+
     public string GetTellerNames()
     {
       return GetTellerNames(Teller1, Teller2);

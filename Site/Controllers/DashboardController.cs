@@ -30,22 +30,26 @@ namespace TallyJ.Controllers
 
 
     [HttpPost]
+    [AllowGuestsInActiveElection]
     public JsonResult LoadV2Election(HttpPostedFileBase loadFile)
     {
       return new ElectionLoader().Import(loadFile);
     }
 
+    [AllowGuestsInActiveElection]
     public JsonResult ChooseLocation(int id)
     {
       return new {Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id)}.AsJsonResult();
     }
 
 
+    [AllowGuestsInActiveElection]
     public JsonResult ChooseTeller(int num, int teller, string newName = "")
     {
       return new TellerModel().ChooseTeller(num, teller, newName).AsJsonResult();
     }
 
+    [AllowGuestsInActiveElection]
     public JsonResult DeleteTeller(int id)
     {
       return new TellerModel().DeleteTeller(id).AsJsonResult();

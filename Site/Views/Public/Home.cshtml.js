@@ -119,7 +119,7 @@
 
     CallAjaxHandler(publicInterface.controllerUrl + 'TellerJoin', form, function (info) {
       if (info.LoggedIn) {
-        statusSpan.html('Success! &nbsp; Going to the Dashboard now...');
+        statusSpan.addClass('success').removeClass('active').html('Success! &nbsp; Going to the Dashboard now...');
         location.href = publicInterface.dashBoardUrl;
         return;
       }
@@ -132,7 +132,8 @@
   var publicInterface = {
     PreparePage: preparePage,
     controllerUrl: '',
-    dashBoardUrl: ''
+    dashBoardUrl: '',
+    local: local
   };
 
   return publicInterface;

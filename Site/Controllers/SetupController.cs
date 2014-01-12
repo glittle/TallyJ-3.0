@@ -11,6 +11,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
+  [AllowGuestsInActiveElection]
   public class SetupController : BaseController
   {
 

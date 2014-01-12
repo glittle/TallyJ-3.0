@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace TallyJ.Controllers
 {
+  [AllowGuestsInActiveElection]
   public class BallotsController : BaseController
   {
     public ActionResult Index()

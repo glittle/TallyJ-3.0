@@ -97,22 +97,23 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        var current = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
-        if (current != null)
-        {
-          return current;
-        }
-
-        // even if have valid guid, may be null if election was just deleted
-        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.FirstOrDefault() : null;
-
-        if (currentElection == null)
-        {
-          CurrentElectionGuid = Guid.Empty;
-        }
-
-        HttpContext.Current.Items[ItemKey.CurrentElection] = currentElection;
-        return currentElection;
+        return new ElectionCacher().AllForThisElection.FirstOrDefault();
+//        var current = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+//        if (current != null)
+//        {
+//          return current;
+//        }
+//
+//        // even if have valid guid, may be null if election was just deleted
+//        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.FirstOrDefault() : null;
+//
+//        if (currentElection == null)
+//        {
+//          CurrentElectionGuid = Guid.Empty;
+//        }
+//
+//        HttpContext.Current.Items[ItemKey.CurrentElection] = currentElection;
+//        return currentElection;
       }
     }
 
@@ -226,6 +227,11 @@ namespace TallyJ.Code.Session
       set { SessionKey.IsGuestTeller.SetInSession(value); }
     }
 
+    public static string AuthLevel
+    {
+      get { return IsKnownTeller ? "Known" : IsGuestTeller ? "Guest" : "None"; }
+    }
+
     /// <Summary>If logged in with an account</Summary>
     public static bool IsKnownTeller
     {
@@ -297,7 +303,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogout()
     {
-      new ComputerModel().DeleteAtLogout(CurrentComputerId);
+      new ComputerModel().Logout();
     }
 
     public static bool IsFeatured(string pageFeatureWhen)

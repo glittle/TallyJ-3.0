@@ -139,6 +139,25 @@ namespace TallyJ.EF
       }
     }
 
+    public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
+    {
+      var list = AllForThisElection;
+      var removed = false;
+
+      var ids = itemsToRemove.Select(i => i.C_RowId).ToList();
+      var oldItems = list.Where(i => ids.Contains(i.C_RowId)).ToList();
+      foreach (var item in oldItems)
+      {
+        list.Remove(item);
+        removed = true;
+      }
+
+      if (removed)
+      {
+        ReplaceEntireCache(list);
+      }
+    }
+
     /// <summary>
     ///   Put the (modified) List back into the cache
     /// </summary>

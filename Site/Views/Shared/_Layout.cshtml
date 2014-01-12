@@ -22,7 +22,7 @@
   </title>
 
 </head>
-<body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") @AuthLevel">
+<body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") Auth@(UserSession.AuthLevel)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
@@ -36,10 +36,10 @@
           else
           {
             @Html.ActionLink(" ", "Index", "Public", null, new
-               {
-                 Class = "site-title",
-                 title = "Go to Welcome Page"
-               })
+            {
+              Class = "site-title",
+              title = "Go to Welcome Page"
+            })
           }
         }
         <div class="Version">
@@ -69,8 +69,8 @@
           {
             <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")" data-state="@UserSession.CurrentElectionStatus">
-                @currentMenu.StateSelectorItems()
-              </ol>
+                                                                                                                            @currentMenu.StateSelectorItems()
+                                                                                                                          </ol>
               <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>
             </div>
             <div class="QuickLinks2">
@@ -97,6 +97,7 @@
   <div id="body">
     @RenderSection("featured", false)
     <section class="content-wrapper main-content clear-fix">
+      <div class="CompCode">@UserSession.CurrentComputerCode</div>
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);

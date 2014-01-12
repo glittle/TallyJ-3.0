@@ -273,15 +273,30 @@ namespace TallyJ.CoreModels
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
-      var exists = Db.Election.Any(e => e.ElectionGuid == wantedElectionGuid);
-      if (!exists)
+      // don't use cache, go directly to database
+      var rawElection = Db.Election.FirstOrDefault(e => e.ElectionGuid == wantedElectionGuid);
+      if (rawElection == null)
       {
         return false;
       }
-
+      
+      // set up the whole environment to use this election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
-      CacherBase.DropAllCachesForThisElection();
+
+      if (UserSession.IsKnownTeller)
+      {
+        // ensure we are using clean data... even if another teller is logged in
+        CacherBase.DropAllCachesForThisElection();
+
+        // 2014-01 clean out old data (don't bother saving to the DB until it is done by something else)
+        var election = UserSession.CurrentElection;
+        if (election.ListedForPublicAsOf.HasValue)
+        {
+          election.ListedForPublicAsOf = null;
+          new ElectionCacher().UpdateItemAndSaveCache(election);
+        }
+      }
 
       var computerModel = new ComputerModel();
       computerModel.AddCurrentComputerIntoCurrentElection();
@@ -292,6 +307,11 @@ namespace TallyJ.CoreModels
       {
         computerModel.MoveCurrentComputerIntoLocation(firstLocation.C_RowId);
       }
+
+      //if (UserSession.IsKnownTeller)
+      //{
+      //  new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+      //}
 
       var message = UserSession.IsGuestTeller
         ? "Guest teller joined into Election"
@@ -532,7 +552,7 @@ namespace TallyJ.CoreModels
 
         election.ListForPublic = listOnPage;
 
-        election.ListedForPublicAsOf = listOnPage ? DateTime.Now : DateTime.MinValue;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
 
         Db.SaveChanges();
 
@@ -548,59 +568,59 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Do any processing for the election</Summary>
     /// <returns> True if the status changed </returns>
-    public bool ProcessPulse()
-    {
-      if (!UserSession.CurrentElectionGuid.HasContent())
-      {
-        return false;
-      }
-
-
-      //      var sharer = new ElectionStatusSharer();
-      //      var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
-      //      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
-      //      if (someoneElseChangedTheStatus)
-      //      {
-      //        //election = GetFreshFromDb(election.ElectionGuid);
-      //        sharer.SetStateFor(election);
-      //      }
-
-      UpdateListedForPublicTime();
-
-      //      return someoneElseChangedTheStatus;
-      return true;
-    }
+    //    public bool ProcessPulse()
+    //    {
+    //      if (!UserSession.CurrentElectionGuid.HasContent())
+    //      {
+    //        return false;
+    //      }
+    //
+    //
+    //      //      var sharer = new ElectionStatusSharer();
+    //      //      var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
+    //      //      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
+    //      //      if (someoneElseChangedTheStatus)
+    //      //      {
+    //      //        //election = GetFreshFromDb(election.ElectionGuid);
+    //      //        sharer.SetStateFor(election);
+    //      //      }
+    //
+    //      UpdateListedForPublicTime();
+    //
+    //      //      return someoneElseChangedTheStatus;
+    //      return true;
+    //    }
 
     /// <summary>
     /// Should be called whenever the known teller has contacted us
     /// </summary>
-    public static void UpdateListedForPublicTime()
-    {
-      if (!UserSession.IsKnownTeller)
-      {
-        return;
-      }
-
-      var election = UserSession.CurrentElection;
-      if (election == null || !election.ListForPublic.AsBoolean())
-      {
-        return;
-      }
-
-      // don't bother setting this to the database
-      var now = DateTime.Now;
-
-      if (now - election.ListedForPublicAsOf < 1.minutes())
-      {
-        // don't need to update in less than a minute
-        return;
-      }
-
-      election.ListedForPublicAsOf = now;
-
-      var electionCacher = new ElectionCacher();
-      electionCacher.UpdateItemAndSaveCache(election);
-    }
+    //    public static void UpdateListedForPublicTime()
+    //    {
+    //      if (!UserSession.IsKnownTeller)
+    //      {
+    //        return;
+    //      }
+    //
+    //      var election = UserSession.CurrentElection;
+    //      if (election == null || !election.ListForPublic.AsBoolean())
+    //      {
+    //        return;
+    //      }
+    //
+    //      // don't bother saving this to the database
+    //      var now = DateTime.Now;
+    //
+    //      if (now - election.ListedForPublicAsOf < 1.minutes())
+    //      {
+    //        // don't need to update in less than a minute
+    //        return;
+    //      }
+    //
+    //      election.ListedForPublicAsOf = now;
+    //
+    //      var electionCacher = new ElectionCacher();
+    //      electionCacher.UpdateItemAndSaveCache(election);
+    //    }
 
     #region Nested type: CanVoteOrReceive
 
@@ -622,5 +642,11 @@ namespace TallyJ.CoreModels
     }
 
     #endregion
+
+    public bool GuestsAllowed()
+    {
+      return UserSession.CurrentElection != null
+             && new ComputerCacher().AllForThisElection.Any(c => c.AuthLevel == "Known");
+    }
   }
 }

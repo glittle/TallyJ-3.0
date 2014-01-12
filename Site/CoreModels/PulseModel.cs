@@ -44,7 +44,7 @@ namespace TallyJ.CoreModels
       var result2 = new Dictionary<string, object>();
 
       var isStillAllowed = new ComputerModel().ProcessPulse();
-      new ElectionModel().ProcessPulse();
+      //new ElectionModel().ProcessPulse();
 
       var statusChanged = false;
 

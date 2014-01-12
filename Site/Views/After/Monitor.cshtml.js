@@ -96,8 +96,13 @@
   var updateAutoMinutes = function () {
     $('.minutesOld').each(function () {
       var span = $(this);
-      var start = +span.data('start');
-      if (start) {
+      var start = span.data('start');
+      if (start !== '') {
+        start = +start; // force to be a number
+        if (start <= 2) {
+          span.html(' (now)');
+          return;
+        }
         var startTime = span.data('startTime');
         var now = new Date();
         var ms = now.getTime() - startTime.getTime();
@@ -108,7 +113,7 @@
           seconds = seconds - minutes * 60;
           txt = minutes + ':' + padRight(seconds);
         }
-        else{
+        else {
           txt = '0:' + padRight(seconds);
         }
         span.html(' (' + txt + ' ago)');
@@ -116,7 +121,7 @@
     });
   };
 
-  var padRight = function(num) {
+  var padRight = function (num) {
     var s = num.toString();
     return ('0' + s).substr(-2);
   };
@@ -203,7 +208,7 @@
         var detailRow = '<table class=compList><thead><tr><th>Code</th><th>Ballots</th><th>Current Tellers</th></tr></thead><tbody>{^0}</tbody></table>';
 
         $.each(this.BallotCodes, function () {
-          this.TellerInfo = '{Tellers} <span class="minutesOld" data-start="{SecondsOld}"></span><br>'.filledWithEach(this.Computers);
+          this.TellerInfo = '<span class="tellers">{Tellers}<span> <span class="minutesOld" data-start="{SecondsOld}"></span><br>'.filledWithEach(this.Computers);
         });
 
         this.ComputerList = detailRow.filledWith(settings.rowTemplateExtra.filledWithEach(this.BallotCodes));

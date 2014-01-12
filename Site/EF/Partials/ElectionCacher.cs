@@ -34,10 +34,7 @@ namespace TallyJ.EF
             var cached = cacheManager.Get(key) as List<Election>;
             if (cached != null)
             {
-              result.AddRange(cached.Where(e => e.ListForPublic.AsBoolean()
-                                                && e.ElectionPasscode.HasContent()
-                                                && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes()
-                ).Select(e => new PublicElection(e)));
+              result.AddRange(cached.Where(e => e.ListForPublicNow).Select(e => new PublicElection(e)));
             }
           }
         }

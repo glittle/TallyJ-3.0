@@ -6,6 +6,7 @@ using TallyJ.CoreModels;
 
 namespace TallyJ.Controllers
 {
+  [AllowGuestsInActiveElection]
   public class PeopleController : BaseController
   {
 
