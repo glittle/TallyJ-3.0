@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Web;
 using TallyJ.Code;
@@ -13,78 +11,54 @@ namespace TallyJ.CoreModels
 {
   public class ComputerModel : DataConnectedModel
   {
-    public Computer CreateComputerForMe(Guid electionGuid)
+    private Computer CreateComputerForMe(ComputerCacher computerCacher)
     {
-      ClearOutOldComputerRecords();
+      var allComputers = new ComputerCacher().AllForThisElection;
 
       var computer = new Computer
-                       {
-                         ElectionGuid = electionGuid,
-                         LastContact = DateTime.Now,
-                         BrowserInfo = HttpContext.Current.Request.Browser.Type
-                       };
+      {
+        C_RowId = 1 + (allComputers.Count == 0 ? 0 : allComputers.Max(c => c.C_RowId)),
+        LocationGuid = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid,
+        LastContact = DateTime.Now,
+        ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode)
+          .Distinct()
+          .OrderBy(s => s)
+          .ToList()),
+        TempAuthLevel = UserSession.AuthLevel,
+        TempSessionId = HttpContext.Current.Session.SessionID
+      };
 
       return computer;
     }
 
-    /// <Summary>Remove all computer records (for all elections) that are not active</Summary>
-    private void ClearOutOldComputerRecords()
-    {
-      const int maxMinutesOfNoContact = 5;
-      var computerCacher = new ComputerCacher();
-
-      var now = DateTime.Now;
-
-      foreach (var oldComputer in Db.Computer.ToList().Where(c => !c.LastContact.HasValue || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact))
-      {
-        Db.Computer.Remove(oldComputer);
-
-        computerCacher.RemoveItemAndSaveCache(oldComputer);
-      }
-
-      Db.SaveChanges();
-
-    }
-
+    //    private void ClearOutOldComputerRecords()
+    //    {
+    //      // backward compatible... remove all records from database
+    //
+    //
+    //      const int maxMinutesOfNoContact = 30;
+    //      var computerCacher = new ComputerCacher();
+    //
+    //      var now = DateTime.Now;
+    //      var computers = computerCacher.AllForThisElection;
+    //
+    //      computerCacher.RemoveItemsAndSaveCache(
+    //        computers.Where(c => !c.LastContact.HasValue
+    //                             || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact));
+    //    }
+    /// <Summary>Remove all computer records (for this election) that are not active</Summary>
     /// <Summary>Add computer into election, with unique computer code</Summary>
-    public void AddCurrentComputerIntoCurrentElection()
+    public Computer MakeComputerForMe()
     {
-      var electionGuid = UserSession.CurrentElectionGuid;
-
       var computerCacher = new ComputerCacher();
 
-      Computer computer = null;
-      var currentComputerId = UserSession.CurrentComputerId;
-
-      if (currentComputerId > 0)
-      {
-        // change this computer
-        computer = computerCacher.GetById(currentComputerId);
-        if (computer != null)
-        {
-          Db.Computer.Attach(computer);
-        }
-      }
-
-      if (computer == null)
-      {
-        // make new
-        computer = CreateComputerForMe(electionGuid);
-        Db.Computer.Add(computer);
-      }
-
-      computer.LocationGuid = new LocationCacher().AllForThisElection.First().LocationGuid;
-
-      computer.ComputerCode = DetermineNextFreeComputerCode(computerCacher.AllForThisElection.Select(c => c.ComputerCode)
-          .Distinct()
-          .OrderBy(s => s)
-          .ToList());
-
-      Db.SaveChanges();
+      var computer = CreateComputerForMe(computerCacher);
 
       UserSession.CurrentComputerId = computer.C_RowId;
 
       computerCacher.UpdateItemAndSaveCache(computer);
+
+      return computer;
     }
 
     /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
@@ -94,18 +68,16 @@ namespace TallyJ.CoreModels
 
       if (location == null)
       {
-        SessionKey.CurrentLocationGuid.SetInSession<Location>(null);
+        // ignore the request
         return false;
       }
 
       var computer = UserSession.CurrentComputer;
-      AssertAtRuntime.That(computer != null, "code missing");
+      AssertAtRuntime.That(computer != null, "computer missing");
       if (computer == null) return false;
 
-      Db.Computer.Attach(computer);
       computer.LocationGuid = location.LocationGuid;
       computer.LastContact = DateTime.Now;
-      Db.SaveChanges();
 
       new ComputerCacher().UpdateItemAndSaveCache(computer);
 
@@ -134,7 +106,7 @@ namespace TallyJ.CoreModels
     {
       var codeToUse = 'A';
       var twoDigit = false;
-      var firstDigit = (char)('A' - 1);
+      var firstDigit = (char) ('A' - 1);
 
       foreach (var computerCode in existingCodesSortedAsc)
       {
@@ -152,7 +124,7 @@ namespace TallyJ.CoreModels
         if (testChar == codeToUse)
         {
           // push the answer to the next one
-          codeToUse = (char)(codeToUse + 1);
+          codeToUse = (char) (codeToUse + 1);
           if (codeToUse == 'I' || codeToUse == 'L' || codeToUse == 'O')
           {
             codeToUse++;
@@ -161,19 +133,33 @@ namespace TallyJ.CoreModels
           {
             twoDigit = true;
             codeToUse = 'A';
-            firstDigit = (char)(firstDigit + 1);
+            firstDigit = (char) (firstDigit + 1);
           }
         }
       }
       if (codeToUse > 'Z')
       {
-        return "" + firstDigit + (char)('A' - 1 + codeToUse - 'Z');
+        return "" + firstDigit + (char) ('A' - 1 + codeToUse - 'Z');
       }
       if (twoDigit)
       {
         return "" + firstDigit + codeToUse;
       }
       return "" + codeToUse;
+    }
+
+    // refresh computer and election info
+    public void RefreshLastContact()
+    {
+      var computer = UserSession.CurrentComputer;
+      if (computer == null)
+      {
+        return;
+      }
+
+      computer.LastContact = DateTime.Now;
+
+      new ComputerCacher().UpdateItemAndSaveCache(computer);
     }
 
     public bool ProcessPulse()
@@ -202,17 +188,21 @@ namespace TallyJ.CoreModels
       //        AddCurrentComputerIntoElection(UserSession.CurrentElectionGuid);
       //      }
 
-      if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
-      {
-        return false;
-      }
+      //      if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
+      //      {
+      //        return false;
+      //      }
 
       return true;
     }
 
-    public void DeleteAtLogout(int computerRowId)
+    public void Logout()
     {
-      //TODO: should this be deleted at logout??
+      var computer = UserSession.CurrentComputer;
+      if (computer != null)
+      {
+        new ComputerCacher().RemoveItemAndSaveCache(computer);
+      }
     }
   }
 }

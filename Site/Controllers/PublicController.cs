@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
@@ -77,6 +78,14 @@ namespace TallyJ.Controllers
     public void PublicHub(string connId)
     {
       new PublicHub().Join(connId);
+    }
+
+    public void MainHub(string connId, string electionGuid)
+    {
+      // likely redundant - can remove when settled
+      AssertAtRuntime.That(electionGuid.AsGuid()==UserSession.CurrentElectionGuid);
+
+      new MainHub().Join(connId);
     }
 
   }

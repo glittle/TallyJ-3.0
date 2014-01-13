@@ -23,8 +23,10 @@ namespace TallyJ.EF
     }
   }
 
-  public abstract class CacherBase<T> : CacherBase where T : class, IIndexedForCaching
+  public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
+    private const int CacheMinutes = 3 * 60;
+
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
@@ -54,7 +56,7 @@ namespace TallyJ.EF
         CacheKey internalCacheKey;
 
         var allForThisElection = MainQuery()
-          .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)),
+          .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
             new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
 
 
@@ -71,20 +73,21 @@ namespace TallyJ.EF
 
     private void RegisterElectionCacheKey(CacheKey electionCacheKey)
     {
-      var cacheManager = Locator.Current.Resolve<CacheManager>();
+      var cacheManager = CacheManager.Current;
 
+      var cacheDuration = TimeSpan.FromMinutes(CacheMinutes);
       var list =
-        cacheManager.GetOrAdd(ElectionKeys, new List<CacheKey>(), CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60))) as
+        cacheManager.GetOrAdd(ElectionKeys, new List<CacheKey>(), CachePolicy.WithSlidingExpiration(cacheDuration)) as
           List<CacheKey>;
       if (list == null)
       {
         return;
       }
-      
+
       if (!list.Exists(k => k.Key == electionCacheKey.Key))
       {
         list.Add(electionCacheKey);
-        cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)));
+        cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(cacheDuration));
       }
     }
 
@@ -101,9 +104,9 @@ namespace TallyJ.EF
     /// <param name="replacementItem"></param>
     public void UpdateItemAndSaveCache(T replacementItem)
     {
-      var list = AllForThisElection;
-      
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
+
+      var list = AllForThisElection;
 
       var oldItems = list.Where(i => i.C_RowId == replacementItem.C_RowId);
       foreach (var item in oldItems.ToList())
@@ -116,7 +119,7 @@ namespace TallyJ.EF
       ReplaceEntireCache(list);
     }
 
-    
+
     /// <summary>
     ///   Find the item by matching the _RowId, remove if found
     /// </summary>
@@ -139,17 +142,35 @@ namespace TallyJ.EF
       }
     }
 
+    public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
+    {
+      var list = AllForThisElection;
+      var removed = false;
+
+      var ids = itemsToRemove.Select(i => i.C_RowId).ToList();
+      var oldItems = list.Where(i => ids.Contains(i.C_RowId)).ToList();
+      foreach (var item in oldItems)
+      {
+        list.Remove(item);
+        removed = true;
+      }
+
+      if (removed)
+      {
+        ReplaceEntireCache(list);
+      }
+    }
+
     /// <summary>
     ///   Put the (modified) List back into the cache
     /// </summary>
     /// <param name="listFromCache"></param>
     public void ReplaceEntireCache(List<T> listFromCache)
     {
-      var key = new CacheKey(MainQuery().GetCacheKey(), 
+      var key = new CacheKey(MainQuery().GetCacheKey(),
         new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
 
-      Locator.Current.Resolve<CacheManager>()
-        .Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)));
+      CacheManager.Current.Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)));
 
       ItemChanged();
     }

@@ -321,9 +321,11 @@ namespace TallyJ.CoreModels
     public JsonResult SaveManualResults(ResultSummary manualResultsFromBrowser)
     {
       ResultSummary resultSummary = null;
+      var resultSummaryCacher = new ResultSummaryCacher();
+
       if (manualResultsFromBrowser.C_RowId != 0)
       {
-        resultSummary = new ResultSummaryCacher().AllForThisElection.FirstOrDefault(rs =>
+        resultSummary = resultSummaryCacher.AllForThisElection.FirstOrDefault(rs =>
           rs.C_RowId == manualResultsFromBrowser.C_RowId
           && rs.ResultType == ResultType.Manual);
       }
@@ -335,6 +337,11 @@ namespace TallyJ.CoreModels
           ResultType = ResultType.Manual
         };
         Db.ResultSummary.Add(resultSummary);
+        resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
+      }
+      else
+      {
+        Db.ResultSummary.Attach(resultSummary);
       }
 
       var editableFields = new
@@ -361,7 +368,8 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+
+      resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
 
       _analyzer.PrepareResultSummaries();
       _analyzer.FinalizeSummaries();

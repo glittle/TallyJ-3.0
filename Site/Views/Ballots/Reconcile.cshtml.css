@@ -30,7 +30,6 @@
 
 #lists {
   clear: left;
-  display: none;
 }
 
   #lists > div {
@@ -69,7 +68,6 @@ tr.Total td {
 }
 
 .Names {
-  display: none;
   width: 400px;
 }
 

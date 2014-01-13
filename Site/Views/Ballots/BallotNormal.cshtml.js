@@ -48,6 +48,9 @@
         if (ui.newPanel.attr('id') === 'tabBallots') {
           local.inputField.focus().select();
         }
+        else if (ui.newPanel.attr('id') === 'tabNameSearch') {
+          $('#txtSearch').focus().select();
+        }
       }
     });
 
@@ -120,7 +123,7 @@
     //        site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'Click to add a spoiled vote.  If the name is readable, first search for it, as someone else may have added it already!' });
 
-    site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+    site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
     site.onbroadcast(site.broadcastCode.locationChanged, function () {
       // do instant reload
       changeLocation();
@@ -175,12 +178,15 @@
 
   };
 
-  var showBallotTab = function() {
-    local.tabList.accordion('option', 'active', tabNum.ballotEdit);
-    local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+  var showBallotTab = function (focusOnIt) {
+    local.tabList.find('h3').eq(tabNum.ballotEdit).show();
+    if (focusOnIt) {
+      // local.tabList.find('h3').eq(tabNum.ballotEdit).next().show();
+      local.tabList.accordion('option', 'active', tabNum.ballotEdit);
+    }
   };
 
-  var hideBallotTab = function() {
+  var hideBallotTab = function () {
     local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
   };
 
@@ -190,7 +196,9 @@
 
     CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
       showBallot(info);
-      showBallotTab();
+      showBallotTab(true);
+
+
       local.inputField.focus().val('').change();
       local.nameList.html('');
       $('.NewBallotBtns').prop('disabled', false);
@@ -202,7 +210,7 @@
   };
 
   var startToChangeBallotFilter = function () {
-    CallAjaxHandler(publicInterface.controllerUrl + '/ChangeBallotFilter', {code: $('#ballotFilter').val()}, function (info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/ChangeBallotFilter', { code: $('#ballotFilter').val() }, function (info) {
       showBallots(info);
       highlightBallotInList();
       ShowStatusSuccess('Updated');
@@ -247,24 +255,35 @@
     }
   };
 
-  var personSaved = function (ev, info) {
+  var newPersonSaved = function (ev, info) {
     local.lastSearch = ''; // force a reload
     runSearch();
     toggleAddMissingPanel();
 
     var person = info.Person;
 
-    local.votes.push({
-      vid: 0,
-      pid: person.C_RowId,
-      name: person.C_FullName,
-      count: 0,
-      ineligible: person.IneligibleReasonGuid
+    var votes = $.grep(local.votes, function (v) {
+      return v.vid == 0;
     });
 
+    if (votes.length) {
+      var vote = votes[0];
+      vote.pid = person.C_RowId;
+      vote.name = person.C_FullName;
+      vote.ineligible = person.IneligibleReasonGuid;
+    } else {
+      vote = {
+        vid: 0,
+        pid: person.C_RowId,
+        name: person.C_FullName,
+        count: 0,
+        ineligible: person.IneligibleReasonGuid
+      };
+      local.votes.push(vote);
+    }
     showVotes();
 
-    var newHost = local.votesList.find('.VoteHost').last();
+    var newHost = local.votesList.find('.VoteHost#V0').eq(0);
 
     startSavingVote(newHost);
   };
@@ -288,7 +307,7 @@
       $('.ballotCode').text(ballot.Code);
       $('#ballotStatus').text(ballot.StatusCode);
 
-      // showBallotTab();
+      showBallotTab();
 
       local.votesNeeded = ballotInfo.NumNeeded;
       local.ballotStatus = ballot.StatusCode;
@@ -309,6 +328,8 @@
       $('.ballotCode').text('');
 
       $('#votesPanel').css('visibility', 'hidden');
+      $('#votesList').html('');
+
       local.tabList.accordion('option', 'active', tabNum.ballotListing);
       hideBallotTab();
       local.btnDeleteBallot.prop('disabled', true);

@@ -239,13 +239,13 @@ namespace TallyJ.CoreModels.ExportImport
       tellerXml.CopyAttributeValuesTo(teller);
 
       // reset Guid to a new guid
-      var oldGuid = teller.TellerGuid;
-      var newGuid = Guid.NewGuid();
-      _guidMap.Add(oldGuid, newGuid);
+//      var oldGuid = teller.TellerGuid;
+//      var newGuid = Guid.NewGuid();
+//      _guidMap.Add(oldGuid, newGuid);
 
       //Debugger.Log(3, "Teller", "Teller {0}-->{1}\n".FilledWith(oldGuid, newGuid));
 
-      teller.TellerGuid = newGuid;
+//      teller.TellerGuid = newGuid;
       teller.ElectionGuid = _electionGuid;
 
       //Debugger.Log(3, "Teller", "Teller={0}\n".FilledWith(teller.TellerGuid));
@@ -360,16 +360,16 @@ namespace TallyJ.CoreModels.ExportImport
       Db.Location.Add(location);
       Db.SaveChanges();
 
-      var computersXml = locationXml.SelectNodes("t:computer", _nsm);
-
-      if (computersXml != null)
-      {
-        foreach (XmlElement computerXml in computersXml)
-        {
-          LoadComputer(computerXml, locationGuid);
-        }
-        Db.SaveChanges();
-      }
+//      var computersXml = locationXml.SelectNodes("t:computer", _nsm);
+//
+//      if (computersXml != null)
+//      {
+//        foreach (XmlElement computerXml in computersXml)
+//        {
+//          LoadComputer(computerXml, locationGuid);
+//        }
+//        Db.SaveChanges();
+//      }
 
       var ballotsXml = locationXml.SelectNodes("t:ballot", _nsm);
       if (ballotsXml != null)
@@ -396,18 +396,18 @@ namespace TallyJ.CoreModels.ExportImport
       Db.SaveChanges();
     }
 
-    private void LoadComputer(XmlElement computerXml, Guid locationGuid)
-    {
-      // need to map Guid to new Guid
-      var computer = new Computer();
-      computerXml.CopyAttributeValuesTo(computer);
-
-      // reset Guid to a new guid
-      computer.ElectionGuid = _electionGuid;
-      computer.LocationGuid = locationGuid;
-
-      Db.Computer.Add(computer);
-    }
+//    private void LoadComputer(XmlElement computerXml, Guid locationGuid)
+//    {
+//      // need to map Guid to new Guid
+//      var computer = new Computer();
+//      computerXml.CopyAttributeValuesTo(computer);
+//
+//      // reset Guid to a new guid
+//      computer.ElectionGuid = _electionGuid;
+//      computer.LocationGuid = locationGuid;
+//
+//      Db.Computer.Add(computer);
+//    }
 
     private void LoadBallotAndVotes(XmlElement ballotXml, Guid locationGuid)
     {
@@ -417,8 +417,8 @@ namespace TallyJ.CoreModels.ExportImport
       // reset Guid to a new guid
       ballot.BallotGuid = Guid.NewGuid();
       ballot.LocationGuid = locationGuid;
-      UpdateGuidFromMapping(ballot, b => b.TellerAssisting);
-      UpdateGuidFromMapping(ballot, b => b.TellerAtKeyboard);
+//      UpdateGuidFromMapping(ballot, b => b.Teller2);
+//      UpdateGuidFromMapping(ballot, b => b.Teller1);
 
       Db.Ballot.Add(ballot);
       Db.SaveChanges();

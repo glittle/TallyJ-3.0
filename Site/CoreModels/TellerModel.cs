@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -51,17 +52,17 @@ namespace TallyJ.CoreModels
       var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
-      if (currentComputer == null)
-      {
-        var computerModel = new ComputerModel();
-        computerModel.AddCurrentComputerIntoCurrentElection();
-
-        currentComputer = UserSession.CurrentComputer;
-      }
-      else
-      {
-        Db.Computer.Attach(currentComputer);
-      }
+//      if (currentComputer == null)
+//      {
+//        var computerModel = new ComputerModel();
+//        computerModel.AddCurrentComputerIntoCurrentElection();
+//
+//        currentComputer = UserSession.CurrentComputer;
+//      }
+//      else
+//      {
+//        Db.Computer.Attach(currentComputer);
+//      }
 
       if (tellerId == 0)
       {
@@ -77,7 +78,6 @@ namespace TallyJ.CoreModels
             break;
         }
 
-        Db.SaveChanges();
         computerCacher.UpdateItemAndSaveCache(currentComputer);
 
         return new {Saved = true};
@@ -97,7 +97,6 @@ namespace TallyJ.CoreModels
           teller = new Teller
           {
             ElectionGuid = UserSession.CurrentElectionGuid,
-            TellerGuid = Guid.NewGuid(),
             Name = newName,
             UsingComputerCode = UserSession.CurrentComputerCode,
           };
@@ -118,16 +117,16 @@ namespace TallyJ.CoreModels
       switch (num)
       {
         case 1:
-          currentComputer.Teller1 = teller.TellerGuid;
+          currentComputer.Teller1 = teller.Name;
           break;
         case 2:
-          currentComputer.Teller2 = teller.TellerGuid;
+          currentComputer.Teller2 = teller.Name;
           break;
       }
 
       Db.SaveChanges();
 
-      UserSession.SetCurrentTeller(num, teller.TellerGuid);
+      UserSession.SetCurrentTeller(num, teller.Name);
 
       tellerCacher.UpdateItemAndSaveCache(teller);
       computerCacher.UpdateItemAndSaveCache(currentComputer);
@@ -140,6 +139,29 @@ namespace TallyJ.CoreModels
       };
 
     }
+
+//    public static string GetTellerNames(Guid? tellerGuid1, Guid? tellerGuid2)
+//    {
+//      var tellers = new TellerCacher().AllForThisElection;
+//
+//      var tellersOnThisComputer = new List<Teller>
+//      {
+//        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid1),
+//        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid2)
+//      };
+//      return tellersOnThisComputer.Select(t => t == null ? "" : t.Name).JoinedAsString(", ", true);
+//    }
+
+    public static string GetTellerNames(string teller1, string teller2)
+    {
+      var tellersOnThisComputer = new List<string>
+      {
+        teller1,
+        teller2
+      };
+      return tellersOnThisComputer.JoinedAsString(", ", true);
+    }
+
 
     public object DeleteTeller(int tellerId)
     {

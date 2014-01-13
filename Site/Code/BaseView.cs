@@ -46,12 +46,7 @@ namespace TallyJ.Code
         {
             get { return Url.RequestContext.RouteData.Values["action"].ToString(); }
         }
-
-        public string AuthLevel
-        {
-            get { return UserSession.IsKnownTeller ? "AuthKnown" : UserSession.IsGuestTeller ? "AuthGuest" : "AuthNone"; }
-        }
-
+        
         /// <Summary>Either Normal (large logo), Mini (work pages), or Full (presentation)</Summary>
         public string ScreenMode
         {

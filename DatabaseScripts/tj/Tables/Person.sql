@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[Person] (
     [_RowId]               INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]         UNIQUEIDENTIFIER NOT NULL,
-    [PersonGuid]           UNIQUEIDENTIFIER CONSTRAINT [DF_Person_PersonGuid] DEFAULT (CONVERT([uniqueidentifier],CONVERT([binary](10),newid(),0)+CONVERT([binary](6),getdate(),0),0)) NOT NULL,
+    [PersonGuid]           UNIQUEIDENTIFIER  NOT NULL,
     [LastName]             NVARCHAR (50)    NOT NULL,
     [FirstName]            NVARCHAR (50)    NULL,
     [OtherLastNames]       NVARCHAR (100)   NULL,
@@ -24,8 +24,8 @@
     [_FullName]            AS               ((((([LastName]+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+', ')+coalesce([FirstName],''))+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
     [_RowVersionInt]       AS               (CONVERT([bigint],[_RowVersion],0)),
     [_FullNameFL]          AS               ((((coalesce([FirstName]+' ','')+[LastName])+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
-    [TellerAtKeyboard]     UNIQUEIDENTIFIER NULL,
-    [TellerAssisting]      UNIQUEIDENTIFIER NULL,
+    [Teller1]              NVARCHAR(25) NULL,
+    [Teller2]              NVARCHAR(25) NULL,
     CONSTRAINT [PK_Person] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Person_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );

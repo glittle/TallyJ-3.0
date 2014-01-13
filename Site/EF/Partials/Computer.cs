@@ -2,27 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.CoreModels;
 
 namespace TallyJ.EF
 {
   [Serializable]
   public partial class Computer : IIndexedForCaching
   {
+    // create or recreate from environment
+    public int C_RowId { get; set; }
+    public Guid LocationGuid { get; set; }
+
+    // also stored in one user's session
+    public string ComputerCode { get; set; }
+    public string Teller1 { get; set; }
+    public string Teller2 { get; set; }
+
+    public DateTime? LastContact { get; set; }
+
+    public string TempAuthLevel { get; set; }
+    public string TempSessionId { get; set; }
+
     public string GetTellerNames()
     {
-      return GetTellerNames(Teller1, Teller2);
+      return TellerModel.GetTellerNames(Teller1, Teller2);
     }
 
-    public static string GetTellerNames(Guid? tellerGuid1, Guid? tellerGuid2)
-    {
-      var tellers = new TellerCacher().AllForThisElection;
-
-      var tellersOnThisComputer = new List<Teller>
-      {
-        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid1),
-        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid2)
-      };
-      return tellersOnThisComputer.Select(t => t == null ? "" : t.Name).JoinedAsString(", ", true);
-    }
   }
 }
