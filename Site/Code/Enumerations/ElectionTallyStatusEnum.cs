@@ -15,11 +15,11 @@ namespace TallyJ.Code.Enumerations
 
 
     public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Initial Setup");
-    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Before Collecting Ballots");
+    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Before Tallying");
     public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Tallying Ballots");
     public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing");
     //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
-    public static readonly ElectionTallyStatusEnum Report = new ElectionTallyStatusEnum("Report", "Show Reports");
+    public static readonly ElectionTallyStatusEnum Report = new ElectionTallyStatusEnum("Report", "Approved");
 
     static ElectionTallyStatusEnum()
     {

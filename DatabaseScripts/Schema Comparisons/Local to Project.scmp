@@ -38,7 +38,7 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>BlockOnPossibleDataLoss</Name>
-        <Value>True</Value>
+        <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>BlockWhenDriftDetected</Name>

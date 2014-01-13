@@ -20,24 +20,6 @@
 
 GO
 
-CREATE
-/*
-
-Purpose: Remove ResultSummary when a Vote is touched
-
-
-*/
-TRIGGER [tj].[Vote_ClearResultSummary] ON [tj].[Vote]
-FOR INSERT, UPDATE, DELETE
-AS
-
-   delete from rs
-   from ResultSummary rs
-     join Location l on l.ElectionGuid = rs.ElectionGuid
-	 join Ballot b on b.LocationGuid = l.LocationGuid
-	 join (select BallotGuid from inserted union select BallotGuid from deleted) id on id.BallotGuid = b.BallotGuid
-   where rs.ResultType != 'M'
-GO
 GRANT UPDATE
     ON OBJECT::[tj].[Vote] TO [TallyJSite]
     AS [dbo];

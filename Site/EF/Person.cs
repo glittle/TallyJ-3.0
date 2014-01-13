@@ -36,8 +36,10 @@ namespace TallyJ.EF
         public string VotingMethod { get; set; }
         public Nullable<int> EnvNum { get; set; }
         public byte[] C_RowVersion { get; set; }
+        public string C_FullName { get; set; }
         public Nullable<long> C_RowVersionInt { get; set; }
-        public Nullable<System.Guid> TellerAtKeyboard { get; set; }
-        public Nullable<System.Guid> TellerAssisting { get; set; }
+        public string C_FullNameFL { get; set; }
+        public string Teller1 { get; set; }
+        public string Teller2 { get; set; }
     }
 }

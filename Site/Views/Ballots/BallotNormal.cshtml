@@ -61,12 +61,6 @@
           Refresh
         </button>
       </div>
-      @if (ContextItems.LocationModel.HasLocations)
-      {
-        <div class="heading">
-          Ballots at Location: <span data-name="Name"></span>
-        </div>
-      }
       <div class="ballotDiv1">
         Ballots to enter:
         <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
@@ -81,10 +75,19 @@
         <option value="">Show All</option>
         @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
         {
-          <option @(UserSession.CurrentBallotFilter==code ? " selected" : "")>@code</option>
+          <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
         }
       </select>
-      <h5>Ballots</h5>
+      <h5>
+        Ballots
+        @if (ContextItems.LocationModel.HasLocations)
+        {
+          <span class="where">
+            <span>-</span> <span data-name="Name"></span>
+          </span>
+        }
+
+      </h5>
       <div id="ballotList" class="ballotList">
       </div>
     </div>

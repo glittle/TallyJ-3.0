@@ -1,0 +1,22 @@
+using System.Web.Mvc;
+using TallyJ.Code.Session;
+using TallyJ.CoreModels;
+
+namespace TallyJ.Code
+{
+  public class AllowGuestsInActiveElectionAttribute : AuthorizeAttribute
+  {
+    protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
+    {
+      if (UserSession.IsGuestTeller)
+      {
+        if (!new ElectionModel().GuestsAllowed())
+        {
+          UserSession.ProcessLogout();
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+}

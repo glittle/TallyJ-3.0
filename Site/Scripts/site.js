@@ -15,6 +15,12 @@
   heartbeatTimeout: null,
   timeOffsetKnown: false,
   firstPulse: null,
+  electionGuid: null,
+  mainHub: null,
+  signalrConnectionId: null,
+  hubReconnectionTime: 95000,
+  hubReconnectionTimeout: null,
+  hubJoinCommands: [],
   qTips: [],
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
@@ -49,11 +55,14 @@ function Onload() {
 
   // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
-  if (site.firstPulse) {
-    ProcessPulseResult(site.firstPulse);
-  } else {
-    SendHeartbeat();
+  if (site.electionGuid) {
+    connectToMainHub();
   }
+  //  if (site.firstPulse) {
+  //    ProcessPulseResult(site.firstPulse);
+  //  } else {
+  //    SendHeartbeat();
+  //  }
 
   CheckTimeOffset();
 
@@ -82,6 +91,46 @@ function HighlightActiveLink() {
     }
   });
 }
+
+var connectToMainHub = function () {
+
+  var hub = site.mainHub = $.connection.mainHubCore;
+
+  var joinMainHub = function () {
+    clearTimeout(site.hubReconnectionTimeout);
+    CallAjaxHandler(site.rootUrl + 'Public/MainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid }, function (info) {
+      setHubConnectionTimer();
+    });
+  };
+  site.hubJoinCommands.push(joinMainHub);
+
+  // Declare a local function so the server can invoke it          
+  hub.client.statusChanged = function (info) {
+    LogMessage('signalR: electionStatusChanged');
+    site.broadcast(site.broadcastCode.electionStatusChanged, info);
+  };
+
+  // In site, start the connection after giving all scripts time to setup their hubs
+  setTimeout(function () {
+    hub.connection
+       .start()
+       .done(function () {
+         site.signalrConnectionId = hub.connection.id;
+         LogMessage(hub.connection.id);
+
+         // invoke all the joins - need to put into one call?
+         while (site.hubJoinCommands.length) {
+           (site.hubJoinCommands.shift())();
+         }
+       });
+
+  }, 250);
+
+  var setHubConnectionTimer = function () {
+    clearTimeout(site.hubReconnectionTimeout);
+    site.hubReconnectionTimeout = setTimeout(joinMainHub, site.hubReconnectionTime);
+  };
+};
 
 function PrepareQTips(doNow) {
   if (!doNow) {
@@ -175,6 +224,9 @@ function UpdateElectionStatus(ev, info) {
       $('#mmHeader').html(info.StateName);
     }
     var target = $('#electionState');
+    if (info.QuickSelector) {
+      target.html(info.QuickSelector);
+    }
     target.data('state', info.State);
     target.find('li').each(function () {
       var li = $(this);
@@ -241,6 +293,7 @@ function PrepareTopLocationAndTellers() {
       }
 
       $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+      $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
     });
   }).each(function () {
     var ddl = $(this);
@@ -248,6 +301,7 @@ function PrepareTopLocationAndTellers() {
   });
 
   $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+  $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
 }
 
 function PrepareMainMenu() {
@@ -276,9 +330,9 @@ function AttachHelp() {
   });
 
   var desired = GetFromStorage('HidePI_' + location.pathname, 'hide');
-    $('.PullInstructionsHandle').each(function () {
-      showHelp($(this), desired != 'hide', true);
-    });
+  $('.PullInstructionsHandle').each(function () {
+    showHelp($(this), desired != 'hide', true);
+  });
 
 }
 

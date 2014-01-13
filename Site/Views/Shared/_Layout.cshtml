@@ -9,7 +9,7 @@
   ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
-  ContextItems.AddJavascriptForPage("pulse", "site.firstPulse={0};".FilledWith(new PulseModel(Url).Pulse().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("electionguid", "site.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid == Guid.Empty ? "" : UserSession.CurrentElectionGuid.ToString()));
   var currentMenu = new MenuHelper(Url);
   var tellerHelper = new TellerHelper();
 }
@@ -22,7 +22,7 @@
   </title>
 
 </head>
-<body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") @AuthLevel">
+<body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") Auth@(UserSession.AuthLevel)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
@@ -36,10 +36,10 @@
           else
           {
             @Html.ActionLink(" ", "Index", "Public", null, new
-               {
-                 Class = "site-title",
-                 title = "Go to Welcome Page"
-               })
+            {
+              Class = "site-title",
+              title = "Go to Welcome Page"
+            })
           }
         }
         <div class="Version">
@@ -50,7 +50,7 @@
       {
         <div class="beta1">
           @*<div class="betaImg">
-          </div>*@
+            </div>*@
           TallyJ is ready for use! Please send feedback to <a title="Send email to Glen"
                                                               href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
                                                                                                                                   href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
@@ -69,15 +69,8 @@
           {
             <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")" data-state="@UserSession.CurrentElectionStatus">
-                @if (UserSession.IsKnownTeller)
-                {
-                  @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
-                }
-                else
-                {
-                  @ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
-                }
-              </ol>
+                                                                                                                            @currentMenu.StateSelectorItems()
+                                                                                                                          </ol>
               <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>
             </div>
             <div class="QuickLinks2">
@@ -104,6 +97,7 @@
   <div id="body">
     @RenderSection("featured", false)
     <section class="content-wrapper main-content clear-fix">
+      <div class="CompCode">@UserSession.CurrentComputerCode</div>
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);

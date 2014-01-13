@@ -21,8 +21,8 @@ namespace TallyJ.EF
         public string ComputerCode { get; set; }
         public int BallotNumAtComputer { get; set; }
         public string C_BallotCode { get; set; }
-        public Nullable<System.Guid> TellerAtKeyboard { get; set; }
-        public Nullable<System.Guid> TellerAssisting { get; set; }
+        public string Teller1 { get; set; }
+        public string Teller2 { get; set; }
         public byte[] C_RowVersion { get; set; }
     }
 }

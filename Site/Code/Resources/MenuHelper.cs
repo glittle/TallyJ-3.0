@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 
 namespace TallyJ.Code.Resources
@@ -222,6 +223,15 @@ namespace TallyJ.Code.Resources
               Tip = item.GetAttribute("desc"),
             }
           )).JoinedAsString(" ");
+    }
+
+    public HtmlString StateSelectorItems()
+    {
+      if (UserSession.IsKnownTeller)
+      {
+        return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
+      }
+      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
     }
   }
 

@@ -110,6 +110,10 @@ div.or {
     color: red;
 }
 
+#joinStatus.success {
+    color: green;
+}
+
 #joinStatus.active {
     color: orange;
 }

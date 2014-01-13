@@ -1,6 +1,5 @@
 ﻿var HomeIndexPage = function () {
   var local = {
-    publicHubConnectionId: null,
     publicHub: null,
     reconnectHubTimeout: null,
     hubReconnectionTime: 95000
@@ -17,37 +16,40 @@
     warnIfCompatibilityMode();
 
     // temp until signalr is working
-//    setTimeout(function () {
-//      refreshElectionList();
-//    }, 60000);
+    //    setTimeout(function () {
+    //      refreshElectionList();
+    //    }, 60000);
 
     setTimeout(delayedPreparePage, 200);
   };
-  var delayedPreparePage = function() {
+  var delayedPreparePage = function () {
     refreshElectionList();
 
-    local.publicHub = $.connection.publicHubCore;
+    var hub = local.publicHub = $.connection.publicHubCore;
 
     // Declare a local function so the server can invoke it          
-    local.publicHub.client.electionsListUpdated = function (listing) {
+    hub.client.electionsListUpdated = function (listing) {
       LogMessage('signalR: electionsListUpdated');
       $('#ddlElections').html(listing);
       LogMessage(listing);
       selectDefaultElection();
     };
 
-    // Start the connection
-    local.publicHub.connection
-      .start(function () {
-        local.publicHubConnectionId = this.id;
-      }).done(function () {
-        updateHubConnection();
-      });
+    site.hubJoinCommands.push(updateHubConnection);
+
+//    // Start the connection
+//    hub.connection
+//      .start()
+//      .done(function () {
+//        local.publicHubConnectionId = hub.connection.id;
+//        LogMessage(hub.connection.id);
+//        updateHubConnection();
+//      });
   };
 
   var updateHubConnection = function () {
     clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: local.publicHubConnectionId }, function (info) {
+    CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function (info) {
       local.reconnectHubTimeout = setTimeout(updateHubConnection, local.hubReconnectionTime);
     });
 
@@ -117,7 +119,7 @@
 
     CallAjaxHandler(publicInterface.controllerUrl + 'TellerJoin', form, function (info) {
       if (info.LoggedIn) {
-        statusSpan.html('Success! &nbsp; Going to the Dashboard now...');
+        statusSpan.addClass('success').removeClass('active').html('Success! &nbsp; Going to the Dashboard now...');
         location.href = publicInterface.dashBoardUrl;
         return;
       }
@@ -130,7 +132,8 @@
   var publicInterface = {
     PreparePage: preparePage,
     controllerUrl: '',
-    dashBoardUrl: ''
+    dashBoardUrl: '',
+    local: local
   };
 
   return publicInterface;
