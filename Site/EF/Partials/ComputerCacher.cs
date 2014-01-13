@@ -1,25 +1,19 @@
 using System.Linq;
 using TallyJ.Code.Session;
+using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.EF
 {
-  public class ComputerCacher : CacherBase<Computer>
+  public class ComputerCacher : NonDbCacherBase<Computer>
   {
-    protected override IQueryable<Computer> MainQuery()
-    {
-      return CurrentDb.Computer.Where(c => c.ElectionGuid == UserSession.CurrentElectionGuid);
-    }
-
     protected override void ItemChanged()
     {
-      base.ItemChanged();
-
       var currentElection = UserSession.CurrentElection;
       var oldValue = currentElection.ListForPublicNow;
 
       currentElection.ListedForPublicAsOf = AllForThisElection
-        .Where(c => c.AuthLevel == "Known")
+        .Where(c => c.TempAuthLevel == "Known")
         .Max(c => c.LastContact);
 
       new ElectionCacher().UpdateItemAndSaveCache(currentElection);

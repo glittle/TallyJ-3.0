@@ -381,9 +381,14 @@ namespace TallyJ.CoreModels
 
     public void PrepareForAnalysis()
     {
+      var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
-        CacherBase.DropAllCachesForThisElection();
+        var resultSummaryCacher = new ResultSummaryCacher();
+        var summaries = resultSummaryCacher.AllForThisElection;
+        resultSummaryCacher.RemoveItemsAndSaveCache(summaries.Where(rs => rs.ResultType != ResultType.Manual));
+
+        Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
       }
 
       // first refresh all votes
@@ -393,12 +398,6 @@ namespace TallyJ.CoreModels
       var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
 
-      // clear any existing results
-      var electionGuid = TargetElection.ElectionGuid;
-      if (!IsFaked)
-      {
-        Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
-      }
       // attach results, but don't save yet
       Results.ForEach(delegate(Result result)
       {

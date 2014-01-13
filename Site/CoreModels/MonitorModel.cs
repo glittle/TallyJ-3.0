@@ -47,7 +47,7 @@ namespace TallyJ.CoreModels
                                     {
                                       ComputerCode = g.Key,
                                       BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots).ToString(),
-                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key) // c.LocationGuid == l.LocationGuid && 
+                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
                                          .Select(c => new
                                          {
                                            Tellers = c.GetTellerNames().DefaultTo("(not set)"),
@@ -69,7 +69,7 @@ namespace TallyJ.CoreModels
                     Status = BallotStatusEnum.TextFor(g.b.StatusCode),
                     LocationName = g.l.Name,
                     LocationId = g.l.C_RowId,
-                    Tellers = Computer.GetTellerNames(g.b.TellerAtKeyboard, g.b.TellerAssisting)
+                    Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                   })
             };
       }

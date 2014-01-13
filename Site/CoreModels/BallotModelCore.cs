@@ -581,8 +581,8 @@ namespace TallyJ.CoreModels
         ComputerCode = computerCode,
         BallotNumAtComputer = NextBallotNumAtComputer(),
         StatusCode = BallotStatusEnum.Empty,
-        TellerAtKeyboard = UserSession.GetCurrentTeller(1),
-        TellerAssisting = UserSession.GetCurrentTeller(2)
+        Teller1 = UserSession.GetCurrentTeller(1),
+        Teller2 = UserSession.GetCurrentTeller(2)
       };
       Db.Ballot.Add(ballot);
       Db.SaveChanges();

@@ -27,18 +27,17 @@ namespace TallyJ.EF
     
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<C_Log> C_Log { get; set; }
-        public virtual DbSet<Ballot> Ballot { get; set; }
-        public virtual DbSet<Computer> Computer { get; set; }
         public virtual DbSet<Election> Election { get; set; }
         public virtual DbSet<ImportFile> ImportFile { get; set; }
         public virtual DbSet<JoinElectionUser> JoinElectionUser { get; set; }
-        public virtual DbSet<Location> Location { get; set; }
         public virtual DbSet<Message> Message { get; set; }
-        public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<Result> Result { get; set; }
         public virtual DbSet<ResultSummary> ResultSummary { get; set; }
         public virtual DbSet<ResultTie> ResultTie { get; set; }
-        public virtual DbSet<Teller> Teller { get; set; }
         public virtual DbSet<Vote> Vote { get; set; }
+        public virtual DbSet<Ballot> Ballot { get; set; }
+        public virtual DbSet<Location> Location { get; set; }
+        public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<Teller> Teller { get; set; }
     }
 }

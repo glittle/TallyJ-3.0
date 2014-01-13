@@ -72,7 +72,7 @@ namespace TallyJ.CoreModels.ExportImport
 
           Election.EraseBallotsAndResults(_electionGuid);
 
-          Db.Computer.Delete(x => x.ElectionGuid == _electionGuid);
+//          Db.Computer.Delete(x => x.ElectionGuid == _electionGuid);
           Db.Location.Delete(x => x.ElectionGuid == _electionGuid);
           Db.Person.Delete(x => x.ElectionGuid == _electionGuid);
           Db.Teller.Delete(x => x.ElectionGuid == _electionGuid);

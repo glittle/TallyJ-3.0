@@ -31,7 +31,7 @@ namespace TallyJ.CoreModels.ExportImport
       // don't use Cached versions - this may not be for the current election
 
       var locations = Db.Location.Where(l => l.ElectionGuid == _electionGuid);
-      var computers = Db.Computer.Where(c => c.ElectionGuid == _electionGuid);
+      //var computers = Db.Computer.Where(c => c.ElectionGuid == _electionGuid);
 
       var people = Db.Person.Where(p => p.ElectionGuid == _electionGuid);
       var tellers = Db.Teller.Where(t => t.ElectionGuid == _electionGuid);
@@ -62,7 +62,7 @@ namespace TallyJ.CoreModels.ExportImport
         resultTie = ExportResultTies(resultTies),
         teller = ExportTellers(tellers),
         user = ExportUsers(users),
-        location = ExportLocationComputerBallotVote(locations, computers, ballots, votes, logs),
+        location = ExportLocationBallotVote(locations, ballots, votes, logs),
         person = ExportPeople(people),
         reason = ExportReasons(),
         //log = ExportLogs(logs)
@@ -135,8 +135,8 @@ namespace TallyJ.CoreModels.ExportImport
           p.EnvNum,
           RegistrationTime = p.RegistrationTime.AsString("o").OnlyIfHasContent(),
           p.VotingLocationGuid,
-          p.TellerAtKeyboard,
-          p.TellerAssisting,
+          TellerAtKeyboard = p.Teller1,
+          TellerAssisting = p.Teller2,
           Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
         }).ToList();
     }
@@ -147,11 +147,11 @@ namespace TallyJ.CoreModels.ExportImport
       {
         t.Name,
         IsHeadTeller = t.IsHeadTeller.OnlyIfTrue(),
-        t.TellerGuid,
+//        t.TellerGuid,
       }).ToList();
     }
 
-    private IList ExportLocationComputerBallotVote(IQueryable<Location> locations, IQueryable<Computer> computers,
+    private IList ExportLocationBallotVote(IQueryable<Location> locations,
       IQueryable<Ballot> ballots, IQueryable<Vote> votes,
       IQueryable<C_Log> logs)
     {
@@ -167,24 +167,24 @@ namespace TallyJ.CoreModels.ExportImport
           location.Lat,
           location.Long,
           //location.LocationGuid,
-          computer = ExportComputer(computers.Where(c => c.LocationGuid == location.LocationGuid)),
+          //computer = ExportComputer(computers.Where(c => c.LocationGuid == location.LocationGuid)),
           ballot = ExportBallotVotes(ballots.Where(b => b.LocationGuid == location.LocationGuid), votes),
           log = ExportLogs(logs.Where(l => l.LocationGuid == location.LocationGuid))
         }).ToList();
     }
 
-    private IList ExportComputer(IQueryable<Computer> computers)
-    {
-      return computers
-        .OrderBy(computer => computer.ComputerCode)
-        .ToList()
-        .Select(computer => new
-        {
-          computer.ComputerCode,
-          computer.BrowserInfo,
-          computer.ComputerInternalCode,
-        }).ToList();
-    }
+//    private IList ExportComputer(IQueryable<Computer> computers)
+//    {
+//      return computers
+//        .OrderBy(computer => computer.ComputerCode)
+//        .ToList()
+//        .Select(computer => new
+//        {
+//          computer.ComputerCode,
+//          computer.BrowserInfo,
+//          computer.ComputerInternalCode,
+//        }).ToList();
+//    }
 
     private IList ExportBallotVotes(IQueryable<Ballot> ballots, IQueryable<Vote> votes)
     {
@@ -197,8 +197,8 @@ namespace TallyJ.CoreModels.ExportImport
           ballot.StatusCode,
           ballot.ComputerCode,
           ballot.BallotNumAtComputer,
-          ballot.TellerAtKeyboard,
-          ballot.TellerAssisting,
+          TellerAtKeyboard = ballot.Teller1,
+          TellerAssisting = ballot.Teller2,
           vote = ExportVotes(votes.Where(v => v.BallotGuid == ballot.BallotGuid))
         }).ToList();
     }

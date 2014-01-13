@@ -16,7 +16,6 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public System.Guid TellerGuid { get; set; }
         public string Name { get; set; }
         public string UsingComputerCode { get; set; }
         public Nullable<bool> IsHeadTeller { get; set; }

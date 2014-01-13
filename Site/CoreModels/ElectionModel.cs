@@ -287,7 +287,7 @@ namespace TallyJ.CoreModels
       if (UserSession.IsKnownTeller)
       {
         // ensure we are using clean data... even if another teller is logged in
-        CacherBase.DropAllCachesForThisElection();
+//        CacherBase.DropAllCachesForThisElection();
 
         // 2014-01 clean out old data (don't bother saving to the DB until it is done by something else)
         var election = UserSession.CurrentElection;
@@ -299,7 +299,7 @@ namespace TallyJ.CoreModels
       }
 
       var computerModel = new ComputerModel();
-      computerModel.AddCurrentComputerIntoCurrentElection();
+      computerModel.MakeComputerForMe();
 
       var firstLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
       // default to top location
@@ -434,8 +434,7 @@ namespace TallyJ.CoreModels
       new LocationCacher().UpdateItemAndSaveCache(mainLocation);
 
       var computerModel = new ComputerModel();
-      computerModel.AddCurrentComputerIntoCurrentElection();
-      computerModel.MoveCurrentComputerIntoLocation(mainLocation.C_RowId);
+      computerModel.MakeComputerForMe();
 
       return new
       {
@@ -646,7 +645,7 @@ namespace TallyJ.CoreModels
     public bool GuestsAllowed()
     {
       return UserSession.CurrentElection != null
-             && new ComputerCacher().AllForThisElection.Any(c => c.AuthLevel == "Known");
+             && new ComputerCacher().AllForThisElection.Any(c => c.TempAuthLevel == "Known");
     }
   }
 }

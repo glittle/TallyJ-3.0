@@ -13,7 +13,8 @@ namespace TallyJ.Controllers
   {
     public ActionResult Index()
     {
-      if (UserSession.CurrentElection == null || UserSession.CurrentLocation == null)
+      if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null 
+         || UserSession.CurrentLocationGuid == Guid.Empty ||  UserSession.CurrentLocation == null)
       {
         return UserSession.IsKnownTeller
                  ? RedirectToAction("ChooseElection")

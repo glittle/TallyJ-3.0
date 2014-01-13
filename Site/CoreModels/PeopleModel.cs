@@ -283,10 +283,10 @@ namespace TallyJ.CoreModels
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
-      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
 
       var ballotSources = PeopleInElectionFiltered() // start with everyone
-          .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson))
+          .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson)
+                    || (string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1!=null || p.Teller2!=null)))
           .ToList()
           .OrderBy(p => p.EnvNum)
           .Select(p => new
@@ -297,7 +297,7 @@ namespace TallyJ.CoreModels
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
                 p.EnvNum,
-                Tellers = ShowTellers(tellers, p)
+                Tellers = ShowTellers(p)
               })
           .ToList();
 
@@ -313,7 +313,6 @@ namespace TallyJ.CoreModels
                                            .Select(l => l.LocationGuid)
                                            .Single();
       var timeOffset = UserSession.TimeOffsetServerAhead;
-      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
 
       var ballotSources = PeopleInElectionFiltered() // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
@@ -329,7 +328,7 @@ namespace TallyJ.CoreModels
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
                 EnvNum = ShowEnvNum(p),
-                Tellers = ShowTellers(tellers, p)
+                Tellers = ShowTellers(p)
               })
           .ToList();
 
@@ -367,7 +366,6 @@ namespace TallyJ.CoreModels
     {
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
       var showLocations = locations.Count > 1;
-      var tellers = new TellerCacher().AllForThisElection.ToDictionary(t => t.TellerGuid, t => t.Name);
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
       return people
@@ -386,7 +384,7 @@ namespace TallyJ.CoreModels
                                 showLocations && p.VotingLocationGuid.HasValue
                                     ? locations[p.VotingLocationGuid.Value]
                                     : "",
-                                ShowTellers(tellers, p),
+                                ShowTellers(p),
                                 ShowRegistrationTime(timeOffset, p)
                             }.JoinedAsString("; ", true),
                 InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
@@ -404,16 +402,12 @@ namespace TallyJ.CoreModels
                  : p.EnvNum;
     }
 
-    private static string ShowTellers(Dictionary<Guid, string> tellers, Person p)
+    private static string ShowTellers(Person p)
     {
       var names = new List<string>
                 {
-                    p.TellerAtKeyboard.HasValue
-                        ? (tellers.ContainsKey(p.TellerAtKeyboard.Value) ? tellers[p.TellerAtKeyboard.Value] : "?")
-                        : "",
-                    p.TellerAssisting.HasValue
-                        ? (tellers.ContainsKey(p.TellerAssisting.Value) ? tellers[p.TellerAssisting.Value] : "?")
-                        : ""
+                    p.Teller1,
+                    p.Teller2
                 };
       return names.JoinedAsString(", ", true);
     }
@@ -477,8 +471,8 @@ namespace TallyJ.CoreModels
         }
       }
 
-      person.TellerAtKeyboard = UserSession.GetCurrentTeller(1);
-      person.TellerAssisting = UserSession.GetCurrentTeller(2);
+      person.Teller1 = UserSession.GetCurrentTeller(1);
+      person.Teller2 = UserSession.GetCurrentTeller(2);
 
       Db.SaveChanges();
 
@@ -499,12 +493,12 @@ namespace TallyJ.CoreModels
     /// </summary>
     /// <param name="lastRowVersion"></param>
     /// <param name="votingMethodRemoved"></param>
-//    public void UpdateFrontDeskListing(long lastRowVersion, bool votingMethodRemoved)
-//    {
-//      UpdateFrontDeskListing(new PersonCacher().AllForThisElection
-//          .Where(p => p.C_RowVersionInt > lastRowVersion)
-//          .ToList(), votingMethodRemoved);
-//    }
+    //    public void UpdateFrontDeskListing(long lastRowVersion, bool votingMethodRemoved)
+    //    {
+    //      UpdateFrontDeskListing(new PersonCacher().AllForThisElection
+    //          .Where(p => p.C_RowVersionInt > lastRowVersion)
+    //          .ToList(), votingMethodRemoved);
+    //    }
 
     /// <summary>
     /// Update listing for just one person
@@ -524,7 +518,7 @@ namespace TallyJ.CoreModels
     {
       var updateInfo = new
       {
-        PersonLines = FrontDeskPersonLines(new List<Person>{person}),
+        PersonLines = FrontDeskPersonLines(new List<Person> { person }),
         LastRowVersion = person.C_RowVersionInt
       };
       new FrontDeskHub().UpdateAllConnectedClients(updateInfo);

@@ -293,6 +293,7 @@ function PrepareTopLocationAndTellers() {
       }
 
       $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+      $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
     });
   }).each(function () {
     var ddl = $(this);
@@ -300,6 +301,7 @@ function PrepareTopLocationAndTellers() {
   });
 
   $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+  $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
 }
 
 function PrepareMainMenu() {

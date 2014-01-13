@@ -7,7 +7,6 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using TallyJ.EF;
-using Membership = System.Web.Security.Membership;
 
 namespace TallyJ.Code.Session
 {
@@ -90,30 +89,52 @@ namespace TallyJ.Code.Session
       get { return LoginId.HasContent(); }
     }
 
+    /// <Summary>Stored as Guid in session</Summary>
+    public static Guid CurrentElectionGuid
+    {
+      get { return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty); }
+      set
+      {
+        SessionKey.CurrentElectionGuid.SetInSession(value);
+        HttpContext.Current.Items[ItemKey.CurrentElection] = null;
+      }
+    }
+
     /// <summary>
-    ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also sets the CurrentElectionGuid into Session.
+    ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also
+    ///   sets the CurrentElectionGuid into Session.
     /// </summary>
     public static Election CurrentElection
     {
       get
       {
-        return new ElectionCacher().AllForThisElection.FirstOrDefault();
-//        var current = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
-//        if (current != null)
-//        {
-//          return current;
-//        }
-//
-//        // even if have valid guid, may be null if election was just deleted
-//        var currentElection = CurrentElectionGuid.HasContent() ? new ElectionCacher().AllForThisElection.FirstOrDefault() : null;
-//
-//        if (currentElection == null)
-//        {
-//          CurrentElectionGuid = Guid.Empty;
-//        }
-//
-//        HttpContext.Current.Items[ItemKey.CurrentElection] = currentElection;
-//        return currentElection;
+        // check temp cache for page rendering
+        var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        if (election != null)
+        {
+          return election;
+        }
+
+        var currentElectionGuid = CurrentElectionGuid;
+        var hasElection = currentElectionGuid.HasContent();
+
+        if (hasElection)
+        {
+          election = new ElectionCacher().AllForThisElection.FirstOrDefault();
+
+          // even if have valid guid, may be null if election was just deleted
+          if (election == null)
+          {
+            CurrentElectionGuid = Guid.Empty;
+          }
+          else
+          {
+            // save for next use in this same rendering
+            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
+          }
+        }
+
+        return election;
       }
     }
 
@@ -148,18 +169,11 @@ namespace TallyJ.Code.Session
         if (numToElect != 9)
         {
           modeWithNum = "{0}for {1} member{2}".FilledWith(mode.SurroundContentWith("", " "), current.NumberToElect,
-                                                          numToElect.Plural());
+            numToElect.Plural());
         }
 
         return "{0}{1} - \"{2}\"".FilledWith(type, modeWithNum.SurroundContentWith(" (", ")"), current.Name);
       }
-    }
-
-    /// <Summary>Stored as Guid in session</Summary>
-    public static Guid CurrentElectionGuid
-    {
-      get { return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty); }
-      set { SessionKey.CurrentElectionGuid.SetInSession(value); }
     }
 
     public static Location CurrentLocation
@@ -200,8 +214,11 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        var currentComputerId = CurrentComputerId;
-        return currentComputerId == 0 ? null : new ComputerCacher().GetById(currentComputerId);
+        if (new ComputerCacher().GetById(CurrentComputerId) != null)
+        {
+          return new ComputerCacher().GetById(CurrentComputerId);
+        }
+        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
       }
     }
 
@@ -268,8 +285,8 @@ namespace TallyJ.Code.Session
       {
         var election = CurrentElection;
         return election == null
-                 ? ElectionTallyStatusEnum.NotStarted
-                 : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+          ? ElectionTallyStatusEnum.NotStarted
+          : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
       }
     }
 
@@ -279,20 +296,19 @@ namespace TallyJ.Code.Session
       {
         var election = CurrentElection;
         return election == null || election.TallyStatus.HasNoContent()
-                 ? ElectionTallyStatusEnum.NotStarted
-                 : election.TallyStatus;
+          ? ElectionTallyStatusEnum.NotStarted
+          : election.TallyStatus;
       }
     }
 
-    public static Guid? GetCurrentTeller(int num)
+    public static string GetCurrentTeller(int num)
     {
-      var stored = HttpContext.Current.Session[SessionKey.CurrentTeller + num];
-      return stored == null ? null : (Guid?)stored;
+      return HttpContext.Current.Session[SessionKey.CurrentTeller + num] as string;
     }
 
-    public static void SetCurrentTeller(int num, Guid? tellerGuid)
+    public static void SetCurrentTeller(int num, string name)
     {
-      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = tellerGuid;
+      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = name;
     }
 
     public static void ProcessLogin()
@@ -314,8 +330,8 @@ namespace TallyJ.Code.Session
       }
       var election = CurrentElection;
       var currentStatus = election == null
-                            ? ElectionTallyStatusEnum.NotStarted
-                            : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
+        ? ElectionTallyStatusEnum.NotStarted
+        : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
 
       return pageFeatureWhen.Contains(currentStatus);
     }

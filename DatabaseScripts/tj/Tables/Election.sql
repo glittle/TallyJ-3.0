@@ -39,29 +39,6 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Election]
 
 GO
 
-CREATE
-/*
-
-Purpose: Remove ResultSummary when a Ballot is touched
-
-
-*/
-TRIGGER [tj].[Election_ClearResultSummary] ON [tj].[Election]
-FOR UPDATE
-AS
-   if( 
-        UPDATE(ElectionType) or
-        UPDATE(ElectionMode) or
-        UPDATE(NumberToElect) or
-        UPDATE(NumberExtra)
-		)
-   begin
-	   delete from rs
-	   from ResultSummary rs
-		 join inserted id on id.ElectionGuid = rs.ElectionGuid
-	   where rs.ResultType != 'M'
-   end
-GO
 GRANT UPDATE
     ON OBJECT::[tj].[Election] TO [TallyJSite]
     AS [dbo];
