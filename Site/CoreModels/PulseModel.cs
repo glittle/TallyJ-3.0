@@ -66,8 +66,8 @@ namespace TallyJ.CoreModels
       var newStatus = statusChanged
                           ? new
                               {
-                                QuickLinks = new MenuHelper(_urlHelper).QuickLinks(),
-                                Name = UserSession.CurrentElectionStatusName,
+//                                QuickLinks = new MenuHelper(_urlHelper).QuickLinks(),
+//                                Name = UserSession.CurrentElectionStatusName,
                                 Code = UserSession.CurrentElectionStatus,
                               }
                           : null;

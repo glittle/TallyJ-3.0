@@ -48,12 +48,6 @@
       return false;
     });
 
-    setTimeout(delayedPreparePage, 200);
-
-  };
-
-  var delayedPreparePage = function () {
-
     // Proxy created on the fly          
     var hub = local.rollCallHub = $.connection.rollCallHubCore;
 
@@ -63,29 +57,20 @@
       updatePeople(info);
     };
 
-
     site.hubJoinCommands.push(refreshHubConnection);
-
-    // Start the connection
-//    hub.connection
-//      .start()
-//      .done(function () {
-//        LogMessage(hub.connection.id);
-//        local.rollCallHubConnectionId = hub.connection.id;
-//        refreshHubConnection();
-//      });
   };
 
   var refreshHubConnection = function () {
+    var resetHubConnectionTimer = function () {
+      clearTimeout(local.reconnectHubTimeout);
+      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+    };
+
+    LogMessage('JoinFrontDeskHub');
     clearTimeout(local.reconnectHubTimeout);
     CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
       resetHubConnectionTimer();
     });
-  };
-
-  var resetHubConnectionTimer = function () {
-    clearTimeout(local.reconnectHubTimeout);
-    local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
   };
 
   var updatePeople = function (info) {

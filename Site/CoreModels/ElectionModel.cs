@@ -462,28 +462,28 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
 
         //new ElectionStatusSharer().SetStateFor(election);
-        var menuHelper = new MenuHelper(controller.Url);
-        var infoForKnown = new
+//        var menuHelper = new MenuHelper(controller.Url);
+        var info = new
         {
-          QuickLinks = menuHelper.QuickLinks(),
-          Name = UserSession.CurrentElectionStatusName,
-          State = UserSession.CurrentElectionStatus,
+//          QuickLinks = menuHelper.QuickLinks(),
+//          Name = UserSession.CurrentElectionStatusName,
+          StateName = UserSession.CurrentElectionStatus,
         };
+//
+//        // should always be true... but usage could change in future
+//        var currentIsKnown = UserSession.IsKnownTeller;
+//        UserSession.IsKnownTeller = false;
+////        menuHelper = new MenuHelper(controller.Url);
+//        var infoForGuest = new
+//        {
+////          QuickLinks = menuHelper.QuickLinks(),
+////          QuickSelector = menuHelper.StateSelectorItems().ToString(),
+////          Name = UserSession.CurrentElectionStatusName,
+//          State = UserSession.CurrentElectionStatus,
+//        };
+//        UserSession.IsKnownTeller = currentIsKnown;
 
-        // should always be true... but usage could change in future
-        var currentIsKnown = UserSession.IsKnownTeller;
-        UserSession.IsKnownTeller = false;
-        menuHelper = new MenuHelper(controller.Url);
-        var infoForGuest = new
-        {
-          QuickLinks = menuHelper.QuickLinks(),
-          QuickSelector = menuHelper.StateSelectorItems().ToString(),
-          Name = UserSession.CurrentElectionStatusName,
-          State = UserSession.CurrentElectionStatus,
-        };
-        UserSession.IsKnownTeller = currentIsKnown;
-
-        new MainHub().StatusChanged(infoForKnown, infoForGuest);
+        new MainHub().StatusChanged(info, info);
       }
     }
 
@@ -515,9 +515,8 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        Saved = true,
-        QuickLinks = new MenuHelper(controller.Url).QuickLinks(),
-        StateName = UserSession.CurrentElectionStatusName
+        // QuickLinks = new MenuHelper(controller.Url).QuickLinks(),
+        StateName = UserSession.CurrentElectionStatus
       }.AsJsonResult();
     }
 

@@ -2,20 +2,20 @@
 <root  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
   <menu id="main">
     <group title="Preparing" longtitle="Initial Setup - Preparing for the election" showTitleInPage="false">
-      <page title="Choose Election" featureWhen="OnDash, Report, NotStarted" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
+      <page title="Choose Election" featureWhen="OnDash, NotStarted" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
       <page title="Configure this Election" featureWhen="NotStarted, NamesReady" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>
     </group>
-    <group title="Voting" longtitle="Before Collecting Ballots - Registration and voting" showTitleInPage="false">
+    <group title="Voting" longtitle="Before Tallying Ballots - Registration and voting" showTitleInPage="false">
       <page title="Edit People's Names" featureWhen="NotStarted, NamesReady, Tallying" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
       <page title="Front Desk Registration" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
     </group>
-    <group title="Tallying" longtitle="Tallying ballots" showTitleInPage="false">
+    <group title="Tallying" longtitle="Tallying Ballots" showTitleInPage="false">
       <page title="Count Envelopes" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
       <page title="Enter Ballots" featureWhen="TieBreakNeeded, Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
-      <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying" controller="After" action="Monitor" requireElection="true" role="known" desc="Centrally monitor progress of tellers."></page>
+      <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying, Reviewing" controller="After" action="Monitor" requireElection="true" role="known" desc="Centrally monitor progress of tellers."></page>
     </group>
     <group title="Review and Report" longtitle="Review then share the news!" showTitleInPage="false">
       <page title="Analyze Ballots" featureWhen="Tallying, TieBreakNeeded, Reviewing" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
@@ -28,7 +28,7 @@
       <page title="Dashboard" featureWhen="OnDash" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
       <page title="Reference Materials" featureWhen="OnDash" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
       <page title="Change my Password" featureWhen="OnDash" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
-      <page title="Logout" featureWhen="OnDash" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>
+      <page title="Logout" featureWhen="OnDash, Report" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>
     </group>
   </menu>
   <menu id="misc">

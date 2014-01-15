@@ -45,6 +45,11 @@ namespace TallyJ.Code.Enumerations
       return ForHtmlList(selected.TallyStatus, showAll);
     }
 
+    public new static IList<ElectionTallyStatusEnum> Items
+    {
+      get { return BaseItems; }
+    }
+
     public static HtmlString ForHtmlList(string selected = "", bool showAll = true)
     {
       return

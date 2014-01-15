@@ -5,7 +5,6 @@
     lastSearch: 0,
     timer: null,
     frontDeskHub: null,
-    frontDeskHubConnectionId: null,
     hubReconnectionTime: 95000,
     matches: [],
     focusedOnMatches: false
@@ -17,12 +16,6 @@
 
     setTimeout(delayedPreparePage, 200);
 
-  };
-
-  var delayedPreparePage = function () {
-
-    $('html, body').animate({ scrollTop: 0 }, 0);
-
     // Proxy created on the fly          
     local.frontDeskHub = $.connection.frontDeskHubCore;
 
@@ -31,28 +24,30 @@
       updatePeople(info);
     };
 
-    // Start the connection
-    local.frontDeskHub.connection
-      .start()
-      .done(function () {
-        local.frontDeskHubConnectionId = local.frontDeskHub.connection.id;
-        refreshHubConnection();
-      });
-
-  };
-
-  var resetHubConnectionTimer = function () {
-    clearTimeout(local.reconnectHubTimeout);
-    local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+    site.hubJoinCommands.push(refreshHubConnection);
   };
 
   var refreshHubConnection = function () {
+    var resetHubConnectionTimer = function () {
+      clearTimeout(local.reconnectHubTimeout);
+      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+    };
+
+    LogMessage('JoinFrontDeskHub');
+
     clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: local.frontDeskHubConnectionId }, function (info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
       resetHubConnectionTimer();
     });
 
   };
+
+  var delayedPreparePage = function () {
+
+    $('html, body').animate({ scrollTop: 0 }, 0);
+
+  };
+
   var processKey = function (ev) {
     var letter, key = ev.which;
     if (ev.altKey) return;
@@ -205,7 +200,7 @@
     };
 
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function(info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
       }
