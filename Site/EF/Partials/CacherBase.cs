@@ -26,6 +26,7 @@ namespace TallyJ.EF
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
     private const int CacheMinutes = 3 * 60;
+    private object thisLock = new object();
 
     /// <summary>
     ///   The key for the current election's data
@@ -55,10 +56,13 @@ namespace TallyJ.EF
 
         CacheKey internalCacheKey;
 
-        var allForThisElection = MainQuery()
-          .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
-            new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
-
+        List<T> allForThisElection;
+        lock (thisLock)
+        {
+          allForThisElection = MainQuery()
+            .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
+              new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
+        }
 
         if (typeof(T) == typeof(Election))
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
@@ -11,6 +12,12 @@ namespace TallyJ.EF
     {
       var currentElection = UserSession.CurrentElection;
       var oldValue = currentElection.ListForPublicNow;
+
+      if (currentElection.ListedForPublicAsOf.HasValue &&
+          (DateTime.Now - currentElection.ListedForPublicAsOf < new TimeSpan(0, 0, 60)))
+      {
+        return;
+      }
 
       currentElection.ListedForPublicAsOf = AllForThisElection
         .Where(c => c.TempAuthLevel == "Known")

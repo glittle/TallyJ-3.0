@@ -693,7 +693,7 @@ a.twitter {
 .ElectionState li.Active_True {
   color: @tallyJBlue;
   font-weight: bold;
-  background-color: #EFEEEF;
+  background-color: #b6ff50;
 }
 
 .ElectionState {
@@ -738,14 +738,18 @@ a.twitter {
 
 body.AuthKnown .ElectionState ol li.Active_False:hover {
   cursor: pointer;
-  background-color: #b6ff50;
+  background-color: #EFffEF;
 }
 
-body.AuthGuest .ElectionState ol li.Active_False:hover {
-  cursor: not-allowed;
+.ElectionState ol li.Active_True {
+  cursor: default;
 }
 
-.ChangeElectionState {
+body.AuthGuest .ElectionState ol li.Active_False {
+  display: none;
+}
+
+/*.ChangeElectionState {
   display: none;
   position: absolute;
   z-index: 10;
@@ -759,6 +763,7 @@ body.AuthGuest .ElectionState ol li.Active_False:hover {
   .ChangeElectionState p {
     margin: 0 .5em .5em 0;
   }
+  */
 
 .CurrentLocationName {
 }
@@ -929,13 +934,13 @@ body.AuthKnown .CurrentElectionName {
   }
 
     a:hover {
-      background-color: #b6ff50;
+      background-color: #EFEEEF;
     }
 
     a.Active {
       color: @tallyJBlue;
       font-weight: bold;
-      background-color: #EFEEEF;
+      background-color: #d2ff92;
 
       &:hover {
         background-color: inherit;
@@ -1078,10 +1083,6 @@ section.features.bottom {
     padding-right: 10px;
     margin-bottom: 15px;
     margin-left: 38px;
-  }
-
-  #mmHeader {
-    font-size: @baseFontSize * 1.1;
   }
 
   .mmSection {

@@ -80,7 +80,6 @@ namespace TallyJ
             configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
           });
 
-
       RegisterGlobalFilters(GlobalFilters.Filters);
       RegisterGeneralRoutes(RouteTable.Routes);
     }

@@ -1,4 +1,5 @@
-﻿var site = {
+﻿// Copyright Glen Little, TallyJ
+var site = {
   onload: [],
   languageCode: 'EN',
   computerCode: '',
@@ -16,6 +17,7 @@
   timeOffsetKnown: false,
   firstPulse: null,
   electionGuid: null,
+  electionState: null,
   mainHub: null,
   signalrConnectionId: null,
   hubReconnectionTime: 95000,
@@ -112,6 +114,7 @@ var connectToMainHub = function () {
 
   // In site, start the connection after giving all scripts time to setup their hubs
   setTimeout(function () {
+    LogMessage('connect to main');
     hub.connection
        .start()
        .done(function () {
@@ -188,53 +191,60 @@ function ActivateTips() {
 }
 
 function AttachHandlers() {
-  var hide = function (ev) {
-    if ($(ev.srcElement).parents('.TopInfo').length) {
-      return;
-    }
-    $('.ChangeElectionState').hide();
-    $(document).off('click', hide);
-  };
-  $('body.AuthKnown .AllowChangeElectionState').on('click', function () {
-    $('.ChangeElectionState').toggle();
-    $(document).on('click', hide);
-  });
+  site.onbroadcast(site.broadcastCode.electionStatusChanged, updateElectionStatus);
+
   $('body.AuthKnown #electionState li').on('click', function () {
     var item = $(this);
     var form = {
-      status: item.data('state')
+      state: item.data('state')
     };
     ShowStatusDisplay('Saving...');
     CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
-      $('.ChangeElectionState').fadeOut();
-      info.State = form.status;
-      site.broadcast(site.broadcastCode.electionStatusChanged, info);
       ResetStatusDisplay();
+      site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
-  });
-  site.onbroadcast(site.broadcastCode.electionStatusChanged, UpdateElectionStatus);
+  }).on('mouseenter', HoverQuickLink);
 }
 
-function UpdateElectionStatus(ev, info) {
-  site.info1 = info;
-  setTimeout(function () {
-    if (info.QuickLinks) {
-      $('#quickLinks2').hide().html(info.QuickLinks).fadeIn('fast');
-      HighlightActiveLink();
-      $('#mmHeader').html(info.StateName);
-    }
-    var target = $('#electionState');
-    if (info.QuickSelector) {
-      target.html(info.QuickSelector);
-    }
-    target.data('state', info.State);
-    target.find('li').each(function () {
-      var li = $(this);
-      var matched = li.data('state') == info.State;
-      li.toggleClass('Active_True', matched);
-      li.toggleClass('Active_False', !matched);
-    });
-  }, 0);
+function updateElectionStatus(ev, info) {
+  showMenu(info.StateName, true);
+}
+
+function showMenu(state, permanent) {
+  //  LogMessage(state);
+  var target = $('#electionState');
+  var temp = target.data('temp') || target.data('state');
+  if (state != temp) {
+    //    LogMessage('changed from {0} to {1}'.filledWith(temp, state));
+    $('#quickLinks2 span:visible').stop(true).hide();
+    $('#menu' + state).fadeIn('fast');
+  }
+
+  target.data('temp', state);
+
+  var mainItem = target.find('li[data-state={0}]'.filledWith(state));
+
+  $('#qmenuTitle').text(mainItem.text());
+
+  if (permanent) {
+    site.electionState = state;
+    target.data('state', state);
+    target.find('li').removeClass('Active_True').addClass('Active_False');
+    mainItem.removeClass('Active_False').addClass('Active_True');
+  }
+}
+
+function HoverQuickLink(ev) {
+  var state = $(ev.currentTarget).data('state');
+
+  showMenu(state, false);
+
+  var cancel = function () {
+    $('.TopInfo').off('mouseleave', cancel);
+    showMenu(site.electionState, true);
+  };
+
+  $('.TopInfo').on('mouseleave', cancel);
 }
 
 function CheckTimeOffset() {
