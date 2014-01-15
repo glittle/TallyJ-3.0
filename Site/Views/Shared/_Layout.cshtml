@@ -9,7 +9,8 @@
   ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
-  ContextItems.AddJavascriptForPage("electionguid", "site.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid == Guid.Empty ? "" : UserSession.CurrentElectionGuid.ToString()));
+  ContextItems.AddJavascriptForPage("electionGuid", "site.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid == Guid.Empty ? "" : UserSession.CurrentElectionGuid.ToString()));
+  ContextItems.AddJavascriptForPage("electionState", "site.electionState='{0}';".FilledWith(UserSession.CurrentElectionStatus));
   var currentMenu = new MenuHelper(Url);
   var tellerHelper = new TellerHelper();
 }
@@ -67,14 +68,17 @@
           <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
           @if (UserSession.CurrentElection != null)
           {
-            <div class="ElectionState" data-status="@UserSession.CurrentElectionStatus">
-              <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span><ol id="electionState" title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")" data-state="@UserSession.CurrentElectionStatus">
-                                                                                                                            @currentMenu.StateSelectorItems()
-                                                                                                                          </ol>
+            <div class="ElectionState">
+              <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
+              <ol id="electionState"
+                  title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")"
+                  data-state="@UserSession.CurrentElectionStatus">
+                @currentMenu.StateSelectorItems()
+              </ol>
               <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>
             </div>
             <div class="QuickLinks2">
-              Pages<span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+              <span id="qmenuTitle">@UserSession.CurrentElectionStatusName</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
             </div>
           }
           else

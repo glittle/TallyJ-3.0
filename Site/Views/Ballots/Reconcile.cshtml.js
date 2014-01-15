@@ -3,6 +3,8 @@
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>',
     sortedBallots: {},
     currentLocation: -1,
+    frontDeskHub: null,
+    hubReconnectionTime: 95000,
     showingNames: false,
     ballotMethods: []
   };
@@ -13,12 +15,38 @@
       $('.Names, #lists').fadeIn();
       local.showingNames = true;
     });
-    $('#locations').change(changeLocation);
+    $('#locations').change(function() {
+      changeLocation(this);
+    });
 
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });
 
     processBallots(publicInterface.ballots);
     showOld(publicInterface.oldEnvelopes);
+
+    // Proxy created on the fly          
+    local.frontDeskHub = $.connection.frontDeskHubCore;
+
+    // Declare a local function so the server can invoke it          
+    local.frontDeskHub.client.updatePeople = function () {
+      LogMessage('signalR: updatePeople');
+      local.currentLocation = '';
+      changeLocation($('#locations'), true);
+    };
+
+    site.hubJoinCommands.push(refreshHubConnection);
+  };
+
+  var refreshHubConnection = function () {
+    var resetHubConnectionTimer = function () {
+      clearTimeout(local.reconnectHubTimeout);
+      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+    };
+    LogMessage('JoinFrontDeskHub');
+    clearTimeout(local.reconnectHubTimeout);
+    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
+      resetHubConnectionTimer();
+    });
   };
 
   var showOld = function (list) {
@@ -30,11 +58,14 @@
     ActivateTips();
   };
 
-  var changeLocation = function () {
-    var newLocation = $(this).val();
+  var changeLocation = function (ddlLocation, highlight) {
+    var newLocation = ddlLocation.val();
     if (newLocation != local.currentLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
+        if (highlight) {
+          $('#Totals').effect('highlight', {}, 5000);
+        }
         local.currentLocation = newLocation;
         processBallots(info.Ballots);
         if (newLocation == -1) {

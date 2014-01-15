@@ -319,7 +319,7 @@ namespace TallyJ.CoreModels
           .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
           .ToList()
           .OrderBy(p => p.VotingMethod)
-          .ThenBy(p => p.RegistrationTime)
+          .ThenByDescending(p => p.RegistrationTime)
           .Select(p => new
               {
                 PersonId = p.C_RowId,

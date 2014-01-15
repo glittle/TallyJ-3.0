@@ -28,7 +28,7 @@ namespace TallyJ.Code.Resources
         var currentNode = CurrentNode;
 
         var title = currentNode.GetAttribute("title");
-        var parentGroup = ((XmlElement)currentNode.ParentNode);
+        var parentGroup = ((XmlElement) currentNode.ParentNode);
         var showParentTitle = parentGroup != null &&
                               parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
         if (showParentTitle)
@@ -68,16 +68,12 @@ namespace TallyJ.Code.Resources
           .Cast<XmlNode>()
           .Where(n => n.NodeType == XmlNodeType.Element)
           .Cast<XmlElement>()
-          .SingleOrDefault(item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
-                          && routeData.Values["action"].ToString() == item.GetAttribute("action"));
+          .SingleOrDefault(
+            item => item != null && routeData.Values["controller"].ToString() == item.GetAttribute("controller")
+                    && routeData.Values["action"].ToString() == item.GetAttribute("action"));
 
         return _currentNode ?? MakeEmptyNode();
       }
-    }
-
-    private XmlElement MakeEmptyNode()
-    {
-      return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
     }
 
     public bool ShowLocationSelection
@@ -90,10 +86,15 @@ namespace TallyJ.Code.Resources
       get { return CurrentNode.GetAttribute("showTellerSelector").AsBoolean(); }
     }
 
+    private XmlElement MakeEmptyNode()
+    {
+      return MainRootXml().OwnerDocument.CreateElement("EmptyDummy");
+    }
+
     public XmlElement TrimmedMenu(string menuId = "main")
     {
       var root = MainRootXml().SelectSingleNode("*[@id='{0}']".FilledWith(menuId));
-      return (XmlElement)root;
+      return (XmlElement) root;
     }
 
     public MvcHtmlString InsertMenu(string menuId = "main")
@@ -107,21 +108,21 @@ namespace TallyJ.Code.Resources
       var hidePreBallotPages = UserSession.CurrentElection.HidePreBallotPages.AsBoolean();
 
       var result = topLevelItems
-          .Cast<XmlNode>()
-          .Where(n => n.NodeType == XmlNodeType.Element)
-          .Cast<XmlElement>()
-          .Where(node1 => Allowed(node1, hidePreBallotPages))
-          .Select(topLevelNode =>
-                    {
-                      var children = GetChildren(topLevelNode, hidePreBallotPages);
-                      if (children.HasNoContent() && topLevelNode.ChildNodes.Count != 0)
-                      {
-                        return "";
-                      }
-                      return "<li><a class=fNiv href='#'>{0}</a>{1}<li>".FilledWith(topLevelNode.GetAttribute("title"),
-                                                                                    children);
-                    })
-          .ToList();
+        .Cast<XmlNode>()
+        .Where(n => n.NodeType == XmlNodeType.Element)
+        .Cast<XmlElement>()
+        .Where(node1 => Allowed(node1, hidePreBallotPages))
+        .Select(topLevelNode =>
+        {
+          var children = GetChildren(topLevelNode, hidePreBallotPages);
+          if (children.HasNoContent() && topLevelNode.ChildNodes.Count != 0)
+          {
+            return "";
+          }
+          return "<li><a class=fNiv href='#'>{0}</a>{1}<li>".FilledWith(topLevelNode.GetAttribute("title"),
+            children);
+        })
+        .ToList();
 
       return result.JoinedAsString("", true).AsRawMvcHtml();
     }
@@ -135,7 +136,7 @@ namespace TallyJ.Code.Resources
 
       var rawPath = HttpContext.Current.Server.MapPath("~/Views/Menu.xml");
       var doc = new XmlHelper().GetCachedXmlFile(rawPath);
-      var root = (XmlElement)doc.DocumentElement.CloneNode(true);
+      var root = (XmlElement) doc.DocumentElement.CloneNode(true);
       var currentElection = UserSession.CurrentElection;
       var hidePreBallotPages = currentElection != null && currentElection.HidePreBallotPages.AsBoolean();
       var nodes = root.SelectNodes("//*");
@@ -143,10 +144,7 @@ namespace TallyJ.Code.Resources
         .Cast<XmlNode>()
         .Where(n => n.NodeType == XmlNodeType.Element)
         .Cast<XmlElement>()
-        .Where(node =>
-        {
-          return !Allowed(node, hidePreBallotPages);
-        }))
+        .Where(node => { return !Allowed(node, hidePreBallotPages); }))
       {
         node.ParentNode.RemoveChild(node);
       }
@@ -176,12 +174,12 @@ namespace TallyJ.Code.Resources
         .DefaultIfEmpty()
         .CheckForCurrentMenu(_urlHelper)
         .Select(i => i == null
-                       ? ""
-                       : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
-                         _urlHelper.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
-                         , i.GetAttribute("title")
-                         , i.GetAttribute("desc")
-                         , i.GetAttribute("class").SurroundContentWith(" class='", "'")))
+          ? ""
+          : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
+            _urlHelper.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
+            , i.GetAttribute("title")
+            , i.GetAttribute("desc")
+            , i.GetAttribute("class").SurroundContentWith(" class='", "'")))
         .JoinedAsString()
         .SurroundContentWith("<ul class='submenu'>", "</ul>");
     }
@@ -206,39 +204,53 @@ namespace TallyJ.Code.Resources
 
     public string QuickLinks()
     {
-      return TrimmedMenu().ChildNodes
-        .Cast<XmlElement>()
-        .SelectMany(item => item.ChildNodes
-                              .Cast<XmlNode>()
-                              .Where(n => n.NodeType == XmlNodeType.Element)
-                              .Cast<XmlElement>()
-                              .Where(c => UserSession.IsFeatured(c.GetAttribute("featureWhen"))))
-        .Select(item => "<a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a>".FilledWithObject(
-          new
-            {
-              Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
-              Class = item.GetAttribute("class"),
-              Role = item.GetAttribute("role"),
-              Title = item.GetAttribute("title"),
-              Tip = item.GetAttribute("desc"),
-            }
-          )).JoinedAsString(" ");
+      var nodes = TrimmedMenu().ChildNodes.Cast<XmlElement>().ToList();
+
+      const string linkTemplate = "<a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a>";
+
+      // for full users, give all menu sets
+      var list =
+        ElectionTallyStatusEnum.Items.Select(ts => ts.Value)
+          .Select(tallyStatus =>
+            nodes.SelectMany(item =>
+              item.ChildNodes.Cast<XmlNode>()
+                .Where(n => n.NodeType == XmlNodeType.Element)
+                .Cast<XmlElement>()
+                .Where(c =>
+                {
+                  var when = c.GetAttribute("featureWhen");
+                  return when == "*" || when.Contains(tallyStatus);
+                })).Select(item => linkTemplate.FilledWithObject(new
+                {
+                  Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
+                  Class = item.GetAttribute("class"),
+                  Role = item.GetAttribute("role"),
+                  Title = item.GetAttribute("title"),
+                  Tip = item.GetAttribute("desc"),
+                }))
+              .JoinedAsString(" ")
+              .SurroundContentWith(
+                "<span id=menu{0}{1}>".FilledWith(tallyStatus,
+                  UserSession.IsFeatured(tallyStatus) ? "" : " class=Hidden"), "</span>")).ToList();
+
+      return list.JoinedAsString("");
     }
 
     public HtmlString StateSelectorItems()
     {
-      if (UserSession.IsKnownTeller)
-      {
-        return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
-      }
-      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
+      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
+//      if (UserSession.IsKnownTeller)
+//      {
+//        return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
+//      }
+//      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
     }
   }
 
   public static class ExtForMenu
   {
     public static IEnumerable<XmlElement> CheckForCurrentMenu(this IEnumerable<XmlElement> inputs,
-                                                              UrlHelper urlHelper)
+      UrlHelper urlHelper)
     {
       // want to have out param, so can't use iterator
       var list = new List<XmlElement>();
