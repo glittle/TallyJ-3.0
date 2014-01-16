@@ -96,6 +96,8 @@ namespace TallyJ.Code.Session
       set
       {
         SessionKey.CurrentElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
         HttpContext.Current.Items[ItemKey.CurrentElection] = null;
       }
     }
@@ -210,22 +212,33 @@ namespace TallyJ.Code.Session
       set { SessionKey.LastVersionNum.SetInSession(value); }
     }
 
+//    public static Computer CurrentComputerX
+//    {
+//      get
+//      {
+//        if (new ComputerCacher().GetById(CurrentComputerId) != null)
+//        {
+//          return new ComputerCacher().GetById(CurrentComputerId);
+//        }
+//        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
+//      }
+//    }
+
+    /// <summary>
+    /// Gets current computer. If there is none, and we are in an election, will create, save, and return a new one.
+    /// </summary>
     public static Computer CurrentComputer
     {
       get
       {
-        if (new ComputerCacher().GetById(CurrentComputerId) != null)
+        var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
+        if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
         {
-          return new ComputerCacher().GetById(CurrentComputerId);
+          return new ComputerModel().CreateAndSaveComputerForMe();
         }
-        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
+        return currentComputer;
       }
-    }
-
-    public static int CurrentComputerId
-    {
-      get { return SessionKey.CurrentComputerId.FromSession(0); }
-      set { SessionKey.CurrentComputerId.SetInSession(value); }
+      set { SessionKey.CurrentComputer.SetInSession(value); }
     }
 
     public static string CurrentComputerCode
@@ -319,7 +332,14 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogout()
     {
-      new ComputerModel().Logout();
+      if (IsLoggedIn)
+      {
+        new ComputerModel().Logout();
+      }
+
+      HttpContext.Current.Session.Clear();
+      FormsAuthentication.SignOut();
+
     }
 
     public static bool IsFeatured(string pageFeatureWhen)

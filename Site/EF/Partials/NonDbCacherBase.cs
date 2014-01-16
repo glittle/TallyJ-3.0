@@ -20,14 +20,15 @@ namespace TallyJ.EF
 
   public abstract class NonDbCacherBase<T> where T : class, IIndexedForCaching
   {
-    private const int CacheMinutes = 3 * 60;
+    private const int CacheMinutes = 180; // 3 hours
+    private readonly object _thisLock = new object();
 
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
     protected virtual string CacheKeyRaw
     {
-      get { return typeof (T).Name + UserSession.CurrentElectionGuid; }
+      get { return typeof(T).Name + UserSession.CurrentElectionGuid; }
     }
 
     protected IDictionary<int, T> CachedDict
@@ -46,52 +47,64 @@ namespace TallyJ.EF
 
     public T GetById(int rowId)
     {
-      return CachedDict.ContainsKey(rowId) ? CachedDict[rowId] : null;
+      lock (_thisLock)
+      {
+        return CachedDict.ContainsKey(rowId) ? CachedDict[rowId] : null;
+      }
     }
 
     public void UpdateItemAndSaveCache(T replacementItem)
     {
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
-      var list = CachedDict;
+      lock (_thisLock)
+      {
+        var list = CachedDict;
 
-      list[replacementItem.C_RowId] = replacementItem;
+        list[replacementItem.C_RowId] = replacementItem;
 
-      ReplaceEntireCache(list);
+        ReplaceEntireCache(list);
+      }
     }
 
     public void RemoveItemAndSaveCache(T itemToRemove)
     {
-      var list = CachedDict;
-
-      if (list.ContainsKey(itemToRemove.C_RowId))
+      lock (_thisLock)
       {
-        list.Remove(itemToRemove.C_RowId);
-        ReplaceEntireCache(list);
+        var list = CachedDict;
+
+        if (list.ContainsKey(itemToRemove.C_RowId))
+        {
+          list.Remove(itemToRemove.C_RowId);
+          ReplaceEntireCache(list);
+        }
       }
     }
 
     public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
     {
-      var list = CachedDict;
-      var removed = false;
-
-      foreach (var item in itemsToRemove.Where(item => list.ContainsKey(item.C_RowId)))
+      lock (_thisLock)
       {
-        list.Remove(item.C_RowId);
-        removed = true;
-      }
+        var list = CachedDict;
+        var removed = false;
 
-      if (removed)
-      {
-        ReplaceEntireCache(list);
+        foreach (var item in itemsToRemove.Where(item => list.ContainsKey(item.C_RowId)))
+        {
+          list.Remove(item.C_RowId);
+          removed = true;
+        }
+
+        if (removed)
+        {
+          ReplaceEntireCache(list);
+        }
       }
     }
 
     public void ReplaceEntireCache(IDictionary<int, T> listForCache)
     {
       var key = new CacheKey(CacheKeyRaw,
-        new[] {UserSession.CurrentElectionGuid.ToString()});
+        new[] { UserSession.CurrentElectionGuid.ToString() });
 
       CacheManager.Current.Set(key, listForCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)));
 

@@ -7,7 +7,7 @@ using TallyJ.CoreModels;
 namespace TallyJ.EF
 {
   [Serializable]
-  public partial class Computer : IIndexedForCaching
+  public class Computer : IIndexedForCaching
   {
     // create or recreate from environment
     public int C_RowId { get; set; }
@@ -20,8 +20,8 @@ namespace TallyJ.EF
 
     public DateTime? LastContact { get; set; }
 
-    public string TempAuthLevel { get; set; }
-    public string TempSessionId { get; set; }
+    public string AuthLevel { get; set; }
+    public string SessionId { get; set; }
 
     public string GetTellerNames()
     {

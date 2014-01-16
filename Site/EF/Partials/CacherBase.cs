@@ -25,8 +25,8 @@ namespace TallyJ.EF
 
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
-    private const int CacheMinutes = 3 * 60;
-    private object thisLock = new object();
+    private const int CacheMinutes = 180; // 3 hours
+    private readonly object _thisLock = new object();
 
     /// <summary>
     ///   The key for the current election's data
@@ -57,7 +57,7 @@ namespace TallyJ.EF
         CacheKey internalCacheKey;
 
         List<T> allForThisElection;
-        lock (thisLock)
+        lock (_thisLock)
         {
           allForThisElection = MainQuery()
             .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
@@ -110,19 +110,45 @@ namespace TallyJ.EF
     {
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
-      var list = AllForThisElection;
-
-      var oldItems = list.Where(i => i.C_RowId == replacementItem.C_RowId);
-      foreach (var item in oldItems.ToList())
+      lock (_thisLock)
       {
-        list.Remove(item);
+        var list = AllForThisElection;
+
+        var oldItems = list.Where(i => i.C_RowId == replacementItem.C_RowId);
+        foreach (var item in oldItems.ToList())
+        {
+          list.Remove(item);
+        }
+
+        list.Add(replacementItem);
+
+        ReplaceEntireCache(list);
       }
-
-      list.Add(replacementItem);
-
-      ReplaceEntireCache(list);
     }
 
+
+    public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
+    {
+      var removed = false;
+
+      var ids = itemsToRemove.Select(i => i.C_RowId).ToList();
+
+      lock (_thisLock)
+      {
+        var list = AllForThisElection;
+        var oldItems = list.Where(i => ids.Contains(i.C_RowId)).ToList();
+        foreach (var item in oldItems)
+        {
+          list.Remove(item);
+          removed = true;
+        }
+
+        if (removed)
+        {
+          ReplaceEntireCache(list);
+        }
+      }
+    }
 
     /// <summary>
     ///   Find the item by matching the _RowId, remove if found
@@ -130,38 +156,21 @@ namespace TallyJ.EF
     /// <param name="itemToRemove"></param>
     public void RemoveItemAndSaveCache(T itemToRemove)
     {
-      var list = AllForThisElection;
       var removed = false;
-
-      var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId).ToList();
-      foreach (var item in oldItems)
+      lock (_thisLock)
       {
-        list.Remove(item);
-        removed = true;
-      }
+        var list = AllForThisElection;
+        var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId).ToList();
+        foreach (var item in oldItems)
+        {
+          list.Remove(item);
+          removed = true;
+        }
 
-      if (removed)
-      {
-        ReplaceEntireCache(list);
-      }
-    }
-
-    public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
-    {
-      var list = AllForThisElection;
-      var removed = false;
-
-      var ids = itemsToRemove.Select(i => i.C_RowId).ToList();
-      var oldItems = list.Where(i => ids.Contains(i.C_RowId)).ToList();
-      foreach (var item in oldItems)
-      {
-        list.Remove(item);
-        removed = true;
-      }
-
-      if (removed)
-      {
-        ReplaceEntireCache(list);
+        if (removed)
+        {
+          ReplaceEntireCache(list);
+        }
       }
     }
 

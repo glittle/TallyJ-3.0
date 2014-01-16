@@ -2,9 +2,6 @@
   var local = {
     currentNameNum: 1,
     currentVoterDiv: null,
-    rollCallHub: null,
-    hubReconnectionTime: 95000,
-    reconnectHubTimeout: null,
     nameDivs: []
   };
 
@@ -14,6 +11,8 @@
     local.nameDivs = main.children('div.Voter');
 
     scrollToMe(local.nameDivs[1]);
+
+    connectToRollCallHub();
 
     // ActivateHeartbeat(true, 15); // faster
 
@@ -47,31 +46,34 @@
       window.scrollTo(0, 0);
       return false;
     });
+  };
 
-    // Proxy created on the fly          
-    var hub = local.rollCallHub = $.connection.rollCallHubCore;
+  var connectToRollCallHub = function() {
+    var hub = $.connection.rollCallHubCore;
 
-    // Declare a local function so the server can invoke it          
     hub.client.updatePeople = function (info) {
       LogMessage('signalR: updatePeople');
       updatePeople(info);
     };
 
-    site.hubJoinCommands.push(refreshHubConnection);
-  };
-
-  var refreshHubConnection = function () {
-    var resetHubConnectionTimer = function () {
-      clearTimeout(local.reconnectHubTimeout);
-      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-    };
-
-    LogMessage('JoinFrontDeskHub');
-    clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
-      resetHubConnectionTimer();
+    activateHub(hub, function () {
+      LogMessage('Join rollCallHub');
+      CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId });
     });
   };
+
+//  var refreshHubConnection = function () {
+//    var resetHubConnectionTimer = function () {
+//      clearTimeout(local.reconnectHubTimeout);
+//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+//    };
+//
+//    LogMessage('Join rollCallHub');
+//    clearTimeout(local.reconnectHubTimeout);
+//    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
+//      resetHubConnectionTimer();
+//    });
+//  };
 
   var updatePeople = function (info) {
     var updated = false;

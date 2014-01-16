@@ -3,10 +3,10 @@ namespace TallyJ.Code.Session
 	public static class SessionKey
 	{
 	  public const string CurrentBallotId = "CurrentBallotId";
-    public const string CurrentComputerId = "ComputerId";
+    //public const string CurrentComputerId = "ComputerId";
 
 	  //public const string CurrentElection = "CurrentElection";
-	  //public const string CurrentComputer = "CurrentComputer";
+	  public const string CurrentComputer = "CurrentComputer";
 	  public const string CurrentLocationGuid = "LocationGuid";
     public const string CurrentBallotFilter = "BallotFilter";
 	  public const string CurrentElectionGuid = "ElectionGuid";

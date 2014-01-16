@@ -18,11 +18,9 @@ var site = {
   firstPulse: null,
   electionGuid: null,
   electionState: null,
-  mainHub: null,
   signalrConnectionId: null,
-  hubReconnectionTime: 95000,
-  hubReconnectionTimeout: null,
-  hubJoinCommands: [],
+  signalrConnecting: false,
+  signalrDelayedCallbacks: [],
   qTips: [],
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
@@ -58,13 +56,8 @@ function Onload() {
   // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
   if (site.electionGuid) {
-    connectToMainHub();
+    connectToElectionHub();
   }
-  //  if (site.firstPulse) {
-  //    ProcessPulseResult(site.firstPulse);
-  //  } else {
-  //    SendHeartbeat();
-  //  }
 
   CheckTimeOffset();
 
@@ -94,45 +87,80 @@ function HighlightActiveLink() {
   });
 }
 
-var connectToMainHub = function () {
+var connectToElectionHub = function () {
+  var hub = $.connection.mainHubCore;
 
-  var hub = site.mainHub = $.connection.mainHubCore;
-
-  var joinMainHub = function () {
-    clearTimeout(site.hubReconnectionTimeout);
-    CallAjaxHandler(site.rootUrl + 'Public/MainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid }, function (info) {
-      setHubConnectionTimer();
-    });
-  };
-  site.hubJoinCommands.push(joinMainHub);
-
-  // Declare a local function so the server can invoke it          
   hub.client.statusChanged = function (info) {
     LogMessage('signalR: electionStatusChanged');
     site.broadcast(site.broadcastCode.electionStatusChanged, info);
   };
 
-  // In site, start the connection after giving all scripts time to setup their hubs
-  setTimeout(function () {
-    LogMessage('connect to main');
-    hub.connection
-       .start()
-       .done(function () {
-         site.signalrConnectionId = hub.connection.id;
-         LogMessage(hub.connection.id);
-
-         // invoke all the joins - need to put into one call?
-         while (site.hubJoinCommands.length) {
-           (site.hubJoinCommands.shift())();
-         }
-       });
-
-  }, 250);
-
-  var setHubConnectionTimer = function () {
-    clearTimeout(site.hubReconnectionTimeout);
-    site.hubReconnectionTimeout = setTimeout(joinMainHub, site.hubReconnectionTime);
+  var closing = false;
+  hub.client.electionClosed = function () {
+    LogMessage('signalR: electionClosed');
+    var msg = 'This election is no longer available. You are being logged out now.';
+    ShowStatusFailed(msg);
+    if (closing) return;
+    location.href = site.rootUrl + 'Account/Logoff';
+    closing = true;
+    alert(msg);
   };
+
+  activateHub(hub, function () {
+    LogMessage('Join main Hub');
+    CallAjaxHandler(site.rootUrl + 'Public/MainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
+  });
+};
+
+var activateHub = function (hub, callBack) {
+  if (site.signalrConnectionId) {
+    LogMessage('hub already connected');
+    callBack();
+    return;
+  }
+
+  if (site.signalrConnecting) {
+    LogMessage('queuing callback');
+    site.signalrDelayedCallbacks.push(callBack);
+    return;
+  }
+
+  site.signalrConnecting = true;
+
+  LogMessage('connecting hub');
+  //  $.connection.hub.logging = true;
+  $.connection.hub
+    .start()
+    .done(function () {
+      LogMessage('connected');
+      LogMessage(hub.connection.id);
+      site.signalrConnectionId = hub.connection.id;
+      callBack();
+      for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
+        site.signalrDelayedCallbacks[0]();
+      }
+    });
+
+  var tryingToReconnect = false;
+  $.connection.hub.connectionSlow(function () {
+    ShowStatusFailed('The connection to the server is slow... please wait...');
+  });
+  $.connection.hub.reconnecting(function () {
+    ShowStatusFailed('Attempting to reconnect to the server...');
+    tryingToReconnect = true;
+  });
+  $.connection.hub.reconnected(function () {
+    ShowStatusDisplay('Reconnected!', 3000);
+    tryingToReconnect = false;
+  });
+  $.connection.hub.disconnected(function () {
+    if (tryingToReconnect) {
+      ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
+    }
+  });
+  $.connection.hub.error(function (error) {
+    ShowStatusFailed(error.toString());
+  });
 };
 
 function PrepareQTips(doNow) {
@@ -402,7 +430,7 @@ function HasErrors(data) {
     return true;
   }
   if (/Server Error/.test(data)) {
-    ShowStatusFailed(data);
+    ShowStatusFailed(data.replace('/*', '').replace('*/', ''));
     return true;
   }
   if (/Error\:/.test(data)) {

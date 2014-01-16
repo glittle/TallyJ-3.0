@@ -43,6 +43,11 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Clients.Group(HubNameForCurrentElection + "Known").statusChanged(infoForKnown);
       CoreHub.Clients.Group(HubNameForCurrentElection + "Guest").statusChanged(infoForGuest);
     }
+
+    public void DisconnectGuests()
+    {
+      CoreHub.Clients.Group(HubNameForCurrentElection + "Guest").electionClosed();
+    }
   }
 
   public class MainHubCore : Hub

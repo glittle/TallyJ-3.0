@@ -300,7 +300,6 @@
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
     <Compile Include="CoreModels\Helper\ResultType.cs" />
-    <Compile Include="CoreModels\Hubs\HubWithTracker.cs" />
     <Compile Include="CoreModels\Hubs\RollCallHub.cs" />
     <Compile Include="CoreModels\Hubs\PublicHub.cs" />
     <Compile Include="CoreModels\Hubs\MainHub.cs" />

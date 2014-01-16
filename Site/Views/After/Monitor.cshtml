@@ -148,7 +148,7 @@
   <div>
     <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
     <label for="chkList">
-      Show this Election on the TallyJ welcome page (access code for tellers: <span class="AccessCode">@UserSession.CurrentElection.ElectionPasscode</span>)
+      Allow tellers to join this election (access code: <span class="AccessCode">@UserSession.CurrentElection.ElectionPasscode</span>)
     </label>
   </div>
   <div class="Clear">

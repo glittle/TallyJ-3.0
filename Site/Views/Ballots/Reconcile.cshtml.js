@@ -10,6 +10,8 @@
   };
 
   var preparePage = function () {
+    connectToFrontDeskHub();
+
     $('#btnShowNames').click(function () {
       $(this).hide();
       $('.Names, #lists').fadeIn();
@@ -23,31 +25,35 @@
 
     processBallots(publicInterface.ballots);
     showOld(publicInterface.oldEnvelopes);
+  };
 
-    // Proxy created on the fly          
-    local.frontDeskHub = $.connection.frontDeskHubCore;
+  var connectToFrontDeskHub = function () {
+    var hub = $.connection.frontDeskHubCore;
 
-    // Declare a local function so the server can invoke it          
-    local.frontDeskHub.client.updatePeople = function () {
+    hub.client.updatePeople = function () {
       LogMessage('signalR: updatePeople');
+
       local.currentLocation = '';
       changeLocation($('#locations'), true);
     };
 
-    site.hubJoinCommands.push(refreshHubConnection);
-  };
-
-  var refreshHubConnection = function () {
-    var resetHubConnectionTimer = function () {
-      clearTimeout(local.reconnectHubTimeout);
-      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-    };
-    LogMessage('JoinFrontDeskHub');
-    clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
-      resetHubConnectionTimer();
+    activateHub(hub, function () {
+      LogMessage('Join frontDesk Hub');
+      CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
   };
+
+//  var refreshHubConnection = function () {
+//    var resetHubConnectionTimer = function () {
+//      clearTimeout(local.reconnectHubTimeout);
+//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+//    };
+//    LogMessage('Join frontDeskHub');
+//    clearTimeout(local.reconnectHubTimeout);
+//    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
+//      resetHubConnectionTimer();
+//    });
+//  };
 
   var showOld = function (list) {
     if (!list.length) return;

@@ -8,13 +8,17 @@ namespace TallyJ.Code
   {
     protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
     {
-      if (UserSession.IsGuestTeller)
+      var authorized = base.AuthorizeCore(httpContext);
+      if (!authorized)
       {
-        if (!new ElectionModel().GuestsAllowed())
-        {
-          UserSession.ProcessLogout();
-          return false;
-        }
+        // The user is not authenticated
+        return false;
+      }
+
+      if (UserSession.IsGuestTeller && !new ElectionModel().GuestsAllowed())
+      {
+        UserSession.ProcessLogout();
+        return false;
       }
       return true;
     }
