@@ -2,7 +2,7 @@
 @using TallyJ.Code.Session
 @model ElectionsListViewModel
 @{
-  ViewBag.Title = "Choose an Election";
+  ViewBag.Title = "Elections";
   ViewBag.Message = "Select or create an election";
 
   ContextItems.AddJavascriptForPage("url1", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));

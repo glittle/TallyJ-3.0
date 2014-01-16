@@ -13,8 +13,8 @@
 }
 
 <hgroup class="title">
-  <h1>Log On.</h1>
-  <h2>Enter your account name and password below.</h2>
+  <h2>Log On.</h2>
+  <h4>Enter your account name and password below.</h4>
 </hgroup>
 <p>
   If you don't have an account, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
@@ -45,6 +45,6 @@
         @Html.LabelFor(m => m.RememberMe, new { @class = "checkbox" })
       </li>
     </ol>
-    <input type="submit" value="Log In" class="btn btn-primary" />
+    <input type="submit" value="Log In" class="btn btn-success" />
   </fieldset>
 }

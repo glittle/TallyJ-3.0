@@ -13,20 +13,23 @@
   ContextItems.AddJavascriptForPage("electionState", "site.electionState='{0}';".FilledWith(UserSession.CurrentElectionStatus));
   var currentMenu = new MenuHelper(Url);
   var tellerHelper = new TellerHelper();
-}
-<!DOCTYPE html>
-<html lang="en">
+}<!DOCTYPE html>
+<html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta charset="utf-8">
+  <meta http-equiv='content-language' content='en'>
+  <title>TallyJ - @(ViewBag.Title ?? currentMenu.CurrentPageTitle ?? ViewBag.Caption)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="msvalidate.01" content="BDA801FC5063E31B10FDB52B7C0ADC14">
+  @RenderSection("Metas", false)
   @RenderPage("Headers.cshtml")
-  <title>
-    TallyJ - @(currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? ViewBag.Title)
-  </title>
-
 </head>
 <body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") Auth@(UserSession.AuthLevel)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
+        <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
           if (Request.IsAuthenticated)
           {
@@ -39,7 +42,7 @@
             @Html.ActionLink(" ", "Index", "Public", null, new
             {
               Class = "site-title",
-              title = "Go to Welcome Page"
+              alt = "TallyJ - Bahá’í Election Tool"
             })
           }
         }
@@ -52,15 +55,16 @@
         <div class="beta1">
           @*<div class="betaImg">
             </div>*@
-          TallyJ is ready for use! Please send feedback to <a title="Send email to Glen"
-                                                              href="mailto:glen.little@gmail.com">Glen Little</a> and refer to <a title="View document"
-                                                                                                                                  href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
-                                                                                                                                  target="gdoc">this document</a> for status updates!
+          TallyJ is ready for use! Please send feedback to
+          <a title="Send email to Glen"
+             href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
+          <a title="View document"
+             href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
+             target="gdoc">Status and Feedback</a> document for current updates!
         </div>
       }
       @if (Request.IsAuthenticated)
       {
-
         <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           @Html.Partial("MasterMenu")
         </div>

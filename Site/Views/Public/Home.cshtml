@@ -1,35 +1,42 @@
 ﻿@using TallyJ.Code.Session
 @{
-  ViewBag.Title = "TallyJ";
+  ViewBag.Title = "Bahá’í Election Tool";
   ViewBag.Caption = "Welcome";
   ViewBag.Message = "The election system for Bahá’í tellers";
+  ViewBag.Metas = new[]{
+    ""
+  }.JoinedAsString("");
 
   ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
 }
+@section Metas {
+    <link rel='canonical' href='https://tallyj.apphb.com/' />
+    <meta name='description' content="TallyJ facilitates the recording of ballots and votes at a Bahá'í election." />
+    <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
+}
 @section featured {
   <section class="featured empty">
-  @*  <div class="content-wrapper">
-    <div class="Intro">
-      <p><em>January 2014 Update:</em> TallyJ require some final testing! Please help by logging in and running a "test" election! The system should be stable by mid-January.</p>
-      <p>Please record any problems you find <a target="bitbucket" href="https://bitbucket.org/glen95/tallyj/issues?status=new&status=open">here</a>. The document linked above has more details.</p>
-    </div>
-  </div>*@
+    @*  <div class="content-wrapper">
+        <div class="Intro">
+          <p><em>January 2014 Update:</em> TallyJ require some final testing! Please help by logging in and running a "test" election! The system should be stable by mid-January.</p>
+          <p>Please record any problems you find <a target="bitbucket" href="https://bitbucket.org/glen95/tallyj/issues?status=new&status=open">here</a>. The document linked above has more details.</p>
+        </div>
+      </div>*@
   </section>
 }
 <section class="features middle">
   <section class="featureBig JoinPanel">
     <div class="top">
     </div>
-    <h2>Join an election as a teller</h2>
+    <h3>Join an election as a teller</h3>
     <ol>
       <li>
         <p>
           Select the election:
         </p>
         <div class="table">
-          <select id="ddlElections" size="4">
-          </select>
+          <select id="ddlElections" size="4"></select>
           <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
         </div>
       </li>
@@ -54,7 +61,7 @@
   <section class="featureBig CenterPanel">
     <div class="top">
     </div>
-    <h1 id="introTitle">Choose an Option!</h1>
+    <h2 id="introTitle">Choose an Option!</h2>
     <div class="centerbuttons">
       <div class="centerL qTip" title="You do not need to register, but will need to know the code for the election you are joining.">
         <button class="btn btn-primary" id="btnChooseJoin">Join an Election</button>
@@ -83,7 +90,7 @@
   <section class="featureBig LoginPanel">
     <div class="top">
     </div>
-    <h2>Log in to make an election or access your elections</h2>
+    <h3>Log in to make an election or access your elections</h3>
     @if (UserSession.IsKnownTeller)
     {
       <p class="AlreadyIn">
@@ -109,31 +116,31 @@
 <section class="features bottom">
   <a href="@Url.Action("Learning")">
     <section class="feature">
-      <h1>Reference Materials</h1>
+      <h2>Reference Materials</h2>
       <p>
-        Read more about Bahá’í elections, the job of tellers, and how TallyJ works.
+        Read more about Bahá’í elections and the job of tellers.
       </p>
     </section>
   </a><a href="@Url.Action("Contact")">
     <section class="feature">
-      <h1>Contact</h1>
+      <h2>Contact</h2>
       <p>
         How to get in contact.
       </p>
     </section>
   </a><a href="@Url.Action("About")">
     <section class="feature">
-      <h1>About TallyJ</h1>
+      <h2>About TallyJ</h2>
       <p>
-        Want to know more about TallyJ?
+        Want to know more about the TallyJ tool?
       </p>
     </section>
   </a><a href="@Url.Action("Install")">
     <section class="feature">
-      <h1>Install for Local Use?</h1>
+      <h2>Install for Local Use?</h2>
       <p>
-        For if you will not have access to the Internet when and where you will need to
-        use TallyJ.
+        No access to the Internet when and where you will need to
+        use TallyJ?
       </p>
     </section>
   </a>

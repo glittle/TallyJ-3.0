@@ -1,259 +1,265 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 section.feature {
-    cursor: pointer;
+  cursor: pointer;
 }
-
 
 section.features {
-    a {
-        text-decoration: none;
+  a {
+    text-decoration: none;
+  }
+
+  &.middle {
+    h1, h2 {
+      font-size: @baseFontSize * 1.5;
     }
 
-    &.middle {
-		h1{font-size: @baseFontSize * 1.5;}
-		h2{font-size: @baseFontSize * 1.2;}
+    h3 {
+      font-size: @baseFontSize * 1.2;
     }
+  }
 }
 
-    section.features a section {
-        border: 2px solid transparent;
-    }
+  section.features a section {
+    border: 2px solid transparent;
+  }
 
-    section.features a:hover section {
-        border: 2px solid #ddd;
-    }
+  section.features a:hover section {
+    border: 2px solid #ddd;
+  }
 
-    section.features a:active section {
-        border: 2px solid #8dc63e;
-    }
+  section.features a:active section {
+    border: 2px solid #8dc63e;
+  }
 
 section.LoginPanel a {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 section.featureBig {
-    float: left;
-    width: 425px;
-    margin: 5px;
-    min-height: 300px;
-    background-image: url('../../Images/BlankBigB.png');
-    background-position: left bottom;
-    background-repeat: no-repeat;
-    text-align: center;
-    padding: 10px 15px 20px 10px;
-    position: relative;
+  float: left;
+  width: 425px;
+  margin: 5px;
+  min-height: 300px;
+  background-image: url('../../Images/BlankBigB.png');
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  text-align: center;
+  padding: 10px 15px 20px 10px;
+  position: relative;
 }
 
-    section.featureBig div.top {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 450px;
-        height: 3px;
-        background-image: url('../../Images/BlankBigT.png');
-        background-position: left top;
-        background-repeat: no-repeat;
-    }
+  section.featureBig div.top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 3px;
+    background-image: url('../../Images/BlankBigT.png');
+    background-position: left top;
+    background-repeat: no-repeat;
+  }
 
-.featureBig h3 {
-    margin-top: 0;
+.featureBig h4 {
+  margin-top: 0;
+  font-weight: normal;
 }
 
 .featureBig ol {
-    text-align: left;
+  text-align: left;
 }
 
 .featureBig.LoginPanel ol {
-    text-align: center;
+  text-align: center;
 }
 
 .featureBig li p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 #txtCode {
-    width: 50px;
+  width: 50px;
 }
 
 #txtPasscode {
-    width: 200px;
+  width: 200px;
 }
 
 #ddlElections {
-    width: 270px;
+  width: 270px;
 }
 
 div.table div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 0 10px 0 5px;
+  display: table-cell;
+  vertical-align: top;
+  padding: 0 10px 0 5px;
 }
 
-    div.table div span {
-        margin-right: 3px;
-        vertical-align: top;
-    }
+  div.table div span {
+    margin-right: 3px;
+    vertical-align: top;
+  }
 
 div.or {
-    font-style: italic;
-    font-weight: bold;
+  font-style: italic;
+  font-weight: bold;
 }
 
 #joinStatus {
-    padding-left: 5px;
+  padding-left: 5px;
 }
 
-    #joinStatus.idle {
-        color: #999;
-    }
+  #joinStatus.idle {
+    color: #999;
+  }
 
-    #joinStatus.error {
-        color: red;
-    }
+  #joinStatus.error {
+    color: red;
+  }
 
-    #joinStatus.success {
-        color: green;
-    }
+  #joinStatus.success {
+    color: green;
+  }
 
-    #joinStatus.active {
-        color: orange;
-    }
+  #joinStatus.active {
+    color: orange;
+  }
 
-.featureBig hgroup h1 {
-    display: none;
+.featureBig hgroup h1,
+.featureBig hgroup h2 {
+  display: none;
 }
 
-.featureBig h2 {
-    font-size: 100%;
+.featureBig h3 {
+  font-size: 100%;
 }
 
 .featureBig fieldset label, .XfeatureBig fieldset input {
-    font-size: 100%;
-    font-weight: normal;
+  font-size: 100%;
+  font-weight: normal;
 }
 
 section.CenterPanel {
-    float: none;
-    margin: 0 auto 0 auto;
+  float: none;
+  margin: 0 auto 0 auto;
 }
 
-    section.CenterPanel.chosen {
-        float: left;
-        opacity: 0.2;
-        margin: 5px;
+  section.CenterPanel.chosen {
+    float: left;
+    opacity: 0.2;
+    margin: 5px;
+  }
+
+    section.CenterPanel.chosen:hover {
+      opacity: 0.9;
     }
 
-        section.CenterPanel.chosen:hover {
-            opacity: 0.9;
-        }
-
 .JoinPanel {
-    display: none;
+  display: none;
 }
 
 .LoginPanel {
-    display: none;
+  display: none;
 }
 
 fieldset input[type="text"], fieldset input[type="password"] {
-    border: 1px solid #e2e2e2;
-    color: #333;
-    margin: 5px 0 6px 0;
-    padding: 5px;
-    width: 150px;
-    text-align: center;
+  border: 1px solid #e2e2e2;
+  color: #333;
+  margin: 5px 0 6px 0;
+  padding: 5px;
+  width: 150px;
+  text-align: center;
 }
 
 .Summary {
-    height: 0px;
-    width: 0px;
-    position: absolute;
-    overflow: hidden;
+  height: 0px;
+  width: 0px;
+  position: absolute;
+  overflow: hidden;
 }
 
 .AlreadyIn {
-    width: 60%;
-    text-align: center;
-    margin: 3em auto 0 auto;
+  width: 60%;
+  text-align: center;
+  margin: 3em auto 0 auto;
 }
 
 .Intro {
-    color: #F6941E;
-    font-size: large;
-    padding: 1.4em 0 1.4em 22px;
+  color: #F6941E;
+  font-size: large;
+  padding: 1.4em 0 1.4em 22px;
 }
 
 #introTitle {
-    color: #013d7a;
-    margin-bottom: 1em;
+  color: #013d7a;
+  margin-bottom: 1em;
 }
 
 .middle {
-    margin-left: 20px;
-    margin-right: 15px;
+  margin-left: 20px;
+  margin-right: 15px;
 }
 
 .bottom {
-    margin-left: 13px;
+  margin-left: 13px;
 }
 
 .CenterPanel div.browser {
-    position: absolute;
-    bottom: 16px;
-    text-align: center;
-    width: 95%;
-    font-size: 90%;
-    color: #999;
+  position: absolute;
+  bottom: 22px;
+  text-align: center;
+  width: 95%;
+  font-size: 90%;
+  color: #999;
 }
 
-    .CenterPanel div.browser.ie {
-        color: red;
-        font-weight: bold;
-        font-size: 105%;
-        margin-bottom: 20px;
-    }
+  .CenterPanel div.browser.ie {
+    color: red;
+    font-weight: bold;
+    font-size: 105%;
+    margin-bottom: 20px;
+  }
 
 #btnRefresh {
-    vertical-align: top;
-    font-size: 85%;
+  vertical-align: top;
+  font-size: 85%;
 }
 
 
 .centerbuttons {
-    position: relative;
-    margin: 0 auto 0 auto;
+  position: relative;
+  margin: 0 auto 0 auto;
 
-    h1 {
-        font-size: @baseFontSize * 1.6;
-		color: @tallyJBlue;
-    }
+  h1, h2 {
+    font-size: @baseFontSize * 1.6;
+    color: @tallyJBlue;
+  }
 
-    h2 {
-        font-size: @baseFontSize * 1.3;
-		color: @tallyJBlue;
-    }
+  h3 {
+    font-size: @baseFontSize * 1.3;
+    color: @tallyJBlue;
+  }
 
-    div {
-        position: absolute;
-        width: 40%;
-        text-align: center;
-    }
+  div {
+    position: absolute;
+    width: 40%;
+    text-align: center;
+  }
 
-    p {
-        margin-top: 5px;
-    }
+  p {
+    margin-top: 5px;
+  }
 
-    .centerL {
-        left: 12px;
-    }
+  .centerL {
+    left: 12px;
+  }
 
-    .centerR {
-        right: 13px;
-    }
+  .centerR {
+    right: 13px;
+  }
 
-    .StartJoin {
-    }
+  .StartJoin {
+  }
 }
 
 

@@ -213,9 +213,9 @@ body.NormalMode .site-title span {
   display: block;
   color: #ade65e;
   text-align: right;
-  top: 95px;
+  top: 100px;
   position: absolute;
-  right: 0;
+  right: -8px;
   z-index: 1;
 }
 
@@ -320,9 +320,10 @@ ul#menu {
   padding: 20px 40px 30px 40px;
 }
 
-.featured hgroup.title h1, .featured hgroup.title h2 {
+.featured hgroup.title h1, 
+.featured hgroup.title h2,
+.featured hgroup.title h3 {
   color: #7ac0da;
-  -xcolor: #fff;
 }
 
 .featured p {
@@ -347,17 +348,24 @@ hgroup.title {
     }
   }
 
-  h1, h2 {
+  h1 {
     display: inline;
     color: @tallyJBlue;
     font-size: @baseFontSize * 2;
   }
 
   h2 {
+    display: inline;
     font-weight: normal;
     font-size: @baseFontSize * 1.7;
   }
 }
+h1.SeoH1 {
+  text-indent: -9990px;
+  position: absolute;
+  z-index: -1;
+}
+
 
 
 /* features */
@@ -371,7 +379,7 @@ section.feature {
   text-align: center;
   padding: 10px 15px 10px 10px;
 
-  h1 {
+  h1, h2 {
     font-size: 1.1em;
     margin: 0;
     padding: 0;
