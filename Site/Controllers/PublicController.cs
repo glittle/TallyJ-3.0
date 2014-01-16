@@ -75,15 +75,18 @@ namespace TallyJ.Controllers
                }.AsJsonResult();
     }
 
-    public void PublicHub(string connId)
+    public JsonResult PublicHub(string connId)
     {
       new PublicHub().Join(connId);
+      return OpenElections();
     }
 
+    [Authorize]
     public void MainHub(string connId, string electionGuid)
     {
       // likely redundant - can remove when settled
-      AssertAtRuntime.That(electionGuid.AsGuid()==UserSession.CurrentElectionGuid);
+      AssertAtRuntime.That(UserSession.CurrentElectionGuid != Guid.Empty, "not logged in");
+      AssertAtRuntime.That(electionGuid.AsGuid() != Guid.Empty, "unknown election");
 
       new MainHub().Join(connId);
     }

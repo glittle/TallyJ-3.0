@@ -14,39 +14,40 @@
 
     $(document).keydown(processKey);
 
-    setTimeout(delayedPreparePage, 200);
-
-    // Proxy created on the fly          
-    local.frontDeskHub = $.connection.frontDeskHubCore;
-
-    // Declare a local function so the server can invoke it          
-    local.frontDeskHub.client.updatePeople = function (info) {
-      updatePeople(info);
-    };
-
-    site.hubJoinCommands.push(refreshHubConnection);
-  };
-
-  var refreshHubConnection = function () {
-    var resetHubConnectionTimer = function () {
-      clearTimeout(local.reconnectHubTimeout);
-      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-    };
-
-    LogMessage('JoinFrontDeskHub');
-
-    clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
-      resetHubConnectionTimer();
-    });
-
-  };
-
-  var delayedPreparePage = function () {
+    connectToFrontDeskHub();
 
     $('html, body').animate({ scrollTop: 0 }, 0);
 
   };
+
+  var connectToFrontDeskHub = function() {
+    var hub = $.connection.frontDeskHubCore;
+    hub.client.updatePeople = function (info) {
+      LogMessage('signalR: updatePeople');
+      updatePeople(info);
+    };
+
+    activateHub(hub, function () {
+      LogMessage('Join frontDesk Hub');
+      CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
+    });
+
+  };
+
+//  var refreshHubConnection = function () {
+//    var resetHubConnectionTimer = function () {
+//      clearTimeout(local.reconnectHubTimeout);
+//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+//    };
+//
+//    LogMessage('Join frontDeskHub');
+//
+//    clearTimeout(local.reconnectHubTimeout);
+//    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
+//      resetHubConnectionTimer();
+//    });
+//
+//  };
 
   var processKey = function (ev) {
     var letter, key = ev.which;

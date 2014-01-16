@@ -11,22 +11,38 @@ namespace TallyJ.CoreModels
 {
   public class ComputerModel : DataConnectedModel
   {
-    private Computer CreateComputerForMe(ComputerCacher computerCacher)
-    {
-      var allComputers = new ComputerCacher().AllForThisElection;
+    private readonly object _thisLock = new object();
 
-      var computer = new Computer
+    public Computer CreateAndSaveComputerForMe()
+    {
+      Computer computer;
+
+      var computerCacher = new ComputerCacher();
+
+      var locationGuid = UserSession.CurrentLocationGuid;
+      if (locationGuid == Guid.Empty)
       {
-        C_RowId = 1 + (allComputers.Count == 0 ? 0 : allComputers.Max(c => c.C_RowId)),
-        LocationGuid = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid,
-        LastContact = DateTime.Now,
-        ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode)
-          .Distinct()
-          .OrderBy(s => s)
-          .ToList()),
-        TempAuthLevel = UserSession.AuthLevel,
-        TempSessionId = HttpContext.Current.Session.SessionID
-      };
+        UserSession.CurrentLocationGuid = locationGuid = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
+      }
+
+      lock (_thisLock)
+      {
+        var allComputers = computerCacher.AllForThisElection;
+
+        computer = new Computer
+        {
+          C_RowId = 1 + (allComputers.Count == 0 ? 0 : allComputers.Max(c => c.C_RowId)),
+          ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
+          LocationGuid = locationGuid,
+          LastContact = DateTime.Now,
+          AuthLevel = UserSession.AuthLevel,
+          SessionId = HttpContext.Current.Session.SessionID
+        };
+
+        computerCacher.UpdateItemAndSaveCache(computer);
+      }
+
+      UserSession.CurrentComputer = computer;
 
       return computer;
     }
@@ -46,20 +62,6 @@ namespace TallyJ.CoreModels
     //        computers.Where(c => !c.LastContact.HasValue
     //                             || (now - c.LastContact.Value).TotalMinutes > maxMinutesOfNoContact));
     //    }
-    /// <Summary>Remove all computer records (for this election) that are not active</Summary>
-    /// <Summary>Add computer into election, with unique computer code</Summary>
-    public Computer MakeComputerForMe()
-    {
-      var computerCacher = new ComputerCacher();
-
-      var computer = CreateComputerForMe(computerCacher);
-
-      UserSession.CurrentComputerId = computer.C_RowId;
-
-      computerCacher.UpdateItemAndSaveCache(computer);
-
-      return computer;
-    }
 
     /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
     public bool MoveCurrentComputerIntoLocation(int locationId)
@@ -89,8 +91,8 @@ namespace TallyJ.CoreModels
       {
         // for single name elections, only have one ballot per computer per location. (But if altered from a normal election to a single name election, may have multiple.)
         var ballotId =
-          new BallotCacher().AllForThisElection.Where(
-            b => b.LocationGuid == location.LocationGuid && b.ComputerCode == computer.ComputerCode)
+          new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == location.LocationGuid
+                                                           && b.ComputerCode == computer.ComputerCode)
             .OrderBy(b => b.BallotNumAtComputer)
             .Select(b => b.C_RowId).FirstOrDefault();
         if (ballotId != 0)
@@ -106,7 +108,7 @@ namespace TallyJ.CoreModels
     {
       var codeToUse = 'A';
       var twoDigit = false;
-      var firstDigit = (char) ('A' - 1);
+      var firstDigit = (char)('A' - 1);
 
       foreach (var computerCode in existingCodesSortedAsc)
       {
@@ -124,7 +126,7 @@ namespace TallyJ.CoreModels
         if (testChar == codeToUse)
         {
           // push the answer to the next one
-          codeToUse = (char) (codeToUse + 1);
+          codeToUse = (char)(codeToUse + 1);
           if (codeToUse == 'I' || codeToUse == 'L' || codeToUse == 'O')
           {
             codeToUse++;
@@ -133,13 +135,13 @@ namespace TallyJ.CoreModels
           {
             twoDigit = true;
             codeToUse = 'A';
-            firstDigit = (char) (firstDigit + 1);
+            firstDigit = (char)(firstDigit + 1);
           }
         }
       }
       if (codeToUse > 'Z')
       {
-        return "" + firstDigit + (char) ('A' - 1 + codeToUse - 'Z');
+        return "" + firstDigit + (char)('A' - 1 + codeToUse - 'Z');
       }
       if (twoDigit)
       {
@@ -151,15 +153,19 @@ namespace TallyJ.CoreModels
     // refresh computer and election info
     public void RefreshLastContact()
     {
-      var computer = UserSession.CurrentComputer;
-      if (computer == null)
+      if (UserSession.CurrentElectionGuid == Guid.Empty)
       {
         return;
       }
 
-      computer.LastContact = DateTime.Now;
+      var computer = UserSession.CurrentComputer;
 
-      new ComputerCacher().UpdateItemAndSaveCache(computer);
+      if (DateTime.Now - computer.LastContact > new TimeSpan(0, 0, 30))
+      {
+        computer.LastContact = DateTime.Now;
+
+        new ComputerCacher().UpdateItemAndSaveCache(computer);
+      }
     }
 
     public bool ProcessPulse()
@@ -175,23 +181,6 @@ namespace TallyJ.CoreModels
       computer.LastContact = lastContact;
 
       new ComputerCacher().UpdateItemAndSaveCache(computer);
-
-      //      try
-      //      {
-      //        Db.SaveChanges();
-      //      }
-      //      catch (DbUpdateConcurrencyException ex)
-      //      {
-      //        ((IObjectContextAdapter)Db).ObjectContext.Detach(computer);
-      //        // if this computer has been inactive, its computer record may have been removed
-      //        CreateComputerRecordForMe();
-      //        AddCurrentComputerIntoElection(UserSession.CurrentElectionGuid);
-      //      }
-
-      //      if (computer.ElectionGuid != UserSession.CurrentElectionGuid)
-      //      {
-      //        return false;
-      //      }
 
       return true;
     }

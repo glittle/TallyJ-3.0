@@ -1,6 +1,5 @@
 ﻿var HomeIndexPage = function () {
   var local = {
-    publicHub: null,
     reconnectHubTimeout: null,
     hubReconnectionTime: 95000
   };
@@ -15,50 +14,37 @@
 
     warnIfCompatibilityMode();
 
-    // temp until signalr is working
-    //    setTimeout(function () {
-    //      refreshElectionList();
-    //    }, 60000);
-
-    setTimeout(delayedPreparePage, 200);
+    connectToPublicHub();
+    
+    // refreshElectionList();
   };
-  var delayedPreparePage = function () {
-    refreshElectionList();
 
-    var hub = local.publicHub = $.connection.publicHubCore;
+  var connectToPublicHub = function() {
+    var hub = $.connection.publicHubCore;
 
-    // Declare a local function so the server can invoke it          
     hub.client.electionsListUpdated = function (listing) {
       LogMessage('signalR: electionsListUpdated');
+
       $('#ddlElections').html(listing);
-      LogMessage(listing);
       selectDefaultElection();
     };
 
-    site.hubJoinCommands.push(updateHubConnection);
-
-//    // Start the connection
-//    hub.connection
-//      .start()
-//      .done(function () {
-//        local.publicHubConnectionId = hub.connection.id;
-//        LogMessage(hub.connection.id);
-//        updateHubConnection();
-//      });
+    activateHub(hub, function() {
+      LogMessage('Join public Hub');
+      CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function(info) {
+        showElections(info);
+      });
+    });
   };
 
-  var updateHubConnection = function () {
-    clearTimeout(local.reconnectHubTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function (info) {
-      local.reconnectHubTimeout = setTimeout(updateHubConnection, local.hubReconnectionTime);
-    });
-
+  var showElections = function(info) {
+    $('#ddlElections').html(info.html);
+    selectDefaultElection();
   };
 
   var refreshElectionList = function () {
-    CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function (info) {
-      $('#ddlElections').html(info.html);
-      selectDefaultElection();
+    CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function(info) {
+      showElections(info);
     });
   };
 

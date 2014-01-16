@@ -13,14 +13,8 @@ namespace TallyJ.EF
       var currentElection = UserSession.CurrentElection;
       var oldValue = currentElection.ListForPublicNow;
 
-      if (currentElection.ListedForPublicAsOf.HasValue &&
-          (DateTime.Now - currentElection.ListedForPublicAsOf < new TimeSpan(0, 0, 60)))
-      {
-        return;
-      }
-
       currentElection.ListedForPublicAsOf = AllForThisElection
-        .Where(c => c.TempAuthLevel == "Known")
+        .Where(c => c.AuthLevel == "Known")
         .Max(c => c.LastContact);
 
       new ElectionCacher().UpdateItemAndSaveCache(currentElection);
@@ -29,6 +23,10 @@ namespace TallyJ.EF
       if (currentElection.ListForPublicNow != oldValue)
       {
         new PublicHub().ElectionsListUpdated();
+      }
+      if (!currentElection.ListForPublicNow)
+      {
+        new MainHub().DisconnectGuests();
       }
 
     }

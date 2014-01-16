@@ -14,7 +14,11 @@ namespace TallyJ.Code
 
     protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
     {
-      new ComputerModel().RefreshLastContact();
+      if (UserSession.CurrentElectionGuid != Guid.Empty)
+      {
+        new ComputerModel().RefreshLastContact();
+
+      }
       return base.BeginExecuteCore(callback, state);
     }
 

@@ -50,7 +50,7 @@ namespace TallyJ.CoreModels.Hubs
 //    }
   }
 
-  public class FrontDeskHubCore : HubWithTracker
+  public class FrontDeskHubCore : Hub
   {
   }
 }

@@ -273,45 +273,16 @@ namespace TallyJ.CoreModels
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
-      // don't use cache, go directly to database
-      var rawElection = Db.Election.FirstOrDefault(e => e.ElectionGuid == wantedElectionGuid);
-      if (rawElection == null)
+      // don't use cache, go directly to database - cache is tied to current election
+      var exists = Db.Election.Any(e => e.ElectionGuid == wantedElectionGuid);
+      if (!exists)
       {
         return false;
       }
       
-      // set up the whole environment to use this election
+      // switch this up the whole environment to use this election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
-
-
-      if (UserSession.IsKnownTeller)
-      {
-        // ensure we are using clean data... even if another teller is logged in
-//        CacherBase.DropAllCachesForThisElection();
-
-        // 2014-01 clean out old data (don't bother saving to the DB until it is done by something else)
-        var election = UserSession.CurrentElection;
-        if (election.ListedForPublicAsOf.HasValue)
-        {
-          election.ListedForPublicAsOf = null;
-          new ElectionCacher().UpdateItemAndSaveCache(election);
-        }
-      }
-
-      var computerModel = new ComputerModel();
-      computerModel.MakeComputerForMe();
-
-      var firstLocation = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).FirstOrDefault();
-      // default to top location
-      if (firstLocation != null)
-      {
-        computerModel.MoveCurrentComputerIntoLocation(firstLocation.C_RowId);
-      }
-
-      //if (UserSession.IsKnownTeller)
-      //{
-      //  new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
-      //}
+      UserSession.CurrentComputer = null; // will get one when we need it
 
       var message = UserSession.IsGuestTeller
         ? "Guest teller joined into Election"
@@ -433,8 +404,8 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
       new LocationCacher().UpdateItemAndSaveCache(mainLocation);
 
-      var computerModel = new ComputerModel();
-      computerModel.MakeComputerForMe();
+//      var computerModel = new ComputerModel();
+//      computerModel.CreateComputerForMe();
 
       return new
       {
@@ -643,8 +614,7 @@ namespace TallyJ.CoreModels
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection != null
-             && new ComputerCacher().AllForThisElection.Any(c => c.TempAuthLevel == "Known");
+      return UserSession.CurrentElection.ListForPublicNow;
     }
   }
 }
