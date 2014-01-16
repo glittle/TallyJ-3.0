@@ -29,6 +29,7 @@
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
+        <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
           if (Request.IsAuthenticated)
           {
@@ -64,7 +65,6 @@
       }
       @if (Request.IsAuthenticated)
       {
-
         <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           @Html.Partial("MasterMenu")
         </div>
