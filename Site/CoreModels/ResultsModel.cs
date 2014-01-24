@@ -337,6 +337,8 @@ namespace TallyJ.CoreModels
           ResultType = ResultType.Manual
         };
         Db.ResultSummary.Add(resultSummary);
+        Db.SaveChanges();
+
         resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
       }
       else

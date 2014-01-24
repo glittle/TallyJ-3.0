@@ -6,8 +6,16 @@
 );
 
 
+
+
 GO
 GRANT SELECT
+    ON OBJECT::[dbo].[Applications] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
     ON OBJECT::[dbo].[Applications] TO [TallyJSite]
     AS [dbo];
 

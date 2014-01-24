@@ -18,7 +18,7 @@
     <Name>DatabaseScripts</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.0</ProjectVersion>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql100DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql110DatabaseSchemaProvider</DSP>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ShowWizard>False</ShowWizard>
     <OutputType>Database</OutputType>
@@ -59,7 +59,7 @@
     <TornPageDetection>False</TornPageDetection>
     <DatabaseAccess>MULTI_USER</DatabaseAccess>
     <Recovery>FULL</Recovery>
-    <EnableFullTextSearch>True</EnableFullTextSearch>
+    <EnableFullTextSearch>False</EnableFullTextSearch>
     <DatabaseChaining>False</DatabaseChaining>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
     <Trustworthy>False</Trustworthy>
@@ -81,7 +81,6 @@
     <IsBrokerPriorityHonored>False</IsBrokerPriorityHonored>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>.\sql\release\</OutputPath>
     <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
     <TargetDatabase>
     </TargetDatabase>
@@ -93,6 +92,13 @@
     <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
     <TargetDatabase>
     </TargetDatabase>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
+    <SuppressTSqlWarnings />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Standalone|AnyCPU' ">
+    <OutputPath>.\sql\release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TargetDatabase />
     <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
     <SuppressTSqlWarnings />
   </PropertyGroup>
@@ -110,6 +116,7 @@
     <Folder Include="Security\" />
     <Folder Include="tj\Functions\" />
     <Folder Include="tj\Stored Procedures\" />
+    <Folder Include="Snapshots" />
   </ItemGroup>
   <ItemGroup>
     <BuildContributorArgument Include="OutDir=$(OutDir)" />
@@ -119,6 +126,8 @@
     <None Include="Schema Comparisons\Project to AppHb - Live.scmp" />
     <None Include="Schema Comparisons\AppHb to Project.scmp" />
     <None Include="Schema Comparisons\Project to AppHb - UAT.scmp" />
+    <None Include="DatabaseScripts.publish.xml" />
+    <None Include="Snapshots\TallyJ.20140121b.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />
