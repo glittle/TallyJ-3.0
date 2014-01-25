@@ -679,6 +679,7 @@
     <Content Include="Reports\Main.cshtml" />
     <Content Include="Reports\ChangedPeople.cshtml" />
     <None Include="Properties\PublishProfiles\Local 2.pubxml" />
+    <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files.pubxml" />
     <None Include="Properties\PublishProfiles\Local for Distribution.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />

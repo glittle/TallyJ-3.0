@@ -26,7 +26,9 @@ namespace TallyJ.CoreModels
         //                                                     });
 
         var list = MyElections()
-          .OrderByDescending(e => e.DateOfElection)
+          .OrderBy(e => e.ShowAsTest)
+          .ThenByDescending(e => e.DateOfElection)
+          .ThenBy(e => e.Name)
           .Select(e => new
           {
             e.Name,
@@ -39,7 +41,7 @@ namespace TallyJ.CoreModels
 
         var electionGuids = list.Select(e => e.ElectionGuid).ToList();
 
-        var personCount = Db.Person.Where(p=>electionGuids.Contains(p.ElectionGuid))
+        var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
           .GroupBy(p => p.ElectionGuid)
           .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
           .ToList();
@@ -75,7 +77,7 @@ namespace TallyJ.CoreModels
         var userGuid = UserSession.UserGuid;
         return Db.Election
           .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
-            (e, j) => new {e, j})
+            (e, j) => new { e, j })
           .Where(joined => joined.j.ElectionGuid.Equals(joined.e.ElectionGuid))
           .Select(joined => joined.e)
           .ToList();
@@ -84,7 +86,7 @@ namespace TallyJ.CoreModels
       var currentElection = UserSession.CurrentElection;
       if (UserSession.IsGuestTeller && currentElection != null)
       {
-        return new List<Election> {currentElection};
+        return new List<Election> { currentElection };
       }
 
       return new List<Election>();

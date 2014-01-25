@@ -206,11 +206,11 @@ namespace TallyJ.Code.Session
 
     /// <summary>
     /// </summary>
-    public static long LastVersionNum
-    {
-      get { return SessionKey.LastVersionNum.FromSession(0); }
-      set { SessionKey.LastVersionNum.SetInSession(value); }
-    }
+//    public static long LastVersionNum
+//    {
+//      get { return SessionKey.LastVersionNum.FromSession(0); }
+//      set { SessionKey.LastVersionNum.SetInSession(value); }
+//    }
 
 //    public static Computer CurrentComputerX
 //    {
@@ -354,6 +354,20 @@ namespace TallyJ.Code.Session
         : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
 
       return pageFeatureWhen.Contains(currentStatus);
+    }
+
+    public static void ResetWhenSwitchingElections()
+    {
+      var session = HttpContext.Current.Session;
+      
+      session.Remove(SessionKey.CurrentBallotFilter);
+      session.Remove(SessionKey.CurrentBallotId);
+      session.Remove(SessionKey.CurrentComputer);
+      session.Remove(SessionKey.CurrentElectionGuid);
+      session.Remove(SessionKey.CurrentLocationGuid);
+      session.Remove(SessionKey.CurrentTeller + "1");
+      session.Remove(SessionKey.CurrentTeller + "2");
+
     }
   }
 }
