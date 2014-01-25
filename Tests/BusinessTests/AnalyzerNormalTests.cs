@@ -843,7 +843,7 @@ namespace Tests.BusinessTests
       var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
 
       resultTies.Count.ShouldEqual(1);
-      resultTies[0].NumToElect.ShouldEqual(3);
+      resultTies[0].NumToElect.ShouldEqual(1);
       resultTies[0].NumInTie.ShouldEqual(4);
       resultTies[0].TieBreakRequired.ShouldEqual(true);
 
