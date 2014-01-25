@@ -616,7 +616,8 @@ namespace TallyJ.CoreModels
             r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
             r.IsTieResolved = r.TieBreakCount.AsInt() > 0
                               && !results.Any(r2 => r2.C_RowId != r.C_RowId
-                                                    && r2.TieBreakCount == r.TieBreakCount);
+                                                    && r2.TieBreakCount == r.TieBreakCount
+                                                    && (r2.Section != r.Section || r.Section == ResultHelper.Section.Extra));
           });
 
       if (groupInOther && (groupInTop || groupInExtra))

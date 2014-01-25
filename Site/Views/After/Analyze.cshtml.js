@@ -325,9 +325,12 @@
             firstPara = '<p>A tie-break election is required to break this tie.</p>';
           }
           tie.Conclusion = firstPara
-              + '<p>Voters must vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below. (A secondary tie between people after the first {0} does not matter.)</p>'
-                  .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
-              + '<p>If minority status can resolve this tie, simply enter vote numbers here to indicate who is given preference.</p>';
+            + '<p>Voters should vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
+            .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
+            + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
+            + '<p>If there are ties in the tie-break, they are acceptable in the top {0} positions{1}.</p>'.filledWith(info.NumToElect,
+              info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
+            + (tie.IsResolved ? '' : '<p><b>In complex situations of ties in the tie-break, additional tie-breaks may be required that are not detailed here.</b></p>');
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
           });
@@ -384,8 +387,8 @@
     var btn = $(this);
     var counts = btn.parent().find('input');
     var needed = +btn.parent().find('.Needed').text();
-    var dups = [];
-    var foundDup = false;
+    //    var dups = [];
+    //    var foundDup = false;
     var foundOkay = 0;
     var foundNegative = false;
 
@@ -393,13 +396,13 @@
       var $item = $(item);
       var value = +$item.val();
       if (value > 0) {
-        if (dups[value]) {
-          foundDup = true;
-        }
-        else {
-          foundOkay++;
-        }
-        dups[value] = (dups[value] ? dups[value] : 0) + 1;
+        //        if (dups[value]) {
+        //          foundDup = true;
+        //        }
+        //        else {
+        foundOkay++;
+        //        }
+        //dups[value] = (dups[value] ? dups[value] : 0) + 1;
       }
       if (value < 0) {
         foundNegative = true;
@@ -410,17 +413,17 @@
       alert('All vote counts must be a positive number.');
       return;
     }
-    if (foundDup) {
-      var foundBeforeDup = 0;
-      for (var i = dups.length - 1; i >= 0; i--) {
-        var dup = dups[i];
-        if (dup > 1) break;
-        foundBeforeDup = foundBeforeDup + dup; // will be 1 or 0
-      }
-      if (foundBeforeDup < needed) {
-        alert('A tie has been entered within the top {0} vote counts.\n\nWhen the tie-breaking vote is done, tied results cannot be accepted. Please resolve those tied votes.'.filledWith(needed));
-      }
-    }
+    //    if (foundDup) {
+    //      var foundBeforeDup = 0;
+    //      for (var i = dups.length - 1; i >= 0; i--) {
+    //        var dup = dups[i];
+    //        if (dup > 1) break;
+    //        foundBeforeDup = foundBeforeDup + dup; // will be 1 or 0
+    //      }
+    //      if (foundBeforeDup < needed) {
+    //        alert('A tie has been entered within the top {0} vote counts.\n\nWhen the tie-breaking vote is done, tied results cannot be accepted. Please resolve those tied votes.'.filledWith(needed));
+    //      }
+    //    }
     if (foundOkay < needed) {
       alert('Please ensure that {0} or more votes are entered.'.filledWith(needed));
     }
