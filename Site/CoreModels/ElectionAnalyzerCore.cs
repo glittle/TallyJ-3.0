@@ -641,7 +641,13 @@ namespace TallyJ.CoreModels
       }
       if (groupInExtra)
       {
-        if (groupInTop && groupInOther || !groupInTop)
+        if (groupInTop)
+        {
+          //resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
+          resultTie.TieBreakRequired = true;
+          //resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
+        }
+        else
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
           resultTie.TieBreakRequired = true;
