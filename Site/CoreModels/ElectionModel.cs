@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -279,10 +280,22 @@ namespace TallyJ.CoreModels
       {
         return false;
       }
+
+      if (UserSession.CurrentElectionGuid == wantedElectionGuid)
+      {
+        return true;
+      }
+
+      // switch this the whole environment to use this election
+      var computer = UserSession.CurrentComputer;
+      if (computer != null)
+      {
+        new ComputerCacher().RemoveItemAndSaveCache(computer);
+      }
       
-      // switch this up the whole environment to use this election
+      UserSession.ResetWhenSwitchingElections();
+
       UserSession.CurrentElectionGuid = wantedElectionGuid;
-      UserSession.CurrentComputer = null; // will get one when we need it
 
       var message = UserSession.IsGuestTeller
         ? "Guest teller joined into Election"
