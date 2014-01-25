@@ -26,7 +26,7 @@ namespace TallyJ.CoreModels
         //                                                     });
 
         var list = MyElections()
-          .OrderBy(e => e.ShowAsTest)
+          .OrderBy(e => e.ShowAsTest.AsBoolean())
           .ThenByDescending(e => e.DateOfElection)
           .ThenBy(e => e.Name)
           .Select(e => new
@@ -46,7 +46,7 @@ namespace TallyJ.CoreModels
           .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
           .ToList();
 
-        return list.ToList().Select(info =>
+        return list.Select(info =>
                       {
                         var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
                         var personCounts = personCount.SingleOrDefault(c => c.ElectionGuid == info.ElectionGuid);
