@@ -81,7 +81,7 @@
         <xs:element minOccurs="0" maxOccurs="unbounded" name="teller">
           <xs:complexType>
             <xs:attribute name="Name" type="xs:string" use="required" />
-            <xs:attribute name="TellerGuid" type="xs:string" use="required" />
+            <xs:attribute name="TellerGuid" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
         <xs:element name="user" maxOccurs="unbounded">
