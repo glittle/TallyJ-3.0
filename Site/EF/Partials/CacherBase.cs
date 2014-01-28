@@ -91,8 +91,8 @@ namespace TallyJ.EF
       if (!list.Exists(k => k.Key == electionCacheKey.Key))
       {
         list.Add(electionCacheKey);
-        cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(cacheDuration));
       }
+      cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(cacheDuration));
     }
 
 

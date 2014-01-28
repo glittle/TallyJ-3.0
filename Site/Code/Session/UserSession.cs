@@ -326,7 +326,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogin()
     {
-      HttpContext.Current.Session.Clear();
+//      HttpContext.Current.Session.Clear();
       // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
     }
 
@@ -339,7 +339,6 @@ namespace TallyJ.Code.Session
 
       HttpContext.Current.Session.Clear();
       FormsAuthentication.SignOut();
-
     }
 
     public static bool IsFeatured(string pageFeatureWhen)

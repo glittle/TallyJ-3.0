@@ -107,3 +107,6 @@ button.Primary
 #btnAddLocation {
   margin-top: 2px;
 }
+#btnResetList {
+  margin-top: -24px;
+}

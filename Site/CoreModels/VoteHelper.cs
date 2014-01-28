@@ -28,7 +28,7 @@ namespace TallyJ.CoreModels
     {
       _forBallot = forBallot;
       _everyoneCanReceiveVotes = everyoneCanReceiveVotes;
-      _notInTieBreakGuid = IneligibleReasonEnum.Ineligible_Not_in_TieBreak.Value;
+      _notInTieBreakGuid = IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak.Value;
       _notInTieBreakGuidNullable = _notInTieBreakGuid.AsNullableGuid();
     }
 
@@ -45,6 +45,7 @@ namespace TallyJ.CoreModels
       {
         return ineligible;
       }
+      //TODO review for CanReceiveVotes
       return (_everyoneCanReceiveVotes || !_forBallot || thisPersonCanReceiveVotes ? Guid.Empty : _notInTieBreakGuid);
     }
   }

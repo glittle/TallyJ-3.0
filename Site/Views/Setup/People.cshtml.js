@@ -88,7 +88,7 @@
       return;
     };
 
-    editPersonPage.applyValues(panel, person);
+    editPersonPage.applyValues(panel, person, true);
 
   };
 

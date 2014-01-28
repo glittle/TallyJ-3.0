@@ -167,7 +167,7 @@ namespace TallyJ.Controllers
 
         if (createStatus == MembershipCreateStatus.Success)
         {
-          FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
+          FormsAuthentication.SetAuthCookie(model.UserName, true);
           UserSession.ProcessLogin();
           UserSession.IsKnownTeller = true;
 

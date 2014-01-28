@@ -89,7 +89,7 @@ namespace TallyJ.CoreModels
               break;
 
             case "On other Institution":
-              reason = IneligibleReasonEnum.Ineligible_On_other_Institution;
+              reason = IneligibleReasonEnum.IneligiblePartial1_On_other_Institution;
               break;
 
             case "Rights removed":

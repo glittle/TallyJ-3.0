@@ -20,12 +20,10 @@
   <h1>@ViewBag.Title.</h1>
   <h2>@ViewBag.Message</h2>
 </hgroup>
-@if (electionsInfo.Count() > 0)
-{
-  <h3>Your Elections</h3>
-}<div id="ElectionList">
-   <span>Loading...</span>
- </div>
+<h3>Your Elections</h3>
+<div id="ElectionList">
+  <span>@electionsInfo.Count.Plural("Loading {0} elections".FilledWith(electionsInfo.Count), "Loading 1 election", "(none found)") ...</span>
+</div>
 @if (UserSession.IsKnownTeller)
 {
   <h3 class="MakeNew">Preparing a New Election?</h3>
@@ -45,5 +43,10 @@
       </form>
     </li>
   </ul>
+}
+else
+{
+  <p>Sorry, no elections found. Please Log Off and try again.</p>
+  <p>@Html.ActionLink("Log Off", "Logoff", "Account")</p>
 
 }

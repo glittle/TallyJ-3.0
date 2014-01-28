@@ -251,10 +251,7 @@ namespace TallyJ.CoreModels
         )
       {
         // reset flags
-        new PeopleModel().ResetInvolvementFlags();
-        Db.SaveChanges();
-
-        new PersonCacher().DropThisCache();
+        new PeopleModel().SetInvolvementFlagsToDefault();
 
         // update analysis
         new ResultsModel().GenerateResults();
@@ -270,7 +267,6 @@ namespace TallyJ.CoreModels
         displayName
       }.AsJsonResult();
     }
-
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
@@ -376,6 +372,8 @@ namespace TallyJ.CoreModels
       // create an election for this ID
       // create a default Location
       // assign all of these to this person and computer
+
+      UserSession.ResetWhenSwitchingElections();
 
       var election = new Election
       {
@@ -627,7 +625,7 @@ namespace TallyJ.CoreModels
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection.ListForPublicNow;
+      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicNow;
     }
   }
 }

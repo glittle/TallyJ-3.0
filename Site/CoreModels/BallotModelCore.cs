@@ -424,7 +424,9 @@ namespace TallyJ.CoreModels
         {
           Id = r.IndexNum,
           r.Group,
-          Desc = r.Description
+          Desc = r.Description,
+          r.CanVote,
+          r.CanReceiveVotes
         })
         .SerializedAsJsonString();
 
@@ -448,7 +450,9 @@ namespace TallyJ.CoreModels
         {
           Guid = r.Value,
           r.Group,
-          Desc = r.Description
+          Desc = r.Description,
+          r.CanVote,
+          r.CanReceiveVotes
         })
         .SerializedAsJsonString();
     }
@@ -464,7 +468,11 @@ namespace TallyJ.CoreModels
         .ThenBy(b => b.BallotNumAtComputer)
         .ToList();
 
-      return BallotsInfoList(ballots);
+      var totalCount = filter.HasNoContent()
+        ? ballots.Count
+        : new BallotCacher().AllForThisElection.Count(b => b.LocationGuid == UserSession.CurrentLocationGuid);
+
+      return BallotsInfoList(ballots, totalCount);
     }
 
     /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
@@ -607,14 +615,15 @@ namespace TallyJ.CoreModels
 //      //todo...
 //    }
 
-    private object BallotsInfoList(List<Ballot> ballots)
+    private object BallotsInfoList(List<Ballot> ballots, int totalCount)
     {
       var maxRowVersion = ballots.Count == 0 ? 0 : ballots.Max(b => b.RowVersionInt);
 
       return new
       {
         Ballots = ballots.ToList().Select(BallotInfoForJs),
-        Last = maxRowVersion
+        Last = maxRowVersion,
+        Total = totalCount
       };
     }
   }

@@ -51,8 +51,8 @@ namespace Tests.BusinessTests
     {
       var vh = new VoteHelper(true, false);
 
-      vh.IneligibleToReceiveVotes(null, null).ShouldEqual(IneligibleReasonEnum.Ineligible_Not_in_TieBreak);
-      vh.IneligibleToReceiveVotes(Guid.Empty, false).ShouldEqual(IneligibleReasonEnum.Ineligible_Not_in_TieBreak);
+      vh.IneligibleToReceiveVotes(null, null).ShouldEqual(IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak);
+      vh.IneligibleToReceiveVotes(Guid.Empty, false).ShouldEqual(IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak);
 
       var alreadyIneligibleGuid = Guid.NewGuid();
 
@@ -60,7 +60,7 @@ namespace Tests.BusinessTests
       vh.IneligibleToReceiveVotes(alreadyIneligibleGuid, false).ShouldEqual(alreadyIneligibleGuid);
 
       vh.IneligibleToReceiveVotes(Guid.Empty, true).ShouldEqual(Guid.Empty);
-      vh.IneligibleToReceiveVotes(Guid.Empty, false).ShouldEqual(IneligibleReasonEnum.Ineligible_Not_in_TieBreak);
+      vh.IneligibleToReceiveVotes(Guid.Empty, false).ShouldEqual(IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak);
     }
 
     [TestMethod]

@@ -89,6 +89,8 @@ namespace TallyJ.CoreModels
         return new List<Election> { currentElection };
       }
 
+      // not logged in correctly
+
       return new List<Election>();
     }
 

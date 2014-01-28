@@ -88,7 +88,9 @@ namespace TallyJ.CoreModels
           {
             Guid = r.Value,
             r.Group,
-            Desc = r.Description
+            Desc = r.Description,
+            r.CanVote,
+            r.CanReceiveVotes
           }).SerializedAsJsonString();
     }
 

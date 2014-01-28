@@ -64,8 +64,8 @@ namespace TallyJ.CoreModels
     {
       const int max = 30;
 
-      var personList = new PersonCacher().AllForThisElection.ToList();
-      var voteList = new VoteCacher().AllForThisElection.ToList();
+      var personList = new PersonCacher().AllForThisElection;
+      var voteList = new VoteCacher().AllForThisElection;
       var voteHelper = new VoteHelper(forBallot);
 
       List<SearchResult> results;
@@ -83,7 +83,7 @@ namespace TallyJ.CoreModels
           results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).OrderBy(p=>p.FullName).AsSearchResults(0, voteHelper).ToList();
           break;
         default:
-          results = GetRankedResults(personList, voteList, nameToFind, max, voteHelper, out moreFound);
+          results = GetRankedResults(personList, voteList, nameToFind, max, voteHelper, forBallot, out moreFound);
           break;
       }
 
@@ -112,7 +112,7 @@ namespace TallyJ.CoreModels
         .AsJsonResult();
     }
 
-    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, List<Vote> voteList, string nameToFind, int max, VoteHelper voteHelper, out bool moreFound)
+    private List<SearchResult> GetRankedResults(IEnumerable<Person> people, List<Vote> voteList, string nameToFind, int max, VoteHelper voteHelper, bool forBallot, out bool moreFound)
     {
       moreFound = false; // need to set
 
@@ -131,6 +131,11 @@ namespace TallyJ.CoreModels
 
       foreach (var person in people)
       {
+        if (forBallot && person.CanReceiveVotes.HasValue && !person.CanReceiveVotes.Value)
+        {
+          // ignore if can't receive votes
+          continue;
+        }
         var matchType = DetermineMatch(person, voteList, terms, metas);
         if (matchType > 0)
         {

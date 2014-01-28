@@ -330,7 +330,7 @@ namespace TallyJ.CoreModels
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
-          personModel.ResetInvolvementFlags(person);
+          personModel.SetInvolvementFlagsToDefault(person);
 
           Db.Person.Add(person);
 

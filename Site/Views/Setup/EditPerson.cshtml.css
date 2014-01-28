@@ -9,3 +9,16 @@
 .personEdit .topLine td {
     background-color: #ddd;
 }
+.overrides {
+  font-style: italic;
+  color: #666;
+  font-size: 85%;
+}
+.overrides td {
+  text-align: right;
+  padding-right: 95px; 
+}
+.overrides select {
+  width: auto;
+
+}

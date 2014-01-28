@@ -19,6 +19,7 @@
     votes: [],
     votesList: null,
     tabList: null,
+    ballotCountAtLastLoad: 0,
     invalidReasonsHtml: null,
     invalidReasonsShortHtml: null,
     rowSelected: 0,
@@ -518,23 +519,24 @@
           break;
       }
     });
-    showBallotCount(location.BallotsEntered);
+    showBallotCount(0, location.BallotsEntered);
   };
 
-  var showBallotCount = function (numEntered) {
-    var remainingToEnter = (local.location.BallotsCollected || 0) - (numEntered || 0);
+  var showBallotCount = function (numEnteredOnThisComputer, numEnteredInLocation) {
+    $('#lblNumEntered').text(numEnteredOnThisComputer || local.ballotCountAtLastLoad || '-');
+
+    var remainingToEnter = (local.location.BallotsCollected || 0) - (numEnteredInLocation || 0);
     var html, title;
     if (remainingToEnter == 0) {
       title = ': All entered';
     } else if (remainingToEnter < 0) {
-      title = ': {0} too many entered'.filledWith(0 - remainingToEnter);
+      title = ': {0} more than counted'.filledWith(0 - remainingToEnter);
     }
     else {
       title = ': {0} more to enter'.filledWith(remainingToEnter);
     }
 
     $('#collectedVsEnteredTitle').text(title);
-    $('#lblNumEntered').text(numEntered || 0);
   };
 
   var showBallots = function (info) {
@@ -543,7 +545,10 @@
     $('#ballotList')
         .html(local.ballotListTemplate.filledWithEach(list));
 
-    showBallotCount(list.length);
+    showBallotCount(list.length, info.Total);
+    local.ballotCountAtLastLoad = list.length;
+
+    $('#showingWhat').text($('#ballotFilter').val() || 'All');
 
     local.lastBallotRowVersion = info.Last;
   };

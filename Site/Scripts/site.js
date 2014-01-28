@@ -150,7 +150,7 @@ var activateHub = function (hub, callBack) {
     tryingToReconnect = true;
   });
   $.connection.hub.reconnected(function () {
-    ShowStatusDisplay('Reconnected!', 3000);
+    ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
     tryingToReconnect = false;
   });
   $.connection.hub.disconnected(function () {

@@ -71,8 +71,8 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-            .Where(p => !onlyIfCanVote || ((!p.CanVote.HasValue || p.CanVote.Value) && p.IneligibleReasonGuid == null))
-            .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
+            .Where(p => includeIneligible || p.IneligibleReasonGuid == null)
+            .Where(p => !onlyIfCanVote || (p.CanVote.HasValue && p.CanVote.Value));
       }
     }
 
@@ -80,14 +80,19 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///     Process each person record, preparing it BEFORE the election starts. Altered... too dangerous to wipe information!
     /// </summary>
-    public void ResetInvolvementFlags()
+    public void SetInvolvementFlagsToDefault()
     {
-      foreach (var person in PeopleInElection)
+      var peopleInElection = new PersonCacher().AllForThisElection;
+
+      foreach (var person in peopleInElection)
       {
         Db.Person.Attach(person);
-        ResetInvolvementFlags(person);
+        SetInvolvementFlagsToDefault(person);
       }
+
       Db.SaveChanges();
+
+      new PersonCacher().ReplaceEntireCache(peopleInElection);
     }
 
     //public void ResetAllInfo(Person person)
@@ -123,10 +128,17 @@ namespace TallyJ.CoreModels
     ///     Set person's flag based on what is default for this election
     /// </summary>
     /// <param name="person"> </param>
-    public void ResetInvolvementFlags(Person person)
+    public void SetInvolvementFlagsToDefault(Person person)
     {
       //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
       //person.IneligibleReasonGuid = canVote ? null : IneligibleReasonEnum.Ineligible_Not_Adult;
+
+      if (person.IneligibleReasonGuid.AsGuid() != Guid.Empty)
+      {
+        person.CanVote = false;
+        person.CanReceiveVotes = false;
+        return;
+      }
 
       var whoCanVote = CurrentElection.CanVote;
       var whoCanReceiveVotes = CurrentElection.CanReceive;
@@ -192,13 +204,14 @@ namespace TallyJ.CoreModels
           }.AsJsonResult();
         }
 
+        // create new
         personInDatastore = new Person
         {
           PersonGuid = Guid.NewGuid(),
           ElectionGuid = CurrentElectionGuid
         };
 
-        ResetInvolvementFlags(personInDatastore);
+        SetInvolvementFlagsToDefault(personInDatastore);
         Db.Person.Add(personInDatastore);
 
         PeopleInElection.Add(personInDatastore);

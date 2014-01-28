@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.AspNet.SignalR.Hubs;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels.Hubs;
@@ -13,9 +14,13 @@ namespace TallyJ.EF
       var currentElection = UserSession.CurrentElection;
       var oldValue = currentElection.ListForPublicNow;
 
-      currentElection.ListedForPublicAsOf = AllForThisElection
-        .Where(c => c.AuthLevel == "Known")
-        .Max(c => c.LastContact);
+      var lastContactOfTeller = AllForThisElection
+                                    .Where(c => c.AuthLevel == "Known")
+                                    .Max(c => c.LastContact);
+      if (lastContactOfTeller != null && (currentElection.ListedForPublicAsOf == null || lastContactOfTeller > currentElection.ListedForPublicAsOf))
+      {
+        currentElection.ListedForPublicAsOf = lastContactOfTeller;
+      }
 
       new ElectionCacher().UpdateItemAndSaveCache(currentElection);
 
