@@ -69,8 +69,15 @@
           personInfo.InUse = true;
         }
         if (personInfo.Ineligible) {
-          classes.push('InvalidName');
-          personInfo.IneligibleData = ' data-ineligible="{0}"'.filledWith(personInfo.Ineligible);
+          if (!personInfo.CanReceiveVotes) {
+            classes.push('CannotReceiveVotes');
+          }
+          // only add if the only restriction
+          if (!personInfo.CanVote) {
+            classes.push('CannotVote');
+          }
+
+          personInfo.IneligibleData = ' data-ineligible="{Ineligible}" data-canVote={CanVote} data-canReceiveVotes={CanReceiveVotes}'.filledWith(personInfo);
         }
         if (classes.length != 0) {
           personInfo.Name = '<span class="{0}">{^1}</span>'.filledWith(classes.join(' '), personInfo.Name);

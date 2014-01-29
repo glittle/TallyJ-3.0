@@ -46,10 +46,17 @@ namespace TallyJ.CoreModels
           .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
           .ToList();
 
+        var ballotCount = Db.Location.Where(p => electionGuids.Contains(p.ElectionGuid))
+          .Join(Db.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, b) => new { l.ElectionGuid, b })
+          .GroupBy(p => p.ElectionGuid)
+          .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
+          .ToList();
+
         return list.Select(info =>
                       {
                         var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
                         var personCounts = personCount.SingleOrDefault(c => c.ElectionGuid == info.ElectionGuid);
+                        var ballotCounts = ballotCount.SingleOrDefault(c => c.ElectionGuid == info.ElectionGuid);
                         return new
                               {
                                 info.Name,
@@ -64,7 +71,8 @@ namespace TallyJ.CoreModels
                                 Mode =
                                     ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
                                 IsTest = info.ShowAsTest.AsBoolean(),
-                                NumVoters = personCounts == null ? 0 : personCounts.Num
+                                NumVoters = personCounts == null ? 0 : personCounts.Num,
+                                NumBallots = ballotCounts == null ? 0 : ballotCounts.Num
                               };
                       });
       }
@@ -88,6 +96,8 @@ namespace TallyJ.CoreModels
       {
         return new List<Election> { currentElection };
       }
+
+      // not logged in correctly
 
       return new List<Election>();
     }

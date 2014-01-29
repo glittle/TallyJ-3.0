@@ -1,11 +1,55 @@
-﻿.text20{ width: 70px; }
-.text50{ width: 150px;}
-.text100{ width: 150px;}
-.text150{ width: 180px;}
+﻿.text20 {
+  width: 70px;
+}
+
+.text50 {
+  width: 150px;
+}
+
+.text100 {
+  width: 150px;
+}
+
+.text150 {
+  width: 180px;
+}
 
 #btnSave {
-    margin-top: 20px;
+  margin-top: 20px;
 }
+
 .personEdit .topLine td {
-    background-color: #ddd;
+  background-color: #ddd;
+}
+
+.overrides {
+  font-style: italic;
+  color: #666;
+  font-size: 85%;
+}
+
+  .overrides td {
+    text-align: right;
+    padding-right: 95px;
+  }
+
+  .overrides select {
+    width: auto;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+    .overrides select::-ms-expand {
+      display: none;
+    }
+
+  .overrides .sample {
+    display: inline-block;
+    width: 87px;
+    text-align: left;
+  }
+
+.CannotReceiveVotesSample {
+  text-decoration: line-through;
 }

@@ -1,109 +1,134 @@
-﻿table.Demographics
-{
-    float: left;
-    margin-right: 15px;
-    padding: 10px 10px 10px 10px;
-    border-spacing: 0;
-    border: 1px solid #8DC63E;
-    border-radius: 3px;
-    max-width: 600px;
+﻿table.Demographics {
+  float: left;
+  margin-right: 15px;
+  padding: 10px 10px 10px 10px;
+  border-spacing: 0;
+  border: 1px solid #8DC63E;
+  border-radius: 3px;
+  max-width: 600px;
 }
-.More
-{
-    float: left;
+
+.More {
+  float: left;
 }
-div.More h3
-{
-    margin: 0;
+
+div.More h3 {
+  margin: 0;
 }
+
 table.Demographics td, table.Demographics td label {
-    font-size: 94%;
-}
-table.More th, table.Demographics th
-{
-    text-align: right;
-    padding: 5px 10px 5px 0;
-    white-space: nowrap;
-    vertical-align: top;
+  font-size: 94%;
 }
 
-table.More th, table.More td
-{
-    vertical-align: top;
+table.More th, table.Demographics th {
+  text-align: right;
+  padding: 5px 10px 5px 0;
+  white-space: nowrap;
+  vertical-align: top;
 }
 
-input[type='text']
-{
-    width: 200px;
-}
-input[type='number']
-{
-    width: 60px;
-}
-input[type='date']
-{
-    width: 140px;
+table.More th, table.More td {
+  vertical-align: top;
 }
 
-.Locations
-{
-    border: 1px solid #8dc63e;
-    border-radius: 3px;
-    width: 250px;
-    padding: 10px 10px 20px 20px;
-}
-tr.electionDetail TD
-{
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
-}
-tr.electionDetailT TD
-{
-    border-top: 1px solid #666;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
-}
-tr.electionDetailB TD
-{
-    border-bottom: 1px solid #666;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
-}
-.ui-icon
-{
-    display: inline-block;
-    cursor: pointer;
+input[type='text'] {
+  width: 200px;
 }
 
-.More.Misc
-{
-    padding: 10px 10px 20px 20px;
-    width: 272px;
+input[type='number'] {
+  width: 60px;
 }
-.techInfo
-{
-    font-size: 75%;
-    color: #ccc;
+
+input[type='date'] {
+  width: 140px;
 }
-div.More h3.TellerTitle
-{
-    margin-top: 50px;
+
+.Locations {
+  border: 1px solid #8dc63e;
+  border-radius: 3px;
+  width: 250px;
+  padding: 10px 10px 20px 20px;
 }
-.ui-icon-trash
-{
-    display: inline-block;
-    cursor: pointer;
+
+tr.electionDetail TD {
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
 }
-button.Primary
-{
-    margin-left: 0;
+
+tr.electionDetailT TD {
+  border-top: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
 }
+
+tr.electionDetailB TD {
+  border-bottom: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
+}
+
+.ui-icon {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.More.Misc {
+  padding: 10px 10px 20px 20px;
+  width: 272px;
+}
+
+.techInfo {
+  font-size: 75%;
+  color: #ccc;
+}
+
+div.More h3.TellerTitle {
+  margin-top: 50px;
+}
+
+.ui-icon-trash {
+  display: inline-block;
+  cursor: pointer;
+}
+
+button.Primary {
+  margin-left: 0;
+}
+
 .accessCode {
   padding-left: 29px;
 }
+
 #btnAddLocation {
   margin-top: 2px;
+}
+
+#btnResetList {
+  margin-top: -24px;
+}
+
+#qTipLocked {
+  display: none;
+}
+#VariationNotice {
+  font-weight: bold;
+  display: none;
+}
+#VariationNotice .ui-icon {
+  display: none;
+}
+.NoteT #qTipNoteT {
+  display:inline-block;
+}
+.NoteB #qTipNoteB {
+  display:inline-block;
+}
+.NoteN #qTipNoteN {
+  display:inline-block;
+}
+option:disabled {
+  color: #ddd;
 }

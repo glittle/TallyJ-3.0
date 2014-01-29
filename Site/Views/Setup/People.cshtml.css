@@ -33,8 +33,12 @@
       padding-left: 20px;
     }
 
-  #nameList .InvalidName {
+  #nameList .CannotReceiveVotes {
     text-decoration: line-through;
+  }
+
+  #nameList .CannotVote:after {
+    content: '  **'
   }
 
   #nameList .Fuzzy {

@@ -1,45 +1,13 @@
 ﻿@model SetupModel
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @{
   ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+  ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
   ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <input type="hidden" data-name="C_RowId" />
 <table class="personEdit">
-  @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
-  {
-    <tr id="trCanReceiveVotes" class="topLine">
-      <td>
-        <label for="input1">Can be voted for in this election?</label>
-      </td>
-      <td>
-        <input type="checkbox" id="input1" data-name="CanReceiveVotes" />
-        <span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
-      </td>
-    </tr>
-  }
-  @if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
-  {
-    <tr id="trCanVote" class="topLine">
-      <td>
-        <label for="input2">Can vote in this election?</label>
-      </td>
-      <td>
-        <input type="checkbox" data-name="CanVote" id="input2" />
-        <span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
-      </td>
-    </tr>
-  }
-  <tr class="topLine">
-    <td>
-      <label for="ddlIneligible">Select correct eligiblity status:</label>
-    </td>
-    <td>
-      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
-      <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
-    </td>
-  </tr>
   <tr>
     <td>
       First Name
@@ -117,6 +85,39 @@
         </td>
     </tr>
   *@
+  <tr class="topLine">
+    <td>
+      <label for="ddlIneligible">Select correct eligiblity status:</label>
+    </td>
+    <td>
+      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
+      <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
+    </td>
+  </tr>
+  <tr id="trCanVote" class="topLine overrides">
+    <td colspan="2">
+      <label for="input2">Can vote in this election?</label>
+      @*<input type="checkbox" readonly data-name="CanVote" id="input2" />*@
+      <select data-name="CanVote" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(e.g. name **)</span>
+      @*<span class="ui-icon ui-icon-info" id="qTipCnVote"></span>*@
+    </td>
+  </tr>
+  <tr id="trCanReceiveVotes" class="topLine overrides">
+    <td colspan ="2">
+      <label for="input1">Can be voted for in this election?</label>
+      @*<input type="checkbox" readonly id="input1" data-name="CanReceiveVotes" />*@
+      <select data-name="CanReceiveVotes" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(e.g. <span class="CannotReceiveVotesSample">name</span>)</span>
+      @*<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>*@
+    </td>
+  </tr>
   <tr>
     <td></td>
     <td>

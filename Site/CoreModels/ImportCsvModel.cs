@@ -259,6 +259,7 @@ namespace TallyJ.CoreModels
 
       var currentPeople = new PersonCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
+      var reason = new ElectionModel().GetDefaultIneligibleReason();
 
       var rowsProcessed = 0;
       var rowsSkipped = 0;
@@ -330,7 +331,7 @@ namespace TallyJ.CoreModels
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
-          personModel.ResetInvolvementFlags(person);
+          personModel.SetInvolvementFlagsToDefault(person, reason);
 
           Db.Person.Add(person);
 

@@ -23,6 +23,7 @@
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
+    $('#btnResetList').click(resetAllCanVote);
     //debugger;
     $("input[type=date]").datepicker({
       //dateFormat: 'd MMM yy'
@@ -44,8 +45,8 @@
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
     site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Unit Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
-    site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" delegates. This is dicated by the type of election.' });
-    site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election.' });
+    site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
+    site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
     site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
     site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'If checked, a "Called In" button is shown on the front desk to record phoned in votes.' });
@@ -55,7 +56,10 @@
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
     site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
     site.qTips.push({ selector: '#qTipWhyMask', title: 'Masking Voting Methods', text: 'If only one or two people have used a voting method, it may be desired to mask the voting method.' });
-    //site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'If the election type is changed so that these selections are changed after people\'s names have been imported or entered, click this to update everyone. If "named individuals" have not been marked, there is no harm in clicking this.' });
+    site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'Everyone is updated automatically if the election type is changed. Can click to update everyone at any other time. After reseting apply special eligibility as needed. (Be sure to Save changes before using Reset.)' });
+    site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
+    site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
+    site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
   };
@@ -88,6 +92,15 @@
       return;
     }
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
+  };
+
+  var resetAllCanVote = function() {
+    
+    ShowStatusDisplay("Updating...");
+    CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
+      ResetStatusDisplay();
+    });
+
   };
 
   var deleteTeller = function (ev) {
@@ -247,6 +260,19 @@
     else {
       $("#modeB").removeAttr("disabled");
     }
+
+    var classes = [];
+    if (type == 'NSA') {
+      classes.push('NoteN');
+    }
+    if (mode == 'B') {
+      classes.push('NoteB');
+    }
+    if (mode == 'T') {
+      classes.push('NoteT');
+    }
+    $('#VariationNotice').removeClass().addClass(classes.join(' ')).toggle(classes.length != 0);
+
     var combined = type + '.' + mode;
     var cachedRule = cachedRules[combined];
     if (cachedRule) {
@@ -283,7 +309,11 @@
         input.prop('disabled', lockedAfterBallots);
       }
     });
-    $('#qTipLocked').toggle(lockedAfterBallots);
+    if (lockedAfterBallots) {
+      $('#qTipLocked').css({ display: 'inline-block' });
+    } else {
+      $('#qTipLocked').hide();
+    }
 
     cachedRules[combined] = info;
   }

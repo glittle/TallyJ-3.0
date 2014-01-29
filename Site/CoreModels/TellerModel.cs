@@ -18,8 +18,7 @@ namespace TallyJ.CoreModels
     {
       var model = new ElectionModel();
 
-      var desiredElection = new ElectionCacher().PublicElections.SingleOrDefault(e => e.C_RowId == electionId
-                                                              && e.ElectionPasscode == secretCode);
+      var desiredElection = new ElectionCacher().PublicElections.SingleOrDefault(e => e.C_RowId == electionId);
 
       if (desiredElection == null)
       {
@@ -28,13 +27,20 @@ namespace TallyJ.CoreModels
                    Error = "Sorry, unable to join that election"
                  }.AsJsonResult();
       }
+      if (desiredElection.ElectionPasscode != secretCode)
+      {
+        return new
+                 {
+                   Error = "Sorry, invalid code entered"
+                 }.AsJsonResult();
+      }
 
-      var fakeUserName = HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
-
-      FormsAuthentication.SetAuthCookie(fakeUserName, false);
-      UserSession.ProcessLogin();
-
-      UserSession.IsGuestTeller = true;
+      if (!UserSession.IsLoggedIn)
+      {
+        var fakeUserName = HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
+        FormsAuthentication.SetAuthCookie(fakeUserName, true);
+        UserSession.IsGuestTeller = true;
+      }
 
       model.JoinIntoElection(desiredElection.ElectionGuid);
 
@@ -52,17 +58,17 @@ namespace TallyJ.CoreModels
       var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
-//      if (currentComputer == null)
-//      {
-//        var computerModel = new ComputerModel();
-//        computerModel.AddCurrentComputerIntoCurrentElection();
-//
-//        currentComputer = UserSession.CurrentComputer;
-//      }
-//      else
-//      {
-//        Db.Computer.Attach(currentComputer);
-//      }
+      //      if (currentComputer == null)
+      //      {
+      //        var computerModel = new ComputerModel();
+      //        computerModel.AddCurrentComputerIntoCurrentElection();
+      //
+      //        currentComputer = UserSession.CurrentComputer;
+      //      }
+      //      else
+      //      {
+      //        Db.Computer.Attach(currentComputer);
+      //      }
 
       if (tellerId == 0)
       {
@@ -80,7 +86,7 @@ namespace TallyJ.CoreModels
 
         computerCacher.UpdateItemAndSaveCache(currentComputer);
 
-        return new {Saved = true};
+        return new { Saved = true };
       }
 
       Teller teller;
@@ -101,6 +107,8 @@ namespace TallyJ.CoreModels
             UsingComputerCode = UserSession.CurrentComputerCode,
           };
           Db.Teller.Add(teller);
+          Db.SaveChanges();
+          tellerCacher.UpdateItemAndSaveCache(teller);
         }
       }
       else
@@ -111,7 +119,6 @@ namespace TallyJ.CoreModels
         {
           return new { Saved = false };
         }
-        Db.Teller.Attach(teller);
       }
 
       switch (num)
@@ -123,13 +130,10 @@ namespace TallyJ.CoreModels
           currentComputer.Teller2 = teller.Name;
           break;
       }
-
       Db.SaveChanges();
+      computerCacher.UpdateItemAndSaveCache(currentComputer);
 
       UserSession.SetCurrentTeller(num, teller.Name);
-
-      tellerCacher.UpdateItemAndSaveCache(teller);
-      computerCacher.UpdateItemAndSaveCache(currentComputer);
 
       return new
       {
@@ -140,17 +144,17 @@ namespace TallyJ.CoreModels
 
     }
 
-//    public static string GetTellerNames(Guid? tellerGuid1, Guid? tellerGuid2)
-//    {
-//      var tellers = new TellerCacher().AllForThisElection;
-//
-//      var tellersOnThisComputer = new List<Teller>
-//      {
-//        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid1),
-//        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid2)
-//      };
-//      return tellersOnThisComputer.Select(t => t == null ? "" : t.Name).JoinedAsString(", ", true);
-//    }
+    //    public static string GetTellerNames(Guid? tellerGuid1, Guid? tellerGuid2)
+    //    {
+    //      var tellers = new TellerCacher().AllForThisElection;
+    //
+    //      var tellersOnThisComputer = new List<Teller>
+    //      {
+    //        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid1),
+    //        tellers.FirstOrDefault(t => t.TellerGuid == tellerGuid2)
+    //      };
+    //      return tellersOnThisComputer.Select(t => t == null ? "" : t.Name).JoinedAsString(", ", true);
+    //    }
 
     public static string GetTellerNames(string teller1, string teller2)
     {

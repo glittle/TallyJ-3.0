@@ -160,12 +160,12 @@ namespace TallyJ.CoreModels
 
       var computer = UserSession.CurrentComputer;
 
-      if (DateTime.Now - computer.LastContact > new TimeSpan(0, 0, 30))
-      {
-        computer.LastContact = DateTime.Now;
+      //if (DateTime.Now - computer.LastContact > new TimeSpan(0, 3, 0))
+      //      {
+      computer.LastContact = DateTime.Now;
 
-        new ComputerCacher().UpdateItemAndSaveCache(computer);
-      }
+      new ComputerCacher().UpdateItemAndSaveCache(computer);
+      //      }
     }
 
     public bool ProcessPulse()

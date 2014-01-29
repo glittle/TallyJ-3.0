@@ -278,7 +278,7 @@ namespace TallyJ.CoreModels.ExportImport
       var person = new Person();
       personXml.CopyAttributeValuesTo(person);
 
-      _peopleModel.ResetInvolvementFlags(person);
+      //_peopleModel.ResetInvolvementFlags(person); -- don't change what was saved
       person.UpdateCombinedSoundCodes();
 
       // reset Guid to a new guid

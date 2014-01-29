@@ -833,7 +833,7 @@
         if (reasonList.length == 1) {
           reason = reasonList[0].Desc;
         }
-        //this.Display = '<span class=InvalidName>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
+        //this.Display = '<span class=CannotReceiveVotes>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
         this.Display = this.name;
         this.invalid = vote.ineligible;
         this.invalidType = 'P';

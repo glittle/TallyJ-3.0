@@ -93,7 +93,9 @@ namespace TallyJ.CoreModels.ExportImport
       {
         i.Value,
         i.DisplayText,
-        i.Description
+        i.Description,
+        i.CanVote,
+        i.CanReceiveVotes
       }).ToList();
     }
 

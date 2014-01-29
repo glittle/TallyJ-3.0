@@ -23,7 +23,7 @@ namespace TallyJ.EF
       {
         return ListForPublic.AsBoolean()
                && ElectionPasscode.HasContent()
-               && DateTime.Now - ListedForPublicAsOf <= 15.minutes();
+               && DateTime.Now - ListedForPublicAsOf <= 5.minutes();
       }
     }
 

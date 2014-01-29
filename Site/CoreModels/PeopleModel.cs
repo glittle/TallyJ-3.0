@@ -67,12 +67,12 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public IEnumerable<Person> PeopleInElectionFiltered(bool onlyIfCanVote = false, bool includeIneligible = true)
+    public List<Person> PeopleWhoCanVote() //, bool includeIneligible = true
     {
       {
         return PeopleInElection
-            .Where(p => !onlyIfCanVote || ((!p.CanVote.HasValue || p.CanVote.Value) && p.IneligibleReasonGuid == null))
-            .Where(p => includeIneligible || p.IneligibleReasonGuid == null);
+          .Where(p => p.CanVote.HasValue && p.CanVote.Value)
+          .ToList();
       }
     }
 
@@ -80,14 +80,20 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///     Process each person record, preparing it BEFORE the election starts. Altered... too dangerous to wipe information!
     /// </summary>
-    public void ResetInvolvementFlags()
+    public void SetInvolvementFlagsToDefault()
     {
-      foreach (var person in PeopleInElection)
+      var peopleInElection = new PersonCacher().AllForThisElection;
+      var reason = new ElectionModel().GetDefaultIneligibleReason();
+
+      foreach (var person in peopleInElection)
       {
         Db.Person.Attach(person);
-        ResetInvolvementFlags(person);
+        SetInvolvementFlagsToDefault(person, reason);
       }
+
       Db.SaveChanges();
+
+      new PersonCacher().ReplaceEntireCache(peopleInElection);
     }
 
     //public void ResetAllInfo(Person person)
@@ -122,17 +128,33 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///     Set person's flag based on what is default for this election
     /// </summary>
-    /// <param name="person"> </param>
-    public void ResetInvolvementFlags(Person person)
+    public void SetInvolvementFlagsToDefault(Person person, IneligibleReasonEnum reason)
     {
       //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
       //person.IneligibleReasonGuid = canVote ? null : IneligibleReasonEnum.Ineligible_Not_Adult;
 
-      var whoCanVote = CurrentElection.CanVote;
-      var whoCanReceiveVotes = CurrentElection.CanReceive;
+//      if (person.IneligibleReasonGuid.HasValue)
+//      {
+//        var reason1 = IneligibleReasonEnum.Get(person.IneligibleReasonGuid.Value);
+//
+//        person.CanVote = reason1.CanVote;
+//        person.CanReceiveVotes = reason1.CanReceiveVotes;
+//        return;
+//      }
 
-      person.CanVote = whoCanVote == ElectionModel.CanVoteOrReceive.All;
-      person.CanReceiveVotes = whoCanReceiveVotes == ElectionModel.CanVoteOrReceive.All;
+//      var reason = new ElectionModel().GetDefaultIneligibleReason();
+      if (reason != null)
+      {
+        person.IneligibleReasonGuid = reason;
+        person.CanVote = reason.CanVote;
+        person.CanReceiveVotes = reason.CanReceiveVotes;
+      }
+      else
+      {
+        person.IneligibleReasonGuid = null;
+        person.CanVote = true;
+        person.CanReceiveVotes = true;
+      }
     }
 
     public JsonResult DetailsFor(int personId)
@@ -179,7 +201,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult SavePerson(Person personFromInput)
     {
-      var personInDatastore = PeopleInElectionFiltered().SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
+      var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
       var changed = false;
 
       if (personInDatastore == null)
@@ -192,13 +214,15 @@ namespace TallyJ.CoreModels
           }.AsJsonResult();
         }
 
+        // create new
         personInDatastore = new Person
         {
           PersonGuid = Guid.NewGuid(),
           ElectionGuid = CurrentElectionGuid
         };
 
-        ResetInvolvementFlags(personInDatastore);
+        var reason = new ElectionModel().GetDefaultIneligibleReason();
+        SetInvolvementFlagsToDefault(personInDatastore, reason);
         Db.Person.Add(personInDatastore);
 
         PeopleInElection.Add(personInDatastore);
@@ -270,13 +294,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Everyone</Summary>
     public IEnumerable<object> FrontDeskPersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
-      return FrontDeskPersonLines(PeopleForFrontDesk());
-    }
-
-    /// <Summary>People to tbe listed on Front Desk page. Called more than once, so separated out</Summary>
-    public List<Person> PeopleForFrontDesk()
-    {
-      return _peopleforFrontDesk ?? (_peopleforFrontDesk = PeopleInElectionFiltered(true).ToList());
+      return FrontDeskPersonLines(PeopleWhoCanVote());
     }
 
     public IEnumerable<object> OldEnvelopes()
@@ -284,7 +302,7 @@ namespace TallyJ.CoreModels
       var timeOffset = UserSession.TimeOffsetServerAhead;
       var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
 
-      var ballotSources = PeopleInElectionFiltered() // start with everyone
+      var ballotSources = PeopleInElection // start with everyone
           .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson)
                     || (string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1!=null || p.Teller2!=null)))
           .ToList()
@@ -314,7 +332,7 @@ namespace TallyJ.CoreModels
                                            .Single();
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
-      var ballotSources = PeopleInElectionFiltered() // start with everyone
+      var ballotSources = PeopleInElection // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
           .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
           .ToList()

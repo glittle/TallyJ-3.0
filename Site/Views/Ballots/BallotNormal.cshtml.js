@@ -19,6 +19,7 @@
     votes: [],
     votesList: null,
     tabList: null,
+    ballotCountAtLastLoad: 0,
     invalidReasonsHtml: null,
     invalidReasonsShortHtml: null,
     rowSelected: 0,
@@ -270,14 +271,14 @@
       var vote = votes[0];
       vote.pid = person.C_RowId;
       vote.name = person.C_FullName;
-      vote.ineligible = person.IneligibleReasonGuid;
+      vote.ineligible = person.CanReceiveVotes ? null : person.IneligibleReasonGuid;
     } else {
       vote = {
         vid: 0,
         pid: person.C_RowId,
         name: person.C_FullName,
         count: 0,
-        ineligible: person.IneligibleReasonGuid
+        ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
       };
       local.votes.push(vote);
     }
@@ -518,23 +519,24 @@
           break;
       }
     });
-    showBallotCount(location.BallotsEntered);
+    showBallotCount(0, location.BallotsEntered);
   };
 
-  var showBallotCount = function (numEntered) {
-    var remainingToEnter = (local.location.BallotsCollected || 0) - (numEntered || 0);
+  var showBallotCount = function (numEnteredOnThisComputer, numEnteredInLocation) {
+    $('#lblNumEntered').text(numEnteredOnThisComputer || local.ballotCountAtLastLoad || '-');
+
+    var remainingToEnter = (local.location.BallotsCollected || 0) - (numEnteredInLocation || 0);
     var html, title;
     if (remainingToEnter == 0) {
       title = ': All entered';
     } else if (remainingToEnter < 0) {
-      title = ': {0} too many entered'.filledWith(0 - remainingToEnter);
+      title = ': {0} more than counted'.filledWith(0 - remainingToEnter);
     }
     else {
       title = ': {0} more to enter'.filledWith(remainingToEnter);
     }
 
     $('#collectedVsEnteredTitle').text(title);
-    $('#lblNumEntered').text(numEntered || 0);
   };
 
   var showBallots = function (info) {
@@ -543,7 +545,10 @@
     $('#ballotList')
         .html(local.ballotListTemplate.filledWithEach(list));
 
-    showBallotCount(list.length);
+    showBallotCount(list.length, info.Total);
+    local.ballotCountAtLastLoad = list.length;
+
+    $('#showingWhat').text($('#ballotFilter').val() || 'All');
 
     local.lastBallotRowVersion = info.Last;
   };
@@ -769,10 +774,15 @@
         local.rowSelected = info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
-        var ineligible = $(item).data('ineligible');
-        if (ineligible) {
+        var li = $(item);
+        var ineligible = li.data('ineligible');
+        if (!li.data('canreceivevotes')) {
           var desc = getIneligibleReasonDesc(ineligible);
           item.title = 'Ineligible: ' + desc;
+        } else {
+          if (ineligible) {
+            li.data('ineligible', null);
+          }
         }
       });
     }
@@ -901,7 +911,7 @@
         if (reasonList.length == 1) {
           reason = reasonList[0].Desc;
         }
-        //this.Display = '<span class=InvalidName>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
+        //this.Display = '<span class=CannotReceiveVotes>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
         this.Display = this.name;
         this.invalid = vote.ineligible;
         this.invalidType = 'P';

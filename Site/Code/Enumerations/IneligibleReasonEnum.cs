@@ -9,7 +9,9 @@ namespace TallyJ.Code.Enumerations
   {
     public static class GroupName
     {
-      public static readonly string Ineligible = "Ineligible";
+      public static readonly string Ineligible = "Ineligible to Participate";
+      public static readonly string IneligiblePartial1 = "Can Vote but not be Voted For";
+      public static readonly string IneligiblePartial2 = "Cannot Vote but can be Voted For";
       public static readonly string Unidentifiable = "Unidentifiable";
       public static readonly string Unreadable = "Unreadable";
     }
@@ -18,12 +20,17 @@ namespace TallyJ.Code.Enumerations
     public static readonly IneligibleReasonEnum Ineligible_Moved_elsewhere_recently = new IneligibleReasonEnum("CF27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Moved elsewhere recently");
     public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Non-Bahá'í");
     public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("CC27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Under 21 years old");
-    public static readonly IneligibleReasonEnum Ineligible_On_Institution_already = new IneligibleReasonEnum("C05EAE49-B01B-E111-A7FB-002269C41D11", GroupName.Ineligible,"On Institution already");
-    public static readonly IneligibleReasonEnum Ineligible_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"On other Institution");
     public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Other");
     public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Resides elsewhere");
-    public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Rights removed");
-    public static readonly IneligibleReasonEnum Ineligible_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.Ineligible, "Not tied in this tie-break");
+    public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Rights removed (entirely)");
+
+    public static readonly IneligibleReasonEnum IneligiblePartial1_On_Institution_already = new IneligibleReasonEnum("C05EAE49-B01B-E111-A7FB-002269C41D11", GroupName.IneligiblePartial1, "On Institution already", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.IneligiblePartial1, "On other Institution (eg. Counselor)", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_Rights_removed = new IneligibleReasonEnum("920A1A55-C4A5-42E5-9BCE-31756B6A20B9", GroupName.IneligiblePartial1, "Rights removed (partial)", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.IneligiblePartial1, "Not tied in this tie-break", true);
+
+    public static readonly IneligibleReasonEnum IneligiblePartial2_Not_a_Delegate = new IneligibleReasonEnum("4B2B0F32-4E14-43A4-9103-C5E9C81E8783", GroupName.IneligiblePartial2, "Not a delegate in this election", false, true);
+    public static readonly IneligibleReasonEnum IneligiblePartial2_Rights_removed = new IneligibleReasonEnum("84FA30C9-F007-44E8-B097-CCA430AAA3AA", GroupName.IneligiblePartial2, "Rights removed (partial)", false, true);
 
     public static readonly IneligibleReasonEnum Unidentifiable_Could_refer_to_more_than_one_person = new IneligibleReasonEnum("D927534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Could refer to more than one person");
     public static readonly IneligibleReasonEnum Unidentifiable_Multiple_people_with_identical_name = new IneligibleReasonEnum("D727534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable,"Multiple people with identical name");
@@ -40,13 +47,18 @@ namespace TallyJ.Code.Enumerations
       Add(Ineligible_Moved_elsewhere_recently);
       Add(Ineligible_Resides_elsewhere);
       Add(Ineligible_Not_Adult);
-      Add(Ineligible_On_other_Institution);
-      Add(Ineligible_On_Institution_already);
       Add(Ineligible_Rights_removed);
       Add(Ineligible_Non_Bahai);
       Add(Ineligible_Deceased);
-      Add(Ineligible_Not_in_TieBreak);
       Add(Ineligible_Other);
+
+      Add(IneligiblePartial1_On_other_Institution);
+      Add(IneligiblePartial1_On_Institution_already);
+      Add(IneligiblePartial1_Not_in_TieBreak);
+      Add(IneligiblePartial1_Rights_removed);
+
+      Add(IneligiblePartial2_Not_a_Delegate);
+      Add(IneligiblePartial2_Rights_removed);
 
       Add(Unidentifiable_Unknown_person);
       Add(Unidentifiable_Could_refer_to_more_than_one_person);
@@ -68,16 +80,20 @@ namespace TallyJ.Code.Enumerations
     }
 
     public string Description { get; private set; }
+    public bool CanReceiveVotes { get; private set; }
+    public bool CanVote { get; private set; }
     public int IndexNum { get; private set; }
 
-    public IneligibleReasonEnum(string guid, string group, string description) : this(Guid.Parse(guid), group, description)
+    public IneligibleReasonEnum(string guid, string group, string description, bool canVote = false, bool canReceiveVotes = false) : this(Guid.Parse(guid), group, description, canVote, canReceiveVotes)
     {
     }
 
-    public IneligibleReasonEnum(Guid key, string group, string description)
+    public IneligibleReasonEnum(Guid key, string group, string description, bool canVote = false, bool canReceiveVotes = false)
       : base(key, group)
     {
       Description = description;
+      CanVote = canVote;
+      CanReceiveVotes = canReceiveVotes;
     }
 
     /// <Summary>Group of reasons</Summary>
@@ -85,6 +101,17 @@ namespace TallyJ.Code.Enumerations
     {
       get { return DisplayText; }
     }
+
+    /// <summary>
+    /// Get the reason matching this guid. If null or not matched, returns null.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public static IneligibleReasonEnum Get(Guid? guid)
+    {
+      return guid.HasValue ? BaseItems.SingleOrDefault(i => i.Value == guid.Value) : null;
+    }
+
 
     public static string DescriptionFor(Guid key)
     {
@@ -97,6 +124,20 @@ namespace TallyJ.Code.Enumerations
       get { return BaseItems; }
     }
 
+    public static string InvalidReasonsJsonString()
+    {
+      return Items
+        .Select(r => new
+        {
+          Guid = r.Value,
+          r.Group,
+          Desc = r.Description,
+          r.CanVote,
+          r.CanReceiveVotes
+        }).SerializedAsJsonString();
+    }
+
+
     public static HtmlString ForHtmlSelect(Guid selected)
     {
       return
@@ -106,7 +147,6 @@ namespace TallyJ.Code.Enumerations
           .JoinedAsString()
           .AsRawHtml();
     }
-
 
     public static implicit operator Guid(IneligibleReasonEnum self)
     {

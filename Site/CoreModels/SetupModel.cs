@@ -81,17 +81,19 @@ namespace TallyJ.CoreModels
       get { return new BallotCacher().AllForThisElection.Any(); }
     }
 
-    public string InvalidReasonsJsonString()
-    {
-      return IneligibleReasonEnum.Items
-        .Select(r => new
-          {
-            Guid = r.Value,
-            r.Group,
-            Desc = r.Description
-          }).SerializedAsJsonString();
-    }
-
+    //    public string InvalidReasonsJsonString()
+    //    {
+    //      return IneligibleReasonEnum.Items
+    //        .Select(r => new
+    //          {
+    //            Guid = r.Value,
+    //            r.Group,
+    //            Desc = r.Description,
+    //            r.CanVote,
+    //            r.CanReceiveVotes
+    //          }).SerializedAsJsonString();
+    //    }
+    //
     //public HtmlString IneligibleReasonsForSelect()
     //{
     //  var reasons = IneligibleReasonEnum.Items.ToList();

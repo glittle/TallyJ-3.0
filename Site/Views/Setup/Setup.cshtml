@@ -81,6 +81,12 @@
           <option value="B" id="modeB">By-election</option>
         *@
       </select>
+      <span id="VariationNotice">
+        Special Notes:
+        <span class="ui-icon ui-icon-info" id="qTipNoteN"></span>
+        <span class="ui-icon ui-icon-info" id="qTipNoteT"></span>
+        <span class="ui-icon ui-icon-info" id="qTipNoteB"></span>
+      </span>
     </td>
   </tr>
   <tr class="electionDetail">
@@ -119,8 +125,7 @@
         <option value="A">Everyone on the list</option>
         <option value="N">Named individuals</option>
       </select>
-      @*<button type="button" id="btnResetList">
-        Update Records</button><span class="ui-icon ui-icon-info" id="qTipReset"></span>*@
+      <button type="button" id="btnResetList" class="btn btn-mini">Reset All People<span class="ui-icon ui-icon-info" id="qTipReset"></span></button>
     </td>
   </tr>
   <tr>
@@ -152,7 +157,7 @@
   </tr>
   <tr>
     <th>
-      
+
     </th>
     <td>
       <span class="accessCode">Access Code</span><span class="ui-icon ui-icon-info" id="qTipAccess"></span><input type="text" data-name="ElectionPasscode" maxlength="50" />

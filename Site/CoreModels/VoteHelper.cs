@@ -28,24 +28,30 @@ namespace TallyJ.CoreModels
     {
       _forBallot = forBallot;
       _everyoneCanReceiveVotes = everyoneCanReceiveVotes;
-      _notInTieBreakGuid = IneligibleReasonEnum.Ineligible_Not_in_TieBreak.Value;
+      _notInTieBreakGuid = IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak.Value;
       _notInTieBreakGuidNullable = _notInTieBreakGuid.AsNullableGuid();
     }
 
-    /// <Summary>Extend the Ineligible reason to include whether they can receive votes</Summary>
-    public Guid? IneligibleToReceiveVotes(Guid? ineligible, bool? thisPersonCanReceiveVotes)
-    {
-      return IneligibleToReceiveVotes(ineligible.GetValueOrDefault(), thisPersonCanReceiveVotes.AsBoolean()).AsNullableGuid();
-    }
+//    /// <Summary>Extend the Ineligible reason to include whether they can receive votes</Summary>
+//    public Guid? IneligibleToReceiveVotes(Guid? ineligible, bool? thisPersonCanReceiveVotes, bool forBallot)
+//    {
+//      return IneligibleToReceiveVotes(ineligible.GetValueOrDefault(), thisPersonCanReceiveVotes.AsBoolean(), forBallot).AsNullableGuid();
+//    }
 
-    /// <Summary>Extend the Ineligible reason to include whether they can receive votes</Summary>
-    public Guid IneligibleToReceiveVotes(Guid ineligible, bool thisPersonCanReceiveVotes)
-    {
-      if (ineligible != Guid.Empty)
-      {
-        return ineligible;
-      }
-      return (_everyoneCanReceiveVotes || !_forBallot || thisPersonCanReceiveVotes ? Guid.Empty : _notInTieBreakGuid);
-    }
+//    /// <Summary>Extend the Ineligible reason to include whether they can receive votes</Summary>
+//    public Guid IneligibleToReceiveVotes(Guid ineligible, bool thisPersonCanReceiveVotes)
+//    {
+//      var reason = IneligibleReasonEnum.Get(ineligible);
+//      if (reason == null)
+//      {
+//        return 
+//      }
+//      if (ineligible != Guid.Empty)
+//      {
+//        return ineligible;
+//      }
+//      //TODO review for CanReceiveVotes
+//      return (_everyoneCanReceiveVotes || !_forBallot || thisPersonCanReceiveVotes ? Guid.Empty : _notInTieBreakGuid);
+//    }
   }
 }

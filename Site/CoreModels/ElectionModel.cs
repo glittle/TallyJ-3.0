@@ -193,6 +193,31 @@ namespace TallyJ.CoreModels
       return rules;
     }
 
+    /// <summary>
+    /// Based on the 2 flags, get a default reason (may be null)
+    /// </summary>
+    /// <returns></returns>
+    public IneligibleReasonEnum GetDefaultIneligibleReason()
+    {
+      var canVote = UserSession.CurrentElection.CanVote == ElectionModel.CanVoteOrReceive.All;
+      var canReceiveVotes = UserSession.CurrentElection.CanReceive == ElectionModel.CanVoteOrReceive.All;
+    
+      if (canVote && canReceiveVotes)
+      {
+        return null;
+      }
+      if (!canVote && !canReceiveVotes)
+      {
+        return IneligibleReasonEnum.Ineligible_Other;
+      }
+      if (!canVote)
+      {
+        return IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+      }
+      return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
+    }
+
+
     //    public Election GetFreshFromDb(Guid electionGuid)
     //    {
     //      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
@@ -251,10 +276,7 @@ namespace TallyJ.CoreModels
         )
       {
         // reset flags
-        new PeopleModel().ResetInvolvementFlags();
-        Db.SaveChanges();
-
-        new PersonCacher().DropThisCache();
+        new PeopleModel().SetInvolvementFlagsToDefault();
 
         // update analysis
         new ResultsModel().GenerateResults();
@@ -270,7 +292,6 @@ namespace TallyJ.CoreModels
         displayName
       }.AsJsonResult();
     }
-
 
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
@@ -376,6 +397,8 @@ namespace TallyJ.CoreModels
       // create an election for this ID
       // create a default Location
       // assign all of these to this person and computer
+
+      UserSession.ResetWhenSwitchingElections();
 
       var election = new Election
       {
@@ -627,7 +650,7 @@ namespace TallyJ.CoreModels
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection.ListForPublicNow;
+      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicNow;
     }
   }
 }
