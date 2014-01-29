@@ -1,8 +1,9 @@
 ﻿@model SetupModel
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @{
   ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(Model.InvalidReasonsJsonString()));
+  ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
   ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <input type="hidden" data-name="C_RowId" />
@@ -101,7 +102,8 @@
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-      @*<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>*@
+      <span class="sample">(e.g. name **)</span>
+      @*<span class="ui-icon ui-icon-info" id="qTipCnVote"></span>*@
     </td>
   </tr>
   <tr id="trCanReceiveVotes" class="topLine overrides">
@@ -112,6 +114,7 @@
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
+      <span class="sample">(e.g. <span class="CannotReceiveVotesSample">name</span>)</span>
       @*<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>*@
     </td>
   </tr>

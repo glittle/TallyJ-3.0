@@ -2,10 +2,6 @@
 var site = {
   onload: [],
   languageCode: 'EN',
-  computerCode: '',
-  computerName: '',
-  teller1: '',
-  teller2: '',
   templates: {},
   computerActive: true,
   context: '', // controller/action

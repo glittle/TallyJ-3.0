@@ -102,9 +102,14 @@ namespace TallyJ.Code.Enumerations
       get { return DisplayText; }
     }
 
-    public static IneligibleReasonEnum Get(Guid guid)
+    /// <summary>
+    /// Get the reason matching this guid. If null or not matched, returns null.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    public static IneligibleReasonEnum Get(Guid? guid)
     {
-      return BaseItems.SingleOrDefault(i => i.Value == guid) ?? Ineligible_Other;
+      return guid.HasValue ? BaseItems.SingleOrDefault(i => i.Value == guid.Value) : null;
     }
 
 
@@ -118,6 +123,20 @@ namespace TallyJ.Code.Enumerations
     {
       get { return BaseItems; }
     }
+
+    public static string InvalidReasonsJsonString()
+    {
+      return Items
+        .Select(r => new
+        {
+          Guid = r.Value,
+          r.Group,
+          Desc = r.Description,
+          r.CanVote,
+          r.CanReceiveVotes
+        }).SerializedAsJsonString();
+    }
+
 
     public static HtmlString ForHtmlSelect(Guid selected)
     {

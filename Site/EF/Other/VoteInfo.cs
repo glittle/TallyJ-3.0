@@ -31,12 +31,13 @@ namespace TallyJ.EF
       if (person != null)
       {
         AssertAtRuntime.That(person.PersonGuid == vote.PersonGuid);
+        var personCanReceiveVotes = person.CanReceiveVotes.AsBoolean(true);
 
         PersonId = person.C_RowId;
         PersonFullNameFL = person.FullNameAndArea;
         PersonCombinedInfo = person.CombinedInfo;
-        PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
-        PersonCanReceiveVotes = election.ElectionMode != ElectionModeEnum.Tie || person.CanReceiveVotes.AsBoolean();
+        PersonIneligibleReasonGuid = personCanReceiveVotes ? null : person.IneligibleReasonGuid;
+        PersonCanReceiveVotes = personCanReceiveVotes;
         PersonGuid = person.PersonGuid;
       }
     }

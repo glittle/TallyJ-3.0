@@ -207,7 +207,8 @@ namespace TallyJ.CoreModels
           name = vi.PersonFullNameFL,
           changed = !Equals(vi.PersonCombinedInfo, vi.PersonCombinedInfoInVote),
           invalid = vi.VoteIneligibleReasonGuid,
-          ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)
+          ineligible = vi.PersonIneligibleReasonGuid,
+          //ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)
         });
     }
 
@@ -304,8 +305,9 @@ namespace TallyJ.CoreModels
         {
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
-            person.CanReceiveVotes);
+          vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+//          VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
+//            person.CanReceiveVotes);
         }
         vote.InvalidReasonGuid = invalidReasonGuid;
         Db.Vote.Add(vote);
@@ -417,45 +419,45 @@ namespace TallyJ.CoreModels
       return sum;
     }
 
-    public string InvalidReasonsByIdJsonString()
-    {
-      return IneligibleReasonEnum.Items
-        .Select(r => new
-        {
-          Id = r.IndexNum,
-          r.Group,
-          Desc = r.Description,
-          r.CanVote,
-          r.CanReceiveVotes
-        })
-        .SerializedAsJsonString();
+//    public string InvalidReasonsByIdJsonString()
+//    {
+//      return IneligibleReasonEnum.Items
+//        .Select(r => new
+//        {
+//          Id = r.IndexNum,
+//          r.Group,
+//          Desc = r.Description,
+//          r.CanVote,
+//          r.CanReceiveVotes
+//        })
+//        .SerializedAsJsonString();
+//
+//      //return Db.Reasons
+//      //  //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
+//      //  .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
+//      //  .ThenBy(r => r.SortOrder)
+//      //  .Select(r => new
+//      //                 {
+//      //                   Id = r.C_RowId,
+//      //                   Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
+//      //                   Desc = r.ReasonDescription
+//      //                 })
+//      //  .SerializedAsJsonString();
+//    }
 
-      //return Db.Reasons
-      //  //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
-      //  .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
-      //  .ThenBy(r => r.SortOrder)
-      //  .Select(r => new
-      //                 {
-      //                   Id = r.C_RowId,
-      //                   Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
-      //                   Desc = r.ReasonDescription
-      //                 })
-      //  .SerializedAsJsonString();
-    }
-
-    public string InvalidReasonsByGuidJsonString()
-    {
-      return IneligibleReasonEnum.Items
-        .Select(r => new
-        {
-          Guid = r.Value,
-          r.Group,
-          Desc = r.Description,
-          r.CanVote,
-          r.CanReceiveVotes
-        })
-        .SerializedAsJsonString();
-    }
+//    public string InvalidReasonsByGuidJsonString()
+//    {
+//      return IneligibleReasonEnum.Items
+//        .Select(r => new
+//        {
+//          Guid = r.Value,
+//          r.Group,
+//          Desc = r.Description,
+//          r.CanVote,
+//          r.CanReceiveVotes
+//        })
+//        .SerializedAsJsonString();
+//    }
 
     public object CurrentBallotsInfoList()
     {

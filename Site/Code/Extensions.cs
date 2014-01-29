@@ -132,9 +132,9 @@ namespace TallyJ.Code
     }
 
     /// <Summary>Returns true if this bool? is true</Summary>
-    public static bool AsBoolean(this bool? input)
+    public static bool AsBoolean(this bool? input, bool? defaultValue = null)
     {
-      return input.HasValue && input.Value;
+      return input.HasValue ? input.Value : (defaultValue.HasValue && defaultValue.Value);
     }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
@@ -713,21 +713,24 @@ namespace TallyJ.Code
     /// <param name="input"></param>
     /// <param name="matchType"></param>
     /// <param name="voteHelper"></param>
+    /// <param name="forBallot"></param>
     /// <returns></returns>
-    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType, VoteHelper voteHelper)
+    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType, VoteHelper voteHelper, bool forBallot)
     {
-      return input.Select(p => p.AsSearchResult(matchType, voteHelper));
+      return input.Select(p => p.AsSearchResult(matchType, voteHelper, forBallot));
     }
 
-    public static SearchResult AsSearchResult(this Person p, int matchType, VoteHelper voteHelper)
+    public static SearchResult AsSearchResult(this Person p, int matchType, VoteHelper voteHelper, bool forBallot)
     {
+      var canReceiveVotes = p.CanReceiveVotes.AsBoolean(true);
       return new SearchResult
       {
         Id = p.C_RowId,
         PersonGuid = p.PersonGuid,
         Name = p.FullNameAndArea,
-        CanReceiveVotes = p.CanReceiveVotes,
-        Ineligible = voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes),
+        CanReceiveVotes = canReceiveVotes,
+        CanVote = p.CanVote.AsBoolean(true),
+        Ineligible = forBallot && canReceiveVotes ? null : p.IneligibleReasonGuid, //   voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes, forBallot),
         RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
         BestMatch = 0, // count of votes
         MatchType = matchType

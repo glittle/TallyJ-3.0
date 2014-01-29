@@ -271,14 +271,14 @@
       var vote = votes[0];
       vote.pid = person.C_RowId;
       vote.name = person.C_FullName;
-      vote.ineligible = person.IneligibleReasonGuid;
+      vote.ineligible = person.CanReceiveVotes ? null : person.IneligibleReasonGuid;
     } else {
       vote = {
         vid: 0,
         pid: person.C_RowId,
         name: person.C_FullName,
         count: 0,
-        ineligible: person.IneligibleReasonGuid
+        ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
       };
       local.votes.push(vote);
     }
@@ -774,10 +774,15 @@
         local.rowSelected = info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
-        var ineligible = $(item).data('ineligible');
-        if (ineligible) {
+        var li = $(item);
+        var ineligible = li.data('ineligible');
+        if (!li.data('canreceivevotes')) {
           var desc = getIneligibleReasonDesc(ineligible);
           item.title = 'Ineligible: ' + desc;
+        } else {
+          if (ineligible) {
+            li.data('ineligible', null);
+          }
         }
       });
     }
@@ -906,7 +911,7 @@
         if (reasonList.length == 1) {
           reason = reasonList[0].Desc;
         }
-        //this.Display = '<span class=InvalidName>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
+        //this.Display = '<span class=CannotReceiveVotes>{name}</span>'.filledWith(this); // ' &nbsp; <span class=Ineligible>{0}</span>'.filledWith(reason, this.name);
         this.Display = this.name;
         this.invalid = vote.ineligible;
         this.invalidType = 'P';

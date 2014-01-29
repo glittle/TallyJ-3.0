@@ -1,68 +1,81 @@
-﻿var EditPersonPage = function () {
+﻿var EditPersonPage = function() {
   var local = {
     inputField: null,
     hostPanel: null
   };
 
-  var startNewPerson = function (panel, ineligible) {
-    applyValues(panel, {
-      C_RowId: -1,
-      IneligibleReasonGuid: ineligible,
-      CanVote: ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
-      CanReceiveVotes: ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
-    }, true);
-    startEdit();
-  };
-
-  var changedIneligible = function () {
-    var ineligible = $(this).val();
-    debugger;
+  var startNewPerson = function(panel, ineligible) {
     var reason = $.grep(publicInterface.invalidReasons, function(e) {
       return e.Guid == ineligible;
     });
-    var canVote = reason.length > 0 ? reason[0].CanVote : publicInterface.defaultRules.CanVote == 'A';
-    var canReceiveVotes = reason.length > 0 ? reason[0].CanReceiveVotes : publicInterface.defaultRules.CanReceive == 'A';
+    var personInfo = {
+      C_RowId: -1,
+      CanVote: true,
+      CanReceiveVotes: true
+  };
+    if (reason.length == 1) {
+      personInfo.IneligibleReasonGuid = reason.Guid;
+      personInfo.CanVote = reason.CanVote;
+      personInfo.CanReceiveVotes = reason.CanReceiveVotes;
+    }
+    //    IneligibleReasonGuid: ineligible,
+    //      CanVote: ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
+    //      CanReceiveVotes: ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
+    applyValues(panel, personInfo, true);
+    startEdit();
+  };
+
+  var changedIneligible = function() {
+    var ineligible = $(this).val();
+
+    var reason = $.grep(publicInterface.invalidReasons, function(e) {
+      return e.Guid == ineligible;
+    });
+    var canVote = reason.length > 0 ? reason[0].CanVote : true; // publicInterface.defaultRules.CanVote == 'A';
+    var canReceiveVotes = reason.length > 0 ? reason[0].CanReceiveVotes : true; // publicInterface.defaultRules.CanReceive == 'A';
 
     applyValues(null, {
+      InEligible: reason.Guid,
       CanVote: canVote, //ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
       CanReceiveVotes: canReceiveVotes // ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
     }, false);
   };
 
-  var startEdit = function () {
+  var startEdit = function() {
     local.hostPanel.find('[data-name="FirstName"]').focus();
   };
 
-  var applyValues = function (panel, person, clearAll) {
+  var applyValues = function(panel, person, clearAll) {
     if (panel) {
       local.hostPanel = panel;
-    }
-    else {
+    } else {
       panel = local.hostPanel;
     }
 
-    var setValue = function(input, value)
-    {
+    var setValue = function(input, value) {
       switch (input.attr('type')) {
-        case 'checkbox':
-          input.prop('checked', value);
-          break;
-        default:
-          input.val(value.toString());
-          break;
+      case 'checkbox':
+        input.prop('checked', value);
+        break;
+      default:
+        input.val(value.toString());
+        break;
       }
     };
 
     if (clearAll) {
-      panel.find(':input[data-name]').each(function () {
+      panel.find(':input[data-name]').each(function() {
         var input = $(this);
-        var value = person[input.data('name')] || '';
+        var value = person[input.data('name')];
+        if (!value && value !== false) {
+          value = '';
+        }
         setValue(input, value);
       });
     } else {
       // apply only the properties given
       for (var prop in person) {
-        panel.find(':input[data-name]').each(function () {
+        panel.find(':input[data-name]').each(function() {
           var input = $(this);
           if (input.data('name') == prop) {
             setValue(input, person[prop]);
@@ -86,18 +99,18 @@
     //        panel.find('[data-name="FirstName"]').focus();
   };
 
-  var saveChanges = function () {
+  var saveChanges = function() {
     var form = {};
-    local.hostPanel.find(':input[data-name]').each(function () {
+    local.hostPanel.find(':input[data-name]').each(function() {
       var input = $(this);
       var value;
       switch (input.attr('type')) {
-        case 'checkbox':
-          value = input.prop('checked');
-          break;
-        default:
-          value = input.val();
-          break;
+      case 'checkbox':
+        value = input.prop('checked');
+        break;
+      default:
+        value = input.val();
+        break;
       }
       form[input.data('name')] = value;
     });
@@ -108,7 +121,7 @@
     }
 
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function(info) {
       if (info.Person) {
         applyValues(null, info.Person, true);
         startEdit();
@@ -120,11 +133,11 @@
   };
 
 
-  var preparePage = function () {
+  var preparePage = function() {
     $('#btnSave').click(saveChanges);
     $('#ddlIneligible').html(prepareReasons()).change(changedIneligible);
 
-    site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {
+    site.onbroadcast(site.broadcastCode.startNewPerson, function(ev, data) {
       startNewPerson($(data.panelSelector), data.ineligible);
     });
 
@@ -136,17 +149,19 @@
     site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
     site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows in final reports if elected.' });
     site.qTips.push({
-      selector: '#qTipIneligible', title: 'Ineligible', text: 'Most people are eligible to participate in the election by voting or being voted for.'
-        + '<br><br>However, if this person is ineligible, select the best reason here.'
+      selector: '#qTipIneligible',
+      title: 'Ineligible',
+      text: 'Most people are eligible to participate in the election by voting or being voted for.'
+        + '<br><br>However, if this person is ineligible in some way, select the best reason here.'
     });
-//    site.qTips.push({ selector: '#qTipCanVote', title: 'Can Vote?', text: 'Override eligibility status. Check this box if this person can vote.' });
-//    site.qTips.push({ selector: '#qTipCanReceive', title: 'Tie Break?', text: 'Override eligibility status. Check this box if this person can be voted for.' });
+    //    site.qTips.push({ selector: '#qTipCanVote', title: 'Can Vote?', text: 'Override eligibility status. Check this box if this person can vote.' });
+    //    site.qTips.push({ selector: '#qTipCanReceive', title: 'Tie Break?', text: 'Override eligibility status. Check this box if this person can be voted for.' });
   };
 
-  var prepareReasons = function () {
-    var html = ['<option value="">Eligible to participate</option>'];
+  var prepareReasons = function() {
+    var html = ['<option value="">Eligible to vote and be voted for</option>'];
     var group = '';
-    $.each(publicInterface.invalidReasons, function () {
+    $.each(publicInterface.invalidReasons, function() {
       var reasonGroup = this.Group;
       if (reasonGroup == 'Unreadable') return;
       if (reasonGroup != group) {

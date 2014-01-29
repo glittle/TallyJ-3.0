@@ -9,7 +9,7 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "ballotSinglePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("peopleUrl", "ballotSinglePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("invalids", "ballotSinglePage.invalidReasons={0};".FilledWith(Model.InvalidReasonsByGuidJsonString()));
+  ContextItems.AddJavascriptForPage("invalids", "ballotSinglePage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
   ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("location", "ballotSinglePage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
   ContextItems.AddJavascriptForPage("locationSingle?", "ballotSinglePage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));

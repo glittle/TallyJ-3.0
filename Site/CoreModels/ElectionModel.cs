@@ -193,6 +193,31 @@ namespace TallyJ.CoreModels
       return rules;
     }
 
+    /// <summary>
+    /// Based on the 2 flags, get a default reason (may be null)
+    /// </summary>
+    /// <returns></returns>
+    public IneligibleReasonEnum GetDefaultIneligibleReason()
+    {
+      var canVote = UserSession.CurrentElection.CanVote == ElectionModel.CanVoteOrReceive.All;
+      var canReceiveVotes = UserSession.CurrentElection.CanReceive == ElectionModel.CanVoteOrReceive.All;
+    
+      if (canVote && canReceiveVotes)
+      {
+        return null;
+      }
+      if (!canVote && !canReceiveVotes)
+      {
+        return IneligibleReasonEnum.Ineligible_Other;
+      }
+      if (!canVote)
+      {
+        return IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+      }
+      return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
+    }
+
+
     //    public Election GetFreshFromDb(Guid electionGuid)
     //    {
     //      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);

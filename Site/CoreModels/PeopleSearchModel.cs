@@ -74,13 +74,13 @@ namespace TallyJ.CoreModels
       switch (nameToFind)
       {
         case "~~All~~":
-          results = personList.OrderBy(p => p.FullName).AsSearchResults(0, voteHelper).ToList();
+          results = personList.OrderBy(p => p.FullName).AsSearchResults(0, voteHelper, forBallot).ToList();
           break;
         case "~~Voters~~":
-          results = personList.Where(p => p.CanVote.AsBoolean()).OrderBy(p => p.FullName).AsSearchResults(0, voteHelper).ToList();
+          results = personList.Where(p => p.CanVote.AsBoolean(true)).OrderBy(p => p.FullName).AsSearchResults(0, voteHelper, forBallot).ToList();
           break;
         case "~~Tied~~":
-          results = personList.Where(p => p.CanReceiveVotes.AsBoolean()).OrderBy(p=>p.FullName).AsSearchResults(0, voteHelper).ToList();
+          results = personList.Where(p => p.CanReceiveVotes.AsBoolean(true)).OrderBy(p=>p.FullName).AsSearchResults(0, voteHelper, forBallot).ToList();
           break;
         default:
           results = GetRankedResults(personList, voteList, nameToFind, max, voteHelper, forBallot, out moreFound);
@@ -101,6 +101,8 @@ namespace TallyJ.CoreModels
           {
             r.Id,
             r.Name,
+            r.CanReceiveVotes,
+            r.CanVote,
             r.Ineligible,
             r.BestMatch,
             r.MatchType,
@@ -131,15 +133,15 @@ namespace TallyJ.CoreModels
 
       foreach (var person in people)
       {
-        if (forBallot && person.CanReceiveVotes.HasValue && !person.CanReceiveVotes.Value)
-        {
-          // ignore if can't receive votes
-          continue;
-        }
+//        if (forBallot && person.CanReceiveVotes.HasValue && !person.CanReceiveVotes.Value)
+//        {
+//          // ignore if can't receive votes
+//          continue;
+//        }
         var matchType = DetermineMatch(person, voteList, terms, metas);
         if (matchType > 0)
         {
-          matched.Add(person.AsSearchResult(matchType, voteHelper));
+          matched.Add(person.AsSearchResult(matchType, voteHelper, forBallot));
         }
 
         if (matched.Count > max)

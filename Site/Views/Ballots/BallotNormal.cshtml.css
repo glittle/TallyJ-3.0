@@ -57,9 +57,13 @@
       border-color: #999;
     }
 
-  .nameList .InvalidName {
+  .nameList .CannotReceiveVotes {
     text-decoration: line-through;
   }
+
+  /*.nameList .CannotVote:after {
+    content: ' **';
+  }*/
 
   .nameList .Match2,
   .nameList .Match4 {
@@ -158,9 +162,13 @@ input.ZZsearching {
   visibility: hidden;
 }
 
-.InvalidName {
+.CannotReceiveVotes {
   text-decoration: line-through;
 }
+
+/*.CannotVote:after {
+  content: ' **';
+}*/
 
 span.Vote {
   width: 60px;

@@ -56,7 +56,10 @@
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
     site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
     site.qTips.push({ selector: '#qTipWhyMask', title: 'Masking Voting Methods', text: 'If only one or two people have used a voting method, it may be desired to mask the voting method.' });
-    site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'All are reset automatically if the election type is changed. Can click to reset everyone at any other time.' });
+    site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'Everyone is updated automatically if the election type is changed. Can click to update everyone at any other time. After reseting apply special eligibility as needed. (Be sure to Save changes before using Reset.)' });
+    site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
+    site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
+    site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
   };
@@ -257,6 +260,19 @@
     else {
       $("#modeB").removeAttr("disabled");
     }
+
+    var classes = [];
+    if (type == 'NSA') {
+      classes.push('NoteN');
+    }
+    if (mode == 'B') {
+      classes.push('NoteB');
+    }
+    if (mode == 'T') {
+      classes.push('NoteT');
+    }
+    $('#VariationNotice').removeClass().addClass(classes.join(' ')).toggle(classes.length != 0);
+
     var combined = type + '.' + mode;
     var cachedRule = cachedRules[combined];
     if (cachedRule) {
@@ -293,7 +309,11 @@
         input.prop('disabled', lockedAfterBallots);
       }
     });
-    $('#qTipLocked').toggle(lockedAfterBallots);
+    if (lockedAfterBallots) {
+      $('#qTipLocked').css({ display: 'inline-block' });
+    } else {
+      $('#qTipLocked').hide();
+    }
 
     cachedRules[combined] = info;
   }
