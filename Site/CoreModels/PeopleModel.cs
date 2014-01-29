@@ -133,16 +133,16 @@ namespace TallyJ.CoreModels
       //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
       //person.IneligibleReasonGuid = canVote ? null : IneligibleReasonEnum.Ineligible_Not_Adult;
 
-//      if (person.IneligibleReasonGuid.HasValue)
-//      {
-//        var reason1 = IneligibleReasonEnum.Get(person.IneligibleReasonGuid.Value);
-//
-//        person.CanVote = reason1.CanVote;
-//        person.CanReceiveVotes = reason1.CanReceiveVotes;
-//        return;
-//      }
+      //      if (person.IneligibleReasonGuid.HasValue)
+      //      {
+      //        var reason1 = IneligibleReasonEnum.Get(person.IneligibleReasonGuid.Value);
+      //
+      //        person.CanVote = reason1.CanVote;
+      //        person.CanReceiveVotes = reason1.CanReceiveVotes;
+      //        return;
+      //      }
 
-//      var reason = new ElectionModel().GetDefaultIneligibleReason();
+      //      var reason = new ElectionModel().GetDefaultIneligibleReason();
       if (reason != null)
       {
         person.IneligibleReasonGuid = reason;
@@ -155,6 +155,55 @@ namespace TallyJ.CoreModels
         person.CanVote = true;
         person.CanReceiveVotes = true;
       }
+    }
+
+    /// <summary>
+    /// Ensure the flags match the Guid
+    /// </summary>
+    /// <param name="people"></param>
+    /// <param name="personSaver"></param>
+    public void EnsureFlagsAreRight(List<Person> people, Action<DbAction, Person> personSaver)
+    {
+
+      foreach (var person in people)
+      {
+        var changesMade = false;
+        var canVote = true;
+        var canReceiveVotes = true;
+        var unknownGuid = false;
+
+        if (person.IneligibleReasonGuid.HasValue)
+        {
+          var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+          if (reason == null)
+          {
+            unknownGuid = true;
+          }
+          else
+          {
+            canVote = reason.CanVote;
+            canReceiveVotes = reason.CanReceiveVotes;
+          }
+        }
+        if (canVote != person.CanVote || canReceiveVotes != person.CanReceiveVotes)
+        {
+          personSaver(DbAction.Attach, person);
+          person.CanVote = canVote;
+          person.CanReceiveVotes = canReceiveVotes;
+          changesMade = true;
+        }
+        if (unknownGuid)
+        {
+          personSaver(DbAction.Attach, person);
+          person.IneligibleReasonGuid = null;
+          changesMade = true;
+        }
+        if (changesMade)
+        {
+          personSaver(DbAction.Save, person);
+        }
+      }
+
     }
 
     public JsonResult DetailsFor(int personId)
@@ -304,7 +353,7 @@ namespace TallyJ.CoreModels
 
       var ballotSources = PeopleInElection // start with everyone
           .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson)
-                    || (string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1!=null || p.Teller2!=null)))
+                    || (string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1 != null || p.Teller2 != null)))
           .ToList()
           .OrderBy(p => p.EnvNum)
           .Select(p => new
@@ -578,5 +627,6 @@ namespace TallyJ.CoreModels
 
       return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }
+
   }
 }

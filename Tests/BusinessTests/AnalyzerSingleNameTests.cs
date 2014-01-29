@@ -152,8 +152,10 @@ namespace Tests.BusinessTests
       }
       voteinfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
       voteinfos[4].BallotStatusCode = "TooFew";
-      voteinfos[5].PersonCombinedInfo = "different";
-      voteinfos[6].PersonIneligibleReasonGuid = Guid.NewGuid();
+      voteinfos[5].PersonCombinedInfo = "different"; // these will be invalid
+
+      voteinfos[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
+      voteinfos[6].PersonCanReceiveVotes = IneligibleReasonEnum.Ineligible_Other.CanReceiveVotes;
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, voteinfos, ballots, SamplePeople);
 
@@ -166,8 +168,8 @@ namespace Tests.BusinessTests
 
       var summary = model.ResultSummaryFinal;
       summary.SpoiledBallots.ShouldEqual(0);
-      summary.SpoiledVotes.ShouldEqual(54);
       summary.BallotsNeedingReview.ShouldEqual(1);
+      summary.SpoiledVotes.ShouldEqual(54);
 
       results.Count.ShouldEqual(5);
     }
@@ -220,7 +222,9 @@ namespace Tests.BusinessTests
       voteInfos[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
       voteInfos[4].BallotStatusCode = "TooFew"; // will be reset to Okay
       voteInfos[5].PersonCombinedInfo = "different";
-      voteInfos[6].PersonIneligibleReasonGuid = Guid.NewGuid();
+
+      voteInfos[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
+      voteInfos[6].PersonCanReceiveVotes = IneligibleReasonEnum.Ineligible_Other.CanReceiveVotes;
 
       var model = new ElectionAnalyzerSingleName(_fakes, election, voteInfos, ballots, SamplePeople);
 

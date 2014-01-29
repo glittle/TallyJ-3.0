@@ -32,6 +32,32 @@ namespace TallyJ.CoreModels
       _isInTest = true;
     }
 
+    public void PersonSaver(DbAction action, Person person)
+    {
+      switch (action)
+      {
+        case DbAction.Attach:
+          if (!_isInTest)
+          {
+            if (Db.Person.Local.All(l => l.C_RowId != person.C_RowId))
+            {
+              Db.Person.Attach(person);
+            }
+          }
+          break;
+
+        case DbAction.Save:
+          if (!_isInTest)
+          {
+            new PersonCacher().UpdateItemAndSaveCache(person);
+          }
+          break;
+
+        default:
+          throw new ArgumentOutOfRangeException("action");
+      }
+    }
+
     public void VoteSaver(DbAction action, Vote vote)
     {
       switch (action)

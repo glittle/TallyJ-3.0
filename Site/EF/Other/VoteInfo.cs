@@ -31,6 +31,7 @@ namespace TallyJ.EF
       if (person != null)
       {
         AssertAtRuntime.That(person.PersonGuid == vote.PersonGuid);
+        
         var personCanReceiveVotes = person.CanReceiveVotes.AsBoolean(true);
 
         PersonId = person.C_RowId;
@@ -39,6 +40,10 @@ namespace TallyJ.EF
         PersonIneligibleReasonGuid = personCanReceiveVotes ? null : person.IneligibleReasonGuid;
         PersonCanReceiveVotes = personCanReceiveVotes;
         PersonGuid = person.PersonGuid;
+      }
+      else
+      {
+        PersonCanReceiveVotes = true;
       }
     }
 
