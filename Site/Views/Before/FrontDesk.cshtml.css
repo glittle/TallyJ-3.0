@@ -41,6 +41,13 @@ p
   font-weight: bold;
   color: rgb(135, 98, 135);
 }
+#Main p {
+  margin: 0 0 0 5px;
+  display: inline-block;
+  padding: 0 0 0 0;
+  font-size: 75%;
+  color: #aaa;
+}
 #Main u
 {
     display: none;
@@ -65,14 +72,22 @@ p
 }
 #search {
     position: fixed;
-    top: 2px;
-    left: 2px;
+    top: 4px;
+    right: 4px;
     min-height: 1em;
     min-width: 4em;
-    padding: 3px 2em 3px 4px;
-    background-color: #8dc63e;
+    padding: 3px 2px 3px 9px;
+    background-color: #9ddc45;
     font-weight: bold;
     display: none;
+    font-size: 120%;
+    letter-spacing: 120%;
+}
+#search span {
+  font-size: 80%;
+    letter-spacing: normal;
+  font-weight: normal;
+  padding-left: 30px;
 }
 .NoCallIn div.CalledIn {
     display: none;

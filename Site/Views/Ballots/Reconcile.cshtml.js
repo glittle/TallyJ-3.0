@@ -66,7 +66,7 @@
 
   var changeLocation = function (ddlLocation, highlight) {
     var newLocation = ddlLocation.val();
-    if (newLocation != local.currentLocation) {
+    if (newLocation != local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
         if (highlight) {
