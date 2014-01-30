@@ -458,7 +458,8 @@ namespace TallyJ.CoreModels
                 DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
                 MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
                 CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
-                EnvNum = ShowEnvNum(p)
+                EnvNum = ShowEnvNum(p),
+                p.BahaiId
               });
     }
 

@@ -12,7 +12,7 @@
   var preparePage = function () {
     $('#Main').on('click', '.Btn', voteBtnClicked);
 
-    $(document).keydown(processKey);
+    $('body').keydown(processKey);
 
     connectToFrontDeskHub();
 
@@ -74,20 +74,20 @@
         handleKeyWhileFocused(ev);
       }
     }
+//    LogMessage('main ' + key);
     switch (key) {
       case 27: // esc
         resetSearch();
         ev.preventDefault();
         break;
 
-      case 38: // up
-        local.focusedOnMatches = true;
-        handleKeyWhileFocused(ev);
-        break;
-      case 40: // down
-        local.focusedOnMatches = true;
-        handleKeyWhileFocused(ev);
-        break;
+        // Disable for now.. not quite working
+//      case 13: // enter
+//      case 38: // up
+//      case 40: // down
+//        local.focusedOnMatches = true;
+//        handleKeyWhileFocused(ev);
+//        break;
 
       case 8: //backspace
         local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
@@ -124,6 +124,7 @@
     }
 
     var key = ev.which;
+    LogMessage('focused ' + key);
     var currentId = local.matches[0].id;
     var current = $('#' + currentId);
     var moveNext;
@@ -160,7 +161,7 @@
     }
   };
   var applyFilter = function () {
-    $('#search').fadeIn().text(local.currentSearch);
+    $('#search').fadeIn().html(local.currentSearch + '<span>(Esc to clear)</span>');
     local.matches = $('.Voter[data-name^="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
     focusOnMatches();
   };
