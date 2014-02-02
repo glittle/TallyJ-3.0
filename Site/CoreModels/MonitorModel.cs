@@ -42,12 +42,14 @@ namespace TallyJ.CoreModels
                                   l.Name,
                                   TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
                                   LocationId = l.C_RowId,
-                                  BallotCodes = ballots.Where(b=>b.LocationGuid==l.LocationGuid).GroupBy(b => b.ComputerCode)
+                                  BallotCodes = ballots.Where(b => b.LocationGuid == l.LocationGuid).GroupBy(b => b.ComputerCode)
+                                    .OrderBy(g => g.Key)
                                     .Select(g => new
                                     {
                                       ComputerCode = g.Key,
                                       BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots).ToString(),
                                       Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
+                                         .OrderBy(c => c.ComputerCode)
                                          .Select(c => new
                                          {
                                            Tellers = c.GetTellerNames().DefaultTo("(not set)"),

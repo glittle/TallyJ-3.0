@@ -332,14 +332,32 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogout()
     {
-      if (IsLoggedIn)
-      {
-        new ComputerModel().Logout();
-      }
+      LeaveElection(false);
 
       HttpContext.Current.Session.Clear();
       FormsAuthentication.SignOut();
     }
+
+    /// <summary>
+    /// Leave this election... remove computer record, close election
+    /// </summary>
+    /// <param name="movingToOtherElection"></param>
+    public static void LeaveElection(bool movingToOtherElection)
+    {
+      if (IsLoggedIn)
+      {
+        new ComputerModel().RemoveComputerRecord();
+      }
+      if (IsKnownTeller)
+      {
+        new ElectionModel().CloseElection();
+      }
+      if (movingToOtherElection)
+      {
+        ResetWhenSwitchingElections();
+      }
+    }
+
 
     public static bool IsFeatured(string pageFeatureWhen)
     {

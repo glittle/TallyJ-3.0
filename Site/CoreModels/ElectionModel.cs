@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.Code.Resources;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
@@ -194,14 +192,14 @@ namespace TallyJ.CoreModels
     }
 
     /// <summary>
-    /// Based on the 2 flags, get a default reason (may be null)
+    ///   Based on the 2 flags, get a default reason (may be null)
     /// </summary>
     /// <returns></returns>
     public IneligibleReasonEnum GetDefaultIneligibleReason()
     {
-      var canVote = UserSession.CurrentElection.CanVote == ElectionModel.CanVoteOrReceive.All;
-      var canReceiveVotes = UserSession.CurrentElection.CanReceive == ElectionModel.CanVoteOrReceive.All;
-    
+      var canVote = UserSession.CurrentElection.CanVote == CanVoteOrReceive.All;
+      var canReceiveVotes = UserSession.CurrentElection.CanReceive == CanVoteOrReceive.All;
+
       if (canVote && canReceiveVotes)
       {
         return null;
@@ -307,20 +305,27 @@ namespace TallyJ.CoreModels
         return true;
       }
 
-      // switch this the whole environment to use this election
-      var computer = UserSession.CurrentComputer;
-      if (computer != null)
-      {
-        new ComputerCacher().RemoveItemAndSaveCache(computer);
-      }
-      
-      UserSession.ResetWhenSwitchingElections();
 
+      // switch this the whole environment to use this election
+      UserSession.LeaveElection(true);
+
+      // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
-      var message = UserSession.IsGuestTeller
-        ? "Guest teller joined into Election"
-        : "Teller (" + UserSession.MemberName + ") switched into Election";
+      string message;
+      if (UserSession.IsGuestTeller)
+      {
+        message = "Guest teller joined into Election";
+      }
+      else
+      {
+        message = "Teller (" + UserSession.MemberName + ") switched into Election";
+
+        if (UserSession.CurrentElection.ListForPublicNow)
+        {
+          new PublicHub().ElectionsListUpdated();
+        }
+      }
 
       new LogHelper().Add(message);
 
@@ -440,8 +445,8 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
       new LocationCacher().UpdateItemAndSaveCache(mainLocation);
 
-//      var computerModel = new ComputerModel();
-//      computerModel.CreateComputerForMe();
+      //      var computerModel = new ComputerModel();
+      //      computerModel.CreateComputerForMe();
 
       return new
       {
@@ -469,26 +474,26 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
 
         //new ElectionStatusSharer().SetStateFor(election);
-//        var menuHelper = new MenuHelper(controller.Url);
+        //        var menuHelper = new MenuHelper(controller.Url);
         var info = new
         {
-//          QuickLinks = menuHelper.QuickLinks(),
-//          Name = UserSession.CurrentElectionStatusName,
+          //          QuickLinks = menuHelper.QuickLinks(),
+          //          Name = UserSession.CurrentElectionStatusName,
           StateName = UserSession.CurrentElectionStatus,
         };
-//
-//        // should always be true... but usage could change in future
-//        var currentIsKnown = UserSession.IsKnownTeller;
-//        UserSession.IsKnownTeller = false;
-////        menuHelper = new MenuHelper(controller.Url);
-//        var infoForGuest = new
-//        {
-////          QuickLinks = menuHelper.QuickLinks(),
-////          QuickSelector = menuHelper.StateSelectorItems().ToString(),
-////          Name = UserSession.CurrentElectionStatusName,
-//          State = UserSession.CurrentElectionStatus,
-//        };
-//        UserSession.IsKnownTeller = currentIsKnown;
+        //
+        //        // should always be true... but usage could change in future
+        //        var currentIsKnown = UserSession.IsKnownTeller;
+        //        UserSession.IsKnownTeller = false;
+        ////        menuHelper = new MenuHelper(controller.Url);
+        //        var infoForGuest = new
+        //        {
+        ////          QuickLinks = menuHelper.QuickLinks(),
+        ////          QuickSelector = menuHelper.StateSelectorItems().ToString(),
+        ////          Name = UserSession.CurrentElectionStatusName,
+        //          State = UserSession.CurrentElectionStatus,
+        //        };
+        //        UserSession.IsKnownTeller = currentIsKnown;
 
         new MainHub().StatusChanged(info, info);
       }
@@ -543,7 +548,7 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
       }
 
-      return new { Saved = true }.AsJsonResult();
+      return new {Saved = true}.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
@@ -557,7 +562,7 @@ namespace TallyJ.CoreModels
 
         election.ListForPublic = listOnPage;
 
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?) DateTime.Now : null;
 
         Db.SaveChanges();
 
@@ -565,14 +570,40 @@ namespace TallyJ.CoreModels
 
         new PublicHub().ElectionsListUpdated();
 
-        return new { Saved = true }.AsJsonResult();
+        return new {Saved = true}.AsJsonResult();
       }
 
-      return new { Saved = false }.AsJsonResult();
+      return new {Saved = false}.AsJsonResult();
     }
 
-    /// <Summary>Do any processing for the election</Summary>
-    /// <returns> True if the status changed </returns>
+
+    public bool GuestsAllowed()
+    {
+      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicNow;
+    }
+
+    /// <summary>
+    /// Closes the election, logging out all guests. 
+    /// If another known teller is still logged in, they will need to access the server to open the election again.
+    /// </summary>
+    public void CloseElection()
+    {
+      var election = UserSession.CurrentElection;
+
+      if (election != null && election.ListedForPublicAsOf.HasValue)
+      {
+        Db.Election.Attach(election);
+
+        election.ListedForPublicAsOf = null;
+
+        Db.SaveChanges();
+
+        new ElectionCacher().UpdateItemAndSaveCache(election);
+        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+        new MainHub().DisconnectGuests();
+      }
+    }
+
     //    public bool ProcessPulse()
     //    {
     //      if (!UserSession.CurrentElectionGuid.HasContent())
@@ -595,9 +626,10 @@ namespace TallyJ.CoreModels
     //      //      return someoneElseChangedTheStatus;
     //      return true;
     //    }
-
+    /// <Summary>Do any processing for the election</Summary>
+    /// <returns> True if the status changed </returns>
     /// <summary>
-    /// Should be called whenever the known teller has contacted us
+    ///   Should be called whenever the known teller has contacted us
     /// </summary>
     //    public static void UpdateListedForPublicTime()
     //    {
@@ -627,30 +659,17 @@ namespace TallyJ.CoreModels
     //      electionCacher.UpdateItemAndSaveCache(election);
     //    }
 
-    #region Nested type: CanVoteOrReceive
-
     public static class CanVoteOrReceive
     {
       public const string All = "A";
       public const string NamedPeople = "N";
     }
 
-    #endregion
-
-    #region Nested type: ElectionMode
-
     public static class ElectionMode
     {
       public const string Normal = "N";
       public const string TieBreak = "T";
       public const string ByElection = "B";
-    }
-
-    #endregion
-
-    public bool GuestsAllowed()
-    {
-      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicNow;
     }
   }
 }

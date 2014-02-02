@@ -94,9 +94,10 @@ var connectToElectionHub = function () {
   var closing = false;
   hub.client.electionClosed = function () {
     LogMessage('signalR: electionClosed');
-    var msg = 'This election is no longer available. You are being logged out now.';
-    ShowStatusFailed(msg);
+    var msg = 'This election has been closed. Thanks for your help!';
+    //ShowStatusFailed(msg);
     if (closing) return;
+    logoffSignalR();
     location.href = site.rootUrl + 'Account/Logoff';
     closing = true;
     alert(msg);
@@ -158,6 +159,11 @@ var activateHub = function (hub, callBack) {
     ShowStatusFailed(error.toString());
   });
 };
+
+function logoffSignalR() {
+  LogMessage('closing signalr');
+  $.connection.hub.stop();
+}
 
 function PrepareQTips(doNow) {
   if (!doNow) {
@@ -228,6 +234,10 @@ function AttachHandlers() {
       site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
   }).on('mouseenter', HoverQuickLink);
+
+  $('body').on('click', 'a[href="/Account/Logoff"]', function () {
+    logoffSignalR();
+  });
 }
 
 function updateElectionStatus(ev, info) {

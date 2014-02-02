@@ -32,6 +32,7 @@ namespace TallyJ.EF
       if (!currentElection.ListForPublicNow)
       {
         new MainHub().DisconnectGuests();
+        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
       }
 
     }
