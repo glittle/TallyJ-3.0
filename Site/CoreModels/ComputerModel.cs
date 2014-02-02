@@ -185,7 +185,7 @@ namespace TallyJ.CoreModels
       return true;
     }
 
-    public void Logout()
+    public void RemoveComputerRecord()
     {
       var computer = UserSession.CurrentComputer;
       if (computer != null)

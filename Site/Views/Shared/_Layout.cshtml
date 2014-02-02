@@ -26,32 +26,33 @@
   @RenderPage("Headers.cshtml")
 </head>
 <body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") Auth@(UserSession.AuthLevel)">
+
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
         <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
-          if (Request.IsAuthenticated)
-          {
-            <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
-              @*<span>Dashboard</span>*@
-            </a>
-          }
-          else
-          {
-            @Html.ActionLink(" ", "Index", "Public", null, new
+            if (Request.IsAuthenticated)
             {
-              Class = "site-title",
-              alt = "TallyJ - Bahá’í Election Tool"
-            })
-          }
+          <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
+            @*<span>Dashboard</span>*@
+          </a>
+            }
+            else
+            {
+          @Html.ActionLink(" ", "Index", "Public", null, new
+              {
+                Class = "site-title",
+                alt = "TallyJ - Bahá’í Election Tool"
+              })
+            }
         }
         <div class="Version">
           @RenderPage("Version.cshtml")
         </div>
       </div>
       @if (ScreenMode == "Normal")
-      {
+        {
         <div class="beta1">
           @*<div class="betaImg">
             </div>*@
@@ -62,16 +63,16 @@
              href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
              target="gdoc">Status and Feedback</a> document for current updates!
         </div>
-      }
+        }
       @if (Request.IsAuthenticated)
-      {
+        {
         <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           @Html.Partial("MasterMenu")
         </div>
         <div class="float-left TopInfo">
           <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
           @if (UserSession.CurrentElection != null)
-          {
+            {
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
@@ -84,71 +85,78 @@
             <div class="QuickLinks2">
               <span id="qmenuTitle">@UserSession.CurrentElectionStatusName</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
             </div>
-          }
-          else
-          {
+            }
+            else
+            {
             <div class="Spacer"></div>
-          }
+            }
         </div>
-      }
-      @if (ScreenMode != "Full")
-      {
-        if (ScreenMode == "Mini")
-        {
-          @*<ul class="sf-menu">
-                @currentMenu.InsertMenu()
-            </ul>*@
         }
-      }
+      @if (ScreenMode != "Full")
+        {
+          if (ScreenMode == "Mini")
+          {
+        @*<ul class="sf-menu">
+              @currentMenu.InsertMenu()
+          </ul>*@
+          }
+        }
     </div>
   </header>
   <div id="body">
     @RenderSection("featured", false)
-    <section class="content-wrapper main-content clear-fix">
-      <div class="CompCode">@UserSession.CurrentComputerCode</div>
-      @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
-      @{
-        var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-        var showTellerSelector = currentMenu.ShowTellerSelector;
-      }
-      @if (showLocationSelector || showTellerSelector)
-      {
-        <div class="CurrentInfo">
-          @if (showLocationSelector)
-          {
-            <label for="ddlTopLocation">
-              Location:
-            </label>
-            <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
-              @ContextItems.LocationModel.GetLocationOptions()
-            </select>
-            <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
-            @*<label>
-                Computer:</label>
-              <select disabled>
-                <option>@UserSession.CurrentComputerCode</option>
-              </select>*@
-          }
-          @if (showTellerSelector)
-          {
-            <label for="ddlTopTeller1">
-              Teller at keyboard:
-            </label>
-            <select id="ddlTopTeller1" class="TopTeller input-medium">
-              @tellerHelper.GetTellerOptions(1).AsRawHtml()
-            </select>
-            <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
-            <label for="ddlTopTeller2">
-              Assisting:
-            </label>
-            <select id="ddlTopTeller2" class="TopTeller input-medium">
-              @tellerHelper.GetTellerOptions(2).AsRawHtml()
-            </select>
-          }
-        </div>
-      }
-      @RenderBody()
-    </section>
+    @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
+    {
+      <div style="margin: 50px auto; padding: 50px; color: red">Sorry, older versions of Internet Explorer are not supported!  Please use Chrome or Firefox.</div>
+    }
+    else
+    {
+      <section class="content-wrapper main-content clear-fix">
+        <div class="CompCode">@UserSession.CurrentComputerCode</div>
+        @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
+        @{
+      var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+      var showTellerSelector = currentMenu.ShowTellerSelector;
+        }
+        @if (showLocationSelector || showTellerSelector)
+        {
+          <div class="CurrentInfo">
+            @if (showLocationSelector)
+            {
+              <label for="ddlTopLocation">
+                Location:
+              </label>
+              <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
+                @ContextItems.LocationModel.GetLocationOptions()
+              </select>
+              <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
+              @*<label>
+                  Computer:</label>
+                <select disabled>
+                  <option>@UserSession.CurrentComputerCode</option>
+                </select>*@
+            }
+            @if (showTellerSelector)
+            {
+              <label for="ddlTopTeller1">
+                Teller at keyboard:
+              </label>
+              <select id="ddlTopTeller1" class="TopTeller input-medium">
+                @tellerHelper.GetTellerOptions(1).AsRawHtml()
+              </select>
+              <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
+              <label for="ddlTopTeller2">
+                Assisting:
+              </label>
+              <select id="ddlTopTeller2" class="TopTeller input-medium">
+                @tellerHelper.GetTellerOptions(2).AsRawHtml()
+              </select>
+            }
+          </div>
+        }
+        @RenderBody()
+      </section>
+    }
   </div>
   <footer>
     <div class="content-wrapper">
