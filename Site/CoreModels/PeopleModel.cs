@@ -346,10 +346,24 @@ namespace TallyJ.CoreModels
       return FrontDeskPersonLines(PeopleWhoCanVote());
     }
 
+
+    private string LocationName(Guid? location)
+    {
+      if (!location.HasValue)
+      {
+        return "";
+      }
+      var matched = Locations.FirstOrDefault(l => l.LocationGuid == location.Value);
+      if (matched == null)
+      {
+        return "?";
+      }
+      return matched.Name;
+    }
+
     public IEnumerable<object> OldEnvelopes()
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
-      var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
 
       var ballotSources = PeopleInElection // start with everyone
           .Where(p => p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson)
@@ -360,7 +374,7 @@ namespace TallyJ.CoreModels
               {
                 PersonId = p.C_RowId,
                 C_FullName = p.FullName,
-                VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+                VotedAt = LocationName(p.VotingLocationGuid),
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
                 p.EnvNum,
@@ -373,7 +387,6 @@ namespace TallyJ.CoreModels
 
     public IEnumerable<object> BallotSources(int forLocationId = -1)
     {
-      var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
       var forLocationGuid = forLocationId == -1
                                 ? Guid.Empty
                                 : Locations.Where(l => l.C_RowId == forLocationId)
@@ -391,7 +404,7 @@ namespace TallyJ.CoreModels
               {
                 PersonId = p.C_RowId,
                 C_FullName = p.FullName,
-                VotedAt = p.VotingLocationGuid.HasValue ? locations[p.VotingLocationGuid.Value] : "",
+                VotedAt = LocationName(p.VotingLocationGuid),
                 When = ShowRegistrationTime(timeOffset, p),
                 p.VotingMethod,
                 EnvNum = ShowEnvNum(p),
@@ -431,8 +444,7 @@ namespace TallyJ.CoreModels
     public IEnumerable<object> FrontDeskPersonLines(List<Person> people,
                                                     FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
-      var locations = Locations.ToDictionary(l => l.LocationGuid, l => l.Name);
-      var showLocations = locations.Count > 1;
+      var showLocations = Locations.Count() > 1;
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
       return people
@@ -448,9 +460,7 @@ namespace TallyJ.CoreModels
                 p.Area,
                 VotedAt = new[]
                             {
-                                showLocations && p.VotingLocationGuid.HasValue
-                                    ? locations[p.VotingLocationGuid.Value]
-                                    : "",
+                                showLocations ? LocationName(p.VotingLocationGuid) : "",
                                 ShowTellers(p),
                                 ShowRegistrationTime(timeOffset, p)
                             }.JoinedAsString("; ", true),

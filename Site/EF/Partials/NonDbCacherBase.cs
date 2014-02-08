@@ -9,6 +9,7 @@ namespace TallyJ.EF
 {
   public abstract class NonDbCacherBase
   {
+    protected readonly object LockNonDbCacheBaseObject = new object();
     /// <summary>
     ///   Remove all cached data for this election
     /// </summary>
@@ -18,10 +19,9 @@ namespace TallyJ.EF
     }
   }
 
-  public abstract class NonDbCacherBase<T> where T : class, IIndexedForCaching
+  public abstract class NonDbCacherBase<T> : NonDbCacherBase where T : class, IIndexedForCaching
   {
     private const int CacheMinutes = 180; // 3 hours
-    private readonly object _thisLock = new object();
 
     /// <summary>
     ///   The key for the current election's data
@@ -47,7 +47,7 @@ namespace TallyJ.EF
 
     public T GetById(int rowId)
     {
-      lock (_thisLock)
+      lock (LockNonDbCacheBaseObject)
       {
         return CachedDict.ContainsKey(rowId) ? CachedDict[rowId] : null;
       }
@@ -57,7 +57,7 @@ namespace TallyJ.EF
     {
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
-      lock (_thisLock)
+      lock (LockNonDbCacheBaseObject)
       {
         var list = CachedDict;
 
@@ -69,7 +69,7 @@ namespace TallyJ.EF
 
     public void RemoveItemAndSaveCache(T itemToRemove)
     {
-      lock (_thisLock)
+      lock (LockNonDbCacheBaseObject)
       {
         var list = CachedDict;
 
@@ -83,7 +83,7 @@ namespace TallyJ.EF
 
     public void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove)
     {
-      lock (_thisLock)
+      lock (LockNonDbCacheBaseObject)
       {
         var list = CachedDict;
         var removed = false;

@@ -13,6 +13,8 @@ namespace TallyJ.EF
 {
   public abstract class CacherBase
   {
+    protected static readonly object LockCacheBaseObject = new object();
+
     /// <summary>
     ///   Remove all cached data for this election
     /// </summary>
@@ -26,7 +28,6 @@ namespace TallyJ.EF
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
     private const int CacheMinutes = 180; // 3 hours
-    private readonly object _thisLock = new object();
 
     /// <summary>
     ///   The key for the current election's data
@@ -57,7 +58,7 @@ namespace TallyJ.EF
         CacheKey internalCacheKey;
 
         List<T> allForThisElection;
-        lock (_thisLock)
+        lock (LockCacheBaseObject)
         {
           allForThisElection = MainQuery()
             .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
@@ -110,7 +111,7 @@ namespace TallyJ.EF
     {
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
-      lock (_thisLock)
+      lock (LockCacheBaseObject)
       {
         var list = AllForThisElection;
 
@@ -133,7 +134,7 @@ namespace TallyJ.EF
 
       var ids = itemsToRemove.Select(i => i.C_RowId).ToList();
 
-      lock (_thisLock)
+      lock (LockCacheBaseObject)
       {
         var list = AllForThisElection;
         var oldItems = list.Where(i => ids.Contains(i.C_RowId)).ToList();
@@ -157,7 +158,7 @@ namespace TallyJ.EF
     public void RemoveItemAndSaveCache(T itemToRemove)
     {
       var removed = false;
-      lock (_thisLock)
+      lock (LockCacheBaseObject)
       {
         var list = AllForThisElection;
         var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId).ToList();
