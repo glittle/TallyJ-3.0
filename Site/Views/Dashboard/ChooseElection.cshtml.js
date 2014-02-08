@@ -255,7 +255,7 @@
     var btn = $(this);
     var guid = btn.parents('.Election').data('guid');
 
-    ShowStatusDisplay("Preparing file...", 0, 2 * 60 * 1000);
+    ShowStatusDisplay("Preparing file...", 0, 3000);
 
     //var oldText = btn.text();
 
@@ -352,7 +352,7 @@
     var fudge = -83;
     var time = 800;
 
-    $('html,body').animate({
+    $(document).animate({
       scrollTop: top + fudge
     }, time);
 

@@ -111,7 +111,7 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="ComputerCode" type="xs:string" use="required" />
+                  <xs:attribute name="ComputerCode" type="xs:string" use="optional" />
                   <xs:attribute name="StatusCode" type="xs:string" use="required" />
                   <xs:attribute name="BallotNumAtComputer" type="xs:nonNegativeInteger" use="required" />
                   <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
@@ -121,7 +121,7 @@
               <xs:element minOccurs="0" maxOccurs="unbounded" name="log">
                 <xs:complexType>
                   <xs:attribute name="AsOf" type="xs:string" use="required" />
-                  <xs:attribute name="ComputerCode" type="xs:string" use="required" />
+                  <xs:attribute name="ComputerCode" type="xs:string" use="optional" />
                   <xs:attribute name="Details" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
@@ -159,6 +159,8 @@
         <xs:element maxOccurs="unbounded" name="reason">
           <xs:complexType>
             <xs:attribute name="Value" type="xs:string" use="required" />
+            <xs:attribute name="CanVote" type="xs:boolean" use="required" />
+            <xs:attribute name="CanReceiveVotes" type="xs:boolean" use="required" />
             <xs:attribute name="DisplayText" type="xs:string" use="required" />
             <xs:attribute name="Description" type="xs:string" use="required" />
           </xs:complexType>
