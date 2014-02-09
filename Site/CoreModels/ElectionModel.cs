@@ -285,7 +285,6 @@ namespace TallyJ.CoreModels
       return new
       {
         Status = "Saved",
-        // TODO 2011-11-20 Glen Little: Return entire election?
         Election = election,
         displayName
       }.AsJsonResult();
