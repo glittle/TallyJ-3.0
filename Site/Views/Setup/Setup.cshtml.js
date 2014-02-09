@@ -24,11 +24,13 @@
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
     $('#btnResetList').click(resetAllCanVote);
-    //debugger;
-    $("input[type=date]").datepicker({
-      //dateFormat: 'd MMM yy'
-    });
-    
+
+    if (Modernizr.inputtypes.date) {
+      $('#txtDate').attr('type', 'date');
+    } else {
+      //$("#txtDate").datepicker({});  //datepicker ui is all messed up.. better to not use it :(
+      $('#txtDateTip').show();
+    }
     applyValues(publicInterface.Election);
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
@@ -40,7 +42,7 @@
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
     site.qTips.push({ selector: '#qTipConvenor', title: 'Convenor', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
-    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd'});
+//    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
@@ -94,8 +96,8 @@
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
   };
 
-  var resetAllCanVote = function() {
-    
+  var resetAllCanVote = function () {
+
     ShowStatusDisplay("Updating...");
     CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
       ResetStatusDisplay();
@@ -125,7 +127,7 @@
       text: deleteThis ? '' : input.val()
     };
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function(info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
       if (info.Success) {
         ShowStatusSuccess(info.Status);
       } else {
@@ -201,6 +203,9 @@
           input.prop('checked', value);
           break;
         default:
+          if (input.attr('id') == 'txtDate') {
+            value = ('' + value).parseJsonDateForInput();
+          }
           input.val(value);
           break;
       }

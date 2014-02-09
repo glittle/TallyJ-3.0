@@ -132,3 +132,6 @@ button.Primary {
 option:disabled {
   color: #ddd;
 }
+#txtDateTip {
+  display: none;
+}
