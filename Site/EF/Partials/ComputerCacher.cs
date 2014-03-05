@@ -9,6 +9,15 @@ namespace TallyJ.EF
 {
   public class ComputerCacher : NonDbCacherBase<Computer>
   {
+    private static object _lockObject;
+    protected override object LockNonDbCacheBaseObject
+    {
+      get
+      {
+        return _lockObject ?? (_lockObject = new object());
+      }
+    }
+
     protected override void ItemChanged()
     {
       var currentElection = UserSession.CurrentElection;
@@ -20,21 +29,22 @@ namespace TallyJ.EF
       if (lastContactOfTeller != null && (currentElection.ListedForPublicAsOf == null || lastContactOfTeller > currentElection.ListedForPublicAsOf))
       {
         currentElection.ListedForPublicAsOf = lastContactOfTeller;
+        new ElectionCacher().UpdateItemAndSaveCache(currentElection);
       }
-
-      new ElectionCacher().UpdateItemAndSaveCache(currentElection);
 
       // changed from shown to hidden or back
-      if (currentElection.ListForPublicNow != oldValue)
-      {
-        new PublicHub().ElectionsListUpdated();
-      }
+      bool updateList = currentElection.ListForPublicNow != oldValue;
+
       if (!currentElection.ListForPublicNow)
       {
         new MainHub().DisconnectGuests();
-        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+        updateList = true;
       }
-
+      if (updateList)
+      {
+        new PublicHub().ElectionsListUpdated();
+      }
     }
+
   }
 }

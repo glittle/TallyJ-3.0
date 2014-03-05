@@ -49,9 +49,9 @@ namespace TallyJ.CoreModels
       };
     }
 
-    public bool SortVotes(List<int> ids)
+    public bool SortVotes(List<int> ids, VoteCacher voteCacher)
     {
-      var voteCacher = new VoteCacher();
+      
       var ballotGuid = CurrentRawBallot().BallotGuid;
 
       var allVotes = voteCacher.AllForThisElection;
@@ -225,12 +225,14 @@ namespace TallyJ.CoreModels
 
       Db.Ballot.Attach(ballot);
 
+      var voteCacher = new VoteCacher();
+
       if (voteId != 0)
       {
         // update existing record
 
         // find info about the existing Vote
-        var vote = new VoteCacher().AllForThisElection.SingleOrDefault(v => v.C_RowId == voteId);
+        var vote = voteCacher.AllForThisElection.SingleOrDefault(v => v.C_RowId == voteId);
 
         if (vote == null)
         {
@@ -260,11 +262,11 @@ namespace TallyJ.CoreModels
 
 
 
-        new VoteCacher().UpdateItemAndSaveCache(vote);
+        var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
         var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true);
-        var sum = BallotCount(ballot.LocationGuid, isSingleName);
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
+        var sum = BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
         new BallotCacher().UpdateItemAndSaveCache(ballot);
 
@@ -288,7 +290,7 @@ namespace TallyJ.CoreModels
 
       if (ok)
       {
-        var nextVoteNum = 1 + new VoteCacher().AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid)
+        var nextVoteNum = 1 + voteCacher.AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid)
           .OrderByDescending(v => v.PositionOnBallot)
           .Take(1)
           .Select(b => b.PositionOnBallot)
@@ -306,20 +308,20 @@ namespace TallyJ.CoreModels
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
           vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid;
-//          VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
-//            person.CanReceiveVotes);
+          //          VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
+          //            person.CanReceiveVotes);
         }
         vote.InvalidReasonGuid = invalidReasonGuid;
         Db.Vote.Add(vote);
         Db.SaveChanges();
 
-        new VoteCacher().UpdateItemAndSaveCache(vote);
+        var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
         var ballotAnalyzer = new BallotAnalyzer();
         var rawBallot = CurrentRawBallot();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(rawBallot, VoteInfosFor(rawBallot), true);
+        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(rawBallot, VoteInfosFor(rawBallot, votes), true);
 
-        var sum = BallotCount(ballot.LocationGuid, isSingleName);
+        var sum = BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
         new BallotCacher().UpdateItemAndSaveCache(rawBallot);
 
@@ -347,21 +349,21 @@ namespace TallyJ.CoreModels
         return new { Message = "Not found" }.AsJsonResult();
       }
 
-      new VoteCacher().RemoveItemAndSaveCache(vote);
-
       Db.Vote.Attach(vote);
       Db.Vote.Remove(vote);
       Db.SaveChanges();
 
-      UpdateVotePositions(vote.BallotGuid);
+      var votes = new VoteCacher().RemoveItemAndSaveCache(vote).AllForThisElection;
+
+      UpdateVotePositions(vote.BallotGuid, votes);
 
       var ballotAnalyzer = new BallotAnalyzer();
       var ballot = CurrentRawBallot();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot), false);
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), false);
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
-      var sum = BallotCount(location.LocationGuid, isSingleName);
+      var sum = BallotCount(location.LocationGuid, isSingleName, null, votes);
 
       new BallotCacher().UpdateItemAndSaveCache(ballot);
 
@@ -399,17 +401,20 @@ namespace TallyJ.CoreModels
       return sum;
     }
 
-    public static int BallotCount(Guid locationGuid, bool isSingleName, List<Ballot> ballots = null)
+    public static int BallotCount(Guid locationGuid, bool isSingleName, List<Ballot> ballots = null, List<Vote> votes = null)
     {
       int sum;
       ballots = ballots ?? new BallotCacher().AllForThisElection;
 
       if (isSingleName)
       {
-        var allBallotGuids = ballots.Where(b => b.LocationGuid == locationGuid)
+        var allBallotGuids = ballots
+          .Where(b => b.LocationGuid == locationGuid)
           .Select(b => b.BallotGuid).ToList();
 
-        sum = new VoteCacher().AllForThisElection.Where(v => allBallotGuids.Contains(v.BallotGuid))
+        votes = votes ?? new VoteCacher().AllForThisElection;
+
+        sum = votes.Where(v => allBallotGuids.Contains(v.BallotGuid))
           .Sum(vi => vi.SingleNameElectionCount).AsInt();
       }
       else
@@ -419,45 +424,45 @@ namespace TallyJ.CoreModels
       return sum;
     }
 
-//    public string InvalidReasonsByIdJsonString()
-//    {
-//      return IneligibleReasonEnum.Items
-//        .Select(r => new
-//        {
-//          Id = r.IndexNum,
-//          r.Group,
-//          Desc = r.Description,
-//          r.CanVote,
-//          r.CanReceiveVotes
-//        })
-//        .SerializedAsJsonString();
-//
-//      //return Db.Reasons
-//      //  //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
-//      //  .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
-//      //  .ThenBy(r => r.SortOrder)
-//      //  .Select(r => new
-//      //                 {
-//      //                   Id = r.C_RowId,
-//      //                   Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
-//      //                   Desc = r.ReasonDescription
-//      //                 })
-//      //  .SerializedAsJsonString();
-//    }
+    //    public string InvalidReasonsByIdJsonString()
+    //    {
+    //      return IneligibleReasonEnum.Items
+    //        .Select(r => new
+    //        {
+    //          Id = r.IndexNum,
+    //          r.Group,
+    //          Desc = r.Description,
+    //          r.CanVote,
+    //          r.CanReceiveVotes
+    //        })
+    //        .SerializedAsJsonString();
+    //
+    //      //return Db.Reasons
+    //      //  //.Where(r => r.ReasonGroup != ReasonGroupIneligible)
+    //      //  .OrderByDescending(r => r.ReasonGroup) // put Ineligible at the bottom
+    //      //  .ThenBy(r => r.SortOrder)
+    //      //  .Select(r => new
+    //      //                 {
+    //      //                   Id = r.C_RowId,
+    //      //                   Group = r.ReasonGroup + (r.ReasonGroup == ReasonGroupIneligible ? " (and not in list)" : ""),
+    //      //                   Desc = r.ReasonDescription
+    //      //                 })
+    //      //  .SerializedAsJsonString();
+    //    }
 
-//    public string InvalidReasonsByGuidJsonString()
-//    {
-//      return IneligibleReasonEnum.Items
-//        .Select(r => new
-//        {
-//          Guid = r.Value,
-//          r.Group,
-//          Desc = r.Description,
-//          r.CanVote,
-//          r.CanReceiveVotes
-//        })
-//        .SerializedAsJsonString();
-//    }
+    //    public string InvalidReasonsByGuidJsonString()
+    //    {
+    //      return IneligibleReasonEnum.Items
+    //        .Select(r => new
+    //        {
+    //          Guid = r.Value,
+    //          r.Group,
+    //          Desc = r.Description,
+    //          r.CanVote,
+    //          r.CanReceiveVotes
+    //        })
+    //        .SerializedAsJsonString();
+    //    }
 
     public object CurrentBallotsInfoList()
     {
@@ -505,11 +510,12 @@ namespace TallyJ.CoreModels
         if (refresh)
         {
           Db.Ballot.Attach(ballot);
+          var voteCacher = new VoteCacher(); 
+          var votes = voteCacher.AllForThisElection;
+          var voteInfos = VoteInfosFor(ballot, votes);
 
-          var voteInfos = VoteInfosFor(ballot);
-
-          SortVotes(voteInfos.OrderBy(vi => vi.PositionOnBallot).Select(v => v.VoteId).ToList());
-          voteInfos = VoteInfosFor(ballot);
+          SortVotes(voteInfos.OrderBy(vi => vi.PositionOnBallot).Select(v => v.VoteId).ToList(), voteCacher);
+          voteInfos = VoteInfosFor(ballot, votes);
 
           new BallotAnalyzer().UpdateBallotStatus(ballot, voteInfos, true);
           ballotCacher.UpdateItemAndSaveCache(ballot);
@@ -535,19 +541,19 @@ namespace TallyJ.CoreModels
       return new VoteCacher().AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
     }
 
-    public List<VoteInfo> VoteInfosFor(Ballot ballot)
+    public List<VoteInfo> VoteInfosFor(Ballot ballot, List<Vote> allVotes = null)
     {
       if (ballot == null)
       {
         return new List<VoteInfo>();
       }
 
-      return VoteInfosForBallot(ballot);
+      return VoteInfosForBallot(ballot, allVotes);
     }
 
-    public static List<VoteInfo> VoteInfosForBallot(Ballot ballot)
+    public static List<VoteInfo> VoteInfosForBallot(Ballot ballot, List<Vote> allVotes)
     {
-      return new VoteCacher().AllForThisElection
+      return (allVotes ?? new VoteCacher().AllForThisElection)
                  .Where(v => v.BallotGuid == ballot.BallotGuid)
                  .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, UserSession.CurrentElection, ballot, UserSession.CurrentLocation, g.p))
@@ -566,9 +572,9 @@ namespace TallyJ.CoreModels
       return invalidReasonGuid;
     }
 
-    private void UpdateVotePositions(Guid ballotGuid)
+    private void UpdateVotePositions(Guid ballotGuid, IEnumerable<Vote> allVotes)
     {
-      var votes = new VoteCacher().AllForThisElection
+      var votes = allVotes
         .Where(v => v.BallotGuid == ballotGuid)
         .OrderBy(v => v.PositionOnBallot)
         .ToList();
@@ -604,18 +610,18 @@ namespace TallyJ.CoreModels
       return ballot; //TODO: used to be view
     }
 
-//    public string NewBallotsJsonString(long lastRowVersion)
-//    {
-//      var ballots = new BallotCacher().AllForThisElection
-//        .Where(b => b.RowVersionInt > lastRowVersion)
-//        .ToList();
-//
-//      return ballots.Any()
-//        ? BallotsInfoList(ballots).SerializedAsJsonString()
-//        : "";
-//
-//      //todo...
-//    }
+    //    public string NewBallotsJsonString(long lastRowVersion)
+    //    {
+    //      var ballots = new BallotCacher().AllForThisElection
+    //        .Where(b => b.RowVersionInt > lastRowVersion)
+    //        .ToList();
+    //
+    //      return ballots.Any()
+    //        ? BallotsInfoList(ballots).SerializedAsJsonString()
+    //        : "";
+    //
+    //      //todo...
+    //    }
 
     private object BallotsInfoList(List<Ballot> ballots, int totalCount)
     {

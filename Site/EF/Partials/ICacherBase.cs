@@ -18,13 +18,13 @@ namespace TallyJ.EF
     /// Can be used to Add or Update
     /// </summary>
     /// <param name="replacementItem"></param>
-    void UpdateItemAndSaveCache(T replacementItem);
+    ICacherBase<T> UpdateItemAndSaveCache(T replacementItem);
 
     /// <summary>
     ///   Find the item by matching the _RowId, remove if found
     /// </summary>
     /// <param name="itemToRemove"></param>
-    void RemoveItemAndSaveCache(T itemToRemove);
+    ICacherBase<T> RemoveItemAndSaveCache(T itemToRemove);
 
     void RemoveItemsAndSaveCache(IEnumerable<T> itemsToRemove);
 

@@ -15,7 +15,7 @@
     <AssemblyName>TallyJ</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>4.0</OldToolsVersion>
@@ -994,12 +994,12 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>52951</DevelopmentServerPort>
+          <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:52951/</IISUrl>
+          <IISUrl>http://localhost/TallyJ</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://x.x</CustomServerUrl>
+          <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

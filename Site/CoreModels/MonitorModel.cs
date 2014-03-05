@@ -24,7 +24,7 @@ namespace TallyJ.CoreModels
         var ballots = new BallotCacher().AllForThisElection;
         var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
         var locations = new LocationCacher().AllForThisElection;
-        //var votes = new VoteCacher().AllForThisElection;
+        var votes = new VoteCacher().AllForThisElection;
 
         return
           new
@@ -36,7 +36,7 @@ namespace TallyJ.CoreModels
                 .ThenBy(l => l.C_RowId)
                 .Select(l => new
                                 {
-                                  BallotsAtLocation = BallotModelCore.BallotCount(l.LocationGuid, isSingleName, ballots),
+                                  BallotsAtLocation = BallotModelCore.BallotCount(l.LocationGuid, isSingleName, ballots, votes),
                                   l.BallotsCollected,
                                   l.ContactInfo,
                                   l.Name,
@@ -47,7 +47,7 @@ namespace TallyJ.CoreModels
                                     .Select(g => new
                                     {
                                       ComputerCode = g.Key,
-                                      BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots).ToString(),
+                                      BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
                                       Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
                                          .OrderBy(c => c.ComputerCode)
                                          .Select(c => new

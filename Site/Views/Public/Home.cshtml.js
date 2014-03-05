@@ -17,6 +17,9 @@
     connectToPublicHub();
     
     // refreshElectionList();
+    $('form').on('submit', function() {
+      logoffSignalR();
+    });
   };
 
   var connectToPublicHub = function() {

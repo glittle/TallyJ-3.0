@@ -13,7 +13,7 @@ namespace TallyJ.EF
 {
   public abstract class CacherBase
   {
-    protected static readonly object LockCacheBaseObject = new object();
+    protected abstract object LockCacheBaseObject { get; }
 
     /// <summary>
     ///   Remove all cached data for this election
@@ -107,7 +107,7 @@ namespace TallyJ.EF
     /// Can be used to Add or Update
     /// </summary>
     /// <param name="replacementItem"></param>
-    public void UpdateItemAndSaveCache(T replacementItem)
+    public ICacherBase<T> UpdateItemAndSaveCache(T replacementItem)
     {
       AssertAtRuntime.That(replacementItem.C_RowId != 0, "Can't add if id is 0");
 
@@ -125,6 +125,8 @@ namespace TallyJ.EF
 
         ReplaceEntireCache(list);
       }
+
+      return this;
     }
 
 
@@ -155,7 +157,7 @@ namespace TallyJ.EF
     ///   Find the item by matching the _RowId, remove if found
     /// </summary>
     /// <param name="itemToRemove"></param>
-    public void RemoveItemAndSaveCache(T itemToRemove)
+    public ICacherBase<T> RemoveItemAndSaveCache(T itemToRemove)
     {
       var removed = false;
       lock (LockCacheBaseObject)
@@ -173,6 +175,7 @@ namespace TallyJ.EF
           ReplaceEntireCache(list);
         }
       }
+      return this;
     }
 
     /// <summary>

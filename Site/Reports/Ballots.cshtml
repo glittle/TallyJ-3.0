@@ -7,6 +7,7 @@
   var ballots = new BallotCacher().AllForThisElection;
   var locations = new LocationCacher().AllForThisElection;
   var election = UserSession.CurrentElection;
+  var votes = new VoteCacher().AllForThisElection;
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots
@@ -29,7 +30,7 @@
         LocationId = locId,
         b.StatusCode,
         Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-        Votes = BallotModelCore.VoteInfosForBallot(b)
+        Votes = BallotModelCore.VoteInfosForBallot(b, votes)
           .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
           .Select(v => new
           {

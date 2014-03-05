@@ -140,22 +140,27 @@ var activateHub = function (hub, callBack) {
 
   var tryingToReconnect = false;
   $.connection.hub.connectionSlow(function () {
+    LogMessage('slow');
     ShowStatusFailed('The connection to the server is slow... please wait...');
   });
   $.connection.hub.reconnecting(function () {
+    LogMessage('reconnecting');
     ShowStatusFailed('Attempting to reconnect to the server...');
     tryingToReconnect = true;
   });
   $.connection.hub.reconnected(function () {
+    LogMessage('connected');
     ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
     tryingToReconnect = false;
   });
   $.connection.hub.disconnected(function () {
+    LogMessage('disconnected');
     if (tryingToReconnect) {
       ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
     }
   });
   $.connection.hub.error(function (error) {
+    LogMessage('error');
     ShowStatusFailed(error.toString());
   });
 };

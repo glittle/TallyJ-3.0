@@ -9,8 +9,9 @@ namespace TallyJ.EF
 {
   public abstract class NonDbCacherBase
   {
-    protected readonly object LockNonDbCacheBaseObject = new object();
-    /// <summary>
+    protected abstract object LockNonDbCacheBaseObject { get; }
+
+  /// <summary>
     ///   Remove all cached data for this election
     /// </summary>
     public static void DropAllCachesForThisElection()

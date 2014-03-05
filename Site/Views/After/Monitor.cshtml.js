@@ -203,7 +203,6 @@
       if (!this.TallyStatus) {
         this.TallyStatus = '-';
       }
-      LogMessage(this.BallotCodes.length);
       if (this.BallotCodes.length) {
         var detailRow = '<table class=compList><thead><tr><th>Code</th><th>Ballots</th><th>Current Tellers</th></tr></thead><tbody>{^0}</tbody></table>';
 
@@ -219,7 +218,6 @@
     if (last != null) {
       last.rows = rows + 1;
     }
-    LogMessage(settings.rowTemplateMain);
     html.push(settings.rowTemplateMain.filledWithEach(locations));
 
     return html.join('');

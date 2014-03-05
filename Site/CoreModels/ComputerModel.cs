@@ -11,7 +11,15 @@ namespace TallyJ.CoreModels
 {
   public class ComputerModel : DataConnectedModel
   {
-    private readonly object _thisLock = new object();
+    private static object _computerModelLock;
+
+    private static object ComputerModelLock
+    {
+      get
+      {
+        return _computerModelLock ?? (_computerModelLock = new object());
+      }
+    }
 
     public Computer CreateAndSaveComputerForMe()
     {
@@ -25,7 +33,7 @@ namespace TallyJ.CoreModels
         UserSession.CurrentLocationGuid = locationGuid = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
       }
 
-      lock (_thisLock)
+      lock (ComputerModelLock)
       {
         var allComputers = computerCacher.AllForThisElection;
 

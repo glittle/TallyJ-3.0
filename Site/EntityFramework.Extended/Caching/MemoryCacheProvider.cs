@@ -62,11 +62,11 @@ namespace EntityFramework.Caching
 
             if (cachedResult != null)
             {
-                Debug.WriteLine("Cache Hit : " + key);
+                Debug.WriteLine(DateTime.Now + " Cache Hit : " + key);
                 return cachedResult;
             }
 
-            Debug.WriteLine("Cache Miss: " + key);
+            Debug.WriteLine(DateTime.Now + " Cache Miss: " + key);
 
             // get value and add to cache, not bothered
             // if it succeeds or not just rerturn the value

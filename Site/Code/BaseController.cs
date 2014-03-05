@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Web.Mvc;
 using TallyJ.Code.Data;
 using TallyJ.Code.Session;
@@ -9,23 +10,20 @@ using TallyJ.EF;
 namespace TallyJ.Code
 {
   public abstract class BaseController : Controller
-	{
-		TallyJ2dEntities _db;
+  {
+    TallyJ2dEntities _db;
 
     protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
     {
-      if (UserSession.CurrentElectionGuid != Guid.Empty)
-      {
-        new ComputerModel().RefreshLastContact();
-
-      }
+      new ComputerModel().RefreshLastContact();
+      Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
       return base.BeginExecuteCore(callback, state);
     }
 
     /// <summary>Access to the database</summary>
-		public TallyJ2dEntities Db
-		{
-			get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
-		}
-	}
+    public TallyJ2dEntities Db
+    {
+      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+    }
+  }
 }

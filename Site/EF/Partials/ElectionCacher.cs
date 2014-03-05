@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using EntityFramework;
 using EntityFramework.Caching;
-using EntityFramework.Extensions;
-using TallyJ.Code;
 using TallyJ.Code.Session;
 
 namespace TallyJ.EF
@@ -29,7 +27,7 @@ namespace TallyJ.EF
         var electionKeys = cacheManager.Get(ElectionKeys) as List<CacheKey>;
         if (electionKeys != null)
         {
-          foreach (var key in electionKeys)
+          foreach (var key in electionKeys.ToList())  //ensure we use a copy?
           {
             var cached = cacheManager.Get(key) as List<Election>;
             if (cached != null)
@@ -41,5 +39,15 @@ namespace TallyJ.EF
         return result;
       }
     }
+
+    private static object _lockObject;
+    protected override object LockCacheBaseObject
+    {
+      get
+      {
+        return _lockObject ?? (_lockObject = new object());
+      }
+    }
+
   }
 }
