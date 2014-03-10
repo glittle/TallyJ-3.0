@@ -11,6 +11,7 @@ var site = {
   heartbeatSeconds: 60, // default seconds
   heartbeatTimeout: null,
   timeOffsetKnown: false,
+  hoverQuickLinkTimeout: null,
   firstPulse: null,
   electionGuid: null,
   electionState: null,
@@ -249,15 +250,16 @@ function updateElectionStatus(ev, info) {
   showMenu(info.StateName, true);
 }
 
-function showMenu(state, permanent) {
-  //  LogMessage(state);
+function showMenu(state, permanent, slow) {
   var target = $('#electionState');
   var temp = target.data('temp') || target.data('state');
   if (state != temp) {
-    //    LogMessage('changed from {0} to {1}'.filledWith(temp, state));
+       LogMessage('changed from {0} to {1}'.filledWith(temp, state));
     $('#quickLinks2 span:visible').stop(true).hide();
-    $('#menu' + state).fadeIn('fast');
+    $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
   }
+
+  $('.QuickLinks2').toggleClass('temp', site.electionState != state);
 
   target.data('temp', state);
 
@@ -276,14 +278,29 @@ function showMenu(state, permanent) {
 function HoverQuickLink(ev) {
   var state = $(ev.currentTarget).data('state');
 
+  clearTimeout(site.hoverQuickLinkTimeout);
+
   showMenu(state, false);
 
-  var cancel = function () {
-    $('.TopInfo').off('mouseleave', cancel);
-    showMenu(site.electionState, true);
+  var reentered = function() {
+    LogMessage('reentered');
+    clearTimeout(site.hoverQuickLinkTimeout);
+    $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
+  };
+  var mouseLeavingTopInfo = function () {
+    LogMessage('leaving top');
+    $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
+    $('.TopInfo').on('mouseenter', reentered);
+
+    site.hoverQuickLinkTimeout = setTimeout(function () {
+      LogMessage('revert menu');
+      showMenu(site.electionState, true, true);
+      $('.TopInfo').off('mouseenter', reentered);
+    }, 2000);
   };
 
-  $('.TopInfo').on('mouseleave', cancel);
+  LogMessage('menu shown');
+  $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
 }
 
 function CheckTimeOffset() {

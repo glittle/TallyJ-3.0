@@ -320,7 +320,7 @@ ul#menu {
   padding: 20px 40px 30px 40px;
 }
 
-.featured hgroup.title h1, 
+.featured hgroup.title h1,
 .featured hgroup.title h2,
 .featured hgroup.title h3 {
   color: #7ac0da;
@@ -360,6 +360,7 @@ hgroup.title {
     font-size: @baseFontSize * 1.7;
   }
 }
+
 h1.SeoH1 {
   text-indent: -9990px;
   position: absolute;
@@ -928,7 +929,7 @@ body.AuthKnown .CurrentElectionName {
 }
 
 .QuickLinks2 {
-  color: @tallyJGreen;
+  color: @tallyJBlue;
   margin: 5px 0 5px 0;
 
   a {
@@ -954,6 +955,13 @@ body.AuthKnown .CurrentElectionName {
         background-color: inherit;
       }
     }
+
+  &.temp {
+    #qmenuTitle{
+      background-color: #d2ff92;
+      padding: 1px 3px;
+    }
+  }
 }
 
 .AuthKnown .AllowChangeElectionState.bold {
