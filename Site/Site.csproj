@@ -375,6 +375,8 @@
     </Compile>
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
+    <Compile Include="EF\Partials\CacherHelper.cs" />
+    <Compile Include="EF\Partials\PublicElectionLister.cs" />
     <Compile Include="EF\Partials\ComputerCacher.cs" />
     <Compile Include="EF\Partials\ElectionCacher.cs" />
     <Compile Include="EF\Partials\ICacherBase.cs" />

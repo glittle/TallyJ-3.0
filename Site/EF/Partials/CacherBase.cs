@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFramework;
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using TallyJ.Code.Data;
@@ -13,16 +12,19 @@ namespace TallyJ.EF
 {
   public abstract class CacherBase
   {
+    private Guid _currentElectionGuid;
     protected abstract object LockCacheBaseObject { get; }
 
-    /// <summary>
-    ///   Remove all cached data for this election
-    /// </summary>
-    public static void DropAllCachesForThisElection()
+    public Guid CurrentElectionGuid
     {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
-      CacheManager.Current.Expire(UserSession.CurrentElectionGuid.ToString());
+      get
+      {
+        return _currentElectionGuid != Guid.Empty
+          ? _currentElectionGuid
+          : (_currentElectionGuid = UserSession.CurrentElectionGuid);
+      }
     }
+
   }
 
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
@@ -34,11 +36,16 @@ namespace TallyJ.EF
     /// </summary>
     protected virtual string CacheKeyRaw
     {
-      get { return typeof(T).Name + UserSession.CurrentElectionGuid; }
+      get { return typeof (T).Name + CurrentElectionGuid; }
+    }
+
+    protected TallyJ2dEntities CurrentDb
+    {
+      get { return UnityInstance.Resolve<IDbContextFactory>().DbContext; }
     }
 
     /// <summary>
-    /// Get a single <typeparamref name="T"/> by Id. If not found, returns null
+    ///   Get a single <typeparamref name="T" /> by Id. If not found, returns null
     /// </summary>
     /// <param name="rowId"></param>
     /// <returns></returns>
@@ -62,49 +69,24 @@ namespace TallyJ.EF
         {
           allForThisElection = MainQuery()
             .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
-              new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
+              new[] {CacheKeyRaw, CurrentElectionGuid.ToString()});
         }
 
-        if (typeof(T) == typeof(Election))
-        {
-          RegisterElectionCacheKey(internalCacheKey);
-        }
+        //        if (typeof(T) == typeof(Election))
+        //        {
+        //          new PublicElectionLister().up.RegisterElectionCacheKey(internalCacheKey);
+        //        }
 
         return allForThisElection;
       }
     }
 
-    protected const string ElectionKeys = "ElectionKeys";
+    //    protected const string ElectionKeys = "ElectionKeys";
 
-    private void RegisterElectionCacheKey(CacheKey electionCacheKey)
-    {
-      var cacheManager = CacheManager.Current;
-
-      var cacheDuration = TimeSpan.FromMinutes(CacheMinutes);
-      var list =
-        cacheManager.GetOrAdd(ElectionKeys, new List<CacheKey>(), CachePolicy.WithSlidingExpiration(cacheDuration)) as
-          List<CacheKey>;
-      if (list == null)
-      {
-        return;
-      }
-
-      if (!list.Exists(k => k.Key == electionCacheKey.Key))
-      {
-        list.Add(electionCacheKey);
-      }
-      cacheManager.Set(ElectionKeys, list, CachePolicy.WithSlidingExpiration(cacheDuration));
-    }
-
-
-    protected TallyJ2dEntities CurrentDb
-    {
-      get { return UnityInstance.Resolve<IDbContextFactory>().DbContext; }
-    }
 
     /// <summary>
-    /// Find the item by matching the _RowId (if found), remove it, then replace it with this one. 
-    /// Can be used to Add or Update
+    ///   Find the item by matching the _RowId (if found), remove it, then replace it with this one.
+    ///   Can be used to Add or Update
     /// </summary>
     /// <param name="replacementItem"></param>
     public ICacherBase<T> UpdateItemAndSaveCache(T replacementItem)
@@ -115,10 +97,10 @@ namespace TallyJ.EF
       {
         var list = AllForThisElection;
 
-        var oldItems = list.Where(i => i.C_RowId == replacementItem.C_RowId);
-        foreach (var item in oldItems.ToList())
+        var oldItem = list.FirstOrDefault(i => i.C_RowId == replacementItem.C_RowId);
+        if (oldItem != null)
         {
-          list.Remove(item);
+          list.Remove(oldItem);
         }
 
         list.Add(replacementItem);
@@ -159,19 +141,13 @@ namespace TallyJ.EF
     /// <param name="itemToRemove"></param>
     public ICacherBase<T> RemoveItemAndSaveCache(T itemToRemove)
     {
-      var removed = false;
       lock (LockCacheBaseObject)
       {
         var list = AllForThisElection;
-        var oldItems = list.Where(i => i.C_RowId == itemToRemove.C_RowId).ToList();
-        foreach (var item in oldItems)
+        var oldItem = list.FirstOrDefault(i => i.C_RowId == itemToRemove.C_RowId);
+        if (oldItem != null)
         {
-          list.Remove(item);
-          removed = true;
-        }
-
-        if (removed)
-        {
+          list.Remove(oldItem);
           ReplaceEntireCache(list);
         }
       }
@@ -185,18 +161,13 @@ namespace TallyJ.EF
     public void ReplaceEntireCache(List<T> listFromCache)
     {
       var key = new CacheKey(MainQuery().GetCacheKey(),
-        new[] { CacheKeyRaw, UserSession.CurrentElectionGuid.ToString() });
+        new[] {CacheKeyRaw, CurrentElectionGuid.ToString()});
 
       CacheManager.Current.Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)));
 
       ItemChanged();
     }
 
-    /// <summary>
-    ///   Add this item to the cached list. The cache is updated with the current version of the data.
-    /// </summary>
-    /// <param name="newItem"></param>
-    /// <returns></returns>
     //public T AddItemAndSaveCache(T newItem)
     //{
     //  var list = AllForThisElection;
@@ -208,7 +179,11 @@ namespace TallyJ.EF
     //  ReplaceEntireCache(list);
     //  return newItem;
     //}
-
+    /// <summary>
+    ///   Add this item to the cached list. The cache is updated with the current version of the data.
+    /// </summary>
+    /// <param name="newItem"></param>
+    /// <returns></returns>
     /// <summary>
     ///   Drop the cache of
     ///   <typeparam name="T"></typeparam>
@@ -221,9 +196,11 @@ namespace TallyJ.EF
     }
 
     /// <summary>
-    /// When an item has been added or changed
+    ///   When an item has been added or changed
     /// </summary>
-    protected virtual void ItemChanged() { }
+    protected virtual void ItemChanged()
+    {
+    }
 
     protected abstract IQueryable<T> MainQuery();
   }

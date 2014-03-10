@@ -102,14 +102,5 @@ namespace TallyJ.CoreModels
       return new List<Election>();
     }
 
-    public string VisibleElectionsOptions()
-    {
-      const string template = "<option value=\"{0}\">{1}</option>";
-      var visibleElections = new ElectionCacher().PublicElections;
-      var listing = visibleElections.OrderBy(e => e.Name).Select(x => template.FilledWith(x.C_RowId, x.Name)).JoinedAsString();
-      return listing
-        .DefaultTo(template.FilledWith(0, "(Sorry, no elections are active right now.)"));
-    }
-
   }
 }

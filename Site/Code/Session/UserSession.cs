@@ -178,9 +178,40 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static Guid CurrentLocationGuid
+    {
+      get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
+      set { SessionKey.CurrentLocationGuid.SetInSession(value); }
+    }
+
     public static Location CurrentLocation
     {
-      get { return new LocationCacher().AllForThisElection.FirstOrDefault(l => l.LocationGuid == CurrentLocationGuid); }
+      get
+      {
+        var currentLocationGuid = CurrentLocationGuid;
+        if (currentLocationGuid == Guid.Empty)
+        {
+          return null;
+        }
+
+        var location = HttpContext.Current.Items[ItemKey.CurrentLocation] as Location;
+        if (location != null && location.LocationGuid == currentLocationGuid)
+        {
+          return location;
+        }
+
+        var locations = new LocationCacher().AllForThisElection;
+
+        location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid)
+                   ?? locations.First();
+        if (location.LocationGuid != currentLocationGuid)
+        {
+          CurrentLocationGuid = location.LocationGuid;
+        }
+
+        HttpContext.Current.Items[ItemKey.CurrentLocation] = location;
+        return location;
+      }
     }
 
     public static string CurrentLocationName
@@ -192,21 +223,13 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static Guid CurrentLocationGuid
-    {
-      get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
-      set { SessionKey.CurrentLocationGuid.SetInSession(value); }
-    }
-
     public static string CurrentBallotFilter
     {
       get { return SessionKey.CurrentBallotFilter.FromSession(""); }
       set { SessionKey.CurrentBallotFilter.SetInSession(value); }
     }
 
-    /// <summary>
-    /// </summary>
-//    public static long LastVersionNum
+    //    public static long LastVersionNum
 //    {
 //      get { return SessionKey.LastVersionNum.FromSession(0); }
 //      set { SessionKey.LastVersionNum.SetInSession(value); }
@@ -223,9 +246,10 @@ namespace TallyJ.Code.Session
 //        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
 //      }
 //    }
-
     /// <summary>
-    /// Gets current computer. If there is none, and we are in an election, will create, save, and return a new one.
+    /// </summary>
+    /// <summary>
+    ///   Gets current computer. If there is none, and we are in an election, will create, save, and return a new one.
     /// </summary>
     public static Computer CurrentComputer
     {
@@ -339,7 +363,7 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    /// Leave this election... remove computer record, close election
+    ///   Leave this election... remove computer record, close election
     /// </summary>
     /// <param name="movingToOtherElection"></param>
     public static void LeaveElection(bool movingToOtherElection)
@@ -376,7 +400,7 @@ namespace TallyJ.Code.Session
     public static void ResetWhenSwitchingElections()
     {
       var session = HttpContext.Current.Session;
-      
+
       session.Remove(SessionKey.CurrentBallotFilter);
       session.Remove(SessionKey.CurrentBallotId);
       session.Remove(SessionKey.CurrentComputer);
@@ -384,7 +408,6 @@ namespace TallyJ.Code.Session
       session.Remove(SessionKey.CurrentLocationGuid);
       session.Remove(SessionKey.CurrentTeller + "1");
       session.Remove(SessionKey.CurrentTeller + "2");
-
     }
   }
 }

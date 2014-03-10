@@ -67,7 +67,7 @@ namespace TallyJ.Controllers
     {
       // wipe cached results - this wipes for everyone looking at this election
       
-      CacherBase.DropAllCachesForThisElection();
+      new CacherHelper().DropAllCachesForThisElection();
 
       return "Cache cleared.".AsJsonResult(JsonRequestBehavior.AllowGet);
     }

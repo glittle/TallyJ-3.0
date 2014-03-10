@@ -18,7 +18,7 @@ namespace TallyJ.EF
       get { return NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0; }
     }
 
-    public bool ListForPublicNow {
+    public bool ListForPublicCalculated {
       get
       {
         return ListForPublic.AsBoolean()

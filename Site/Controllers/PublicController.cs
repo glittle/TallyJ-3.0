@@ -8,6 +8,7 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -71,7 +72,7 @@ namespace TallyJ.Controllers
     {
       return new
                {
-                 html = new ElectionsListViewModel().VisibleElectionsOptions()
+                 html = new PublicElectionLister().VisibleElectionsOptions()
                }.AsJsonResult();
     }
 

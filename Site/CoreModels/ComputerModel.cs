@@ -39,15 +39,16 @@ namespace TallyJ.CoreModels
 
         computer = new Computer
         {
-          C_RowId = 1 + (allComputers.Count == 0 ? 0 : allComputers.Max(c => c.C_RowId)),
+          ComputerGuid = Guid.NewGuid(),
           ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
           LocationGuid = locationGuid,
+          ElectionGuid = UserSession.CurrentElectionGuid,
           LastContact = DateTime.Now,
           AuthLevel = UserSession.AuthLevel,
           SessionId = HttpContext.Current.Session.SessionID
         };
 
-        computerCacher.UpdateItemAndSaveCache(computer);
+        computerCacher.AddToCache(computer);
       }
 
       UserSession.CurrentComputer = computer;
@@ -84,12 +85,11 @@ namespace TallyJ.CoreModels
 
       var computer = UserSession.CurrentComputer;
       AssertAtRuntime.That(computer != null, "computer missing");
-      if (computer == null) return false;
+      AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, "can't switch elections");
 
       computer.LocationGuid = location.LocationGuid;
-      computer.LastContact = DateTime.Now;
 
-      new ComputerCacher().UpdateItemAndSaveCache(computer);
+      new ComputerCacher().UpdateComputerLocation(computer);
 
       SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 
@@ -166,30 +166,12 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      var computer = UserSession.CurrentComputer;
-
-      //if (DateTime.Now - computer.LastContact > new TimeSpan(0, 3, 0))
-      //      {
-      computer.LastContact = DateTime.Now;
-
-      new ComputerCacher().UpdateItemAndSaveCache(computer);
-      //      }
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
     }
 
     public bool ProcessPulse()
     {
-      var computer = UserSession.CurrentComputer;
-      if (computer == null)
-      {
-        return false;
-      }
-      // Db.Computer.Attach(computer);
-
-      var lastContact = DateTime.Now;
-      computer.LastContact = lastContact;
-
-      new ComputerCacher().UpdateItemAndSaveCache(computer);
-
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
       return true;
     }
 

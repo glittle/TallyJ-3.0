@@ -17,28 +17,25 @@ namespace TallyJ.EF
     /// <summary>
     /// All elections that are currently cached
     /// </summary>
-    public List<PublicElection> PublicElections
-    {
-      get
-      {
-        var result = new List<PublicElection>();
-
-        var cacheManager = Locator.Current.Resolve<CacheManager>();
-        var electionKeys = cacheManager.Get(ElectionKeys) as List<CacheKey>;
-        if (electionKeys != null)
-        {
-          foreach (var key in electionKeys.ToList())  //ensure we use a copy?
-          {
-            var cached = cacheManager.Get(key) as List<Election>;
-            if (cached != null)
-            {
-              result.AddRange(cached.Where(e => e.ListForPublicNow).Select(e => new PublicElection(e)));
-            }
-          }
-        }
-        return result;
-      }
-    }
+//    public List<PublicElection> PublicElections
+//    {
+//      get
+//      {
+//        var result = new List<PublicElection>();
+//
+//        var cacheManager = Locator.Current.Resolve<CacheManager>();
+//        var electionKeys = new PublicElectionLister().CacheKeysForElectionsToList;
+//        foreach (var key in electionKeys) //ensure we use a copy?
+//        {
+//          var cached = cacheManager.Get(key) as List<Election>;
+//          if (cached != null)
+//          {
+//            result.AddRange(cached.Where(e => e.ListForPublicCalculated).Select(e => new PublicElection(e)));
+//          }
+//        }
+//        return result;
+//      }
+//    }
 
     private static object _lockObject;
     protected override object LockCacheBaseObject
