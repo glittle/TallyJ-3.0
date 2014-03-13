@@ -1,7 +1,7 @@
+/// <reference path="variables.less" />
 //
 // Mixins
 // --------------------------------------------------
-
 
 // UTILITY MIXINS
 // --------------------------------------------------
@@ -585,9 +585,7 @@
   .core (@gridColumnWidth, @gridGutterWidth) {
 
     .spanX (@index) when (@index > 0) {
-      (~".span@{index}") {
-        .span(@index);
-      }
+      //.span{@index} { .span(@index); }
 
       .spanX(@index - 1);
     }
@@ -596,9 +594,7 @@
     }
 
     .offsetX (@index) when (@index > 0) {
-      (~".offset@{index}") {
-        .offset(@index);
-      }
+      //.offset{@index} {         .offset(@index);        }
 
       .offsetX(@index - 1);
     }
@@ -639,9 +635,9 @@
   .fluid (@fluidGridColumnWidth, @fluidGridGutterWidth) {
 
     .spanX (@index) when (@index > 0) {
-      (~".span@{index}") {
+      /*.span{@index} {
         .span(@index);
-      }
+      }*/
 
       .spanX(@index - 1);
     }
@@ -650,13 +646,13 @@
     }
 
     .offsetX (@index) when (@index > 0) {
-      (~'.offset@{index}') {
+      /*.offset{@index} {
         .offset(@index);
-      }
+      }*/
 
-      (~'.offset@{index}:first-child') {
+      /*.offset{@index}:first-child {
         .offsetFirstChild(@index);
-      }
+      }*/
 
       .offsetX(@index - 1);
     }
@@ -706,7 +702,7 @@
   .input(@gridColumnWidth, @gridGutterWidth) {
 
     .spanX (@index) when (@index > 0) {
-      (~"input.span@{index}, textarea.span@{index}, .uneditable-input.span@{index}") {
+      input.span@{index}, textarea.span@{index}, .uneditable-input.span@{index} {
         .span(@index);
       }
 

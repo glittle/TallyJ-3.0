@@ -291,6 +291,15 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
+    public bool JoinIntoElection(int wantedElectionId)
+    {
+      var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid).FirstOrDefault();
+      if (electionGuid == Guid.Empty)
+      {
+        return false;
+      }
+      return JoinIntoElection(electionGuid);
+    }
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
@@ -548,7 +557,7 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
       }
 
-      return new {Saved = true}.AsJsonResult();
+      return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
@@ -561,7 +570,7 @@ namespace TallyJ.CoreModels
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?) DateTime.Now : null;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
 
         Db.SaveChanges();
 
@@ -569,10 +578,10 @@ namespace TallyJ.CoreModels
 
         new PublicHub().ElectionsListUpdated();
 
-        return new {Saved = true}.AsJsonResult();
+        return new { Saved = true }.AsJsonResult();
       }
 
-      return new {Saved = false}.AsJsonResult();
+      return new { Saved = false }.AsJsonResult();
     }
 
     public bool GuestsAllowed()

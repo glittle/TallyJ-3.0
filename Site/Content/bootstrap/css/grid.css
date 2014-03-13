@@ -1,0 +1,9 @@
+﻿[class*="span"].hide,
+.row-fluid [class*="span"].hide {
+  display: none;
+}
+[class*="span"].pull-right,
+.row-fluid [class*="span"].pull-right {
+  float: right;
+}
+/*# sourceMappingURL=grid.css.map */

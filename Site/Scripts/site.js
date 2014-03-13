@@ -254,7 +254,7 @@ function showMenu(state, permanent, slow) {
   var target = $('#electionState');
   var temp = target.data('temp') || target.data('state');
   if (state != temp) {
-       LogMessage('changed from {0} to {1}'.filledWith(temp, state));
+    //       LogMessage('changed from {0} to {1}'.filledWith(temp, state));
     $('#quickLinks2 span:visible').stop(true).hide();
     $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
   }
@@ -282,24 +282,20 @@ function HoverQuickLink(ev) {
 
   showMenu(state, false);
 
-  var reentered = function() {
-    LogMessage('reentered');
+  var reentered = function () {
     clearTimeout(site.hoverQuickLinkTimeout);
     $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
   };
   var mouseLeavingTopInfo = function () {
-    LogMessage('leaving top');
     $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
     $('.TopInfo').on('mouseenter', reentered);
 
     site.hoverQuickLinkTimeout = setTimeout(function () {
-      LogMessage('revert menu');
       showMenu(site.electionState, true, true);
       $('.TopInfo').off('mouseenter', reentered);
     }, 2000);
   };
 
-  LogMessage('menu shown');
   $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
 }
 
@@ -707,7 +703,6 @@ function ShowStatusFailed(msg, keepTime) {
       top.location.href = top.location.href;
       return '';
     } else {
-      LogMessage(msg);
       text = '(' + msg.status + ') ' + msg.statusText + ': ';
       if (msg.responseText) {
         var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);

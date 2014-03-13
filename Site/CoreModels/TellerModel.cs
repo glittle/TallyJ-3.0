@@ -18,16 +18,15 @@ namespace TallyJ.CoreModels
     {
       var model = new ElectionModel();
 
-      var isAvailable = new PublicElectionLister().IsListed(electionId);
-      if (!isAvailable)
+      var electionInfo = new PublicElectionLister().PublicElectionInfo(electionId);
+      if (electionInfo == null)
       {
         return new
                  {
-                   Error = "Sorry, unknown election"
+                   Error = "Sorry, unknown election id"
                  }.AsJsonResult();
       }
-      var desiredElection = new ElectionCacher().GetById(electionId);
-      if (desiredElection.ElectionPasscode != secretCode)
+      if (electionInfo.Passcode != secretCode)
       {
         return new
                  {
@@ -42,7 +41,7 @@ namespace TallyJ.CoreModels
         UserSession.IsGuestTeller = true;
       }
 
-      model.JoinIntoElection(desiredElection.ElectionGuid);
+      model.JoinIntoElection(electionId);
 
       return new
                {

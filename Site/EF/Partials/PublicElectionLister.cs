@@ -10,10 +10,15 @@ using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.EF
 {
+  public class PublicElectionInfo
+  {
+    public string Name { get; set; }
+    public string Passcode { get; set; }
+  }
   public class PublicElectionLister
   {
     /// This static cache is shared across all elections in active use!
-    private static readonly ConcurrentDictionary<int, string> CachedDict = new ConcurrentDictionary<int, string>();
+    private static readonly ConcurrentDictionary<int, PublicElectionInfo> CachedDict = new ConcurrentDictionary<int, PublicElectionInfo>();
 
     public void UpdateThisElectionInList()
     {
@@ -33,13 +38,13 @@ namespace TallyJ.EF
       // something changed!
       if (!shouldBePublic)
       {
-        string removedName;
+        PublicElectionInfo removedName;
         var wasRemoved = CachedDict.TryRemove(electionId, out removedName);
         new MainHub().DisconnectGuests();
       }
       else
       {
-        CachedDict[electionId] = election.Name;
+        CachedDict[electionId] = new PublicElectionInfo { Name = election.Name, Passcode = election.ElectionPasscode };
       }
       // the public listing changed
       new PublicHub().ElectionsListUpdated();
@@ -50,15 +55,15 @@ namespace TallyJ.EF
     /// </summary>
     /// <param name="electionId"></param>
     /// <returns></returns>
-    public bool IsListed(int electionId)
+    public PublicElectionInfo PublicElectionInfo(int electionId)
     {
-      return CachedDict.ContainsKey(electionId);
+      return CachedDict.ContainsKey(electionId) ? CachedDict[electionId] : null;
     }
 
     public string VisibleElectionsOptions()
     {
       const string template = "<option value=\"{0}\">{1}</option>";
-      var listing = CachedDict.OrderBy(kvp=>kvp.Value).Select(kvp => template.FilledWith(kvp.Key, kvp.Value)).JoinedAsString();
+      var listing = CachedDict.OrderBy(kvp => kvp.Value.Name).Select(kvp => template.FilledWith(kvp.Key, kvp.Value.Name)).JoinedAsString();
       return listing
         .DefaultTo(template.FilledWith(0, "(Sorry, no elections are active right now.)"));
     }

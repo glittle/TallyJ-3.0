@@ -28,7 +28,7 @@ namespace TallyJ.CoreModels.Hubs
 
     public void ElectionsListUpdated()
     {
-      CoreHub.Clients.Group(HubNameForPublic).electionsListUpdated(new PublicElectionLister().VisibleElectionsOptions());
+      CoreHub.Clients.Group(HubNameForPublic).ElectionsListUpdated(new PublicElectionLister().VisibleElectionsOptions());
     }
   }
 

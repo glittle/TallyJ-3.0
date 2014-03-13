@@ -62,11 +62,10 @@ namespace TallyJ.EF
 
         if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-        CacheKey internalCacheKey;
-
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
         {
+          CacheKey internalCacheKey;
           allForThisElection = MainQuery()
             .FromCache(out internalCacheKey, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
               new[] {CacheKeyRaw, CurrentElectionGuid.ToString()});
