@@ -17,23 +17,6 @@
     $('#btnRefresh').click(function () {
       runAnalysis(false);
     });
-    //        $('#chkShowAll').on('click change', function () {
-    //            ShowStatusDisplay('Updating...');
-    //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionShowAll', {
-    //                showAll: $(this).prop('checked')
-    //            }, function () {
-    //                ShowStatusSuccess('Updated');
-    //            });
-    //        });
-
-    //        $('#body').on('change', '#ddlElectionStatus', function () {
-    //            ShowStatusDisplay('Updating...');
-    //            CallAjaxHandler(publicInterface.controllerUrl + '/UpdateElectionStatus', {
-    //                status: $(this).val()
-    //            }, function () {
-    //                ShowStatusSuccess('Updated');
-    //            });
-    //        });
 
     $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
@@ -124,7 +107,6 @@
               currentGroup = group;
               groupMax = value;
             }
-            //item.css('background-color', '#013d{0}0'.filledWith(group));
             item.animate({
               width: (value / groupMax * 100) + '%'
             }, {
@@ -134,11 +116,6 @@
         });
 
       }
-
-      //            setTimeout(function () {
-      //                $('#chart').show();
-      //                showChart(info.Votes);
-      //            }, 100);
     }
     else {
       table = invalidsTable;
@@ -196,84 +173,6 @@
 
   };
 
-  //var showChart = function (votes) {
-
-  //<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
-  //<script src="@Url.Content("~/Scripts/highcharts/themes/dark-green.js")"></script>
-
-  //    var numToElect = settings.info.NumToElect;
-  //    var numExtra = settings.info.NumExtra;
-
-  //    var maxToShow = (numToElect + numExtra) * 1.5;
-
-  //    var getVoteCounts = function (ties) {
-  //        var determineColor = function (item, i) {
-  //            if (ties) {
-  //                return 'blue';
-  //            }
-  //            if (i < numToElect) {
-  //                return 'green';
-  //            }
-  //            else if (i < numToElect + numExtra) {
-  //                return 'orange';
-  //            }
-  //            else {
-  //                return '#ccc';
-  //            }
-  //        };
-
-
-  //        return $.map(votes.slice(0, maxToShow), function (item, i) {
-  //            return {
-  //                name: (i + 1), //TODO: name not showing?
-  //                color: determineColor(item, i),
-  //                y: item.VoteCount
-  //            };
-  //        });
-  //    };
-
-  //    var getNames = function () {
-  //        return $.map(votes.slice(0, maxToShow), function (item, i) {
-  //            return item.Rank;
-  //        });
-  //    };
-
-
-  //    settings.chart = new Highcharts.Chart({
-  //        chart: {
-  //            renderTo: 'chart',
-  //            type: 'bar'
-  //        },
-  //        title: {
-  //            text: 'Votes Received'
-  //        },
-  //        legend: {
-  //            enabled: false
-  //        },
-  //        xAxis: {
-  //            categories: getNames()
-  //        },
-  //        yAxis: {
-  //            title: {
-  //                text: 'Votes'
-  //            }
-  //        },
-  //        series: [{
-  //            name: 'Votes',
-  //            data: getVoteCounts()
-  //        }, {
-  //            name: 'Tied',
-  //            data: getVoteCounts(true)
-  //        }],
-  //        tooltip: {
-  //            formatter: function () {
-  //                var s = 'Position {0}: {1} vote{2}'.filledWith(this.x, this.y, this.y == 1 ? '' : 's');
-  //                return s;
-  //            }
-  //        }
-  //    });
-  //};
-
   var expandInvalids = function (needReview) {
     $.each(needReview, function () {
       this.Ballot = '<a target=L{LocationId} href="../Ballots?l={LocationId}&b={BallotId}">{Ballot}</a>'.filledWith(this);
@@ -285,12 +184,15 @@
   var expand = function (results) {
     settings.hasCloseVote = false;
     $.each(results, function (i) {
+      if (!this.TieBreakRequired) {
+        this.TieBreakCount = 0;
+      }
       this.ClassName = 'Section{0} {1} {2} {3}'.filledWith(
           this.Section,
           this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
           (i % 2 == 0 ? 'Even' : 'Odd'),
           (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
-      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie Break ' + this.TieBreakGroup) : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
+      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + ' (' + (this.IsTieResolved ? 'Done' : 'Tied') + ')') : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
       if (this.CloseToNext) {
         this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
       } else if (this.CloseToPrev) {
@@ -318,7 +220,7 @@
         else {
           var firstPara;
           if (tie.IsResolved) {
-            firstPara = '<p>This tie has been resolved.</p>';
+            firstPara = '<p><b>This tie has been resolved.</b></p>';
           }
           else {
             tie.rowClass = 'TieBreakNeeded';
@@ -327,10 +229,13 @@
           tie.Conclusion = firstPara
             + '<p>Voters should vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
             .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
+            ;
+          tie.After = '' 
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
-            + '<p>If there are ties in the tie-break, they are acceptable in the top {0} positions{1}.</p>'.filledWith(info.NumToElect,
+            + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
               info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
-            + (tie.IsResolved ? '' : '<p><b>In complex situations of ties in the tie-break, additional tie-breaks may be required that are not detailed here.</b></p>');
+            + (tie.IsResolved ? '' : ' <b>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here.')
+            + '</p>';
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
           });
