@@ -291,10 +291,10 @@
         <ol>
           <li>If there are any errors shown in red, they need to be resolved.</li>
           <li>
-            Once all are resolved, review and approve the results.
+            Once all are resolved, review the results carefully and determine if they are approved.
           </li>
           <li>
-            Then set the "Election Status" to "@ElectionTallyStatusEnum.Report.Text" to enable the "Display Teller's Report" page and other reports to be viewed.
+            When approved, set the "Election State" to "@ElectionTallyStatusEnum.Report.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
           </li>
         </ol>
       </td>
@@ -321,7 +321,7 @@
           {^TieBreakGroup}
         </td>
         <td>
-          {^Conclusion} {^People} {^Buttons}
+          {^Conclusion} <p>{^People} {^Buttons}</p> {^After}
         </td>
       </tr>
     </tbody>

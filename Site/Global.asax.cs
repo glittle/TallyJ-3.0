@@ -166,7 +166,9 @@ namespace TallyJ
 
       var url = siteInfo.RootUrl;
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
-      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
+//      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
+      Response.Write(String.Format("{0}<br>", msgs.JoinedAsString("<br>")));
+      Response.Write(String.Format("{0}", mainException.StackTrace.Replace("\n", "<br>")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
       {
         //Response.Write("Error on site");

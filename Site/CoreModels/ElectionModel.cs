@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -290,6 +291,15 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
+    public bool JoinIntoElection(int wantedElectionId)
+    {
+      var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid).FirstOrDefault();
+      if (electionGuid == Guid.Empty)
+      {
+        return false;
+      }
+      return JoinIntoElection(electionGuid);
+    }
     public bool JoinIntoElection(Guid wantedElectionGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
@@ -320,7 +330,7 @@ namespace TallyJ.CoreModels
       {
         message = "Teller (" + UserSession.MemberName + ") switched into Election";
 
-        if (UserSession.CurrentElection.ListForPublicNow)
+        if (UserSession.CurrentElection.ListForPublicCalculated)
         {
           new PublicHub().ElectionsListUpdated();
         }
@@ -547,7 +557,7 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
       }
 
-      return new {Saved = true}.AsJsonResult();
+      return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult UpdateListOnPageJson(bool listOnPage)
@@ -560,8 +570,7 @@ namespace TallyJ.CoreModels
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
-
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?) DateTime.Now : null;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
 
         Db.SaveChanges();
 
@@ -569,37 +578,39 @@ namespace TallyJ.CoreModels
 
         new PublicHub().ElectionsListUpdated();
 
-        return new {Saved = true}.AsJsonResult();
+        return new { Saved = true }.AsJsonResult();
       }
 
-      return new {Saved = false}.AsJsonResult();
+      return new { Saved = false }.AsJsonResult();
     }
-
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicNow;
+      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicCalculated;
     }
 
     /// <summary>
-    /// Closes the election, logging out all guests. 
-    /// If another known teller is still logged in, they will need to access the server to open the election again.
+    ///   Closes the election, logging out all guests.
+    ///   If another known teller is still logged in, they will need to access the server to open the election again.
     /// </summary>
     public void CloseElection()
     {
       var election = UserSession.CurrentElection;
 
-      if (election != null && election.ListedForPublicAsOf.HasValue)
+      if (election != null)
       {
-        Db.Election.Attach(election);
+        if (election.ListedForPublicAsOf.HasValue)
+        {
+          Db.Election.Attach(election);
 
-        election.ListedForPublicAsOf = null;
+          election.ListedForPublicAsOf = null;
 
-        Db.SaveChanges();
+          Db.SaveChanges();
 
-        new ElectionCacher().UpdateItemAndSaveCache(election);
-        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
-        new MainHub().DisconnectGuests();
+          new ElectionCacher().RemoveItemAndSaveCache(election);
+          new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+          new MainHub().DisconnectGuests();
+        }
       }
     }
 
@@ -657,6 +668,28 @@ namespace TallyJ.CoreModels
     //      var electionCacher = new ElectionCacher();
     //      electionCacher.UpdateItemAndSaveCache(election);
     //    }
+
+    public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
+    {
+      var currentElection = UserSession.CurrentElection;
+
+      var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
+        .Where(c => c.AuthLevel == "Known")
+        .Max(c => c.LastContact);
+
+      if (lastContactOfTeller != null &&
+          (currentElection.ListedForPublicAsOf == null
+           ||
+           Math.Abs((lastContactOfTeller.Value - currentElection.ListedForPublicAsOf.Value).TotalMinutes) >
+           5.minutes().TotalMinutes))
+      {
+        currentElection.ListedForPublicAsOf = lastContactOfTeller;
+        new ElectionCacher().UpdateItemAndSaveCache(currentElection);
+      }
+
+      new PublicElectionLister().UpdateThisElectionInList();
+    }
+
 
     public static class CanVoteOrReceive
     {

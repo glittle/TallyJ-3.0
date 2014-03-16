@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     JsonResult DeleteVote(int vid);
     object CurrentBallotsInfoList();
     object SwitchToBallotAndGetInfo(int ballotId, bool refresh);
-    bool SortVotes(List<int> ids);
+    bool SortVotes(List<int> ids, VoteCacher voteCacher);
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);

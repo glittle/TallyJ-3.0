@@ -163,7 +163,6 @@
     var form = {
       idList: ids
     };
-    LogMessage(ids);
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
       if (info) {

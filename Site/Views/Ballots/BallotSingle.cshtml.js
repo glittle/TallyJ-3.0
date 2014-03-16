@@ -414,8 +414,8 @@
     var saveNow = ev.type === 'change';
     var focusOnNew = false;
     var changing = true;
-    LogMessage(ev.type);
-    LogMessage(ev.which);
+//    LogMessage(ev.type);
+//    LogMessage(ev.which);
 
 
     switch (ev.which) {
@@ -795,7 +795,7 @@
   };
 
   var addSpoiled = function () {
-    LogMessage('spoiled');
+//    LogMessage('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -906,7 +906,7 @@
         return true;
 
       default:
-        LogMessage(ev.which);
+//        LogMessage(ev.which);
         break;
     }
     return false;

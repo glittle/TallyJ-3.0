@@ -11,6 +11,7 @@ var site = {
   heartbeatSeconds: 60, // default seconds
   heartbeatTimeout: null,
   timeOffsetKnown: false,
+  hoverQuickLinkTimeout: null,
   firstPulse: null,
   electionGuid: null,
   electionState: null,
@@ -140,22 +141,27 @@ var activateHub = function (hub, callBack) {
 
   var tryingToReconnect = false;
   $.connection.hub.connectionSlow(function () {
+    LogMessage('slow');
     ShowStatusFailed('The connection to the server is slow... please wait...');
   });
   $.connection.hub.reconnecting(function () {
+    LogMessage('reconnecting');
     ShowStatusFailed('Attempting to reconnect to the server...');
     tryingToReconnect = true;
   });
   $.connection.hub.reconnected(function () {
+    LogMessage('connected');
     ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
     tryingToReconnect = false;
   });
   $.connection.hub.disconnected(function () {
+    LogMessage('disconnected');
     if (tryingToReconnect) {
       ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
     }
   });
   $.connection.hub.error(function (error) {
+    LogMessage('error');
     ShowStatusFailed(error.toString());
   });
 };
@@ -244,15 +250,16 @@ function updateElectionStatus(ev, info) {
   showMenu(info.StateName, true);
 }
 
-function showMenu(state, permanent) {
-  //  LogMessage(state);
+function showMenu(state, permanent, slow) {
   var target = $('#electionState');
   var temp = target.data('temp') || target.data('state');
   if (state != temp) {
-    //    LogMessage('changed from {0} to {1}'.filledWith(temp, state));
+    //       LogMessage('changed from {0} to {1}'.filledWith(temp, state));
     $('#quickLinks2 span:visible').stop(true).hide();
-    $('#menu' + state).fadeIn('fast');
+    $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
   }
+
+  $('.QuickLinks2').toggleClass('temp', site.electionState != state);
 
   target.data('temp', state);
 
@@ -271,14 +278,25 @@ function showMenu(state, permanent) {
 function HoverQuickLink(ev) {
   var state = $(ev.currentTarget).data('state');
 
+  clearTimeout(site.hoverQuickLinkTimeout);
+
   showMenu(state, false);
 
-  var cancel = function () {
-    $('.TopInfo').off('mouseleave', cancel);
-    showMenu(site.electionState, true);
+  var reentered = function () {
+    clearTimeout(site.hoverQuickLinkTimeout);
+    $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
+  };
+  var mouseLeavingTopInfo = function () {
+    $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
+    $('.TopInfo').on('mouseenter', reentered);
+
+    site.hoverQuickLinkTimeout = setTimeout(function () {
+      showMenu(site.electionState, true, true);
+      $('.TopInfo').off('mouseenter', reentered);
+    }, 2000);
   };
 
-  $('.TopInfo').on('mouseleave', cancel);
+  $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
 }
 
 function CheckTimeOffset() {
@@ -685,7 +703,6 @@ function ShowStatusFailed(msg, keepTime) {
       top.location.href = top.location.href;
       return '';
     } else {
-      LogMessage(msg);
       text = '(' + msg.status + ') ' + msg.statusText + ': ';
       if (msg.responseText) {
         var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -430,6 +431,7 @@ namespace TallyJ.Code
     /// <param name="input"> Name in Session </param>
     /// <param name="defaultValue"> Default value to use if nothing found </param>
     /// <returns> </returns>
+    [DebuggerStepThrough]
     public static T FromSession<T>(this string input, T defaultValue)
     {
       if (HttpContext.Current == null || HttpContext.Current.Session == null) return defaultValue;

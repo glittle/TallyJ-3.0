@@ -8,7 +8,7 @@ namespace TallyJ.Code.Helpers
   public class UrlAdjuster
     {
         private readonly Regex _rCss = new Regex(@"^(.*\.css)(-\d*)$", RegexOptions.IgnoreCase);
-        private readonly Regex _rLess = new Regex(@"^(.*\.less)(-\d*)$", RegexOptions.IgnoreCase);
+        //private readonly Regex _rLess = new Regex(@"^(.*\.less)(-\d*)$", RegexOptions.IgnoreCase);
         private readonly Regex _rJs = new Regex(@"^(.*\.js)(-\d*)$", RegexOptions.IgnoreCase);
 
         private readonly string _url;
@@ -24,7 +24,7 @@ namespace TallyJ.Code.Helpers
         {
             get
             {
-                if (CheckPath(_rJs) || CheckPath(_rCss) || CheckPath(_rLess))
+              if (CheckPath(_rJs) || CheckPath(_rCss)) // || CheckPath(_rLess)
                 {
                     return _adjustedUrl;
                 }

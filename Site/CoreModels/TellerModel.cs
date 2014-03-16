@@ -18,16 +18,15 @@ namespace TallyJ.CoreModels
     {
       var model = new ElectionModel();
 
-      var desiredElection = new ElectionCacher().PublicElections.SingleOrDefault(e => e.C_RowId == electionId);
-
-      if (desiredElection == null)
+      var electionInfo = new PublicElectionLister().PublicElectionInfo(electionId);
+      if (electionInfo == null)
       {
         return new
                  {
-                   Error = "Sorry, unable to join that election"
+                   Error = "Sorry, unknown election id"
                  }.AsJsonResult();
       }
-      if (desiredElection.ElectionPasscode != secretCode)
+      if (electionInfo.Passcode != secretCode)
       {
         return new
                  {
@@ -42,7 +41,7 @@ namespace TallyJ.CoreModels
         UserSession.IsGuestTeller = true;
       }
 
-      model.JoinIntoElection(desiredElection.ElectionGuid);
+      model.JoinIntoElection(electionId);
 
       return new
                {
@@ -58,17 +57,6 @@ namespace TallyJ.CoreModels
       var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
-      //      if (currentComputer == null)
-      //      {
-      //        var computerModel = new ComputerModel();
-      //        computerModel.AddCurrentComputerIntoCurrentElection();
-      //
-      //        currentComputer = UserSession.CurrentComputer;
-      //      }
-      //      else
-      //      {
-      //        Db.Computer.Attach(currentComputer);
-      //      }
 
       if (tellerId == 0)
       {
@@ -84,7 +72,7 @@ namespace TallyJ.CoreModels
             break;
         }
 
-        computerCacher.UpdateItemAndSaveCache(currentComputer);
+        computerCacher.UpdateTellers(currentComputer);
 
         return new { Saved = true };
       }
@@ -131,7 +119,7 @@ namespace TallyJ.CoreModels
           break;
       }
       Db.SaveChanges();
-      computerCacher.UpdateItemAndSaveCache(currentComputer);
+      computerCacher.UpdateTellers(currentComputer);
 
       UserSession.SetCurrentTeller(num, teller.Name);
 

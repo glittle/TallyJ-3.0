@@ -1,4 +1,5 @@
 using Microsoft.AspNet.SignalR;
+using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
 {
@@ -27,7 +28,7 @@ namespace TallyJ.CoreModels.Hubs
 
     public void ElectionsListUpdated()
     {
-      CoreHub.Clients.Group(HubNameForPublic).electionsListUpdated(new ElectionsListViewModel().VisibleElectionsOptions());
+      CoreHub.Clients.Group(HubNameForPublic).ElectionsListUpdated(new PublicElectionLister().VisibleElectionsOptions());
     }
   }
 

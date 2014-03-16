@@ -7,11 +7,12 @@ using TallyJ.CoreModels;
 namespace TallyJ.EF
 {
   [Serializable]
-  public class Computer : IIndexedForCaching
+  public class Computer
   {
     // create or recreate from environment
-    public int C_RowId { get; set; }
+    public Guid ComputerGuid { get; set; }
     public Guid LocationGuid { get; set; }
+    public Guid ElectionGuid { get; set; }
 
     // also stored in one user's session
     public string ComputerCode { get; set; }

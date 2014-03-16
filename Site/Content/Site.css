@@ -58,16 +58,12 @@ sub {
 }
 img {
   /* Responsive images (ensure images don't scale beyond their parents) */
-
   max-width: 100%;
   /* Part 1: Set a maxium relative to the parent */
-
   width: auto\9;
   /* IE7-8 need help adjusting responsive images */
-
   height: auto;
   /* Part 2: Scale the height according to the width, otherwise you get stretching */
-
   vertical-align: middle;
   border: 0;
   -ms-interpolation-mode: bicubic;
@@ -162,7 +158,7 @@ textarea {
   img {
     max-width: 100% !important;
   }
-  @page  {
+  @page {
     margin: 0.5cm;
   }
   p,
@@ -236,276 +232,6 @@ a:hover {
   -webkit-border-radius: 500px;
   -moz-border-radius: 500px;
   border-radius: 500px;
-}
-.row {
-  margin-left: -20px;
-  *zoom: 1;
-}
-.row:before,
-.row:after {
-  display: table;
-  content: "";
-  line-height: 0;
-}
-.row:after {
-  clear: both;
-}
-[class*="span"] {
-  float: left;
-  min-height: 1px;
-  margin-left: 20px;
-}
-.container,
-.navbar-static-top .container,
-.navbar-fixed-top .container,
-.navbar-fixed-bottom .container {
-  width: 940px;
-}
-.span12 {
-  width: 940px;
-}
-.span11 {
-  width: 860px;
-}
-.span10 {
-  width: 780px;
-}
-.span9 {
-  width: 700px;
-}
-.span8 {
-  width: 620px;
-}
-.span7 {
-  width: 540px;
-}
-.span6 {
-  width: 460px;
-}
-.span5 {
-  width: 380px;
-}
-.span4 {
-  width: 300px;
-}
-.span3 {
-  width: 220px;
-}
-.span2 {
-  width: 140px;
-}
-.span1 {
-  width: 60px;
-}
-.offset12 {
-  margin-left: 980px;
-}
-.offset11 {
-  margin-left: 900px;
-}
-.offset10 {
-  margin-left: 820px;
-}
-.offset9 {
-  margin-left: 740px;
-}
-.offset8 {
-  margin-left: 660px;
-}
-.offset7 {
-  margin-left: 580px;
-}
-.offset6 {
-  margin-left: 500px;
-}
-.offset5 {
-  margin-left: 420px;
-}
-.offset4 {
-  margin-left: 340px;
-}
-.offset3 {
-  margin-left: 260px;
-}
-.offset2 {
-  margin-left: 180px;
-}
-.offset1 {
-  margin-left: 100px;
-}
-.row-fluid {
-  width: 100%;
-  *zoom: 1;
-}
-.row-fluid:before,
-.row-fluid:after {
-  display: table;
-  content: "";
-  line-height: 0;
-}
-.row-fluid:after {
-  clear: both;
-}
-.row-fluid [class*="span"] {
-  display: block;
-  width: 100%;
-  min-height: 30px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  float: left;
-  margin-left: 2.127659574468085%;
-  *margin-left: 2.074468085106383%;
-}
-.row-fluid [class*="span"]:first-child {
-  margin-left: 0;
-}
-.row-fluid .controls-row [class*="span"] + [class*="span"] {
-  margin-left: 2.127659574468085%;
-}
-.row-fluid .span12 {
-  width: 100%;
-  *width: 99.94680851063829%;
-}
-.row-fluid .span11 {
-  width: 91.48936170212765%;
-  *width: 91.43617021276594%;
-}
-.row-fluid .span10 {
-  width: 82.97872340425532%;
-  *width: 82.92553191489361%;
-}
-.row-fluid .span9 {
-  width: 74.46808510638297%;
-  *width: 74.41489361702126%;
-}
-.row-fluid .span8 {
-  width: 65.95744680851064%;
-  *width: 65.90425531914893%;
-}
-.row-fluid .span7 {
-  width: 57.44680851063829%;
-  *width: 57.39361702127659%;
-}
-.row-fluid .span6 {
-  width: 48.93617021276595%;
-  *width: 48.88297872340425%;
-}
-.row-fluid .span5 {
-  width: 40.42553191489362%;
-  *width: 40.37234042553192%;
-}
-.row-fluid .span4 {
-  width: 31.914893617021278%;
-  *width: 31.861702127659576%;
-}
-.row-fluid .span3 {
-  width: 23.404255319148934%;
-  *width: 23.351063829787232%;
-}
-.row-fluid .span2 {
-  width: 14.893617021276595%;
-  *width: 14.840425531914894%;
-}
-.row-fluid .span1 {
-  width: 6.382978723404255%;
-  *width: 6.329787234042553%;
-}
-.row-fluid .offset12 {
-  margin-left: 104.25531914893616%;
-  *margin-left: 104.14893617021275%;
-}
-.row-fluid .offset12:first-child {
-  margin-left: 102.12765957446808%;
-  *margin-left: 102.02127659574466%;
-}
-.row-fluid .offset11 {
-  margin-left: 95.74468085106382%;
-  *margin-left: 95.6382978723404%;
-}
-.row-fluid .offset11:first-child {
-  margin-left: 93.61702127659573%;
-  *margin-left: 93.51063829787232%;
-}
-.row-fluid .offset10 {
-  margin-left: 87.23404255319148%;
-  *margin-left: 87.12765957446807%;
-}
-.row-fluid .offset10:first-child {
-  margin-left: 85.1063829787234%;
-  *margin-left: 84.99999999999998%;
-}
-.row-fluid .offset9 {
-  margin-left: 78.72340425531914%;
-  *margin-left: 78.61702127659572%;
-}
-.row-fluid .offset9:first-child {
-  margin-left: 76.59574468085105%;
-  *margin-left: 76.48936170212764%;
-}
-.row-fluid .offset8 {
-  margin-left: 70.2127659574468%;
-  *margin-left: 70.10638297872339%;
-}
-.row-fluid .offset8:first-child {
-  margin-left: 68.08510638297872%;
-  *margin-left: 67.9787234042553%;
-}
-.row-fluid .offset7 {
-  margin-left: 61.70212765957446%;
-  *margin-left: 61.59574468085106%;
-}
-.row-fluid .offset7:first-child {
-  margin-left: 59.574468085106375%;
-  *margin-left: 59.46808510638297%;
-}
-.row-fluid .offset6 {
-  margin-left: 53.191489361702125%;
-  *margin-left: 53.085106382978715%;
-}
-.row-fluid .offset6:first-child {
-  margin-left: 51.063829787234034%;
-  *margin-left: 50.95744680851063%;
-}
-.row-fluid .offset5 {
-  margin-left: 44.68085106382979%;
-  *margin-left: 44.57446808510638%;
-}
-.row-fluid .offset5:first-child {
-  margin-left: 42.5531914893617%;
-  *margin-left: 42.4468085106383%;
-}
-.row-fluid .offset4 {
-  margin-left: 36.170212765957444%;
-  *margin-left: 36.06382978723405%;
-}
-.row-fluid .offset4:first-child {
-  margin-left: 34.04255319148936%;
-  *margin-left: 33.93617021276596%;
-}
-.row-fluid .offset3 {
-  margin-left: 27.659574468085104%;
-  *margin-left: 27.5531914893617%;
-}
-.row-fluid .offset3:first-child {
-  margin-left: 25.53191489361702%;
-  *margin-left: 25.425531914893618%;
-}
-.row-fluid .offset2 {
-  margin-left: 19.148936170212764%;
-  *margin-left: 19.04255319148936%;
-}
-.row-fluid .offset2:first-child {
-  margin-left: 17.02127659574468%;
-  *margin-left: 16.914893617021278%;
-}
-.row-fluid .offset1 {
-  margin-left: 10.638297872340425%;
-  *margin-left: 10.53191489361702%;
-}
-.row-fluid .offset1:first-child {
-  margin-left: 8.51063829787234%;
-  *margin-left: 8.404255319148937%;
 }
 [class*="span"].hide,
 .row-fluid [class*="span"].hide {
@@ -623,16 +349,16 @@ h3 {
   line-height: 40px;
 }
 h1 {
-  font-size: 38.5px;
+  font-size: 28px;
 }
 h2 {
-  font-size: 31.5px;
-}
-h3 {
   font-size: 24.5px;
 }
-h4 {
+h3 {
   font-size: 17.5px;
+}
+h4 {
+  font-size: 16.1px;
 }
 h5 {
   font-size: 14px;
@@ -951,7 +677,6 @@ input[type="color"]:focus,
   outline: 0;
   outline: thin dotted \9;
   /* IE6-9 */
-
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
@@ -961,10 +686,8 @@ input[type="checkbox"] {
   margin: 0px 5px 2px 5px;
   *margin-top: 0;
   /* IE7 */
-
   margin-top: 1px \9;
   /* IE8-9 */
-
 }
 input[type="file"],
 input[type="image"],
@@ -979,7 +702,6 @@ select,
 input[type="file"] {
   *margin-top: 4px;
   /* For IE7, add top margin to align select with labels */
-
 }
 select {
   width: 220px;
@@ -1102,40 +824,64 @@ textarea,
 .controls-row [class*="span"] + [class*="span"] {
   margin-left: 20px;
 }
-input.span12, textarea.span12, .uneditable-input.span12 {
+input.span12,
+textarea.span12,
+.uneditable-input.span12 {
   width: 926px;
 }
-input.span11, textarea.span11, .uneditable-input.span11 {
+input.span11,
+textarea.span11,
+.uneditable-input.span11 {
   width: 846px;
 }
-input.span10, textarea.span10, .uneditable-input.span10 {
+input.span10,
+textarea.span10,
+.uneditable-input.span10 {
   width: 766px;
 }
-input.span9, textarea.span9, .uneditable-input.span9 {
+input.span9,
+textarea.span9,
+.uneditable-input.span9 {
   width: 686px;
 }
-input.span8, textarea.span8, .uneditable-input.span8 {
+input.span8,
+textarea.span8,
+.uneditable-input.span8 {
   width: 606px;
 }
-input.span7, textarea.span7, .uneditable-input.span7 {
+input.span7,
+textarea.span7,
+.uneditable-input.span7 {
   width: 526px;
 }
-input.span6, textarea.span6, .uneditable-input.span6 {
+input.span6,
+textarea.span6,
+.uneditable-input.span6 {
   width: 446px;
 }
-input.span5, textarea.span5, .uneditable-input.span5 {
+input.span5,
+textarea.span5,
+.uneditable-input.span5 {
   width: 366px;
 }
-input.span4, textarea.span4, .uneditable-input.span4 {
+input.span4,
+textarea.span4,
+.uneditable-input.span4 {
   width: 286px;
 }
-input.span3, textarea.span3, .uneditable-input.span3 {
+input.span3,
+textarea.span3,
+.uneditable-input.span3 {
   width: 206px;
 }
-input.span2, textarea.span2, .uneditable-input.span2 {
+input.span2,
+textarea.span2,
+.uneditable-input.span2 {
   width: 126px;
 }
-input.span1, textarea.span1, .uneditable-input.span1 {
+input.span1,
+textarea.span1,
+.uneditable-input.span1 {
   width: 46px;
 }
 .controls-row {
@@ -1352,7 +1098,6 @@ select:focus:invalid:focus {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   vertical-align: middle;
   padding-left: 5px;
@@ -1499,7 +1244,6 @@ input.search-query {
   padding-left: 14px;
   padding-left: 4px \9;
   /* IE7-8 doesn't have border-radius, so don't indent the padding */
-
   margin-bottom: 0;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
@@ -1556,7 +1300,6 @@ input.search-query {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   margin-bottom: 0;
   vertical-align: middle;
@@ -1881,7 +1624,7 @@ table th[class*="span"],
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("bootstrap/css/../img/glyphicons-halflings.png");
+  background-image: url("bootstrap/img/glyphicons-halflings.png");
   background-position: 14px 14px;
   background-repeat: no-repeat;
   margin-top: 1px;
@@ -1900,7 +1643,7 @@ table th[class*="span"],
 .dropdown-menu > .active > a > [class*=" icon-"],
 .dropdown-submenu:hover > a > [class^="icon-"],
 .dropdown-submenu:hover > a > [class*=" icon-"] {
-  background-image: url("bootstrap/css/../img/glyphicons-halflings-white.png");
+  background-image: url("bootstrap/img/glyphicons-halflings-white.png");
 }
 .icon-glass {
   background-position: 0      0;
@@ -2598,7 +2341,6 @@ button.close {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   padding: 4px 12px;
   margin-bottom: 0;
@@ -2621,7 +2363,6 @@ button.close {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #e6e6e6;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   border: 1px solid #bbbbbb;
   *border: 0;
@@ -2684,7 +2425,7 @@ button.close {
 }
 .btn-large {
   padding: 11px 19px;
-  font-size: 17.5px;
+  font-size: 16.8px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -2759,7 +2500,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #0044cc;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-primary:hover,
@@ -2790,7 +2530,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #f89406;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-warning:hover,
@@ -2821,7 +2560,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #bd362f;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-danger:hover,
@@ -2852,7 +2590,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #51a351;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-success:hover,
@@ -2883,7 +2620,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #2f96b4;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-info:hover,
@@ -2914,7 +2650,6 @@ input[type="button"].btn-block {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #222222;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .btn-inverse:hover,
@@ -2986,7 +2721,6 @@ input[type="submit"].btn.btn-mini {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   font-size: 0;
   vertical-align: middle;
@@ -3030,7 +2764,7 @@ input[type="submit"].btn.btn-mini {
   font-size: 11.9px;
 }
 .btn-group > .btn-large {
-  font-size: 17.5px;
+  font-size: 16.8px;
 }
 .btn-group > .btn:first-child {
   margin-left: 0;
@@ -3160,7 +2894,6 @@ input[type="submit"].btn.btn-mini {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
 }
 .btn-group-vertical > .btn {
@@ -3835,7 +3568,6 @@ input[type="submit"].btn.btn-mini {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #e5e5e5;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
   -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.075);
@@ -4063,7 +3795,6 @@ input[type="submit"].btn.btn-mini {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #040404;
   /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 .navbar-inverse .btn-navbar:hover,
@@ -4092,7 +3823,6 @@ input[type="submit"].btn.btn-mini {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   text-shadow: 0 1px 0 #ffffff;
 }
@@ -4110,7 +3840,6 @@ input[type="submit"].btn.btn-mini {
   display: inline-block;
   *display: inline;
   /* IE7 inline-block hack */
-
   *zoom: 1;
   margin-left: 0;
   margin-bottom: 0;
@@ -4179,7 +3908,7 @@ input[type="submit"].btn.btn-mini {
 .pagination-large ul > li > a,
 .pagination-large ul > li > span {
   padding: 11px 19px;
-  font-size: 17.5px;
+  font-size: 16.8px;
 }
 .pagination-large ul > li:first-child > a,
 .pagination-large ul > li:first-child > span {
@@ -4307,7 +4036,6 @@ input[type="submit"].btn.btn-mini {
   border: 1px solid rgba(0, 0, 0, 0.3);
   *border: 1px solid #999;
   /* IE6-7 */
-
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -5120,7 +4848,7 @@ a:link, a:visited, a:active, a:hover
 {
     color: #333;
     outline: none;
-    padding-left: 3px;
+    padding-left: 3px; 
     padding-right: 3px;
     text-decoration: underline;
 }
@@ -5255,7 +4983,6 @@ body.NormalMode .site-title span {
 .NormalMode .TopInfo {
   display: none;
   /*     bottom: 0;     position: relative;     margin: 40px 0 0 90px;     margin-left: -50px;     top: 15px;*/
-
 }
 .NormalMode .site-title {
   display: block;
@@ -5269,6 +4996,9 @@ body.NormalMode .site-title span {
 .Presenter .PageTitle {
   display: none;
 }
+.Hidden {
+  display: none;
+}
 .Version {
   display: none;
 }
@@ -5278,15 +5008,15 @@ body.NormalMode .site-title span {
 .NormalMode .MainTop {
   display: block;
   position: relative;
-  height: 106px;
+  height: 102px;
 }
 .NormalMode .Version {
   display: block;
   color: #ade65e;
   text-align: right;
-  top: 95px;
+  top: 100px;
   position: absolute;
-  right: 0;
+  right: -8px;
   z-index: 1;
 }
 /* login  
@@ -5380,9 +5110,9 @@ ul#menu li a:hover {
   padding: 20px 40px 30px 40px;
 }
 .featured hgroup.title h1,
-.featured hgroup.title h2 {
+.featured hgroup.title h2,
+.featured hgroup.title h3 {
   color: #7ac0da;
-  -xcolor: #fff;
 }
 .featured p {
   font-size: 1.1em;
@@ -5402,15 +5132,20 @@ hgroup.title a:hover {
 hgroup.title a.normal {
   float: none;
 }
-hgroup.title h1,
-hgroup.title h2 {
+hgroup.title h1 {
   display: inline;
   color: #013d7a;
   font-size: 28px;
 }
 hgroup.title h2 {
+  display: inline;
   font-weight: normal;
   font-size: 23.8px;
+}
+h1.SeoH1 {
+  text-indent: -9990px;
+  position: absolute;
+  z-index: -1;
 }
 /* features */
 section.feature {
@@ -5423,7 +5158,8 @@ section.feature {
   text-align: center;
   padding: 10px 15px 10px 10px;
 }
-section.feature h1 {
+section.feature h1,
+section.feature h2 {
   font-size: 1.1em;
   margin: 0;
   padding: 0;
@@ -5545,7 +5281,6 @@ input[type="submit"]:hover,
 input[type="file"]:hover,
 button.Primary:hover {
   /*background-color: #b6ff50;*/
-
 }
 /* ajax login/registration dialog */
 .modal-popup {
@@ -5613,21 +5348,19 @@ a.facebook,
 a.twitter,
 a.gplus {
   display: inline-block;
-  height: 24px;
-  width: 16px;
-}
-a.facebook,
-a.twitter {
+  height: 25px;
   width: 24px;
+  background: url("../images/social.png") no-repeat;
+  margin-top: 3px;
 }
 a.facebook {
-  background: url("../images/facebook.png") no-repeat;
+  background-position: -2px -2px;
 }
 a.gplus {
-  background: url("../images/gplus-16.png") no-repeat;
+  background-position: -34px -2px;
 }
 a.twitter {
-  background: url("../images/twitter.png") no-repeat;
+  background-position: -98px -2px;
 }
 /* Statuses */
 #statusDisplay,
@@ -5669,7 +5402,6 @@ a.twitter {
 }
 .StatusOuter {
   /* inspired by http://simon.html5.org/sandbox/css/center-fixed */
-
   min-width: 400px;
   position: fixed;
   top: 0;
@@ -5685,6 +5417,14 @@ a.twitter {
   display: table-cell;
 }
 /* End: Statuses */
+.CompCode {
+  color: #dadada;
+  position: absolute;
+  top: -1px;
+  width: 40px;
+  text-align: center;
+  font-size: 15px;
+}
 .CurrentElectionName {
   padding: 3px 0 3px 0;
   color: #013d7a;
@@ -5693,12 +5433,17 @@ a.twitter {
 .ElectionState li.Active_True {
   color: #013d7a;
   font-weight: bold;
-  background-color: #EFEEEF;
+  background-color: #b6ff50;
 }
 .ElectionState {
   display: inline-block;
   margin-left: 0px;
   color: #8dc63e;
+}
+.ElectionState a {
+  color: #333;
+  text-decoration: none;
+  padding: 0 4px 0 4px;
 }
 .ElectionState span {
   color: #8dc63e;
@@ -5727,12 +5472,15 @@ a.twitter {
 }
 body.AuthKnown .ElectionState ol li.Active_False:hover {
   cursor: pointer;
-  background-color: #b6ff50;
+  background-color: #EFffEF;
 }
-body.AuthGuest .ElectionState ol li.Active_False:hover {
-  cursor: not-allowed;
+.ElectionState ol li.Active_True {
+  cursor: default;
 }
-.ChangeElectionState {
+body.AuthGuest .ElectionState ol li.Active_False {
+  display: none;
+}
+/*.ChangeElectionState {
   display: none;
   position: absolute;
   z-index: 10;
@@ -5742,9 +5490,11 @@ body.AuthGuest .ElectionState ol li.Active_False:hover {
   border-top-style: solid;
   background-color: #BDD2FF;
 }
-.ChangeElectionState p {
-  margin: 0 .5em .5em 0;
-}
+
+  .ChangeElectionState p {
+    margin: 0 .5em .5em 0;
+  }
+  */
 .CurrentLocationAndCode {
   color: #013d7a;
 }
@@ -5764,6 +5514,7 @@ body.AuthGuest .ElectionState ol li.Active_False:hover {
   font-size: 95%;
   padding: 0 5px 0 15px;
   margin-bottom: 5px;
+  display: none;
 }
 .PullInstructionsHandle {
   color: #77BBFF;
@@ -5837,10 +5588,13 @@ body.AuthGuest .ElectionState ol li.Active_False:hover {
   margin-left: 18px;
 }
 .CurrentInfo.NotSet {
-  background: #ff7e7e;
+  background-color: #ff0000;
 }
 .CurrentInfo.NotSet #ddlTopTeller1 {
-  color: #ff7e7e;
+  color: #ff0000;
+}
+#ddlTopTeller2.NotSet {
+  color: #ff0000;
 }
 body .ifAuthKnownInline,
 .AllowChangeElectionState,
@@ -5865,7 +5619,7 @@ body.AuthKnown .CurrentElectionName {
   cursor: pointer;
 }
 .QuickLinks2 {
-  color: #8dc63e;
+  color: #013d7a;
   margin: 5px 0 5px 0;
 }
 .QuickLinks2 a {
@@ -5876,6 +5630,21 @@ body.AuthKnown .CurrentElectionName {
   border-radius: 2px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
+}
+.QuickLinks2 a:hover {
+  background-color: #EFEEEF;
+}
+.QuickLinks2 a.Active {
+  color: #013d7a;
+  font-weight: bold;
+  background-color: #d2ff92;
+}
+.QuickLinks2 a.Active:hover {
+  background-color: inherit;
+}
+.QuickLinks2.temp #qmenuTitle {
+  background-color: #d2ff92;
+  padding: 1px 3px;
 }
 .AuthKnown .AllowChangeElectionState.bold {
   border: 1px solid #013d7a;
@@ -5892,17 +5661,6 @@ body.AuthKnown .CurrentElectionName {
 }
 .AuthGuest .NotFeatured {
   display: none;
-}
-.QuickLinks2 a:hover {
-  background-color: #b6ff50;
-}
-.QuickLinks2 a.Active {
-  color: #013d7a;
-  font-weight: bold;
-  background-color: #EFEEEF;
-}
-.QuickLinks2 a.Active:hover {
-  background-color: inherit;
 }
 .QuickLinks {
   margin: 5px 0 0 0;
@@ -5954,9 +5712,9 @@ body.AuthKnown .CurrentElectionName {
   float: left;
   margin-top: 9px;
 }
-.ShowMasterMenu {
-  margin-left: 15px;
-  color: #999;
+a.ShowMasterMenu {
+  margin-left: 20px;
+  color: #aaa;
   font-style: italic;
 }
 section.featured.empty {
@@ -6001,9 +5759,6 @@ section.features.bottom a {
   margin-bottom: 15px;
   margin-left: 38px;
 }
-#MasterMenu #mmHeader {
-  font-size: 15.400000000000002px;
-}
 #MasterMenu .mmSection {
   margin: 0 0 15px 0;
 }
@@ -6036,7 +5791,7 @@ section.features.bottom a {
   font-size: 14px;
 }
 #MasterMenu .mmSection a.NotStarted {
-  font-size: 9.799999999999999px;
+  font-size: 9.8px;
 }
 #MasterMenu .mmSection .featuresTitle {
   margin: -5px 0 0 -17px;
@@ -6090,10 +5845,10 @@ section.features.bottom a {
 }
 .qTip {
   /*nothing needed, just define it*/
-
 }
 .modal-header div {
   color: #013d7a;
-  font-size: 17.5px;
+  font-size: 16.8px;
   font-family: inherit;
 }
+/*# sourceMappingURL=Site.css.map */

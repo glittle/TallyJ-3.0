@@ -5,6 +5,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using System.Linq;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -143,7 +144,7 @@ namespace TallyJ.Controllers
     public JsonResult SortVotes(List<int> idList)
     {
       //var ids = idList.Split(new[] {','}).Select(s => s.AsInt()).ToList();
-      return CurrentBallotModel.SortVotes(idList).AsJsonResult();
+      return CurrentBallotModel.SortVotes(idList, new VoteCacher()).AsJsonResult();
     }
 
     public JsonResult NewBallot()
