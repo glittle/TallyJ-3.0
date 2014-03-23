@@ -591,7 +591,7 @@ String.prototype.parseJsonDateForInput = function () {
   if (this == '') return '';
   var d = this.parseJsonDate();
   // counteract UTC time...
-  d.setTime(d.getTime() + now.getTimezoneOffset() * 60 * 1000);
+  d.setTime(d.getTime() + d.getTimezoneOffset() * 60 * 1000);
 
   var day = ("0" + d.getDate()).slice(-2);
   var month = ("0" + (d.getMonth() + 1)).slice(-2);

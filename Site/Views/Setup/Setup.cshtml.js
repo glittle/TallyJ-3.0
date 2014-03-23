@@ -211,7 +211,7 @@
       }
     });
     $('span[data-name]').each(function () {
-      LogMessage(this.tagName);
+      //LogMessage(this.tagName);
       var input = $(this);
       var value = election[input.data('name')] || '';
       input.html(value);
