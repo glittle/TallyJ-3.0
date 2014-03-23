@@ -44,7 +44,7 @@ namespace TallyJ.EF
       }
       else
       {
-        CachedDict[electionId] = new PublicElectionInfo { Name = election.Name, Passcode = election.ElectionPasscode };
+        CachedDict[electionId] = new PublicElectionInfo { Name = election.Name + election.Convenor.SurroundContentWith(" (", ")"), Passcode = election.ElectionPasscode };
       }
       // the public listing changed
       new PublicHub().ElectionsListUpdated();
