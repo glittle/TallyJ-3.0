@@ -13,11 +13,6 @@ namespace TallyJ.EF
   [Serializable]
   public partial class Election : IIndexedForCaching
   {
-    public DateTime? ElectionDateOnly
-    {
-      get { return DateOfElection.HasValue ? (DateTime?)DateOfElection.Value.Date : null; }
-    }
-
     public bool IsSingleNameElection
     {
       get { return NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0; }
