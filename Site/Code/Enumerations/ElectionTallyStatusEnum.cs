@@ -52,13 +52,13 @@ namespace TallyJ.Code.Enumerations
 
     public static HtmlString ForHtmlList(string selected = "", bool showAll = true)
     {
-      return
-        BaseItems
-          .Where(bi => showAll || bi.Value == selected)
-          .Select(bi => "<li data-state='{0}' class='Active_{2}'>{1}</li>"
-                          .FilledWith(bi.Value, bi.Text, bi.Value == selected))
-          .JoinedAsString()
-          .AsRawHtml();
+      const string liTemplate = "<li data-state='{0}' class='Active_{2} {0}'>{1}</li>";
+      var mainList = BaseItems
+        .Where(bi => showAll || bi.Value == selected)
+        .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, bi.Value == selected))
+        .JoinedAsString();
+     
+      return (mainList + liTemplate.FilledWith("General", "Misc Pages", "General" == selected)).AsRawHtml();
     }
 
     public static string TextFor(string status)

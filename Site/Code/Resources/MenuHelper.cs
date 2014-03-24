@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Xml;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Resources
 {
@@ -14,10 +15,16 @@ namespace TallyJ.Code.Resources
     private readonly UrlHelper _urlHelper;
     private XmlElement _currentNode;
     private XmlElement _root;
+    private Election _currentElection;
+    private bool _isGuestTeller;
+    private bool _isKnownTeller;
 
     public MenuHelper(UrlHelper urlHelper)
     {
       _urlHelper = urlHelper;
+      _currentElection = UserSession.CurrentElection;
+      _isGuestTeller = UserSession.IsGuestTeller;
+      _isKnownTeller = UserSession.IsKnownTeller;
     }
 
     /// <Summary>Title of current menu item, if there is one. Empty string if not.</Summary>
@@ -28,7 +35,7 @@ namespace TallyJ.Code.Resources
         var currentNode = CurrentNode;
 
         var title = currentNode.GetAttribute("title");
-        var parentGroup = ((XmlElement) currentNode.ParentNode);
+        var parentGroup = ((XmlElement)currentNode.ParentNode);
         var showParentTitle = parentGroup != null &&
                               parentGroup.GetAttribute("showTitleInPage").DefaultTo("true") == "true";
         if (showParentTitle)
@@ -94,7 +101,7 @@ namespace TallyJ.Code.Resources
     public XmlElement TrimmedMenu(string menuId = "main")
     {
       var root = MainRootXml().SelectSingleNode("*[@id='{0}']".FilledWith(menuId));
-      return (XmlElement) root;
+      return (XmlElement)root;
     }
 
     public MvcHtmlString InsertMenu(string menuId = "main")
@@ -105,7 +112,7 @@ namespace TallyJ.Code.Resources
 
       var topLevelItems = node.ChildNodes;
 
-      var hidePreBallotPages = UserSession.CurrentElection.HidePreBallotPages.AsBoolean();
+      var hidePreBallotPages = _currentElection == null || _currentElection.HidePreBallotPages.AsBoolean();
 
       var result = topLevelItems
         .Cast<XmlNode>()
@@ -136,9 +143,8 @@ namespace TallyJ.Code.Resources
 
       var rawPath = HttpContext.Current.Server.MapPath("~/Views/Menu.xml");
       var doc = new XmlHelper().GetCachedXmlFile(rawPath);
-      var root = (XmlElement) doc.DocumentElement.CloneNode(true);
-      var currentElection = UserSession.CurrentElection;
-      var hidePreBallotPages = currentElection != null && currentElection.HidePreBallotPages.AsBoolean();
+      var root = (XmlElement)doc.DocumentElement.CloneNode(true);
+      var hidePreBallotPages = _currentElection != null && _currentElection.HidePreBallotPages.AsBoolean();
       var nodes = root.SelectNodes("//*");
       foreach (var node in nodes
         .Cast<XmlNode>()
@@ -187,7 +193,7 @@ namespace TallyJ.Code.Resources
     private bool Allowed(XmlElement node, bool hidePreBallotPages)
     {
       var role = node.GetAttribute("role");
-      var hasElection = UserSession.CurrentElectionGuid != Guid.Empty;
+      var hasElection = _currentElection != null;
 
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
@@ -195,9 +201,9 @@ namespace TallyJ.Code.Resources
 
       // true tests
       if (role == "*" || role.HasNoContent()) return true;
-      if (role == "guest" && (UserSession.IsGuestTeller || UserSession.IsKnownTeller)) return true;
-      if (role == "known" && UserSession.IsKnownTeller) return true;
-      if (role == "anon" && !(UserSession.IsGuestTeller || UserSession.IsKnownTeller)) return true;
+      if (role == "guest" && (_isGuestTeller || _isKnownTeller)) return true;
+      if (role == "known" && _isKnownTeller) return true;
+      if (role == "anon" && !(_isGuestTeller || _isKnownTeller)) return true;
 
       return false;
     }
@@ -209,8 +215,10 @@ namespace TallyJ.Code.Resources
       const string linkTemplate = "<a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a>";
 
       // for full users, give all menu sets
+      var statusItems = ElectionTallyStatusEnum.Items.Select(ts => ts.Value).ToList();
+      statusItems.Add("General");
       var list =
-        ElectionTallyStatusEnum.Items.Select(ts => ts.Value)
+        statusItems
           .Select(tallyStatus =>
             nodes.SelectMany(item =>
               item.ChildNodes.Cast<XmlNode>()
@@ -231,19 +239,24 @@ namespace TallyJ.Code.Resources
               .JoinedAsString(" ")
               .SurroundContentWith(
                 "<span id=menu{0}{1}>".FilledWith(tallyStatus,
-                  UserSession.IsFeatured(tallyStatus) ? "" : " class=Hidden"), "</span>")).ToList();
+                  UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " class=Hidden"), "</span>")).ToList();
 
       return list.JoinedAsString("");
     }
 
     public HtmlString StateSelectorItems()
     {
-      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
-//      if (UserSession.IsKnownTeller)
-//      {
-//        return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
-//      }
-//      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
+      return ElectionTallyStatusEnum.ForHtmlList(_currentElection);
+      //      if (UserSession.IsKnownTeller)
+      //      {
+      //        return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection);
+      //      }
+      //      return ElectionTallyStatusEnum.ForHtmlList(UserSession.CurrentElection, false);
+    }
+
+    public bool IsFeatured(string pageFeatureWhen)
+    {
+      return UserSession.IsFeatured(pageFeatureWhen, _currentElection);
     }
   }
 

@@ -9,7 +9,11 @@
     </div>
 </div>
 <div class="modal-body">
-    @foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
+    
+  @{
+    var menuHelper = new MenuHelper(this.Url);
+  }
+  @foreach (XmlElement item in menuHelper.TrimmedMenu().ChildNodes)
     {
         var started = false;
         <section class="mmSection">
@@ -24,7 +28,7 @@
                 <h1 class="mmTitle">@item.GetAttribute("longtitle")</h1>
                     started = true;
                 }
-                <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
+                <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(menuHelper.IsFeatured(child.GetAttribute("featureWhen")) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
                     <span class="mainmenu @child.GetAttribute("class") Role-@child.GetAttribute("role")">
                         @child.GetAttribute("title")
                     </span>

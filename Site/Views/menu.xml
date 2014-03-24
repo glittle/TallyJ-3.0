@@ -2,7 +2,6 @@
 <root  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
   <menu id="main">
     <group title="Preparing" longtitle="Initial Setup - Preparing for the election" showTitleInPage="false">
-      <page title="Choose Election" featureWhen="OnDash, NotStarted" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
       <page title="Configure this Election" featureWhen="NotStarted, NamesReady" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>
@@ -23,18 +22,19 @@
       <page title="Display Tellers' Report" featureWhen="Reviewing, Report" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
       <!--<page title="Export Data" controller="Setup" action="Export" requireElection="true" role="known" desc="Download election data to a local file."></page>-->
     </group>
-    <group title="General" longtitle="General pages" showTitleInPage="false">
+    <group title="general" longtitle="General pages" showTitleInPage="false">
       <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="true" requireElection="false" role="*" desc="Welcome page"></page>
-      <page title="Dashboard" featureWhen="OnDash" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
-      <page title="Reference Materials" featureWhen="OnDash" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
-      <page title="Change my Password" featureWhen="OnDash" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
-      <page title="Logout" featureWhen="OnDash, Report" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>
+      <page title="Choose Election" featureWhen="OnDash, General" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
+      <page title="Dashboard" featureWhen="OnDash, General" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
+      <page title="Reference Materials" featureWhen="OnDash, General" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
+      <page title="Change my Password" featureWhen="OnDash, General" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
+      <page title="Logout" featureWhen="OnDash, General" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>
     </group>
   </menu>
   <menu id="misc">
     <page title="Logon Page" controller="Account" action="LogOn" requireElection="false" role="*" desc=""/>
     <page title="Register Page" controller="Account" action="Register" requireElection="false" role="*" desc=""/>
-    <page title="Contact" controller="Public" action="Contact" requireElection="false" role="*" desc=""/>
+    <page title="Contact" controller="Public" featureWhen="General" action="Contact" requireElection="false" role="*" desc=""/>
     <page title="About" controller="Public" action="About" requireElection="false" role="*" desc=""/>
     <page title="Install" controller="Public" action="Install" requireElection="false" role="*" desc=""/>
   </menu>
