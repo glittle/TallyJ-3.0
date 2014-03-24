@@ -5470,6 +5470,17 @@ a.twitter {
   -moz-border-top-left-radius: 0px;
   -moz-border-bottom-left-radius: 0px;
 }
+.ElectionState ol li.Report {
+  border-radius: 0;
+}
+.ElectionState ol li.General {
+  border-radius: 12px;
+  color: #bbb;
+  border: 1px solid #ccc;
+}
+.ElectionState ol li.General:hover {
+  color: #333;
+}
 body.AuthKnown .ElectionState ol li.Active_False:hover {
   cursor: pointer;
   background-color: #EFffEF;
@@ -5479,6 +5490,10 @@ body.AuthKnown .ElectionState ol li.Active_False:hover {
 }
 body.AuthGuest .ElectionState ol li.Active_False {
   display: none;
+}
+body.AuthGuest .ElectionState ol li.General {
+  cursor: pointer;
+  display: inline-block;
 }
 /*.ChangeElectionState {
   display: none;
@@ -5642,9 +5657,20 @@ body.AuthKnown .CurrentElectionName {
 .QuickLinks2 a.Active:hover {
   background-color: inherit;
 }
-.QuickLinks2.temp #qmenuTitle {
+.QuickLinks2.temp {
+  background-color: #efeeef;
+}
+.QuickLinks2.temp #quickLinks2 a {
+  background-color: #fff;
+}
+.QuickLinks2.temp #quickLinks2 a.Active {
   background-color: #d2ff92;
-  padding: 1px 3px;
+}
+.QuickLinks2.temp #quickLinks2 a.Active:hover {
+  background-color: inherit;
+}
+.QuickLinks2.temp #quickLinks2 a:hover {
+  background-color: #EFEEEF;
 }
 .AuthKnown .AllowChangeElectionState.bold {
   border: 1px solid #013d7a;

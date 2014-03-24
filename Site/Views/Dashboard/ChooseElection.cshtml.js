@@ -185,9 +185,9 @@
   };
 
   var afterSelectElection = function (info) {
-    if (info.Pulse) {
-      ProcessPulseResult(info.Pulse);
-    }
+//    if (info.Pulse) {
+//      ProcessPulseResult(info.Pulse);
+//    }
     ResetStatusDisplay();
 
     if (info.Selected) {

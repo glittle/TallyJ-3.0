@@ -80,7 +80,7 @@
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>
-              <a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>
+              @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
             <div class="QuickLinks2">
               <span id="qmenuTitle">@UserSession.CurrentElectionStatusName</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>

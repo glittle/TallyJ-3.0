@@ -231,6 +231,10 @@ function AttachHandlers() {
 
   $('body.AuthKnown #electionState li').on('click', function () {
     var item = $(this);
+    if (item.hasClass('General')) {
+      // don't set status to General
+      return;
+    }
     var form = {
       state: item.data('state')
     };
@@ -239,7 +243,8 @@ function AttachHandlers() {
       ResetStatusDisplay();
       site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
-  }).on('mouseenter', HoverQuickLink);
+  });
+  $('#electionState li').on('mouseenter', HoverQuickLink);
 
   $('body').on('click', 'a[href="/Account/Logoff"]', function () {
     logoffSignalR();
@@ -247,6 +252,7 @@ function AttachHandlers() {
 }
 
 function updateElectionStatus(ev, info) {
+  site.electionState = info.StateName;
   showMenu(info.StateName, true);
 }
 
@@ -290,6 +296,7 @@ function HoverQuickLink(ev) {
     $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
     $('.TopInfo').on('mouseenter', reentered);
 
+    clearTimeout(site.hoverQuickLinkTimeout);
     site.hoverQuickLinkTimeout = setTimeout(function () {
       showMenu(site.electionState, true, true);
       $('.TopInfo').off('mouseenter', reentered);

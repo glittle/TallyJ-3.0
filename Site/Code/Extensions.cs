@@ -457,12 +457,17 @@ namespace TallyJ.Code
     /// <typeparam name="T"> The type of the stored object </typeparam>
     /// <param name="input"> Name in list </param>
     /// <param name="defaultValue"> Default value to use if nothing found </param>
+    /// <param name="saveDefault">If yes, the Default value is stored if it is used</param>
     /// <returns> </returns>
-    public static T FromPageItems<T>(this string input, T defaultValue)
+    public static T FromPageItems<T>(this string input, T defaultValue, bool saveDefault = false)
     {
       var value = HttpContext.Current.Items[input];
       if (value == null || value.GetType() != typeof(T))
       {
+        if (saveDefault)
+        {
+          HttpContext.Current.Items[input] = defaultValue;
+        }
         return defaultValue;
       }
       return (T)value;

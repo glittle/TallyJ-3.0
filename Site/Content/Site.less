@@ -741,6 +741,20 @@ a.twitter {
       -moz-border-radius: 12px;
       -moz-border-top-left-radius: 0px;
       -moz-border-bottom-left-radius: 0px;
+
+      &.Report {
+        border-radius: 0;
+      }
+
+      &.General {
+        border-radius: 12px;
+        color: #bbb;
+        border: 1px solid #ccc;
+
+        &:hover {
+          color: #333;
+        }
+      }
     }
   }
 }
@@ -757,6 +771,12 @@ body.AuthKnown .ElectionState ol li.Active_False:hover {
 body.AuthGuest .ElectionState ol li.Active_False {
   display: none;
 }
+
+body.AuthGuest .ElectionState ol li.General {
+  cursor: pointer;
+  display: inline-block;
+}
+
 
 /*.ChangeElectionState {
   display: none;
@@ -957,9 +977,24 @@ body.AuthKnown .CurrentElectionName {
     }
 
   &.temp {
-    #qmenuTitle{
-      background-color: #d2ff92;
-      padding: 1px 3px;
+    background-color: #efeeef;
+
+    #quickLinks2 {
+      a {
+        background-color: #fff;
+
+        &.Active {
+          background-color: #d2ff92;
+
+          &:hover {
+            background-color: inherit;
+          }
+        }
+
+        &:hover {
+          background-color: #EFEEEF;
+        }
+      }
     }
   }
 }
@@ -976,14 +1011,15 @@ body.AuthKnown .CurrentElectionName {
     background-color: #BDD2FF;
   }
 
-.AuthGuest .AllowChangeElectionState.ui-icon {
-  display: none;
-}
+.AuthGuest {
+  .AllowChangeElectionState.ui-icon {
+    display: none;
+  }
 
-.AuthGuest .NotFeatured {
-  display: none;
+  .NotFeatured {
+    display: none;
+  }
 }
-
 
 .QuickLinks {
   margin: 5px 0 0 0;

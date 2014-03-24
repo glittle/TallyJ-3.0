@@ -98,7 +98,8 @@ namespace TallyJ.Code.Session
         SessionKey.CurrentElectionGuid.SetInSession(value);
 
         // reset so we don't use data we just loaded
-        HttpContext.Current.Items[ItemKey.CurrentElection] = null;
+        ItemKey.CurrentElection.SetInPageItems<Election>(null);
+        //        HttpContext.Current.Items[ItemKey.CurrentElection] = null;
       }
     }
 
@@ -111,7 +112,8 @@ namespace TallyJ.Code.Session
       get
       {
         // check temp cache for page rendering
-        var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        var election = ItemKey.CurrentElection.FromPageItems<Election>(null);
         if (election != null)
         {
           return election;
@@ -123,6 +125,12 @@ namespace TallyJ.Code.Session
         if (hasElection)
         {
           election = new ElectionCacher().AllForThisElection.FirstOrDefault();
+          if (election == null)
+          {
+            // occasionally, when changing elections, the cacher has the old election...need to flush it
+            new ElectionCacher().DropThisCache();
+            election = new ElectionCacher().AllForThisElection.FirstOrDefault();
+          }
 
           // even if have valid guid, may be null if election was just deleted
           if (election == null)
@@ -132,7 +140,8 @@ namespace TallyJ.Code.Session
           else
           {
             // save for next use in this same rendering
-            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
+            //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
+            ItemKey.CurrentElection.SetInPageItems(election);
           }
         }
 
@@ -194,7 +203,7 @@ namespace TallyJ.Code.Session
           return null;
         }
 
-        var location = HttpContext.Current.Items[ItemKey.CurrentLocation] as Location;
+        var location = ItemKey.CurrentLocation.FromPageItems<Location>(null);
         if (location != null && location.LocationGuid == currentLocationGuid)
         {
           return location;
@@ -209,7 +218,7 @@ namespace TallyJ.Code.Session
           CurrentLocationGuid = location.LocationGuid;
         }
 
-        HttpContext.Current.Items[ItemKey.CurrentLocation] = location;
+        ItemKey.CurrentLocation.SetInPageItems(location);
         return location;
       }
     }
@@ -230,22 +239,22 @@ namespace TallyJ.Code.Session
     }
 
     //    public static long LastVersionNum
-//    {
-//      get { return SessionKey.LastVersionNum.FromSession(0); }
-//      set { SessionKey.LastVersionNum.SetInSession(value); }
-//    }
+    //    {
+    //      get { return SessionKey.LastVersionNum.FromSession(0); }
+    //      set { SessionKey.LastVersionNum.SetInSession(value); }
+    //    }
 
-//    public static Computer CurrentComputerX
-//    {
-//      get
-//      {
-//        if (new ComputerCacher().GetById(CurrentComputerId) != null)
-//        {
-//          return new ComputerCacher().GetById(CurrentComputerId);
-//        }
-//        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
-//      }
-//    }
+    //    public static Computer CurrentComputerX
+    //    {
+    //      get
+    //      {
+    //        if (new ComputerCacher().GetById(CurrentComputerId) != null)
+    //        {
+    //          return new ComputerCacher().GetById(CurrentComputerId);
+    //        }
+    //        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
+    //      }
+    //    }
     /// <summary>
     /// </summary>
     /// <summary>
@@ -350,7 +359,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogin()
     {
-//      HttpContext.Current.Session.Clear();
+      //      HttpContext.Current.Session.Clear();
       // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
     }
 
@@ -383,13 +392,12 @@ namespace TallyJ.Code.Session
     }
 
 
-    public static bool IsFeatured(string pageFeatureWhen)
+    public static bool IsFeatured(string pageFeatureWhen, Election election)
     {
       if (pageFeatureWhen == "*")
       {
         return true;
       }
-      var election = CurrentElection;
       var currentStatus = election == null
         ? ElectionTallyStatusEnum.NotStarted
         : election.TallyStatus ?? ElectionTallyStatusEnum.NotStarted;
@@ -399,6 +407,8 @@ namespace TallyJ.Code.Session
 
     public static void ResetWhenSwitchingElections()
     {
+      new CacherHelper().DropAllCachesForThisElection();
+
       var session = HttpContext.Current.Session;
 
       session.Remove(SessionKey.CurrentBallotFilter);
