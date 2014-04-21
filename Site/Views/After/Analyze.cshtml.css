@@ -108,9 +108,10 @@ td.Left {
 
 #InitialMsg {
   color: red;
-  font-size: 120%;
   font-weight: bold;
-  margin-bottom: 50px;
+  font-size: 105%;
+  margin: 10px 0 25px 0;
+  text-align: center;
 }
 
 
