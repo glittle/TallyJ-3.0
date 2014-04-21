@@ -672,6 +672,10 @@ namespace TallyJ.CoreModels
     public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
     {
       var currentElection = UserSession.CurrentElection;
+      if (currentElection == null)
+      {
+        return;
+      }
 
       var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
         .Where(c => c.AuthLevel == "Known")
