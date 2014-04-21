@@ -323,14 +323,14 @@ namespace TallyJ.CoreModels
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection); }
+      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection.ToList()); }
     }
 
     #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
-      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection); }
+      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection.ToList()); }
     }
 
     /// <Summary>Current Results records</Summary>
@@ -351,9 +351,9 @@ namespace TallyJ.CoreModels
       {
         if (_voteinfos != null) return _voteinfos;
 
-        return _voteinfos = new VoteCacher().AllForThisElection
-          .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
-          .Select(g => new VoteInfo(g.v, TargetElection, new BallotCacher().AllForThisElection.Single(b => b.BallotGuid == g.v.BallotGuid), UserSession.CurrentLocation, g.p))
+        return _voteinfos = Votes
+          .JoinMatchingOrNull(People, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
+          .Select(g => new VoteInfo(g.v, TargetElection, Ballots.Single(b => b.BallotGuid == g.v.BallotGuid), UserSession.CurrentLocation, g.p))
           .OrderBy(vi => vi.PositionOnBallot)
           .ToList();
       }

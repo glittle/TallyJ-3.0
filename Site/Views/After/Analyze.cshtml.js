@@ -52,12 +52,17 @@
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
     $('body').removeClass('notReady');
     $('.LeftHalf, .RightHalf').fadeOut();
-    $('#InitialMsg').show();
+    $('#InitialMsg').text('Analyzing all ballots...').show();
 
     CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
   };
 
   var showInfo = function (info, firstLoad) {
+    if (info.Interrupted) {
+      $('#InitialMsg').text('Analysis interrupted. Please try again while tellers are not actively entering ballots.');
+      return;
+    }
+
     var votesTable = $('table.Main');
     var invalidsTable = $('table#invalids');
     var instructionsTable = $('table#instructions');

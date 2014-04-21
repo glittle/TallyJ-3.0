@@ -377,13 +377,13 @@ namespace TallyJ.Code.Session
     /// <param name="movingToOtherElection"></param>
     public static void LeaveElection(bool movingToOtherElection)
     {
-      if (IsLoggedIn)
-      {
-        new ComputerModel().RemoveComputerRecord();
-      }
       if (IsKnownTeller)
       {
         new ElectionModel().CloseElection();
+      }
+      if (IsLoggedIn)
+      {
+        new ComputerModel().RemoveComputerRecord();
       }
       if (movingToOtherElection)
       {

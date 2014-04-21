@@ -110,51 +110,113 @@ namespace TallyJ.CoreModels
     public object GetCurrentResults()
     {
       var resultSummaries = _analyzer.ResultSummaries;
-      var resultSummaryFinal = resultSummaries.First(rs => rs.ResultType == ResultType.Final);
 
-      // don't show any details if review is needed
-      if (resultSummaryFinal.BallotsNeedingReview != 0)
+      try
       {
-        var locations = new LocationCacher().AllForThisElection;
+        var resultSummaryFinal = resultSummaries.First(rs => rs.ResultType == ResultType.Final);
 
-        var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
-          .Join(locations, vi => vi.LocationId, l => l.C_RowId,
-            (vi, location) => new { vi, location })
-          .Select(x => new
-          {
-            x.vi.LocationId,
-            x.vi.BallotId,
-            Status =
-              x.vi.BallotStatusCode == "Review"
-                ? BallotStatusEnum.Review.DisplayText
-                : "Verification Needed",
-            Ballot =
-              string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name)
-          })
-          .Distinct()
-          .OrderBy(x => x.Ballot);
+        // don't show any details if review is needed
+        if (resultSummaryFinal.BallotsNeedingReview != 0)
+        {
+          var locations = new LocationCacher().AllForThisElection;
 
-        var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
-          .Join(locations, b => b.LocationGuid, l => l.LocationGuid,
-            (b, location) => new { b, location })
-          .Select(x => new
+          var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
+            .Join(locations, vi => vi.LocationId, l => l.C_RowId,
+              (vi, location) => new { vi, location })
+            .Select(x => new
+            {
+              x.vi.LocationId,
+              x.vi.BallotId,
+              Status =
+                x.vi.BallotStatusCode == "Review"
+                  ? BallotStatusEnum.Review.DisplayText
+                  : "Verification Needed",
+              Ballot =
+                string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name)
+            })
+            .Distinct()
+            .OrderBy(x => x.Ballot);
+
+          var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
+            .Join(locations, b => b.LocationGuid, l => l.LocationGuid,
+              (b, location) => new { b, location })
+            .Select(x => new
+            {
+              LocationId = x.location.C_RowId,
+              BallotId = x.b.C_RowId,
+              Status =
+                x.b.StatusCode == "Review"
+                  ? BallotStatusEnum.Review.DisplayText
+                  : "Verification Needed",
+              Ballot =
+                string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name)
+            });
+
+          return new
           {
-            LocationId = x.location.C_RowId,
-            BallotId = x.b.C_RowId,
-            Status =
-              x.b.StatusCode == "Review"
-                ? BallotStatusEnum.Review.DisplayText
-                : "Verification Needed",
-            Ballot =
-              string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name)
-          });
+            NeedReview = needReview.Concat(needReview2).Distinct(),
+            ResultsManual =
+              (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
+               new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            ResultsCalc =
+              resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
+                .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            ResultsFinal =
+              resultSummaries.First(rs => rs.ResultType == ResultType.Final)
+                .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+          };
+        }
+
+        // show vote totals
+
+        var persons = new PersonCacher().AllForThisElection;
+
+        var vResultInfos =
+          // TODO 2012-01-21 Glen Little: Could return fewer columns for non-tied results
+          new ResultCacher().AllForThisElection
+            .OrderBy(r => r.Rank)
+            .ToList()
+            .Select(r => new
+            {
+              rid = r.C_RowId,
+              r.CloseToNext,
+              r.CloseToPrev,
+              r.ForceShowInOther,
+              r.IsTied,
+              r.IsTieResolved,
+              PersonName = PersonNameFor(persons, r),
+              r.Rank,
+              //ri.RankInExtra,
+              r.Section,
+              r.TieBreakCount,
+              r.TieBreakGroup,
+              r.TieBreakRequired,
+              r.VoteCount
+            }).ToList();
+
+        var ties = new ResultTieCacher().AllForThisElection
+          .OrderBy(rt => rt.TieBreakGroup)
+          .Select(rt => new
+          {
+            rt.TieBreakGroup,
+            rt.NumInTie,
+            rt.NumToElect,
+            rt.TieBreakRequired,
+            rt.IsResolved
+          }).ToList();
+
+        //var spoiledVotesSummary = Db.vVoteInfoes.where
 
         return new
         {
-          NeedReview = needReview.Concat(needReview2).Distinct(),
+          Votes = vResultInfos,
+          Ties = ties,
+          NumToElect = _election.NumberToElect,
+          NumExtra = _election.NumberExtra,
+          ShowCalledIn = _election.UseCallInButton,
           ResultsManual =
-            (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
-             new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
+              .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
           ResultsCalc =
             resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
@@ -163,64 +225,14 @@ namespace TallyJ.CoreModels
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
         };
       }
-
-      // show vote totals
-
-      var persons = new PersonCacher().AllForThisElection;
-
-      var vResultInfos =
-        // TODO 2012-01-21 Glen Little: Could return fewer columns for non-tied results
-        new ResultCacher().AllForThisElection
-          .OrderBy(r => r.Rank)
-          .ToList()
-          .Select(r => new
-          {
-            rid = r.C_RowId,
-            r.CloseToNext,
-            r.CloseToPrev,
-            r.ForceShowInOther,
-            r.IsTied,
-            r.IsTieResolved,
-            PersonName = PersonNameFor(persons, r),
-            r.Rank,
-            //ri.RankInExtra,
-            r.Section,
-            r.TieBreakCount,
-            r.TieBreakGroup,
-            r.TieBreakRequired,
-            r.VoteCount
-          }).ToList();
-
-      var ties = new ResultTieCacher().AllForThisElection
-        .OrderBy(rt => rt.TieBreakGroup)
-        .Select(rt => new
-        {
-          rt.TieBreakGroup,
-          rt.NumInTie,
-          rt.NumToElect,
-          rt.TieBreakRequired,
-          rt.IsResolved
-        }).ToList();
-
-      //var spoiledVotesSummary = Db.vVoteInfoes.where
-
-      return new
+      catch (Exception)
       {
-        Votes = vResultInfos,
-        Ties = ties,
-        NumToElect = _election.NumberToElect,
-        NumExtra = _election.NumberExtra,
-        ShowCalledIn = _election.UseCallInButton,
-        ResultsManual =
-          (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
-            .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
-        ResultsCalc =
-          resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
-            .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
-        ResultsFinal =
-          resultSummaries.First(rs => rs.ResultType == ResultType.Final)
-            .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
-      };
+        return new
+        {
+          Interrupted = true
+        };
+      }
+
     }
 
     private string PersonNameFor(IEnumerable<Person> persons, Result result)
@@ -268,7 +280,7 @@ namespace TallyJ.CoreModels
           html = MvcViewRenderer.RenderRazorViewToString("~/Reports/{0}.cshtml".FilledWith(code));
           if (html.HasNoContent())
           {
-            return new {Status = "Unknown report"}.AsJsonResult();
+            return new { Status = "Unknown report" }.AsJsonResult();
           }
           break;
       }
