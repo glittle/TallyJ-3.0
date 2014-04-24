@@ -59,9 +59,12 @@
         if (personInfo.MatchType === 1 || personInfo.MatchType === 3) {
           $.each(searchParts, function (k, searchPart) {
             personInfo.Name = personInfo.Name.replace(searchPart, function () {
-              return '<b>' + arguments[0] + '</b>';
+              return '$$' + arguments[0] + '%%';
             });
           });
+          // if "B" is a search term, was matching in <B>
+          personInfo.Name = personInfo.Name.replace(/\$\$/ig, '<b>');
+          personInfo.Name = personInfo.Name.replace(/\%\%/ig, '</b>');
         }
 
         if (usedIds && $.inArray(personInfo.Id, usedIds) != -1) {

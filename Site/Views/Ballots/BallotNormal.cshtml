@@ -54,10 +54,11 @@
         </div>
       </div>
     }
-    <h3><span>Ballots<span id="collectedVsEnteredTitle"></span></span></h3>
+    <h3><span>Ballots</span></h3>
+    @*<span id="collectedVsEnteredTitle"></span>*@
     <div id="tabBallots" class="locationInfo">
       <div class="float-right">
-        <button type="button" id="btnRefreshBallotList" class="btn btn-mini">
+        <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
           Refresh
         </button>
       </div>
@@ -107,8 +108,8 @@
           <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
             Add na<u>m</u>e not in list</button>*@
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="L" class="btn btn-mini btn-warn spoiledBtn float-right">
-          Add a spoi<u>l</u>ed vote
+        <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
+          <u>A</u>dd new or spoiled
         </button>
       </div>
       <div class="float-left">
@@ -135,11 +136,11 @@
   <div id="votesList">
   </div>
   <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
-          accesskey="N" tabindex="2">
+          accesskey="N" tabindex="3">
     Start <u>N</u>ew Ballot
   </button>
   <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if ballot status or vote lines and numbers appear to be wrong.">
-    Clean Up Ballot
+    Refresh Ballot
   </button>
   <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
     Delete this empty ballot

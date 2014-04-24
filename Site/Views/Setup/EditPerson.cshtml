@@ -26,6 +26,40 @@
       <span class="ui-icon ui-icon-info" id="qTipLName"></span>
     </td>
   </tr>
+  <tr class="topLine">
+    <td>
+      <label for="ddlIneligible">Eligiblity status:</label>
+    </td>
+    <td>
+      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
+      <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
+    </td>
+  </tr>
+  <tr id="trCanVote" class="topLine overrides">
+    <td colspan="2">
+      <label for="input2">Can vote in this election?</label>
+      @*<input type="checkbox" readonly data-name="CanVote" id="input2" />*@
+      <select data-name="CanVote" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(e.g. name **)</span>
+      @*<span class="ui-icon ui-icon-info" id="qTipCnVote"></span>*@
+    </td>
+  </tr>
+  <tr id="trCanReceiveVotes" class="topLine overrides">
+    <td colspan="2">
+      <label for="input1">Can be voted for in this election?</label>
+      @*<input type="checkbox" readonly id="input1" data-name="CanReceiveVotes" />*@
+      <select data-name="CanReceiveVotes" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(e.g. <span class="CannotReceiveVotesSample">name</span>)</span>
+      @*<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>*@
+    </td>
+  </tr>
+
   <tr>
     <td>
       Other First Name(s)
@@ -85,39 +119,6 @@
         </td>
     </tr>
   *@
-  <tr class="topLine">
-    <td>
-      <label for="ddlIneligible">Select correct eligiblity status:</label>
-    </td>
-    <td>
-      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
-      <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
-    </td>
-  </tr>
-  <tr id="trCanVote" class="topLine overrides">
-    <td colspan="2">
-      <label for="input2">Can vote in this election?</label>
-      @*<input type="checkbox" readonly data-name="CanVote" id="input2" />*@
-      <select data-name="CanVote" disabled="disabled">
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <span class="sample">(e.g. name **)</span>
-      @*<span class="ui-icon ui-icon-info" id="qTipCnVote"></span>*@
-    </td>
-  </tr>
-  <tr id="trCanReceiveVotes" class="topLine overrides">
-    <td colspan ="2">
-      <label for="input1">Can be voted for in this election?</label>
-      @*<input type="checkbox" readonly id="input1" data-name="CanReceiveVotes" />*@
-      <select data-name="CanReceiveVotes" disabled="disabled">
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <span class="sample">(e.g. <span class="CannotReceiveVotesSample">name</span>)</span>
-      @*<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>*@
-    </td>
-  </tr>
   <tr>
     <td></td>
     <td>

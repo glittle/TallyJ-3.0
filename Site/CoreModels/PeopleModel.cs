@@ -244,7 +244,7 @@ namespace TallyJ.CoreModels
             person.OtherLastNames,
             person.OtherNames,
             person.Area,
-            C_FullName = person.FullName
+            C_FullName = person.C_FullNameFL
           };
     }
 

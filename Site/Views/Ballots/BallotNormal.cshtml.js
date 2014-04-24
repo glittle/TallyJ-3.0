@@ -246,7 +246,19 @@
 
   var addMissing = function () {
     toggleAddMissingPanel();
-    site.broadcast(site.broadcastCode.startNewPerson, { panelSelector: '#addMissingPanel', ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11' });
+    var searchParts = local.inputField.val().split(' ');
+    var capitalized = function(s) {
+      if (!s) return '';
+      return s.substr(0, 1).toUpperCase() + s.substr(1);
+    };
+    var first = searchParts.shift();
+    var last = searchParts.join(' ');
+    site.broadcast(site.broadcastCode.startNewPerson, {
+      panelSelector: '#addMissingPanel',
+      ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11',
+      first: capitalized(first),
+      last: capitalized(last)
+     });
   };
 
   var cancelAddMissing = function () {
@@ -261,7 +273,6 @@
     toggleAddMissingPanel();
 
     var person = info.Person;
-
     var votes = $.grep(local.votes, function (v) {
       return v.vid == 0;
     });
@@ -280,6 +291,11 @@
         ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
       };
       local.votes.push(vote);
+    }
+    if (!vote.ineligible) {
+      vote.InvalidReasons = null;
+      vote.invalidType = null;
+      vote.invalid = null;
     }
     showVotes();
 
@@ -318,7 +334,7 @@
 
       updateStatusDisplay(ballot);
 
-      var toShow = ballot.StatusCode == 'TooFew' ? tabNum.ballotEdit : tabNum.ballotListing;
+      var toShow = (ballot.StatusCode == 'TooFew' || ballot.StatusCode == 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
       local.tabList.find('h3').eq(toShow).show().next().show();
       local.tabList.accordion('option', 'active', toShow);
 
