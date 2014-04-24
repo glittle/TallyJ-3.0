@@ -553,7 +553,7 @@ namespace TallyJ.CoreModels
 
     public static List<VoteInfo> VoteInfosForBallot(Ballot ballot, List<Vote> allVotes)
     {
-      return (allVotes ?? new VoteCacher().AllForThisElection)
+      return (allVotes ?? new VoteCacher().AllForThisElection.ToList())
                  .Where(v => v.BallotGuid == ballot.BallotGuid)
                  .JoinMatchingOrNull(new PersonCacher().AllForThisElection, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
                  .Select(g => new VoteInfo(g.v, UserSession.CurrentElection, ballot, UserSession.CurrentLocation, g.p))

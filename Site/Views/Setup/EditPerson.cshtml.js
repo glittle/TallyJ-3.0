@@ -1,18 +1,20 @@
-﻿var EditPersonPage = function() {
+﻿var EditPersonPage = function () {
   var local = {
     inputField: null,
     hostPanel: null
   };
 
-  var startNewPerson = function(panel, ineligible) {
-    var reason = $.grep(publicInterface.invalidReasons, function(e) {
+  var startNewPerson = function (panel, ineligible, first, last) {
+    var reason = $.grep(publicInterface.invalidReasons, function (e) {
       return e.Guid == ineligible;
     });
     var personInfo = {
       C_RowId: -1,
       CanVote: true,
-      CanReceiveVotes: true
-  };
+      CanReceiveVotes: true,
+      FirstName: first,
+      LastName: last
+    };
     if (reason.length == 1) {
       personInfo.IneligibleReasonGuid = reason.Guid;
       personInfo.CanVote = reason.CanVote;
@@ -25,10 +27,10 @@
     startEdit();
   };
 
-  var changedIneligible = function() {
+  var changedIneligible = function () {
     var ineligible = $(this).val();
 
-    var reason = $.grep(publicInterface.invalidReasons, function(e) {
+    var reason = $.grep(publicInterface.invalidReasons, function (e) {
       return e.Guid == ineligible;
     });
     var canVote = reason.length > 0 ? reason[0].CanVote : true; // publicInterface.defaultRules.CanVote == 'A';
@@ -41,30 +43,30 @@
     }, false);
   };
 
-  var startEdit = function() {
+  var startEdit = function () {
     local.hostPanel.find('[data-name="FirstName"]').focus();
   };
 
-  var applyValues = function(panel, person, clearAll) {
+  var applyValues = function (panel, person, clearAll) {
     if (panel) {
       local.hostPanel = panel;
     } else {
       panel = local.hostPanel;
     }
 
-    var setValue = function(input, value) {
+    var setValue = function (input, value) {
       switch (input.attr('type')) {
-      case 'checkbox':
-        input.prop('checked', value);
-        break;
-      default:
-        input.val(value.toString());
-        break;
+        case 'checkbox':
+          input.prop('checked', value);
+          break;
+        default:
+          input.val(value.toString());
+          break;
       }
     };
 
     if (clearAll) {
-      panel.find(':input[data-name]').each(function() {
+      panel.find(':input[data-name]').each(function () {
         var input = $(this);
         var value = person[input.data('name')];
         if (!value && value !== false) {
@@ -75,7 +77,7 @@
     } else {
       // apply only the properties given
       for (var prop in person) {
-        panel.find(':input[data-name]').each(function() {
+        panel.find(':input[data-name]').each(function () {
           var input = $(this);
           if (input.data('name') == prop) {
             setValue(input, person[prop]);
@@ -99,18 +101,18 @@
     //        panel.find('[data-name="FirstName"]').focus();
   };
 
-  var saveChanges = function() {
+  var saveChanges = function () {
     var form = {};
-    local.hostPanel.find(':input[data-name]').each(function() {
+    local.hostPanel.find(':input[data-name]').each(function () {
       var input = $(this);
       var value;
       switch (input.attr('type')) {
-      case 'checkbox':
-        value = input.prop('checked');
-        break;
-      default:
-        value = input.val();
-        break;
+        case 'checkbox':
+          value = input.prop('checked');
+          break;
+        default:
+          value = input.val();
+          break;
       }
       form[input.data('name')] = value;
     });
@@ -121,7 +123,7 @@
     }
 
     ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function(info) {
+    CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
       if (info.Person) {
         applyValues(null, info.Person, true);
         startEdit();
@@ -133,12 +135,12 @@
   };
 
 
-  var preparePage = function() {
+  var preparePage = function () {
     $('#btnSave').click(saveChanges);
     $('#ddlIneligible').html(prepareReasons()).change(changedIneligible);
 
-    site.onbroadcast(site.broadcastCode.startNewPerson, function(ev, data) {
-      startNewPerson($(data.panelSelector), data.ineligible);
+    site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {
+      startNewPerson($(data.panelSelector), data.ineligible, data.first, data.last);
     });
 
     site.qTips.push({ selector: '#qTipFName', title: 'First Name', text: 'These are the main names for this person. Both first and last name must be filled in.' });
@@ -158,10 +160,10 @@
     //    site.qTips.push({ selector: '#qTipCanReceive', title: 'Tie Break?', text: 'Override eligibility status. Check this box if this person can be voted for.' });
   };
 
-  var prepareReasons = function() {
+  var prepareReasons = function () {
     var html = ['<option value="">Eligible to vote and be voted for</option>'];
     var group = '';
-    $.each(publicInterface.invalidReasons, function() {
+    $.each(publicInterface.invalidReasons, function () {
       var reasonGroup = this.Group;
       if (reasonGroup == 'Unreadable') return;
       if (reasonGroup != group) {
