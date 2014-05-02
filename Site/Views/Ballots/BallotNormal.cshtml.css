@@ -450,3 +450,22 @@ span.HideZero0 {
   margin-top: 9px;
   font-size: 80%;
 }
+
+#keyTimeShow {
+  width: 3px;
+  height: 1px;
+  top: 1px;
+  background-color: #0ce84d;
+  display: inline-block;
+  position: absolute;
+}
+#keyTimeShow.searching {
+  background-color: red;
+}
+#txtSearch {
+  margin-left: 5px;
+}
+
+#searchInput {
+  position: relative;
+}

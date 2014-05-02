@@ -4,9 +4,9 @@
     People: [],
     peopleHelper: null,
     keyTimer: null,
-    keyTime: 300,
+    keyTime: 950,
     lastSearch: '',
-    actionTag: null,
+//    actionTag: null,
     inputField: null,
     nameList: null,
     searchPanel: null,
@@ -24,6 +24,7 @@
     invalidReasonsShortHtml: null,
     rowSelected: 0,
     lastBallotRowVersion: 0,
+    keyTimeShowSpan: null,
     searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
@@ -58,8 +59,9 @@
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
-    local.actionTag = $('#action');
+    local.inputField = $('#txtSearch').live('keyup paste', searchTextChanged).focus();
+//    local.actionTag = $('#action');
+    local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
@@ -247,7 +249,7 @@
   var addMissing = function () {
     toggleAddMissingPanel();
     var searchParts = local.inputField.val().split(' ');
-    var capitalized = function(s) {
+    var capitalized = function (s) {
       if (!s) return '';
       return s.substr(0, 1).toUpperCase() + s.substr(1);
     };
@@ -258,7 +260,7 @@
       ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11',
       first: capitalized(first),
       last: capitalized(last)
-     });
+    });
   };
 
   var cancelAddMissing = function () {
@@ -269,7 +271,7 @@
 
   var newPersonSaved = function (ev, info) {
     local.lastSearch = ''; // force a reload
-    runSearch();
+    searchTextChanged();
     toggleAddMissingPanel();
 
     var person = info.Person;
@@ -772,6 +774,8 @@
   var onNamesReady = function (info, beingRefreshed) {
     local.People = info.People || [];
 
+    resetKeyTimeShow();
+
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
     if (!local.People.length && local.lastSearch) {
@@ -801,13 +805,15 @@
         }
       });
     }
-    local.actionTag.removeClass('searching');
-    local.actionTag.text('');
-    local.inputField.removeClass('searching');
+//    local.actionTag.removeClass('searching');
+//    local.actionTag.text('');
+//    local.inputField.removeClass('searching');
 
     // single:
-    local.nameList.children().removeClass('selected');
-    local.nameList.children().eq(local.rowSelected).addClass('selected');
+//    local.nameList.children().removeClass('selected');
+//    LogMessage(local.rowSelected);
+//    local.nameList.children().eq(local.rowSelected).addClass('selected');
+    setSelected(local.nameList.children(), local.rowSelected);
   };
 
   var getIneligibleReasonDesc = function (guid) {
@@ -853,7 +859,7 @@
     if (elemTop < containerTop) {
       $(container).scrollTop(Math.max(0, elemTop - 10));
     } else if (elemBottom > containerBottom) {
-      $(container).scrollTop(elemBottom - $(container).height() + 10);
+      $(container).scrollTop(elemBottom - $(container).height() + 30);
     }
   };
 
@@ -1020,18 +1026,24 @@
 
       case 27: // esc
         local.inputField.val('');
-        runSearch();
+        searchTextChanged();
         return true;
 
       default:
-        LogMessage(ev.which);
+        //        LogMessage(ev.which);
         break;
     }
     return false;
   };
-
-  var runSearch = function (ev) {
+  var resetKeyTimeShow = function() {
+    local.keyTimeShowSpan
+      .stop(true, true)
+      .removeClass('searching')
+      .css({ height: 0 });
+  };
+  var searchTextChanged = function (ev) {
     clearTimeout(local.keyTimer);
+    resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
     if (ev && navigating(ev)) {
@@ -1042,19 +1054,32 @@
       resetSearch();
       return;
     }
-    local.actionTag.html('');
-    local.actionTag.addClass('delaying');
-    input.addClass('delaying');
+//    local.actionTag.html('');
+//    local.actionTag.addClass('delaying');
+//    input.addClass('delaying');
+
+
+    local.keyTimeShowSpan
+      .animate({
+        height: 25
+      }, {
+        duration: local.keyTime,
+        queue: false,
+        start: resetKeyTimeShow,
+        complete: function () {
+          local.keyTimeShowSpan.addClass('searching');
+        }
+      });
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
 
-      local.actionTag.removeClass('delaying');
-      input.removeClass('delaying');
+//      local.actionTag.removeClass('delaying');
+//      input.removeClass('delaying');
 
-      local.actionTag.addClass('searching');
-      local.actionTag.text('searching...');
-      input.addClass('searching');
+//      local.actionTag.addClass('searching');
+//      local.actionTag.text('searching...');
+//      input.addClass('searching');
 
       local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
     }, local.keyTime);

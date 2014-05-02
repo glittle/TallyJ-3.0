@@ -104,15 +104,13 @@
         Search for a <u>p</u>erson:
       </div>
       <div class="float-right">
-        @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-          <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
-            Add na<u>m</u>e not in list</button>*@
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
         <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
           <u>A</u>dd new or spoiled
         </button>
       </div>
-      <div class="float-left">
+      <div class="float-left" id="searchInput">
+        <span id="keyTimeShow"></span>
         <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
       </div>
       <div class="actionHolder Clear">
