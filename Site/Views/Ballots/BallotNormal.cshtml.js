@@ -6,7 +6,7 @@
     keyTimer: null,
     keyTime: 950,
     lastSearch: '',
-//    actionTag: null,
+    //    actionTag: null,
     inputField: null,
     nameList: null,
     searchPanel: null,
@@ -47,11 +47,19 @@
       collapsible: true,
       icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
       activate: function (event, ui) {
-        if (ui.newPanel.attr('id') === 'tabBallots') {
-          local.inputField.focus().select();
-        }
-        else if (ui.newPanel.attr('id') === 'tabNameSearch') {
-          $('#txtSearch').focus().select();
+        var activePanelId = ui.newPanel.attr('id');
+        switch (activePanelId) {
+          case 'tabBallots':
+            local.inputField.focus().select();
+            showAddToThisBtn(true);
+            break;
+          case 'tabNameSearch':
+            local.inputField.focus().select();
+            showAddToThisBtn(false);
+            break;
+          default:
+            showAddToThisBtn(true);
+            break;
         }
       }
     });
@@ -59,8 +67,8 @@
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch').live('keyup paste', searchTextChanged).focus();
-//    local.actionTag = $('#action');
+    local.inputField = $('#txtSearch').live('keyup paste', searchTextChanged);
+    local.inputField.focus();
     local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
@@ -94,7 +102,7 @@
 
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
-
+    $('#btnAddToThis').on('click', showBallotTab);
     $('#ballotFilter').on('change', startToChangeBallotFilter);
 
     //        $('#btnAddMissing').on('click', addMissing);
@@ -181,6 +189,8 @@
   };
 
   var showBallotTab = function (focusOnIt) {
+    resetSearch();
+
     local.tabList.find('h3').eq(tabNum.ballotEdit).show();
     if (focusOnIt) {
       // local.tabList.find('h3').eq(tabNum.ballotEdit).next().show();
@@ -188,6 +198,23 @@
     }
   };
 
+  /*
+  
+
+add to this ballot
+ - show if name search NOT visible and ballot is displayed
+ - hide if search is visible
+
+  */
+
+
+  var showAddToThisBtn = function (show) {
+    if (show) {
+      $('#btnAddToThis').show();
+    } else {
+      $('#btnAddToThis').hide();
+    }
+  }
   var hideBallotTab = function () {
     local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
   };
@@ -339,6 +366,7 @@
       var toShow = (ballot.StatusCode == 'TooFew' || ballot.StatusCode == 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
       local.tabList.find('h3').eq(toShow).show().next().show();
       local.tabList.accordion('option', 'active', toShow);
+      showAddToThisBtn(toShow == tabNum.ballotListing);
 
       highlightBallotInList();
 
@@ -350,6 +378,7 @@
 
       local.tabList.accordion('option', 'active', tabNum.ballotListing);
       hideBallotTab();
+      showAddToThisBtn(true);
       local.btnDeleteBallot.prop('disabled', true);
     }
 
@@ -575,6 +604,9 @@
   };
 
   var invalidReasonChanged = function (ev) {
+    if (ev.target.selectedIndex == -1) {
+      return; //nothing selected
+    }
     var select = $(ev.target);
     var reason = select.val();
     if (reason == '0') {
@@ -587,6 +619,13 @@
       // remove this one
       var voteId = parent.data('vote-id') || 0;
       parent.remove();
+      for (var i = 0; i < local.votes.length; i++) {
+        var vote = local.votes[i];
+        if (vote.vid == voteId) {
+          local.votes.splice(i, 1);
+          break;
+        }
+      }
       if (voteId != 0) {
         var form = {
           vid: voteId
@@ -685,10 +724,11 @@
 
         if (info.BallotStatus == 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
+
           $('#btnNewBallot2').effect('highlight', null, 1500);
         }
 
-        focusOnTextInput();
+        //        focusOnTextInput();
       }
       else {
         ShowStatusFailed(info.Error);
@@ -740,6 +780,7 @@
 
         if (info.BallotStatus == 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
+          showAddToThisBtn(true);
         }
 
         if (info.Location) {
@@ -805,14 +846,14 @@
         }
       });
     }
-//    local.actionTag.removeClass('searching');
-//    local.actionTag.text('');
-//    local.inputField.removeClass('searching');
+    //    local.actionTag.removeClass('searching');
+    //    local.actionTag.text('');
+    //    local.inputField.removeClass('searching');
 
     // single:
-//    local.nameList.children().removeClass('selected');
-//    LogMessage(local.rowSelected);
-//    local.nameList.children().eq(local.rowSelected).addClass('selected');
+    //    local.nameList.children().removeClass('selected');
+    //    LogMessage(local.rowSelected);
+    //    local.nameList.children().eq(local.rowSelected).addClass('selected');
     setSelected(local.nameList.children(), local.rowSelected);
   };
 
@@ -878,6 +919,8 @@
     var personId = +rawId.substr(1);
     if (personId == 0) return;
 
+    focusOnTextInput();
+
     local.votes.push({
       vid: 0,
       pid: personId,
@@ -894,7 +937,7 @@
   };
 
   var addSpoiled = function () {
-    LogMessage('spoiled');
+    //    LogMessage('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -902,7 +945,6 @@
       changed: false,
       InvalidReasons: local.invalidReasonsShortHtml
     });
-
 
     showVotes(false);
 
@@ -975,8 +1017,8 @@
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-        '<option value="0">Select a reason...</option>',
-        '<option value="-1">Name not found in search...</option>'
+          '<option value="-1">Add new name (including spoiled)...</option>',
+          '<option value="0">Select a reason...</option>'
     ];
     var group = '';
     $.each(publicInterface.invalidReasons, function () {
@@ -1035,7 +1077,7 @@
     }
     return false;
   };
-  var resetKeyTimeShow = function() {
+  var resetKeyTimeShow = function () {
     local.keyTimeShowSpan
       .stop(true, true)
       .removeClass('searching')
@@ -1054,9 +1096,9 @@
       resetSearch();
       return;
     }
-//    local.actionTag.html('');
-//    local.actionTag.addClass('delaying');
-//    input.addClass('delaying');
+    //    local.actionTag.html('');
+    //    local.actionTag.addClass('delaying');
+    //    input.addClass('delaying');
 
 
     local.keyTimeShowSpan
@@ -1074,12 +1116,12 @@
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
 
-//      local.actionTag.removeClass('delaying');
-//      input.removeClass('delaying');
+      //      local.actionTag.removeClass('delaying');
+      //      input.removeClass('delaying');
 
-//      local.actionTag.addClass('searching');
-//      local.actionTag.text('searching...');
-//      input.addClass('searching');
+      //      local.actionTag.addClass('searching');
+      //      local.actionTag.text('searching...');
+      //      input.addClass('searching');
 
       local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
     }, local.keyTime);
@@ -1093,6 +1135,7 @@
 
   var resetSearch = function () {
     local.lastSearch = '';
+    local.inputField.val('');
     onNamesReady({
       People: [],
       MoreFound: ''

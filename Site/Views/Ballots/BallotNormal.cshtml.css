@@ -453,7 +453,7 @@ span.HideZero0 {
 
 #keyTimeShow {
   width: 3px;
-  height: 1px;
+  height: 0px;
   top: 1px;
   background-color: #0ce84d;
   display: inline-block;
@@ -468,4 +468,8 @@ span.HideZero0 {
 
 #searchInput {
   position: relative;
+}
+
+#btnCancelAddMissing {
+  margin: 9px 0 0 225px;
 }

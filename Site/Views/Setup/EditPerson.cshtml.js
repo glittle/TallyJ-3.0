@@ -161,7 +161,7 @@
   };
 
   var prepareReasons = function () {
-    var html = ['<option value="">Eligible to vote and be voted for</option>'];
+    var html = ['<optgroup label="Eligible"><option value="">Eligible to vote and be voted for</option></optgroup>'];
     var group = '';
     $.each(publicInterface.invalidReasons, function () {
       var reasonGroup = this.Group;

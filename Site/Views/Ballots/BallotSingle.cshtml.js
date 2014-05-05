@@ -4,9 +4,9 @@
     People: [],
     peopleHelper: null,
     keyTimer: null,
-    keyTime: 300,
+    keyTime: 950,
     lastSearch: '',
-    actionTag: null,
+    //    actionTag: null,
     inputField: null,
     nameList: null,
     searchPanel: null,
@@ -23,6 +23,7 @@
     invalidReasonsShortHtml: null,
     rowSelected: 0,
     lastBallotRowVersion: 0,
+    keyTimeShowSpan: null,
     searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>Group {Code}</div>'
@@ -37,9 +38,10 @@
     local.peopleHelper.Prepare();
 
     local.inputField = $('#txtSearch');
-    local.inputField.on('keyup paste', runSearch).focus();
+    local.inputField.on('keyup paste', searchTextChanged).focus();
 
-    local.actionTag = $('#action');
+    //    local.actionTag = $('#action');
+    local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
@@ -223,7 +225,7 @@
 
   var personSaved = function (ev, info) {
     local.lastSearch = ''; // force a reload
-    runSearch();
+    searchTextChanged();
     toggleAddMissingPanel();
 
     var person = info.Person;
@@ -295,14 +297,15 @@
 
     cancelAddMissing();
 
+    var scroll = local.votesList.scrollTop();
+
     local.votesList.html(site.templates.SingleVoteLine.filledWithEach(votes));
-    local.votesList.find('select[data-invalid]').each(function() {
+    local.votesList.find('select:visible').each(function () {
       var select = $(this);
-      var invalid = select.data('invalid'); // may be empty
-      if (invalid) {
-        select.val(invalid);
-      }
+      select.val(select.data('invalid'));
     });
+
+    local.votesList.scrollTop(scroll);
 
     //local.btnDeleteBallot.toggle(votes.length === 0);
   };
@@ -414,8 +417,8 @@
     var saveNow = ev.type === 'change';
     var focusOnNew = false;
     var changing = true;
-//    LogMessage(ev.type);
-//    LogMessage(ev.which);
+    //    LogMessage(ev.type);
+    //    LogMessage(ev.which);
 
 
     switch (ev.which) {
@@ -463,6 +466,9 @@
   };
 
   var invalidReasonChanged = function (ev) {
+    if (ev.target.selectedIndex == -1) {
+      return; //nothing selected
+    }
     var select = $(ev.target);
     var reason = select.val();
     if (reason == '0') {
@@ -470,12 +476,19 @@
     }
 
     select.attr('size', 1);
-    var parent = select.parent();
+    var parent = select.parent('.VoteHost');
 
     if (reason == '-1') {
       // remove this one
       var voteId = parent.data('vote-id') || 0;
       parent.remove();
+      for (var i = 0; i < local.votes.length; i++) {
+        var vote = local.votes[i];
+        if (vote.vid == voteId) {
+          local.votes.splice(i, 1);
+          break;
+        }
+      }
       if (voteId != 0) {
         var form = {
           vid: voteId
@@ -705,9 +718,9 @@
         }
       });
     }
-    local.actionTag.removeClass('searching');
-    local.actionTag.text('');
-    local.inputField.removeClass('searching');
+    //    local.actionTag.removeClass('searching');
+    //    local.actionTag.text('');
+    //    local.inputField.removeClass('searching');
 
     // single:
     local.nameList.children().removeClass('selected');
@@ -795,7 +808,7 @@
   };
 
   var addSpoiled = function () {
-//    LogMessage('spoiled');
+    //    LogMessage('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -803,7 +816,6 @@
       changed: false,
       InvalidReasons: local.invalidReasonsShortHtml
     });
-
 
     showVotes(false);
 
@@ -850,8 +862,8 @@
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-          '<option value="0">Select a reason...</option>',
-          '<option value="-1">Name not found in search...</option>'
+          '<option value="-1">Add new name (including spoiled)...</option>',
+          '<option value="0">Select a reason...</option>'
     ];
 
     var group = '';
@@ -902,18 +914,25 @@
 
       case 27: // esc
         local.inputField.val('');
-        runSearch();
+        searchTextChanged();
         return true;
 
       default:
-//        LogMessage(ev.which);
+        //        LogMessage(ev.which);
         break;
     }
     return false;
   };
 
-  var runSearch = function (ev) {
+  var resetKeyTimeShow = function () {
+    local.keyTimeShowSpan
+      .stop(true, true)
+      .removeClass('searching')
+      .css({ height: 0 });
+  };
+  var searchTextChanged = function (ev) {
     clearTimeout(local.keyTimer);
+    resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
     if (ev && navigating(ev)) {
@@ -924,19 +943,32 @@
       resetSearch();
       return;
     }
-    local.actionTag.html('');
-    local.actionTag.addClass('delaying');
-    input.addClass('delaying');
+    //    local.actionTag.html('');
+    //    local.actionTag.addClass('delaying');
+    //    input.addClass('delaying');
+
+    local.keyTimeShowSpan
+      .animate({
+        height: 25
+      }, {
+        duration: local.keyTime,
+        queue: false,
+        start: resetKeyTimeShow,
+        complete: function () {
+          local.keyTimeShowSpan.addClass('searching');
+        }
+      });
+
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
 
-      local.actionTag.removeClass('delaying');
-      input.removeClass('delaying');
-
-      local.actionTag.addClass('searching');
-      local.actionTag.text('Searching...');
-      input.addClass('searching');
+      //      local.actionTag.removeClass('delaying');
+      //      input.removeClass('delaying');
+      //
+      //      local.actionTag.addClass('searching');
+      //      local.actionTag.text('Searching...');
+      //      input.addClass('searching');
 
       local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
     }, local.keyTime);
