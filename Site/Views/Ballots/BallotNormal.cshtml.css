@@ -71,6 +71,12 @@
     font-style: italic;
   }
 
+  .nameList .selected .Match2,
+  .nameList .selected .Match4 {
+    background-color: #c1f1b4;
+    font-style: italic;
+  }
+
   .nameList .First {
     padding: 3px 0 3px 0;
     border-top: 3px double #ccc;

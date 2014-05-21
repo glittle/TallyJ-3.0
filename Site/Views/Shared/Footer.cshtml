@@ -1,14 +1,78 @@
-﻿<script src="@Url.Content("~/Scripts/jquery-1.11.0.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery-migrate.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery-ui-1.10.4.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/modernizr-2.7.2.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Content/Bootstrap/js/bootstrap.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/AjaxLogin.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.qtip.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/superfish.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.signalR-2.0.2.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/signalr/hubs")" type="text/javascript"></script>
-<script src="@ClientFile("~/Scripts/site.js")" type="text/javascript"></script>
-@AddResourceFilesForViews("js")
+﻿<footer>
+  <div class="content-wrapper">
+    <div class="copyright">
+      &copy; @DateTime.Now.Year Glen Little
+    </div>
+    <div class="float-right">
+      <ul id="social">
+        @*<li>
+              <link href="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed.cssgz?1334210082"
+                  media="screen" rel="stylesheet" type="text/css" />
+              <script src="https://d3jyn100am7dxp.cloudfront.net/assets/widget_embed_libraries.jsgz?1334210083"
+                  type="text/javascript"></script>
+              <script>
+
+                  // ********************************************************************************
+                  // This needs to be placed in the document body where you want the widget to render
+                  // ********************************************************************************
+                  try {
+                      new DESK.Widget({
+                          version: 1,
+                          site: 'tallyj.desk.com',
+                          port: '80',
+                          type: 'chat',
+                          displayMode: 1,  //0 for popup, 1 for lightbox
+                          features: {
+                              offerAlways: false,
+                              offerAgentsOnline: true,
+                              offerRoutingAgentsAvailable: false,
+                              offerEmailIfChatUnavailable: true
+                          },
+                          fields: {
+                              ticket: {
+
+                                  // desc: '',
+                                  // labels_new: '',
+                                  // priority: '',
+                                  // subject: ''
+                              },
+                              interaction: {
+                                  email: @UserSession.MemberEmail.QuotedForJavascript().AsRawHtml(),
+                                  name: @UserSession.MemberName.QuotedForJavascript().AsRawHtml()
+                              },
+                              chat: {
+
+                                  //subject: ''
+                              },
+                              customer: {
+
+                                  // company: '',
+                                  // desc: '',
+                                  // first_name: '',
+                                  // last_name: '',
+                                  // locale_code: '',
+                                  // title: ''
+                              }
+                          }
+                      }).render();
+                  } catch (ex) {
+                      LogMessage(ex);
+                  }
+              </script>
+          </li>*@
+        <li>
+          <a tabindex="-1" target="facebook" href="http://www.facebook.com/TallyJ.Support"
+             class="facebook" title="Go to the TallyJ Support page"></a>
+        </li>
+        <li>
+          <a tabindex="-1" target="twitter" href="http://twitter.com/#!/tallyj_bahai" class="twitter"
+             title="View news from #TallyJ_Bahai"></a>
+        </li>
+        <li>
+          <a tabindex="-1" target="gplus" class="gplus" title="Go to TallyJ on Google+"
+             href="https://plus.google.com/109176504285792009711?prsrc=3" style="text-decoration: none;"></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>

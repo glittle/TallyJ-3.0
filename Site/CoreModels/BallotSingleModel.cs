@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
@@ -12,7 +13,7 @@ namespace TallyJ.CoreModels
       return 1;
     }
 
-    public override object BallotInfoForJs(Ballot b)
+    public override object BallotInfoForJs(Ballot b, List<Vote> allVotes)
     {
       var loc = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == b.LocationGuid);
       return new

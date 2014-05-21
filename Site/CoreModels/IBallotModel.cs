@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
 
     int NextBallotNumAtComputer();
     object CurrentBallotInfo();
-    IEnumerable<object> CurrentVotesForJs();
+    IEnumerable<object> CurrentVotesForJs(Ballot ballotInfo, List<Vote> allVotes);
     JsonResult SaveVote(int personId, int voteId, int count, Guid? invalid);
     JsonResult DeleteVote(int vid);
     object CurrentBallotsInfoList();
@@ -23,6 +23,6 @@ namespace TallyJ.CoreModels
     JsonResult StartNewBallotJson();
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);
-    object BallotInfoForJs(Ballot b);
+    object BallotInfoForJs(Ballot b, List<Vote> allVotes);
   }
 }

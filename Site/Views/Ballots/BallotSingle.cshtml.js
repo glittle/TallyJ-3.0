@@ -943,9 +943,6 @@
       resetSearch();
       return;
     }
-    //    local.actionTag.html('');
-    //    local.actionTag.addClass('delaying');
-    //    input.addClass('delaying');
 
     local.keyTimeShowSpan
       .animate({
@@ -962,14 +959,6 @@
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-
-      //      local.actionTag.removeClass('delaying');
-      //      input.removeClass('delaying');
-      //
-      //      local.actionTag.addClass('searching');
-      //      local.actionTag.text('Searching...');
-      //      input.addClass('searching');
-
       local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
     }, local.keyTime);
   };

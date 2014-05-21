@@ -36,13 +36,14 @@ namespace TallyJ.CoreModels
 
       SessionKey.CurrentLocationGuid.SetInSession(ballot.LocationGuid);
 
+      var allVotes = new VoteCacher().AllForThisElection;
       return new
       {
 
         BallotInfo = new
         {
-          Ballot = BallotInfoForJs(ballot),
-          Votes = CurrentVotesForJs(),
+          Ballot = BallotInfoForJs(ballot, allVotes),
+          Votes = CurrentVotesForJs(ballot, allVotes),
           NumNeeded = UserSession.CurrentElection.NumberToElect
         },
         Location = ContextItems.LocationModel.LocationInfoForJson(UserSession.CurrentLocation)
@@ -76,12 +77,13 @@ namespace TallyJ.CoreModels
     {
       var ballotInfo = CreateAndRegisterBallot();
 
+      var allVotes = new VoteCacher().AllForThisElection;
       return new
       {
         BallotInfo = new
         {
-          Ballot = BallotInfoForJs(ballotInfo),
-          Votes = CurrentVotesForJs(),
+          Ballot = BallotInfoForJs(ballotInfo, allVotes),
+          Votes = CurrentVotesForJs(ballotInfo, allVotes),
           NumNeeded = UserSession.CurrentElection.NumberToElect
         },
         Ballots = CurrentBallotsInfoList()
@@ -186,17 +188,18 @@ namespace TallyJ.CoreModels
         return null;
       }
 
+      var allVotes = new VoteCacher().AllForThisElection;
       return new
       {
-        Ballot = BallotInfoForJs(ballotInfo),
-        Votes = CurrentVotesForJs(),
+        Ballot = BallotInfoForJs(ballotInfo, allVotes),
+        Votes = CurrentVotesForJs(ballotInfo, allVotes),
         NumNeeded = UserSession.CurrentElection.NumberToElect
       };
     }
 
-    public IEnumerable<object> CurrentVotesForJs()
+    public IEnumerable<object> CurrentVotesForJs(Ballot ballotInfo, List<Vote> allVotes)
     {
-      return VoteInfosFor(GetCurrentBallot())
+      return VoteInfosFor(ballotInfo, allVotes)
         .OrderBy(v => v.PositionOnBallot)
         .Select(vi => new
         {
@@ -353,24 +356,24 @@ namespace TallyJ.CoreModels
       Db.Vote.Remove(vote);
       Db.SaveChanges();
 
-      var votes = new VoteCacher().RemoveItemAndSaveCache(vote).AllForThisElection;
+      var allVotes = new VoteCacher().RemoveItemAndSaveCache(vote).AllForThisElection;
 
-      UpdateVotePositions(vote.BallotGuid, votes);
+      UpdateVotePositions(vote.BallotGuid, allVotes);
 
       var ballotAnalyzer = new BallotAnalyzer();
       var ballot = CurrentRawBallot();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), false);
+      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, allVotes), false);
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
-      var sum = BallotCount(location.LocationGuid, isSingleName, null, votes);
+      var sum = BallotCount(location.LocationGuid, isSingleName, null, allVotes);
 
       new BallotCacher().UpdateItemAndSaveCache(ballot);
 
       return new
       {
         Deleted = true,
-        Votes = CurrentVotesForJs(),
+        Votes = CurrentVotesForJs(GetCurrentBallot(), allVotes),
         BallotStatus = ballotStatusInfo.Status.Value,
         BallotStatusText = ballotStatusInfo.Status.DisplayText,
         ballotStatusInfo.SpoiledCount,
@@ -528,7 +531,7 @@ namespace TallyJ.CoreModels
 
     #endregion
 
-    public abstract object BallotInfoForJs(Ballot b);
+    public abstract object BallotInfoForJs(Ballot b, List<Vote> allVotes);
 
     public List<Vote> CurrentVotes()
     {
@@ -629,7 +632,7 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        Ballots = ballots.ToList().Select(BallotInfoForJs),
+        Ballots = ballots.ToList().Select(ballot => BallotInfoForJs(ballot, new VoteCacher().AllForThisElection)),
         Last = maxRowVersion,
         Total = totalCount
       };

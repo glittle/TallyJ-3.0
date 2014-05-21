@@ -4,10 +4,11 @@
     People: [],
     peopleHelper: null,
     keyTimer: null,
-    keyTime: 950,
+    keyTime: 1200,
     lastSearch: '',
     //    actionTag: null,
     inputField: null,
+    lastKey: null,
     nameList: null,
     searchPanel: null,
     ballotsPanel: null,
@@ -25,7 +26,7 @@
     rowSelected: 0,
     lastBallotRowVersion: 0,
     keyTimeShowSpan: null,
-    searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
   };
@@ -133,8 +134,13 @@
 
     //        site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'Click to add a spoiled vote.  If the name is readable, first search for it, as someone else may have added it already!' });
+    site.qTips.push({ selector: '#qTipSearch', title: 'Searching for Names', text: 'Type the first few letters of desired name(s). A quick search will be done, followed by a thorough search when the green bar touches the bottom. Press Esc to cancel the thorough search.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
+    site.onbroadcast(site.broadcastCode.personNameChanging, function(fullname) {
+      local.inputField.val(fullname);
+      searchTextChanged();
+    });
     site.onbroadcast(site.broadcastCode.locationChanged, function () {
       // do instant reload
       changeLocation();
@@ -702,8 +708,8 @@ add to this ballot
             host.attr('id', 'V' + info.VoteId);
             host.find('.VoteNum').text(info.pos);
 
-            for (var i = 0; i < local.votes.length; i++) {
-              var vote = local.votes[i];
+            for (i = 0; i < local.votes.length; i++) {
+              vote = local.votes[i];
               if (vote.vid == 0) {
                 vote.vid = info.VoteId;
                 vote.pos = info.pos;
@@ -812,16 +818,19 @@ add to this ballot
     });
   };
 
-  var onNamesReady = function (info, beingRefreshed) {
+  var onNamesReady = function (info, beingRefreshed, fromQuickSearch) {
     local.People = info.People || [];
 
-    resetKeyTimeShow();
+    if (!fromQuickSearch) {
+      resetKeyTimeShow();
+      local.peopleHelper.AddGroupToChosenNames(local.People);
+    }
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
     if (!local.People.length && local.lastSearch) {
       var search = local.inputField.val();
-      if (search) {
+      if (search && !fromQuickSearch) {
         local.nameList.append('<li>...no matches found...</li>');
       }
     } else {
@@ -870,17 +879,16 @@ add to this ballot
     var numChildren = children.length;
     if (children.eq(numChildren - 1).text() == '...') { numChildren--; }
 
-    var rowNum = local.rowSelected;
+    var rowNum = typeof local.rowSelected == 'undefined' ? -1 : local.rowSelected;
     rowNum = rowNum + delta;
-    var wraparound = false;
-    if (wraparound) {
-      if (rowNum < 0) { rowNum = numChildren - 1; }
-      if (rowNum >= numChildren) { rowNum = 0; }
-    }
-    else {
-      if (rowNum < 0) { rowNum = 0; }
-      if (rowNum >= numChildren) { rowNum = numChildren - 1; }
-    }
+    //    if (wraparound) {
+    //      if (rowNum < 0) { rowNum = numChildren - 1; }
+    //      if (rowNum >= numChildren) { rowNum = 0; }
+    //    }
+    //    else {
+    if (rowNum < 0) { rowNum = 0; }
+    if (rowNum >= numChildren) { rowNum = numChildren - 1; }
+    //    }
     setSelected(children, rowNum);
   };
 
@@ -928,6 +936,8 @@ add to this ballot
       count: 0,
       ineligible: selectedPersonLi.data('ineligible')
     });
+
+    local.peopleHelper.AddToChosenNames(personId);
 
     showVotes();
 
@@ -984,6 +994,8 @@ add to this ballot
       else {
         this.Display = this.name;
       }
+
+      // local.peopleHelper.AddToChosenNames(this.pid); -- don't have full details, can't load
       num++;
     });
     return votes;
@@ -1067,8 +1079,13 @@ add to this ballot
         return true;
 
       case 27: // esc
-        local.inputField.val('');
-        searchTextChanged();
+        clearTimeout(local.keyTimer);
+        resetKeyTimeShow();
+        if (local.lastKey == 27) {
+          // pressed esc twice - clear inputs
+          local.inputField.val('');
+          searchTextChanged();
+        }
         return true;
 
       default:
@@ -1088,18 +1105,18 @@ add to this ballot
     resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
-    if (ev && navigating(ev)) {
-      return;
+    if (ev) {
+      if (navigating(ev)) {
+        local.lastKey = ev.which;
+        return;
+      }
+      local.lastKey = ev.which;
     }
-    if (local.lastSearch === text.trim()) return;
+    if (local.lastSearch === text) return;
     if (text == '') {
       resetSearch();
       return;
     }
-    //    local.actionTag.html('');
-    //    local.actionTag.addClass('delaying');
-    //    input.addClass('delaying');
-
 
     local.keyTimeShowSpan
       .animate({
@@ -1113,17 +1130,15 @@ add to this ballot
         }
       });
 
+    local.peopleHelper.QuickSearch(text, function (info) {
+      onNamesReady(info, false, true);
+    }, getUsedIds());
+
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-
-      //      local.actionTag.removeClass('delaying');
-      //      input.removeClass('delaying');
-
-      //      local.actionTag.addClass('searching');
-      //      local.actionTag.text('searching...');
-      //      input.addClass('searching');
-
-      local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      if (text) {
+        local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      }
     }, local.keyTime);
   };
 
@@ -1136,6 +1151,7 @@ add to this ballot
   var resetSearch = function () {
     local.lastSearch = '';
     local.inputField.val('');
+    LogMessage('reset');
     onNamesReady({
       People: [],
       MoreFound: ''

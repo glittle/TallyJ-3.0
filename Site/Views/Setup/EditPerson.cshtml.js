@@ -44,7 +44,13 @@
   };
 
   var startEdit = function () {
-    local.hostPanel.find('[data-name="FirstName"]').focus();
+    var $first = local.hostPanel.find('[data-name="LastName"]');
+    var $last = local.hostPanel.find('[data-name="FirstName"]');
+    var update = function() {
+      site.broadcast(site.broadcastCode.personNameChanging, $.trim($first.text() + ' ' + $last.text()));
+    };
+    $first.on('keypress', update).focus();
+    $last.on('keypress', update);
   };
 
   var applyValues = function (panel, person, clearAll) {
