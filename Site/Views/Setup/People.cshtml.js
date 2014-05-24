@@ -42,7 +42,9 @@
     local.actionTag.removeClass('delaying');
     local.inputField.removeClass('delaying');
 
-    local.nameList.children().eq(local.rowSelected).addClass('selected');
+    var selectedName = local.nameList.children().eq(local.rowSelected);
+    selectedName.addClass('selected');
+    scrollIntoView(selectedName, local.nameList);
   };
   var moveSelected = function (delta) {
     var children = local.nameList.children();
@@ -196,6 +198,21 @@
     }
     edit(+el.id.substr(1));
   };
+
+  var scrollIntoView = function (jNode, container) {
+    if (!jNode.length) return;
+    var containerTop = $(container).scrollTop();
+    var containerBottom = containerTop + $(container).height();
+    var elemTop = jNode.offset().top;
+    var elemBottom = elemTop + $(jNode).height();
+    if (elemTop < containerTop) {
+      $(container).scrollTop(Math.max(0, elemTop - 10));
+    } else if (elemBottom > containerBottom) {
+      $(container).scrollTop(elemBottom - $(container).height() + 30);
+    }
+  };
+
+
   var preparePage = function () {
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
@@ -246,24 +263,6 @@ var personSaved = function (ev, info) {
     $('#more').html(moreFound(info.OnFile));
   }
 };
-
-//    var prepareReasons = function () {
-//        var html = ['<option value="">Select a reason if ineligible...</option>'];
-//        var group = '';
-//        $.each(publicInterface.invalidReasons, function () {
-//            var reasonGroup = this.Group;
-//            if (reasonGroup != group) {
-//                if (group) {
-//                    html.push('</optgroup>');
-//                }
-//                html.push('<optgroup label="{0}">'.filledWith(reasonGroup));
-//                group = reasonGroup;
-//            }
-//            html.push('<option value="{Guid}">{Desc}</option>'.filledWith(this));
-//        });
-//        html.push('</optgroup>');
-//        return html.join('\n');
-//    };
 
 var publicInterface = {
   peopleUrl: '',

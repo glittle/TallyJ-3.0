@@ -4,10 +4,11 @@
     People: [],
     peopleHelper: null,
     keyTimer: null,
-    keyTime: 300,
+    keyTime: 1200,
     lastSearch: '',
-    actionTag: null,
+    //    actionTag: null,
     inputField: null,
+    lastKey: null,
     nameList: null,
     searchPanel: null,
     ballotsPanel: null,
@@ -24,7 +25,8 @@
     invalidReasonsShortHtml: null,
     rowSelected: 0,
     lastBallotRowVersion: 0,
-    searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
+    keyTimeShowSpan: null,
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
   };
@@ -46,11 +48,19 @@
       collapsible: true,
       icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
       activate: function (event, ui) {
-        if (ui.newPanel.attr('id') === 'tabBallots') {
-          local.inputField.focus().select();
-        }
-        else if (ui.newPanel.attr('id') === 'tabNameSearch') {
-          $('#txtSearch').focus().select();
+        var activePanelId = ui.newPanel.attr('id');
+        switch (activePanelId) {
+          case 'tabBallots':
+            local.inputField.focus().select();
+            showAddToThisBtn(true);
+            break;
+          case 'tabNameSearch':
+            local.inputField.focus().select();
+            showAddToThisBtn(false);
+            break;
+          default:
+            showAddToThisBtn(true);
+            break;
         }
       }
     });
@@ -58,8 +68,10 @@
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch').live('keyup paste', runSearch).focus();
-    local.actionTag = $('#action');
+    local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
+    local.inputField.focus();
+
+    local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
@@ -92,10 +104,9 @@
 
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
-
+    $('#btnAddToThis').on('click', showBallotTab);
     $('#ballotFilter').on('change', startToChangeBallotFilter);
 
-    //        $('#btnAddMissing').on('click', addMissing);
     $('#btnCancelAddMissing').on('click', cancelAddMissing);
 
     $('#cbReview').on('click, change', cbReviewChanged);
@@ -123,8 +134,13 @@
 
     //        site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'Click to add a spoiled vote.  If the name is readable, first search for it, as someone else may have added it already!' });
+    site.qTips.push({ selector: '#qTipSearch', title: 'Searching for Names', text: 'Type the first few letters of desired name(s). A quick search will be done, followed by a more thorough search when the green bar touches the bottom. Type more letters or press Esc to cancel the second search.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
+    site.onbroadcast(site.broadcastCode.personNameChanging, function(fullname) {
+      local.inputField.val(fullname);
+      searchTextChanged();
+    });
     site.onbroadcast(site.broadcastCode.locationChanged, function () {
       // do instant reload
       changeLocation();
@@ -142,9 +158,7 @@
       showLocation(info.Location);
       showBallot(info);
     });
-
   };
-
 
   var orderChanged = function (ev, ui) {
     var ids = [];
@@ -179,6 +193,8 @@
   };
 
   var showBallotTab = function (focusOnIt) {
+    resetSearch();
+
     local.tabList.find('h3').eq(tabNum.ballotEdit).show();
     if (focusOnIt) {
       // local.tabList.find('h3').eq(tabNum.ballotEdit).next().show();
@@ -186,6 +202,23 @@
     }
   };
 
+  /*
+  
+
+add to this ballot
+ - show if name search NOT visible and ballot is displayed
+ - hide if search is visible
+
+  */
+
+
+  var showAddToThisBtn = function (show) {
+    if (show) {
+      $('#btnAddToThis').show();
+    } else {
+      $('#btnAddToThis').hide();
+    }
+  }
   var hideBallotTab = function () {
     local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
   };
@@ -247,7 +280,7 @@
   var addMissing = function () {
     toggleAddMissingPanel();
     var searchParts = local.inputField.val().split(' ');
-    var capitalized = function(s) {
+    var capitalized = function (s) {
       if (!s) return '';
       return s.substr(0, 1).toUpperCase() + s.substr(1);
     };
@@ -258,7 +291,7 @@
       ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11',
       first: capitalized(first),
       last: capitalized(last)
-     });
+    });
   };
 
   var cancelAddMissing = function () {
@@ -269,7 +302,7 @@
 
   var newPersonSaved = function (ev, info) {
     local.lastSearch = ''; // force a reload
-    runSearch();
+    searchTextChanged();
     toggleAddMissingPanel();
 
     var person = info.Person;
@@ -337,6 +370,7 @@
       var toShow = (ballot.StatusCode == 'TooFew' || ballot.StatusCode == 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
       local.tabList.find('h3').eq(toShow).show().next().show();
       local.tabList.accordion('option', 'active', toShow);
+      showAddToThisBtn(toShow == tabNum.ballotListing);
 
       highlightBallotInList();
 
@@ -348,6 +382,7 @@
 
       local.tabList.accordion('option', 'active', tabNum.ballotListing);
       hideBallotTab();
+      showAddToThisBtn(true);
       local.btnDeleteBallot.prop('disabled', true);
     }
 
@@ -379,26 +414,6 @@
 
     local.btnDeleteBallot.prop('disabled', votes.length > 0);
   };
-
-  //        var showTempBallotStatusAndDups = function () {
-  //            var votes = local.votesList.find('.VoteHost');
-  //            var votesDiff = local.votesNeeded - votes.length;
-  //            var newStatus = 'Ok';
-
-  //            if (findAndMarkDups(votes)) {
-  //                newStatus = 'Dup';
-  //                // want to show dups even if TooMany or TooFew
-  //            }
-
-  //            if (votesDiff < 0) {
-  //                newStatus = 'TooMany';
-  //            }
-  //            else if (votesDiff > 0) {
-  //                newStatus = 'TooFew';
-  //            }
-
-  //            setBallotStatus(newStatus, null, false, 0);
-  //        };
 
   var findAndMarkDups = function (votes) {
     var found = false;
@@ -436,47 +451,11 @@
     return found;
   };
 
-  //    var setBallotStatus = function (status, display, fromServer) {
-  //        local.ballotStatus = status;
-  //        if (!display) {
-  //            var matched = $.grep(publicInterface.BallotStatus, function () {
-  //                return this.v == status;
-  //            });
-  //            display = matched.length == 1 ? matched[0].d : '??';
-  //        }
-  //        if (fromServer) {
-  //            $('#cbReview').attr('checked', status == 'Review');
-  //        }
-
-  //        // {"Id":745,"Code":"A1","StatusCode":"Ok","StatusCodeText":"Ok","SpoiledCount":3}
-  //        $('#B' + local.ballotId).html(local.ballotListTemplate.filledWith({ Id: local.ballotId }));
-
-  //        var statusDisplay = $('.ballotStatus');
-  //        statusDisplay.html(display);
-
-  //        if (status == 'Ok') {
-  //            statusDisplay.removeClass('InvalidBallot');
-  //            statusDisplay.addClass('Ok');
-  //        } else {
-  //            statusDisplay.removeClass('Ok');
-  //            statusDisplay.addClass('InvalidBallot');
-  //        }
-  //        if (fromServer) {
-  //            statusDisplay.addClass('Confirmed');
-  //            statusDisplay.removeClass('NotConfirmed');
-  //        }
-  //        else {
-  //            statusDisplay.removeClass('Confirmed');
-  //            statusDisplay.addClass('NotConfirmed');
-  //        }
-  //    };
-
   var updateStatusInList = function (info) {
     $('#BallotStatus' + local.ballotId).html(local.ballotListDetailTemplate.filledWith(info));
   };
 
   var updateStatusDisplay = function (info) {
-    //  info = { "BallotStatus": "TooFew", "BallotStatusText": "Too Few", "SpoiledCount": 0 };
 
     if (info.StatusCode) {
       // backward compatibilty... convert values
@@ -541,7 +520,7 @@
     $('#lblNumEntered').text(numEnteredOnThisComputer || local.ballotCountAtLastLoad || '-');
 
     var remainingToEnter = (local.location.BallotsCollected || 0) - (numEnteredInLocation || 0);
-    var html, title;
+    var title;
     if (remainingToEnter == 0) {
       title = ': All entered';
     } else if (remainingToEnter < 0) {
@@ -573,6 +552,9 @@
   };
 
   var invalidReasonChanged = function (ev) {
+    if (ev.target.selectedIndex == -1) {
+      return; //nothing selected
+    }
     var select = $(ev.target);
     var reason = select.val();
     if (reason == '0') {
@@ -585,6 +567,13 @@
       // remove this one
       var voteId = parent.data('vote-id') || 0;
       parent.remove();
+      for (var i = 0; i < local.votes.length; i++) {
+        var vote = local.votes[i];
+        if (vote.vid == voteId) {
+          local.votes.splice(i, 1);
+          break;
+        }
+      }
       if (voteId != 0) {
         var form = {
           vid: voteId
@@ -661,8 +650,8 @@
             host.attr('id', 'V' + info.VoteId);
             host.find('.VoteNum').text(info.pos);
 
-            for (var i = 0; i < local.votes.length; i++) {
-              var vote = local.votes[i];
+            for (i = 0; i < local.votes.length; i++) {
+              vote = local.votes[i];
               if (vote.vid == 0) {
                 vote.vid = info.VoteId;
                 vote.pos = info.pos;
@@ -683,10 +672,9 @@
 
         if (info.BallotStatus == 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
+
           $('#btnNewBallot2').effect('highlight', null, 1500);
         }
-
-        focusOnTextInput();
       }
       else {
         ShowStatusFailed(info.Error);
@@ -738,6 +726,7 @@
 
         if (info.BallotStatus == 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
+          showAddToThisBtn(true);
         }
 
         if (info.Location) {
@@ -769,14 +758,19 @@
     });
   };
 
-  var onNamesReady = function (info, beingRefreshed) {
+  var onNamesReady = function (info, beingRefreshed, fromQuickSearch) {
     local.People = info.People || [];
+
+    if (!fromQuickSearch) {
+      resetKeyTimeShow();
+      local.peopleHelper.AddGroupToChosenNames(local.People);
+    }
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
     if (!local.People.length && local.lastSearch) {
       var search = local.inputField.val();
-      if (search) {
+      if (search && !fromQuickSearch) {
         local.nameList.append('<li>...no matches found...</li>');
       }
     } else {
@@ -801,13 +795,15 @@
         }
       });
     }
-    local.actionTag.removeClass('searching');
-    local.actionTag.text('');
-    local.inputField.removeClass('searching');
+    //    local.actionTag.removeClass('searching');
+    //    local.actionTag.text('');
+    //    local.inputField.removeClass('searching');
 
     // single:
-    local.nameList.children().removeClass('selected');
-    local.nameList.children().eq(local.rowSelected).addClass('selected');
+    //    local.nameList.children().removeClass('selected');
+    //    LogMessage(local.rowSelected);
+    //    local.nameList.children().eq(local.rowSelected).addClass('selected');
+    setSelected(local.nameList.children(), local.rowSelected);
   };
 
   var getIneligibleReasonDesc = function (guid) {
@@ -823,17 +819,16 @@
     var numChildren = children.length;
     if (children.eq(numChildren - 1).text() == '...') { numChildren--; }
 
-    var rowNum = local.rowSelected;
+    var rowNum = typeof local.rowSelected == 'undefined' ? -1 : local.rowSelected;
     rowNum = rowNum + delta;
-    var wraparound = false;
-    if (wraparound) {
-      if (rowNum < 0) { rowNum = numChildren - 1; }
-      if (rowNum >= numChildren) { rowNum = 0; }
-    }
-    else {
-      if (rowNum < 0) { rowNum = 0; }
-      if (rowNum >= numChildren) { rowNum = numChildren - 1; }
-    }
+    //    if (wraparound) {
+    //      if (rowNum < 0) { rowNum = numChildren - 1; }
+    //      if (rowNum >= numChildren) { rowNum = 0; }
+    //    }
+    //    else {
+    if (rowNum < 0) { rowNum = 0; }
+    if (rowNum >= numChildren) { rowNum = numChildren - 1; }
+    //    }
     setSelected(children, rowNum);
   };
 
@@ -853,7 +848,7 @@
     if (elemTop < containerTop) {
       $(container).scrollTop(Math.max(0, elemTop - 10));
     } else if (elemBottom > containerBottom) {
-      $(container).scrollTop(elemBottom - $(container).height() + 10);
+      $(container).scrollTop(elemBottom - $(container).height() + 30);
     }
   };
 
@@ -872,6 +867,8 @@
     var personId = +rawId.substr(1);
     if (personId == 0) return;
 
+    focusOnTextInput();
+
     local.votes.push({
       vid: 0,
       pid: personId,
@@ -879,6 +876,8 @@
       count: 0,
       ineligible: selectedPersonLi.data('ineligible')
     });
+
+    local.peopleHelper.AddToChosenNames(personId);
 
     showVotes();
 
@@ -888,7 +887,7 @@
   };
 
   var addSpoiled = function () {
-    LogMessage('spoiled');
+    //    LogMessage('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -896,7 +895,6 @@
       changed: false,
       InvalidReasons: local.invalidReasonsShortHtml
     });
-
 
     showVotes(false);
 
@@ -936,6 +934,8 @@
       else {
         this.Display = this.name;
       }
+
+      // local.peopleHelper.AddToChosenNames(this.pid); -- don't have full details, can't load
       num++;
     });
     return votes;
@@ -969,8 +969,8 @@
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-        '<option value="0">Select a reason...</option>',
-        '<option value="-1">Name not found in search...</option>'
+          '<option value="-1">Add new name (including spoiled)...</option>',
+          '<option value="0">Select a reason...</option>'
     ];
     var group = '';
     $.each(publicInterface.invalidReasons, function () {
@@ -1019,44 +1019,66 @@
         return true;
 
       case 27: // esc
-        local.inputField.val('');
-        runSearch();
+        clearTimeout(local.keyTimer);
+        resetKeyTimeShow();
+        if (local.lastKey == 27) {
+          // pressed esc twice - clear inputs
+          local.inputField.val('');
+          searchTextChanged();
+        }
         return true;
 
       default:
-        LogMessage(ev.which);
+        //        LogMessage(ev.which);
         break;
     }
     return false;
   };
-
-  var runSearch = function (ev) {
+  var resetKeyTimeShow = function () {
+    local.keyTimeShowSpan
+      .stop(true, true)
+      .removeClass('searching')
+      .css({ height: 0 });
+  };
+  var searchTextChanged = function (ev) {
     clearTimeout(local.keyTimer);
+    resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
-    if (ev && navigating(ev)) {
-      return;
+    if (ev) {
+      if (navigating(ev)) {
+        local.lastKey = ev.which;
+        return;
+      }
+      local.lastKey = ev.which;
     }
-    if (local.lastSearch === text.trim()) return;
     if (text == '') {
       resetSearch();
       return;
     }
-    local.actionTag.html('');
-    local.actionTag.addClass('delaying');
-    input.addClass('delaying');
+    if (local.lastSearch === text) return;
+
+    local.keyTimeShowSpan
+      .animate({
+        height: 25
+      }, {
+        duration: local.keyTime,
+        queue: false,
+        start: resetKeyTimeShow,
+        complete: function () {
+          local.keyTimeShowSpan.addClass('searching');
+        }
+      });
+
+    local.peopleHelper.QuickSearch(text, function (info) {
+      onNamesReady(info, false, true);
+    }, getUsedIds());
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-
-      local.actionTag.removeClass('delaying');
-      input.removeClass('delaying');
-
-      local.actionTag.addClass('searching');
-      local.actionTag.text('searching...');
-      input.addClass('searching');
-
-      local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      if (text) {
+        local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      }
     }, local.keyTime);
   };
 
@@ -1068,6 +1090,7 @@
 
   var resetSearch = function () {
     local.lastSearch = '';
+    local.inputField.val('');
     onNamesReady({
       People: [],
       MoreFound: ''
@@ -1105,6 +1128,7 @@
         local.rowSelected = i;
         return false;
       }
+      return true;
     });
 
     edit($(el));

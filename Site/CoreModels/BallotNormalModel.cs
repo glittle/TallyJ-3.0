@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -21,10 +22,10 @@ namespace TallyJ.CoreModels
       return nextBallotNum;
     }
 
-    public override object BallotInfoForJs(Ballot b)
+    public override object BallotInfoForJs(Ballot b, List<Vote> allVotes)
     {
-      var votes = VoteInfosForBallot(b, new VoteCacher().AllForThisElection.ToList());
-      var spoiledCount = votes.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
+      var spoiledCount = (allVotes ?? new VoteCacher().AllForThisElection)
+        .Count(v => v.BallotGuid == b.BallotGuid && v.StatusCode != VoteHelper.VoteStatusCode.Ok);
       return new
       {
         Id = b.C_RowId,

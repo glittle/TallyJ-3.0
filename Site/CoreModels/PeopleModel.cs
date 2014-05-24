@@ -332,11 +332,13 @@ namespace TallyJ.CoreModels
         UpdateFrontDeskListing(personInDatastore);
       }
 
+      var persons = new PersonCacher().AllForThisElection;
       return new
           {
             Status = "Saved",
             Person = PersonForEdit(personInDatastore),
-            OnFile = new PersonCacher().AllForThisElection.Count()
+            OnFile = persons.Count(),
+            Eligible = persons.Count(p => p.IneligibleReasonGuid == null),
           }.AsJsonResult();
     }
 

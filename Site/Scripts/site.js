@@ -11,19 +11,24 @@ var site = {
   heartbeatSeconds: 60, // default seconds
   heartbeatTimeout: null,
   timeOffsetKnown: false,
-  hoverQuickLinkTimeout: null,
+  hoverQuickLinkRevertDelay: null,
+  hoverQuickLinkShowDelay: null,
   firstPulse: null,
   electionGuid: null,
   electionState: null,
   signalrConnectionId: null,
   signalrConnecting: false,
   signalrDelayedCallbacks: [],
+  menuShowingDefault: true,
+  menuShowDelay: 1000,
+  menuResetDelay: 2000,
   qTips: [],
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
     locationChanged: 'locationChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
+    personNameChanging: 'personNameChanging',
     pulse: 'pulse'
   },
   broadcast: function (broadcastCode, data) {
@@ -181,7 +186,7 @@ function PrepareQTips(doNow) {
 
   // global tips
   site.qTips.push({ selector: '#qTipQuickLinks', title: 'Common Pages', text: 'Shows the pages relevant to the current state of the election. All other pages are still available using "Go to any page..."' });
-  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate.' });
+  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Hover with mouse to temporarily show other menus.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 
@@ -273,35 +278,53 @@ function showMenu(state, permanent, slow) {
 
   $('#qmenuTitle').text(mainItem.text());
 
+  site.menuShowingDefault = permanent;
+
   if (permanent) {
     site.electionState = state;
     target.data('state', state);
-    target.find('li').removeClass('Active_True').addClass('Active_False');
+    target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
     mainItem.removeClass('Active_False').addClass('Active_True');
+  } else {
+    target.find('li').removeClass('Active_Temp');
+    mainItem.addClass('Active_Temp');
   }
 }
 
-function HoverQuickLink(ev) {
-  var state = $(ev.currentTarget).data('state');
-
-  clearTimeout(site.hoverQuickLinkTimeout);
-
-  showMenu(state, false);
-
+function HoverQuickLink(ev, showNow) {
   var reentered = function () {
-    clearTimeout(site.hoverQuickLinkTimeout);
+    clearTimeout(site.hoverQuickLinkRevertDelay);
     $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
   };
   var mouseLeavingTopInfo = function () {
     $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
     $('.TopInfo').on('mouseenter', reentered);
 
-    clearTimeout(site.hoverQuickLinkTimeout);
-    site.hoverQuickLinkTimeout = setTimeout(function () {
+    clearTimeout(site.hoverQuickLinkRevertDelay);
+    site.hoverQuickLinkRevertDelay = setTimeout(function () {
       showMenu(site.electionState, true, true);
       $('.TopInfo').off('mouseenter', reentered);
-    }, 2000);
+    }, site.menuResetDelay);
   };
+
+  clearTimeout(site.hoverQuickLinkRevertDelay);
+
+  if (!showNow) { // && site.menuShowingDefault) {
+    clearTimeout(site.hoverQuickLinkShowDelay);
+
+    $('.TopInfo').on('mouseleave', function () {
+      clearTimeout(site.hoverQuickLinkShowDelay);
+    });
+
+    site.hoverQuickLinkShowDelay = setTimeout(function () {
+      HoverQuickLink(ev, true);
+    }, site.menuShowDelay);
+    return;
+  }
+
+  var state = $(ev.currentTarget).data('state');
+
+  showMenu(state, false);
 
   $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
 }
@@ -1177,7 +1200,7 @@ function OptionsFromResourceList(resourceList, defaultValue) {
 }
 
 //  Storge  //////////////////////////////////////////////////
-var ObjectConstant = '$****$';
+var ObjectConstant = '$@$';
 
 function GetFromStorage(key, defaultValue) {
 

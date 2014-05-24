@@ -704,7 +704,6 @@ input[type="file"] {
   /* For IE7, add top margin to align select with labels */
 }
 select {
-  width: 220px;
   border: 1px solid #cccccc;
   background-color: #ffffff;
 }
@@ -5460,15 +5459,15 @@ a.twitter {
   text-decoration: none;
   border: 1px solid #013d7a;
   padding: 0 8px;
-  border-radius: 12px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
   -webkit-border-radius: 12px;
   -webkit-border-top-left-radius: 0px;
   -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius: 12px;
   -moz-border-top-left-radius: 0px;
   -moz-border-bottom-left-radius: 0px;
+  border-radius: 12px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
 }
 .ElectionState ol li.Report {
   border-radius: 0;
@@ -5487,6 +5486,10 @@ body.AuthKnown .ElectionState ol li.Active_False:hover {
 }
 .ElectionState ol li.Active_True {
   cursor: default;
+}
+.ElectionState ol li.Active_Temp {
+  cursor: pointer;
+  background-color: #EFffEF;
 }
 body.AuthGuest .ElectionState ol li.Active_False {
   display: none;

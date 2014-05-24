@@ -13,7 +13,7 @@
 @section Metas {
     <link rel='canonical' href='https://tallyj.apphb.com/' />
     <meta name='description' content="TallyJ facilitates the recording of ballots and votes at a Bahá'í election." />
-    <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
+    <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,tallyj,tally,tally ballots,tally votes,tally election,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bye election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
 }
 @section featured {
   <section class="featured empty">
@@ -148,3 +148,29 @@
 <div class="Summary">
   TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
 </div>
+@if (Request.Url.Host != "localhost")
+{
+  <!-- Begin Inspectlet Embed Code -->
+  <script type="text/javascript" id="inspectletjs">
+    window.__insp = window.__insp || [];
+    __insp.push(['wid', 140853088]);
+    (function () {
+      function __ldinsp() {
+        var insp = document.createElement('script');
+        insp.type = 'text/javascript';
+        insp.async = true;
+        insp.id = "inspsync";
+        insp.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cdn.inspectlet.com/inspectlet.js';
+        var x = document.getElementsByTagName('script')[0];
+        x.parentNode.insertBefore(insp, x);
+      }
+
+      if (window.attachEvent) {
+        window.attachEvent('onload', __ldinsp);
+      } else {
+        window.addEventListener('load', __ldinsp, false);
+      }
+    })();
+  </script>
+  <!-- End Inspectlet Embed Code -->
+}

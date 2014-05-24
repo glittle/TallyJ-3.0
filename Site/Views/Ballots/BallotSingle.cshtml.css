@@ -442,3 +442,28 @@ span.HideZero0 {
 .NotBold {
   font-weight: normal;
 }
+.addSpoiled {
+  margin-top: 16px;
+}
+#keyTimeShow {
+  width: 3px;
+  height: 0px;
+  top: 1px;
+  background-color: #0ce84d;
+  display: inline-block;
+  position: absolute;
+}
+#keyTimeShow.searching {
+  background-color: red;
+}
+#txtSearch {
+  margin-left: 5px;
+}
+
+#searchInput {
+  position: relative;
+}
+
+#btnCancelAddMissing {
+  margin: 9px 0 0 225px;
+}

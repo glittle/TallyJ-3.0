@@ -1,11 +1,20 @@
 ﻿var HomeIndexPage = function () {
-  var local = {
-    uploader: null
-  };
+//  var local = {
+//    uploader: null
+//  };
+  var clearElectionRelatedStorageItems = function() {
+    for (var key in localStorage) {
+      if (key.substr(0, 11) == 'chosenName_') {
+        localStorage.removeItem(key);
+      }
+    }
 
+  };
   var preparePage = function () {
     $(document).on('click', '.btnSelectElection', null, selectElection);
 
+    clearElectionRelatedStorageItems();
+    
     showElections(publicInterface.elections);
 
     if (!publicInterface.isGuest) {
@@ -179,7 +188,7 @@
           guid: row.data('guid')
         };
 
-    ShowStatusDisplay("Selecting election...");
+    ShowStatusDisplay("Opening election...");
 
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
   };

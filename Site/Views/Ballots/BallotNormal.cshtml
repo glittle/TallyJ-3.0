@@ -76,16 +76,16 @@
         <option value="">Show All</option>
         @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
         {
-          <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
+        <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
         }
       </select>
       <h5>
         Ballots
         @if (ContextItems.LocationModel.HasLocations)
         {
-          <span class="where">
-            <span>-</span> <span data-name="Name"></span>
-          </span>
+        <span class="where">
+          <span>-</span> <span data-name="Name"></span>
+        </span>
         }
 
       </h5>
@@ -102,17 +102,16 @@
       </div>
       <div>
         Search for a <u>p</u>erson:
+        <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
       </div>
       <div class="float-right">
-        @*<span class="ui-icon ui-icon-info float-right" id="qTipMissing"></span>
-          <button id="btnAddMissing" type="button" tabindex="2" accesskey="M" class="btn btn-mini btn-info">
-            Add na<u>m</u>e not in list</button>*@
         <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
         <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
           <u>A</u>dd new or spoiled
         </button>
       </div>
-      <div class="float-left">
+      <div class="float-left" id="searchInput">
+        <span id="keyTimeShow"></span>
         <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
       </div>
       <div class="actionHolder Clear">
@@ -136,8 +135,11 @@
   <div id="votesList">
   </div>
   <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
-          accesskey="N" tabindex="3">
+          accesskey="N" tabindex="2">
     Start <u>N</u>ew Ballot
+  </button>
+  <button type="button" id="btnAddToThis" class="btn btn-mini">
+    Add to Ballot
   </button>
   <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if ballot status or vote lines and numbers appear to be wrong.">
     Refresh Ballot
@@ -154,9 +156,9 @@
 <div id="addMissingPanel" class="votesPanel">
   <h3>
     Adding Name Not in List
-    <button id="btnCancelAddMissing" type="button" class="btn btn-mini btn-warning">
-      Cancel
-    </button>
   </h3>
   @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
+  <button id="btnCancelAddMissing" type="button" class="btn btn-warning">
+    Cancel
+  </button>
 </div>

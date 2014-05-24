@@ -4,10 +4,11 @@
     People: [],
     peopleHelper: null,
     keyTimer: null,
-    keyTime: 300,
+    keyTime: 1200,
     lastSearch: '',
-    actionTag: null,
+    //    actionTag: null,
     inputField: null,
+    lastKey: null,
     nameList: null,
     searchPanel: null,
     ballotsPanel: null,
@@ -23,7 +24,8 @@
     invalidReasonsShortHtml: null,
     rowSelected: 0,
     lastBallotRowVersion: 0,
-    searchResultTemplate: '<li id=P{Id}{^IneligibleData}>{^Name}</li>',
+    keyTimeShowSpan: null,
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>Group {Code}</div>'
   };
@@ -36,10 +38,13 @@
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch');
-    local.inputField.on('keyup paste', runSearch).focus();
+    local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
 
-    local.actionTag = $('#action');
+    setTimeout(function() {
+      local.inputField.focus();
+    }, 0);
+
+    local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
@@ -50,54 +55,11 @@
 
     $('#btnAddSpoiled').on('click', addSpoiled);
 
-    local.votesList.on('change keyup', 'input', voteNumChange);
     local.votesList.on('click', '.ui-icon-trash', deleteVote);
     local.votesList.on('click', '.btnClearChangeError', resaveVote);
     local.votesList.on('change', 'select', invalidReasonChanged);
 
-    local.tabList = $('#tabs');
-    local.tabList.tabs();
-    //    {
-    //      show: function (event, ui) {
-    //        switch (ui.index) {
-    //          case tabNum.ballot:
-    //            local.inputField.focus().select();
-    //            break;
-    //        }
-    //      }
-    //    });
-    local.tabList.tabs('option', 'active', tabNum.ballot);
-
-    //    local.btnDeleteBallot = $('#btnDeleteBallot');
-    //    local.btnDeleteBallot.on('click', deleteBallot);
-
-    //$('#btnRefreshBallotCount').click(changeLocationStatus);
-    //    $('#btnRefreshBallotquList').click(startToRefreshBallotList);
-
-    //    $('#btnNewBallot').on('click', newBallot);
-    //    $('#btnNewBallot2').on('click', newBallot);
-
-    $('#btnAddMissing').click(addMissing);
-    $('#btnCancelAddMissing').click(cancelAddMissing);
-
-    //    $('#cbReview').on('click, change', cbReviewChanged);
-
-    //    $('#ddlLocationStatus').on('change', changeLocationStatus);
-    $('#txtContact').on('change', function () {
-      CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
-        ShowStatusSuccess('Updated');
-      });
-    });
-    $('#txtNumCollected').on('change', function () {
-      var num = Math.max(0, +$(this).val());
-      CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: num }, function (info) {
-        if (info.Location) {
-          showLocation(info.Location);
-        }
-        ShowStatusSuccess('Updated');
-      });
-    });
-    resetSearch();
+    local.votesList.on('change keyup', 'input', voteNumChange);
 
     local.votesList.sortable({
       handle: '.ui-icon-arrow-2-n-s',
@@ -108,6 +70,31 @@
       stop: orderChanged
     });
 
+    local.tabList = $('#tabs');
+    local.tabList.tabs();
+
+    local.tabList.tabs('option', 'active', tabNum.ballot);
+
+    $('#btnAddMissing').click(addMissing);
+    $('#btnCancelAddMissing').click(cancelAddMissing);
+
+    $('#txtContact').on('change', function () {
+      CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
+        ShowStatusSuccess('Updated');
+      });
+    });
+    $('#txtNumCollected').on('change', function () {
+      var num = Math.max(0, +$(this).val());
+      ShowStatusDisplay('Saving...');
+      CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: num }, function (info) {
+        if (info.Location) {
+          showLocation(info.Location);
+        }
+        ShowStatusSuccess('Saved');
+      });
+    });
+    resetSearch();
+
     local.invalidReasonsHtml = prepareReasons();
     local.invalidReasonsShortHtml = prepareReasons('Unreadable');
 
@@ -116,7 +103,11 @@
     site.qTips.push({ selector: '#qTipNumVotes', title: '# Votes', text: 'After the paper ballots are sorted by name, enter the number of votes each person has received.  When typing the number, the Up and Down keys will change the number of votes for you.' });
     site.qTips.push({ selector: '#qTipBallotGroups', title: 'Ballot Groups', text: 'Since this is an election for just one person, a ballot and a vote are effectively the same.  For each person, the number of votes cast for them is counted by hand and entered here.  If multiple computers are used, then each computer will enter a group of ballots.' });
 
-    site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+    site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
+    site.onbroadcast(site.broadcastCode.personNameChanging, function (fullname) {
+      local.inputField.val(fullname);
+      searchTextChanged();
+    });
     site.onbroadcast(site.broadcastCode.locationChanged, function () {
       // do instant reload
       changeLocation();
@@ -126,18 +117,14 @@
 
     $('#votesPanel, .div1').show();
   };
-  //  var newBallot = function () {
-  //    // disable on click...
-  //    $('.NewBallotBtns').prop('disabled', true);
-  //
-  //    CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
-  //      showBallot(info);
-  //      //local.tabList.tabs('option', 'active', tabNum.ballot);
-  //      local.inputField.focus().val('').change();
-  //      local.nameList.html('');
-  //      $('.NewBallotBtns').prop('disabled', false);
-  //    });
-  //  };
+
+  var changeLocation = function () {
+    ShowStatusDisplay('Loading location...');
+    CallAjaxHandler(publicInterface.controllerUrl + '/GetLocationInfo', null, function (info) {
+      showLocation(info.Location);
+      showBallot(info);
+    });
+  };
 
   var focusOnTextInput = function () {
     local.inputField.focus().select();
@@ -182,15 +169,6 @@
   //    });
   //  };
 
-  var changeLocation = function () {
-    ShowStatusDisplay('Loading location...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/GetLocationInfo', null, function (info) {
-      showLocation(info.Location);
-      showBallot(info);
-    });
-
-  };
-
   var changeLocationStatus = function () {
     var form = {
       id: publicInterface.Location.Id,
@@ -212,7 +190,19 @@
 
   var addMissing = function () {
     toggleAddMissingPanel();
-    site.broadcast(site.broadcastCode.startNewPerson, { panelSelector: '#addMissingPanel', ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11' });
+    var searchParts = local.inputField.val().split(' ');
+    var capitalized = function (s) {
+      if (!s) return '';
+      return s.substr(0, 1).toUpperCase() + s.substr(1);
+    };
+    var first = searchParts.shift();
+    var last = searchParts.join(' ');
+    site.broadcast(site.broadcastCode.startNewPerson, {
+      panelSelector: '#addMissingPanel',
+      ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11',
+      first: capitalized(first),
+      last: capitalized(last)
+    });
   };
 
   var cancelAddMissing = function () {
@@ -221,9 +211,9 @@
     }
   };
 
-  var personSaved = function (ev, info) {
+  var newPersonSaved = function (ev, info) {
     local.lastSearch = ''; // force a reload
-    runSearch();
+    searchTextChanged();
     toggleAddMissingPanel();
 
     var person = info.Person;
@@ -232,7 +222,7 @@
       vid: 0,
       pid: person.C_RowId,
       name: person.C_FullName,
-      count: 0,
+      count: 1,
       ineligible: person.IneligibleReasonGuid
     });
 
@@ -248,13 +238,14 @@
   };
 
   var showBallot = function (info) {
+    local.votesList.scrollTop(0);
+
     if (info.Ballots) {
       showBallots(info.Ballots);
     }
 
     var ballotInfo = info.BallotInfo;
     if (ballotInfo) {
-      //local.tabList.tabs('enable', tabNum.ballot);
       $('#votesPanel').css('visibility', 'visible');
 
       var ballot = ballotInfo.Ballot;
@@ -270,17 +261,13 @@
 
       updateStatusDisplay(ballot);
 
-      //local.tabList.tabs('option', 'active', ballot.StatusCode == 'TooFew' ? tabNum.ballot : tabNum.ballots);
-
       highlightBallotInList();
 
     } else {
       $('.ballotCode').text('');
 
-      //$('#votesPanel').css('visibility', 'hidden');
-      //local.tabList.tabs('option', 'active', tabNum.ballots);
-      //      local.tabList.tabs('disable', tabNum.ballot);
-      //local.btnDeleteBallot.hide();
+      $('#votesPanel').css('visibility', 'hidden');
+      $('#votesList').html('');
     }
 
     if (info.Location) {
@@ -295,16 +282,15 @@
 
     cancelAddMissing();
 
+    var scroll = local.votesList.scrollTop();
+
     local.votesList.html(site.templates.SingleVoteLine.filledWithEach(votes));
-    local.votesList.find('select[data-invalid]').each(function() {
+    local.votesList.find('select:visible').each(function () {
       var select = $(this);
-      var invalid = select.data('invalid'); // may be empty
-      if (invalid) {
-        select.val(invalid);
-      }
+      select.val(select.data('invalid'));
     });
 
-    //local.btnDeleteBallot.toggle(votes.length === 0);
+    local.votesList.scrollTop(scroll);
   };
 
   var updateStatusInList = function (info) {
@@ -312,15 +298,12 @@
   };
 
   var updateStatusDisplay = function (info) {
-    //  info = { "BallotStatus": "TooFew", "BallotStatusText": "Too Few", "SpoiledCount": 0 };
 
     if (info.StatusCode) {
       // backward compatibilty... convert values
       info.BallotStatus = info.StatusCode;
       info.BallotStatusText = info.StatusCodeText;
     }
-
-    //    $('#cbReview').attr('checked', info.BallotStatus == 'Review');
 
     var status = info.BallotStatus;
 
@@ -336,23 +319,6 @@
       topDisplay.addClass('InvalidBallot');
     }
   };
-
-  //  var cbReviewChanged = function () {
-  //    var checked = $('#cbReview').prop('checked');
-  //    //var isReview = local.ballotStatus == 'Review';
-  //
-  //    //if (checked != isReview) {
-  //    ShowStatusDisplay('Saving');
-  //
-  //    CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
-  //      updateStatusDisplay(info);
-  //      updateStatusInList(info);
-  //
-  //      ShowStatusSuccess('Saved');
-  //    });
-  //
-  //    //}
-  //  };
 
   var showLocation = function (location) {
     local.location = location;
@@ -380,10 +346,10 @@
     if (remainingToEnter == 0) {
       title = 'All entered';
     } else if (remainingToEnter < 0) {
-      title = '{0} too many'.filledWith(0 - remainingToEnter);
+      title = '{0} more than counted'.filledWith(0 - remainingToEnter);
     }
     else {
-      title = '{0} more'.filledWith(remainingToEnter);
+      title = '{0} more to enter'.filledWith(remainingToEnter);
     }
 
     $('#collectedVsEntered').text(title ? ' (' + title + ')' : '');
@@ -414,8 +380,8 @@
     var saveNow = ev.type === 'change';
     var focusOnNew = false;
     var changing = true;
-//    LogMessage(ev.type);
-//    LogMessage(ev.which);
+    //    LogMessage(ev.type);
+    //    LogMessage(ev.which);
 
 
     switch (ev.which) {
@@ -458,11 +424,14 @@
     if (saveNow) {
       startSavingVote(input.parent(), focusOnNew);
     } else if (changing) {
-      input.addClass('changing');
+//      input.addClass('changing');
     }
   };
 
   var invalidReasonChanged = function (ev) {
+    if (ev.target.selectedIndex == -1) {
+      return; //nothing selected
+    }
     var select = $(ev.target);
     var reason = select.val();
     if (reason == '0') {
@@ -470,12 +439,19 @@
     }
 
     select.attr('size', 1);
-    var parent = select.parent();
+    var parent = select.parent('.VoteHost');
 
     if (reason == '-1') {
       // remove this one
       var voteId = parent.data('vote-id') || 0;
       parent.remove();
+      for (var i = 0; i < local.votes.length; i++) {
+        var vote = local.votes[i];
+        if (vote.vid == voteId) {
+          local.votes.splice(i, 1);
+          break;
+        }
+      }
       if (voteId != 0) {
         var form = {
           vid: voteId
@@ -552,13 +528,6 @@
         ShowStatusSuccess('Saved');
         // assume any error was removed
         host.removeClass('Changedtrue').addClass('Changedfalse');
-        input.removeClass('changing');
-
-        //        if (!publicInterface.Location) {
-        //          location.href = location.href;
-        //          //TODO: use Ajax to reload the content?
-        //          return;
-        //        }
 
         if (info.Location) {
           showLocation(info.Location);
@@ -591,6 +560,7 @@
           }
         }
 
+        scrollToVote(host, info.pos);
         //setBallotStatus(info.BallotStatus, info.BallotStatusText, true, info.SpoiledCount);
         updateStatusDisplay(info);
         updateStatusInList(info);
@@ -599,10 +569,10 @@
 
         showBallotCount(info.LocationBallotsEntered);
 
-        if (info.BallotStatus == 'Ok') {
-          //local.tabList.tabs('option', 'active', tabNum.ballots);
-          //$('#btnNewBallot2').effect('highlight', null, 1500);
-        }
+        //        if (info.BallotStatus == 'Ok') {
+        //local.tabList.tabs('option', 'active', tabNum.ballots);
+        //$('#btnNewBallot2').effect('highlight', null, 1500);
+        //        }
         if (focusOnNew) {
           focusOnTextInput();
         }
@@ -613,8 +583,20 @@
     });
   };
 
+  var scrollToVote = function (host, num) {
+    var parent = host.parent();
+    var size = host.outerHeight();
+
+    var newScroll = num * size;
+    if (newScroll > parent.height() - 2 * size) {
+      parent.scrollTop(newScroll);
+    } else {
+      parent.scrollTop(0);
+    }
+  };
+
   var deleteVote = function (ev) {
-    var host = $(ev.target).parent();
+    var host = $(ev.target).parents('.VoteHost');
     var voteId = host.data('vote-id') || 0;
     var form = {
       vid: voteId
@@ -660,32 +642,37 @@
     });
   };
 
-  var deleteBallot = function () {
-    ShowStatusDisplay('Deleting...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/DeleteBallot', null, function (info) {
-      if (info.Deleted) {
-        ShowStatusSuccess('Deleted');
+  //  var deleteBallot = function () {
+  //    ShowStatusDisplay('Deleting...');
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/DeleteBallot', null, function (info) {
+  //      if (info.Deleted) {
+  //        ShowStatusSuccess('Deleted');
+  //
+  //        showBallot(info);
+  //
+  //        if (info.Location) {
+  //          showLocation(info.Location);
+  //        }
+  //      }
+  //      else {
+  //        ShowStatusFailed(info.Message);
+  //      }
+  //    });
+  //  };
 
-        showBallot(info);
-
-        if (info.Location) {
-          showLocation(info.Location);
-        }
-      }
-      else {
-        ShowStatusFailed(info.Message);
-      }
-    });
-  };
-
-  var onNamesReady = function (info, beingRefreshed) {
+  var onNamesReady = function (info, beingRefreshed, fromQuickSearch) {
     local.People = info.People || [];
+
+    if (!fromQuickSearch) {
+      resetKeyTimeShow();
+      local.peopleHelper.AddGroupToChosenNames(local.People);
+    }
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
     if (!local.People.length && local.lastSearch) {
       var search = local.inputField.val();
-      if (search) {
+      if (search && !fromQuickSearch) {
         local.nameList.append('<li>...no matches found...</li>');
       }
     } else {
@@ -698,16 +685,21 @@
         local.rowSelected = info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
-        var ineligible = $(item).data('ineligible');
-        if (ineligible) {
+        var li = $(item);
+        var ineligible = li.data('ineligible');
+        if (!li.data('canreceivevotes')) {
           var desc = getIneligibleReasonDesc(ineligible);
           item.title = 'Ineligible: ' + desc;
+        } else {
+          if (ineligible) {
+            li.data('ineligible', null);
+          }
         }
       });
     }
-    local.actionTag.removeClass('searching');
-    local.actionTag.text('');
-    local.inputField.removeClass('searching');
+    //    local.actionTag.removeClass('searching');
+    //    local.actionTag.text('');
+    //    local.inputField.removeClass('searching');
 
     // single:
     local.nameList.children().removeClass('selected');
@@ -795,7 +787,7 @@
   };
 
   var addSpoiled = function () {
-//    LogMessage('spoiled');
+    //    LogMessage('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -803,7 +795,6 @@
       changed: false,
       InvalidReasons: local.invalidReasonsShortHtml
     });
-
 
     showVotes(false);
 
@@ -850,8 +841,8 @@
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-          '<option value="0">Select a reason...</option>',
-          '<option value="-1">Name not found in search...</option>'
+          '<option value="-1">Add new name (including spoiled)...</option>',
+          '<option value="0">Select a reason...</option>'
     ];
 
     var group = '';
@@ -901,44 +892,67 @@
         return true;
 
       case 27: // esc
-        local.inputField.val('');
-        runSearch();
+        clearTimeout(local.keyTimer);
+        resetKeyTimeShow();
+        if (local.lastKey == 27) {
+          // pressed esc twice - clear inputs
+          local.inputField.val('');
+          searchTextChanged();
+        }
         return true;
 
       default:
-//        LogMessage(ev.which);
+        //        LogMessage(ev.which);
         break;
     }
     return false;
   };
 
-  var runSearch = function (ev) {
+  var resetKeyTimeShow = function () {
+    local.keyTimeShowSpan
+      .stop(true, true)
+      .removeClass('searching')
+      .css({ height: 0 });
+  };
+  var searchTextChanged = function (ev) {
     clearTimeout(local.keyTimer);
+    resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
-    if (ev && navigating(ev)) {
-      return;
+    if (ev) {
+      if (navigating(ev)) {
+        local.lastKey = ev.which;
+        return;
+      }
+      local.lastKey = ev.which;
     }
-    if (local.lastSearch === text.trim()) return;
     if (text == '') {
       resetSearch();
       return;
     }
-    local.actionTag.html('');
-    local.actionTag.addClass('delaying');
-    input.addClass('delaying');
+    if (local.lastSearch === text) return;
+
+    local.keyTimeShowSpan
+      .animate({
+        height: 25
+      }, {
+        duration: local.keyTime,
+        queue: false,
+        start: resetKeyTimeShow,
+        complete: function () {
+          local.keyTimeShowSpan.addClass('searching');
+        }
+      });
+
+    local.peopleHelper.QuickSearch(text, function (info) {
+      onNamesReady(info, false, true);
+    }, getUsedIds());
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-
-      local.actionTag.removeClass('delaying');
-      input.removeClass('delaying');
-
-      local.actionTag.addClass('searching');
-      local.actionTag.text('Searching...');
-      input.addClass('searching');
-
-      local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      if (text) {
+        local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+      }
     }, local.keyTime);
   };
 
@@ -950,6 +964,7 @@
 
   var resetSearch = function () {
     local.lastSearch = '';
+    local.inputField.val('');
     onNamesReady({
       People: [],
       MoreFound: ''
