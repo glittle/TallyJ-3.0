@@ -25,10 +25,10 @@ namespace TallyJ.Code.Enumerations
         {
         }
 
-        public static string TextFor(string value)
+        public static string TextFor(string value, string defaultValue = "")
         {
             var item = BaseItems.SingleOrDefault(i => i.Value == value);
-            return item == null ? value : item.DisplayText;
+            return item == null ? (defaultValue ?? value) : item.DisplayText;
         }
 
         public static string DisplayVotingMethodFor(Election currentElection, Person person)

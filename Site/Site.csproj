@@ -719,6 +719,9 @@
     <None Include="Properties\PublishProfiles\Local for Distribution.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\jquery-1.11.0.min.map" />
+    <Content Include="Reports\Voters.cshtml" />
+    <Content Include="Reports\NonVoters.cshtml" />
+    <Content Include="Reports\AllPeople.cshtml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />

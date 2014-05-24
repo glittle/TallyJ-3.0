@@ -249,7 +249,7 @@ function AttachHandlers() {
       site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
   });
-  $('#electionState li').on('mouseenter', HoverQuickLink);
+  $('#electionState').on('mouseenter', 'li', HoverQuickLink);
 
   $('body').on('click', 'a[href="/Account/Logoff"]', function () {
     logoffSignalR();
@@ -264,8 +264,8 @@ function updateElectionStatus(ev, info) {
 function showMenu(state, permanent, slow) {
   var target = $('#electionState');
   var temp = target.data('temp') || target.data('state');
+  LogMessage('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
   if (state != temp) {
-    //       LogMessage('changed from {0} to {1}'.filledWith(temp, state));
     $('#quickLinks2 span:visible').stop(true).hide();
     $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
   }
@@ -284,10 +284,12 @@ function showMenu(state, permanent, slow) {
     site.electionState = state;
     target.data('state', state);
     target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
-    mainItem.removeClass('Active_False').addClass('Active_True');
+    mainItem.removeClass('Active_False Active_Temp').addClass('Active_True');
   } else {
     target.find('li').removeClass('Active_Temp');
-    mainItem.addClass('Active_Temp');
+    if (state != site.electionState) {
+      mainItem.addClass('Active_Temp');
+    }
   }
 }
 

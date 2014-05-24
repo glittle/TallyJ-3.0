@@ -1,0 +1,97 @@
+﻿@using TallyJ.Code
+@using TallyJ.Code.Enumerations
+@using TallyJ.EF
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var people = new PersonCacher().AllForThisElection
+    .Where(p => !p.IneligibleReasonGuid.HasValue)
+    .OrderBy(p => p.FullName)
+    .Select(p => new
+    {
+      PersonName = p.FullName,
+      VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod, "---"),
+      //      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(
+      //        p.IneligibleReasonGuid.AsGuid()).
+      //        SurroundContentWith("[", "]")
+    });
+}
+<style>
+  .Voters {
+    -webkit-column-width: 15em;
+    -moz-column-width: 15em;
+    -ms-column-width: 15em;
+    -o-column-width: 15em;
+    column-width: 15em;
+    -webkit-column-gap: 1em;
+    -moz-column-gap: 1em;
+    -ms-column-gap: 1em;
+    -o-column-gap: 1em;
+    column-gap: 1em;
+    -webkit-column-rule-width: 4px;
+    -moz-column-rule-width: 4px;
+    -ms-column-rule-width: 4px;
+    -o-column-rule-width: 4px;
+    column-rule-width: 4px;
+  }
+
+  b {
+    display: inline-block;
+  }
+
+  .person {
+    position: relative;
+  }
+
+    .person.first {
+      margin-top: .5em;
+    }
+
+    .person.ineligible {
+      text-decoration: line-through;
+      color: red;
+    }
+
+  .reason {
+    position: absolute;
+    right: 20px;
+  }
+
+  .method {
+    position: absolute;
+    right: 0;
+  }
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    Showing all eligible voters, and how they were registered on the Front Desk, if they were.
+  </p>
+  <div class="Voters">
+    @{
+      var initial = ' ';
+    }
+    @foreach (var person in people)
+    {
+      var name = person.PersonName;
+      var first = name.ToUpper()[0];
+      var firstClass = "";
+      if (first != initial)
+      {
+        initial = first;
+        name = "<b>" + initial + "</b>" + name.Substring(1);
+        firstClass = "first";
+      }
+//      var ineligible = "";
+//      if (person.InvalidReasonDesc.HasContent())
+//      {
+//        ineligible = "ineligible";
+//        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
+//      }
+
+      <div class="person @firstClass">
+        <span class="name">@Raw(name)</span>
+        <span class="method">@person.VotingMethod</span>
+      </div>
+    }
+  </div>
+</div>
