@@ -68,8 +68,9 @@
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
     local.peopleHelper.Prepare();
 
-    local.inputField = $('#txtSearch').live('keyup paste', searchTextChanged);
+    local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
     local.inputField.focus();
+
     local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
@@ -106,7 +107,6 @@
     $('#btnAddToThis').on('click', showBallotTab);
     $('#ballotFilter').on('change', startToChangeBallotFilter);
 
-    //        $('#btnAddMissing').on('click', addMissing);
     $('#btnCancelAddMissing').on('click', cancelAddMissing);
 
     $('#cbReview').on('click, change', cbReviewChanged);
@@ -134,7 +134,7 @@
 
     //        site.qTips.push({ selector: '#qTipMissing', title: 'Add Missing', text: 'If the name on the ballot paper cannot be found by searching, then use this button to add a new name.<br><br>If this person named is ineligible to receive votes, this can be noted as you add the name.' });
     site.qTips.push({ selector: '#qTipSpoiled', title: 'Add Spoiled', text: 'Click to add a spoiled vote.  If the name is readable, first search for it, as someone else may have added it already!' });
-    site.qTips.push({ selector: '#qTipSearch', title: 'Searching for Names', text: 'Type the first few letters of desired name(s). A quick search will be done, followed by a thorough search when the green bar touches the bottom. Press Esc to cancel the thorough search.' });
+    site.qTips.push({ selector: '#qTipSearch', title: 'Searching for Names', text: 'Type the first few letters of desired name(s). A quick search will be done, followed by a more thorough search when the green bar touches the bottom. Type more letters or press Esc to cancel the second search.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
     site.onbroadcast(site.broadcastCode.personNameChanging, function(fullname) {
@@ -158,9 +158,7 @@
       showLocation(info.Location);
       showBallot(info);
     });
-
   };
-
 
   var orderChanged = function (ev, ui) {
     var ids = [];
@@ -417,26 +415,6 @@ add to this ballot
     local.btnDeleteBallot.prop('disabled', votes.length > 0);
   };
 
-  //        var showTempBallotStatusAndDups = function () {
-  //            var votes = local.votesList.find('.VoteHost');
-  //            var votesDiff = local.votesNeeded - votes.length;
-  //            var newStatus = 'Ok';
-
-  //            if (findAndMarkDups(votes)) {
-  //                newStatus = 'Dup';
-  //                // want to show dups even if TooMany or TooFew
-  //            }
-
-  //            if (votesDiff < 0) {
-  //                newStatus = 'TooMany';
-  //            }
-  //            else if (votesDiff > 0) {
-  //                newStatus = 'TooFew';
-  //            }
-
-  //            setBallotStatus(newStatus, null, false, 0);
-  //        };
-
   var findAndMarkDups = function (votes) {
     var found = false;
     var dups = {};
@@ -473,47 +451,11 @@ add to this ballot
     return found;
   };
 
-  //    var setBallotStatus = function (status, display, fromServer) {
-  //        local.ballotStatus = status;
-  //        if (!display) {
-  //            var matched = $.grep(publicInterface.BallotStatus, function () {
-  //                return this.v == status;
-  //            });
-  //            display = matched.length == 1 ? matched[0].d : '??';
-  //        }
-  //        if (fromServer) {
-  //            $('#cbReview').attr('checked', status == 'Review');
-  //        }
-
-  //        // {"Id":745,"Code":"A1","StatusCode":"Ok","StatusCodeText":"Ok","SpoiledCount":3}
-  //        $('#B' + local.ballotId).html(local.ballotListTemplate.filledWith({ Id: local.ballotId }));
-
-  //        var statusDisplay = $('.ballotStatus');
-  //        statusDisplay.html(display);
-
-  //        if (status == 'Ok') {
-  //            statusDisplay.removeClass('InvalidBallot');
-  //            statusDisplay.addClass('Ok');
-  //        } else {
-  //            statusDisplay.removeClass('Ok');
-  //            statusDisplay.addClass('InvalidBallot');
-  //        }
-  //        if (fromServer) {
-  //            statusDisplay.addClass('Confirmed');
-  //            statusDisplay.removeClass('NotConfirmed');
-  //        }
-  //        else {
-  //            statusDisplay.removeClass('Confirmed');
-  //            statusDisplay.addClass('NotConfirmed');
-  //        }
-  //    };
-
   var updateStatusInList = function (info) {
     $('#BallotStatus' + local.ballotId).html(local.ballotListDetailTemplate.filledWith(info));
   };
 
   var updateStatusDisplay = function (info) {
-    //  info = { "BallotStatus": "TooFew", "BallotStatusText": "Too Few", "SpoiledCount": 0 };
 
     if (info.StatusCode) {
       // backward compatibilty... convert values
@@ -578,7 +520,7 @@ add to this ballot
     $('#lblNumEntered').text(numEnteredOnThisComputer || local.ballotCountAtLastLoad || '-');
 
     var remainingToEnter = (local.location.BallotsCollected || 0) - (numEnteredInLocation || 0);
-    var html, title;
+    var title;
     if (remainingToEnter == 0) {
       title = ': All entered';
     } else if (remainingToEnter < 0) {
@@ -733,8 +675,6 @@ add to this ballot
 
           $('#btnNewBallot2').effect('highlight', null, 1500);
         }
-
-        //        focusOnTextInput();
       }
       else {
         ShowStatusFailed(info.Error);
@@ -1112,11 +1052,11 @@ add to this ballot
       }
       local.lastKey = ev.which;
     }
-    if (local.lastSearch === text) return;
     if (text == '') {
       resetSearch();
       return;
     }
+    if (local.lastSearch === text) return;
 
     local.keyTimeShowSpan
       .animate({
@@ -1151,7 +1091,6 @@ add to this ballot
   var resetSearch = function () {
     local.lastSearch = '';
     local.inputField.val('');
-    LogMessage('reset');
     onNamesReady({
       People: [],
       MoreFound: ''
@@ -1189,6 +1128,7 @@ add to this ballot
         local.rowSelected = i;
         return false;
       }
+      return true;
     });
 
     edit($(el));

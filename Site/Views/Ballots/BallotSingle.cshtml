@@ -46,6 +46,12 @@
     </div>
 
     <div id="tabNameSearch">
+      <div class="float-right addSpoiled">
+        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
+        <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini spoiledBtn float-right">
+          <u>A</u>dd new or spoiled
+        </button>
+      </div>
       <div class="float-left">
         <div>
           Search for a <u>p</u>erson:
@@ -54,12 +60,6 @@
           <span id="keyTimeShow"></span>
           <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
         </div>
-      </div>
-      <div class="float-right addSpoiled">
-        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="3" accesskey="A" class="btn btn-mini spoiledBtn float-right">
-          <u>A</u>dd new or spoiled
-        </button>
       </div>
       <div class="actionHolder Clear">
         <div class="tip1">
@@ -90,7 +90,7 @@
             <span>Location Status:</span>
           </td>
           <td>
-            <select id="ddlLocationStatus" data-name="TallyStatusCode" tabindex="2">
+            <select id="ddlLocationStatus" data-name="TallyStatusCode" tabindex="3">
               @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
             </select>
           </td>
@@ -116,7 +116,7 @@
             <span>Contact Info:</span>
           </td>
           <td>
-            <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="2">
+            <input id="txtContact" maxlength="250" data-name="ContactInfo" tabindex="3">
           </td>
         </tr>
       }

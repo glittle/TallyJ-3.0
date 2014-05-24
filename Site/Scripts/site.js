@@ -283,8 +283,11 @@ function showMenu(state, permanent, slow) {
   if (permanent) {
     site.electionState = state;
     target.data('state', state);
-    target.find('li').removeClass('Active_True').addClass('Active_False');
+    target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
     mainItem.removeClass('Active_False').addClass('Active_True');
+  } else {
+    target.find('li').removeClass('Active_Temp');
+    mainItem.addClass('Active_Temp');
   }
 }
 
@@ -306,7 +309,7 @@ function HoverQuickLink(ev, showNow) {
 
   clearTimeout(site.hoverQuickLinkRevertDelay);
 
-  if (!showNow && site.menuShowingDefault) {
+  if (!showNow) { // && site.menuShowingDefault) {
     clearTimeout(site.hoverQuickLinkShowDelay);
 
     $('.TopInfo').on('mouseleave', function () {
