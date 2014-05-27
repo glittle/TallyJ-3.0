@@ -27,7 +27,9 @@
 
   var showInfo = function (info, codeTitle) {
     ResetStatusDisplay();
-
+    if (!info) {
+      return;
+    }
     if (info.Status != 'ok') {
       $('#Status').text(info.Status).show();
       local.reportHolder.hide();

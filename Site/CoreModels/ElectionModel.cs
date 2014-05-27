@@ -334,12 +334,77 @@ namespace TallyJ.CoreModels
         {
           new PublicHub().ElectionsListUpdated();
         }
+
+        UpgradeOldData();
       }
 
       new LogHelper().Add(message);
 
       return true;
     }
+
+    private void UpgradeOldData()
+    {
+      var personCacher = new PersonCacher();
+      var testInfo = personCacher.MainQuery().Select(p=>new {p.CombinedInfo, p.CombinedSoundCodes}).FirstOrDefault();
+
+      if (testInfo == null)
+      {
+        return;
+      }
+
+      if (testInfo.CombinedInfo.HasContent() && testInfo.CombinedSoundCodes.HasContent() &&
+          !testInfo.CombinedInfo.Contains("^") && !testInfo.CombinedSoundCodes.Contains("^"))
+      {
+        return;
+      }
+
+      // fix all data
+      var voteCacher = new VoteCacher();
+
+      var people = personCacher.MainQuery().ToList();
+      var votes = voteCacher.MainQuery().ToList();
+        
+      var peopleModel = new PeopleModel();
+      var saveNeeded = false;
+
+      foreach (var person in people)
+      {
+        AutoFix(person, votes, peopleModel, ref saveNeeded);
+      }
+
+      if (saveNeeded)
+      {
+        Db.SaveChanges();
+
+        new LogHelper().Add("Updated person combined infos");
+
+        personCacher.DropThisCache();
+        voteCacher.DropThisCache();
+      }
+    }
+
+    public void AutoFix(Person person, List<Vote> voteList, PeopleModel peopleModel, ref bool saveNeeded)
+    {
+      var oldCombined = person.CombinedInfo;
+      var oldSounds = person.CombinedSoundCodes;
+
+      peopleModel.SetCombinedInfos(person);
+
+      if (person.CombinedInfo == oldCombined && person.CombinedSoundCodes == oldSounds)
+      {
+        //didn't need to fix it
+        return;
+      }
+
+      saveNeeded = true;
+
+      foreach (var vote in voteList.Where(v => v.PersonGuid == person.PersonGuid))
+      {
+        vote.PersonCombinedInfo = person.CombinedInfo;
+      }
+    }
+
 
     //public JsonResult Copy(Guid guidOfElectionToCopy)
     //{

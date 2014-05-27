@@ -593,6 +593,9 @@ namespace TallyJ.CoreModels
       var currentLocationGuid = UserSession.CurrentLocationGuid;
       var computerCode = UserSession.CurrentComputerCode;
 
+      var ballotCacher = new BallotCacher();
+      var firstBallot = ballotCacher.AllForThisElection.Any();
+
       var ballot = new Ballot
       {
         BallotGuid = Guid.NewGuid(),
@@ -604,9 +607,24 @@ namespace TallyJ.CoreModels
         Teller2 = UserSession.GetCurrentTeller(2)
       };
       Db.Ballot.Add(ballot);
+
+      if (firstBallot)
+      {
+        var locationCacher = new LocationCacher();
+        var location = locationCacher.AllForThisElection.FirstOrDefault(l => l.LocationGuid == currentLocationGuid);
+        if (location != null && location.BallotsCollected.AsInt() == 0)
+        {
+          var ballotSources = new PersonCacher()
+            .AllForThisElection
+            .Count(p => !string.IsNullOrEmpty(p.VotingMethod) && p.VotingLocationGuid == currentLocationGuid);
+          location.BallotsCollected = ballotSources;
+          locationCacher.UpdateItemAndSaveCache(location);
+        }
+      }
+
       Db.SaveChanges();
 
-      new BallotCacher().UpdateItemAndSaveCache(ballot);
+      ballotCacher.UpdateItemAndSaveCache(ballot);
 
       SessionKey.CurrentBallotId.SetInSession(ballot.C_RowId);
 

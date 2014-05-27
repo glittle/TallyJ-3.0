@@ -7,9 +7,7 @@
 
   ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
-  //    ContextItems.AddJavascriptForPage("electionGuid", "frontDeskPage.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid));
   TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
-
 }
 <div class="PullInstructions">
   <ol>

@@ -18,7 +18,7 @@
       local.showingNames = true;
     });
     $('#locations').change(function() {
-      changeLocation(this);
+      changeLocation($(this));
     });
 
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });

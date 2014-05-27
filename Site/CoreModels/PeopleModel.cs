@@ -82,18 +82,24 @@ namespace TallyJ.CoreModels
     /// </summary>
     public void SetInvolvementFlagsToDefault()
     {
-      var peopleInElection = new PersonCacher().AllForThisElection;
+      new PersonCacher().DropThisCache();
+     
+      var peopleInElection = new PersonCacher().MainQuery().ToList();
       var reason = new ElectionModel().GetDefaultIneligibleReason();
-
+      var counter = 0;
       foreach (var person in peopleInElection)
       {
-        Db.Person.Attach(person);
         SetInvolvementFlagsToDefault(person, reason);
+
+        if (counter++ > 500)
+        {
+          Db.SaveChanges();
+          counter = 0;
+        }
       }
 
       Db.SaveChanges();
 
-      new PersonCacher().ReplaceEntireCache(peopleInElection);
     }
 
     //public void ResetAllInfo(Person person)
@@ -418,15 +424,15 @@ namespace TallyJ.CoreModels
                          ? new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
                          : new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
 
-      if (location.BallotsCollected.AsInt() == 0)
-      {
-        location.BallotsCollected = ballotSources.Count;
-        Db.SaveChanges();
+//      if (location.BallotsCollected.AsInt() == 0)
+//      {
+//        location.BallotsCollected = ballotSources.Count;
+//        Db.SaveChanges();
+//      }
 
-        if (location.LocationGuid != UserSession.CurrentLocationGuid)
-        {
-          UserSession.CurrentLocationGuid = location.LocationGuid;
-        }
+      if (location.LocationGuid != UserSession.CurrentLocationGuid)
+      {
+        UserSession.CurrentLocationGuid = location.LocationGuid;
       }
 
 

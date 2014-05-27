@@ -128,7 +128,7 @@ div.result1 div span:nth-child(2) {
 
 @media print
 {
-    header, .chooser, footer
+    header, .chooser, footer, .CompCode
     {
         display: none;
     }
