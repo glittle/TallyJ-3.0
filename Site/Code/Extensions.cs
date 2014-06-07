@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using RazorEngine.Text;
 using TallyJ.CoreModels;
 using TallyJ.EF;
 
@@ -289,6 +290,42 @@ namespace TallyJ.Code
       }
     }
 
+    public static IEncodedString PercentInSpan(this int num, int total, int decimals = 0, bool surroundWithParen = false, bool showZero = true)
+    {
+      return new RawString("<span class=pct>" + num.PercentOf(total, decimals, surroundWithParen, showZero) + "</span>");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="num"></param>
+    /// <param name="total"></param>
+    /// <param name="decimals">If negative, will be the maximum number of decimals, with no trailing 0 digits</param>
+    /// <param name="surroundWithParen"></param>
+    /// <param name="showZero"></param>
+    /// <returns></returns>
+    public static string PercentOf(this int num, int total, int decimals = 0, bool surroundWithParen = false, bool showZero = true)
+    {
+      if (total == 0 || num == 0 && !showZero) return "-";
+
+      var isMax = decimals < 0;
+      decimals = Math.Abs(decimals);
+
+      var pct = Math.Round(num * 100.0 / total, decimals, MidpointRounding.ToEven);
+
+      var numRaw = pct.ToString("F" + decimals);
+      while (isMax && decimals > 0)
+      {
+        decimals--;
+        var test = pct.ToString("F" + decimals);
+        if (Convert.ToDouble(test) == pct)
+        {
+          numRaw = test;
+        }
+      }
+      var s = numRaw + "%";
+      return surroundWithParen ? "(" + s + ")" : s;
+    }
 
     public static object ForSqlParameter(this string input)
     {
@@ -674,21 +711,21 @@ namespace TallyJ.Code
       }
     }
 
-//    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
-//    {
-//      return inputs.Select(VoteInfo => new Vote
-//          {
-//            C_RowId = VoteInfo.VoteId,
-//            BallotGuid = VoteInfo.BallotGuid,
-//            C_RowVersion = null,
-//            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
-//            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
-//            PersonGuid = VoteInfo.PersonGuid,
-//            PositionOnBallot = VoteInfo.PositionOnBallot,
-//            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
-//            StatusCode = VoteInfo.VoteStatusCode
-//          });
-//    }
+    //    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
+    //    {
+    //      return inputs.Select(VoteInfo => new Vote
+    //          {
+    //            C_RowId = VoteInfo.VoteId,
+    //            BallotGuid = VoteInfo.BallotGuid,
+    //            C_RowVersion = null,
+    //            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
+    //            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
+    //            PersonGuid = VoteInfo.PersonGuid,
+    //            PositionOnBallot = VoteInfo.PositionOnBallot,
+    //            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
+    //            StatusCode = VoteInfo.VoteStatusCode
+    //          });
+    //    }
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>
