@@ -291,8 +291,13 @@ namespace Tests.FrameworkTests
 
       1.PercentOf(0).ShouldEqual("-");
       50.PercentOf(0).ShouldEqual("-");
-      0.PercentOf(1).ShouldEqual("-");
-      0.PercentOf(50).ShouldEqual("-");
+      0.PercentOf(1).ShouldEqual("0%");
+      0.PercentOf(50).ShouldEqual("0%");
+
+      0.PercentOf(50, 3).ShouldEqual("0.000%");
+      0.PercentOf(50, -3).ShouldEqual("0%");
+      
+      0.PercentOf(50, showZero:false).ShouldEqual("-");
 
       1.PercentOf(10000).ShouldEqual("0%");
       1.PercentOf(10000, 1).ShouldEqual("0.0%");
