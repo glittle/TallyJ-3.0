@@ -1,17 +1,21 @@
 ﻿.Names > div > span:first-child {
-  width: 15em;
+  max-width: 19em;
   display: inline-block;
 }
 
 .EnvNum {
   float: right;
   text-align: right;
-  margin-right: 1em;
+  margin-right: 6px;
 }
 
 .Names div {
-  border-bottom: dotted 1px #ccc;
+  border-top: dotted 1px #ccc;
   clear: both;
+}
+
+.Names div:first-child {
+  border-top: none;
 }
 
   .Names div:hover {
@@ -24,6 +28,10 @@
   vertical-align: top;
 }
 
+.oldEnv .When {
+  float: none;
+}
+
 .ui-icon {
   display: inline-block;
 }
@@ -34,7 +42,7 @@
 
   #lists > div {
     float: left;
-    margin-right: 20px;
+    margin-right: 70px;
   }
 
 .Count {
@@ -75,6 +83,10 @@ h3 {
   margin: 1.2em 0 .2em 0;
 }
 
-.oldEnv div span:first-child {
+.oldEnv div span:first-child span:first-child {
   text-decoration: line-through;
+}
+.btnRefreshDiv {
+  float: right;
+    margin-right: 2em;
 }

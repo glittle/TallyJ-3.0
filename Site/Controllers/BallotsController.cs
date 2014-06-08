@@ -58,9 +58,11 @@ namespace TallyJ.Controllers
 
     public JsonResult BallotsForLocation(int id)
     {
+      var peopleModel = new PeopleModel();
       return new
                {
-                 Ballots = new PeopleModel().BallotSources(id)
+                 Ballots = peopleModel.BallotSources(id),
+                 OldEnvelopes = peopleModel.OldEnvelopes()
                }.AsJsonResult();
     }
 
