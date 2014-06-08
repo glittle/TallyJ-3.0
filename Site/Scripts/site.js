@@ -200,7 +200,7 @@ function PrepareQTips(doNow) {
   ActivateTips();
 }
 
-function ActivateTips() {
+function ActivateTips(forceRecreate) {
   var baseOption = {
     position: {
       my: 'bottom left',
@@ -215,7 +215,7 @@ function ActivateTips() {
   $('.qTip').qtip(baseOption);
 
   $.each(site.qTips, function () {
-    if ($(this).data('done')) return;
+    if (!(forceRecreate||false) && $(this).data('done')) return;
 
     var opt = $.extend({}, baseOption);
     if (this.text) {

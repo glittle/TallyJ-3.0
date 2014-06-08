@@ -5,7 +5,7 @@ namespace TallyJ.EF
 {
   public class ResultCacher : CacherBase<Result>
   {
-    protected override IQueryable<Result> MainQuery()
+    public override IQueryable<Result> MainQuery()
     {
       var currentElectionGuid = UserSession.CurrentElectionGuid;
       return CurrentDb.Result.Where(p => p.ElectionGuid == currentElectionGuid);

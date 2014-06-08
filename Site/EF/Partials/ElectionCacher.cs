@@ -9,7 +9,7 @@ namespace TallyJ.EF
 {
   public class ElectionCacher : CacherBase<Election>
   {
-    protected override IQueryable<Election> MainQuery()
+    public override IQueryable<Election> MainQuery()
     {
       return CurrentDb.Election.Where(p => p.ElectionGuid == UserSession.CurrentElectionGuid);
     }

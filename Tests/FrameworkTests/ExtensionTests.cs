@@ -241,7 +241,7 @@ namespace Tests.FrameworkTests
     {
       "true".AsBoolean().ShouldEqual(true);
       "True".AsBoolean().ShouldEqual(true);
-      
+
       "false".AsBoolean().ShouldEqual(false);
       "False".AsBoolean().ShouldEqual(false);
 
@@ -277,6 +277,40 @@ namespace Tests.FrameworkTests
       "ab==123".ReplacePunctuation(sep).ShouldEqual("ab$$123");
     }
 
+    [TestMethod]
+    public void AsPctString_Test()
+    {
+
+
+      50.PercentOf(100).ShouldEqual("50%");
+      1.PercentOf(100).ShouldEqual("1%");
+      100.PercentOf(10).ShouldEqual("1000%");
+      45.PercentOf(100).ShouldEqual("45%");
+
+      45.PercentOf(100, surroundWithParen: true).ShouldEqual("(45%)");
+
+      1.PercentOf(0).ShouldEqual("-");
+      50.PercentOf(0).ShouldEqual("-");
+      0.PercentOf(1).ShouldEqual("-");
+      0.PercentOf(50).ShouldEqual("-");
+
+      1.PercentOf(10000).ShouldEqual("0%");
+      1.PercentOf(10000, 1).ShouldEqual("0.0%");
+      1.PercentOf(10000, -1).ShouldEqual("0%");
+
+      44.PercentOf(1000).ShouldEqual("4%");
+      45.PercentOf(1000).ShouldEqual("4%"); // round down
+      46.PercentOf(1000).ShouldEqual("5%");
+      
+      74.PercentOf(1000).ShouldEqual("7%");
+      75.PercentOf(1000).ShouldEqual("8%"); //round up
+      76.PercentOf(1000).ShouldEqual("8%");
+
+      46.PercentOf(1000, 1).ShouldEqual("4.6%");
+      46.PercentOf(1000, 2).ShouldEqual("4.60%");
+
+      46.PercentOf(1000, -2).ShouldEqual("4.6%");
+    }
   }
 
 }

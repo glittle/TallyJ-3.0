@@ -11,25 +11,39 @@
 
   var reports = new Dictionary<string, string>
   {
-    { "SimpleResults", "Election Report (Simple)"},
+    { "SimpleResults|Ballot Results", "Election Report (Simple)"},
     { "Ballots", "All Ballots for Review"},
     { "VotesByNum", "Tellers' Report, by Votes"},
     { "VotesByName", "Tellers' Report, by Name"},
-    { "AllPeople", "All Eligible Voters"},
+    { "BallotAlignment", "Ballot Alignment"},
+    { "ChangedPeople", "Updated People"},
+
+    { "AllPeople|Registration", "All Eligible Voters"},
     { "Voters", "Eligible Voters Who Voted"},
     { "NonVoters", "Eligible Voters Who Did Not Vote"},
-    { "ChangedPeople", "Updated People"},
-    { "BallotAlignment", "Ballot Alignment"},
+    { "VotersByArea", "Voters by Sector/Area"},
   };
+  var firstHeader = false;
 }
 <div class="chooser">
   <h1>Reports</h1>
-  <ul id="chooser">
     @foreach (var r in reports)
     {
-      <li><a href='#@r.Key'>@r.Value</a></li>
+      var keyParts = r.Key.Split('|');
+      var href = keyParts[0];
+      if (keyParts.Length == 2)
+      {
+        if (firstHeader)
+        {
+          @("</ul>".AsRawHtml())
+        }
+        @("<h2>{0}</h2><ul>".FilledWith(keyParts[1]).AsRawHtml())
+
+        firstHeader = true;
+      }
+      <li><a href='#@href'>@r.Value</a></li>
     }
-  </ul>
+  @("</ul>".AsRawHtml())
   <button type="button" onclick="window.print()" class="btn btn-info btnPrint">Print (Ctrl+P)</button>
   <p class="Comment ">Some browsers, such as Chrome, can create a PDF copy of the report when printing.</p>
 </div>

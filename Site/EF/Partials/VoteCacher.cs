@@ -5,7 +5,7 @@ namespace TallyJ.EF
 {
   public class VoteCacher : CacherBase<Vote>
   {
-    protected override IQueryable<Vote> MainQuery()
+    public override IQueryable<Vote> MainQuery()
     {
       return CurrentDb.Vote
         .Join(CurrentDb.Ballot, v => v.BallotGuid, b => b.BallotGuid, (v, b) => new { v, b })

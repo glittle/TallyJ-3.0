@@ -346,7 +346,7 @@
     if (remainingToEnter == 0) {
       title = 'All entered';
     } else if (remainingToEnter < 0) {
-      title = '{0} more than counted'.filledWith(0 - remainingToEnter);
+      title = '{0} more than received'.filledWith(0 - remainingToEnter);
     }
     else {
       title = '{0} more to enter'.filledWith(remainingToEnter);

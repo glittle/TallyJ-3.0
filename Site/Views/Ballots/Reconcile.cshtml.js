@@ -17,8 +17,12 @@
       $('.Names, #lists').fadeIn();
       local.showingNames = true;
     });
-    $('#locations').change(function() {
-      changeLocation(this);
+    $('#locations').change(function () {
+      changeLocation($(this));
+    });
+    $('#btnRefresh').click(function () {
+      local.currentLocation = '';
+      changeLocation($('#locations'), true);
     });
 
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });
@@ -43,21 +47,26 @@
     });
   };
 
-//  var refreshHubConnection = function () {
-//    var resetHubConnectionTimer = function () {
-//      clearTimeout(local.reconnectHubTimeout);
-//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-//    };
-//    LogMessage('Join frontDeskHub');
-//    clearTimeout(local.reconnectHubTimeout);
-//    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
-//      resetHubConnectionTimer();
-//    });
-//  };
+  //  var refreshHubConnection = function () {
+  //    var resetHubConnectionTimer = function () {
+  //      clearTimeout(local.reconnectHubTimeout);
+  //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+  //    };
+  //    LogMessage('Join frontDeskHub');
+  //    clearTimeout(local.reconnectHubTimeout);
+  //    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
+  //      resetHubConnectionTimer();
+  //    });
+  //  };
 
   var showOld = function (list) {
     if (!list.length) return;
-    var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum} &nbsp; {Method}</span>"}</div>'.filledWithEach(extend(list));
+    var ballotList = ('<div title="{Tellers}"><span><span>{C_FullName}</span>'
+      + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
+      + '</span>'
+      + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
+      + '{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}'
+      + '</div>').filledWithEach(extend(list));
     $('#lists').append('<div><h3>Un-used Envelopes & Un-registered: {0} <span class="ui-icon ui-icon-info" id="qTipUn"></span></h3><div class="Names oldEnv">{^1}</div></div>'.filledWith(
         list.length, ballotList));
 
@@ -74,9 +83,13 @@
         }
         local.currentLocation = newLocation;
         processBallots(info.Ballots);
+        publicInterface.oldEnvelopes = info.OldEnvelopes;
+
         if (newLocation == -1) {
           showOld(publicInterface.oldEnvelopes);
         }
+
+        ActivateTips(true);
         ResetStatusDisplay();
       });
     }

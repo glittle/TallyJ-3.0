@@ -201,6 +201,6 @@ namespace TallyJ.EF
     {
     }
 
-    protected abstract IQueryable<T> MainQuery();
+    public abstract IQueryable<T> MainQuery();
   }
 }
