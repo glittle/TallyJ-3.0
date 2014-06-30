@@ -57,7 +57,7 @@
     var table = $('#mainBody');
     if (!firstLoad) {
       table.animate({
-        opacity: 0.5
+        opacity: 0.4
       }, 10, function () {
         table.animate({
           opacity: 1

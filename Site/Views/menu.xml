@@ -14,7 +14,7 @@
     <group title="Tallying" longtitle="Tallying Ballots" showTitleInPage="false">
       <page title="Count Envelopes" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
       <page title="Enter Ballots" featureWhen="TieBreakNeeded, Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
-      <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying, Reviewing" controller="After" action="Monitor" requireElection="true" role="known" desc="Centrally monitor progress of tellers."></page>
+      <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying, Reviewing" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
     </group>
     <group title="Review and Report" longtitle="Review then share the news!" showTitleInPage="false">
       <page title="Analyze Ballots" featureWhen="Tallying, TieBreakNeeded, Reviewing" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>

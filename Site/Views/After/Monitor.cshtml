@@ -22,17 +22,17 @@
         Status
       </th>
       @*<th rowspan="2">
-        @(UserSession.CurrentElection.IsSingleNameElection ? "Group" : "Computer")
-      </th>*@
+          @(UserSession.CurrentElection.IsSingleNameElection ? "Group" : "Computer")
+        </th>*@
       @*<th>
-        Ballots
-      </th>
-      <th>
-        Minutes Ago
-      </th>
-      <th>
-        Tellers
-      </th>*@
+          Ballots
+        </th>
+        <th>
+          Minutes Ago
+        </th>
+        <th>
+          Tellers
+        </th>*@
       <th rowspan="2">
         @(UserSession.CurrentElection.IsSingleNameElection ? "Groups" : "Computers")
       </th>
@@ -132,7 +132,7 @@
     </div>*@
   <div class="AutoButtons">
     <input type="checkbox" id="chkAutoRefresh" />
-    <span>Auto-refresh monitor listing every </span>
+    <label for="chkAutoRefresh">Auto-refresh monitor listing every </label>
     <select id="ddlRefresh" class="input-medium">
       <option value="10">10 seconds</option>
       <option value="15">20 seconds</option>
@@ -145,12 +145,15 @@
     </button>
     Last Refresh at <span id="lastRefresh"></span>
   </div>
-  <div>
-    <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
-    <label for="chkList">
-      Allow tellers to join this election (access code: <span class="AccessCode">@UserSession.CurrentElection.ElectionPasscode</span>)
-    </label>
-  </div>
+  @if (UserSession.IsKnownTeller)
+  {
+    <div>
+      <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
+      <label for="chkList">
+        Allow tellers to join this election with the <span class="publicInfo" title="Access code: @UserSession.CurrentElection.ElectionPasscode">access code</span>.@*: <span class="AccessCode">@UserSession.CurrentElection.ElectionPasscode</span>)*@
+      </label>
+    </div>
+  }
   <div class="Clear">
   </div>
 </div>

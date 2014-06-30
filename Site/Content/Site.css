@@ -5147,7 +5147,8 @@ h1.SeoH1 {
   z-index: -1;
 }
 /* features */
-div.MainDashboard section.feature {
+div.MainDashboard section.feature,
+section.features.bottom section.feature {
   float: left;
   width: 200px;
   height: 133px;
@@ -5158,7 +5159,9 @@ div.MainDashboard section.feature {
   padding: 10px 15px 10px 10px;
 }
 div.MainDashboard section.feature h1,
-div.MainDashboard section.feature h2 {
+section.features.bottom section.feature h1,
+div.MainDashboard section.feature h2,
+section.features.bottom section.feature h2 {
   font-size: 1.1em;
   margin: 0;
   padding: 0;
@@ -5735,6 +5738,12 @@ body.AuthKnown .CurrentElectionName {
 }
 .AuthGuest .NotFeatured {
   display: none;
+}
+.publicInfo {
+  cursor: help;
+}
+.publicInfo .topArea {
+  margin-left: 10px;
 }
 .QuickLinks {
   margin: 5px 0 0 0;

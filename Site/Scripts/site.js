@@ -185,8 +185,8 @@ function PrepareQTips(doNow) {
   }
 
   // global tips
-  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Common Pages', text: 'Shows the pages relevant to the current state of the election. All other pages are still available using the "All Pages" button.' });
-  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Hover with mouse to temporarily show other menus.' });
+  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available using the "All Pages" button.' });
+  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Use "All Pages" to go to a page not shown.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 

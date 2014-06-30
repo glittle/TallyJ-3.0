@@ -3,6 +3,7 @@
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @using TallyJ.Code
+@using TallyJ.EF
 @{
   ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
@@ -73,6 +74,8 @@
           <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
           @if (UserSession.CurrentElection != null)
           {
+            var publicInfo = new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId);
+
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
@@ -80,6 +83,11 @@
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>
+              @if (publicInfo != null)
+              {
+                <span class="publicInfo topArea" title="Access code: @publicInfo.Passcode">(Joinable)</span>
+              }
+
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
             <div class="QuickLinks2">
@@ -106,6 +114,7 @@
       }
     </div>
   </header>
+
   <div id="body">
     @RenderSection("featured", false)
     @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
