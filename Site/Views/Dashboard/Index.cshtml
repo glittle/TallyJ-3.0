@@ -1,7 +1,7 @@
 ﻿@using System.Xml
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
-@model ElectionsListViewModel
+@*@model ElectionsListViewModel*@
 @{
     ViewBag.Title = "Dashboard";
 }
@@ -13,25 +13,6 @@
     <li>After reading these instructions at the top of a page, you can click on "Hide Instructions" just above, to hide them.</li>
   </ol>
 </div>
-@foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
-{
-  <section class="features">
-    <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
-    @foreach (var child in item.ChildNodes
-                            .Cast<XmlNode>()
-                            .Where(n=>n.NodeType==XmlNodeType.Element)
-                            .Cast<XmlElement>()
-                            .Where(c=>c.GetAttribute("showOnDashboard").DefaultTo("true")=="true"))
-    {
-        <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen"), UserSession.CurrentElection) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
-            <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">
-                <h3>
-                    @child.GetAttribute("title")</h3>
-                <p>
-                    @child.GetAttribute("desc")</p>
-            </section></a>
-    }
-    <div class="Clear">
-    </div>
-  </section>
-}
+<div class="MainDashboard">
+  @Html.Partial("DashItems")
+</div>

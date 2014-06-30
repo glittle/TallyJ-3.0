@@ -32,27 +32,27 @@
       <div class="MainTop">
         <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
-            if (Request.IsAuthenticated)
-            {
-          <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
-            @*<span>Dashboard</span>*@
-          </a>
-            }
-            else
-            {
-          @Html.ActionLink(" ", "Index", "Public", null, new
+          if (Request.IsAuthenticated)
+          {
+            <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
+              @*<span>Dashboard</span>*@
+            </a>
+          }
+          else
+          {
+            @Html.ActionLink(" ", "Index", "Public", null, new
               {
                 Class = "site-title",
                 alt = "TallyJ - Bahá’í Election Tool"
               })
-            }
+          }
         }
         <div class="Version">
           @RenderPage("Version.cshtml")
         </div>
       </div>
       @if (ScreenMode == "Normal")
-        {
+      {
         <div class="beta1">
           @*<div class="betaImg">
             </div>*@
@@ -63,16 +63,16 @@
              href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
              target="gdoc">Status and Feedback</a> document for current updates!
         </div>
-        }
+      }
       @if (Request.IsAuthenticated)
-        {
+      {
         <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           @Html.Partial("MasterMenu")
         </div>
         <div class="float-left TopInfo">
           <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
           @if (UserSession.CurrentElection != null)
-            {
+          {
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
@@ -83,24 +83,27 @@
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
             <div class="QuickLinks2">
-              <span id="qmenuTitle">@UserSession.CurrentElectionStatusName</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+              <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
             </div>
-            }
-            else
-            {
-            <div class="Spacer"></div>
-            }
-        </div>
-        }
-      @if (ScreenMode != "Full")
-        {
-          if (ScreenMode == "Mini")
-          {
-        @*<ul class="sf-menu">
-              @currentMenu.InsertMenu()
-          </ul>*@
+            <div class="QuickDash">
+              @Html.Partial("../Dashboard/DashItems")
+            </div>
           }
+          else
+          {
+            <div class="Spacer"></div>
+          }
+        </div>
+      }
+      @if (ScreenMode != "Full")
+      {
+        if (ScreenMode == "Mini")
+        {
+          @*<ul class="sf-menu">
+                @currentMenu.InsertMenu()
+            </ul>*@
         }
+      }
     </div>
   </header>
   <div id="body">

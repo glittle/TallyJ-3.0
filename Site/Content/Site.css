@@ -4913,7 +4913,7 @@ span, div {
 ----------------------------------------------------------*/
 .content-wrapper {
   margin: 0 auto;
-  width: 960px;
+  max-width: 960px;
   position: relative;
 }
 .headerRight {
@@ -5147,7 +5147,7 @@ h1.SeoH1 {
   z-index: -1;
 }
 /* features */
-section.feature {
+div.MainDashboard section.feature {
   float: left;
   width: 200px;
   height: 133px;
@@ -5157,11 +5157,60 @@ section.feature {
   text-align: center;
   padding: 10px 15px 10px 10px;
 }
-section.feature h1,
-section.feature h2 {
+div.MainDashboard section.feature h1,
+div.MainDashboard section.feature h2 {
   font-size: 1.1em;
   margin: 0;
   padding: 0;
+}
+div.QuickDash {
+  border: 1px solid #eee;
+  -webkit-box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
+  box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
+  background-color: #EFffEF;
+  z-index: 1;
+  padding: 5px 10px 5px 10px;
+  display: none;
+  position: absolute;
+  right: 172px;
+  top: 50px;
+}
+div.QuickDash section.features {
+  display: block;
+  padding-left: 10px;
+}
+div.QuickDash section.features a {
+  vertical-align: top;
+  text-align: left;
+  padding: 3px 5px;
+  margin: 1px 1px 1px 1px;
+  display: block;
+  width: 180px;
+}
+div.QuickDash section.features a section h3 {
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+  display: inline;
+}
+div.QuickDash section.features a section p {
+  display: none;
+}
+div.QuickDash section.features a section.Projector {
+  background-position: right 0;
+  background-image: url('../Images/SlideProjector.gif');
+  background-repeat: no-repeat;
+  display: inline;
+  padding-right: 25px;
+}
+div.QuickDash section.features h2 {
+  font-size: 14px;
+  margin: 6px 0 3px -10px;
+  padding: 0;
+  line-height: normal;
+  font-style: italic;
 }
 /* ordered list */
 ol.round {
@@ -5432,6 +5481,7 @@ a.twitter {
 .ElectionState li.Active_True {
   color: #013d7a;
   font-weight: bold;
+  box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75);
   background-color: #b6ff50;
 }
 .ElectionState {
@@ -5460,25 +5510,19 @@ a.twitter {
   border: 1px solid #013d7a;
   padding: 0 8px;
   -webkit-border-radius: 12px;
-  -webkit-border-top-left-radius: 0px;
-  -webkit-border-bottom-left-radius: 0px;
   -moz-border-radius: 12px;
-  -moz-border-top-left-radius: 0px;
-  -moz-border-bottom-left-radius: 0px;
   border-radius: 12px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-.ElectionState ol li.Report {
-  border-radius: 0;
 }
 .ElectionState ol li.General {
-  border-radius: 12px;
   color: #bbb;
   border: 1px solid #ccc;
 }
 .ElectionState ol li.General:hover {
   color: #333;
+}
+.ElectionState ol li.General.GeneralActive {
+  color: #333;
+  background-color: #EFffEF;
 }
 body.AuthKnown .ElectionState ol li.Active_False:hover {
   cursor: pointer;
@@ -5645,6 +5689,7 @@ body.AuthKnown .CurrentElectionName {
   text-decoration: none;
   border: 1px solid #8dc63e;
   padding: 0 4px 0 4px;
+  margin: 0 3px;
   border-radius: 2px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
@@ -5656,9 +5701,9 @@ body.AuthKnown .CurrentElectionName {
   color: #013d7a;
   font-weight: bold;
   background-color: #d2ff92;
-}
-.QuickLinks2 a.Active:hover {
-  background-color: inherit;
+  /*&:hover {
+      background-color: inherit;
+    }*/
 }
 .QuickLinks2.temp {
   background-color: #efeeef;
