@@ -184,6 +184,8 @@
   };
   var voteBtnClicked = function (ev) {
     var btn = $(ev.target);
+    btn.addClass('clicked');
+
     var row = btn.parent();
 
     var btnType = btn.hasClass('InPerson') ? 'P'

@@ -58,7 +58,7 @@ namespace TallyJ.Code.Enumerations
         .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, bi.Value == selected))
         .JoinedAsString();
      
-      return (mainList + liTemplate.FilledWith("General", "Misc Pages", "General" == selected)).AsRawHtml();
+      return (mainList + liTemplate.FilledWith("General", "All Pages", "General" == selected)).AsRawHtml();
     }
 
     public static string TextFor(string status)

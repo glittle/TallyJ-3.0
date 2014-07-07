@@ -1,115 +1,116 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
-section.feature h3 {
+div.MainDashboard {
+  section.feature h3 {
     font-size: @baseFontSize * 1.2;
-	line-height: normal;
-}
+    line-height: normal;
+  }
 
-section.features a {
+  section.features a {
     text-decoration: none;
     cursor: pointer;
     color: @textColor;
 
     &:hover h3 {
-        color: @tallyJGreen;
+      color: @tallyJGreen;
     }
 
     section {
-        border: 2px solid transparent;
+      border: 2px solid transparent;
     }
 
     &:hover.Featured section {
-        border: 2px solid #ddd;
+      border: 2px solid #ddd;
     }
 
     &:hover.NotFeatured section {
-        border: 1px solid #ddd;
+      border: 1px solid #ddd;
     }
 
     &:active section {
-        border: 2px solid #8dc63e;
+      border: 2px solid #8dc63e;
     }
-}
+  }
 
-hgroup.title a {
+  hgroup.title a {
     float: right;
     color: #013d7a;
     text-decoration: none;
-}
+  }
 
-    hgroup.title a:hover {
-        text-decoration: underline;
-    }
+  hgroup.title a:hover {
+    text-decoration: underline;
+  }
 
-section.todo h3, section.todo {
+  section.todo h3, section.todo {
     color: #ccc;
-}
+  }
 
-section.features {
+  section.features {
     padding-left: 20px;
     padding-right: 10px;
     margin-bottom: 15px;
     margin-left: 38px;
-}
+  }
 
-.featuresTitle {
+  .featuresTitle {
     margin: -5px 0 0px -17px;
     color: #bbb;
     font-weight: normal;
     font-style: italic;
     font-size: 23px;
-}
+  }
 
-.Projector h3 {
+  .Projector h3 {
     background-position: right 4px;
     background-image: url('../../Images/SlideProjector.gif');
     background-repeat: no-repeat;
-}
+  }
 
-.Role-known h3 {
+  .Role-known h3 {
     background-position: right 4px;
     background-image: url('../../Images/keys.png');
     background-repeat: no-repeat;
-}
+  }
 
-.TipKnown {
+  .TipKnown {
     background-image: url('../../Images/keys.png');
     background-repeat: no-repeat;
     display: inline-block;
     width: 16px;
     height: 16px;
-}
+  }
 
-.TipProjector {
+  .TipProjector {
     background-image: url('../../Images/SlideProjector.gif');
     background-repeat: no-repeat;
     display: inline-block;
     width: 16px;
     height: 16px;
-}
+  }
 
-.Featured section.feature {
-}
+  .Featured section.feature {
+  }
 
-.NotFeatured h3 {
+  .NotFeatured h3 {
     color: @grayLight;
-}
+  }
 
-.NotFeatured section.feature {
+  .NotFeatured section.feature {
     background-image: none;
     height: 45px;
     padding: 10px 15px 20px 10px;
     border: solid #ccc thin;
-}
+  }
 
-section.features p {
-	color: @tallyJBlue;
-}
-.NotFeatured p {
+  section.features p {
+    color: @tallyJBlue;
+  }
+
+  .NotFeatured p {
     display: none;
-}
-
-/*
+  }
+  /*
 .NotFeatured:hover p {
     display: block;
 }
@@ -122,6 +123,7 @@ section.features p {
     xfont-weight: bold;
 }
 */
-.h2 {
+  .h2 {
     margin-top: 10px;
+  }
 }

@@ -767,6 +767,7 @@
     <Content Include="Views\Dashboard\Index.cshtml.css.map">
       <DependentUpon>Index.cshtml.css</DependentUpon>
     </Content>
+    <Content Include="Views\Dashboard\DashItems.cshtml" />
     <None Include="Web.Standalone.config" />
   </ItemGroup>
   <ItemGroup>

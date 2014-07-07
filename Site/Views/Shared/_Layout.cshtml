@@ -3,6 +3,7 @@
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @using TallyJ.Code
+@using TallyJ.EF
 @{
   ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
@@ -32,27 +33,27 @@
       <div class="MainTop">
         <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
-            if (Request.IsAuthenticated)
-            {
-          <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
-            @*<span>Dashboard</span>*@
-          </a>
-            }
-            else
-            {
-          @Html.ActionLink(" ", "Index", "Public", null, new
+          if (Request.IsAuthenticated)
+          {
+            <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
+              @*<span>Dashboard</span>*@
+            </a>
+          }
+          else
+          {
+            @Html.ActionLink(" ", "Index", "Public", null, new
               {
                 Class = "site-title",
                 alt = "TallyJ - Bahá’í Election Tool"
               })
-            }
+          }
         }
         <div class="Version">
           @RenderPage("Version.cshtml")
         </div>
       </div>
       @if (ScreenMode == "Normal")
-        {
+      {
         <div class="beta1">
           @*<div class="betaImg">
             </div>*@
@@ -63,16 +64,27 @@
              href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
              target="gdoc">Status and Feedback</a> document for current updates!
         </div>
-        }
+      }
       @if (Request.IsAuthenticated)
-        {
-        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          @Html.Partial("MasterMenu")
-        </div>
-        <div class="float-left TopInfo">
-          <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
+      {
+        var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
+
+@*        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+@*          @Html.Partial("MasterMenu")*@
+@*        </div>*@
+        <div class="TopInfo">
+          <span class="CurrentElectionName" title="Election Name">
+            @UserSession.CurrentElectionDisplayNameAndInfo
+          </span>
+          @if (publicInfo != null)
+          {
+            <span class="publicInfo topArea"><span class="ui-icon ui-icon-info" id="qTipPasscode"></span>open</span>
+            <script>
+              site.qTips.push({ selector: '#qTipPasscode', title: 'Election Open for Tellers', text: 'Tellers can join this election using the pass code <b>"@publicInfo.Passcode.Replace("'", "\\'")"</b> on the home page.' });
+            </script>
+          }
           @if (UserSession.CurrentElection != null)
-            {
+          {
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
@@ -80,29 +92,36 @@
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>
+
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
             <div class="QuickLinks2">
-              <span id="qmenuTitle">@UserSession.CurrentElectionStatusName</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+              <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
             </div>
-            }
-            else
-            {
-            <div class="Spacer"></div>
-            }
-        </div>
-        }
-      @if (ScreenMode != "Full")
-        {
-          if (ScreenMode == "Mini")
-          {
-        @*<ul class="sf-menu">
-              @currentMenu.InsertMenu()
-          </ul>*@
+            <div class="QuickDash">
+              @Html.Partial("../Dashboard/DashItems")
+            </div>
           }
+          else
+          {
+            <div class="Spacer"></div>
+          }
+        </div>
+      }
+      @if (ScreenMode != "Full")
+      {
+        if (ScreenMode == "Mini")
+        {
+          @*<ul class="sf-menu">
+                @currentMenu.InsertMenu()
+            </ul>*@
         }
+      }
     </div>
   </header>
+
+
+
   <div id="body">
     @RenderSection("featured", false)
     @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)

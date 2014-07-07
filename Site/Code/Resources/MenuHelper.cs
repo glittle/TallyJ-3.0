@@ -212,7 +212,7 @@ namespace TallyJ.Code.Resources
     {
       var nodes = TrimmedMenu().ChildNodes.Cast<XmlElement>().ToList();
 
-      const string linkTemplate = "<a href='{Link}' title='{Tip}' class='{Class} Role-{Role}'>{Title}</a>";
+      const string linkTemplate = "<a href='{Link}' title=\"{Tip}\" class='{Class} Role-{Role}'>{Title}</a>";
 
       // for full users, give all menu sets
       var statusItems = ElectionTallyStatusEnum.Items.Select(ts => ts.Value).ToList();
@@ -236,7 +236,7 @@ namespace TallyJ.Code.Resources
                   Title = item.GetAttribute("title"),
                   Tip = item.GetAttribute("desc"),
                 }))
-              .JoinedAsString(" ")
+              .JoinedAsString("")
               .SurroundContentWith(
                 "<span id=menu{0}{1}>".FilledWith(tallyStatus,
                   UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " class=Hidden"), "</span>")).ToList();

@@ -185,8 +185,8 @@ function PrepareQTips(doNow) {
   }
 
   // global tips
-  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Common Pages', text: 'Shows the pages relevant to the current state of the election. All other pages are still available using "Go to any page..."' });
-  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Hover with mouse to temporarily show other menus.' });
+  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available using the "All Pages" button.' });
+  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Use "All Pages" to go to a page not shown.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 
@@ -215,7 +215,7 @@ function ActivateTips(forceRecreate) {
   $('.qTip').qtip(baseOption);
 
   $.each(site.qTips, function () {
-    if (!(forceRecreate||false) && $(this).data('done')) return;
+    if (!(forceRecreate || false) && $(this).data('done')) return;
 
     var opt = $.extend({}, baseOption);
     if (this.text) {
@@ -234,12 +234,12 @@ function ActivateTips(forceRecreate) {
 function AttachHandlers() {
   site.onbroadcast(site.broadcastCode.electionStatusChanged, updateElectionStatus);
 
-  $('body.AuthKnown #electionState li').on('click', function () {
+  $('#electionState li.General').on('click', function () {
+    showAllPages(this);
+  });
+
+  $('body.AuthKnown #electionState li').not('.General').on('click', function () {
     var item = $(this);
-    if (item.hasClass('General')) {
-      // don't set status to General
-      return;
-    }
     var form = {
       state: item.data('state')
     };
@@ -249,7 +249,7 @@ function AttachHandlers() {
       site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
   });
-  $('#electionState').on('mouseenter', 'li', HoverQuickLink);
+  // $('#electionState').on('mouseenter', 'li', HoverQuickLink);
 
   $('body').on('click', 'a[href="/Account/Logoff"]', function () {
     logoffSignalR();
@@ -261,74 +261,101 @@ function updateElectionStatus(ev, info) {
   showMenu(info.StateName, true);
 }
 
+function showAllPages(btnRaw) {
+  var btn = $(btnRaw);
+
+  var btnOffset = btn.offset();
+  var quickDash = $('div.QuickDash');
+
+  quickDash.css({
+    left: Math.max(btnOffset.left - quickDash.width(), 0),
+    right: 'auto',
+    top: btnOffset.top + btn.height() + 2
+  }).show();
+
+  $('.ElectionState .General').addClass('GeneralActive');
+  setTimeout(function () {
+    $(document).on('click', quickDashCloser);
+  }, 0);
+}
+
+var quickDashCloser = function (ev) {
+  LogMessage($(ev.srcElement).closest('.QuickDash'));
+  if ($(ev.srcElement).closest('.QuickDash').length == 0) {
+    $('div.QuickDash').fadeOut('fast');
+    $('.ElectionState .General').removeClass('GeneralActive');
+    $(document).off('click', quickDashCloser);
+  }
+};
+
 function showMenu(state, permanent, slow) {
   var target = $('#electionState');
-  var temp = target.data('temp') || target.data('state');
-  LogMessage('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
-  if (state != temp) {
-    $('#quickLinks2 span:visible').stop(true).hide();
-    $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
-  }
+  //  var temp = target.data('temp') || target.data('state');
+  // LogMessage('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
+  //  if (state != temp) {
+  $('#quickLinks2 span:visible').stop(true).hide();
+  $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
+  //  }
 
-  $('.QuickLinks2').toggleClass('temp', site.electionState != state);
+  //$('.QuickLinks2').toggleClass('temp', site.electionState != state);
 
-  target.data('temp', state);
+  //  target.data('temp', state);
 
   var mainItem = target.find('li[data-state={0}]'.filledWith(state));
 
-  $('#qmenuTitle').text(mainItem.text());
+  //$('#qmenuTitle').text(mainItem.text());
 
   site.menuShowingDefault = permanent;
 
-  if (permanent) {
-    site.electionState = state;
-    target.data('state', state);
-    target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
-    mainItem.removeClass('Active_False Active_Temp').addClass('Active_True');
-  } else {
-    target.find('li').removeClass('Active_Temp');
-    if (state != site.electionState) {
-      mainItem.addClass('Active_Temp');
-    }
-  }
+  //  if (permanent) {
+  site.electionState = state;
+  target.data('state', state);
+  target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
+  mainItem.removeClass('Active_False Active_Temp').addClass('Active_True');
+  //  } else {
+  //    target.find('li').removeClass('Active_Temp');
+  //    if (state != site.electionState) {
+  //      mainItem.addClass('Active_Temp');
+  //    }
+  //  }
 }
 
 function HoverQuickLink(ev, showNow) {
-  var reentered = function () {
-    clearTimeout(site.hoverQuickLinkRevertDelay);
-    $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
-  };
-  var mouseLeavingTopInfo = function () {
-    $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
-    $('.TopInfo').on('mouseenter', reentered);
+  //  var reentered = function () {
+  //    clearTimeout(site.hoverQuickLinkRevertDelay);
+  //    $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
+  //  };
+  //  var mouseLeavingTopInfo = function () {
+  //    $('.TopInfo').off('mouseleave', mouseLeavingTopInfo);
+  //    $('.TopInfo').on('mouseenter', reentered);
+  //
+  //    clearTimeout(site.hoverQuickLinkRevertDelay);
+  //    site.hoverQuickLinkRevertDelay = setTimeout(function () {
+  //      showMenu(site.electionState, true, true);
+  //      $('.TopInfo').off('mouseenter', reentered);
+  //    }, site.menuResetDelay);
+  //  };
+  //
+  //  clearTimeout(site.hoverQuickLinkRevertDelay);
 
-    clearTimeout(site.hoverQuickLinkRevertDelay);
-    site.hoverQuickLinkRevertDelay = setTimeout(function () {
-      showMenu(site.electionState, true, true);
-      $('.TopInfo').off('mouseenter', reentered);
-    }, site.menuResetDelay);
-  };
+  //  if (!showNow) { // && site.menuShowingDefault) {
+  //    clearTimeout(site.hoverQuickLinkShowDelay);
+  //
+  //    $('.TopInfo').on('mouseleave', function () {
+  //      clearTimeout(site.hoverQuickLinkShowDelay);
+  //    });
+  //
+  //    site.hoverQuickLinkShowDelay = setTimeout(function () {
+  //      HoverQuickLink(ev, true);
+  //    }, site.menuShowDelay);
+  //    return;
+  //  }
 
-  clearTimeout(site.hoverQuickLinkRevertDelay);
+  //  var state = $(ev.currentTarget).data('state');
 
-  if (!showNow) { // && site.menuShowingDefault) {
-    clearTimeout(site.hoverQuickLinkShowDelay);
+  //  showMenu(state, false);
 
-    $('.TopInfo').on('mouseleave', function () {
-      clearTimeout(site.hoverQuickLinkShowDelay);
-    });
-
-    site.hoverQuickLinkShowDelay = setTimeout(function () {
-      HoverQuickLink(ev, true);
-    }, site.menuShowDelay);
-    return;
-  }
-
-  var state = $(ev.currentTarget).data('state');
-
-  showMenu(state, false);
-
-  $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
+  //  $('.TopInfo').on('mouseleave', mouseLeavingTopInfo);
 }
 
 function CheckTimeOffset() {
@@ -499,10 +526,20 @@ function HasErrors(data) {
 function LogMessage(msg) {
   /// <summary>Log the message to the console, if the browser supports it
   /// </summary>
-  if (typeof console != 'undefined' && console) {
-    console.log(('' + msg).toString());
-  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
-    window.console.log(msg);
+//  if (typeof console != 'undefined' && console) {
+//    console.log(JSON.stringify(msg));
+//  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
+//    window.console.log(msg);
+//  }
+
+  if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
+    if (/rv:1/.test(navigator.userAgent) && typeof msg === 'object') {
+      // in IE11, log is not useful
+      window.console.dir(msg);
+    }
+    else {
+      window.console.log(msg);
+    }
   }
 }
 
