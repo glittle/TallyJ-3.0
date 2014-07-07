@@ -67,15 +67,24 @@
       }
       @if (Request.IsAuthenticated)
       {
-        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          @Html.Partial("MasterMenu")
-        </div>
-        <div class="float-left TopInfo">
-          <div class="CurrentElectionName" title="Election Name">@UserSession.CurrentElectionDisplayNameAndInfo</div>
+        var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
+
+@*        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+@*          @Html.Partial("MasterMenu")*@
+@*        </div>*@
+        <div class="TopInfo">
+          <span class="CurrentElectionName" title="Election Name">
+            @UserSession.CurrentElectionDisplayNameAndInfo
+          </span>
+          @if (publicInfo != null)
+          {
+            <span class="publicInfo topArea"><span class="ui-icon ui-icon-info" id="qTipPasscode"></span>open</span>
+            <script>
+              site.qTips.push({ selector: '#qTipPasscode', title: 'Election Open for Tellers', text: 'Tellers can join this election using the pass code <b>"@publicInfo.Passcode.Replace("'", "\\'")"</b> on the home page.' });
+            </script>
+          }
           @if (UserSession.CurrentElection != null)
           {
-            var publicInfo = new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId);
-
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
@@ -83,10 +92,6 @@
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>
-              @if (publicInfo != null)
-              {
-                <span class="publicInfo topArea" title="Access code: @publicInfo.Passcode">(Joinable)</span>
-              }
 
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
@@ -114,6 +119,8 @@
       }
     </div>
   </header>
+
+
 
   <div id="body">
     @RenderSection("featured", false)

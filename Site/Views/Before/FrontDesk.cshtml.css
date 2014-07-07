@@ -16,6 +16,9 @@ p
 {
     border-color: #80ff80;
 }
+div.Btn.clicked {
+  background-color: #9bff9b;
+}
 .Voter.KeyMatch {
     background-color: #ffff99;
 }

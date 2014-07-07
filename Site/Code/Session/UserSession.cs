@@ -183,7 +183,7 @@ namespace TallyJ.Code.Session
             numToElect.Plural());
         }
 
-        return "{0}{1} - \"{2}\"".FilledWith(type, modeWithNum.SurroundContentWith(" (", ")"), current.Name);
+        return "\"{2}\" - {0}{1}".FilledWith(type, modeWithNum.SurroundContentWith(" (", ")"), current.Name);
       }
     }
 
