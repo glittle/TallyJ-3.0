@@ -7,7 +7,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 
 @{
-  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart)
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart || p.IneligibleReasonGuid != null)
     .OrderBy(p => p.FullNameFL)
     .Select(p => new
     {
