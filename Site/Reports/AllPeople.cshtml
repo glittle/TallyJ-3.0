@@ -4,7 +4,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var people = new PersonCacher().AllForThisElection
-    .Where(p => !p.IneligibleReasonGuid.HasValue)
+    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
