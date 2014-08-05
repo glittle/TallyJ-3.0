@@ -216,7 +216,7 @@ namespace TallyJ.Code.Resources
 
       // for full users, give all menu sets
       var statusItems = ElectionTallyStatusEnum.Items.Select(ts => ts.Value).ToList();
-      statusItems.Add("General");
+//      statusItems.Add("General");
       var list =
         statusItems
           .Select(tallyStatus =>

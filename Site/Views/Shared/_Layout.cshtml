@@ -27,7 +27,6 @@
   @RenderPage("Headers.cshtml")
 </head>
 <body class="@ControllerActionNamesJoined @(ScreenMode + "Mode") Auth@(UserSession.AuthLevel)">
-
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
@@ -97,6 +96,7 @@
             </div>
             <div class="QuickLinks2">
               <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+              <span><a href="#" id="AllPages" title="Go to any page">All Pages</a></span>
             </div>
             <div class="QuickDash">
               @Html.Partial("../Dashboard/DashItems")
