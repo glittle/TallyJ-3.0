@@ -642,7 +642,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
   if (waitForResponse) {
     options.async = false;
   }
-  $.ajax(options);
+  return $.ajax(options);
 }
 
 

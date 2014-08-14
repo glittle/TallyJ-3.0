@@ -16,13 +16,26 @@
     lastInfo: null,
     People: [],
     nameSplitter: /[\s-']/,
+    currentAjaxSearch: null,
     chosenNamesCount: 0
   };
   local.chosenNames = loadStoredNames();
 
+  var resetSearch = function () {
+    if (local.currentAjaxSearch) {
+      local.currentAjaxSearch.abort();
+      LogMessage('aborted previous');
+    }
+  };
   var startGettingPeople = function (search, onNamesReady, includeMatches, usedPersonIds, forBallot) {
+    resetSearch();
+    if (!search) {
+      return;
+    }
+
     ShowStatusDisplay('searching...', 500);
-    CallAjaxHandler(local.url + '/GetPeople', {
+
+    local.currentAjaxSearch = CallAjaxHandler(local.url + '/GetPeople', {
       search: search,
       includeMatches: includeMatches,
       forBallot: forBallot
@@ -30,6 +43,7 @@
   };
 
   var onComplete = function (info, extra) {
+    local.currentAjaxSearch = null;
     ResetStatusDisplay();
     if (info && info.Error) {
       ShowStatusFailed(info.Error);
@@ -312,6 +326,7 @@
     Prepare: function () {
     },
     local: local,
+    ResetSearch: resetSearch,
     SearchNames: function (searchText, onNamesReady, includeMatches, usedPersonIds, forBallot) {
       startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds, forBallot);
     },

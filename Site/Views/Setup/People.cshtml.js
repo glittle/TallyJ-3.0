@@ -181,6 +181,7 @@
     $('#txtSearch').val('');
     local.actionTag.removeClass('delaying');
     local.inputField.removeClass('delaying');
+    local.peopleHelper.ResetSearch();
     local.lastSearch = '';
     onNamesReady({
       People: [],

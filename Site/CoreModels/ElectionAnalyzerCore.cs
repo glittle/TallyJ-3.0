@@ -391,15 +391,7 @@ namespace TallyJ.CoreModels
         Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
       }
 
-      // first refresh person vote statuses
-      new PeopleModel().EnsureFlagsAreRight(People, Savers.PersonSaver);
-
-      // then refresh all votes
-      VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, Savers.VoteSaver);
-
-      // then refresh all ballots
-      var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
-      ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
+      RefreshBallotStatuses();
 
       // attach results, but don't save yet
       Results.ForEach(delegate(Result result)
@@ -410,6 +402,19 @@ namespace TallyJ.CoreModels
 
       PrepareResultSummaries();
       FillResultSummaryCalc();
+    }
+
+    public void RefreshBallotStatuses()
+    {
+      // first refresh person vote statuses
+      new PeopleModel().EnsureFlagsAreRight(People, Savers.PersonSaver);
+
+      // then refresh all votes
+      VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, Savers.VoteSaver);
+
+      // then refresh all ballots
+      var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
+      ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
     }
 
     /// <summary>

@@ -14,17 +14,17 @@ namespace TallyJ.CoreModels
     public const string ReasonGroupIneligible = "Ineligible";
 
     private BallotAnalyzer _analyzer;
-    private VoteHelper _voteHelper;
+//    private VoteHelper _voteHelper;
 
-    protected BallotAnalyzer Analyzer
+    protected BallotAnalyzer BallotAnalyzerLocal
     {
       get { return _analyzer ?? (_analyzer = new BallotAnalyzer()); }
     }
 
-    protected VoteHelper VoteHelperLocal
-    {
-      get { return _voteHelper ?? (_voteHelper = new VoteHelper(true)); }
-    }
+//    protected VoteHelper VoteHelperLocal
+//    {
+//      get { return _voteHelper ?? (_voteHelper = new VoteHelper(true)); }
+//    }
 
     #region IBallotModel Members
 
@@ -129,8 +129,7 @@ namespace TallyJ.CoreModels
 
       ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
 
-      var ballotAnalyzer = new BallotAnalyzer();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true);
+      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true);
 
       Db.SaveChanges();
 
@@ -267,8 +266,7 @@ namespace TallyJ.CoreModels
 
         var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
-        var ballotAnalyzer = new BallotAnalyzer();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
+        var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
         var sum = BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
         new BallotCacher().UpdateItemAndSaveCache(ballot);
@@ -320,9 +318,8 @@ namespace TallyJ.CoreModels
 
         var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
-        var ballotAnalyzer = new BallotAnalyzer();
         var rawBallot = CurrentRawBallot();
-        var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(rawBallot, VoteInfosFor(rawBallot, votes), true);
+        var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(rawBallot, VoteInfosFor(rawBallot, votes), true);
 
         var sum = BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
@@ -360,9 +357,8 @@ namespace TallyJ.CoreModels
 
       UpdateVotePositions(vote.BallotGuid, allVotes);
 
-      var ballotAnalyzer = new BallotAnalyzer();
       var ballot = CurrentRawBallot();
-      var ballotStatusInfo = ballotAnalyzer.UpdateBallotStatus(ballot, VoteInfosFor(ballot, allVotes), false);
+      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, allVotes), false);
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
@@ -467,8 +463,14 @@ namespace TallyJ.CoreModels
     //        .SerializedAsJsonString();
     //    }
 
-    public object CurrentBallotsInfoList()
+    public object CurrentBallotsInfoList(bool refresh = false)
     {
+      if (refresh)
+      {
+        new ElectionAnalyzerNormal().RefreshBallotStatuses(); // identical for single name elections
+        Db.SaveChanges();
+      }
+
       var filter = UserSession.CurrentBallotFilter;
       var ballots = new BallotCacher().AllForThisElection
         .Where(b => b.LocationGuid == UserSession.CurrentLocationGuid)
@@ -520,7 +522,7 @@ namespace TallyJ.CoreModels
           SortVotes(voteInfos.OrderBy(vi => vi.PositionOnBallot).Select(v => v.VoteId).ToList(), voteCacher);
           voteInfos = VoteInfosFor(ballot, votes);
 
-          new BallotAnalyzer().UpdateBallotStatus(ballot, voteInfos, true);
+          BallotAnalyzerLocal.UpdateBallotStatus(ballot, voteInfos, true);
           ballotCacher.UpdateItemAndSaveCache(ballot);
           Db.SaveChanges();
         }
