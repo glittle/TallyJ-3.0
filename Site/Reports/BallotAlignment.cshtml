@@ -32,7 +32,7 @@
 
 
   var aligned = slots.JoinMatchingOrNull(ballots.Select(b => votes.Where(v => v.BallotGuid == b.BallotGuid).Count(v => v.PersonGuid.HasValue && elected.Contains(v.PersonGuid.Value)))
-    .GroupBy(i => i, (i, ints) => new { i, sum = ints.Count() }), i => i, g => g.i, (i, g) => new { i, sum = g==null ? 0 : g.sum })
+    .GroupBy(i => i, (i, ints) => new { i, sum = ints.Count() }), i => i, g => g.i, (i, g) => new { i, sum = g == null ? 0 : g.sum })
     .OrderByDescending(g => g.i);
 }
 <style>
@@ -42,6 +42,7 @@
 
   .Ballots th {
     max-width: 200px;
+    padding: 0 20px;
     text-align: center;
     vertical-align: bottom;
   }
@@ -49,7 +50,9 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
-    A count of the alignment of ballots to the final results.  For example, the first row shows how many people voted for all @numElected of the elected.
+    A count of the alignment of ballots to the final results.  For example, the first row shows
+    how many people voted for all @numElected of the elected, while the last line shows the how
+    many voted for none of those elected.
   </p>
   @if (message.HasContent())
   {
@@ -60,8 +63,8 @@
     <table class="Ballots">
       <thead>
         <tr>
-          <th>Number of Votes Matching Final Result</th>
-          <th>Number of Ballots</th>
+          <th>Number of Voters</th>
+          <th>Number Elected</th>
         </tr>
 
       </thead>
@@ -69,8 +72,8 @@
         @foreach (var alignment in aligned)
         {
           <tr>
-            <td>@alignment.i</td>
             <td>@alignment.sum</td>
+            <td>@alignment.i</td>
           </tr>
         }
       </tbody>

@@ -84,7 +84,13 @@ namespace TallyJ.CoreModels
         return new
         {
           ReportVotes =
-            reportVotes.Select(g => new { g.PersonName, g.r.VoteCount, g.r.TieBreakCount, g.r.Section }),
+            reportVotes.Select(g => new
+            {
+              g.PersonName, 
+              g.r.VoteCount,
+              TieBreakCount = g.r.IsTied.AsBoolean() ? g.r.TieBreakCount : null, 
+              g.r.Section
+            }),
           NumBallots = resultSummaryFinal.NumBallotsWithManual,
           resultSummaryFinal.TotalVotes,
           TotalInvalidVotes = resultSummaryFinal.SpoiledVotes,

@@ -27,7 +27,7 @@
     keyTimeShowSpan: null,
     searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
-    ballotListTemplate: '<div id=B{Id}>Group {Code}</div>'
+    ballotListTemplate: '<div id=B{Id}>Computer {Code}</div>'
   };
   var tabNum = {
     ballotList: 0,
