@@ -234,8 +234,9 @@ function ActivateTips(forceRecreate) {
 function AttachHandlers() {
   site.onbroadcast(site.broadcastCode.electionStatusChanged, updateElectionStatus);
 
-  $('#electionState li.General').on('click', function () {
+  $('#AllPages').on('click', function () {
     showAllPages(this);
+    return false;
   });
 
   $('body.AuthKnown #electionState li').not('.General').on('click', function () {
@@ -641,7 +642,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
   if (waitForResponse) {
     options.async = false;
   }
-  $.ajax(options);
+  return $.ajax(options);
 }
 
 

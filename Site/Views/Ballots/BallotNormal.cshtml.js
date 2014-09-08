@@ -251,6 +251,7 @@ add to this ballot
   };
 
   var startToRefreshBallotList = function () {
+    ShowStatusDisplay('Refreshing ballots');
     CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
       showBallots(info);
       highlightBallotInList();
@@ -1076,9 +1077,7 @@ add to this ballot
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-      if (text) {
         local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
-      }
     }, local.keyTime);
   };
 

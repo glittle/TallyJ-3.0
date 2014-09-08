@@ -17,7 +17,7 @@ namespace TallyJ.CoreModels
     IEnumerable<object> CurrentVotesForJs(Ballot ballotInfo, List<Vote> allVotes);
     JsonResult SaveVote(int personId, int voteId, int count, Guid? invalid);
     JsonResult DeleteVote(int vid);
-    object CurrentBallotsInfoList();
+    object CurrentBallotsInfoList(bool refresh = false);
     object SwitchToBallotAndGetInfo(int ballotId, bool refresh);
     bool SortVotes(List<int> ids, VoteCacher voteCacher);
     JsonResult StartNewBallotJson();

@@ -134,7 +134,7 @@ namespace TallyJ.Controllers
 
     public JsonResult RefreshBallotsList()
     {
-      return CurrentBallotModel.CurrentBallotsInfoList().AsJsonResult();
+      return CurrentBallotModel.CurrentBallotsInfoList(true).AsJsonResult();
     }
 
     public JsonResult ChangeBallotFilter(string code)

@@ -27,7 +27,7 @@
     keyTimeShowSpan: null,
     searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
     ballotListDetailTemplate: temp1,
-    ballotListTemplate: '<div id=B{Id}>Group {Code}</div>'
+    ballotListTemplate: '<div id=B{Id}>Computer {Code}</div>'
   };
   var tabNum = {
     ballotList: 0,
@@ -40,7 +40,7 @@
 
     local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
 
-    setTimeout(function() {
+    setTimeout(function () {
       local.inputField.focus();
     }, 0);
 
@@ -424,7 +424,7 @@
     if (saveNow) {
       startSavingVote(input.parent(), focusOnNew);
     } else if (changing) {
-//      input.addClass('changing');
+      //      input.addClass('changing');
     }
   };
 
@@ -950,9 +950,7 @@
 
     local.keyTimer = setTimeout(function () {
       local.lastSearch = text;
-      if (text) {
-        local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
-      }
+      local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
     }, local.keyTime);
   };
 

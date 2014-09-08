@@ -77,6 +77,11 @@ namespace TallyJ.CoreModels
 
       foreach (var person in people)
       {
+        if (!System.Web.HttpContext.Current.Response.IsClientConnected)
+        {
+          return new List<SearchResult>();
+        }
+
         var matchType = DetermineMatch(person, voteList, terms, metas);
         if (matchType > 0)
         {
@@ -135,7 +140,8 @@ namespace TallyJ.CoreModels
     {
       var matches = 0;
       Dictionary<string, int> matchedPositions = null;
-      var adjusted = " " + targets + (soundMatching ? " " : "");
+      // include ^ for backward compatibility
+      var adjusted = " " + targets.Replace('^', ' ') + (soundMatching ? " " : "");
 
       foreach (var t in terms)
       {

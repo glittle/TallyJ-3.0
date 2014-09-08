@@ -5489,7 +5489,6 @@ a.twitter {
   background-color: #b6ff50;
 }
 .ElectionState {
-  display: inline-block;
   margin-left: 0px;
   color: #8dc63e;
 }
@@ -5708,6 +5707,11 @@ body.AuthKnown .CurrentElectionName {
   /*&:hover {
       background-color: inherit;
     }*/
+}
+.QuickLinks2 #AllPages {
+  border-color: #A4D4E6;
+  color: #8899CB;
+  background-color: #EFffEF;
 }
 .QuickLinks2.temp {
   background-color: #efeeef;
