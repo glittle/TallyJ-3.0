@@ -723,6 +723,8 @@
     <Content Include="Reports\NonVoters.cshtml" />
     <Content Include="Reports\AllPeople.cshtml" />
     <Content Include="Reports\VotersByArea.cshtml" />
+    <None Include="Properties\PublishProfiles\tallyj - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\tallyj - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
