@@ -722,7 +722,6 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Images\social.png" />
-    <Content Include="readme.txt" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
