@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5CAA1F70-25B1-400F-BE9E-2AE8F7B003FF}"
 EndProject
@@ -14,25 +14,46 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DatabaseScripts", "DatabaseScripts\DatabaseScripts.sqlproj", "{318A3641-8822-4B4E-9848-80C3538A03D7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{240AA649-A1D4-42BA-8D7F-C8E73436CE3D}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		AzureDebug|Any CPU = AzureDebug|Any CPU
+		AzureRelease|Any CPU = AzureRelease|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 		Standalone|Any CPU = Standalone|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A444CE75-8087-4828-BCE5-87A82752E0EC}.AzureDebug|Any CPU.ActiveCfg = AzureDebug|Any CPU
+		{A444CE75-8087-4828-BCE5-87A82752E0EC}.AzureDebug|Any CPU.Build.0 = AzureDebug|Any CPU
+		{A444CE75-8087-4828-BCE5-87A82752E0EC}.AzureRelease|Any CPU.ActiveCfg = Azure|Any CPU
+		{A444CE75-8087-4828-BCE5-87A82752E0EC}.AzureRelease|Any CPU.Build.0 = Azure|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Standalone|Any CPU.ActiveCfg = Standalone|Any CPU
 		{A444CE75-8087-4828-BCE5-87A82752E0EC}.Standalone|Any CPU.Build.0 = Standalone|Any CPU
+		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.AzureDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.AzureDebug|Any CPU.Build.0 = Debug|Any CPU
+		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.AzureRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.AzureRelease|Any CPU.Build.0 = Release|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Standalone|Any CPU.ActiveCfg = Standalone|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Standalone|Any CPU.Build.0 = Standalone|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.Build.0 = Debug|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.Deploy.0 = Debug|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.Build.0 = Release|Any CPU
+		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.Deploy.0 = Release|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
