@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
+using System.Web.Profile;
 using System.Web.Routing;
 using FluentSecurity;
+using Microsoft.Web.Redis;
 using NLog;
 using NLog.Targets;
+using RedisSessionProvider.Config;
+using StackExchange.Redis;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.Helpers;
@@ -29,6 +36,8 @@ namespace TallyJ
 
   public class MvcApplication : HttpApplication
   {
+    public static ConfigurationOptions RedisConfigOpts { get; set; }
+
     protected void Application_Start()
     {
       //ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(UnityInstance.Container));
@@ -97,11 +106,28 @@ namespace TallyJ
           siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
       ConfigureNLog();
+      ConfigureRedis();
+    }
+
+    private void ConfigureRedis()
+    {
+      if (new SiteInfo().CurrentEnvironment != "Azure")
+      {
+        return;
+      }
+
+      // https://github.com/welegan/RedisSessionProvider 
+
+      RedisConfigOpts = ConfigurationOptions.Parse("tallyj.redis.cache.windows.net:6379");
+      RedisConfigOpts.Password = ConfigurationManager.AppSettings["REDIS_KEY"];
+
+      RedisConnectionConfig.GetSERedisServerConfig =
+        context => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
     }
 
     private void ConfigureNLog()
     {
-      // see http://nlog-project.org/wiki/Configuration_API
+      // see https://github.com/nlog/nlog/wiki/Configuration-API
       var config = LogManager.Configuration;
       var target = config.FindTargetByName("logentries") as LogentriesTarget;
       if (target != null)
@@ -166,7 +192,7 @@ namespace TallyJ
 
       var url = siteInfo.RootUrl;
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
-//      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
+      //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
       Response.Write(String.Format("{0}<br>", msgs.JoinedAsString("<br>")));
       Response.Write(String.Format("{0}", mainException.StackTrace.Replace("\n", "<br>")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
