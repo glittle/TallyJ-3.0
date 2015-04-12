@@ -93,6 +93,9 @@
     <Reference Include="LumenWorks.Framework.IO">
       <HintPath>..\OtherSources\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
+    <Reference Include="MemcachedProviders">
+      <HintPath>..\OtherSources\MemcachedProviders.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
