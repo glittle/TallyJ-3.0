@@ -20,7 +20,7 @@ namespace TallyJ.CoreModels
 
     private List<Location> _locations;
     private List<Person> _people;
-    private List<Person> _peopleforFrontDesk;
+    //private List<Person> _peopleforFrontDesk;
 
     public PeopleModel()
     {
