@@ -86,7 +86,7 @@
                 alert('Please select a file from the list first.');
                 return;
             }
-            ShowStatusDisplay('Processing...');
+            ShowStatusDisplay('Processing');
             $('#importResults').html('');
 
             CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
@@ -112,7 +112,11 @@
             action: publicInterface.controllerUrl + '/Upload',
             allowedExtensions: ['CSV'],
             onSubmit: function (id, fileName) {
-                ShowStatusDisplay('Uploading...');
+              ShowStatusDisplay('Uploading...');
+              if (fileName.length > 50) {
+                alert('Please shorten the name of the file to less than 50 characters long. This one was ' + fileName.length + '.');
+                return false;
+              }
             },
             onProgress: function (id, fileName, loaded, total) {
             },
@@ -253,8 +257,15 @@
         SetInStorage('ActiveUploadRowId', rowId);
         local.activeFileRowId = rowId;
         if (highlightInList) {
-            $.each(local.uploadList, function () {
-                this.RowClass = this.C_RowId == rowId ? 'Active' : 'NotActive';
+          $('tr[data-rowid]').removeClass('Active').addClass('NotActive');
+
+          $.each(local.uploadList, function () {
+            if (this.C_RowId == rowId) {
+              this.RowClass = 'Active';
+              $('tr[data-rowid="{0}"]'.filledWith(rowId)).addClass('Active').removeClass('NotActive');
+            } else {
+              this.RowClass = 'NotActive';
+            }
             });
             // showUploads();
             getFieldsInfoIfNeeded();
@@ -277,6 +288,8 @@
         staticSetup();
         local.activeFileRowId = GetFromStorage('ActiveUploadRowId', 0);
 
+        connectToImportHub();
+
         showUploads(publicInterface);
 
         if (activeUploadFileRow().length == 0) {
@@ -286,6 +299,26 @@
             getFieldsInfoIfNeeded();
         }
     };
+
+    var connectToImportHub = function () {
+      var hub = $.connection.importHubCore;
+
+      hub.client.importInfo = function (lines, people) {
+        ResetStatusDisplay();
+        ShowStatusDisplay('Processed {0} lines, {1} people added'
+          .filledWith(comma(lines), comma(people)), 0, 9999999);
+      };
+
+      activateHub(hub, function () {
+        LogMessage('Join import Hub');
+        CallAjaxHandler(publicInterface.controllerUrl + '/ImportHub', { connId: site.signalrConnectionId }, function (info) {
+          
+        });
+      });
+    };
+
+
+
     var publicInterface = {
         controllerUrl: '',
         PreparePage: preparePage,

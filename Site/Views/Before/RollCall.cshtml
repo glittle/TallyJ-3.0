@@ -3,6 +3,7 @@
 @using TallyJ.Code.Session
 @{
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new TallyJ.EF.Location()).C_RowId));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
   TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
@@ -12,9 +13,28 @@
   </div>
   <div class="NextUp"></div>
   <div class="Nav Show">
-    <button id="btnReturn" type="button">Show Menu</button>
-    <div>Press F11 for full-screen</div>
-    <div>Press Up/Down/Space/Home/PgUp/PgDn to move names.</div>
+    <p>
+      <button id="btnReturn" type="button">Show Menu</button>
+    </p>
+    @if (ContextItems.LocationModel.HasLocations)
+    {
+      <p>
+        Show who voted at:
+        <select id="locations">
+          <option value="-1">[All Locations]</option>
+          @ContextItems.LocationModel.GetLocationOptions()
+        </select>
+      </p>
+    }
+    <p>
+      Include:
+      <select id="includeMethod">
+        <option value="all">[All who voted]</option>
+        <option value="inperson">Only those present</option>
+      </select>
+    </p>
+    <p>Press F11 for full-screen</p>
+    <p>Press Up/Down Space Home PgUp/PgDn to move names.</p>
   </div>
   @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters()).AsRawHtml()
 </div>

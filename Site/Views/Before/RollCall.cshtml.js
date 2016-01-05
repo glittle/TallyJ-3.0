@@ -2,10 +2,13 @@
   var local = {
     currentNameNum: 1,
     currentVoterDiv: null,
+    currentLocation: -1,
     nameDivs: []
   };
 
   var preparePage = function () {
+
+    local.currentLocation = rollCallPage.location;
 
     var main = $('.Main');
     local.nameDivs = main.children('div.Voter');
@@ -28,6 +31,10 @@
       });
     }, 1000);
 
+    $('#locations').change(function () {
+      changeLocation($(this));
+    });
+
     $(document).keydown(keyDown);
 
     //        main.animate({
@@ -48,7 +55,7 @@
     });
   };
 
-  var connectToRollCallHub = function() {
+  var connectToRollCallHub = function () {
     var hub = $.connection.rollCallHubCore;
 
     hub.client.updatePeople = function (info) {
@@ -62,18 +69,25 @@
     });
   };
 
-//  var refreshHubConnection = function () {
-//    var resetHubConnectionTimer = function () {
-//      clearTimeout(local.reconnectHubTimeout);
-//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-//    };
-//
-//    LogMessage('Join rollCallHub');
-//    clearTimeout(local.reconnectHubTimeout);
-//    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
-//      resetHubConnectionTimer();
-//    });
-//  };
+  //  var refreshHubConnection = function () {
+  //    var resetHubConnectionTimer = function () {
+  //      clearTimeout(local.reconnectHubTimeout);
+  //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+  //    };
+  //
+  //    LogMessage('Join rollCallHub');
+  //    clearTimeout(local.reconnectHubTimeout);
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
+  //      resetHubConnectionTimer();
+  //    });
+  //  };
+
+  var changeLocation = function (ddlLocation, highlight) {
+    var newLocation = ddlLocation.val();
+    if (newLocation != local.currentLocation && newLocation) {
+      LogMessage('Change location');
+    }
+  };
 
   var updatePeople = function (info) {
     var updated = false;

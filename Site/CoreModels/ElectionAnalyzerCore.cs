@@ -87,6 +87,16 @@ namespace TallyJ.CoreModels
       get { return _saveChanges ?? Db.SaveChanges; }
     }
 
+    //protected Func<IEnumerable<T>, int> BulkInsert(IEnumerable<T> objects)
+    //{
+    //  get {
+    //    if (_saveChanges != null) {
+    //      _saveChanges();
+    //      return 0;
+    //    }
+    //    return Db.BulkInsert(; }
+    //}
+
     //
     //    protected void VoteSaver(DbAction action, Vote vote)
     //    {

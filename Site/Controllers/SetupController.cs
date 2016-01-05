@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -107,6 +108,13 @@ namespace TallyJ.Controllers
       var importCsvModel = new ImportCsvModel();
       
       return importCsvModel.DeleteFile(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult ImportHub(string connId)
+    {
+      new ImportHub().Join(connId);
+      return true.AsJsonResult();
     }
 
     [ForAuthenticatedTeller]
