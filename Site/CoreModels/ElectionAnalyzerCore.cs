@@ -392,7 +392,7 @@ namespace TallyJ.CoreModels
         var summaries = resultSummaryCacher.AllForThisElection;
         resultSummaryCacher.RemoveItemsAndSaveCache(summaries.Where(rs => rs.ResultType != ResultType.Manual));
 
-        Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
+        Db.ResultSummary.Where(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual).Delete();
       }
 
       RefreshBallotStatuses();
@@ -487,7 +487,7 @@ namespace TallyJ.CoreModels
       // remove any existing Tie info
       if (!IsFaked)
       {
-        Db.ResultTie.Delete(rt => rt.ElectionGuid == _election.ElectionGuid);
+        Db.ResultTie.Where(rt => rt.ElectionGuid == _election.ElectionGuid).Delete();
         new ResultTieCacher().DropThisCache();
         ResultTies.Clear();
       }

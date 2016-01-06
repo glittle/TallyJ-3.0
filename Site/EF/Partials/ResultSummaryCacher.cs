@@ -19,7 +19,7 @@ namespace TallyJ.EF
       var results = AllForThisElection;
       if (results.Any(r => r.ResultType != ResultType.Manual))
       {
-        CurrentDb.ResultSummary.Delete(r => r.ResultType != ResultType.Manual);
+        CurrentDb.ResultSummary.Where(r => r.ResultType != ResultType.Manual).Delete();
         results.RemoveAll(r => r.ResultType != ResultType.Manual);
         ReplaceEntireCache(results);
       }

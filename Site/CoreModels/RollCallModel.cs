@@ -68,6 +68,7 @@ namespace TallyJ.CoreModels
         after.Add(new Person {C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "&nbsp;"});
         numBlanksAfter--;
       }
+      var locationModel = new LocationModel();
       var currentElection = UserSession.CurrentElection;
       var i = 0;
       return
@@ -79,7 +80,9 @@ namespace TallyJ.CoreModels
             PersonId = p.C_RowId,
             FullName = p.FullNameFL,
             TS = p.C_RowVersionInt,
+            Loc = locationModel.IdFor(p.VotingLocationGuid),
             VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "",
+            VM = p.VotingMethod,
             Pos = ++i
           });
     }
@@ -105,6 +108,8 @@ namespace TallyJ.CoreModels
       public long? TS { get; set; }
       public string VotingMethod { get; set; }
       public int Pos { get; set; }
+      public int Loc { get; internal set; }
+      public string VM { get; internal set; }
     }
   }
 }

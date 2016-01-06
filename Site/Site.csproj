@@ -81,6 +81,10 @@
       <HintPath>..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework.Extended, Version=6.0.0.0, Culture=neutral, PublicKeyToken=05b7e29bdd433584, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.Extended.6.1.0.168\lib\net45\EntityFramework.Extended.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework.MappingAPI, Version=6.0.0.7, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
       <Private>True</Private>
@@ -377,77 +381,6 @@
     <Compile Include="EF\Partials\Location.cs" />
     <Compile Include="EF\Partials\Teller.cs" />
     <Compile Include="EF\Partials\VoteCacher.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AlwaysAuditAttribute.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditAction.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditAttribute.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditConfiguration.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditEntity.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditEntryState.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditKey.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditKeyCollection.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditLog.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditLogger.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditProperty.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditPropertyCollection.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\AuditPropertyFormatAttribute.cs" />
-    <Compile Include="EntityFramework.Extended\Audit\NotAuditedAttribute.cs" />
-    <Compile Include="EntityFramework.Extended\Batch\IBatchRunner.cs" />
-    <Compile Include="EntityFramework.Extended\Batch\SqlServerBatchRunner.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\CacheExpirationMode.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\CacheKey.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\CacheManager.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\CachePolicy.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\CacheTag.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\ICacheProvider.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\MemoryCacheProvider.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\Query\Evaluator.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\Query\LocalCollectionExpander.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\Query\QueryCache.cs" />
-    <Compile Include="EntityFramework.Extended\Caching\Query\Utility.cs" />
-    <Compile Include="EntityFramework.Extended\Container.cs" />
-    <Compile Include="EntityFramework.Extended\Dynamic\DynamicQueryable.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\AuditExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\BatchExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\CacheExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\DataRecordExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\ExpressionExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\FutureExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\ObjectContextExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Extensions\ObjectQueryExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureContext.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureCount.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureException.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FuturePlan.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureQuery.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureQueryBase.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureRunner.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureStore.cs" />
-    <Compile Include="EntityFramework.Extended\Future\FutureValue.cs" />
-    <Compile Include="EntityFramework.Extended\Future\IFutureContext.cs" />
-    <Compile Include="EntityFramework.Extended\Future\IFutureQuery.cs" />
-    <Compile Include="EntityFramework.Extended\Future\IFutureRunner.cs" />
-    <Compile Include="EntityFramework.Extended\IContainer.cs" />
-    <Compile Include="EntityFramework.Extended\Locator.cs" />
-    <Compile Include="EntityFramework.Extended\Mapping\EntityMap.cs" />
-    <Compile Include="EntityFramework.Extended\Mapping\IMappingProvider.cs" />
-    <Compile Include="EntityFramework.Extended\Mapping\MappingResolver.cs" />
-    <Compile Include="EntityFramework.Extended\Mapping\PropertyMap.cs" />
-    <Compile Include="EntityFramework.Extended\Mapping\ReflectionMappingProvider.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\DelegateFactory.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\DynamicProxy.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\FieldAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\ILGeneratorExtensions.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\IMemberAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\IMemberInfo.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\IMethodAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\LateBinder.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\MemberAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\MethodAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\ObjectCloner.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\ObjectCopier.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\PropertyAccessor.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\ReflectionHelper.cs" />
-    <Compile Include="EntityFramework.Extended\Reflection\TypeAccessor.cs" />
     <Compile Include="OwinStartup.cs" />
     <Content Include="Content\bootstrap\css\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
@@ -637,10 +570,8 @@
     <Content Include="Content\bootstrap\css\variables.css.map">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
-    <None Include="EntityFramework.Extended\Audit\Audit.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Images\social.png" />
+    <Content Include="Images\walk.png" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />

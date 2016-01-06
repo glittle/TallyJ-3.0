@@ -14,11 +14,36 @@ namespace TallyJ.CoreModels
   public class LocationModel : DataConnectedModel
   {
     private List<Location> _locations;
+    private Dictionary<Guid, int> _idMap;
 
     /// <Summary>List of Locations</Summary>
     public List<Location> MyLocations
     {
       get { return _locations ?? (_locations = new LocationCacher().AllForThisElection); }
+    }
+
+    public Dictionary<Guid, int> LocationIdMap
+    {
+      get
+      {
+        return _idMap ?? (_idMap = MyLocations.ToDictionary(l => l.LocationGuid, l => l.C_RowId));
+      }
+    }
+
+    /// <summary>
+    /// Get the RowId from a LocationGuid
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public int IdFor(Guid? guid, int defaultValue = 0) {
+      if (!guid.HasValue) {
+        return defaultValue;
+      }
+      if (LocationIdMap.ContainsKey(guid.Value)) {
+        return LocationIdMap[guid.Value];
+      }
+      return defaultValue;
     }
 
     public string ShowDisabled

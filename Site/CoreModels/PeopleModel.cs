@@ -682,7 +682,7 @@ namespace TallyJ.CoreModels
       int rows;
       try
       {
-        rows = Db.Person.Delete(p => p.ElectionGuid == CurrentElectionGuid);
+        rows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Delete();
       }
       catch (SqlException)
       {
