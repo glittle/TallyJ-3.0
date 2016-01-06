@@ -3,18 +3,29 @@
     currentNameNum: 1,
     currentVoterDiv: null,
     currentLocation: -1,
-    nameDivs: []
+    nameDivs: [],
+    settingPrefix: 'rollCall_'
   };
 
   var preparePage = function () {
 
     local.currentLocation = rollCallPage.location;
 
+    var currentLocOption = $('#locations option[value="{0}"]'.filledWith(local.currentLocation));
+    currentLocOption.html(currentLocOption.html() + ' *');
+
+    recallSetting('locations')
+    recallSetting('includeMethod')
+    recallSetting('showOthers')
+
     var main = $('#voterList');
 
     main.html(site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
     local.nameDivs = main.children('div.Voter');
     updateVisibility();
+
+    $('.Nav').show();
+
     scrollToMe(local.nameDivs[1]);
 
     connectToRollCallHub();
@@ -31,19 +42,30 @@
           opacity: ''
         });
       });
-    }, 1000);
+    }, 3000);
 
     $('#locations').change(function () {
       updateVisibility();
+      saveSetting(this);
     });
     $('#includeMethod').change(function () {
       updateVisibility();
+      SetInStorage('rollCall_includeMethod', $(this).val());
     });
     $('#showOthers').change(function () {
       updateVisibility();
+      SetInStorage('rollCall_showOthers', $(this).val());
     });
 
+
     $(document).keydown(keyDown);
+    $(document).click(function (ev) {
+      if ($(ev.target).closest('.Nav, header').length) {
+        return;
+      }
+      ev.which = 32;
+      keyDown(ev);
+    });
 
     //        main.animate({
     //            marginTop: '0%'
@@ -56,17 +78,40 @@
       $('header').toggle(!isShowing);
 
       isShowing = !isShowing;
-      $(this).text(isShowing ? 'Hide Top Menu' : 'Show Top Menu');
+      $(this).text(isShowing ? 'Hide Menus' : 'Show Menus');
       $('.Nav').toggleClass('Show', isShowing);
       window.scrollTo(0, 0);
       return false;
     });
   };
 
+  var recallSetting = function (id, key) {
+    var notSet = 'NOTSET';
+    if (typeof key === 'undefined') {
+      key = id;
+    }
+    var value = GetFromStorage(local.settingPrefix + key, notSet);
+    if (value === notSet) {
+      return;
+    }
+    $('#' + id).val(value);
+  }
+
+  var saveSetting = function(dom)
+  {
+    SetInStorage(local.settingPrefix + dom.id, $(dom).val());
+  }
+
   var updateVisibility = function () {
     var locToShow = $('#locations').val() || 0; // may not exist; 0 means ALL
     var methodToShow = $('#includeMethod').val() || '';
     var othersHidden = $('#showOthers').val() == 'hidden';
+
+    var showingOthers = !!(locToShow || methodToShow);
+    $('#askOthers').toggle(showingOthers);
+    if (!showingOthers) {
+      othersHidden = false;
+    }
 
     $.each(local.nameDivs, function (i, d) {
       var div = $(d);
@@ -76,12 +121,13 @@
 
       div.toggleClass('Other', !(thisLocation && thisMethod) && !blank);
       div.toggleClass('NotLocal', !thisLocation);
-      div.toggleClass('Present', thisLocation && div.hasClass('VM_P') && methodToShow!='P');
+      div.toggleClass('Present', thisLocation && div.hasClass('VM_P') && methodToShow != 'P');
     });
 
     var value = $('#showOthers').val();
     $('body').toggleClass('OthersDim', value === 'dim');
     $('body').toggleClass('OthersHidden', value === 'hidden');
+
   }
 
   var connectToRollCallHub = function () {
@@ -204,6 +250,10 @@
         //LogMessage(ev.which);
         return;
     }
+    if ($(ev.target).closest('.Nav, header').length) {
+      return;
+    }
+
     var wanted = local.currentNameNum;
     while (true) {
       wanted += delta;

@@ -15,7 +15,7 @@
   <div class="NextUp"></div>
   <div class="Nav Show">
     <p>
-      <button id="btnReturn" type="button">Show Top Menu</button>
+      <button id="btnReturn" type="button">Show Menus</button>
     </p>
     @if (ContextItems.LocationModel.HasLocations)
     {
@@ -30,19 +30,22 @@
     <p>
       Highlight
       <select id="includeMethod">
-        <option value="">All</option>
+        <option value="">All *</option>
         <option value="P">Those Present</option>
       </select>
+      <span class="comment">* recommended</span>
     </p>
-    <p>
+    <p id="askOthers">
       Other Voters are
       <select id="showOthers">
-        <option value="dim">Dimmed</option>
+        <option value="dim">Dimmed *</option>
         <option value="hidden">Hidden</option>
+        <option value="">also Highlighted</option>
       </select>
     </p>
-    <p>Press F11 for full-screen</p>
-    <p>Press Up/Down, Space, Home, PgUp/PgDn to move names.</p>
+
+    <p>Press F11 to view in full-screen!</p>
+    <p>Click or press Space, Up/Down, Home/End, PgUp/PgDn to move names.</p>
   </div>
   <div id="voterList"></div>
 </div>
