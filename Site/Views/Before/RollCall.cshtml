@@ -3,7 +3,9 @@
 @using TallyJ.Code.Session
 @{
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new TallyJ.EF.Location()).C_RowId));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
+  ContextItems.AddJavascriptForPage("voters", "rollCallPage.voters={0};".FilledWith(Model.Voters().SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
@@ -12,9 +14,38 @@
   </div>
   <div class="NextUp"></div>
   <div class="Nav Show">
-    <button id="btnReturn" type="button">Show Menu</button>
-    <div>Press F11 for full-screen</div>
-    <div>Press Up/Down/Space/Home/PgUp/PgDn to move names.</div>
+    <p>
+      <button id="btnReturn" type="button">Show Menus</button>
+    </p>
+    @if (ContextItems.LocationModel.HasLocations)
+    {
+      <p>
+        Highlight voters from
+        <select id="locations">
+          <option value="">All Locations</option>
+          @ContextItems.LocationModel.GetLocationOptions()
+        </select>
+      </p>
+    }
+    <p>
+      Highlight
+      <select id="includeMethod">
+        <option value="">All *</option>
+        <option value="P">Those Present</option>
+      </select>
+      <span class="comment">* recommended</span>
+    </p>
+    <p id="askOthers">
+      Other Voters are
+      <select id="showOthers">
+        <option value="dim">Dimmed *</option>
+        <option value="hidden">Hidden</option>
+        <option value="">also Highlighted</option>
+      </select>
+    </p>
+
+    <p>Press F11 to view in full-screen!</p>
+    <p>Click or press Space, Up/Down, Home/End, PgUp/PgDn to move names.</p>
   </div>
-  @TemplateLoader.File.RollCallLine.FilledWithEach(Model.Voters()).AsRawHtml()
+  <div id="voterList"></div>
 </div>

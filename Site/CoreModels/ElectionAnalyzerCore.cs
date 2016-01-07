@@ -87,6 +87,16 @@ namespace TallyJ.CoreModels
       get { return _saveChanges ?? Db.SaveChanges; }
     }
 
+    //protected Func<IEnumerable<T>, int> BulkInsert(IEnumerable<T> objects)
+    //{
+    //  get {
+    //    if (_saveChanges != null) {
+    //      _saveChanges();
+    //      return 0;
+    //    }
+    //    return Db.BulkInsert(; }
+    //}
+
     //
     //    protected void VoteSaver(DbAction action, Vote vote)
     //    {
@@ -382,7 +392,7 @@ namespace TallyJ.CoreModels
         var summaries = resultSummaryCacher.AllForThisElection;
         resultSummaryCacher.RemoveItemsAndSaveCache(summaries.Where(rs => rs.ResultType != ResultType.Manual));
 
-        Db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual);
+        Db.ResultSummary.Where(r => r.ElectionGuid == electionGuid && r.ResultType != ResultType.Manual).Delete();
       }
 
       RefreshBallotStatuses();
@@ -477,7 +487,7 @@ namespace TallyJ.CoreModels
       // remove any existing Tie info
       if (!IsFaked)
       {
-        Db.ResultTie.Delete(rt => rt.ElectionGuid == _election.ElectionGuid);
+        Db.ResultTie.Where(rt => rt.ElectionGuid == _election.ElectionGuid).Delete();
         new ResultTieCacher().DropThisCache();
         ResultTies.Clear();
       }

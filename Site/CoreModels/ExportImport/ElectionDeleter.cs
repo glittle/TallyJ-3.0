@@ -72,14 +72,14 @@ namespace TallyJ.CoreModels.ExportImport
 
           Election.EraseBallotsAndResults(_electionGuid);
 
-//          Db.Computer.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Location.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Person.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Teller.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.JoinElectionUser.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.ImportFile.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Message.Delete(x => x.ElectionGuid == _electionGuid);
-          Db.Election.Delete(x => x.ElectionGuid == _electionGuid);
+//          Db.Computer.Where(x => x.ElectionGuid == _electionGuid);
+          Db.Location.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.Person.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.Teller.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.JoinElectionUser.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.ImportFile.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.Message.Where(x => x.ElectionGuid == _electionGuid).Delete();
+          Db.Election.Where(x => x.ElectionGuid == _electionGuid).Delete();
 
           new LogHelper().Add("Deleted election '{0}' ({1})".FilledWith(electionName, _electionGuid));
 

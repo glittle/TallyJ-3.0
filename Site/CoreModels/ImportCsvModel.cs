@@ -6,9 +6,11 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using LumenWorks.Framework.IO.Csv;
+using EntityFramework.BulkInsert.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.CoreModels
 {
@@ -53,15 +55,15 @@ namespace TallyJ.CoreModels
       var fileSize = (int)inputStream.Length;
 
       var record = new ImportFile
-                     {
-                       ElectionGuid = UserSession.CurrentElectionGuid,
-                       Contents = new byte[fileSize],
-                       FileSize = fileSize,
-                       OriginalFileName = name,
-                       UploadTime = DateTime.Now,
-                       FileType = FileTypeCsv,
-                       ProcessingStatus = "Uploaded"
-                     };
+      {
+        ElectionGuid = UserSession.CurrentElectionGuid,
+        Contents = new byte[fileSize],
+        FileSize = fileSize,
+        OriginalFileName = name,
+        UploadTime = DateTime.Now,
+        FileType = FileTypeCsv,
+        ProcessingStatus = "Uploaded"
+      };
 
       var numWritten = inputStream.Read(record.Contents, 0, fileSize);
       if (numWritten != fileSize)
@@ -91,23 +93,27 @@ namespace TallyJ.CoreModels
         .OrderByDescending(vi => vi.UploadTime)
         .ToList()
         .Select(vi => new
-                        {
-                          vi.C_RowId,
-                          vi.FileSize,
-                          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
-                          vi.FileType,
-                          vi.ProcessingStatus,
-                          vi.OriginalFileName,
-                          vi.CodePage,
-                          vi.Messages
-                        })
+        {
+          vi.C_RowId,
+          vi.FileSize,
+          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
+          vi.FileType,
+          vi.ProcessingStatus,
+          vi.OriginalFileName,
+          vi.CodePage,
+          vi.Messages
+        })
         .ToList();
     }
 
     public ActionResult DeleteFile(int id)
     {
-      var targetFile = new ImportFile { C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid };
-      Db.ImportFile.Attach(targetFile);
+      var targetFile = Db.ImportFile.FirstOrDefault(f => f.C_RowId == id);
+      if (targetFile == null)
+      {
+        targetFile = new ImportFile { C_RowId = id, ElectionGuid = UserSession.CurrentElectionGuid };
+        Db.ImportFile.Attach(targetFile);
+      }
       Db.ImportFile.Remove(targetFile);
       Db.SaveChanges();
 
@@ -119,10 +125,10 @@ namespace TallyJ.CoreModels
     public ActionResult GetUploadList()
     {
       return new
-               {
-                 serverTime = DateTime.Now,
-                 previousFiles = PreviousUploads()
-               }.AsJsonResult();
+      {
+        serverTime = DateTime.Now,
+        previousFiles = PreviousUploads()
+      }.AsJsonResult();
     }
 
     public JsonResult CopyMap(int from, int to)
@@ -197,16 +203,16 @@ namespace TallyJ.CoreModels
       }
 
       return new
-               {
-                 possible = dbFields,
-                 csvFields = csvHeaders.Select(header => new
-                                                           {
-                                                             field = header,
-                                                             map = currentMappings.Where(cs => cs[0] == header)
-                                                           .Select(cs => cs[1]).SingleOrDefault().DefaultTo(""),
-                                                             sample = sampleValues[header]
-                                                           })
-               }.AsJsonResult();
+      {
+        possible = dbFields,
+        csvFields = csvHeaders.Select(header => new
+        {
+          field = header,
+          map = currentMappings.Where(cs => cs[0] == header)
+                                                  .Select(cs => cs[1]).SingleOrDefault().DefaultTo(""),
+          sample = sampleValues[header]
+        })
+      }.AsJsonResult();
     }
 
     public JsonResult SaveMapping(int id, List<string> mapping)
@@ -265,6 +271,9 @@ namespace TallyJ.CoreModels
       var rowsSkipped = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
+
+      var hub = new ImportHub();
+      var peopleToLoad = new List<Person>();
 
       csv.ReadNextRecord();
       while (!csv.EndOfStream)
@@ -333,18 +342,32 @@ namespace TallyJ.CoreModels
           personModel.SetCombinedInfoAtStart(person);
           personModel.SetInvolvementFlagsToDefault(person, reason);
 
-          Db.Person.Add(person);
-
-          if (peopleAdded == 1 || peopleAdded % 100 == 0)
-          {
-            // save after first, then as we go
-            Db.SaveChanges();
-          }
+          //Db.Person.Add(person);
+          currentPeople.Add(person);
+          peopleToLoad.Add(person);
 
           peopleAdded++;
+
+          if (peopleToLoad.Count >= 500)
+          {
+            //Db.SaveChanges();
+
+            Db.BulkInsert(peopleToLoad);
+            peopleToLoad.Clear();
+          }
+        }
+
+        if (rowsProcessed % 100 == 0)
+        {
+          hub.ImportInfo(rowsProcessed, peopleAdded);
         }
 
         csv.ReadNextRecord();
+      }
+
+      if (peopleToLoad.Count != 0)
+      {
+        Db.BulkInsert(peopleToLoad);
       }
 
       file.ProcessingStatus = "Imported";
@@ -353,7 +376,7 @@ namespace TallyJ.CoreModels
 
       new PersonCacher().DropThisCache();
 
-      var result = "Processed {0} row{1}. Added {2} {3}.".FilledWith(rowsProcessed, rowsProcessed.Plural(), peopleAdded,
+      var result = "Processed {0} line{1}. Added {2} {3}.".FilledWith(rowsProcessed, rowsProcessed.Plural(), peopleAdded,
                                                                      peopleAdded.Plural("people", "person"));
       if (peopleSkipped > 0)
       {
@@ -361,15 +384,15 @@ namespace TallyJ.CoreModels
       }
       if (rowsSkipped > 0)
       {
-        result += " {0} row{1} skipped.".FilledWith(rowsSkipped, rowsSkipped.Plural());
+        result += " {0} line{1} skipped.".FilledWith(rowsSkipped, rowsSkipped.Plural());
       }
 
       new LogHelper().Add("Imported file #" + rowId + ": " + result);
 
       return new
-               {
-                 result
-               }.AsJsonResult();
+      {
+        result
+      }.AsJsonResult();
     }
 
     public JsonResult SaveCodePage(int id, int codepage)

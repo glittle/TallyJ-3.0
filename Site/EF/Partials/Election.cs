@@ -32,12 +32,12 @@ namespace TallyJ.EF
     {
       var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
 
-      db.Result.Delete(r => r.ElectionGuid == electionGuid);
-      db.ResultTie.Delete(r => r.ElectionGuid == electionGuid);
-      db.ResultSummary.Delete(r => r.ElectionGuid == electionGuid);
+      db.Result.Where(r => r.ElectionGuid == electionGuid).Delete();
+      db.ResultTie.Where(r => r.ElectionGuid == electionGuid).Delete();
+      db.ResultSummary.Where(r => r.ElectionGuid == electionGuid).Delete();
 
       // delete ballots in all locations... cascading will delete votes
-      db.Ballot.Delete(b => db.Location.Where(x => x.ElectionGuid == electionGuid).Select(l => l.LocationGuid).Contains(b.LocationGuid));
+      db.Ballot.Where(b => db.Location.Where(x => x.ElectionGuid == electionGuid).Select(l => l.LocationGuid).Contains(b.LocationGuid)).Delete();
     }
   }
 }
