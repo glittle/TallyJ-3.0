@@ -1,97 +1,147 @@
-﻿#Main
-{
+﻿#Main {
     overflow: auto;
 }
-p
-{
+
+p {
     margin-top: -25px;
     margin-left: 60px;
 }
-.Voter
-{
+
+.Voter {
     clear: both;
     border: 2px solid transparent;
+    overflow: auto;
 }
-.Voter div.Btn:hover 
-{
-    border-color: #80ff80;
-}
+
+    /*.Voter:hover {
+        background-color: #fbfffb;
+    }*/
+
+
+    .Voter div.Btn:hover {
+        border-color: #80ff80;
+    }
+
 div.Btn.clicked {
-  background-color: #9bff9b;
+    background-color: #9bff9b;
 }
+
+#selectorTip {
+    display: none;
+    position: absolute;
+    left: 16px;
+    font-size: 90%;
+    font-style: italic;
+    color: green;
+}
+
+#Main.InSelection #selectorTip {
+    display: block;
+}
+
+#Main.InSelection .Voter {
+    opacity: .1;
+}
+
+    #Main.InSelection .Voter.Selection {
+        opacity: 1;
+    }
+
+.Voter.Selection {
+    border-color: #00ff00;
+}
+
 .Voter.KeyMatch {
     background-color: #ffff99;
 }
-.Voter.KeyMatch.Focused {
-    border-color: #00ff00;
-}
-.Btn
-{
+
+/*.Voter.KeyMatch.Focused {
+        border-color: #00ff00;
+    }*/
+
+.Btn {
     display: inline-block;
-    height: 20px;
-    padding: 2px 8px;
+    padding: 3px 8px;
     border: 1px solid #8dc63e;
     border-radius: 3px;
-    margin: 2px 5px 2px 5px;
+    margin: 1px 0;
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
 }
+
 .Env {
     width: 16px;
     display: inline-block;
     text-align: center;
-  font-weight: bold;
-  color: rgb(135, 98, 135);
-}
-#Main p {
-  margin: 0 0 0 5px;
-  display: inline-block;
-  padding: 0 0 0 0;
-  font-size: 75%;
-  color: #aaa;
-}
-#Main u
-{
-    display: none;
-}
-#Main.WithArea u {
-    text-decoration: none;
-    width: 150px;
-    overflow: hidden;
-    display: inline-block;
-}
-#Main i
-{
-    display: inline-block;
-    float: right;
-    font-size: .8em;
-    margin-top: 6px;
+    font-weight: bold;
+    color: rgb(135, 98, 135);
 }
 
-.Btn.true, .Btn.True
-{
+#Main p {
+    margin: 0 0 0 5px;
+    display: inline-block;
+    padding: 0 0 0 0;
+    font-size: 75%;
+    color: #999;
+    vertical-align: middle;
+}
+
+#Main u {
+    display: none;
+}
+
+#Main.WithArea u {
+    margin: 0 0 0 5px;
+    display: inline-block;
+    padding: 0 0 0 0;
+    font-size: 75%;
+    color: #999;
+    text-decoration: none;
+    vertical-align: middle;
+    max-width: 150px;
+    overflow: hidden;
+}
+
+#Main i {
+    float: right;
+    margin: 0 0 0 6px;
+    padding: 7px 0 3px 0;
+    font-size: 75%;
+    color: green;
+    vertical-align: middle;
+    font-style: normal;
+}
+
+.Btn.true, .Btn.True {
     background-color: plum;
 }
+
 #search {
     position: fixed;
-    top: 4px;
-    right: 4px;
-    min-height: 1em;
-    min-width: 4em;
-    padding: 3px 2px 3px 9px;
-    background-color: #9ddc45;
-    font-weight: bold;
+    top: 1px;
+    left: 40%;
+    padding: 3px 10px 5px 10px;
+    background-color: white;
+    font-size: 15px;
     display: none;
-    font-size: 120%;
-    letter-spacing: 120%;
+    border-radius: 2px;
+    box-shadow: 0 3px 9px #555;
 }
-#search span {
-  font-size: 80%;
-    letter-spacing: normal;
-  font-weight: normal;
-  padding-left: 30px;
-}
+
+    #search span {
+        font-weight: bold;
+        padding: 0 15px 0 5px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
 .NoCallIn div.CalledIn {
     display: none;
+}
+
+@media only screen and (max-width: 600px) {
+    .Voter {
+        border-bottom: 1px solid grey;
+    }
 }

@@ -20,4 +20,8 @@
 <div id="search"></div>
 <div id="Main" class="@(ContextItems.LocationModel.HasLocations ? "WithArea " : "" + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "" : "NoCallIn"))">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
+  <div id="selectorTip">
+    Type first letter of any button (C, M, D, I) to click.
+    Press Esc or Enter when done.
+  </div>
 </div>
