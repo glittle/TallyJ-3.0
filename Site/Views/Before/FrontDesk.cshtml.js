@@ -7,20 +7,29 @@
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     matches: [],
-    focusedOnMatches: false
+    focusedOnMatches: false,
+    headerSpace: 0
   };
   var preparePage = function () {
-    $('#Main').on('click', '.Btn', voteBtnClicked);
+    $('#Main')
+      .on('click', '.Btn', function (ev) {
+        voteBtnClicked(ev.target);
+      })
+      .on('click', '.Voter', function (ev) {
+        setSelection($(ev.target).closest('.Voter'), false);
+      });
 
-    $('body').keydown(processKey);
+    $(document).keydown(processKey);
 
     connectToFrontDeskHub();
 
-    $('html, body').animate({ scrollTop: 0 }, 0);
+    local.headerSpace = $('header').outerHeight();
+
+    $('body').animate({ scrollTop: 0 }, 0);
 
   };
 
-  var connectToFrontDeskHub = function() {
+  var connectToFrontDeskHub = function () {
     var hub = $.connection.frontDeskHubCore;
     hub.client.updatePeople = function (info) {
       LogMessage('signalR: updatePeople');
@@ -34,20 +43,20 @@
 
   };
 
-//  var refreshHubConnection = function () {
-//    var resetHubConnectionTimer = function () {
-//      clearTimeout(local.reconnectHubTimeout);
-//      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-//    };
-//
-//    LogMessage('Join frontDeskHub');
-//
-//    clearTimeout(local.reconnectHubTimeout);
-//    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
-//      resetHubConnectionTimer();
-//    });
-//
-//  };
+  //  var refreshHubConnection = function () {
+  //    var resetHubConnectionTimer = function () {
+  //      clearTimeout(local.reconnectHubTimeout);
+  //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
+  //    };
+  //
+  //    LogMessage('Join frontDeskHub');
+  //
+  //    clearTimeout(local.reconnectHubTimeout);
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
+  //      resetHubConnectionTimer();
+  //    });
+  //
+  //  };
 
   var processKey = function (ev) {
     var letter, key = ev.which;
@@ -59,13 +68,31 @@
         break;
       case 116: // F5
         return;
+      case 27: // esc
+        if (inSelectionMode()) {
+          $('#Main').removeClass('InSelection');
+        }
+        else {
+          resetSearch();
+        }
+        ev.preventDefault();
+        return;
+
       default:
         letter = String.fromCharCode(key);
         break;
     }
+
     var doSearch = false;
 
-    if (/[\w\'\-]/.test(letter)) {
+    if (inSelectionMode()) {
+      $('.Voter.Selection div.Btn:visible').each(function (i, el) {
+        if (letter == el.innerText.substr(0, 1)) {
+          voteBtnClicked(el);
+        }
+      });
+    }
+    else if (/[\w\'\-]/.test(letter)) {
       if (!local.focusedOnMatches) {
         local.currentSearch = local.currentSearch + letter.toLowerCase();
         doSearch = true;
@@ -74,24 +101,31 @@
         handleKeyWhileFocused(ev);
       }
     }
-//    LogMessage('main ' + key);
+    //    LogMessage('main ' + key);
     switch (key) {
-      case 27: // esc
-        resetSearch();
+      case 13: // enter
+        if (inSelectionMode()) {
+          $('#Main').removeClass('InSelection');
+        } else {
+          activateSelection();
+        }
         ev.preventDefault();
         break;
 
-        // Disable for now.. not quite working
-//      case 13: // enter
-//      case 38: // up
-//      case 40: // down
-//        local.focusedOnMatches = true;
-//        handleKeyWhileFocused(ev);
-//        break;
+      case 38: // up
+        moveSelector(-1);
+        ev.preventDefault();
+        break;
+      case 40: // down
+        moveSelector(1);
+        ev.preventDefault();
+        break;
 
       case 8: //backspace
-        local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
-        doSearch = true;
+        if (!inSelectionMode()) {
+          local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
+          doSearch = true;
+        }
         ev.preventDefault();
         break;
 
@@ -105,6 +139,74 @@
       local.timer = setTimeout(resetSearch, 3000);
     }
   };
+
+  var inSelectionMode = function () {
+    return $('#Main').hasClass('InSelection');
+  }
+
+  var activateSelection = function () {
+    var current = $('.Voter.Selection');
+    if (!current.length) {
+      return;
+    }
+    LogMessage(current.offset().top);
+    LogMessage(local.headerSpace)
+    $('#selectorTip').css('top', current.offset().top - local.headerSpace - 40);
+    $('#Main').addClass('InSelection');
+  }
+  var moveSelector = function (delta) {
+    if (inSelectionMode()) {
+      return;
+    }
+    var current = $('.Voter.Selection');
+    if (current.length) {
+      var moveTo = [];
+      switch (delta) {
+        case -1:
+          moveTo = current.prev('.Voter');
+          break;
+        case 1:
+          moveTo = current.next('.Voter');
+          break;
+      }
+      if (moveTo.length) {
+        setSelection(moveTo, true);
+      }
+    }
+  }
+  var setSelection = function (el, move) {
+    $('.Voter.Selection').removeClass('Selection');
+    if (move) {
+      scrollToMe(el, function () {
+        el.addClass('Selection');
+      });
+    } else {
+      el.addClass('Selection');
+    }
+  }
+
+  var scrollToMe = function (el, after) {
+
+    var top = el.offset().top;
+    var gap = 40;
+    var time = 100;
+
+    $('body').scrollTop(top - gap - local.headerSpace);
+    after();
+    //return;
+
+
+    //$('body').animate({
+    //  scrollTop: top + gap - local.headerSpace
+    //}, {
+    //  duration: time,
+    //  queue: false,
+    //  easing: 'easeInOutCubic',
+    //  complete: after
+    //});
+  };
+
+
   var resetSearch = function () {
     clearTimeout(local.timer);
     local.matches.length = 0;
@@ -124,7 +226,6 @@
     }
 
     var key = ev.which;
-    LogMessage('focused ' + key);
     var currentId = local.matches[0].id;
     var current = $('#' + currentId);
     var moveNext;
@@ -161,7 +262,7 @@
     }
   };
   var applyFilter = function () {
-    $('#search').fadeIn().html(local.currentSearch + '<span>(Esc to clear)</span>');
+    $('#search').fadeIn().html('Last name: <span>' + local.currentSearch + '</span> (Esc to clear)');
     local.matches = $('.Voter[data-name^="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
     focusOnMatches();
   };
@@ -172,21 +273,22 @@
     }
     var desired = local.matches.offset().top - 100;
 
-    $('html, body').animate({ scrollTop: desired }, 150);
-
     local.currentTop = desired;
 
-    $('.Voter').removeClass('KeyMatch Focused');
+    $('.Voter').removeClass('KeyMatch Focused Selection');
     local.matches.addClass('KeyMatch'); //$(this).switchClass('KeyMatch', 'AfterMatch', 5000, 'linear');
+    var num = local.matches.length;
     if (local.focusedOnMatches) {
       local.matches.addClass('Focused');
     }
+    setSelection(local.matches.eq(Math.floor((num - 1) / 2)).first(), true);
   };
-  var voteBtnClicked = function (ev) {
-    var btn = $(ev.target);
+  var voteBtnClicked = function (target) {
+    var btn = $(target);
     btn.addClass('clicked');
 
-    var row = btn.parent();
+    var row = btn.closest('.Voter');
+    setSelection(row, false);
 
     var btnType = btn.hasClass('InPerson') ? 'P'
         : btn.hasClass('DroppedOff') ? 'D'
@@ -213,6 +315,7 @@
 
   var updatePeople = function (info, pid) {
     ResetStatusDisplay();
+    var current = $('.Voter.Selection').attr('id');
     if (info) {
       if (info.PersonLines) {
         $.each(info.PersonLines, function () {
@@ -220,6 +323,10 @@
           $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
           if (this.PersonId != pid) {
             $(selector).effect('highlight', {}, 5000);
+          }
+          $('.KeyMatch').removeClass('KeyMatch');
+          if (selector === '#' + current) {
+            setSelection($(selector), false);
           }
         });
       }

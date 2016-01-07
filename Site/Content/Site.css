@@ -4674,9 +4674,10 @@ body.AuthKnown .CurrentElectionName {
   border: 1px solid #8dc63e;
   padding: 0 4px 0 4px;
   margin: 0 3px;
-  border-radius: 2px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
+  border-radius: 2px;
+  display: inline-block;
 }
 .QuickLinks2 a:hover {
   background-color: #EFEEEF;
