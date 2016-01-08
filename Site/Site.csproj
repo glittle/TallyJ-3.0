@@ -576,6 +576,10 @@
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
     <Content Include="Reports\ChangedPeople.cshtml" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="Properties\PublishProfiles\Local 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files.pubxml" />
@@ -593,16 +597,9 @@
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
-    <None Include="Scripts\jquery-2.1.0.intellisense.js" />
-    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.6.4.js" />
-    <Content Include="Scripts\jquery-1.6.4.min.js" />
-    <Content Include="Scripts\jquery-2.1.0.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.js" />
     <Content Include="Scripts\jquery-migrate-1.2.1.js" />
     <Content Include="Scripts\jquery-migrate-1.2.1.min.js" />
     <Content Include="Scripts\jquery-migrate.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
@@ -616,6 +613,18 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Views\Account\LogOn.cshtml.js" />
+    <Content Include="Views\Before\FrontDesk.cshtml.css">
+      <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\FrontDesk.cshtml.min.css">
+      <DependentUpon>FrontDesk.cshtml.css</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\RollCall.cshtml.css">
+      <DependentUpon>RollCall.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\RollCall.cshtml.min.css">
+      <DependentUpon>RollCall.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
     </Content>
@@ -640,6 +649,8 @@
       <DependentUpon>Index.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Dashboard\DashItems.cshtml" />
+    <Content Include="Views\Before\FrontDesk.cshtml.less" />
+    <Content Include="Views\Before\RollCall.cshtml.less" />
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
     <None Include="Web.Standalone.config">
@@ -714,14 +725,8 @@
     <Content Include="Views\Ballots\Reconcile.cshtml.js">
       <DependentUpon>Reconcile.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Before\RollCall.cshtml.css">
-      <DependentUpon>RollCall.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\Before\RollCall.cshtml.js">
       <DependentUpon>RollCall.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Before\FrontDesk.cshtml.css">
-      <DependentUpon>FrontDesk.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Before\FrontDesk.cshtml.js">
       <DependentUpon>FrontDesk.cshtml</DependentUpon>

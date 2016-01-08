@@ -18,10 +18,10 @@
   </ol>
 </div>
 <div id="search"></div>
-<div id="Main" class="@(ContextItems.LocationModel.HasLocations ? "WithArea " : "" + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "" : "NoCallIn"))">
+<div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea " : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : ""))">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
   <div id="selectorTip">
-    Type first letter of any button (C, M, D, I) to click.
+    Type a letter (<span class="CalledIn">C, </span>M, D, I) to click the corresponding button.
     Press Esc or Enter when done.
   </div>
 </div>

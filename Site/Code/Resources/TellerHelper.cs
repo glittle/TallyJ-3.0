@@ -18,7 +18,7 @@ namespace TallyJ.Code.Resources
         .Select(l => new { l.C_RowId, l.Name, Selected = l.Name == tellerName ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
         .JoinedAsString()
-        .SurroundWith("<option value='0'>Enter teller's name!</option>", "<option value='-1'>+ Add my name</option>");
+        .SurroundWith("<option value='0'>Which Teller?</option>", "<option value='-1'>+ Add my name</option>");
     }
   }
 }

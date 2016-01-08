@@ -1,0 +1,154 @@
+﻿.content-wrapper {
+    width: 100%;
+}
+
+header,
+footer {
+    display: none;
+}
+
+.main-content {
+    background-image: none;
+    padding: 0;
+}
+
+.Main {
+    overflow: hidden;
+}
+
+.TopLine {
+    background-position: right center;
+    background-image: url(../../Images/LogoSm.png);
+    width: 100px;
+    height: 60pt;
+    z-index: 3;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-repeat: no-repeat;
+}
+
+.NowVoting {
+    height: 130pt;
+    width: 100%;
+    z-index: 0;
+    position: fixed;
+    top: 50pt;
+    left: 0;
+}
+
+.NextUp {
+    height: 50pt;
+    font-size: 20pt;
+    z-index: 10;
+    color: #013d7a;
+    position: fixed;
+    top: 183pt;
+    left: 20pt;
+}
+
+body.OthersDim {
+    .Voter.Other {
+        color: #a8dda5;
+        background-color: #F0F4F0;
+        padding: 0 3px .15em 3px;
+
+        &.Current {
+            background-color: #fdfffd !important;
+        }
+
+        div {
+            font-size: 40pt;
+        }
+    }
+
+    .Voter.NotLocal span {
+        display: none;
+    }
+}
+
+body.OthersHidden {
+    .Voter.Other {
+        display: none;
+    }
+}
+
+.Voter {
+    position: relative;
+    z-index: 2;
+    color: black;
+    background-color: #efeeef;
+    text-align: center;
+    padding: 0 3px 0 3px;
+    font-size: 55pt; /* 50 for most, 60 for Petpetua */
+    border: 3px double transparent;
+
+    &.Current {
+        background-color: white !important;
+        border: 3px double grey;
+        padding: .4em 3px .5em 3px;
+    }
+
+    &.Present {
+        background: url(../../Images/walk.png) left 9px center no-repeat;
+    }
+
+    &.NotCurrent {
+        background-color: #efeeef;
+    }
+
+    span {
+        font-size: 26pt;
+        color: #999;
+        display: block;
+
+        span {
+            margin: 0 20px;
+            display: inline-block;
+            color: #333;
+        }
+    }
+}
+
+.Nav {
+    display: none;
+    position: fixed;
+    top: 95px;
+    right: 20px;
+    z-index: 10;
+    opacity: 0.01;
+    padding: 9px;
+    border-radius: 2px;
+    box-shadow: 0 3px 9px #555;
+}
+
+.Nav.Show, .Nav:hover {
+    opacity: 1;
+    background-color: #fff;
+}
+
+.comment {
+    font-size: 80%;
+    color: #999;
+    float: right;
+}
+
+
+@media only screen and (max-width: 800px) {
+    .Voter {
+        font-size: 36pt;
+
+        span {
+            margin-top: -2pt;
+            font-size: 18pt;
+        }
+
+        &.Current {
+            background-color: white;
+        }
+
+        &.NotCurrent {
+            background-color: #efeeef;
+        }
+    }
+}

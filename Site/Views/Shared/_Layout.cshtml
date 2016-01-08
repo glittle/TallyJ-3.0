@@ -42,10 +42,10 @@
           else
           {
             @Html.ActionLink(" ", "Index", "Public", null, new
-              {
-                Class = "site-title",
-                alt = "TallyJ - Bahá’í Election Tool"
-              })
+       {
+         Class = "site-title",
+         alt = "TallyJ - Bahá’í Election Tool"
+       })
           }
         }
         <div class="Version">
@@ -69,9 +69,9 @@
       {
         var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
 
-@*        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
-@*          @Html.Partial("MasterMenu")*@
-@*        </div>*@
+        @*        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+        @*          @Html.Partial("MasterMenu")*@
+        @*        </div>*@
         <div class="TopInfo">
           <span class="CurrentElectionName" title="Election Name">
             @UserSession.CurrentElectionDisplayNameAndInfo
@@ -96,8 +96,12 @@
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
             <div class="QuickLinks2">
-              <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>: <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
-              <span><a href="#" id="AllPages" title="Go to any page">All Pages</a></span>
+              <div class="left">
+                <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>:
+              </div>
+              <div class="right">
+                <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span><span><a href="#" id="AllPages" title="Go to any page">All Pages</a></span>
+              </div>
             </div>
             <div class="QuickDash">
               @Html.Partial("../Dashboard/DashItems")
@@ -123,6 +127,10 @@
 
 
 
+
+
+
+
   <div id="body">
     @RenderSection("featured", false)
     @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
@@ -135,8 +143,8 @@
         <div class="CompCode">@UserSession.CurrentComputerCode</div>
         @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
         @{
-      var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-      var showTellerSelector = currentMenu.ShowTellerSelector;
+          var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+          var showTellerSelector = currentMenu.ShowTellerSelector;
         }
         @if (showLocationSelector || showTellerSelector)
         {
@@ -145,11 +153,11 @@
             {
               <label for="ddlTopLocation">
                 Location:
+                <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
+                  @ContextItems.LocationModel.GetLocationOptions()
+                </select>
+                <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
               </label>
-              <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
-                @ContextItems.LocationModel.GetLocationOptions()
-              </select>
-              <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
               @*<label>
                   Computer:</label>
                 <select disabled>
@@ -160,23 +168,23 @@
             {
               <label for="ddlTopTeller1">
                 Teller at keyboard:
+                <select id="ddlTopTeller1" class="TopTeller input-medium">
+                  @tellerHelper.GetTellerOptions(1).AsRawHtml()
+                </select>
+                <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
               </label>
-              <select id="ddlTopTeller1" class="TopTeller input-medium">
-                @tellerHelper.GetTellerOptions(1).AsRawHtml()
-              </select>
-              <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
               <label for="ddlTopTeller2">
                 Assisting:
+                <select id="ddlTopTeller2" class="TopTeller input-medium">
+                  @tellerHelper.GetTellerOptions(2).AsRawHtml()
+                </select>
               </label>
-              <select id="ddlTopTeller2" class="TopTeller input-medium">
-                @tellerHelper.GetTellerOptions(2).AsRawHtml()
-              </select>
             }
           </div>
         }
         @RenderBody()
       </section>
-    }
+          }
   </div>
   @RenderPage("Footer.cshtml")
 

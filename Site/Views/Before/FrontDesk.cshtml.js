@@ -283,8 +283,30 @@
     }
     setSelection(local.matches.eq(Math.floor((num - 1) / 2)).first(), true);
   };
-  var voteBtnClicked = function (target) {
+  var voteBtnClicked = function (target, overrideConfirm) {
     var btn = $(target);
+    
+    if (!overrideConfirm && btn.hasClass('True')) {
+      // already on
+      if (!confirm('Are you sure you want to de-select this person?')) {
+        return;
+      }
+      //$("#dialog-confirm").dialog({
+      //  resizable: false,
+      //  modal: true,
+      //  buttons: {
+      //    "Yes": function () {
+      //      voteBtnClicked(target, true);
+      //      $(this).dialog("close");
+      //    },
+      //    Cancel: function () {
+      //      $(this).dialog("close");
+      //    }
+      //  }
+      //});
+      //return;
+    }
+
     btn.addClass('clicked');
 
     var row = btn.closest('.Voter');
