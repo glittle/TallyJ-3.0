@@ -1,0 +1,18 @@
+﻿[
+  {
+    "outputFile": "Content/Site.css",
+    "inputFile": "Content/Site.less"
+  },
+  {
+    "outputFile": "Views/Before/FrontDesk.cshtml.css",
+    "inputFile": "Views/Before/FrontDesk.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Before/RollCall.cshtml.css",
+    "inputFile": "Views/Before/RollCall.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Public/Home.cshtml.css",
+    "inputFile": "Views/Public/Home.cshtml.less"
+  }
+]

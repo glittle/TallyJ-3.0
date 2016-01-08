@@ -7,8 +7,13 @@
   var preparePage = function () {
 
 
-    $('#btnJoin').on('click', null, null, btnJoinClick);
-    $('#btnRefresh').on('click', null, refreshElectionList);
+    $('#btnJoin').on('click', btnJoinClick);
+    $('#btnRefresh').on('click', refreshElectionList);
+    $('#txtPasscode').on('keypress', function (ev) {
+      if (ev.which == 13) {
+        btnJoinClick();
+      }
+    });
     $('#btnChooseJoin').click(startJoinClick);
     $('#btnChooseLogin').click(startJoinClick);
 
@@ -91,7 +96,6 @@
       statusSpan.addClass('error').html('Please select an election');
       return false;
     }
-    LogMessage('x' + electionCode + 'x');
 
     var passCode = $('#txtPasscode').val();
     if (!passCode) {
