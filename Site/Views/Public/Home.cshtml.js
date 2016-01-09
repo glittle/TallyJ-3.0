@@ -86,6 +86,7 @@
       $('.LoginPanel').fadeIn();
       $('.JoinPanel').hide();
     }
+    $('input:visible').eq(0).focus();
   };
 
   var btnJoinClick = function () {

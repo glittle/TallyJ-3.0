@@ -1,16 +1,19 @@
 ﻿var ReconcilePageFunc = function () {
   var local = {
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>',
-    sortedBallots: {},
+    groupedBallots: {},
     currentLocation: -1,
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     showingNames: false,
-    ballotMethods: []
+    ballotMethods: [],
+    sortSelector: '<select class=sortSelector><option value=Time>Sort by Time</option><option value=Env>Sort by Envelope Number</option><option value=Name>Sort by Name</option></select>'
   };
 
   var preparePage = function () {
     connectToFrontDeskHub();
+
+    changeLocation($('#locations'), false);
 
     $('#btnShowNames').click(function () {
       $(this).hide();
@@ -25,10 +28,14 @@
       changeLocation($('#locations'), true);
     });
 
+    $('#lists').on('change', '.sortSelector', sortSection);
+
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });
 
-    processBallots(publicInterface.ballots);
-    showOld(publicInterface.oldEnvelopes);
+    //processBallots(publicInterface.ballots);
+    //showOld(publicInterface.oldEnvelopes);
+
+
   };
 
   var connectToFrontDeskHub = function () {
@@ -61,7 +68,7 @@
 
   var showOld = function (list) {
     if (!list.length) return;
-    var ballotList = ('<div title="{Tellers}"><span><span>{C_FullName}</span>'
+    var ballotList = ('<div title="{Tellers}" data-time="{RegistrationTime}"><span><span>{C_FullName}</span>'
       + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
       + '</span>'
       + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
@@ -95,22 +102,33 @@
     }
   };
 
+
+  var extend2 = function (ballot) {
+    ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
+    ballot.EnvInfo = ballot.EnvNum ? '<span class=EnvNum data-num="{EnvNum}">#{EnvNum}</span>'.filledWith(ballot) : '';
+    var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
+    ballot.FullTime = time.toString();
+    ballot.SortTime = time.getTime();
+    return ballot;
+  }
+
   var processBallots = function (ballots) {
-    local.sortedBallots = {};
+    local.groupedBallots = {};
     local.ballotMethods = [];
 
     for (var i = 0; i < ballots.length; i++) {
       var ballot = ballots[i];
       var method = ballot.VotingMethod;
 
-      var list = local.sortedBallots[method];
+      var list = local.groupedBallots[method];
       if (!list) {
-        list = local.sortedBallots[method] = [];
+        list = local.groupedBallots[method] = [];
         local.ballotMethods.push(method);
       }
 
-      list.push(ballot);
+      list.push(extend2(ballot));
     }
+
 
     var methodInfos = {
       P: { name: 'In Person', count: 0 },
@@ -129,13 +147,16 @@
 
       var methodName = methodInfo.name;
 
-      var sortedBallots = local.sortedBallots[method] || null;
-      if (sortedBallots) {
-        var ballotList = '<div title="{Tellers}"><span>{C_FullName}</span><span class=When>{When}{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person\'></span>")}</span>{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}</div>'.filledWithEach(sortedBallots);
-        host.append('<div data-method={0}><h3>{1}: {2}</h3><div class=Names>{^3}</div></div>'.filledWith(
-            method, methodName, sortedBallots.length, ballotList));
+      var groupedBallots = local.groupedBallots[method] || null;
+      if (groupedBallots) {
+        var ballotList = '<div data-time="{SortTime}"><span>{C_FullName}</span><span class=When title="{FullTime}">{When}{^TellerIcon}</span>{^EnvInfo}</div>'.filledWithEach(groupedBallots);
+        host.append('<div data-method={0}>{^4}<h3>{1}: {2}</h3><div class=Names>{^3}</div></div>'.filledWith(
+            method, methodName, groupedBallots.length, ballotList, local.sortSelector));
 
-        methodInfo.count = sortedBallots.length;
+        if (method == 'P') {
+          host.find('.sortSelector option[value="Env"]').remove();
+        }
+        methodInfo.count = groupedBallots.length;
       }
     }
 
@@ -183,6 +204,41 @@
     });
     return ballots;
   };
+
+  var sortSection = function (ev) {
+    var select = $(ev.target);
+    var section = select.parent().find('.Names');
+    var rows = section.children();
+    var sortType = select.val();
+
+    $.each(rows, function (i, r) {
+      r.sortValue = null;
+    });
+
+    var getValue = function (a) {
+      var value;
+      switch (sortType) {
+        case 'Name':
+          value = $(a).children().eq(0).text();
+          break;
+        case 'Time':
+          value = 0 - +$(a).data('time'); // reverse sort!
+          break;
+        case 'Env':
+          value = +($(a).find('.EnvNum').data('num') || 0);
+          break;
+      }
+      return value;
+    }
+
+    rows.sort(function (a, b) {
+      var aValue = a.sortValue || (a.sortValue = getValue(a));
+      var bValue = b.sortValue || (b.sortValue = getValue(b));
+      return aValue > bValue ? 1 : -1;
+    });
+
+    rows.detach().appendTo(section);
+  }
 
   var publicInterface = {
     controllerUrl: '',

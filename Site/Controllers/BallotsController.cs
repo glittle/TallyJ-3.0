@@ -56,6 +56,12 @@ namespace TallyJ.Controllers
       return View(new PeopleModel());
     }
 
+
+    public ActionResult SortBallots()
+    {
+      return View(new PeopleModel());
+    }
+
     public JsonResult BallotsForLocation(int id)
     {
       var peopleModel = new PeopleModel();

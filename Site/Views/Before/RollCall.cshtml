@@ -4,6 +4,9 @@
 @{
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new TallyJ.EF.Location()).C_RowId));
+  ContextItems.AddJavascriptForPage("hasloc", "rollCallPage.hasLocations={0};".FilledWith(new LocationModel().HasLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("locs", "rollCallPage.locations={0};".FilledWith(new LocationModel().LocationRowIdMap));
+  ContextItems.AddJavascriptForPage("methods", "rollCallPage.methods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
   ContextItems.AddJavascriptForPage("voters", "rollCallPage.voters={0};".FilledWith(Model.Voters().SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
@@ -14,13 +17,12 @@
   </div>
   <div class="NextUp"></div>
   <div class="Nav Show">
-    <p>
-      <button id="btnReturn" type="button">Show Menus</button>
-    </p>
+    <span class="comment">* are recommended</span>
+    <h3>Display Options</h3>
     @if (ContextItems.LocationModel.HasLocations)
     {
       <p>
-        Highlight voters from
+        Highlight those who voted at
         <select id="locations">
           <option value="">All Locations</option>
           @ContextItems.LocationModel.GetLocationOptions()
@@ -30,22 +32,44 @@
     <p>
       Highlight
       <select id="includeMethod">
-        <option value="">All *</option>
-        <option value="P">Those Present</option>
+        <option value="">all voting methods *</option>
+        <option value="P">only those voting in person</option>
       </select>
-      <span class="comment">* recommended</span>
     </p>
     <p id="askOthers">
-      Other Voters are
+      Other voters are
       <select id="showOthers">
-        <option value="dim">Dimmed *</option>
-        <option value="hidden">Hidden</option>
+        <option value="dim">displayed dimly *</option>
+        <option value="hidden">not shown</option>
         <option value="">also Highlighted</option>
       </select>
     </p>
+    <p>
+      <label>
+        <input checked type="checkbox" id="showEnvReason" />
+        Show reason for envelope *
+      </label>
+    </p>
 
+    @if (ContextItems.LocationModel.HasLocations)
+    {
+      <p>
+        <label>
+          <input checked type="checkbox" id="showLocations" />
+          Show person's home Sector *
+        </label>
+      </p>
+    }
+    <h3>Instructions</h3>
+    <p>Click mouse, or press Space, Enter, Up/Down, Home/End, PgUp/PgDn to move names.</p>
     <p>Press F11 to view in full-screen!</p>
-    <p>Click or press Space, Up/Down, Home/End, PgUp/PgDn to move names.</p>
+    <p>
+      <button type="button" id="hideNav" accesskey="H"><u>H</u>ide these Instruction</button>
+      &nbsp;
+      <button id="btnReturn" type="button">Show Site Menus</button>
+    </p>
+    <p>Scroll to the top of the page for a button to show these instructions again. Or, press Esc.</p>
+
   </div>
-  <div id="voterList"></div>
+  <div id="voterList" tabindex="1"></div>
 </div>

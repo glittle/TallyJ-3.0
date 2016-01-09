@@ -17,12 +17,22 @@
     recallSetting('locations')
     recallSetting('includeMethod')
     recallSetting('showOthers')
+    recallSetting('showLocations')
+    recallSetting('showEnvReason')
 
     var main = $('#voterList');
 
-    main.html(site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
+    if (rollCallPage.hasLocations) {
+      $.each(rollCallPage.voters, function (i, v) {
+        addInfo(v);
+      });
+    }
+    var btnShow = '<button id=showNav>Show Instructions</button>';
+    main.html(btnShow + site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
     local.nameDivs = main.children('div.Voter');
     updateVisibility();
+
+    site.qTips.push({ selector: '#qTipWhyMask', title: 'Masking Voting Methods', text: 'If only one or two people have used a voting method, it may be desired to mask the voting method.' });
 
     $('.Nav').show();
 
@@ -36,13 +46,28 @@
     //      processPulse(info);
     //    });
 
-    setTimeout(function () {
-      $('.Nav').animate({ opacity: 0 }, 1500, null, function () {
-        $('.Nav').removeClass('Show').css({
-          opacity: ''
-        });
-      });
-    }, 3000);
+    //setTimeout(function () {
+    //  $('.Nav').animate({ opacity: 0 }, 1500, null, function () {
+    //    $('.Nav').removeClass('Show').css({
+    //      opacity: ''
+    //    });
+    //  });
+    //}, 3000);
+
+    $('#hideNav').click(function () {
+      $('.Nav').removeClass('Show');
+      $(document).focus();
+        //$('.Nav').animate({ opacity: 0 }, 1000, null, function () {
+        //  $('.Nav').removeClass('Show').css({
+        //    opacity: ''
+        //  });
+        //  $(document).blur();
+        //});
+    });
+    $('#showNav').click(function (ev) {
+      $('.Nav').addClass('Show').filter(':input').focus();
+      ev.stopPropagation();
+    });
 
     $('#locations').change(function () {
       updateVisibility();
@@ -56,13 +81,18 @@
       updateVisibility();
       SetInStorage('rollCall_showOthers', $(this).val());
     });
+    $('#showLocations').change(function () {
+      updateVisibility();
+      SetInStorage('rollCall_showLocations', $(this).prop('checked') ? 'Y' : 'N');
+    });
+    $('#showEnvReason').change(function () {
+      updateVisibility();
+      SetInStorage('rollCall_showEnvReason', $(this).prop('checked') ? 'Y' : 'N');
+    });
 
 
     $(document).keydown(keyDown);
-    $(document).click(function (ev) {
-      if ($(ev.target).closest('.Nav, header').length) {
-        return;
-      }
+    $('#voterList').click(function (ev) {
       ev.which = 32;
       keyDown(ev);
     });
@@ -94,11 +124,32 @@
     if (value === notSet) {
       return;
     }
-    $('#' + id).val(value);
+    var input = $('#' + id);
+    if (input.attr('type') === 'checkbox') {
+      input.prop('checked', value == 'Y');
+      return;
+    }
+
+    input.val(value);
   }
 
-  var saveSetting = function(dom)
-  {
+  var addInfo = function (v) {
+    //var currentDisplayLocation = $('#locations').val();
+    //if (v.Loc != currentDisplayLocation) {
+      v.Location = v.Area;
+    //}
+
+    if (v.VM != 'P' && v.Env) {
+      var vm = rollCallPage.methods[v.VM];
+      if (vm) {
+        v.VotingMethod = vm;
+      }
+      v.EnvInfo = v.Env;
+      v.VotingInfo = '{VotingMethod}'.filledWith(v);
+    }
+  }
+
+  var saveSetting = function (dom) {
     SetInStorage(local.settingPrefix + dom.id, $(dom).val());
   }
 
@@ -128,6 +179,11 @@
     $('body').toggleClass('OthersDim', value === 'dim');
     $('body').toggleClass('OthersHidden', value === 'hidden');
 
+    value = $('#showLocations').prop('checked');
+    $('body').toggleClass('ShowLocations', value);
+
+    value = $('#showEnvReason').prop('checked');
+    $('body').toggleClass('ShowEnvReason', value);
   }
 
   var connectToRollCallHub = function () {
@@ -177,6 +233,9 @@
     if (info.changed) {
       for (var i = 0; i < info.changed.length; i++) {
         var item = info.changed[i];
+        if (rollCallPage.hasLocations) {
+          addInfo(item);
+        }
         var itemLine = $('#P' + item.PersonId);
         var html = site.templates.RollCallLine.filledWith(item);
 
@@ -222,6 +281,7 @@
 
       case 32: // space
       case 74: // j
+      case 13: // enter
       case 40: // down
         delta = 1;
         ev.preventDefault();
