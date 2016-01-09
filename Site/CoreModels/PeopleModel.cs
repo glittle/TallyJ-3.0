@@ -406,6 +406,7 @@ namespace TallyJ.CoreModels
           C_FullName = p.FullName,
           VotedAt = LocationName(p.VotingLocationGuid),
           When = ShowRegistrationTime(timeOffset, p),
+          p.RegistrationTime,
           p.VotingMethod,
           EnvNum = ShowEnvNum(p),
           Tellers = ShowTellers(p)

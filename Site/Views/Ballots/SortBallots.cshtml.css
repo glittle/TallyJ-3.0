@@ -3,20 +3,23 @@
     display: inline-block;
 }
 
+
+
 .sortSelector {
     float: right;
     margin-top: 12px;
 }
 
-.EnvNum {
-    float: right;
-    text-align: right;
-    margin-right: 6px;
-}
-
 .Names div {
     border-top: dotted 1px #ccc;
     clear: both;
+
+}
+
+.Names div b {
+        width: 60px;
+        text-align: center;
+        display: inline-block;
 }
 
     .Names div:first-child {
