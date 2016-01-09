@@ -92,10 +92,7 @@
 
 
     $(document).keydown(keyDown);
-    $(document).click(function (ev) {
-      if ($(ev.target).closest('.Nav, header').length) {
-        return;
-      }
+    $('#voterList').click(function (ev) {
       ev.which = 32;
       keyDown(ev);
     });
