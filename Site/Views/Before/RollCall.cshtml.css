@@ -42,14 +42,9 @@ footer {
 }
 body.OthersDim .Voter.Other {
   color: #a8dda5;
-  background-color: #F0F4F0;
-  padding: 0 3px .15em 3px;
 }
 body.OthersDim .Voter.Other.Current {
-  background-color: #fdfffd !important;
-}
-body.OthersDim .Voter.Other div {
-  font-size: 40pt;
+  background-color: #fafffa !important;
 }
 body.OthersDim .Voter.NotLocal span {
   display: none;
@@ -60,34 +55,69 @@ body.OthersHidden .Voter.Other {
 .Voter {
   position: relative;
   z-index: 2;
-  color: black;
-  background-color: #efeeef;
-  text-align: center;
-  padding: 0 3px 0 3px;
+  padding: 0 3px 11px 3px;
   font-size: 55pt;
   /* 50 for most, 60 for Petpetua */
-  border: 3px double transparent;
+  clear: both;
+  border-radius: 2px;
+  box-shadow: 0 3px 9px #555;
+  margin: 0 7px 9px 6px;
+}
+.Voter.VM_BLANK {
+  box-shadow: none;
+  height: 50px;
+}
+.Voter div {
+  margin: 0 200px 0 60px;
+  z-index: 1;
 }
 .Voter.Current {
   background-color: white !important;
-  border: 3px double grey;
-  padding: .4em 3px .5em 3px;
+  color: black;
 }
 .Voter.Present {
-  background: url(../../Images/walk.png) left 9px center no-repeat;
+  background: url(../../Images/walk.png) no-repeat;
+  background-position: 10px 30px;
+  background-size: 24px;
+}
+.Voter b {
+  position: absolute;
+  left: 5px;
+  text-align: right;
+  min-width: 27px;
+  top: 15px;
+  font-size: 23pt;
+  font-weight: normal;
+  color: #013d7a;
 }
 .Voter.NotCurrent {
   background-color: #efeeef;
+  color: #666;
 }
-.Voter span {
-  font-size: 26pt;
-  color: #999;
+.Voter i,
+.Voter u {
+  display: none;
+}
+body.ShowLocations .Voter i {
+  font-style: normal;
+  font-size: 19pt;
+  color: #8dc63e;
   display: block;
+  position: absolute;
+  bottom: 6px;
+  right: 7px;
 }
-.Voter span span {
-  margin: 0 20px;
-  display: inline-block;
-  color: #333;
+body.ShowEnvReason .Voter u {
+  display: inline;
+  text-decoration: none;
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  font-size: 19pt;
+  color: #013d7a;
+}
+#showNav {
+  float: right;
 }
 .Nav {
   display: none;
@@ -95,33 +125,40 @@ body.OthersHidden .Voter.Other {
   top: 95px;
   right: 20px;
   z-index: 10;
-  opacity: 0.01;
+  /*opacity: 0.01;*/
   padding: 9px;
   border-radius: 2px;
   box-shadow: 0 3px 9px #555;
-}
-.Nav.Show,
-.Nav:hover {
-  opacity: 1;
   background-color: #fff;
 }
-.comment {
+.Nav h3 {
+  margin-top: 0;
+  line-height: normal;
+}
+.Nav p {
+  margin: 4px 0;
+}
+.Nav .comment {
   font-size: 80%;
   color: #999;
   float: right;
+}
+.Nav.Show {
+  /*opacity: 1;*/
+  display: block;
 }
 @media only screen and (max-width: 800px) {
   .Voter {
     font-size: 36pt;
   }
-  .Voter span {
-    margin-top: -2pt;
-    font-size: 18pt;
+  .Voter u {
+    font-size: 14pt;
   }
-  .Voter.Current {
-    background-color: white;
+  .Voter.Present {
+    background-size: 20px;
+    background-position-y: 13px;
   }
-  .Voter.NotCurrent {
-    background-color: #efeeef;
+  body.ShowLocations .Voter i {
+    font-size: 14pt;
   }
 }

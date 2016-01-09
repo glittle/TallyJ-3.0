@@ -29,6 +29,17 @@ namespace TallyJ.CoreModels
         return _idMap ?? (_idMap = MyLocations.ToDictionary(l => l.LocationGuid, l => l.C_RowId));
       }
     }
+    public string LocationRowIdMap
+    {
+      get
+      {
+        return MyLocations
+          .Select(l => "{0}:{1}".FilledWith(l.C_RowId, l.Name.SerializedAsJsonString()))
+          .JoinedAsString(", ")
+          .SurroundContentWith("{", "}");
+      }
+    }
+
 
     /// <summary>
     /// Get the RowId from a LocationGuid

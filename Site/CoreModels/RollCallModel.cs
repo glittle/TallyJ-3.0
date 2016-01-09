@@ -45,27 +45,27 @@ namespace TallyJ.CoreModels
         : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
     }
 
-    public IEnumerable<PersonVotingMethodInfo> Voters(int numBlanksBefore = 2, int numBlanksAfter = 6)
+    public IEnumerable<object> Voters(int numBlanksBefore = 2, int numBlanksAfter = 6)
     {
       return PersonLines(PeopleInCurrentElection(), numBlanksBefore, numBlanksAfter, IncludeAbsentees);
     }
 
     /// <Summary>Only those listed</Summary>
-    public IEnumerable<PersonVotingMethodInfo> PersonLines(List<Person> people, int numBlanksBefore, int numBlanksAfter,
+    public IEnumerable<object> PersonLines(List<Person> people, int numBlanksBefore, int numBlanksAfter,
       bool includeAbsentees)
     {
       var before = new List<Person>();
       var after = new List<Person>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person {C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "&nbsp;"});
+        before.Add(new Person {C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "BLANK" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person {C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "&nbsp;"});
+        after.Add(new Person {C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod="BLANK"});
         numBlanksAfter--;
       }
       var locationModel = new LocationModel();
@@ -75,19 +75,20 @@ namespace TallyJ.CoreModels
         before.Concat(people
           .OrderBy(p => p.LastName)
           .ThenBy(p => p.FirstName)).Concat(after)
-          .Select(p => new PersonVotingMethodInfo
+          .Select(p => new 
           {
             PersonId = p.C_RowId,
-            FullName = p.FullNameFL,
+            FullName = p.C_FullName, //.FullNameFL,
+            Area = p.Area,
             TS = p.C_RowVersionInt,
             Loc = locationModel.IdFor(p.VotingLocationGuid),
-            VotingMethod = includeAbsentees ? VotingMethodEnum.DisplayVotingMethodFor(currentElection, p) : "",
+            Env = p.EnvNum,
             VM = p.VotingMethod,
             Pos = ++i
           });
     }
 
-    public IEnumerable<PersonVotingMethodInfo> GetMorePeople(long stamp, out long newStamp)
+    public IEnumerable<object> GetMorePeople(long stamp, out long newStamp)
     {
       var newPeopleInCurrentElection = PeopleInCurrentElectionQuery().Where(p => p.C_RowVersionInt > stamp).ToList();
       if (newPeopleInCurrentElection.Count == 0)
@@ -101,15 +102,15 @@ namespace TallyJ.CoreModels
       return PersonLines(newPeopleInCurrentElection, 0, 0, IncludeAbsentees);
     }
 
-    public class PersonVotingMethodInfo
-    {
-      public int PersonId { get; set; }
-      public string FullName { get; set; }
-      public long? TS { get; set; }
-      public string VotingMethod { get; set; }
-      public int Pos { get; set; }
-      public int Loc { get; internal set; }
-      public string VM { get; internal set; }
-    }
+    //public class PersonVotingMethodInfo
+    //{
+    //  public int PersonId { get; set; }
+    //  public string FullName { get; set; }
+    //  public long? TS { get; set; }
+    //  public string VotingMethod { get; set; }
+    //  public int Pos { get; set; }
+    //  public int Loc { get; internal set; }
+    //  public string VM { get; internal set; }
+    //}
   }
 }
