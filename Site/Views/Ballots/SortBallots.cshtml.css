@@ -10,21 +10,30 @@
     margin-top: 12px;
 }
 
+.Names {
+   -webkit-column-count: 3;
+      -moz-column-count: 3;
+           column-count: 3;
+
+   -webkit-column-gap: 20px;
+      -moz-column-gap: 20px;
+           column-gap: 20px;
+}
+
 .Names div {
     border-top: dotted 1px #ccc;
     clear: both;
-
+    white-space: nowrap;
 }
-
+.Names div span {
+    white-space: normal;
+    display: inline-block;
+}
 .Names div b {
         width: 60px;
         text-align: center;
         display: inline-block;
 }
-
-    .Names div:first-child {
-        border-top: none;
-    }
 
     .Names div:hover {
         background-color: #ddd;
@@ -36,47 +45,13 @@
     vertical-align: top;
 }
 
-.oldEnv .When {
-    float: none;
-}
-
 .ui-icon {
     display: inline-block;
 }
 
-#lists {
-    clear: left;
-}
-
-    #lists > div {
-        float: left;
-        margin-right: 70px;
-        margin-top: 20px;
-    }
-
 .Count {
     margin: 2px 0 15px 0;
     font-size: 110%;
-}
-
-.Totals {
-    margin: 15px 0 0 0;
-}
-
-    .Totals tr td:first-child {
-        font-weight: bold;
-        text-align: left;
-        width: 130px;
-    }
-
-tr.SubTotal td {
-    border-top: solid #000 1px;
-    padding-bottom: 20px;
-}
-
-tr.Total td {
-    border-top: double #000 3px;
-    padding-bottom: 20px;
 }
 
 #btnShowNames {
@@ -85,7 +60,6 @@ tr.Total td {
 }
 
 .Names {
-    width: 400px;
 }
 
 h3 {
@@ -99,4 +73,19 @@ h3 {
 .btnRefreshDiv {
     float: right;
     margin-right: 2em;
+}
+
+@media only screen and (max-width: 800px) {
+    .Names {
+       -webkit-column-count: 2;
+          -moz-column-count: 2;
+               column-count: 2;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .Names {
+       -webkit-column-count: 1;
+          -moz-column-count: 1;
+               column-count: 1;
+    }
 }

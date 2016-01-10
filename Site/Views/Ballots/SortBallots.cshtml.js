@@ -7,6 +7,7 @@
     hubReconnectionTime: 95000,
     showingNames: false,
     ballotMethods: [],
+    recentUpdates: [],
     sortSelector: '<select class=sortSelector><option value=Name>Sort by Name</option><option value=Time>Sort by Time</option><option value=Env>Sort by Envelope Number</option></select>'
   };
 
@@ -34,8 +35,15 @@
   var connectToFrontDeskHub = function () {
     var hub = $.connection.frontDeskHubCore;
 
-    hub.client.updatePeople = function () {
+    hub.client.updatePeople = function (changes) {
       LogMessage('signalR: updatePeople');
+      var personLines = changes.PersonLines;
+      for (var i = 0; i < personLines.length; i++) {
+        local.recentUpdates.push({
+          when: new Date(),
+          who: personLines[i].PersonId
+        });
+      }
 
       local.currentLocation = '';
       changeLocation($('#locations'), true);
@@ -52,12 +60,10 @@
     if (newLocation != local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
-        if (highlight) {
-          $('#Totals').effect('highlight', {}, 5000);
-        }
         local.currentLocation = newLocation;
         processBallots(info.Ballots);
         sortSection();
+        highlightRecentChanges();
 
         ActivateTips(true);
         ResetStatusDisplay();
@@ -65,6 +71,25 @@
     }
   };
 
+  var highlightRecentChanges = function () {
+    var i = 0;
+    var minutes = 2;
+    var maxAge = minutes * 60000;
+    var now = new Date();
+    while (true) {
+      if (i >= local.recentUpdates.length) {
+        break;
+      }
+      var info = local.recentUpdates[i];
+      var age = now - info.when;
+      if (age < maxAge) {
+        $('#B_' + info.who).effect('highlight', {}, maxAge - age);
+        i++;
+      } else {
+        local.recentUpdates.splice(i, 1);
+      }
+    }
+  }
 
   var extend2 = function (ballot) {
     ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
@@ -91,7 +116,7 @@
     var host = $('#lists');
     host.html('');
 
-    var ballotList = '<div data-time="{SortTime}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
+    var ballotList = '<div data-time="{SortTime}" id="B_{PersonId}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
     host.append('<div>{^0}<h3>Envelopes: {1}</h3><div class=Names>{^2}</div></div>'.filledWith(
         local.sortSelector, local.ballots.length, ballotList));
 
@@ -105,7 +130,6 @@
     var section = select.parent().find('.Names');
     var rows = section.children();
     var sortType = select.val();
-    LogMessage(sortType);
     $.each(rows, function (i, r) {
       r.sortValue = null;
     });
