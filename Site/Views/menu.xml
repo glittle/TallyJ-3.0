@@ -9,11 +9,11 @@
     <group title="Voting" longtitle="Before Tallying Ballots - Registration and voting" showTitleInPage="false">
       <page title="Edit People's Names" featureWhen="NotStarted, NamesReady, Tallying" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
+      <page title="Sort Envelopes" featureWhen="NamesReady" controller="Ballots" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
     </group>
     <group title="Tallying" longtitle="Tallying Ballots" showTitleInPage="false">
-      <page title="Sort Envelopes" featureWhen="NamesReady" controller="Ballots" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
-      <page title="Count Envelopes" featureWhen="NamesReady, Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
+      <page title="Count Envelopes" featureWhen="Tallying" controller="Ballots" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
       <page title="Enter Ballots" featureWhen="TieBreakNeeded, Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying, Reviewing" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
     </group>
