@@ -31,7 +31,7 @@
   <tr>
     <th></th>
     <td>
-      <button type="button" id="btnSave" class="btn btn-success" accesskey="S">
+      <button type="button" id="btnSave" class="btn" accesskey="S">
         <u>S</u>ave Changes
       </button>
     </td>
@@ -59,6 +59,11 @@
     <td>
       <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
       @*<span class="ui-icon ui-icon-info" id="qTipDate2"></span>*@ <span id="txtDateTip">(yyyy-mm-dd)</span>
+      <div class="badiDate">
+        <div id="badiDateIntro"></div>
+        <div id="badiDateBefore" class="badiDateName"></div>
+        <div id="badiDateAfter" class="badiDateName"></div>
+      </div>
     </td>
   </tr>
   <tr>
@@ -81,6 +86,7 @@
         @ElectionTypeEnum.ForHtmlSelect()
       </select>
       <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked"></span></span>
+      <span class="showJalal13">LSA election meetings begin on Jalál 13.</span>
     </td>
   </tr>
   <tr class="electionDetail">
@@ -212,3 +218,4 @@
   </p>
 
 </div>
+<script type="text/javascript" src="http://www3.telus.net/avlittle/badiDateToday/BadiDateToday.v1.js"></script>

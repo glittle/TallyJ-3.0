@@ -4,16 +4,27 @@
   };
   var settings = {
     locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>     <span class="ui-icon ui-icon-trash" title="Delete this location"></span></div>',
-    tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>'
+    tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>',
+    badiDateGetter: null,
+    dateKnown: false,
+    isJalal13: null
   };
   var preparePage = function () {
 
-    $(document).on('change keyup', '#ddlType', startToAdjustByType);
+    $(document).on('change keyup', '#ddlType', function (ev) {
+      startToAdjustByType(ev);
+      $('.showJalal13').toggle($('#ddlType').val() == 'LSA');
+      getBadiDate();
+    });
+
     $(document).on('change keyup', '#ddlMode', startToAdjustByType);
 
     $(document).on('click', '#btnSave', saveChanges);
     $(document).on('click', '#btnAddLocation', addLocation);
 
+    $('.Demographics').on('change', '*:input', function () {
+      $('#btnSave').addClass('btn-primary');
+    });
     $('#locationList').on('change', 'input', function () {
       locationChanged($(this));
     });
@@ -24,6 +35,8 @@
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
     $('#btnResetList').click(resetAllCanVote);
+
+    $('#txtDate').on('change', getBadiDate);
 
     if (Modernizr.inputtypes.date) {
       $('#txtDate').attr('type', 'date');
@@ -42,7 +55,7 @@
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
     site.qTips.push({ selector: '#qTipConvenor', title: 'Convenor', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
-//    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
+    //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
@@ -63,6 +76,17 @@
     site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
+    $(window).on('beforeunload', function () {
+      if ($('#btnSave').hasClass('btn-primary')) {
+        return "Changes have been made and not saved.";
+      }
+    });
+
+    settings.badiDateGetter = BadiDateToday({
+      locationIdentification: 2
+    });
+
+    getBadiDate();
   };
 
   //    var resetVoteStatuses = function () {
@@ -72,6 +96,55 @@
   //        });
   //    };
 
+  var getBadiDate = function () {
+    settings.dateKnown = true;
+    var dateStr = $('#txtDate').val();
+    var dateParts = dateStr.split('-');
+    if (dateStr.length != 10 || dateParts.length != 3) {
+      return; // expecting 2020-04-21
+    }
+    settings.isJalal13 = null;
+    var d = new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
+
+    d.setHours(12, 0, 0, 0, 0); // noon
+    settings.badiDateGetter.refresh({
+      currentTime: d,
+      onReady: function (di) {
+        showBadiInfo(di, $('#badiDateBefore'), 'Start before sunset: &nbsp; ');
+
+        d.setDate(d.getDate() + 1);
+        settings.badiDateGetter.refresh({
+          currentTime: d,
+          onReady: function (di) {
+            showBadiInfo(di, $('#badiDateAfter'), 'Start after sunset: &nbsp; ');
+            showMoreBadiInfo(di);
+          }
+        });
+      }
+    });
+  }
+  var showMoreBadiInfo = function (di) {
+    var isFuture = di.frag1 > new Date();
+    var msg = 'Sunset in {location} ' + (isFuture ? 'will be' : 'was') + ' about {startingSunsetDesc} on that day.'
+    $('#badiDateIntro').html(msg.filledWith(di));
+
+    // found 1st Ridvan for an LSA election?
+    $('.badiDateName').removeClass('isJalal13');
+    var found = !!settings.isJalal13;
+    if (found) {
+      settings.isJalal13.addClass('isJalal13');
+    }
+    $('.showJalal13').toggleClass('missing', $('#ddlType').val() == 'LSA' && !found);
+  }
+
+  var showBadiInfo = function (di, target, intro) {
+    if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() == 'LSA') {
+      settings.isJalal13 = target;
+    }
+
+    var msg = intro + '{bMonthNameAr} ({bMonthMeaning}) {bDay}, {bYear}';
+    target.html(msg.filledWith(di));
+  }
 
   var showLocations = function (locations) {
     //        if (locations == null) {
@@ -244,6 +317,7 @@
         applyValues(info.Election);
         $('.CurrentElectionName').text(info.displayName);
       }
+      $('#btnSave').removeClass('btn-primary');
       ResetStatusDisplay();
       ShowStatusSuccess(info.Status);
     });
@@ -331,6 +405,7 @@
     hasBallots: false,
     Election: null,
     Locations: null,
+    settings: settings,
     initialRules: function (type, mode, info) {
       var combined = type + '.' + mode;
       cachedRules[combined] = info;
