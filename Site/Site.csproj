@@ -585,6 +585,7 @@
     <None Include="Properties\PublishProfiles\Local Files.pubxml" />
     <None Include="Properties\PublishProfiles\Local for Distribution.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
+    <Content Include="Scripts\BadiDateToday.v1.js" />
     <Content Include="Scripts\jquery-1.11.0.min.map" />
     <Content Include="Reports\Voters.cshtml" />
     <Content Include="Reports\NonVoters.cshtml" />
