@@ -56,7 +56,7 @@ var BadiDateLocationChoice = {
     // don't try to customize sunset times, just use 6:30pm
     ignoreLocation: 1,
     // guess the user's location
-    guessUserLocation: 2,
+    //guessUserLocation: 2,
     // ask the user for their location. User will be prompted to allow your site to read their location.
     askForUserLocation: 3
     // if location is reused, this is set to 4
@@ -70,7 +70,7 @@ var BadiDateToday = function (settings) {
     if (settings && settings.onReady) {
         // if user supplied onReady, but didn't set locationMethod, set it to guessUserLocation
         if (!settings.locationMethod) {
-            settings.locationMethod = BadiDateLocationChoice.guessUserLocation;
+            settings.locationMethod = BadiDateLocationChoice.askForUserLocation;
         }
     }
 
@@ -182,7 +182,7 @@ var BadiDateToday = function (settings) {
     //}
     function applySettings(newSettings) {
         localSettings.onReady = (newSettings && newSettings.onReady) || localSettings.onReady || defaultOnReady;
-        localSettings.locationMethod = (newSettings && newSettings.locationMethod) || localSettings.originalLocationMethod || BadiDateLocationChoice.guessUserLocation;
+        localSettings.locationMethod = (newSettings && newSettings.locationMethod) || localSettings.originalLocationMethod || BadiDateLocationChoice.askForUserLocation;
         localSettings.use24HourClock = (newSettings && newSettings.use24HourClock) || localSettings.use24HourClock || false;
         localSettings.language = (newSettings && newSettings.language) || localSettings.language || 'en';
         localSettings.currentTime = (newSettings && newSettings.currentTime) || new Date(); // don't reuse time
@@ -557,7 +557,7 @@ var BadiDateToday = function (settings) {
                 }, function () {
                     // failed
                     console.log('Failed to get location. Will guess.');
-                    localSettings.locationMethod = BadiDateLocationChoice.guessUserLocation;
+                    localSettings.locationMethod = BadiDateLocationChoice.ignoreLocation;
                     WaitingForLocationInformation();
                 }, {
                     timeout: 3000,
@@ -569,23 +569,23 @@ var BadiDateToday = function (settings) {
             // not available in the browser, or user denied request. Fallback to guessing location
         }
 
-        if (localSettings.locationMethod == BadiDateLocationChoice.guessUserLocation) {
-            var url = "http://ipinfo.io/geo?json";
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var info = JSON.parse(xhr.responseText);
-                    var loc = info.loc.split(',');
-                    saveLocation(loc[0], loc[1], info.city);
-                    continueAfterLocationKnown();
-                }
-            }
-            xhr.open("GET", url, true);
-            xhr.timeout = 1000;
-            xhr.ontimeout = function () { continueAfterLocationKnown(); };
-            xhr.send();
-            return true;
-        }
+        //if (localSettings.locationMethod == BadiDateLocationChoice.guessUserLocation) {
+        //    var url = "http://ipinfo.io/geo?json";
+        //    var xhr = new XMLHttpRequest();
+        //    xhr.onreadystatechange = function () {
+        //        if (xhr.readyState == 4 && xhr.status == 200) {
+        //            var info = JSON.parse(xhr.responseText);
+        //            var loc = info.loc.split(',');
+        //            saveLocation(loc[0], loc[1], info.city);
+        //            continueAfterLocationKnown();
+        //        }
+        //    }
+        //    xhr.open("GET", url, true);
+        //    xhr.timeout = 1000;
+        //    xhr.ontimeout = function () { continueAfterLocationKnown(); };
+        //    xhr.send();
+        //    return true;
+        //}
 
         // use 6:30 as sunset time
         saveLocation(0, 0, '', true);
