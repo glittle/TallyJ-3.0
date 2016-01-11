@@ -110,13 +110,13 @@
     settings.badiDateGetter.refresh({
       currentTime: d,
       onReady: function (di) {
-        showBadiInfo(di, $('#badiDateBefore'), 'Start before sunset: &nbsp; ');
+        showBadiInfo(di, $('#badiDateBefore'), 'Starting before sunset? &rarr; ');
 
         d.setDate(d.getDate() + 1);
         settings.badiDateGetter.refresh({
           currentTime: d,
           onReady: function (di) {
-            showBadiInfo(di, $('#badiDateAfter'), 'Start after sunset: &nbsp; ');
+            showBadiInfo(di, $('#badiDateAfter'), 'Starting after sunset? &rarr; ');
             showMoreBadiInfo(di);
           }
         });

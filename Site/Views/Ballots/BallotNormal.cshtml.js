@@ -1142,6 +1142,7 @@ add to this ballot
     Location: null,
     HasLocations: false,
     PreparePage: preparePage,
+    peopleHelper: function () { return local.peopleHelper; },
     local: local
   };
 

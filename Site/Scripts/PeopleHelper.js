@@ -76,11 +76,11 @@
 
     if (info && typeof info.People != 'undefined') {
       var currentType = 0;
-      var highestBestMatch = 0;
+      var highestNumVotes = 0;
 
       $.each(info.People, function (i, personInfo) {
-        if (personInfo.BestMatch > highestBestMatch) {
-          highestBestMatch = personInfo.BestMatch;
+        if (personInfo.NumVotes > highestNumVotes) {
+          highestNumVotes = personInfo.NumVotes;
         }
         if (currentType == 0) currentType = personInfo.MatchType;
         var classes = [];
@@ -117,9 +117,9 @@
       info.BestRowNum = 1;
 
       for (var matchType = 1; matchType <= 4; matchType++) {
-        for (var targetMatch = highestBestMatch; !foundBest && targetMatch >= 0; targetMatch--) {
+        for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
           $.each(results, function (i, item) {
-            if (item.MatchType === matchType && item.BestMatch === targetMatch && !item.InUse && !item.Ineligible) {
+            if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
               info.BestRowNum = i;
               foundBest = true;
               return false;
@@ -146,8 +146,8 @@
   var addGroupToChosenNames = function (people) {
     for (var i = 0; i < people.length; i++) {
       var person = people[i];
-      if (person.BestMatch) {
-        // only add from group if they have a BestMatch value
+      if (person.NumVotes) {
+        // only add from group if they have a NumVotes value
         addToChosenNames(null, person);
       }
     }
@@ -167,8 +167,8 @@
     if (person) {
       if (local.chosenNames[id]) {
         // update our cache
-        if (person.BestMatch) {
-          local.chosenNames[id].Person.BestMatch = person.BestMatch;
+        if (person.NumVotes) {
+          local.chosenNames[id].Person.NumVotes = person.NumVotes;
         }
       } else {
         var $name = $(person.Name);
