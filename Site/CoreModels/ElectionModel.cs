@@ -338,7 +338,7 @@ namespace TallyJ.CoreModels
         UpgradeOldData();
       }
 
-      new LogHelper().Add(message);
+      new LogHelper().Add(message, true);
 
       return true;
     }
@@ -597,7 +597,7 @@ namespace TallyJ.CoreModels
     {
       SetTallyStatus(controller, status);
 
-      new LogHelper().Add("Status changed to " + status);
+      new LogHelper().Add("Status changed to " + status, true);
 
       return new
       {

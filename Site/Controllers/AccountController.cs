@@ -76,7 +76,10 @@ namespace TallyJ.Controllers
         {
           FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
           UserSession.ProcessLogin();
+          new LogHelper().Add("Logged In", true);
+
           UserSession.IsKnownTeller = true;
+
 
           if (Url.IsLocalUrl(returnUrl))
           {
