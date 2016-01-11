@@ -30,7 +30,7 @@
         local.showPersonId = 0;
       } else {
         $.each(local.People, function (i, item) {
-          if (item.BestMatch && !local.maintainCurrentRow) {
+          if (item.NumVotes && !local.maintainCurrentRow) {
             local.rowSelected = i;
           }
         });

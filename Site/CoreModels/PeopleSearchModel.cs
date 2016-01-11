@@ -50,7 +50,7 @@ namespace TallyJ.CoreModels
             r.CanReceiveVotes,
             r.CanVote,
             r.Ineligible,
-            r.BestMatch,
+            NumVotes = r.BestMatch,
             r.MatchType,
             r.Extra
           }),
