@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Net;
+using System.Web;
 using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
@@ -52,7 +53,7 @@ namespace TallyJ.Code
       }
 
       var info = new NameValueCollection();
-      info["value1"] = UserSession.LoginId;
+      info["value1"] = UserSession.LoginId + "/" + HttpContext.Current.Request.Url.Host;
       info["value2"] = UserSession.CurrentElectionName;
       info["value3"] = message;
 
