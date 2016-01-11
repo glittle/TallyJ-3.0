@@ -365,6 +365,8 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogout()
     {
+      new LogHelper().Add("Logged Out");
+
       LeaveElection(false);
 
       HttpContext.Current.Session.Clear();

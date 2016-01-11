@@ -452,7 +452,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString());
+      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(), true);
 
       return new
       {

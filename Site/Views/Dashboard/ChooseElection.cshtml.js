@@ -97,7 +97,7 @@
       return;
     }
 
-    ShowStatusDisplay("Loading election...", 0, 2 * 60 * 1000);
+    ShowStatusDisplay("Loading election...");
 
     var form = $('#formLoadFile');
     var frameId = 'tempUploadFrame';
@@ -264,7 +264,7 @@
     var btn = $(this);
     var guid = btn.parents('.Election').data('guid');
 
-    ShowStatusDisplay("Preparing file...", 0, 3000);
+    ShowStatusDisplay("Preparing file...");
 
     //var oldText = btn.text();
 
