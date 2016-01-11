@@ -166,3 +166,7 @@ option:disabled {
 #txtDateTip {
     display: none;
 }
+.locationDetail {
+    cursor: help;
+    text-decoration: underline;
+}
