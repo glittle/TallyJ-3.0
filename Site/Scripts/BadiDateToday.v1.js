@@ -556,7 +556,7 @@ var BadiDateToday = function (settings) {
                     continueAfterLocationKnown();
                 }, function () {
                     // failed
-                    console.log('Failed to get location. Will guess.');
+                    console.log('Failed to get location. Will default to unknown.');
                     localSettings.locationMethod = BadiDateLocationChoice.ignoreLocation;
                     WaitingForLocationInformation();
                 }, {
