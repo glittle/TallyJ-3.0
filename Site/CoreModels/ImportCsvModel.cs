@@ -11,6 +11,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 using TallyJ.CoreModels.Hubs;
+using TallyJ.Code.Enumerations;
 
 namespace TallyJ.CoreModels
 {
@@ -27,11 +28,12 @@ namespace TallyJ.CoreModels
                        // same list repeated below
                        "LastName",
                        "FirstName",
+                       "IneligibleReasonGuid",
+                       "Area",
+                       "BahaiId",
                        "OtherLastNames",
                        "OtherNames",
                        "OtherInfo",
-                       "Area",
-                       "BahaiId",
                      };
 
         // screen this hardcoded list against the Person object to ensure we aren't using old field names
@@ -240,13 +242,19 @@ namespace TallyJ.CoreModels
           fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == rowId);
       if (file == null)
       {
-        throw new ApplicationException("File not found");
+        return new
+        {
+          result = new[] { "File not found" }
+        }.AsJsonResult();
       }
 
       var columnsToRead = file.ColumnsToRead;
       if (columnsToRead == null)
       {
-        throw new ApplicationException("Mapping not defined");
+        return new
+        {
+          result = new[] { "Mapping not defined" }
+        }.AsJsonResult();
       }
 
       var textReader = new StringReader(file.Contents.AsString(file.CodePage));
@@ -260,12 +268,15 @@ namespace TallyJ.CoreModels
 
       if (validMappings.Count == 0)
       {
-        throw new ApplicationException("Mapping not defined");
+        return new
+        {
+          result = new[] { "Mapping not defined" }
+        }.AsJsonResult();
       }
 
       var currentPeople = new PersonCacher().AllForThisElection.ToList();
       var personModel = new PeopleModel();
-      var reason = new ElectionModel().GetDefaultIneligibleReason();
+      var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
       var rowsProcessed = 0;
       var rowsSkipped = 0;
@@ -274,6 +285,9 @@ namespace TallyJ.CoreModels
 
       var hub = new ImportHub();
       var peopleToLoad = new List<Person>();
+
+      var unexpectedReasons = new Dictionary<string, int>();
+      var validReasons = 0;
 
       csv.ReadNextRecord();
       while (!csv.EndOfStream)
@@ -286,13 +300,45 @@ namespace TallyJ.CoreModels
         var query = currentPeople.AsQueryable();
 
         var person = new Person();
+        var reason = defaultReason;
 
         foreach (var currentMapping in validMappings)
         {
           var dbFieldName = currentMapping[1];
           var value = csv[currentMapping[0]];
 
-          person.SetPropertyValue(dbFieldName, value);
+          switch (dbFieldName)
+          {
+            case "IneligibleReasonGuid":
+              // match value to the list of Enums
+              value = value.Trim();
+              if (value.HasContent())
+              {
+                var match = IneligibleReasonEnum.GetFor(value);
+                if (match != null)
+                {
+                  reason = match;
+                  validReasons += 1;
+                }
+                else
+                {
+                  // tried but didn't match a valid reason!
+                  reason = defaultReason;
+
+                  if (unexpectedReasons.ContainsKey(value))
+                  {
+                    unexpectedReasons[value] += 1;
+                  }
+                  else {
+                    unexpectedReasons.Add(value, 1);
+                  }
+                }
+              }
+              break;
+            default:
+              person.SetPropertyValue(dbFieldName, value);
+              break;
+          };
           valuesSet = true;
 
           switch (dbFieldName)
@@ -319,6 +365,12 @@ namespace TallyJ.CoreModels
               break;
             case "BahaiId":
               query = query.Where(p => p.BahaiId == value);
+              break;
+            case "IneligibleReasonGuid":
+              //if (reason != defaultReason)
+              //{
+              //  query = query.Where(p => p.IneligibleReasonGuid == reason.Value);
+              //}
               break;
             default:
               throw new ApplicationException("Unexpected: " + dbFieldName);
@@ -376,18 +428,31 @@ namespace TallyJ.CoreModels
 
       new PersonCacher().DropThisCache();
 
-      var result = "Processed {0} line{1}. Added {2} {3}.".FilledWith(rowsProcessed, rowsProcessed.Plural(), peopleAdded,
-                                                                     peopleAdded.Plural("people", "person"));
+      var result = new List<string>();
+      result.Add("Processed {0} line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()));
+      result.Add("Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person")));
       if (peopleSkipped > 0)
       {
-        result += " {0} {1} matched.".FilledWith(peopleSkipped, peopleSkipped.Plural("people", "person"));
+        result.Add("{0} {1} matched.".FilledWith(peopleSkipped, peopleSkipped.Plural("people", "person")));
       }
       if (rowsSkipped > 0)
       {
-        result += " {0} line{1} skipped.".FilledWith(rowsSkipped, rowsSkipped.Plural());
+        result.Add("{0} line{1} skipped or blank.".FilledWith(rowsSkipped, rowsSkipped.Plural()));
+      }
+      if (validReasons > 0)
+      {
+        result.Add("{0} eligibility status{1} recognized.".FilledWith(validReasons, validReasons.Plural("es")));
+      }
+      if (unexpectedReasons.Count > 0)
+      {
+        result.Add("Status Reason{0} not recognized: ".FilledWith(unexpectedReasons.Count.Plural()));
+        foreach (var r in unexpectedReasons)
+        {
+          result.Add("- \"{0}\"{1}".FilledWith(r.Key, r.Value == 1 ? "" : " x" + r.Value));
+        }
       }
 
-      new LogHelper().Add("Imported file #" + rowId + ": " + result);
+      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString());
 
       return new
       {

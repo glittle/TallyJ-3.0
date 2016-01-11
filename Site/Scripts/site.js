@@ -431,9 +431,13 @@ function PrepareMainMenu() {
 }
 
 function AttachHelp() {
-  var pi = $('.PullInstructions');
-  pi.before($('<div class=PullInstructionsHandle><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> Instructions</div>'));
-
+  var piList = $('.PullInstructions');
+  piList.each(function (i, el) {
+    var pi = $(el);
+    var title = pi.data('title') || 'Instructions';
+    pi.before($('<div class=PullInstructionsHandle data-title="{0}"><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> {0}</div>'.filledWith(title)));
+  });
+  
   var showHelp = function (handle, show, fast) {
     var next = handle.next();
     if (fast) {
@@ -443,7 +447,7 @@ function AttachHelp() {
       next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
-    SetInStorage('HidePI_' + location.pathname, show ? 'show' : 'hide');
+    SetInStorage('HidePI_' + location.pathname + handle.data('title'), show ? 'show' : 'hide');
   };
 
   $(document).on('click', '.PullInstructionsHandle', function (ev) {
@@ -451,9 +455,9 @@ function AttachHelp() {
     showHelp(handle, !handle.next().is(':visible'), false);
   });
 
-  var desired = GetFromStorage('HidePI_' + location.pathname, 'hide');
   $('.PullInstructionsHandle').each(function () {
-    showHelp($(this), desired != 'hide', true);
+    var handle = $(this)
+    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title'), 'hide') != 'hide', true);
   });
 
 }
