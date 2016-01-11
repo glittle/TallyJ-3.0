@@ -83,7 +83,7 @@
     });
 
     settings.badiDateGetter = BadiDateToday({
-      locationIdentification: 2
+      locationIdentification: 3
     });
 
     getBadiDate();
