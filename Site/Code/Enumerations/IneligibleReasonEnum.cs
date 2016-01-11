@@ -22,25 +22,25 @@ namespace TallyJ.Code.Enumerations
     public static readonly IneligibleReasonEnum Unidentifiable_Unknown_person = new IneligibleReasonEnum("CE27534D-D7E8-E011-A095-002269C41D11", GroupName.Unidentifiable, "Unknown person");
 
     public static readonly IneligibleReasonEnum Ineligible_Deceased = new IneligibleReasonEnum("D227534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Deceased");
-    public static readonly IneligibleReasonEnum Ineligible_Moved_elsewhere_recently = new IneligibleReasonEnum("CF27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Moved elsewhere recently");
-    public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Not registered Bahá'í");
-    public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("CC27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Under 21 years old");
-    public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Other");
-    public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Resides elsewhere");
-    public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible,"Rights removed (entirely)");
+    public static readonly IneligibleReasonEnum Ineligible_Moved_elsewhere_recently = new IneligibleReasonEnum("CF27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Moved elsewhere recently");
+    public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not registered Bahá'í");
+    public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("CC27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Under 21 years old");
+    public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Other");
+    public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Resides elsewhere");
+    public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Rights removed (entirely)");
 
     public static readonly IneligibleReasonEnum IneligiblePartial1_On_Institution_already = new IneligibleReasonEnum("C05EAE49-B01B-E111-A7FB-002269C41D11", GroupName.IneligiblePartial1, "By-election: On Institution already", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.IneligiblePartial1, "On other Institution (eg. Counselor)", true);
-    public static readonly IneligibleReasonEnum IneligiblePartial1_Rights_removed = new IneligibleReasonEnum("920A1A55-C4A5-42E5-9BCE-31756B6A20B9", GroupName.IneligiblePartial1, "Rights removed (partial)", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_Rights_removed = new IneligibleReasonEnum("920A1A55-C4A5-42E5-9BCE-31756B6A20B9", GroupName.IneligiblePartial1, "Rights removed (cannot be voted for)", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.IneligiblePartial1, "Tie-break: Not tied", true);
 
     public static readonly IneligibleReasonEnum IneligiblePartial2_Not_a_Delegate = new IneligibleReasonEnum("4B2B0F32-4E14-43A4-9103-C5E9C81E8783", GroupName.IneligiblePartial2, "Not a delegate in this election", false, true);
-    public static readonly IneligibleReasonEnum IneligiblePartial2_Rights_removed = new IneligibleReasonEnum("84FA30C9-F007-44E8-B097-CCA430AAA3AA", GroupName.IneligiblePartial2, "Rights removed (partial)", false, true);
+    public static readonly IneligibleReasonEnum IneligiblePartial2_Rights_removed = new IneligibleReasonEnum("84FA30C9-F007-44E8-B097-CCA430AAA3AA", GroupName.IneligiblePartial2, "Rights removed (cannot vote)", false, true);
 
-    public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"In an unknown language");
-    public static readonly IneligibleReasonEnum Unreadable_Not_a_complete_name = new IneligibleReasonEnum("86DDBE4A-841D-E111-A7FB-002269C41D11", GroupName.Unreadable,"Not a complete name");
-//    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
-    public static readonly IneligibleReasonEnum Unreadable_Writing_illegible = new IneligibleReasonEnum("CD27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Writing is illegible");
+    public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable, "In an unknown language");
+    public static readonly IneligibleReasonEnum Unreadable_Not_a_complete_name = new IneligibleReasonEnum("86DDBE4A-841D-E111-A7FB-002269C41D11", GroupName.Unreadable, "Not a complete name");
+    //    public static readonly IneligibleReasonEnum Unreadable_Vote_is_blank = new IneligibleReasonEnum("DA27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable,"Vote line is blank");
+    public static readonly IneligibleReasonEnum Unreadable_Writing_illegible = new IneligibleReasonEnum("CD27534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable, "Writing is illegible");
 
     static IneligibleReasonEnum()
     {
@@ -65,7 +65,7 @@ namespace TallyJ.Code.Enumerations
       Add(IneligiblePartial2_Not_a_Delegate);
       Add(IneligiblePartial2_Rights_removed);
 
-//      Add(Unreadable_Vote_is_blank);
+      //      Add(Unreadable_Vote_is_blank);
       Add(Unreadable_Writing_illegible);
       Add(Unreadable_Not_a_complete_name);
       Add(Unreadable_In_another_language_not_translatable);
@@ -119,6 +119,16 @@ namespace TallyJ.Code.Enumerations
       return item == null ? "" : item.Description;
     }
 
+    public static IneligibleReasonEnum GetFor(string description)
+    {
+      var item = BaseItems.SingleOrDefault(i => i.Description.Equals(description.Trim(), StringComparison.InvariantCultureIgnoreCase));
+      if (item == null) {
+        return null;
+      }
+      return item;
+    }
+
+
     public new static IList<IneligibleReasonEnum> Items
     {
       get { return BaseItems; }
@@ -147,6 +157,18 @@ namespace TallyJ.Code.Enumerations
           .JoinedAsString()
           .AsRawHtml();
     }
+
+    public static object ReasonNamesForImportPage()
+    {
+      return BaseItems
+        .Where(r => r.Group != GroupName.Unreadable && r.Group != GroupName.Unidentifiable)
+        .Select(r => new
+        {
+          r.Group,
+          r.Description
+        });
+    }
+
 
     public static implicit operator Guid(IneligibleReasonEnum self)
     {
