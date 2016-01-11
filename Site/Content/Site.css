@@ -4160,6 +4160,9 @@ div.QuickDash {
   right: 172px;
   top: 50px;
 }
+div.QuickDash .home {
+  font-weight: bold;
+}
 div.QuickDash section.features {
   display: block;
   padding-left: 10px;

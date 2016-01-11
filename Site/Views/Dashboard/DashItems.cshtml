@@ -1,16 +1,28 @@
-﻿@using System.Xml
+﻿@model ElectionsListViewModel
+@using System.Xml
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 
-@foreach (XmlElement item in new MenuHelper(this.Url).TrimmedMenu().ChildNodes)
+@{
+  var menuItems = new MenuHelper(this.Url).TrimmedMenu().ChildNodes;
+}
+
+@if (ViewData.ContainsKey("ShowHomeLink") && ViewData["ShowHomeLink"].ToString() == "Yes")
+{
+  <a class="home" href="@Url.Action("Index", "Dashboard")">
+    Home Dashboard
+  </a>
+}
+
+@foreach (XmlElement item in menuItems)
 {
   <section class="features">
     <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
     @foreach (var child in item.ChildNodes
-                            .Cast<XmlNode>()
-                            .Where(n => n.NodeType == XmlNodeType.Element)
-                            .Cast<XmlElement>()
-                            .Where(c => c.GetAttribute("showOnDashboard").DefaultTo("true") == "true"))
+                                            .Cast<XmlNode>()
+                                            .Where(n => n.NodeType == XmlNodeType.Element)
+                                            .Cast<XmlElement>()
+                                            .Where(c => c.GetAttribute("showOnDashboard").DefaultTo("true") == "true"))
     {
       <a data-when="@child.GetAttribute("featureWhen")" href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="@(UserSession.IsFeatured(child.GetAttribute("featureWhen"), UserSession.CurrentElection) || child.GetAttribute("featureWhen") == "OnDash" ? "Featured" : "NotFeatured")">
         <section class="feature @child.GetAttribute("class") Role-@child.GetAttribute("role")">

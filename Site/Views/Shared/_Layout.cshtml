@@ -104,7 +104,7 @@
               </div>
             </div>
             <div class="QuickDash">
-              @Html.Partial("../Dashboard/DashItems")
+              @Html.Partial("../Dashboard/DashItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })
             </div>
           }
           else
