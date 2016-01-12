@@ -435,7 +435,7 @@ function AttachHelp() {
   piList.each(function (i, el) {
     var pi = $(el);
     var title = pi.data('title') || 'Instructions';
-    pi.before($('<div class=PullInstructionsHandle data-title="{0}"><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> {0}</div>'.filledWith(title)));
+    pi.before($('<div class=PullInstructionsHandle data-title="{0}"><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class="buttonDiv"><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> {0}</span></div>'.filledWith(title)));
   });
   
   var showHelp = function (handle, show, fast) {
@@ -447,6 +447,7 @@ function AttachHelp() {
       next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
+    handle.find('.buttonDiv').toggleClass('btn btn-mini', show);
     SetInStorage('HidePI_' + location.pathname + handle.data('title'), show ? 'show' : 'hide');
   };
 
@@ -457,7 +458,7 @@ function AttachHelp() {
 
   $('.PullInstructionsHandle').each(function () {
     var handle = $(this)
-    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title'), 'hide') != 'hide', true);
+    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title'), 'show') != 'hide', true);
   });
 
 }
@@ -519,6 +520,11 @@ function HasErrors(data) {
   }
   if (/Server Error/.test(data)) {
     ShowStatusFailed(data.replace('/*', '').replace('*/', ''));
+    return true;
+  }
+  if (/^Exception:/.test(data)) {
+    LogMessage(data);
+    ShowStatusFailed('Server Error: ' + data.substr(0, 60) + '...');
     return true;
   }
   if (/Error\:/.test(data)) {

@@ -23,14 +23,6 @@ footer {
   right: 0;
   background-repeat: no-repeat;
 }
-.NowVoting {
-  height: 130pt;
-  width: 100%;
-  z-index: 0;
-  position: fixed;
-  top: 50pt;
-  left: 0;
-}
 .NextUp {
   height: 50pt;
   font-size: 20pt;
@@ -147,7 +139,7 @@ body.ShowEnvReason .Voter u {
   /*opacity: 1;*/
   display: block;
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1024px) {
   .Voter {
     font-size: 36pt;
   }

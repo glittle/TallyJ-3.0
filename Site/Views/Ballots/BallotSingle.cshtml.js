@@ -665,7 +665,7 @@
 
     if (!fromQuickSearch) {
       resetKeyTimeShow();
-      local.peopleHelper.AddGroupToChosenNames(local.People);
+      //local.peopleHelper.AddGroupToLocalNames(local.People);
     }
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
@@ -841,8 +841,8 @@
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-          '<option value="-1">Add new name (including spoiled)...</option>',
-          '<option value="0">Select a reason...</option>'
+          '<option value="0">Select a reason...</option>',
+          '<option value="-1">Add new name (including spoiled)...</option>'
     ];
 
     var group = '';
