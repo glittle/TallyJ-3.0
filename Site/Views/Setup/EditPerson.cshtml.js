@@ -44,13 +44,13 @@
   };
 
   var startEdit = function () {
-    var $first = local.hostPanel.find('[data-name="LastName"]');
-    var $last = local.hostPanel.find('[data-name="FirstName"]');
+    var $first = local.hostPanel.find('[data-name="FirstName"]');
+    var $last = local.hostPanel.find('[data-name="LastName"]');
     var update = function() {
-      site.broadcast(site.broadcastCode.personNameChanging, $.trim($first.text() + ' ' + $last.text()));
+      site.broadcast(site.broadcastCode.personNameChanging, $.trim($first.val() + ' ' + $last.val()));
     };
-    $first.on('keypress', update).focus();
-    $last.on('keypress', update);
+    $first.on('keyup', update).focus();
+    $last.on('keyup', update);
   };
 
   var applyValues = function (panel, person, clearAll) {

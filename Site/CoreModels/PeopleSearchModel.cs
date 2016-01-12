@@ -52,7 +52,8 @@ namespace TallyJ.CoreModels
             r.Ineligible,
             NumVotes = r.BestMatch,
             r.MatchType,
-            r.Extra
+            r.Extra,
+            r.RowVersion
           }),
         MoreFound = moreFound ? "More than {0} matches".FilledWith(max) : "",
         LastRowVersion = results.Count == 0 ? 0 : results.Max(p => p.RowVersion)

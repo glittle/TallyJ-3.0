@@ -26,7 +26,7 @@
     rowSelected: 0,
     lastBallotRowVersion: 0,
     keyTimeShowSpan: null,
-    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^Name}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
   };
@@ -70,6 +70,17 @@
 
     local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
     local.inputField.focus();
+    $(document).on('keydown', function (ev) {
+      if ($(ev.target).is(':text')) {
+        return;
+      }
+      switch (ev.which) {
+        case 8:
+          ev.preventDefault();
+          return false;
+          break;
+      }
+    });
 
     local.keyTimeShowSpan = $("#keyTimeShow"),
     local.nameList = $('#nameList');
@@ -137,7 +148,7 @@
     site.qTips.push({ selector: '#qTipSearch', title: 'Searching for Names', text: 'Type the first few letters of desired name(s). A quick search will be done, followed by a more thorough search when the green bar touches the bottom. Type more letters or press Esc to cancel the second search.' });
 
     site.onbroadcast(site.broadcastCode.personSaved, newPersonSaved);
-    site.onbroadcast(site.broadcastCode.personNameChanging, function(fullname) {
+    site.onbroadcast(site.broadcastCode.personNameChanging, function(ev, fullname) {
       local.inputField.val(fullname);
       searchTextChanged();
     });
@@ -764,7 +775,7 @@ add to this ballot
 
     if (!fromQuickSearch) {
       resetKeyTimeShow();
-      local.peopleHelper.AddGroupToChosenNames(local.People);
+      //local.peopleHelper.AddGroupToLocalNames(local.People);
     }
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
@@ -878,7 +889,7 @@ add to this ballot
       ineligible: selectedPersonLi.data('ineligible')
     });
 
-    local.peopleHelper.AddToChosenNames(personId);
+    //local.peopleHelper.AddToLocalNames(personId);
 
     showVotes();
 
@@ -936,7 +947,6 @@ add to this ballot
         this.Display = this.name;
       }
 
-      // local.peopleHelper.AddToChosenNames(this.pid); -- don't have full details, can't load
       num++;
     });
     return votes;
@@ -970,8 +980,10 @@ add to this ballot
 
   var prepareReasons = function (onlyGroup) {
     var html = [
-          '<option value="-1">Add new name (including spoiled)...</option>',
-          '<option value="0">Select a reason...</option>'
+          '<option value="0">Select a reason...</option>',
+          '<optgroup label="Name not in the List">',
+          '<option value="-1">Add new name (including spoiled)</option>',
+          '</optgroup>'
     ];
     var group = '';
     $.each(publicInterface.invalidReasons, function () {

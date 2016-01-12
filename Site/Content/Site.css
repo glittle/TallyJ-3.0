@@ -4566,9 +4566,10 @@ body.AuthGuest .ElectionState ol li.General {
   display: none;
 }
 .PullInstructionsHandle {
-  color: #5E99D5;
+  color: #77BBFF;
   cursor: pointer;
   font-size: 90%;
+  clear: both;
   font-style: italic;
 }
 .PullInstructionsHandle .IfClosed {
@@ -4580,11 +4581,11 @@ body.AuthGuest .ElectionState ol li.General {
 .PullInstructionsHandle .IfOpen {
   display: inline-block;
 }
-.PullInstructionsHandle.Closed .IfOpen {
-  display: none;
-}
 .PullInstructionsHandle.Closed {
   margin-bottom: 10px;
+}
+.PullInstructionsHandle.Closed .IfOpen {
+  display: none;
 }
 .Clear {
   clear: both;
@@ -4621,10 +4622,7 @@ body.AuthGuest .ElectionState ol li.General {
 .CurrentInfo {
   background: #ccffbe;
   font-size: 10pt;
-  position: absolute;
-  left: 76px;
-  width: 849px;
-  top: 0;
+  margin: -30px 0 0 56px;
   padding: 1px 30px 2px 9px;
   border-top: none;
   border-bottom-left-radius: 6px;

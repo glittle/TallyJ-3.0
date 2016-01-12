@@ -11,33 +11,45 @@
 }
 
 .Names {
-   -webkit-column-count: 3;
-      -moz-column-count: 3;
-           column-count: 3;
+    -webkit-column-gap: 20px;
+    -moz-column-gap: 20px;
+    column-gap: 20px;
+    
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
 
-   -webkit-column-gap: 20px;
-      -moz-column-gap: 20px;
-           column-gap: 20px;
-}
-
-.Names div {
-    border-top: dotted 1px #ccc;
-    clear: both;
-    white-space: nowrap;
-}
-.Names div span {
-    white-space: normal;
-    display: inline-block;
-}
-.Names div b {
-        width: 60px;
-        text-align: center;
-        display: inline-block;
+    -moz-column-rule: 1px solid #ccc;
+    -webkit-column-rule: 1px solid #ccc;
+    column-rule: 1px solid #ccc;
 }
 
-    .Names div:hover {
-        background-color: #ddd;
+    .Names.Col3 {
+        -webkit-column-count: 3;
+        -moz-column-count: 3;
+        column-count: 3;
     }
+
+    .Names div {
+        border-top: dotted 1px #ccc;
+        clear: both;
+        white-space: nowrap;
+    }
+
+        .Names div span {
+            white-space: normal;
+            display: inline-block;
+        }
+
+        .Names div b {
+            width: 60px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .Names div:hover {
+            background-color: #ddd;
+        }
 
 .When {
     text-align: right;
@@ -59,9 +71,6 @@
     margin: 25px 0 0 0;
 }
 
-.Names {
-}
-
 h3 {
     margin: 0;
 }
@@ -76,16 +85,17 @@ h3 {
 }
 
 @media only screen and (max-width: 800px) {
-    .Names {
-       -webkit-column-count: 2;
-          -moz-column-count: 2;
-               column-count: 2;
+    .Names.Col3 {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
     }
 }
+
 @media only screen and (max-width: 600px) {
-    .Names {
-       -webkit-column-count: 1;
-          -moz-column-count: 1;
-               column-count: 1;
+    .Names.Col3 {
+        -webkit-column-count: 1;
+        -moz-column-count: 1;
+        column-count: 1;
     }
 }

@@ -1,10 +1,12 @@
 ﻿var HomeIndexPage = function () {
-//  var local = {
-//    uploader: null
-//  };
-  var clearElectionRelatedStorageItems = function() {
+  //  var local = {
+  //    uploader: null
+  //  };
+  var clearElectionRelatedStorageItems = function () {
     for (var key in localStorage) {
-      if (key.substr(0, 11) == 'chosenName_') {
+      if (key.substr(0, 5) == 'name_') {
+        localStorage.removeItem(key);
+      } else if (key == 'ActiveUploadRowId') {
         localStorage.removeItem(key);
       }
     }
@@ -13,8 +15,6 @@
   var preparePage = function () {
     $(document).on('click', '.btnSelectElection', null, selectElection);
 
-    clearElectionRelatedStorageItems();
-    
     showElections(publicInterface.elections);
 
     if (!publicInterface.isGuest) {
@@ -191,12 +191,15 @@
     ShowStatusDisplay("Opening election...");
 
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
+
+    clearElectionRelatedStorageItems();
+
   };
 
   var afterSelectElection = function (info) {
-//    if (info.Pulse) {
-//      ProcessPulseResult(info.Pulse);
-//    }
+    //    if (info.Pulse) {
+    //      ProcessPulseResult(info.Pulse);
+    //    }
     ResetStatusDisplay();
 
     if (info.Selected) {
@@ -326,32 +329,32 @@
     LogMessage(name);
   };
 
-//  var copyElection = function () {
-//    if (publicInterface.isGuest) return;
-//
-//    var btn = $(this);
-//    var form =
-//        {
-//          guid: btn.parents('.Election').data('guid')
-//        };
-//
-//    if (!confirm('Are you sure you want to make a new election based on this one?')) {
-//      return;
-//    }
-//
-//    CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
-//
-//      if (info.Success) {
-//        location.href = '.';
-//        return;
-//      }
-//
-//      alert(info.Message);
-//
-//      site.heartbeatActive = true;
-//      ActivateHeartbeat(true);
-//    });
-//  };
+  //  var copyElection = function () {
+  //    if (publicInterface.isGuest) return;
+  //
+  //    var btn = $(this);
+  //    var form =
+  //        {
+  //          guid: btn.parents('.Election').data('guid')
+  //        };
+  //
+  //    if (!confirm('Are you sure you want to make a new election based on this one?')) {
+  //      return;
+  //    }
+  //
+  //    CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
+  //
+  //      if (info.Success) {
+  //        location.href = '.';
+  //        return;
+  //      }
+  //
+  //      alert(info.Message);
+  //
+  //      site.heartbeatActive = true;
+  //      ActivateHeartbeat(true);
+  //    });
+  //  };
 
   var scrollToMe = function (nameDiv) {
     var target = $(nameDiv);

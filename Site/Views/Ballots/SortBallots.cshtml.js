@@ -102,6 +102,7 @@
 
   var processBallots = function (ballots) {
     local.ballots = [];
+    var ThresholdFor3Columns = 20;
 
     for (var i = 0; i < ballots.length; i++) {
       var ballot = ballots[i];
@@ -119,6 +120,8 @@
     var ballotList = '<div data-time="{SortTime}" id="B_{PersonId}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
     host.append('<div>{^0}<h3>Envelopes: {1}</h3><div class=Names>{^2}</div></div>'.filledWith(
         local.sortSelector, local.ballots.length, ballotList));
+
+    $('#lists .Names').toggleClass('Col3', local.ballots.length > ThresholdFor3Columns)
 
     if (local.showingNames) {
       $('.Names').fadeIn();

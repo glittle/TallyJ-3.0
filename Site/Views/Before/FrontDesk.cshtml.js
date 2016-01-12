@@ -149,8 +149,6 @@
     if (!current.length) {
       return;
     }
-    LogMessage(current.offset().top);
-    LogMessage(local.headerSpace)
     $('#selectorTip').css('top', current.offset().top - local.headerSpace - 40);
     $('#Main').addClass('InSelection');
   }
