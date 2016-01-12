@@ -53,15 +53,21 @@ namespace TallyJ.Code
       }
 
       var info = new NameValueCollection();
-      info["value1"] = UserSession.LoginId + "/" + HttpContext.Current.Request.Url.Host;
+      info["value1"] = UserSession.LoginId + " / " + HttpContext.Current.Request.Url.Host + " / " + Environment.MachineName;
       info["value2"] = UserSession.CurrentElectionName;
       info["value3"] = message;
 
       var url = "https://maker.ifttt.com/trigger/{0}/with/key/{1}".FilledWith("TallyJ", iftttKey);
 
-      using (var client = new WebClient())
+      using (var client = new WebClientWithTimeout(1000))
       {
-        var response = client.UploadValues(url, info);
+        try
+        {
+          var response = client.UploadValues(url, info);
+        }
+        catch (Exception) {
+          // ignore if we can't send to remote log
+        }
       }
     }
 
@@ -71,6 +77,19 @@ namespace TallyJ.Code
       logItem.AsOf = DateTime.Now;
       db.C_Log.Add(logItem);
       db.SaveChanges();
+    }
+  }
+  public class WebClientWithTimeout : WebClient {
+    public WebClientWithTimeout(int timeout) {
+      Timeout = timeout;
+    }
+    public int Timeout { get; set; }
+
+    protected override WebRequest GetWebRequest(Uri address)
+    {
+      var request = base.GetWebRequest(address);
+      request.Timeout = Timeout;
+      return request;
     }
   }
 }
