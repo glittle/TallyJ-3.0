@@ -65,7 +65,7 @@ namespace TallyJ.EF
       const string template = "<option value=\"{0}\">{1}</option>";
       var listing = CachedDict.OrderBy(kvp => kvp.Value.Name).Select(kvp => template.FilledWith(kvp.Key, kvp.Value.Name)).JoinedAsString();
       return listing
-        .DefaultTo(template.FilledWith(0, "(Sorry, no elections are active right now.)"));
+        .DefaultTo(template.FilledWith(0, "(No elections are active right now.)"));
     }
 
   }
