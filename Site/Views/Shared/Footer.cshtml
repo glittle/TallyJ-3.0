@@ -1,6 +1,7 @@
-﻿<footer>
+﻿@using TallyJ.Code.Session
+<footer>
   <div class="content-wrapper">
-    <div class="copyright" title="Running on @Environment.MachineName">
+    <div class="copyright" title="Running on @Environment.MachineName - @UserSession.CurrentElectionGuid">
       &copy; @DateTime.Now.Year Glen Little
     </div>
     <div class="float-right">

@@ -31,6 +31,8 @@ namespace TallyJ.CoreModels.ExportImport
     private XmlElement _xmlRoot;
     private ImportHub _hub;
     private List<Person> _people;
+    private Dictionary<Location, XmlElement> _locationsToProcess;
+    private Guid _defaultLocationGuid;
 
     public JsonResult Import(HttpPostedFileBase file)
     {
@@ -115,8 +117,9 @@ namespace TallyJ.CoreModels.ExportImport
     private bool LoadXmlToDatabase()
     {
       _guidMap = new Dictionary<Guid, Guid>();
+      _locationsToProcess = new Dictionary<Location, XmlElement>();
       _hub = new ImportHub();
-      var start = new DateTime();
+      var start = DateTime.Now;
       //      using (var transaction = new TransactionScope())
       {
         try
@@ -142,9 +145,11 @@ namespace TallyJ.CoreModels.ExportImport
 
           LoadTellers();
 
+          LoadLocations();
+
           LoadPeople();
 
-          LoadLocationsEtc();
+          LoadBallots();
 
           LoadResultInfo();
 
@@ -195,18 +200,20 @@ namespace TallyJ.CoreModels.ExportImport
           = Guid.NewGuid();
 
       var newName = _election.Name;
-      var matching = Db.Election.Where(e => e.Name == newName || e.Name.StartsWith(newName)).ToList();
-      if (matching.Any())
+      var matchingNums = Db.Election
+        .Where(e => e.Name == newName || e.Name.StartsWith(newName))
+        .ToList()
+        .Select(e => e.Name.Replace(newName, "").Split(' ').Last().AsInt());
+      if (matchingNums.Any())
       {
-        if (matching.All(e => e.Name != newName))
+        if (matchingNums.All(n => n != 0))
         {
           // don't need to rename
         }
         else
         {
-          var last = matching.OrderBy(e => e.Name).Last();
-          var num = last.Name.Replace(newName, "").Split(' ').Last().AsInt();
-          _election.Name = string.Format("{0} - {1}", newName, num + 1);
+          var last = matchingNums.Max(n => n);
+          _election.Name = string.Format("{0} - {1}", newName, last + 1);
         }
       }
 
@@ -263,6 +270,50 @@ namespace TallyJ.CoreModels.ExportImport
       //Db.Teller.Add(teller);
     }
 
+    private void LoadLocations()
+    {
+      var locationsXml = _xmlRoot.SelectNodes("t:location", _nsm);
+
+      if (locationsXml == null || locationsXml.Count == 0)
+      {
+        throw new LoaderException("No locations in the file");
+      }
+
+      var toLoad = new List<Location>();
+      foreach (XmlElement locationXml in locationsXml)
+      {
+        LoadLocation(locationXml, toLoad);
+      }
+      Db.BulkInsert(toLoad);
+    }
+
+    private void LoadLocation(XmlElement locationXml, List<Location> locations)
+    {
+      var location = new Location();
+      locations.Add(location);
+
+      locationXml.CopyAttributeValuesTo(location);
+
+      // reset Guid to a new guid
+      // reset Guid to a new guid
+      var oldGuid = location.LocationGuid;
+      var newGuid = Guid.NewGuid();
+      location.LocationGuid = newGuid;
+      if (oldGuid != Guid.Empty)
+      {
+        _guidMap.Add(oldGuid, newGuid);
+      }
+
+      location.ElectionGuid = _electionGuid;
+
+      if (_defaultLocationGuid == Guid.Empty) {
+        _defaultLocationGuid = location.LocationGuid;
+      }
+
+      _locationsToProcess.Add(location, locationXml);
+    }
+
+
     private void LoadPeople()
     {
       var peopleXml = _xmlRoot.SelectNodes("t:person", _nsm);
@@ -301,109 +352,37 @@ namespace TallyJ.CoreModels.ExportImport
       people.Add(person);
       personXml.CopyAttributeValuesTo(person);
 
+      personXml.CopyAttributeValueTo("TellerAtKeyboard", person, p => person.Teller1);
+      personXml.CopyAttributeValueTo("TellerAssisting", person, p => person.Teller2);
+
       // reset Guid to a new guid
       var oldGuid = person.PersonGuid;
       var newGuid = Guid.NewGuid();
       person.PersonGuid = newGuid;
       _guidMap.Add(oldGuid, newGuid);
 
+      // pre version 2.3.6, the export did not include the Location's Guid, so we cannot map back to it
+      // if missing, map to first location
+      UpdateGuidFromMapping(person, o => o.VotingLocationGuid, _defaultLocationGuid);
+
       person.ElectionGuid = _electionGuid;
 
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
     }
-
-    private void LoadResultInfo()
+    private void LoadBallots()
     {
-      var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
-      if (nodes != null)
+      foreach (var kvp in _locationsToProcess)
       {
-        var toLoad = new List<ResultSummary>();
-        foreach (XmlElement element in nodes)
-        {
-          var resultSummary = new ResultSummary();
-          element.CopyAttributeValuesTo(resultSummary);
-          resultSummary.ElectionGuid = _electionGuid;
-          toLoad.Add(resultSummary);
-        }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} summar{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("ies", "y")));
-      }
-
-      nodes = _xmlRoot.SelectNodes("t:result", _nsm);
-      if (nodes != null)
-      {
-        var toLoad = new List<EF.Result>();
-        foreach (XmlElement element in nodes)
-        {
-          var result = new EF.Result();
-          element.CopyAttributeValuesTo(result);
-          result.ElectionGuid = _electionGuid;
-          UpdateGuidFromMapping(result, v => v.PersonGuid);
-          toLoad.Add(result);
-        }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
-      }
-
-      nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
-      if (nodes != null)
-      {
-        var toLoad = new List<ResultTie>();
-        foreach (XmlElement element in nodes)
-        {
-          var resultTie = new ResultTie();
-          element.CopyAttributeValuesTo(resultTie);
-          resultTie.ElectionGuid = _electionGuid;
-          toLoad.Add(resultTie);
-        }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+        LoadBallots(kvp.Value, kvp.Key);
       }
     }
 
-    private void LoadLocationsEtc()
+    private void LoadBallots(XmlElement locationXml, Location location)
     {
-      var locationsXml = _xmlRoot.SelectNodes("t:location", _nsm);
-
-      if (locationsXml == null || locationsXml.Count == 0)
-      {
-        throw new LoaderException("No locations in the file");
-      }
-
-      foreach (XmlElement locationXml in locationsXml)
-      {
-        LoadLocationEtc(locationXml);
-      }
-    }
-
-    private void LoadLocationEtc(XmlElement locationXml)
-    {
-      var location = new Location();
-      locationXml.CopyAttributeValuesTo(location);
-
-      // reset Guid to a new guid
-      var newGuid = Guid.NewGuid();
-
-      var locationGuid
-        = location.LocationGuid
-        = newGuid;
-      location.ElectionGuid = _electionGuid;
-
-      Db.BulkInsert(new[] { location });
-
       _hub.LoaderStatus("Loading for '" + location.Name + "'...");
 
-      //      var computersXml = locationXml.SelectNodes("t:computer", _nsm);
-      //
-      //      if (computersXml != null)
-      //      {
-      //        foreach (XmlElement computerXml in computersXml)
-      //        {
-      //          LoadComputer(computerXml, locationGuid);
-      //        }
-      //        Db.SaveChanges();
-      //      }
+      var locationGuid = location.LocationGuid;
 
       var ballotsXml = locationXml.SelectNodes("t:ballot", _nsm);
       if (ballotsXml != null)
@@ -468,14 +447,8 @@ namespace TallyJ.CoreModels.ExportImport
 
       ballotXml.CopyAttributeValuesTo(ballot);
 
-      // reset Guid to a new guid
       ballot.BallotGuid = Guid.NewGuid();
       ballot.LocationGuid = locationGuid;
-      //      UpdateGuidFromMapping(ballot, b => b.Teller2);
-      //      UpdateGuidFromMapping(ballot, b => b.Teller1);
-
-      //Db.Ballot.Add(ballot);
-      //Db.SaveChanges();
 
       var votesXml = ballotXml.SelectNodes("t:vote", _nsm);
       if (votesXml != null)
@@ -498,7 +471,7 @@ namespace TallyJ.CoreModels.ExportImport
 
       vote.PositionOnBallot = positionOnBallot;
       vote.BallotGuid = ballotGuid;
-      UpdateGuidFromMapping(vote, v => v.PersonGuid);
+      UpdateGuidFromMapping(vote, v => v.PersonGuid, Guid.Empty);
 
       if (vote.PersonGuid.AsGuid().HasContent())
       {
@@ -512,6 +485,56 @@ namespace TallyJ.CoreModels.ExportImport
       //Db.Vote.Add(vote);
     }
 
+    private void LoadResultInfo()
+    {
+      var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
+      if (nodes != null)
+      {
+        var toLoad = new List<ResultSummary>();
+        foreach (XmlElement element in nodes)
+        {
+          var resultSummary = new ResultSummary();
+          element.CopyAttributeValuesTo(resultSummary);
+          resultSummary.ElectionGuid = _electionGuid;
+          toLoad.Add(resultSummary);
+        }
+        Db.BulkInsert(toLoad);
+        _hub.LoaderStatus("Loaded {0} summar{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("ies", "y")));
+      }
+
+      nodes = _xmlRoot.SelectNodes("t:result", _nsm);
+      if (nodes != null)
+      {
+        var toLoad = new List<EF.Result>();
+        foreach (XmlElement element in nodes)
+        {
+          var result = new EF.Result();
+          element.CopyAttributeValuesTo(result);
+          result.ElectionGuid = _electionGuid;
+          UpdateGuidFromMapping(result, v => v.PersonGuid, Guid.Empty);
+          toLoad.Add(result);
+        }
+        Db.BulkInsert(toLoad);
+        _hub.LoaderStatus("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+      }
+
+      nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
+      if (nodes != null)
+      {
+        var toLoad = new List<ResultTie>();
+        foreach (XmlElement element in nodes)
+        {
+          var resultTie = new ResultTie();
+          element.CopyAttributeValuesTo(resultTie);
+          resultTie.ElectionGuid = _electionGuid;
+          toLoad.Add(resultTie);
+        }
+        Db.BulkInsert(toLoad);
+        _hub.LoaderStatus("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+      }
+    }
+
+
     private void LoadLog(XmlElement logXml, Guid locationGuid, List<C_Log> logs)
     {
       var log = new C_Log();
@@ -524,7 +547,7 @@ namespace TallyJ.CoreModels.ExportImport
       //Db.C_Log.Add(log);
     }
 
-    private void UpdateGuidFromMapping<T, T2>(T obj, Expression<Func<T, T2>> action)
+    private void UpdateGuidFromMapping<T, T2>(T obj, Expression<Func<T, T2>> action, Guid fallBack)
     {
       var prop = ((MemberExpression)action.Body).Member as PropertyInfo;
       var oldValue = prop.GetValue(obj, null) as Guid?;
@@ -536,6 +559,11 @@ namespace TallyJ.CoreModels.ExportImport
         {
           var value = _guidMap[oldGuid];
           prop.SetValue(obj, value, null);
+        }
+        else if (fallBack != Guid.Empty) {
+          // incoming XML had a value, but we can't map it
+          // pre 2.3.6, Locations did not export their Guid, so the voting location was lost
+          prop.SetValue(obj, fallBack, null);
         }
         else
         {

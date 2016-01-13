@@ -14,11 +14,9 @@
     -webkit-column-gap: 20px;
     -moz-column-gap: 20px;
     column-gap: 20px;
-    
     -webkit-column-count: 2;
     -moz-column-count: 2;
     column-count: 2;
-
     -moz-column-rule: 1px solid #ccc;
     -webkit-column-rule: 1px solid #ccc;
     column-rule: 1px solid #ccc;
@@ -31,19 +29,24 @@
     }
 
     .Names div {
-        border-top: dotted 1px #ccc;
-        clear: both;
+        border: dotted 1px #ccc;
+        border-left: none;
+        position: relative;
+        border-right: none;
+        margin-bottom: -1px;
+        padding: 1px 0;
         white-space: nowrap;
     }
 
         .Names div span {
-            white-space: normal;
+            white-space: nowrap;
             display: inline-block;
         }
 
         .Names div b {
-            width: 60px;
-            text-align: center;
+            width: 40px;
+            text-align: right;
+            padding-right: 10px;
             display: inline-block;
         }
 
@@ -52,9 +55,8 @@
         }
 
 .When {
-    text-align: right;
-    float: right;
-    vertical-align: top;
+    position: absolute;
+    right: 0;
 }
 
 .ui-icon {

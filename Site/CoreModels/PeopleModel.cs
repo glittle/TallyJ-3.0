@@ -413,9 +413,9 @@ namespace TallyJ.CoreModels
         })
         .ToList();
 
-      var location = ContextItems.LocationModel.HasLocations && forLocationGuid.HasContent()
-        ? new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
-        : new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
+      //var location = ContextItems.LocationModel.HasLocations && forLocationGuid.HasContent()
+      //  ? new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
+      //  : new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
 
       //      if (location.BallotsCollected.AsInt() == 0)
       //      {

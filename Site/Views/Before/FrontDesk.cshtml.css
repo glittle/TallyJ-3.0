@@ -19,6 +19,9 @@
 .Voter.KeyMatch {
   background-color: #ffff99;
 }
+.Voter b {
+  margin-left: 5px;
+}
 #selectorTip {
   display: none;
   position: absolute;
@@ -43,9 +46,9 @@
   cursor: pointer;
 }
 .Env {
-  width: 16px;
+  width: 27px;
   display: inline-block;
-  text-align: center;
+  text-align: left;
   font-weight: bold;
   color: #876287;
 }

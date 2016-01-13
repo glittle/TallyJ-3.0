@@ -202,6 +202,15 @@ namespace TallyJ.Code
       return changed > 0;
     }
 
+    public static void CopyAttributeValueTo<T,T2>(this XmlElement input, string attrName, T obj, Expression<Func<T, T2>> action) {
+      var value = input.GetAttribute(attrName);
+      if (value == "") {
+        return;
+      }
+      var prop = ((MemberExpression)action.Body).Member as PropertyInfo;
+      prop.SetValue(obj, value, null);
+    }
+
     /// <summary>
     ///     Set the value of this property, as an object.
     /// </summary>

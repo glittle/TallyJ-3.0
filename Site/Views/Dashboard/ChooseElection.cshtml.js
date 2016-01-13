@@ -121,7 +121,8 @@
     ShowStatusDisplay("Loading election...");
 
     $('#loadingLog').show();
-    $('#log, #tempLog').html('');
+    $('#log').html('');
+    $('#tempLog').html('Loading');
 
     var form = $('#formLoadFile');
     var frameId = 'tempUploadFrame';
