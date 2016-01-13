@@ -661,10 +661,12 @@ namespace TallyJ.CoreModels
       results.ForEach(delegate (Result r)
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
-        r.IsTieResolved = r.TieBreakCount.AsInt() > 0
-                          && !results.Any(r2 => r2.C_RowId != r.C_RowId
-                                                && r2.TieBreakCount == r.TieBreakCount
-                                                && (r2.Section != r.Section || r.Section == ResultHelper.Section.Extra));
+
+      var stillTied = results.Any(other => other != r
+                                  && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
+                                  && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
+                                  );
+        r.IsTieResolved = !stillTied;
       });
 
       if (groupInOther && (groupInTop || groupInExtra))
