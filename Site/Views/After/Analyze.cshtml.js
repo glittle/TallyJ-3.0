@@ -39,12 +39,14 @@
     tieResultsRowTemplate.html('');
 
     if (publicInterface.results) {
+      $('#InitialMsg').text('Loading results...');
       showInfo(publicInterface.results, true);
     }
     else {
-      setTimeout(function () {
-        runAnalysis(true);
-      }, 0);
+      $('#btnRefresh').show();
+      //setTimeout(function () {
+      //  runAnalysis(true);
+      //}, 0);
     }
   };
 
@@ -52,14 +54,14 @@
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
     $('body').removeClass('notReady');
     $('.LeftHalf, .RightHalf').fadeOut();
-    $('#InitialMsg').text('Analyzing all ballots...').show();
+    $('#InitialMsg').text('Analyzing all ballots...').removeClass('bad').show();
 
     CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
   };
 
   var showInfo = function (info, firstLoad) {
     if (info.Interrupted) {
-      $('#InitialMsg').text('Analysis interrupted. Please try again while tellers are not actively entering ballots.');
+      $('#InitialMsg').addClass('bad').text('Analysis interrupted. Please try again while tellers are not actively entering ballots.');
       return;
     }
 
@@ -73,6 +75,7 @@
     $('#InitialMsg').hide();
     $('#tieResults').hide();
     $('#HasCloseVote').hide();
+    $('#btnRefresh').text('Re-run Analysis').show();
 
     ResetStatusDisplay();
 

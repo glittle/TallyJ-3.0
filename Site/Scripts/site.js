@@ -523,8 +523,8 @@ function HasErrors(data) {
     return true;
   }
   if (/^Exception:/.test(data)) {
-    LogMessage(data);
     ShowStatusFailed('Server Error: ' + data.substr(0, 60) + '...');
+    LogMessage(data);
     return true;
   }
   if (/Error\:/.test(data)) {

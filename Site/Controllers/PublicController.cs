@@ -82,12 +82,16 @@ namespace TallyJ.Controllers
       return OpenElections();
     }
 
-    [Authorize]
     public void MainHub(string connId, string electionGuid)
     {
-      // likely redundant - can remove when settled
-      AssertAtRuntime.That(UserSession.CurrentElectionGuid != Guid.Empty, "not logged in");
-      AssertAtRuntime.That(electionGuid.AsGuid() != Guid.Empty, "unknown election");
+      // removed [Authorize]... just ignore if we don't like the call
+
+      if (UserSession.CurrentElectionGuid == Guid.Empty) {
+        return;
+      }
+      if (electionGuid.AsGuid() == Guid.Empty) {
+        return;
+      }
 
       new MainHub().Join(connId);
     }

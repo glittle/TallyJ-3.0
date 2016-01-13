@@ -5,6 +5,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.ExportImport;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -54,6 +55,14 @@ namespace TallyJ.Controllers
       var model = new ElectionModel();
       return model.Create();
     }
+
+    [ForAuthenticatedTeller]
+    public JsonResult ImportHub(string connId)
+    {
+      new ImportHub().Join(connId);
+      return true.AsJsonResult();
+    }
+
 
     [ForAuthenticatedTeller]
     public ActionResult ExportElection(Guid guid)

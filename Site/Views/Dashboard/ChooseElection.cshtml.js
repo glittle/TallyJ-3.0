@@ -83,13 +83,34 @@
       //                showMessage: function(message) { ShowStatusFailed(message); }
       //            });
 
+      connectToImportHub();
 
     } else {
       $('.btnExport, .btnDelete, #btnLoad, #btnCreate').hide();
     }
-
-
   };
+
+  var connectToImportHub = function () {
+    var hub = $.connection.importHubCore;
+
+    hub.client.loaderStatus = function (msg, isTemp) {
+      if (isTemp) {
+        $('#tempLog').html(msg);
+      } else {
+        $('#tempLog').html('');
+        $('#log').append('<div>' + msg + '</div>');
+      }
+    };
+
+    activateHub(hub, function () {
+      LogMessage('Join import Hub');
+      CallAjaxHandler(chooseElectionPage.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
+
+      });
+    });
+  };
+
+
 
   var upload2 = function () {
     var $input = $('#loadFile');
@@ -98,6 +119,9 @@
     }
 
     ShowStatusDisplay("Loading election...");
+
+    $('#loadingLog').show();
+    $('#log, #tempLog').html('');
 
     var form = $('#formLoadFile');
     var frameId = 'tempUploadFrame';
@@ -275,6 +299,7 @@
     var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
     iframe.ready(function () {
       setTimeout(function () {
+        ResetStatusDisplay();
         btn.removeClass('active');
       }, 1000);
     });

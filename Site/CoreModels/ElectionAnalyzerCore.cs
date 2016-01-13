@@ -739,7 +739,7 @@ namespace TallyJ.CoreModels
 
       result.RankInExtra = null;
 
-      result.Section = null;
+      result.Section = ResultHelper.Section.Top;
 
       // result.TieBreakCount = null;  -- don't clear this, as it may be entered after tie-break vote is held
 

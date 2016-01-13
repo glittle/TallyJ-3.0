@@ -666,8 +666,10 @@ namespace TallyJ.CoreModels
       {
         if (election.ListedForPublicAsOf.HasValue)
         {
-          Db.Election.Attach(election);
-
+          if (!Db.Election.Local.Any(e => e.ElectionGuid == election.ElectionGuid))
+          {
+            Db.Election.Attach(election);
+          }
           election.ListedForPublicAsOf = null;
 
           Db.SaveChanges();

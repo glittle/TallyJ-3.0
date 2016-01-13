@@ -30,6 +30,11 @@ namespace TallyJ.CoreModels.Hubs
     {
       CoreHub.Clients.Group(HubNameForPublic).ImportInfo(linesProcessed, peopleAdded);
     }
+
+    public void LoaderStatus(string msg, bool msgIsTemp = false)
+    {
+      CoreHub.Clients.Group(HubNameForPublic).LoaderStatus(msg, msgIsTemp);
+    }
   }
 
   public class ImportHubCore : Hub
