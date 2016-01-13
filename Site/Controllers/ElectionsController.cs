@@ -65,6 +65,13 @@ namespace TallyJ.Controllers
 
 
     [ForAuthenticatedTeller]
+    public JsonResult AnalyzeHub(string connId)
+    {
+      new AnalyzeHub().Join(connId);
+      return true.AsJsonResult();
+    }
+
+    [ForAuthenticatedTeller]
     public ActionResult ExportElection(Guid guid)
     {
       var model = new ElectionExporter(guid);

@@ -115,11 +115,15 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var resultSummaries = _analyzer.ResultSummaries;
+      var localResultSummaryCacher = _analyzer.LocalResultSummaryCacher;
+      localResultSummaryCacher.DropThisCache();
 
+      var resultSummaries = localResultSummaryCacher.AllForThisElection;
+      
       try
       {
-        var resultSummaryFinal = resultSummaries.First(rs => rs.ResultType == ResultType.Final);
+        var resultSummaryFinal = resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+
 
         // don't show any details if review is needed
         if (resultSummaryFinal.BallotsNeedingReview != 0)
@@ -231,11 +235,12 @@ namespace TallyJ.CoreModels
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
         };
       }
-      catch (Exception)
+      catch (Exception ex)
       {
         return new
         {
-          Interrupted = true
+          Interrupted = true,
+          Msg = ex.GetAllMsgs("; ") + "\n" + ex.StackTrace
         };
       }
 
@@ -260,7 +265,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var localResultSummaryCacher = _analyzer.LocalResultSummaryCacher;
+      localResultSummaryCacher.DropThisCache();
+      var summary = localResultSummaryCacher.AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";

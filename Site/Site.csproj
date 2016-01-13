@@ -263,6 +263,7 @@
     <Compile Include="CoreModels\BallotStatusWithSpoilCount.cs" />
     <Compile Include="CoreModels\ElectionStatusSharer.cs" />
     <Compile Include="CoreModels\Helper\ResultType.cs" />
+    <Compile Include="CoreModels\Hubs\AnalyzeHub.cs" />
     <Compile Include="CoreModels\Hubs\ImportHub.cs" />
     <Compile Include="CoreModels\Hubs\RollCallHub.cs" />
     <Compile Include="CoreModels\Hubs\PublicHub.cs" />

@@ -43,17 +43,17 @@ namespace TallyJ.CoreModels.ExportImport
         var success = LoadXmlToDatabase();
 
         return success
-                 ? new Result(_electionGuid).AsJsonResult()
-                 : new Result("(Under construction!)").AsJsonResult();
+                 ? new LoadResult(_electionGuid).AsJsonResult()
+                 : new LoadResult("(Under construction!)").AsJsonResult();
       }
       catch (LoaderException ex)
       {
-        return new Result(ex.GetAllMsgs("\n")).AsJsonResult();
+        return new LoadResult(ex.GetAllMsgs("\n")).AsJsonResult();
       }
       catch (Exception ex)
       {
         // some unexpected exception...
-        return new Result(ex.GetType().Name + ": " + ex.GetAllMsgs("\n")).AsJsonResult();
+        return new LoadResult(ex.GetType().Name + ": " + ex.GetAllMsgs("\n")).AsJsonResult();
       }
     }
 
@@ -558,7 +558,7 @@ namespace TallyJ.CoreModels.ExportImport
 
     #region Nested type: Result
 
-    private class Result
+    private class LoadResult
     {
       public Guid ElectionGuid;
       public string Message;
@@ -566,14 +566,14 @@ namespace TallyJ.CoreModels.ExportImport
       public IEnumerable<object> Elections;
 
       /// <Summary>Failed result</Summary>
-      public Result(string message = "")
+      public LoadResult(string message = "")
       {
         Success = false;
         Message = message;
       }
 
       /// <Summary>Success!</Summary>
-      public Result(Guid electionGuid)
+      public LoadResult(Guid electionGuid)
       {
         Elections = new ElectionsListViewModel().MyElectionsInfo;
         ElectionGuid = electionGuid;

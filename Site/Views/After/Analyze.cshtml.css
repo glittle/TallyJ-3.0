@@ -268,3 +268,11 @@ body.notReady .overallWarning {
 #instructions li {
     line-height: normal;
 }
+
+#loadingLog {
+    background-color: white;
+    margin: 1px auto 0 auto;
+    padding: 3px 10px;
+    width: 50%;
+    display: none;
+}
