@@ -8,7 +8,7 @@
     showingNames: false,
     ballotMethods: [],
     recentUpdates: [],
-    sortSelector: '<select class=sortSelector><option value=Name>Sort by Name</option><option value=Time>Sort by Time</option><option value=Env>Sort by Envelope Number</option></select>'
+    sortSelector: '<select class=sortSelector><option value=Name>Sort by Name</option><option value=Env>Sort by Envelope Number</option></select>'
   };
 
   var preparePage = function () {
@@ -25,7 +25,7 @@
       changeLocation($(this));
     });
     $('#btnRefresh').click(function () {
-      local.currentLocation = '';
+      local.currentLocation = -1;
       changeLocation($('#locations'), true);
     });
 
@@ -94,9 +94,9 @@
   var extend2 = function (ballot) {
     ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
     ballot.EnvInfo = '<b data-num="{EnvNum}">{EnvNum}</b>'.filledWith(ballot);
-    var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
-    ballot.FullTime = time.toString();
-    ballot.SortTime = time.getTime();
+    //var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
+    //ballot.FullTime = time.toString();
+    //ballot.SortTime = time.getTime();
     return ballot;
   }
 
@@ -117,7 +117,7 @@
     var host = $('#lists');
     host.html('');
 
-    var ballotList = '<div data-time="{SortTime}" id="B_{PersonId}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
+    var ballotList = '<div id="B_{PersonId}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
     host.append('<div>{^0}<h3>Envelopes: {1}</h3><div class=Names>{^2}</div></div>'.filledWith(
         local.sortSelector, local.ballots.length, ballotList));
 
@@ -142,9 +142,6 @@
       switch (sortType) {
         case 'Name':
           value = $(a).find('span').eq(0).text();
-          break;
-        case 'Time':
-          value = 0 - +$(a).data('time'); // reverse sort!
           break;
         case 'Env':
           value = +($(a).find('b').data('num') || 0);
@@ -171,8 +168,8 @@
   return publicInterface;
 };
 
-var reconcilePage = ReconcilePageFunc();
+var sortBallotsPage = ReconcilePageFunc();
 
 $(function () {
-  reconcilePage.preparePage();
+  sortBallotsPage.preparePage();
 });

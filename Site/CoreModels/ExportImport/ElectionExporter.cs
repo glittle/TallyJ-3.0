@@ -168,7 +168,7 @@ namespace TallyJ.CoreModels.ExportImport
           location.ContactInfo,
           location.Lat,
           location.Long,
-          //location.LocationGuid,
+          location.LocationGuid,
           //computer = ExportComputer(computers.Where(c => c.LocationGuid == location.LocationGuid)),
           ballot = ExportBallotVotes(ballots.Where(b => b.LocationGuid == location.LocationGuid), votes),
           log = ExportLogs(logs.Where(l => l.LocationGuid == location.LocationGuid))

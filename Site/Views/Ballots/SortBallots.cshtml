@@ -1,10 +1,11 @@
-﻿@using TallyJ.Code.Enumerations
+﻿
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @model PeopleModel
 @{
-  ContextItems.AddJavascriptForPage("pageUrl", "reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("beforeUrl", "reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("pageUrl", "sortBallotsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("beforeUrl", "sortBallotsPage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
 }
 <div class="PullInstructions">
   <ol>
