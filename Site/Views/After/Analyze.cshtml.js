@@ -33,33 +33,66 @@
     settings.invalidsRowTemplate = invalidsBody.html();
     invalidsBody.html('');
 
+    connectToAnalyzeHub();
 
     var tieResultsRowTemplate = $('#tieResultsBody');
     settings.tieResultRowTemplate = tieResultsRowTemplate.html();
     tieResultsRowTemplate.html('');
 
     if (publicInterface.results) {
+      $('#InitialMsg').text('Loading results...');
       showInfo(publicInterface.results, true);
     }
     else {
-      setTimeout(function () {
-        runAnalysis(true);
-      }, 0);
+      $('#btnRefresh').show();
+      //setTimeout(function () {
+      //  runAnalysis(true);
+      //}, 0);
     }
   };
+
+
+  var connectToAnalyzeHub = function () {
+    var hub = $.connection.analyzeHubCore;
+
+    hub.client.loadStatus = function (msg, isTemp) {
+      $('#loadingLog').show();
+      if (isTemp) {
+        $('#tempLog').html(msg);
+      } else {
+        $('#tempLog').html('');
+        $('#log').append('<div>' + msg + '</div>');
+      }
+    };
+
+    activateHub(hub, function () {
+      LogMessage('Join analyze Hub');
+      CallAjaxHandler(analyzePage.analyzeHubUrl, { connId: site.signalrConnectionId }, function (info) {
+        LogMessage(info);
+      });
+    });
+  };
+
 
   var runAnalysis = function (firstLoad) {
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
     $('body').removeClass('notReady');
     $('.LeftHalf, .RightHalf').fadeOut();
-    $('#InitialMsg').text('Analyzing all ballots...').show();
+    $('#InitialMsg').text('Analyzing all ballots...').removeClass('bad').show();
+
+    $('#loadingLog').show();
+    $('#log, #tempLog').html('');
+    connectToAnalyzeHub(); // in case it has been lost
 
     CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
   };
 
   var showInfo = function (info, firstLoad) {
+    $('#btnRefresh').text('Re-run Analysis').show();
+
     if (info.Interrupted) {
-      $('#InitialMsg').text('Analysis interrupted. Please try again while tellers are not actively entering ballots.');
+      LogMessage(info.Msg);
+      $('#InitialMsg').addClass('bad').text('Analysis failed. This may happen if tellers are actively entering ballots.');
       return;
     }
 
@@ -70,6 +103,7 @@
 
     settings.info = info;
 
+    $('#loadingLog').hide();
     $('#InitialMsg').hide();
     $('#tieResults').hide();
     $('#HasCloseVote').hide();

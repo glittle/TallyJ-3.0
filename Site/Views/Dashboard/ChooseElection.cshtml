@@ -10,6 +10,7 @@
   var electionsInfo = Model.MyElectionsInfo.ToList();
   ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("importHubUrl", "chooseElectionPage.importHubUrl={0};".FilledWith(@Url.Action("ImportHub", "Elections").QuotedForJavascript()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 @section featured {
@@ -41,6 +42,10 @@
         <label for="loadFile">Load a previous Election from file saved from this page:</label>
         <input id="loadFile" name="loadFile" type="file" />
       </form>
+      <div id="loadingLog">
+        <div id="log"></div>
+        <div id="tempLog"></div>
+      </div>
     </li>
   </ul>
 }

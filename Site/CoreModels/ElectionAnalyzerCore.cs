@@ -9,6 +9,7 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
+using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.CoreModels
 {
@@ -34,10 +35,13 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
+    protected AnalyzeHub _hub;
+    private ResultSummaryCacher _localResultSummaryCacher;
 
     protected ElectionAnalyzerCore()
     {
       Savers = new Savers();
+      _hub = new AnalyzeHub();
     }
 
     protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people,
@@ -53,15 +57,17 @@ namespace TallyJ.CoreModels
       _people = people;
       _ballots = ballots;
       _voteinfos = voteinfos;
-      _votes = voteinfos.Select(vi => new Vote {C_RowId = vi.VoteId}).ToList();
+      _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
       _saveChanges = fakes.SaveChanges;
       IsFaked = true;
+      _hub = new AnalyzeHub();
     }
 
     protected ElectionAnalyzerCore(Election election)
     {
       _election = election;
       Savers = new Savers();
+      _hub = new AnalyzeHub();
     }
 
     public bool IsFaked { get; private set; }
@@ -342,7 +348,15 @@ namespace TallyJ.CoreModels
 
     public List<ResultSummary> ResultSummaries
     {
-      get { return _resultSummaries ?? (_resultSummaries = new ResultSummaryCacher().AllForThisElection); }
+      get { return _resultSummaries ?? (_resultSummaries = LocalResultSummaryCacher.AllForThisElection); }
+    }
+
+    public ResultSummaryCacher LocalResultSummaryCacher
+    {
+      get
+      {
+        return _localResultSummaryCacher ?? (_localResultSummaryCacher = new ResultSummaryCacher());
+      }
     }
 
     /// <Summary>Current VoteInfo records. They are detached, so no updates can be done</Summary>
@@ -353,7 +367,7 @@ namespace TallyJ.CoreModels
         if (_voteinfos != null) return _voteinfos;
 
         return _voteinfos = Votes
-          .JoinMatchingOrNull(People, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new {v, p})
+          .JoinMatchingOrNull(People, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
           .Select(
             g =>
               new VoteInfo(g.v, TargetElection, Ballots.Single(b => b.BallotGuid == g.v.BallotGuid),
@@ -368,12 +382,12 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        if (ResultSummaryFinal != null)
+        if (ResultSummaryFinal != null && ResultSummaryFinal.C_RowId > 0)
         {
           return true;
         }
 
-        ResultSummaryFinal = new ResultSummaryCacher().AllForThisElection
+        ResultSummaryFinal = ResultSummaries
           .FirstOrDefault(rs => rs.ResultType == ResultType.Final);
 
         return ResultSummaryFinal != null;
@@ -385,6 +399,7 @@ namespace TallyJ.CoreModels
 
     public void PrepareForAnalysis()
     {
+      _hub.LoadStatus("Starting Analysis");
       var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
@@ -398,25 +413,29 @@ namespace TallyJ.CoreModels
       RefreshBallotStatuses();
 
       // attach results, but don't save yet
-      Results.ForEach(delegate(Result result)
+      Results.ForEach(delegate (Result result)
       {
         Savers.ResultSaver(DbAction.Attach, result);
         InitializeSomeProperties(result);
       });
 
       PrepareResultSummaries();
+
       FillResultSummaryCalc();
     }
 
     public void RefreshBallotStatuses()
     {
       // first refresh person vote statuses
+      _hub.LoadStatus("Checking people");
       new PeopleModel().EnsureFlagsAreRight(People, Savers.PersonSaver);
 
       // then refresh all votes
+      _hub.LoadStatus("Checking votes");
       VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, Savers.VoteSaver);
 
       // then refresh all ballots
+      _hub.LoadStatus("Checking ballots");
       var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
     }
@@ -430,6 +449,8 @@ namespace TallyJ.CoreModels
       {
         return;
       }
+
+      _hub.LoadStatus("Checking summary");
 
       // check each on on its own
       if (ResultSummaryCalc == null)
@@ -466,6 +487,8 @@ namespace TallyJ.CoreModels
 
     public void FinalizeSummaries()
     {
+      _hub.LoadStatus("Finalizing");
+
       CombineCalcAndManualSummaries();
 
       ResultSummaryFinal.UseOnReports = ResultSummaryFinal.BallotsNeedingReview == 0
@@ -479,10 +502,18 @@ namespace TallyJ.CoreModels
 
     protected void FinalizeResultsAndTies()
     {
+      _hub.LoadStatus("Checking for ties");
+
       // remove any results no longer needed
       Results.Where(r => r.VoteCount.AsInt() == 0)
         .ToList()
-        .ForEach(r => Savers.ResultSaver(DbAction.AttachAndRemove, r));
+        .ForEach(r =>
+        {
+          Savers.ResultSaver(DbAction.AttachAndRemove, r);
+          Results.Remove(r);
+        });
+
+      SaveChanges();
 
       // remove any existing Tie info
       if (!IsFaked)
@@ -627,7 +658,7 @@ namespace TallyJ.CoreModels
       var groupOnlyInTop = groupInTop && !(groupInExtra || groupInOther);
       var groupOnlyInOther = groupInOther && !(groupInTop || groupInExtra);
 
-      results.ForEach(delegate(Result r)
+      results.ForEach(delegate (Result r)
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
         r.IsTieResolved = r.TieBreakCount.AsInt() > 0
@@ -739,7 +770,7 @@ namespace TallyJ.CoreModels
 
       result.RankInExtra = null;
 
-      result.Section = null;
+      result.Section = "";
 
       // result.TieBreakCount = null;  -- don't clear this, as it may be entered after tie-break vote is held
 

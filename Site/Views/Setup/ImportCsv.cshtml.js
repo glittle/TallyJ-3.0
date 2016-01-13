@@ -355,7 +355,7 @@
 
     activateHub(hub, function () {
       LogMessage('Join import Hub');
-      CallAjaxHandler(publicInterface.controllerUrl + '/ImportHub', { connId: site.signalrConnectionId }, function (info) {
+      CallAjaxHandler(publicInterface.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
 
       });
     });

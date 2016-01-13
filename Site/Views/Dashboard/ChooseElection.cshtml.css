@@ -117,8 +117,16 @@ div.Comment {
     font-style: italic;
     margin: -10px 0px 9px 0px;
 }
+
 li.Comment {
     color: #666;
     font-size: 90%;
     font-style: italic;
+}
+
+#loadingLog {
+    background-color: white;
+    margin: 5px 100px 0 50px;
+    padding: 3px 10px;
+    display: none;
 }

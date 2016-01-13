@@ -2,6 +2,7 @@
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @{
+  ContextItems.AddJavascriptForPage("importHubUrl", "importCsvPage.importHubUrl={0};".FilledWith(@Url.Action("ImportHub", "Elections").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("controllerUrl", "importCsvPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("previous", "importCsvPage.previousFiles={0};".FilledWith(Model.PreviousUploads().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("statusNames", "importCsvPage.statusNames={0};".FilledWith(IneligibleReasonEnum.ReasonNamesForImportPage().SerializedAsJsonString()));

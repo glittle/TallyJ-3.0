@@ -3,18 +3,18 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
 {
-  public class ImportHub
+  public class AnalyzeHub
   {
     private IHubContext _coreHub;
 
     private string HubNameForPublic
     {
-      get { return "Import"; }
+      get { return "Analyze"; }
     }
 
     private IHubContext CoreHub
     {
-      get { return _coreHub ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<ImportHubCore>()); }
+      get { return _coreHub ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<AnalyzeHubCore>()); }
     }
 
     /// <summary>
@@ -26,18 +26,13 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Groups.Add(connectionId, HubNameForPublic);
     }
 
-    public void ImportInfo(int linesProcessed, int peopleAdded)
+    public void LoadStatus(string msg, bool msgIsTemp = false)
     {
-      CoreHub.Clients.Group(HubNameForPublic).ImportInfo(linesProcessed, peopleAdded);
-    }
-
-    public void LoaderStatus(string msg, bool msgIsTemp = false)
-    {
-      CoreHub.Clients.Group(HubNameForPublic).LoaderStatus(msg, msgIsTemp);
+      CoreHub.Clients.Group(HubNameForPublic).LoadStatus(msg, msgIsTemp);
     }
   }
 
-  public class ImportHubCore : Hub
+  public class AnalyzeHubCore : Hub
   {
     // empty class needed for signalR use!!
     // referenced by helper and in JavaScript

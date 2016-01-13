@@ -7,12 +7,17 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("AnalyzeHub", "Elections").QuotedForJavascript()));
 }
 <button type="button" id="btnRefresh" class="btn">
-  Re-run Analysis
+  Start Analysis
 </button>
 <div class="overallWarning">Issues highlighted in red below must be resolved before accurate reports can be made.</div>
 <div id="InitialMsg"></div>
+<div id="loadingLog">
+  <div id="log"></div>
+  <div id="tempLog"></div>
+</div>
 <div class="LeftHalf">
   @*    <div class="float-left">
         <b>Election Status</b> (set by head teller)<br />
