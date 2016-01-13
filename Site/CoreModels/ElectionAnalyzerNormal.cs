@@ -85,7 +85,7 @@ namespace TallyJ.CoreModels
             };
             InitializeSomeProperties(result);
 
-            Savers.ResultSaver(DbAction.Add, result);
+            //Savers.ResultSaver(DbAction.Add, result);
             Results.Add(result);
           }
 

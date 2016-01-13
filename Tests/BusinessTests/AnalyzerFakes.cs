@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 
+using TallyJ.CoreModels.Hubs;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
 using TallyJ.Code;
 using TallyJ.EF;
+using System.Dynamic;
 
 namespace Tests.BusinessTests
 {
@@ -16,6 +18,7 @@ namespace Tests.BusinessTests
       Results = new List<Result>();
       ResultTies = new List<ResultTie>();
       ResultSummaries = new List<ResultSummary>();
+      FakeHub = new FakeHub();
     }
 
     private int _rowCounter;
@@ -33,6 +36,11 @@ namespace Tests.BusinessTests
     public List<ResultTie> ResultTies { get; set; }
     public List<Result> Results { get; set; }
     public List<ResultSummary> ResultSummaries { get; set; }
+
+    public IAnalyzeHub FakeHub
+    {
+      get; set;
+    }
 
     public Result RemoveResult(Result input)
     {
@@ -68,6 +76,14 @@ namespace Tests.BusinessTests
       arg.C_RowId = ++_rowCounter;
       ResultTies.Add(arg);
       return arg;
+    }
+  }
+
+  public class FakeHub : IAnalyzeHub
+  {
+    public void LoadStatus(string msg, bool msgIsTemp = false)
+    {
+      Console.WriteLine(msg);
     }
   }
 }

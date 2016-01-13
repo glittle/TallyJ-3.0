@@ -35,7 +35,7 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
-    protected AnalyzeHub _hub;
+    protected IAnalyzeHub _hub;
     private ResultSummaryCacher _localResultSummaryCacher;
 
     protected ElectionAnalyzerCore()
@@ -60,7 +60,7 @@ namespace TallyJ.CoreModels
       _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
       _saveChanges = fakes.SaveChanges;
       IsFaked = true;
-      _hub = new AnalyzeHub();
+      _hub = fakes.FakeHub;
     }
 
     protected ElectionAnalyzerCore(Election election)
