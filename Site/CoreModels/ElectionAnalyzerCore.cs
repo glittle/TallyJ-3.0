@@ -35,7 +35,7 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
-    protected AnalyzeHub _hub;
+    protected IAnalyzeHub _hub;
     private ResultSummaryCacher _localResultSummaryCacher;
 
     protected ElectionAnalyzerCore()
@@ -60,7 +60,7 @@ namespace TallyJ.CoreModels
       _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
       _saveChanges = fakes.SaveChanges;
       IsFaked = true;
-      _hub = new AnalyzeHub();
+      _hub = fakes.FakeHub;
     }
 
     protected ElectionAnalyzerCore(Election election)
@@ -661,10 +661,12 @@ namespace TallyJ.CoreModels
       results.ForEach(delegate (Result r)
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
-        r.IsTieResolved = r.TieBreakCount.AsInt() > 0
-                          && !results.Any(r2 => r2.C_RowId != r.C_RowId
-                                                && r2.TieBreakCount == r.TieBreakCount
-                                                && (r2.Section != r.Section || r.Section == ResultHelper.Section.Extra));
+
+      var stillTied = results.Any(other => other != r
+                                  && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
+                                  && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
+                                  );
+        r.IsTieResolved = !stillTied;
       });
 
       if (groupInOther && (groupInTop || groupInExtra))

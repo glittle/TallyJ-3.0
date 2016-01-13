@@ -3,7 +3,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
 {
-  public class AnalyzeHub
+  public class AnalyzeHub : IAnalyzeHub
   {
     private IHubContext _coreHub;
 
@@ -36,5 +36,9 @@ namespace TallyJ.CoreModels.Hubs
   {
     // empty class needed for signalR use!!
     // referenced by helper and in JavaScript
+  }
+
+  public interface IAnalyzeHub {
+    void LoadStatus(string msg, bool msgIsTemp = false);
   }
 }
