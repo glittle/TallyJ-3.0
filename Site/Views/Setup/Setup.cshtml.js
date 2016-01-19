@@ -128,7 +128,7 @@
     if (!di.location) {
       di.location = 'your area';
     }
-    var msg = di.longitude ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' about {startingSunsetDesc} on the election day.' : ''
+    var msg = di.longitude ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' at {startingSunsetDesc} on the election day.' : ''
     $('#badiDateIntro').html(msg.filledWith(di));
 
     // found 1st Ridvan for an LSA election?
@@ -145,7 +145,7 @@
       settings.isJalal13 = target;
     }
 
-    var msg = intro + '{bMonthNameAr} ({bMonthMeaning}) {bDay}, {bYear}';
+    var msg = intro + '{bDay} {bMonthNameAr} {bYear}  ({bMonthMeaning})';
     target.html(msg.filledWith(di));
   }
 
