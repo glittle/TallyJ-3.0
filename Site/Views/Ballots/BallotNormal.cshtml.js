@@ -424,7 +424,10 @@ add to this ballot
 
     findAndMarkDups(local.votesList.find('.VoteHost'));
 
-    local.btnDeleteBallot.prop('disabled', votes.length > 0);
+    var disable = votes.length > 0;
+    local.btnDeleteBallot
+      .prop('disabled', disable)
+      .toggleClass('btn-warning', !disable); // only show orange if usable
   };
 
   var findAndMarkDups = function (votes) {
