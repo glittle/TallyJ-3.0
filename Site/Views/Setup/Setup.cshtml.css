@@ -11,7 +11,7 @@
 .badiDate {
     display: block;
     margin: 0 0 0 5px;
-    font-size: 90%;
+    line-height:normal;
 }
 
 .badiDateName {
@@ -20,17 +20,18 @@
 
 .isJalal13 {
     font-weight: bold;
+    color: green;
 }
 
 .showJalal13 {
-    font-size: 90%;
     color: green;
     white-space: nowrap;
-    display: none;
 }
 
     .showJalal13.missing {
         color: red;
+        font-weight: bold;
+        display: block;
     }
 
 .More {
