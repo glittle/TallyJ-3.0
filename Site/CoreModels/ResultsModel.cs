@@ -402,6 +402,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
+      _analyzer.AnalyzeHub.LoadStatus("Starting Analysis from " + UserSession.CurrentComputerCode);
 
       resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
 

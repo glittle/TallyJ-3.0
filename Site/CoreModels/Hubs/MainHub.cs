@@ -16,7 +16,7 @@ namespace TallyJ.CoreModels.Hubs
         var electionGuid = UserSession.CurrentElectionGuid;
         AssertAtRuntime.That(electionGuid != Guid.Empty);
 
-        return electionGuid.ToString();
+        return "Main" +  electionGuid;
       }
     }
 

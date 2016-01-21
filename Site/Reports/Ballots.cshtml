@@ -25,7 +25,8 @@
       var locId = location == null ? 0 : location.C_RowId;
       return new
       {
-        C_BallotCode = locName.HasContent() ? locName + " " + b.C_BallotCode : b.C_BallotCode,
+        C_BallotCode = b.C_BallotCode,
+        Location = locName,
         BallotId = b.C_RowId,
         LocationId = locId,
         b.StatusCode,
@@ -69,7 +70,6 @@
   }
 
   .Ballot {
-    font-size: 10pt;
     margin-top: 3px;
   }
 
@@ -111,7 +111,11 @@
     @foreach (var ballot in data)
 {
   <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "")">
-    <td><a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a> (@ballot.StatusCode)</td>
+    <td>
+      <a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a>
+      <div>@ballot.StatusCode</div>
+      <div>@ballot.Location</div>
+    </td>
     <td>
       @foreach (var vote in ballot.Votes)
       {

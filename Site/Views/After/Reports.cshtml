@@ -6,7 +6,6 @@
   ViewBag.Title = "Reports";
   ViewBag.Message = "Report the results";
 
-  TemplateLoader.RequireTemplates(TemplateLoader.File.ReportTemplates);
   ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 
   var reports = new Dictionary<string, string>

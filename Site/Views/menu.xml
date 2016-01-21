@@ -18,7 +18,7 @@
       <page title="Monitor Progress" featureWhen="TieBreakNeeded, Tallying, Reviewing" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
     </group>
     <group title="Review and Report" longtitle="Review then share the news!" showTitleInPage="false">
-      <page title="Analyze Ballots" featureWhen="Tallying, TieBreakNeeded, Reviewing" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
+      <page title="Analyze Ballots" featureWhen="Tallying, TieBreakNeeded, Reviewing, Report" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
       <page title="Detailed Reports" featureWhen="TieBreakNeeded, Reviewing, Report" controller="After" action="Reports" requireElection="true" role="known" desc="Generate election reports."></page>
       <page title="Display Tellers' Report" featureWhen="Reviewing, Report" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
       <!--<page title="Export Data" controller="Setup" action="Export" requireElection="true" role="known" desc="Download election data to a local file."></page>-->

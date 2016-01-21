@@ -70,6 +70,8 @@ namespace TallyJ.CoreModels
       _hub = new AnalyzeHub();
     }
 
+    public IAnalyzeHub AnalyzeHub { get { return _hub; } }
+
     public bool IsFaked { get; private set; }
 
     public ResultSummary ResultSummaryCalc { get; private set; }

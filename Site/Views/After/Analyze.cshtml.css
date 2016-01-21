@@ -142,7 +142,7 @@ table#totalCounts td {
 }
 
 #totalCounts tr td:first-child {
-    padding-right: 30px;
+    padding-right: 5px;
     text-align: left;
 }
 
