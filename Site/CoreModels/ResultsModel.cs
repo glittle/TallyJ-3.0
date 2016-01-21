@@ -86,9 +86,9 @@ namespace TallyJ.CoreModels
           ReportVotes =
             reportVotes.Select(g => new
             {
-              g.PersonName, 
+              g.PersonName,
               g.r.VoteCount,
-              TieBreakCount = g.r.IsTied.AsBoolean() ? g.r.TieBreakCount : null, 
+              TieBreakCount = g.r.IsTied.AsBoolean() ? g.r.TieBreakCount : null,
               g.r.Section
             }),
           NumBallots = resultSummaryFinal.NumBallotsWithManual,
@@ -119,7 +119,7 @@ namespace TallyJ.CoreModels
       localResultSummaryCacher.DropThisCache();
 
       var resultSummaries = localResultSummaryCacher.AllForThisElection;
-      
+
       try
       {
         var resultSummaryFinal = resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
@@ -310,8 +310,15 @@ namespace TallyJ.CoreModels
 
     public JsonResult SaveTieCounts(List<string> counts)
     {
+      if (counts == null || counts.Count == 0)
+      {
+        return new
+        {
+          Msg = "Nothing to Save"
+        }.AsJsonResult();
+      }
       // input like:   2_3,5_3,235_0
-      var countItems = counts.Select(delegate(string s)
+      var countItems = counts.Select(delegate (string s)
       {
         var parts = s.SplitWithString("_", StringSplitOptions.None);
         return new
@@ -339,7 +346,7 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        Status = "Saved"
+        Saved = true
       }.AsJsonResult();
     }
 

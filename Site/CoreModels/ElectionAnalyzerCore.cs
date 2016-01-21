@@ -313,7 +313,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Current Results records</Summary>
     public List<Person> People
     {
-      get { return _people ?? (_people = new PersonCacher().AllForThisElection.ToList()); }
+      get { return _people ?? (_people = new PersonCacher().AllForThisElection); }
     }
 
     /// <Summary>Current Results records</Summary>
@@ -330,14 +330,14 @@ namespace TallyJ.CoreModels
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection.ToList()); }
+      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection); }
     }
 
     #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
-      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection.ToList()); }
+      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection); }
     }
 
     /// <Summary>Current Results records</Summary>
@@ -399,7 +399,7 @@ namespace TallyJ.CoreModels
 
     public void PrepareForAnalysis()
     {
-      _hub.LoadStatus("Starting Analysis");
+      _hub.LoadStatus("Starting Analysis from " + UserSession.CurrentComputerCode);
       var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
@@ -497,7 +497,6 @@ namespace TallyJ.CoreModels
                                         ResultSummaryFinal.NumBallotsWithManual ==
                                         ResultSummaryFinal.SumOfEnvelopesCollected;
 
-      SaveChanges();
     }
 
     protected void FinalizeResultsAndTies()
@@ -513,8 +512,6 @@ namespace TallyJ.CoreModels
           Results.Remove(r);
         });
 
-      SaveChanges();
-
       // remove any existing Tie info
       if (!IsFaked)
       {
@@ -526,6 +523,8 @@ namespace TallyJ.CoreModels
       {
         ResultTies.Clear();
       }
+
+      Db.SaveChanges();
 
       DetermineOrderAndSections();
 
@@ -678,16 +677,17 @@ namespace TallyJ.CoreModels
 
       if (groupInTop)
       {
-        if (!groupOnlyInTop)
+        if (groupOnlyInTop)
+        {
+          // default... tie-break not needed
+        }
+        else
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Top);
           resultTie.TieBreakRequired = true;
         }
-        else
-        {
-          // default... tie-break not needed
-        }
       }
+
       if (groupInExtra)
       {
         if (groupInTop)

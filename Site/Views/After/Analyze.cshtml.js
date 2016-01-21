@@ -17,6 +17,10 @@
     $('#btnRefresh').click(function () {
       runAnalysis(false);
     });
+    $('#btnShowLog').click(function () {
+      showLog();
+    });
+
 
     $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
@@ -44,24 +48,40 @@
       showInfo(publicInterface.results, true);
     }
     else {
-      $('#btnRefresh').show();
+      $('#btnRefreshDiv').show();
       //setTimeout(function () {
       //  runAnalysis(true);
       //}, 0);
     }
   };
 
+  var showLog = function (display) {
+    var wasShowing = $('#loadingLog').is(':visible');
+    if (typeof display != 'undefined') {
+      wasShowing = !display;
+    }
+    $('#loadingLog').toggle(!wasShowing);
+    $('#btnShowLog').html(wasShowing ? 'Show Analysis Log' : 'Hide Analysis Log');
+  }
 
   var connectToAnalyzeHub = function () {
     var hub = $.connection.analyzeHubCore;
 
     hub.client.loadStatus = function (msg, isTemp) {
-      $('#loadingLog').show();
+      var mainLogDiv = $('#log');
+
+      if (msg.search('Starting Analysis') == 0) {
+        mainLogDiv.html('');
+      }
+
+      showLog(true);
+
+      var tempLogDiv = $('#tempLog');
       if (isTemp) {
-        $('#tempLog').html(msg);
+        tempLogDiv.html(msg);
       } else {
-        $('#tempLog').html('');
-        $('#log').append('<div>' + msg + '</div>');
+        tempLogDiv.html('');
+        mainLogDiv.append('<div>' + msg + '</div>');
       }
     };
 
@@ -80,7 +100,7 @@
     $('.LeftHalf, .RightHalf').fadeOut();
     $('#InitialMsg').text('Analyzing all ballots...').removeClass('bad').show();
 
-    $('#loadingLog').show();
+    showLog(true);
     $('#log, #tempLog').html('');
     connectToAnalyzeHub(); // in case it has been lost
 
@@ -88,7 +108,8 @@
   };
 
   var showInfo = function (info, firstLoad) {
-    $('#btnRefresh').text('Re-run Analysis').show();
+    $('#btnRefresh').text('Re-run Analysis');
+    $('#btnRefreshDiv').show();
 
     if (info.Interrupted) {
       LogMessage(info.Msg);
@@ -103,7 +124,7 @@
 
     settings.info = info;
 
-    $('#loadingLog').hide();
+    showLog(false);
     $('#InitialMsg').hide();
     $('#tieResults').hide();
     $('#HasCloseVote').hide();
@@ -268,8 +289,8 @@
           tie.Conclusion = firstPara
             + '<p>Voters should vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
             .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
-            ;
-          tie.After = '' 
+          ;
+          tie.After = ''
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
             + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
               info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
@@ -376,8 +397,12 @@
     };
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveTieCounts', form, function (info) {
-      ShowStatusSuccess("Saved");
-      runAnalysis(false);
+      if (info.Saved) {
+        ShowStatusSuccess("Saved");
+        runAnalysis(false);
+      } else {
+        ShowStatusFailed(info.Msg);
+      }
     });
   };
 

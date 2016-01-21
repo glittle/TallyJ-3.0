@@ -3,6 +3,7 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
+using EntityFramework.BulkInsert.Extensions;
 
 namespace TallyJ.CoreModels
 {
@@ -85,8 +86,8 @@ namespace TallyJ.CoreModels
             };
             InitializeSomeProperties(result);
 
-            //Savers.ResultSaver(DbAction.Add, result);
-            Results.Add(result);
+            Savers.ResultSaver(DbAction.Add, result);
+            //Results.Add(result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;
@@ -97,6 +98,8 @@ namespace TallyJ.CoreModels
 
       FinalizeResultsAndTies();
       FinalizeSummaries();
+
+      SaveChanges();
 
       return ResultSummaryFinal;
     }
