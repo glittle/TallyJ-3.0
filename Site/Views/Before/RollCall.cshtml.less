@@ -42,7 +42,7 @@ footer {
 
 body.OthersDim {
     .Voter.Other {
-        color: #a8dda5;
+        color: #85b082;
 
         &.Current {
             background-color: #fafffa !important;
@@ -52,8 +52,10 @@ body.OthersDim {
         }
     }
 
-    .Voter.NotLocal span {
-        display: none;
+    .Voter.NotLocal {
+        b, span {
+            display: none;
+        }
     }
 }
 
@@ -110,21 +112,33 @@ body.OthersHidden {
         color: #666;
     }
 
-    i, u {
+    u {
         display: none;
+    }
+
+    i, em {
+        display: none;
+        font-style: normal;
+        font-size: 19pt;
+        color: @tallyJGreen;
+        position: absolute;
+        bottom: 6px;
+        right: 7px;
     }
 }
 
-body.ShowLocations {
+body.ShowLocations_i {
     .Voter {
         i {
-            font-style: normal;
-            font-size: 19pt;
-            color: @tallyJGreen;
             display: block;
-            position: absolute;
-            bottom: 6px;
-            right: 7px;
+        }
+    }
+}
+
+body.ShowLocations_em {
+    .Voter {
+        em {
+            display: block;
         }
     }
 }

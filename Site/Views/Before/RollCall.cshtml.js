@@ -57,12 +57,12 @@
     $('#hideNav').click(function () {
       $('.Nav').removeClass('Show');
       $(document).focus();
-        //$('.Nav').animate({ opacity: 0 }, 1000, null, function () {
-        //  $('.Nav').removeClass('Show').css({
-        //    opacity: ''
-        //  });
-        //  $(document).blur();
-        //});
+      //$('.Nav').animate({ opacity: 0 }, 1000, null, function () {
+      //  $('.Nav').removeClass('Show').css({
+      //    opacity: ''
+      //  });
+      //  $(document).blur();
+      //});
     });
     $('#showNav').click(function (ev) {
       $('.Nav').addClass('Show').filter(':input').focus();
@@ -83,7 +83,7 @@
     });
     $('#showLocations').change(function () {
       updateVisibility();
-      SetInStorage('rollCall_showLocations', $(this).prop('checked') ? 'Y' : 'N');
+      SetInStorage('rollCall_showLocations', $(this).val());
     });
     $('#showEnvReason').change(function () {
       updateVisibility();
@@ -136,7 +136,7 @@
   var addInfo = function (v) {
     //var currentDisplayLocation = $('#locations').val();
     //if (v.Loc != currentDisplayLocation) {
-      v.Location = v.Area;
+    v.Location = rollCallPage.hasLocations ? rollCallPage.locations[v.Loc] : '';
     //}
 
     if (v.VM != 'P' && v.Env) {
@@ -179,8 +179,10 @@
     $('body').toggleClass('OthersDim', value === 'dim');
     $('body').toggleClass('OthersHidden', value === 'hidden');
 
-    value = $('#showLocations').prop('checked');
-    $('body').toggleClass('ShowLocations', value);
+    value = $('#showLocations').val();
+    $('body').removeClass('ShowLocations_em');
+    $('body').removeClass('ShowLocations_i');
+    $('body').addClass('ShowLocations_' + value);
 
     value = $('#showEnvReason').prop('checked');
     $('body').toggleClass('ShowEnvReason', value);
