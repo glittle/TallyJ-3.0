@@ -11,13 +11,16 @@
     nameList: null,
     rowSelected: 0,
     showPersonId: null,
+    selectByVoteCount: false,
     maintainCurrentRow: false,
-    template: '<li id=P{Id}>{^Name}</li>'
+    //template: '<li id=P{Id}>{^Name}</li>',
+    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>'
   };
   var onNamesReady = function (info) {
     local.People = info.People;
-    local.nameList.html(local.template.filledWithEach(local.People));
+    local.nameList.html(local.template2.filledWithEach(local.People));
     $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
+
     if (!local.People.length && local.lastSearch) {
       local.nameList.append('<li>...no matches found...</li>');
     }
@@ -28,7 +31,7 @@
       if (local.showPersonId) {
         local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
         local.showPersonId = 0;
-      } else {
+      } else if (local.selectByVoteCount) {
         $.each(local.People, function (i, item) {
           if (item.NumVotes && !local.maintainCurrentRow) {
             local.rowSelected = i;
@@ -42,9 +45,12 @@
     local.actionTag.removeClass('delaying');
     local.inputField.removeClass('delaying');
 
+    // if none selected, selects first name
     var selectedName = local.nameList.children().eq(local.rowSelected);
     selectedName.addClass('selected');
-    scrollIntoView(selectedName, local.nameList);
+    if (local.rowSelected) {
+      scrollIntoView(selectedName, local.nameList);
+    }
   };
   var moveSelected = function (delta) {
     var children = local.nameList.children();
@@ -234,43 +240,45 @@
 
     local.totalOnFile = publicInterface.namesOnFile;
 
+    resetSearch();
+
     if (local.totalOnFile < 25) {
-      setTimeout(function() {
+      setTimeout(function () {
         specialSearch('~~All~~');
       }, 500);
+    } else {
+      local.nameList.html('<li class=Match2>(Ready for searching)</li>');
     }
 
-  site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+    site.onbroadcast(site.broadcastCode.personSaved, personSaved);
 
-  resetSearch();
+    site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
+  };
 
-  site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
-};
+  var specialSearch = function (code) {
+    resetSearch();
+    local.peopleHelper.SearchNames(code, onNamesReady, false, null, false);
+  };
 
-var specialSearch = function(code) {
-  resetSearch();
-  local.peopleHelper.SearchNames(code, onNamesReady, false, null, false);
-};
-  
-var personSaved = function (ev, info) {
-  var searchText = $('#txtSearch').val();
-  local.totalOnFile = info.OnFile;
-  if (searchText) {
-    local.maintainCurrentRow = true;
-    local.showPersonId = info.Person.C_RowId;
-    local.peopleHelper.SearchNames(searchText, onNamesReady, false, null, false);
-  }
-  else {
-    $('#more').html(moreFound(info.OnFile));
-  }
-};
+  var personSaved = function (ev, info) {
+    var searchText = $('#txtSearch').val();
+    local.totalOnFile = info.OnFile;
+    if (searchText) {
+      local.maintainCurrentRow = true;
+      local.showPersonId = info.Person.C_RowId;
+      local.peopleHelper.SearchNames(searchText, onNamesReady, false, null, false);
+    }
+    else {
+      $('#more').html(moreFound(info.OnFile));
+    }
+  };
 
-var publicInterface = {
-  peopleUrl: '',
-  namesOnFile: 0,
-  PreparePage: preparePage
-};
-return publicInterface;
+  var publicInterface = {
+    peopleUrl: '',
+    namesOnFile: 0,
+    PreparePage: preparePage
+  };
+  return publicInterface;
 };
 
 var peoplePage = PeoplePage();

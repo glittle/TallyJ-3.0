@@ -42,22 +42,23 @@
         <option value="">also Highlighted</option>
       </select>
     </p>
-    <p>
-      <label>
-        <input checked type="checkbox" id="showEnvReason" />
-        Show reason for envelope *
-      </label>
-    </p>
-
     @if (ContextItems.LocationModel.HasLocations)
     {
       <p>
-        <label>
-          <input checked type="checkbox" id="showLocations" />
-          Show person's home Sector *
-        </label>
+        Show voter's 
+        <select id="showLocations">
+          <option value="em">home area *</option>
+          <option value="i">voting location</option>
+          <option value="">none</option>
+        </select>
       </p>
     }
+    <p>
+      <label>
+        <input checked type="checkbox" id="showEnvReason" />
+        Show ballot delivery method *
+      </label>
+    </p>
     <h3>Instructions</h3>
     <p>Press F11 to view in full-screen!</p>
     <p>Click mouse, or press Space, Enter, Up/Down, Home/End, PgUp/PgDn to move names.</p>

@@ -48,6 +48,7 @@
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
+    $('.showJalal13').toggle($('#ddlType').val() == 'LSA');
     $('#txtName').focus();
 
     site.qTips.push({ selector: '#qTipLocked', title: 'Election Locked', text: 'The core settings for the election are locked after ballots have been entered.' });
@@ -145,7 +146,7 @@
       settings.isJalal13 = target;
     }
 
-    var msg = intro + '{bDay} {bMonthNameAr} {bYear}  ({bMonthMeaning})';
+    var msg = intro + '<span class=badiDateValue>{bDay} {bMonthNameAr} {bYear}</span>  ({bMonthMeaning})';
     target.html(msg.filledWith(di));
   }
 
