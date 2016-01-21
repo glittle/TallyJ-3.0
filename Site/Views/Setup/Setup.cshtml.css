@@ -11,11 +11,15 @@
 .badiDate {
     display: block;
     margin: 0 0 0 5px;
-    line-height:normal;
+    line-height: normal;
 }
 
 .badiDateName {
     margin-left: 15px;
+}
+
+.badiDateValue {
+    font-weight: bold;
 }
 
 .isJalal13 {
@@ -26,6 +30,7 @@
 .showJalal13 {
     color: green;
     white-space: nowrap;
+    display: none;
 }
 
     .showJalal13.missing {
@@ -167,6 +172,7 @@ option:disabled {
 #txtDateTip {
     display: none;
 }
+
 .locationDetail {
     cursor: help;
     text-decoration: underline;
