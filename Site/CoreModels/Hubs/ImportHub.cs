@@ -1,4 +1,7 @@
 using Microsoft.AspNet.SignalR;
+using System;
+using TallyJ.Code.Helpers;
+using TallyJ.Code.Session;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
@@ -9,7 +12,12 @@ namespace TallyJ.CoreModels.Hubs
 
     private string HubNameForPublic
     {
-      get { return "Import"; }
+      get {
+        var electionGuid = UserSession.CurrentElectionGuid;
+        AssertAtRuntime.That(electionGuid != Guid.Empty);
+
+        return "Import" + electionGuid;
+      }
     }
 
     private IHubContext CoreHub

@@ -54,8 +54,6 @@ div.chooser {
     width: 735px;
     padding: 0 3pt 6pt 3pt;
     margin-left: 5px;
-    font-size: 13pt;
-    xpadding: 5px;
     height: 100%;
 }
 
@@ -66,9 +64,9 @@ div.chooser {
     }
 
     #report h2 {
-        margin: 6pt 0 4pt 0;
+        margin: 6pt 0 3px 0;
         padding: 0;
-        font-size: 140%;
+        font-size: 120%;
     }
 
 p.Comment {
@@ -124,26 +122,6 @@ table.resultInfo tr td:nth-child(2) {
     padding-left: 25px;
     padding-right: 12px;
 }
-
-div.result1 {
-    display: table;
-    margin-left: 10px;
-}
-
-    div.result1 div {
-        display: table-row;
-    }
-
-        div.result1 div span {
-            display: table-cell;
-            text-align: center;
-            border: 1px solid gray;
-            padding: 3px 10px;
-        }
-
-            div.result1 div span:nth-child(2) {
-                text-align: left;
-            }
 
 .btnPrint {
     margin-bottom: 10px;

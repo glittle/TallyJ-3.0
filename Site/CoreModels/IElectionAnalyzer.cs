@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
@@ -28,5 +29,8 @@ namespace TallyJ.CoreModels
     void PrepareResultSummaries();
 
     void FinalizeSummaries();
+
+    IAnalyzeHub AnalyzeHub { get; }
+
   }
 }

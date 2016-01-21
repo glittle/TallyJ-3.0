@@ -672,7 +672,6 @@
     <Content Include="Images\LogoTopSmall.png" />
     <Content Include="Images\shadow.png" />
     <Content Include="Images\SlideProjector.gif" />
-    <Content Include="JsTemplates\ReportTemplates.html" />
     <Content Include="JsTemplates\RollCallLine.html" />
     <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\FrontDeskLine.html" />

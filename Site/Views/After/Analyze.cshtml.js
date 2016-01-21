@@ -88,7 +88,9 @@
     activateHub(hub, function () {
       LogMessage('Join analyze Hub');
       CallAjaxHandler(analyzePage.analyzeHubUrl, { connId: site.signalrConnectionId }, function (info) {
-        LogMessage(info);
+        if (!info) {
+          LogMessage(info);
+        }
       });
     });
   };
@@ -209,7 +211,7 @@
       var finalText = finalSpan.text();
 
       finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
-      calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
+      //calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
     });
     $('#totalCounts').toggleClass('mismatch', settings.info.ResultsFinal.NumBallotsWithManual != settings.info.ResultsFinal.SumOfEnvelopesCollected);
     $('body').toggleClass('ready', settings.info.ResultsFinal.UseOnReports);

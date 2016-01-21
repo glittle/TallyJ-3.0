@@ -23,7 +23,6 @@ namespace TallyJ.Code.Resources
       EditPerson,
       NormalVoteLine,
       RollCallLine,
-      ReportTemplates
     }
 
     #endregion
