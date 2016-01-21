@@ -35,7 +35,7 @@ namespace Tests.BusinessTests
         new Person {},
         new Person {IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person},
       };
-      _persons.ForEach(delegate(Person p)
+      _persons.ForEach(delegate (Person p)
       {
         p.CanVote = true;
         p.PersonGuid = Guid.NewGuid();
@@ -953,7 +953,7 @@ namespace Tests.BusinessTests
       results.Count.ShouldEqual(3);
 
       var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
-      
+
       resultTies.Count.ShouldEqual(1);
       resultTies[0].NumToElect.ShouldEqual(2);
       resultTies[0].NumInTie.ShouldEqual(3);
@@ -1146,7 +1146,7 @@ namespace Tests.BusinessTests
       resultTies[0].NumToElect.ShouldEqual(2);
       resultTies[0].NumInTie.ShouldEqual(3);
       resultTies[0].TieBreakRequired.ShouldEqual(true);
-      
+
       // not resolved
       resultTies[0].IsResolved.ShouldEqual(false);
 
@@ -1177,6 +1177,172 @@ namespace Tests.BusinessTests
       results[2].TieBreakRequired.ShouldEqual(true);
       results[2].ForceShowInOther.ShouldEqual(false);
       results[2].IsTieResolved.ShouldEqual(false);
+
+
+    }
+
+
+    // Not ready yet [TestMethod]
+    public void ElectionTieWithTieBreakTiedInExtraSection2()
+    {
+      var electionGuid = Guid.NewGuid();
+      var election = new Election
+      {
+        ElectionGuid = electionGuid,
+        NumberToElect = 2,
+        NumberExtra = 2
+      };
+      var location = new Location
+      {
+        LocationGuid = Guid.NewGuid(),
+        ElectionGuid = electionGuid
+      };
+
+      var ballots = new List<Ballot>
+      {
+        new Ballot
+        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+        new Ballot
+        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+        new Ballot
+        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+      };
+
+      // test wanted:
+      //  person 0 = 2  TieBreak: 
+      //  person 1 = 1            2
+      // ---
+      //  person 2 = 1            1
+      //  person 3 = 1            1
+
+      // Ballot 0: 0,1
+      // Ballot 1: 0,2
+      // Ballot 2: 3,spoiled
+      var votes = new List<VoteInfo>
+      {
+        new VoteInfo {VoteId=1,PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+        new VoteInfo {VoteId=2,PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid},
+        new VoteInfo {VoteId=3,PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+        new VoteInfo {VoteId=4,PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[1].BallotGuid},
+        new VoteInfo {VoteId=5,PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[2].BallotGuid},
+        new VoteInfo {VoteId=6,VoteIneligibleReasonGuid = Guid.NewGuid(), BallotGuid = ballots[2].BallotGuid},
+      };
+      foreach (var voteInfo in votes)
+      {
+        voteInfo.ElectionGuid = electionGuid;
+        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
+        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
+        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+        voteInfo.PersonCanReceiveVotes = true;
+      }
+
+      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var summary = model.ResultSummaryFinal;
+      summary.BallotsReceived.ShouldEqual(3);
+      summary.SpoiledBallots.ShouldEqual(0);
+      summary.SpoiledVotes.ShouldEqual(1);
+      summary.BallotsNeedingReview.ShouldEqual(0);
+
+      var results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+
+      results.Count.ShouldEqual(4);
+
+      var resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
+
+      results[0].IsTied.ShouldEqual(false);
+      //results[0].TieBreakGroup.ShouldEqual(1);
+      results[0].CloseToPrev.ShouldEqual(false);
+      results[0].CloseToNext.ShouldEqual(true);
+      results[0].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[0].TieBreakRequired.ShouldEqual(false);
+      results[0].ForceShowInOther.ShouldEqual(false);
+
+      results[1].IsTied.ShouldEqual(true);
+      results[1].TieBreakGroup.ShouldEqual(1);
+      results[1].CloseToPrev.ShouldEqual(true);
+      results[1].CloseToNext.ShouldEqual(true);
+      results[1].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[1].TieBreakRequired.ShouldEqual(true);
+      results[1].ForceShowInOther.ShouldEqual(false);
+
+      results[2].IsTied.ShouldEqual(true);
+      results[2].TieBreakGroup.ShouldEqual(1);
+      results[2].CloseToPrev.ShouldEqual(true);
+      results[2].CloseToNext.ShouldEqual(true);
+      results[2].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[2].TieBreakRequired.ShouldEqual(true);
+      results[2].ForceShowInOther.ShouldEqual(false);
+
+      results[3].IsTied.ShouldEqual(true);
+      results[3].TieBreakGroup.ShouldEqual(1);
+      results[3].CloseToPrev.ShouldEqual(true);
+      results[3].CloseToNext.ShouldEqual(false);
+      results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[3].TieBreakRequired.ShouldEqual(true);
+      results[3].ForceShowInOther.ShouldEqual(false);
+
+
+      // apply tie break counts
+      results[1].TieBreakCount = 2;
+      results[2].TieBreakCount = 1;
+      results[3].TieBreakCount = 1;
+
+      model.AnalyzeEverything();
+
+      results = model.Results.OrderByDescending(r => r.VoteCount).ToList();
+
+      results.Count.ShouldEqual(4);
+
+      resultTies = model.ResultTies.OrderBy(rt => rt.TieBreakGroup).ToList();
+
+      resultTies.Count.ShouldEqual(1);
+      resultTies[0].NumToElect.ShouldEqual(1);
+      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].TieBreakRequired.ShouldEqual(true);
+
+      // not resolved
+      resultTies[0].IsResolved.ShouldEqual(false);
+
+      results[0].IsTied.ShouldEqual(false);
+      //results[0].TieBreakGroup.ShouldEqual(1);
+      results[0].CloseToPrev.ShouldEqual(false);
+      results[0].CloseToNext.ShouldEqual(true);
+      results[0].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[0].TieBreakRequired.ShouldEqual(false);
+      results[0].ForceShowInOther.ShouldEqual(false);
+
+      results[1].IsTied.ShouldEqual(true);
+      results[1].TieBreakGroup.ShouldEqual(1);
+      results[1].CloseToPrev.ShouldEqual(true);
+      results[1].CloseToNext.ShouldEqual(true);
+      results[1].Section.ShouldEqual(ResultHelper.Section.Top);
+      results[1].TieBreakRequired.ShouldEqual(true);
+      results[1].ForceShowInOther.ShouldEqual(false);
+
+      results[2].IsTied.ShouldEqual(true);
+      results[2].TieBreakGroup.ShouldEqual(1);
+      results[2].CloseToPrev.ShouldEqual(true);
+      results[2].CloseToNext.ShouldEqual(true);
+      results[2].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[2].TieBreakRequired.ShouldEqual(true);
+      results[2].ForceShowInOther.ShouldEqual(false);
+
+      results[3].IsTied.ShouldEqual(true);
+      results[3].TieBreakGroup.ShouldEqual(1);
+      results[3].CloseToPrev.ShouldEqual(true);
+      results[3].CloseToNext.ShouldEqual(false);
+      results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
+      results[3].TieBreakRequired.ShouldEqual(true);
+      results[3].ForceShowInOther.ShouldEqual(false);
+
 
 
     }

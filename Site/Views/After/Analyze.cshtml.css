@@ -99,7 +99,13 @@ td.Left {
 }
 
 #btnRefresh {
+    display: block;
+    margin-top: 2px;
+}
+
+#btnRefreshDiv {
     float: right;
+    text-align: right;
     display: none;
 }
 

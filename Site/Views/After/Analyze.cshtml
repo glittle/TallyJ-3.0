@@ -9,9 +9,10 @@
   ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("AnalyzeHub", "Elections").QuotedForJavascript()));
 }
-<button type="button" id="btnRefresh" class="btn">
-  Start Analysis
-</button>
+<div id="btnRefreshDiv">
+  <button type="button" id="btnRefresh" class="btn" accesskey="A">Start Analysis</button>
+  <button type="button" id="btnShowLog" class="btn btn-mini">Show Analysis Log</button>
+</div>
 <div class="overallWarning">Issues highlighted in red below must be resolved before accurate reports can be made.</div>
 <div id="InitialMsg"></div>
 <div id="loadingLog">
