@@ -53,7 +53,8 @@ namespace TallyJ.Code
       }
 
       var info = new NameValueCollection();
-      info["value1"] = UserSession.LoginId + " / " + HttpContext.Current.Request.Url.Host + " / " + Environment.MachineName;
+      info["value1"] = UserSession.LoginId + " / " + HttpContext.Current.Request.Url.Host + " / " 
+        + (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? Environment.MachineName);
       info["value2"] = UserSession.CurrentElectionName;
       info["value3"] = message;
 

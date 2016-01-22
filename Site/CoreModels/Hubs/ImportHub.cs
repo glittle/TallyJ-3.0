@@ -13,10 +13,7 @@ namespace TallyJ.CoreModels.Hubs
     private string HubNameForPublic
     {
       get {
-        var electionGuid = UserSession.CurrentElectionGuid;
-        AssertAtRuntime.That(electionGuid != Guid.Empty);
-
-        return "Import" + electionGuid;
+        return "Import" + UserSession.LoginId;
       }
     }
 
