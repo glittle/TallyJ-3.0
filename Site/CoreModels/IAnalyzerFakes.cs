@@ -10,7 +10,7 @@ namespace TallyJ.CoreModels
     List<ResultTie> ResultTies { get; set; }
     List<Result> Results { get; set; }
     List<ResultSummary> ResultSummaries { get; set; }
-    IAnalyzeHub FakeHub { get; }
+    IStatusUpdateHub FakeHub { get; }
     Result RemoveResult(Result input);
     Result AddResult(Result arg);
     ResultSummary AddResultSummary(ResultSummary arg);

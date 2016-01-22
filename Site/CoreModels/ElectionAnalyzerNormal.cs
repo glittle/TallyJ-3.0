@@ -4,6 +4,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using EntityFramework.BulkInsert.Extensions;
+using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.CoreModels
 {
@@ -20,8 +21,8 @@ namespace TallyJ.CoreModels
     {
     }
 
-    public ElectionAnalyzerNormal(Election election)
-      : base(election)
+    public ElectionAnalyzerNormal(Election election, IStatusUpdateHub hub = null)
+      : base(election, hub)
     {
     }
 
@@ -45,13 +46,13 @@ namespace TallyJ.CoreModels
       var electionGuid = TargetElection.ElectionGuid;
 
       // collect only valid ballots
-      _hub.LoadStatus("Counting ballots", true);
+      _hub.StatusUpdate("Processing ballots", true);
       var numDone = 0;
       foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
       {
         numDone++;
         if (numDone % 10 == 0) {
-          _hub.LoadStatus("Counted {0} ballot{1}".FilledWith(numDone, numDone.Plural()), true);
+          _hub.StatusUpdate("Processed {0} ballot{1}".FilledWith(numDone, numDone.Plural()), true);
         }
 
         var ballotGuid = ballot.BallotGuid;
@@ -94,7 +95,7 @@ namespace TallyJ.CoreModels
           result.VoteCount = voteCount;
         }
       }
-      _hub.LoadStatus("Counted {0} unspoiled ballot{1}".FilledWith(numDone, numDone.Plural()));
+      _hub.StatusUpdate("Processing {0} unspoiled ballot{1}".FilledWith(numDone, numDone.Plural()));
 
       FinalizeResultsAndTies();
       FinalizeSummaries();

@@ -6,7 +6,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
 {
-  public class ImportHub
+  public class ImportHub : IStatusUpdateHub
   {
     private IHubContext _coreHub;
 
@@ -36,7 +36,7 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Clients.Group(HubNameForPublic).ImportInfo(linesProcessed, peopleAdded);
     }
 
-    public void LoaderStatus(string msg, bool msgIsTemp = false)
+    public void StatusUpdate(string msg, bool msgIsTemp = false)
     {
       CoreHub.Clients.Group(HubNameForPublic).LoaderStatus(msg, msgIsTemp);
     }

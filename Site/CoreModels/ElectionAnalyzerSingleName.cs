@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
@@ -19,8 +20,8 @@ namespace TallyJ.CoreModels
     {
     }
 
-    public ElectionAnalyzerSingleName(Election election)
-      : base(election)
+    public ElectionAnalyzerSingleName(Election election, IStatusUpdateHub hub = null)
+      : base(election, hub)
     {
     }
 
