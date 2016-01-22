@@ -122,7 +122,7 @@
 
     $('#loadingLog').show();
     $('#log').html('');
-    $('#tempLog').html('Loading');
+    $('#tempLog').html('Uploading the file to the server');
 
     var form = $('#formLoadFile');
     var frameId = 'tempUploadFrame';
@@ -390,9 +390,14 @@
     var fudge = -83;
     var time = 800;
 
-    $(document).animate({
-      scrollTop: top + fudge
-    }, time);
+    try {
+      $(document).animate({
+        scrollTop: top + fudge
+      }, time);
+    } catch (e) {
+      // ignore error
+      LogMessage(e.message);
+    }
 
     setTimeout(function () {
       target.toggleClass('justloaded', 'slow');

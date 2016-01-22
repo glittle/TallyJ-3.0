@@ -153,14 +153,14 @@ namespace TallyJ.CoreModels.ExportImport
 
           LoadResultInfo();
 
-          _hub.LoaderStatus("Running analysis...");
+          _hub.StatusUpdate("Running analysis...");
 
           new ElectionModel().JoinIntoElection(_electionGuid);
 
-          var analyzer = new ResultsModel();
+          var analyzer = new ResultsModel(null, _hub);
           analyzer.GenerateResults();
 
-          _hub.LoaderStatus("Load complete ({0:N1} seconds)".FilledWith((DateTime.Now - start).TotalSeconds));
+          _hub.StatusUpdate("Load complete ({0:N1} seconds)".FilledWith((DateTime.Now - start).TotalSeconds));
         }
         catch (DbUpdateException ex)
         {
@@ -218,7 +218,7 @@ namespace TallyJ.CoreModels.ExportImport
       }
 
       Db.BulkInsert(new[] { _election });
-      _hub.LoaderStatus("Loading <b>{0}</b>".FilledWith(_election.Name));
+      _hub.StatusUpdate("Loading <b>{0}</b>".FilledWith(_election.Name));
 
       // set current person as owner
       var join = new JoinElectionUser
@@ -244,7 +244,7 @@ namespace TallyJ.CoreModels.ExportImport
       }
       Db.BulkInsert(toLoad);
 
-      _hub.LoaderStatus("Loaded {0} teller{1}".FilledWith(tellersXml.Count, tellersXml.Count.Plural()));
+      _hub.StatusUpdate("Loaded {0} teller{1}".FilledWith(tellersXml.Count, tellersXml.Count.Plural()));
     }
 
     private void LoadTeller(XmlElement tellerXml, List<Teller> tellers)
@@ -306,7 +306,8 @@ namespace TallyJ.CoreModels.ExportImport
 
       location.ElectionGuid = _electionGuid;
 
-      if (_defaultLocationGuid == Guid.Empty) {
+      if (_defaultLocationGuid == Guid.Empty)
+      {
         _defaultLocationGuid = location.LocationGuid;
       }
 
@@ -336,13 +337,13 @@ namespace TallyJ.CoreModels.ExportImport
         rowsProcessed++;
         if (rowsProcessed % 100 == 0)
         {
-          _hub.LoaderStatus("Processing {0:n0} people".FilledWith(rowsProcessed, numToLoad), true);
+          _hub.StatusUpdate("Processing {0:n0} people".FilledWith(rowsProcessed, numToLoad), true);
         }
       }
 
       Db.BulkInsert(_people);
 
-      _hub.LoaderStatus("Loaded {0:n0} people.".FilledWith(rowsProcessed));
+      _hub.StatusUpdate("Loaded {0:n0} people.".FilledWith(rowsProcessed));
     }
 
     private void LoadPerson(XmlElement personXml, List<Person> people)
@@ -380,7 +381,7 @@ namespace TallyJ.CoreModels.ExportImport
 
     private void LoadBallots(XmlElement locationXml, Location location)
     {
-      _hub.LoaderStatus("Loading for '" + location.Name + "'...");
+      _hub.StatusUpdate("Loading for '" + location.Name + "'...");
 
       var locationGuid = location.LocationGuid;
 
@@ -399,13 +400,13 @@ namespace TallyJ.CoreModels.ExportImport
           numLoaded++;
           if (numLoaded == 1 || numLoaded % 10 == 0)
           {
-            _hub.LoaderStatus("Processing {0:n0} of {1:n0} ballots ({2:n0} votes)".FilledWith(ballots.Count, numToLoad, votes.Count), true);
+            _hub.StatusUpdate("Processing {0:n0} of {1:n0} ballots ({2:n0} votes)".FilledWith(ballots.Count, numToLoad, votes.Count), true);
           }
         }
 
         Db.BulkInsert(ballots);
         Db.BulkInsert(votes);
-        _hub.LoaderStatus("Loaded {0:n0} ballots ({1:n0} votes)".FilledWith(ballots.Count, votes.Count));
+        _hub.StatusUpdate("Loaded {0:n0} ballots ({1:n0} votes)".FilledWith(ballots.Count, votes.Count));
       }
 
       var logsXml = locationXml.SelectNodes("t:log", _nsm);
@@ -419,7 +420,7 @@ namespace TallyJ.CoreModels.ExportImport
         }
         //Db.SaveChanges();
         Db.BulkInsert(logs);
-        _hub.LoaderStatus("Loaded {0} log entr{1}".FilledWith(logs.Count, logs.Count.Plural("ies", "y")));
+        _hub.StatusUpdate("Loaded {0} log entr{1}".FilledWith(logs.Count, logs.Count.Plural("ies", "y")));
       }
 
       var logger = new LogHelper(_electionGuid);
@@ -487,50 +488,74 @@ namespace TallyJ.CoreModels.ExportImport
 
     private void LoadResultInfo()
     {
-      var nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
-      if (nodes != null)
+      XmlNodeList nodes;
+      try
       {
-        var toLoad = new List<ResultSummary>();
-        foreach (XmlElement element in nodes)
+        nodes = _xmlRoot.SelectNodes("t:resultSummary", _nsm);
+        if (nodes != null)
         {
-          var resultSummary = new ResultSummary();
-          element.CopyAttributeValuesTo(resultSummary);
-          resultSummary.ElectionGuid = _electionGuid;
-          toLoad.Add(resultSummary);
+          var toLoad = new List<ResultSummary>();
+          foreach (XmlElement element in nodes)
+          {
+            var resultSummary = new ResultSummary();
+            element.CopyAttributeValuesTo(resultSummary);
+            resultSummary.ElectionGuid = _electionGuid;
+            toLoad.Add(resultSummary);
+          }
+          Db.BulkInsert(toLoad);
+          _hub.StatusUpdate("Loaded {0} summar{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("ies", "y")));
         }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} summar{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("ies", "y")));
+      }
+      catch (Exception ex)
+      {
+        _hub.StatusUpdate("Failed to load result summaries. Manual overrides on Analyze page may be missing. (Error: {0})".FilledWith(ex.LastException().Message));
       }
 
-      nodes = _xmlRoot.SelectNodes("t:result", _nsm);
-      if (nodes != null)
+      try
       {
-        var toLoad = new List<EF.Result>();
-        foreach (XmlElement element in nodes)
+        nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
+        if (nodes != null)
         {
-          var result = new EF.Result();
-          element.CopyAttributeValuesTo(result);
-          result.ElectionGuid = _electionGuid;
-          UpdateGuidFromMapping(result, v => v.PersonGuid, Guid.Empty);
-          toLoad.Add(result);
+          var toLoad = new List<ResultTie>();
+          foreach (XmlElement element in nodes)
+          {
+            var resultTie = new ResultTie();
+            element.CopyAttributeValuesTo(resultTie);
+            resultTie.ElectionGuid = _electionGuid;
+            toLoad.Add(resultTie);
+          }
+          Db.BulkInsert(toLoad);
+          _hub.StatusUpdate("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
         }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+      }
+      catch (Exception ex)
+      {
+        _hub.StatusUpdate("Failed to load tie information. Tie-break counts may be missing. (Error: {0})".FilledWith(ex.LastException().Message));
       }
 
-      nodes = _xmlRoot.SelectNodes("t:resultTie", _nsm);
-      if (nodes != null)
+      try
       {
-        var toLoad = new List<ResultTie>();
-        foreach (XmlElement element in nodes)
+        nodes = _xmlRoot.SelectNodes("t:result", _nsm);
+        if (nodes != null)
         {
-          var resultTie = new ResultTie();
-          element.CopyAttributeValuesTo(resultTie);
-          resultTie.ElectionGuid = _electionGuid;
-          toLoad.Add(resultTie);
+          var toLoad = new List<EF.Result>();
+          foreach (XmlElement element in nodes)
+          {
+            var result = new EF.Result();
+            element.CopyAttributeValuesTo(result);
+            result.ElectionGuid = _electionGuid;
+            UpdateGuidFromMapping(result, v => v.PersonGuid, Guid.Empty);
+            toLoad.Add(result);
+          }
+          Db.BulkInsert(toLoad);
+          _hub.StatusUpdate("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
         }
-        Db.BulkInsert(toLoad);
-        _hub.LoaderStatus("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+
+
+      }
+      catch (Exception ex)
+      {
+        _hub.StatusUpdate("Failed to load some individual results and tie-break counts. Overall results will be recreated but tie-break informaion may be missing. (Error: {0})".FilledWith(ex.LastException().Message));
       }
     }
 
@@ -560,7 +585,8 @@ namespace TallyJ.CoreModels.ExportImport
           var value = _guidMap[oldGuid];
           prop.SetValue(obj, value, null);
         }
-        else if (fallBack != Guid.Empty) {
+        else if (fallBack != Guid.Empty)
+        {
           // incoming XML had a value, but we can't map it
           // pre 2.3.6, Locations did not export their Guid, so the voting location was lost
           prop.SetValue(obj, fallBack, null);

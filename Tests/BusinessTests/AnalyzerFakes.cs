@@ -37,7 +37,7 @@ namespace Tests.BusinessTests
     public List<Result> Results { get; set; }
     public List<ResultSummary> ResultSummaries { get; set; }
 
-    public IAnalyzeHub FakeHub
+    public IStatusUpdateHub FakeHub
     {
       get; set;
     }
@@ -79,9 +79,9 @@ namespace Tests.BusinessTests
     }
   }
 
-  public class FakeHub : IAnalyzeHub
+  public class FakeHub : IStatusUpdateHub
   {
-    public void LoadStatus(string msg, bool msgIsTemp = false)
+    public void StatusUpdate(string msg, bool msgIsTemp = false)
     {
       Console.WriteLine(msg);
     }

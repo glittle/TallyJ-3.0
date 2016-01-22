@@ -30,7 +30,7 @@ namespace TallyJ.CoreModels
 
     void FinalizeSummaries();
 
-    IAnalyzeHub AnalyzeHub { get; }
+    IStatusUpdateHub AnalyzeHub { get; }
 
   }
 }

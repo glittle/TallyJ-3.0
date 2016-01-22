@@ -6,7 +6,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels.Hubs
 {
-  public class AnalyzeHub : IAnalyzeHub
+  public class AnalyzeHub : IStatusUpdateHub
   {
     private IHubContext _coreHub;
 
@@ -34,7 +34,7 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Groups.Add(connectionId, HubNameForPublic);
     }
 
-    public void LoadStatus(string msg, bool msgIsTemp = false)
+    public void StatusUpdate(string msg, bool msgIsTemp = false)
     {
       CoreHub.Clients.Group(HubNameForPublic).LoadStatus(msg, msgIsTemp);
     }
@@ -46,7 +46,7 @@ namespace TallyJ.CoreModels.Hubs
     // referenced by helper and in JavaScript
   }
 
-  public interface IAnalyzeHub {
-    void LoadStatus(string msg, bool msgIsTemp = false);
+  public interface IStatusUpdateHub {
+    void StatusUpdate(string msg, bool msgIsTemp = false);
   }
 }

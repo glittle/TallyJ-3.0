@@ -8,6 +8,7 @@ using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
@@ -17,13 +18,13 @@ namespace TallyJ.CoreModels
     private readonly IElectionAnalyzer _analyzer;
     private Election _election;
 
-    public ResultsModel(Election election = null)
+    public ResultsModel(Election election = null, IStatusUpdateHub hub = null)
     {
       _election = election;
 
       _analyzer = CurrentElection.IsSingleNameElection
-        ? new ElectionAnalyzerSingleName(election) as IElectionAnalyzer
-        : new ElectionAnalyzerNormal(election);
+        ? new ElectionAnalyzerSingleName(election, hub) as IElectionAnalyzer
+        : new ElectionAnalyzerNormal(election, hub);
     }
 
     private Election CurrentElection
@@ -402,7 +403,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      _analyzer.AnalyzeHub.LoadStatus("Starting Analysis from " + UserSession.CurrentComputerCode);
+      _analyzer.AnalyzeHub.StatusUpdate("Starting Analysis from " + UserSession.CurrentComputerCode);
 
       resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
 

@@ -35,13 +35,19 @@ namespace TallyJ.CoreModels
     private List<Result> _results;
     private List<VoteInfo> _voteinfos;
     private List<Vote> _votes;
-    protected IAnalyzeHub _hub;
+    protected IStatusUpdateHub _hub;
     private ResultSummaryCacher _localResultSummaryCacher;
 
     protected ElectionAnalyzerCore()
     {
       Savers = new Savers();
       _hub = new AnalyzeHub();
+    }
+    protected ElectionAnalyzerCore(Election election, IStatusUpdateHub hub = null)
+    {
+      _election = election;
+      _hub = hub ?? new AnalyzeHub();
+      Savers = new Savers();
     }
 
     protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people,
@@ -63,14 +69,7 @@ namespace TallyJ.CoreModels
       _hub = fakes.FakeHub;
     }
 
-    protected ElectionAnalyzerCore(Election election)
-    {
-      _election = election;
-      Savers = new Savers();
-      _hub = new AnalyzeHub();
-    }
-
-    public IAnalyzeHub AnalyzeHub { get { return _hub; } }
+    public IStatusUpdateHub AnalyzeHub { get { return _hub; } }
 
     public bool IsFaked { get; private set; }
 
@@ -401,7 +400,7 @@ namespace TallyJ.CoreModels
 
     public void PrepareForAnalysis()
     {
-      _hub.LoadStatus("Starting Analysis from " + UserSession.CurrentComputerCode);
+      _hub.StatusUpdate("Starting Analysis from computer " + UserSession.CurrentComputerCode);
       var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
@@ -429,15 +428,15 @@ namespace TallyJ.CoreModels
     public void RefreshBallotStatuses()
     {
       // first refresh person vote statuses
-      _hub.LoadStatus("Checking people");
+      _hub.StatusUpdate("Checking people");
       new PeopleModel().EnsureFlagsAreRight(People, Savers.PersonSaver);
 
       // then refresh all votes
-      _hub.LoadStatus("Checking votes");
+      _hub.StatusUpdate("Checking votes");
       VoteAnalyzer.UpdateAllStatuses(VoteInfos, Votes, Savers.VoteSaver);
 
       // then refresh all ballots
-      _hub.LoadStatus("Checking ballots");
+      _hub.StatusUpdate("Checking ballots");
       var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
     }
@@ -452,7 +451,7 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      _hub.LoadStatus("Checking summary");
+      _hub.StatusUpdate("Checking summary");
 
       // check each on on its own
       if (ResultSummaryCalc == null)
@@ -489,7 +488,7 @@ namespace TallyJ.CoreModels
 
     public void FinalizeSummaries()
     {
-      _hub.LoadStatus("Finalizing");
+      _hub.StatusUpdate("Finalizing");
 
       CombineCalcAndManualSummaries();
 
@@ -503,7 +502,7 @@ namespace TallyJ.CoreModels
 
     protected void FinalizeResultsAndTies()
     {
-      _hub.LoadStatus("Checking for ties");
+      _hub.StatusUpdate("Checking for ties");
 
       // remove any results no longer needed
       Results.Where(r => r.VoteCount.AsInt() == 0)
