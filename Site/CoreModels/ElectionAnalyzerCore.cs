@@ -27,14 +27,14 @@ namespace TallyJ.CoreModels
     protected readonly Savers Savers;
 
     private readonly Func<int> _saveChanges;
-    private List<Ballot> _ballots;
+    private List<Ballot> _fakeBallots;
     private Election _election;
-    private List<Person> _people;
-    private List<ResultSummary> _resultSummaries;
-    private List<ResultTie> _resultTies;
-    private List<Result> _results;
-    private List<VoteInfo> _voteinfos;
-    private List<Vote> _votes;
+    private List<Person> _fakePeople;
+    private List<ResultSummary> _fakeResultSummaries;
+    private List<ResultTie> _fakeResultTies;
+    private List<Result> _fakeResults;
+    private List<VoteInfo> _fakeVoteinfos;
+    private List<Vote> _fakeVotes;
     protected IStatusUpdateHub _hub;
     private ResultSummaryCacher _localResultSummaryCacher;
 
@@ -56,14 +56,14 @@ namespace TallyJ.CoreModels
     {
       Savers = new Savers(fakes);
       _election = election;
-      _resultTies = fakes.ResultTies;
-      _results = fakes.Results;
-      _resultSummaries = fakes.ResultSummaries;
-      _resultSummaries.Add(fakes.ResultSummaryManual);
-      _people = people;
-      _ballots = ballots;
-      _voteinfos = voteinfos;
-      _votes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
+      _fakeResultTies = fakes.ResultTies;
+      _fakeResults = fakes.Results;
+      _fakeResultSummaries = fakes.ResultSummaries;
+      _fakeResultSummaries.Add(fakes.ResultSummaryManual);
+      _fakePeople = people;
+      _fakeBallots = ballots;
+      _fakeVoteinfos = voteinfos;
+      _fakeVotes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
       _saveChanges = fakes.SaveChanges;
       IsFaked = true;
       _hub = fakes.FakeHub;
@@ -314,50 +314,49 @@ namespace TallyJ.CoreModels
     /// <Summary>Current Results records</Summary>
     public List<Person> People
     {
-      get { return _people ?? (_people = new PersonCacher().AllForThisElection); }
+      get
+      {
+        return _fakePeople ?? new PersonCacher().AllForThisElection;
+      }
     }
 
     /// <Summary>Current Results records</Summary>
     public List<ResultTie> ResultTies
     {
-      get { return _resultTies ?? (_resultTies = new ResultTieCacher().AllForThisElection); }
+      get
+      {
+        return _fakeResultTies ?? new ResultTieCacher().AllForThisElection;
+      }
     }
 
     internal Election TargetElection
     {
-      get { return _election ?? (_election = UserSession.CurrentElection); }
+      get { return _election ?? UserSession.CurrentElection; }
     }
 
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection); }
+      get { return _fakeVotes ?? new VoteCacher().AllForThisElection; }
     }
 
     #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
-      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection); }
+      get { return _fakeBallots ?? new BallotCacher().AllForThisElection; }
     }
 
     /// <Summary>Current Results records</Summary>
     public List<Result> Results
     {
-      get { return _results ?? (_results = new ResultCacher().AllForThisElection); }
+      //get { return _results ?? (_results = new ResultCacher().DropThisCache().AllForThisElection); }
+      get { return _fakeResults ?? new ResultCacher().AllForThisElection; }
     }
 
     public List<ResultSummary> ResultSummaries
     {
-      get { return _resultSummaries ?? (_resultSummaries = LocalResultSummaryCacher.AllForThisElection); }
-    }
-
-    public ResultSummaryCacher LocalResultSummaryCacher
-    {
-      get
-      {
-        return _localResultSummaryCacher ?? (_localResultSummaryCacher = new ResultSummaryCacher());
-      }
+      get { return _fakeResultSummaries ?? new ResultSummaryCacher().AllForThisElection; }
     }
 
     /// <Summary>Current VoteInfo records. They are detached, so no updates can be done</Summary>
@@ -365,9 +364,9 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        if (_voteinfos != null) return _voteinfos;
+        if (_fakeVoteinfos != null) return _fakeVoteinfos;
 
-        return _voteinfos = Votes
+        return Votes
           .JoinMatchingOrNull(People, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
           .Select(
             g =>
@@ -516,8 +515,8 @@ namespace TallyJ.CoreModels
       // remove any existing Tie info
       if (!IsFaked)
       {
-        Db.ResultTie.Where(rt => rt.ElectionGuid == _election.ElectionGuid).Delete();
-        new ResultTieCacher().DropThisCache();
+        Db.ResultTie.Where(rt => rt.ElectionGuid == TargetElection.ElectionGuid).Delete();
+        new ResultTieCacher();
         ResultTies.Clear();
       }
       else
@@ -567,7 +566,9 @@ namespace TallyJ.CoreModels
     {
       Result aboveResult = null;
       var nextTieBreakGroup = 1;
+      var foundFirstOneInOther = false;
 
+      // round 1
       foreach (var result in Results.OrderBy(r => r.Rank))
       {
         result.IsTied = false;
@@ -583,12 +584,26 @@ namespace TallyJ.CoreModels
 
             result.IsTied = true;
 
+            if (result.Section == ResultHelper.Section.Other)
+            {
+              foundFirstOneInOther = true;
+            }
+
             if (aboveResult.TieBreakGroup.HasNoContent())
             {
               aboveResult.TieBreakGroup = nextTieBreakGroup;
               nextTieBreakGroup++;
             }
             result.TieBreakGroup = aboveResult.TieBreakGroup;
+          }
+          else {
+            // not tied with one above
+            if (foundFirstOneInOther)
+            {
+              // already finished a tie break in Other
+              // don't bother marking others
+              break;
+            }
           }
 
           // set CloseTo___ - if tied, then is also Close to
@@ -604,7 +619,7 @@ namespace TallyJ.CoreModels
         aboveResult = result;
       }
 
-      // last one
+      // last one?
       if (aboveResult != null)
       {
         aboveResult.CloseToNext = false;
@@ -662,10 +677,10 @@ namespace TallyJ.CoreModels
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
 
-      var stillTied = results.Any(other => other != r
-                                  && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
-                                  && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
-                                  );
+        var stillTied = results.Any(other => other != r
+                                    && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
+                                    && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
+                                    );
         r.IsTieResolved = !stillTied;
       });
 
@@ -780,7 +795,7 @@ namespace TallyJ.CoreModels
       result.TieBreakGroup = null;
       result.TieBreakRequired = false;
 
-      result.VoteCount = null;
+      result.VoteCount = 0;
     }
 
     protected void FillResultSummaryCalc()

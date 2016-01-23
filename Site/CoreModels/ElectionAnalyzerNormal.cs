@@ -48,11 +48,12 @@ namespace TallyJ.CoreModels
       // collect only valid ballots
       _hub.StatusUpdate("Processing ballots", true);
       var numDone = 0;
+      var numVotesTotal = 0;
       foreach (var ballot in Ballots.Where(bi => bi.StatusCode == BallotStatusEnum.Ok))
       {
         numDone++;
         if (numDone % 10 == 0) {
-          _hub.StatusUpdate("Processed {0} ballot{1}".FilledWith(numDone, numDone.Plural()), true);
+          _hub.StatusUpdate("Processed {0} ballot{1} ({2} votes)".FilledWith(numDone, numDone.Plural(), numVotesTotal), true);
         }
 
         var ballotGuid = ballot.BallotGuid;
@@ -62,7 +63,7 @@ namespace TallyJ.CoreModels
             VoteInfos.Where(vi => vi.BallotGuid == ballotGuid && vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
         {
           var voteInfo = voteInfoRaw;
-
+          numVotesTotal++;
           // get existing result record for this person, if available
           var result = Results.FirstOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
           //Result result = null;
@@ -88,17 +89,18 @@ namespace TallyJ.CoreModels
             InitializeSomeProperties(result);
 
             Savers.ResultSaver(DbAction.Add, result);
-            //Results.Add(result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;
           result.VoteCount = voteCount;
         }
       }
-      _hub.StatusUpdate("Processing {0} unspoiled ballot{1}".FilledWith(numDone, numDone.Plural()));
+      _hub.StatusUpdate("Processed {0} unspoiled ballot{1} ({2} votes)".FilledWith(numDone, numDone.Plural(), numVotesTotal));
 
       FinalizeResultsAndTies();
       FinalizeSummaries();
+
+      _hub.StatusUpdate("Saving");
 
       SaveChanges();
 

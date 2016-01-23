@@ -116,10 +116,7 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var localResultSummaryCacher = _analyzer.LocalResultSummaryCacher;
-      localResultSummaryCacher.DropThisCache();
-
-      var resultSummaries = localResultSummaryCacher.AllForThisElection;
+      var resultSummaries = new ResultSummaryCacher().AllForThisElection;
 
       try
       {
@@ -266,9 +263,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var localResultSummaryCacher = _analyzer.LocalResultSummaryCacher;
-      localResultSummaryCacher.DropThisCache();
-      var summary = localResultSummaryCacher.AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";

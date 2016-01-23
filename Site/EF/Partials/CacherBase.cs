@@ -188,10 +188,13 @@ namespace TallyJ.EF
     ///   <typeparam name="T"></typeparam>
     ///   for this election
     /// </summary>
-    public void DropThisCache()
+    public ICacherBase<T> DropThisCache()
     {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
+      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) {
+        return this;
+      };
       CacheManager.Current.Expire(CacheKeyRaw);
+      return this;
     }
 
     /// <summary>

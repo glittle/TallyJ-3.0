@@ -115,9 +115,9 @@ namespace TallyJ.CoreModels
       switch (action)
       {
         case DbAction.Add:
-          result.C_RowId = _tempRowId--;
           if (!_isInTest)
           {
+            result.C_RowId = _tempRowId--;
             Db.Result.Add(result);
             new ResultCacher().UpdateItemAndSaveCache(result);
           }
@@ -162,20 +162,20 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Add this result to the datastore</Summary>
-//    protected void AddResultSummary(ResultSummary resultSummary)
-//    {
-//      ResultSummaries.Add(resultSummary);
-//      if (_addResultSummary != null)
-//      {
-//        _addResultSummary(resultSummary);
-//      }
-//      else
-//      {
-//        resultSummary.C_RowId = tempRowId--;
-//        Db.ResultSummary.Add(resultSummary);
-//        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
-//      }
-//    }
+    //    protected void AddResultSummary(ResultSummary resultSummary)
+    //    {
+    //      ResultSummaries.Add(resultSummary);
+    //      if (_addResultSummary != null)
+    //      {
+    //        _addResultSummary(resultSummary);
+    //      }
+    //      else
+    //      {
+    //        resultSummary.C_RowId = tempRowId--;
+    //        Db.ResultSummary.Add(resultSummary);
+    //        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+    //      }
+    //    }
     public void ResultSummarySaver(DbAction action, ResultSummary resultSummary)
     {
       switch (action)

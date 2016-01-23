@@ -39,6 +39,6 @@ namespace TallyJ.EF
     ///   <typeparam name="T"></typeparam>
     ///   for this election
     /// </summary>
-    void DropThisCache();
+    ICacherBase<T> DropThisCache();
   }
 }
