@@ -509,25 +509,21 @@ namespace TallyJ.CoreModels
         .ForEach(r =>
         {
           Savers.ResultSaver(DbAction.AttachAndRemove, r);
-          Results.Remove(r);
+          //Results.Remove(r);
         });
+
+      Db.SaveChanges();
 
       // remove any existing Tie info
       if (!IsFaked)
       {
         Db.ResultTie.Where(rt => rt.ElectionGuid == TargetElection.ElectionGuid).Delete();
-        new ResultTieCacher();
-        ResultTies.Clear();
       }
-      else
-      {
-        ResultTies.Clear();
-      }
+      ResultTies.Clear();
 
       Db.SaveChanges();
 
       DetermineOrderAndSections();
-
       AnalyzeForTies();
     }
 
