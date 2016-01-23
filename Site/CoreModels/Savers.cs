@@ -13,10 +13,14 @@ namespace TallyJ.CoreModels
     private readonly Func<Result, Result> _addResult;
     private readonly Func<ResultSummary, ResultSummary> _addResultSummary;
     private readonly Func<ResultTie, ResultTie> _addResultTie;
+    private BallotCacher _ballotCacher;
+    private ResultCacher _resultCacher;
 
     public Savers()
     {
       _isInTest = false;
+      _ballotCacher = new BallotCacher();
+      _resultCacher = new ResultCacher();
     }
 
     public Savers(bool isInTest)
@@ -101,7 +105,7 @@ namespace TallyJ.CoreModels
         case DbAction.Save:
           if (!_isInTest)
           {
-            new BallotCacher().UpdateItemAndSaveCache(ballot);
+            _ballotCacher.UpdateItemAndSaveCache(ballot);
           }
           break;
 
@@ -119,7 +123,7 @@ namespace TallyJ.CoreModels
           if (!_isInTest)
           {
             Db.Result.Add(result);
-            new ResultCacher().UpdateItemAndSaveCache(result);
+            _resultCacher.UpdateItemAndSaveCache(result);
           }
           else
           {
@@ -140,14 +144,14 @@ namespace TallyJ.CoreModels
         case DbAction.Save:
           if (!_isInTest)
           {
-            new ResultCacher().UpdateItemAndSaveCache(result);
+            _resultCacher.UpdateItemAndSaveCache(result);
           }
           break;
 
         case DbAction.AttachAndRemove:
           if (!_isInTest)
           {
-            new ResultCacher().RemoveItemAndSaveCache(result);
+            _resultCacher.RemoveItemAndSaveCache(result);
             if (Db.Result.Local.All(r => r.C_RowId != result.C_RowId))
             {
               Db.Result.Attach(result);

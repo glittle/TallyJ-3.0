@@ -314,13 +314,28 @@ namespace TallyJ.CoreModels
     /// <Summary>Current Results records</Summary>
     public List<Person> People
     {
-      get { return _people ?? (_people = new PersonCacher().AllForThisElection); }
+      get
+      {
+        if (_people == null)
+        {
+          _people = new PersonCacher().DropThisCache().AllForThisElection;
+        }
+        return _people;
+      }
     }
 
     /// <Summary>Current Results records</Summary>
     public List<ResultTie> ResultTies
     {
-      get { return _resultTies ?? (_resultTies = new ResultTieCacher().AllForThisElection); }
+      get
+      {
+        if (_resultTies == null)
+        {
+          _resultTies = new ResultTieCacher().DropThisCache().AllForThisElection;
+        }
+
+        return _resultTies;
+      }
     }
 
     internal Election TargetElection
@@ -331,20 +346,20 @@ namespace TallyJ.CoreModels
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _votes ?? (_votes = new VoteCacher().AllForThisElection); }
+      get { return _votes ?? (_votes = new VoteCacher().DropThisCache().AllForThisElection); }
     }
 
     #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
-      get { return _ballots ?? (_ballots = new BallotCacher().AllForThisElection); }
+      get { return _ballots ?? (_ballots = new BallotCacher().DropThisCache().AllForThisElection); }
     }
 
     /// <Summary>Current Results records</Summary>
     public List<Result> Results
     {
-      get { return _results ?? (_results = new ResultCacher().AllForThisElection); }
+      get { return _results ?? (_results = new ResultCacher().DropThisCache().AllForThisElection); }
     }
 
     public List<ResultSummary> ResultSummaries
@@ -356,7 +371,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _localResultSummaryCacher ?? (_localResultSummaryCacher = new ResultSummaryCacher());
+        return _localResultSummaryCacher ?? (_localResultSummaryCacher = (ResultSummaryCacher)(new ResultSummaryCacher()).DropThisCache());
       }
     }
 
@@ -567,7 +582,9 @@ namespace TallyJ.CoreModels
     {
       Result aboveResult = null;
       var nextTieBreakGroup = 1;
+      var foundFirstOneInOther = false;
 
+      // round 1
       foreach (var result in Results.OrderBy(r => r.Rank))
       {
         result.IsTied = false;
@@ -583,12 +600,26 @@ namespace TallyJ.CoreModels
 
             result.IsTied = true;
 
+            if (result.Section == ResultHelper.Section.Other)
+            {
+              foundFirstOneInOther = true;
+            }
+
             if (aboveResult.TieBreakGroup.HasNoContent())
             {
               aboveResult.TieBreakGroup = nextTieBreakGroup;
               nextTieBreakGroup++;
             }
             result.TieBreakGroup = aboveResult.TieBreakGroup;
+          }
+          else {
+            // not tied with one above
+            if (foundFirstOneInOther)
+            {
+              // already finished a tie break in Other
+              // don't bother marking others
+              break;
+            }
           }
 
           // set CloseTo___ - if tied, then is also Close to
@@ -604,7 +635,7 @@ namespace TallyJ.CoreModels
         aboveResult = result;
       }
 
-      // last one
+      // last one?
       if (aboveResult != null)
       {
         aboveResult.CloseToNext = false;
@@ -662,10 +693,10 @@ namespace TallyJ.CoreModels
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
 
-      var stillTied = results.Any(other => other != r
-                                  && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
-                                  && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
-                                  );
+        var stillTied = results.Any(other => other != r
+                                    && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
+                                    && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
+                                    );
         r.IsTieResolved = !stillTied;
       });
 
@@ -780,7 +811,7 @@ namespace TallyJ.CoreModels
       result.TieBreakGroup = null;
       result.TieBreakRequired = false;
 
-      result.VoteCount = null;
+      result.VoteCount = 0;
     }
 
     protected void FillResultSummaryCalc()
