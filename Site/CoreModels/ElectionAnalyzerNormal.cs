@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels
           var voteInfo = voteInfoRaw;
           numVotesTotal++;
           // get existing result record for this person, if available
-          var result = Db.Result.FirstOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
+          var result = Results.FirstOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
           //Result result = null;
           //if (results.Count == 1)
           //{

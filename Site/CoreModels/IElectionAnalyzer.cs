@@ -11,7 +11,6 @@ namespace TallyJ.CoreModels
 
     List<ResultSummary> ResultSummaries { get; }
 
-    ResultSummaryCacher LocalResultSummaryCacher { get; }
 
     /// <Summary>Current Results records</Summary>
     ResultSummary ResultSummaryFinal { get; }

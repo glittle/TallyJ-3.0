@@ -13,14 +13,10 @@ namespace TallyJ.CoreModels
     private readonly Func<Result, Result> _addResult;
     private readonly Func<ResultSummary, ResultSummary> _addResultSummary;
     private readonly Func<ResultTie, ResultTie> _addResultTie;
-    private BallotCacher _ballotCacher;
-    private ResultCacher _resultCacher;
 
     public Savers()
     {
       _isInTest = false;
-      _ballotCacher = new BallotCacher();
-      _resultCacher = new ResultCacher();
     }
 
     public Savers(bool isInTest)
@@ -105,7 +101,7 @@ namespace TallyJ.CoreModels
         case DbAction.Save:
           if (!_isInTest)
           {
-            _ballotCacher.UpdateItemAndSaveCache(ballot);
+            new BallotCacher().UpdateItemAndSaveCache(ballot);
           }
           break;
 
@@ -119,11 +115,11 @@ namespace TallyJ.CoreModels
       switch (action)
       {
         case DbAction.Add:
-          result.C_RowId = _tempRowId--;
           if (!_isInTest)
           {
+            result.C_RowId = _tempRowId--;
             Db.Result.Add(result);
-            _resultCacher.UpdateItemAndSaveCache(result);
+            new ResultCacher().UpdateItemAndSaveCache(result);
           }
           else
           {
@@ -144,14 +140,14 @@ namespace TallyJ.CoreModels
         case DbAction.Save:
           if (!_isInTest)
           {
-            _resultCacher.UpdateItemAndSaveCache(result);
+            new ResultCacher().UpdateItemAndSaveCache(result);
           }
           break;
 
         case DbAction.AttachAndRemove:
           if (!_isInTest)
           {
-            _resultCacher.RemoveItemAndSaveCache(result);
+            new ResultCacher().RemoveItemAndSaveCache(result);
             if (Db.Result.Local.All(r => r.C_RowId != result.C_RowId))
             {
               Db.Result.Attach(result);
@@ -166,20 +162,20 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Add this result to the datastore</Summary>
-//    protected void AddResultSummary(ResultSummary resultSummary)
-//    {
-//      ResultSummaries.Add(resultSummary);
-//      if (_addResultSummary != null)
-//      {
-//        _addResultSummary(resultSummary);
-//      }
-//      else
-//      {
-//        resultSummary.C_RowId = tempRowId--;
-//        Db.ResultSummary.Add(resultSummary);
-//        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
-//      }
-//    }
+    //    protected void AddResultSummary(ResultSummary resultSummary)
+    //    {
+    //      ResultSummaries.Add(resultSummary);
+    //      if (_addResultSummary != null)
+    //      {
+    //        _addResultSummary(resultSummary);
+    //      }
+    //      else
+    //      {
+    //        resultSummary.C_RowId = tempRowId--;
+    //        Db.ResultSummary.Add(resultSummary);
+    //        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+    //      }
+    //    }
     public void ResultSummarySaver(DbAction action, ResultSummary resultSummary)
     {
       switch (action)
