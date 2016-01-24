@@ -13,10 +13,10 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        var model = CurrentContext.Items[ItemKey.LocationModel] as LocationModel;
+        var model = UserSession.CurrentContext.Items[ItemKey.LocationModel] as LocationModel;
 				if (model == null)
 				{
-					CurrentContext.Items[ItemKey.LocationModel] = model = new LocationModel();
+          UserSession.CurrentContext.Items[ItemKey.LocationModel] = model = new LocationModel();
 				}
 				return model;
       }
@@ -26,10 +26,10 @@ namespace TallyJ.Code.Session
 		{
 			get
 			{
-				var dictionary = CurrentContext.Items[ItemKey.JavascriptForPage] as Dictionary<string, string>;
+				var dictionary = UserSession.CurrentContext.Items[ItemKey.JavascriptForPage] as Dictionary<string, string>;
 				if (dictionary == null)
 				{
-					CurrentContext.Items[ItemKey.JavascriptForPage] = dictionary = new Dictionary<string, string>();
+          UserSession.CurrentContext.Items[ItemKey.JavascriptForPage] = dictionary = new Dictionary<string, string>();
 				}
 				return dictionary;
 			}
@@ -39,10 +39,10 @@ namespace TallyJ.Code.Session
 		{
 			get
 			{
-				var dictionary = CurrentContext.Items[ItemKey.ResourcesForJavascript] as Dictionary<string, string>;
+				var dictionary = UserSession.CurrentContext.Items[ItemKey.ResourcesForJavascript] as Dictionary<string, string>;
 				if (dictionary == null)
 				{
-					CurrentContext.Items[ItemKey.ResourcesForJavascript] = dictionary = new Dictionary<string, string>();
+          UserSession.CurrentContext.Items[ItemKey.ResourcesForJavascript] = dictionary = new Dictionary<string, string>();
 				}
 				return dictionary;
 			}

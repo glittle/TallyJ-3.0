@@ -53,12 +53,12 @@ namespace TallyJ.CoreModels
 
     private IEnumerable<Location> Locations
     {
-      get { return _locations ?? (_locations = new LocationCacher().AllForThisElection); }
+      get { return _locations ?? (_locations = new LocationCacher(Db).AllForThisElection); }
     }
 
     private List<Person> PeopleInElection
     {
-      get { return _people ?? (_people = new PersonCacher().AllForThisElection); }
+      get { return _people ?? (_people = new PersonCacher(Db).AllForThisElection); }
     }
 
     public List<Person> PeopleWhoCanVote() //, bool includeIneligible = true
@@ -76,9 +76,10 @@ namespace TallyJ.CoreModels
     /// </summary>
     public void SetInvolvementFlagsToDefault()
     {
-      new PersonCacher().DropThisCache();
+      var personCacher = new PersonCacher(Db);
+      personCacher.DropThisCache();
 
-      var peopleInElection = new PersonCacher().MainQuery().ToList();
+      var peopleInElection = personCacher.MainQuery().ToList();
       var reason = new ElectionModel().GetDefaultIneligibleReason();
       var counter = 0;
       foreach (var person in peopleInElection)
@@ -323,12 +324,12 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        new PersonCacher().ReplaceEntireCache(PeopleInElection);
+        new PersonCacher(Db).ReplaceEntireCache(PeopleInElection);
 
         UpdateFrontDeskListing(personInDatastore);
       }
 
-      var persons = new PersonCacher().AllForThisElection;
+      var persons = new PersonCacher(Db).AllForThisElection;
       return new
       {
         Status = "Saved",
@@ -414,8 +415,8 @@ namespace TallyJ.CoreModels
         .ToList();
 
       //var location = ContextItems.LocationModel.HasLocations && forLocationGuid.HasContent()
-      //  ? new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
-      //  : new LocationCacher().AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
+      //  ? new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == forLocationGuid)
+      //  : new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == UserSession.CurrentLocationGuid);
 
       //      if (location.BallotsCollected.AsInt() == 0)
       //      {
@@ -505,7 +506,7 @@ namespace TallyJ.CoreModels
         return new { Message = "Invalid type" }.AsJsonResult();
       }
 
-      var personCacher = new PersonCacher();
+      var personCacher = new PersonCacher(Db);
       var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null)
       {
@@ -555,7 +556,7 @@ namespace TallyJ.CoreModels
             person.EnvNum = nextNum;
             election.LastEnvNum = nextNum;
 
-            new ElectionCacher().UpdateItemAndSaveCache(election);
+            new ElectionCacher(Db).UpdateItemAndSaveCache(election);
           }
         }
       }
@@ -583,7 +584,7 @@ namespace TallyJ.CoreModels
     private void UpdateLocationCounts(Guid? newVoteLocationGuid, Guid? oldVoteLocationGuid, PersonCacher personCacher)
     {
       // would be great to throw this into a remote queue to be processed later
-      var locationCacher = new LocationCacher();
+      var locationCacher = new LocationCacher(Db);
       var saveNeeded = false;
 
       UpdateLocation(newVoteLocationGuid, personCacher, locationCacher, ref saveNeeded);
@@ -630,7 +631,7 @@ namespace TallyJ.CoreModels
 
     //    public void UpdateFrontDeskListing(long lastRowVersion, bool votingMethodRemoved)
     //    {
-    //      UpdateFrontDeskListing(new PersonCacher().AllForThisElection
+    //      UpdateFrontDeskListing(new PersonCacher(Db).AllForThisElection
     //          .Where(p => p.C_RowVersionInt > lastRowVersion)
     //          .ToList(), votingMethodRemoved);
     //    }
@@ -695,7 +696,7 @@ namespace TallyJ.CoreModels
             AsJsonResult();
       }
 
-      new PersonCacher().DropThisCache();
+      new PersonCacher(Db).DropThisCache();
 
       return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
     }

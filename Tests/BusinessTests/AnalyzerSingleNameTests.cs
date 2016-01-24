@@ -77,7 +77,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -157,7 +157,7 @@ namespace Tests.BusinessTests
       voteinfos[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
       voteinfos[6].PersonCanReceiveVotes = IneligibleReasonEnum.Ineligible_Other.CanReceiveVotes;
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, voteinfos, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, voteinfos, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -226,7 +226,7 @@ namespace Tests.BusinessTests
       voteInfos[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
       voteInfos[6].PersonCanReceiveVotes = IneligibleReasonEnum.Ineligible_Other.CanReceiveVotes;
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, voteInfos, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, voteInfos, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -307,7 +307,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -365,7 +365,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -425,7 +425,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerSingleName(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 

@@ -14,6 +14,12 @@ namespace TallyJ.EF
   {
     /// This static cache is shared across all elections in active use!
     private static readonly ConcurrentDictionary<Guid, Computer> CachedDict = new ConcurrentDictionary<Guid, Computer>();
+    private ITallyJDbContext db;
+
+    public ComputerCacher(ITallyJDbContext db)
+    {
+      this.db = db;
+    }
 
     public List<Computer> AllForThisElection
     {

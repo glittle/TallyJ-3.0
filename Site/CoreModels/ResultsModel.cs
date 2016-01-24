@@ -56,8 +56,8 @@ namespace TallyJ.CoreModels
         //                var numForChart = (numToShow + numExtra) * 2;
 
         var reportVotes =
-          new ResultCacher().AllForThisElection
-            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
+          new ResultCacher(Db).AllForThisElection
+            .Join(new PersonCacher(Db).AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
               (r, p) => new { r, PersonName = p.FullNameFL })
             .OrderBy(g => g.r.Rank)
             .Take(numToShow + numExtra);
@@ -116,7 +116,7 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var resultSummaries = new ResultSummaryCacher().AllForThisElection;
+      var resultSummaries = new ResultSummaryCacher(Db).AllForThisElection;
 
       try
       {
@@ -126,7 +126,7 @@ namespace TallyJ.CoreModels
         // don't show any details if review is needed
         if (resultSummaryFinal.BallotsNeedingReview != 0)
         {
-          var locations = new LocationCacher().AllForThisElection;
+          var locations = new LocationCacher(Db).AllForThisElection;
 
           var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
             .Join(locations, vi => vi.LocationId, l => l.C_RowId,
@@ -177,11 +177,11 @@ namespace TallyJ.CoreModels
 
         // show vote totals
 
-        var persons = new PersonCacher().AllForThisElection;
+        var persons = new PersonCacher(Db).AllForThisElection;
 
         var vResultInfos =
           // TODO 2012-01-21 Glen Little: Could return fewer columns for non-tied results
-          new ResultCacher().AllForThisElection
+          new ResultCacher(Db).AllForThisElection
             .OrderBy(r => r.Rank)
             .ToList()
             .Select(r => new
@@ -202,7 +202,7 @@ namespace TallyJ.CoreModels
               r.VoteCount
             }).ToList();
 
-        var ties = new ResultTieCacher().AllForThisElection
+        var ties = new ResultTieCacher(Db).AllForThisElection
           .OrderBy(rt => rt.TieBreakGroup)
           .Select(rt => new
           {
@@ -263,7 +263,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";
@@ -326,7 +326,7 @@ namespace TallyJ.CoreModels
 
       var resultsIds = countItems.Select(ci => ci.ResultId).ToArray();
 
-      var resultCacher = new ResultCacher();
+      var resultCacher = new ResultCacher(Db);
       var results = resultCacher.AllForThisElection.Where(r => resultsIds.Contains(r.C_RowId)).ToList();
 
       foreach (var result in results)
@@ -349,7 +349,7 @@ namespace TallyJ.CoreModels
     public JsonResult SaveManualResults(ResultSummary manualResultsFromBrowser)
     {
       ResultSummary resultSummary = null;
-      var resultSummaryCacher = new ResultSummaryCacher();
+      var resultSummaryCacher = new ResultSummaryCacher(Db);
 
       if (manualResultsFromBrowser.C_RowId != 0)
       {

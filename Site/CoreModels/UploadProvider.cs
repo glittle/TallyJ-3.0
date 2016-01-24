@@ -12,12 +12,12 @@ namespace TallyJ.CoreModels
 {
   public class UploadProvider : UploadStreamProviderBase
   {
-    private TallyJ2dEntities _db;
+    private ITallyJDbContext _db;
 
     /// <summary>
     ///     Access to the database
     /// </summary>
-    protected TallyJ2dEntities Db
+    protected ITallyJDbContext Db
     {
       get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
     }

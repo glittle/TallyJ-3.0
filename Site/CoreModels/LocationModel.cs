@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     /// <Summary>List of Locations</Summary>
     public List<Location> MyLocations
     {
-      get { return _locations ?? (_locations = new LocationCacher().AllForThisElection); }
+      get { return _locations ?? (_locations = new LocationCacher(Db).AllForThisElection); }
     }
 
     public Dictionary<Guid, int> LocationIdMap
@@ -93,7 +93,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult UpdateStatus(int locationId, string status)
     {
-      var locationCacher = new LocationCacher();
+      var locationCacher = new LocationCacher(Db);
 
       var location = MyLocations.SingleOrDefault(l => l.C_RowId == locationId);
 
@@ -141,7 +141,7 @@ namespace TallyJ.CoreModels
     public object LocationInfoForJson(Location location)
     {
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
-      var sum = BallotModelCore.BallotCount(location.LocationGuid, isSingleName);
+      var sum = new BallotHelper().BallotCount(location.LocationGuid, isSingleName);
 
       return new
       {
@@ -164,7 +164,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new LocationCacher().UpdateItemAndSaveCache(location);
+      new LocationCacher(Db).UpdateItemAndSaveCache(location);
 
       return new
       {
@@ -183,14 +183,14 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new LocationCacher().UpdateItemAndSaveCache(location);
+      new LocationCacher(Db).UpdateItemAndSaveCache(location);
 
       return new { Saved = true }.AsJsonResult();
     }
 
     public JsonResult EditLocation(int id, string text)
     {
-      var locationCacher = new LocationCacher();
+      var locationCacher = new LocationCacher(Db);
 
       var location = locationCacher.AllForThisElection.SingleOrDefault(l => l.C_RowId == id);
       var changed = false;
@@ -221,7 +221,7 @@ namespace TallyJ.CoreModels
         if (MyLocations.Count() > 1)
         {
           // delete existing if we can
-          var used = new BallotCacher().AllForThisElection.Any(b => b.LocationGuid == location.LocationGuid);
+          var used = new BallotCacher(Db).AllForThisElection.Any(b => b.LocationGuid == location.LocationGuid);
           if (!used)
           {
             Db.Location.Remove(location);
@@ -287,7 +287,7 @@ namespace TallyJ.CoreModels
     {
       //var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
-      var locationCacher = new LocationCacher();
+      var locationCacher = new LocationCacher(Db);
 
       var locations = locationCacher.AllForThisElection.Where(l => idList.Contains(l.C_RowId)).ToList();
 

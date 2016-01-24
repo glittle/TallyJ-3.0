@@ -1,9 +1,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TallyJ.CoreModels;
+using TallyJ.EF;
 
 namespace Tests.Support
 {
   public static class Extensions
   {
+
     public static void ShouldEqual<T>(this T actual, T expected)
     {
       ShouldEqual<T>(actual, expected, null);

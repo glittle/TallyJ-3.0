@@ -21,22 +21,22 @@ namespace TallyJ.CoreModels
       {
         var now = DateTime.Now;
 
-        var ballots = new BallotCacher().AllForThisElection;
+        var ballots = new BallotCacher(Db).AllForThisElection;
         var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
-        var locations = new LocationCacher().AllForThisElection;
-        var votes = new VoteCacher().AllForThisElection;
+        var locations = new LocationCacher(Db).AllForThisElection;
+        var votes = new VoteCacher(Db).AllForThisElection;
 
         return
           new
             {
               Locations = locations
-                //.JoinMatchingOrNull(new ComputerCacher().AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
+                //.JoinMatchingOrNull(new ComputerCacher(Db).AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(l => l.SortOrder)
                 .ThenBy(l => l.Name)
                 .ThenBy(l => l.C_RowId)
                 .Select(l => new
                                 {
-                                  BallotsAtLocation = BallotModelCore.BallotCount(l.LocationGuid, isSingleName, ballots, votes),
+                                  BallotsAtLocation = new BallotHelper().BallotCount(l.LocationGuid, isSingleName, ballots, votes),
                                   l.BallotsCollected,
                                   l.ContactInfo,
                                   l.Name,
@@ -47,8 +47,8 @@ namespace TallyJ.CoreModels
                                     .Select(g => new
                                     {
                                       ComputerCode = g.Key,
-                                      BallotsAtComputer = BallotModelCore.BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
-                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
+                                      BallotsAtComputer = new BallotHelper().BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
+                                      Computers = new ComputerCacher(Db).AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
                                          .OrderBy(c => c.ComputerCode)
                                          .Select(c => new
                                          {

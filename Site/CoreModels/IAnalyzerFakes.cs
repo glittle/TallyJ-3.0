@@ -6,6 +6,8 @@ namespace TallyJ.CoreModels
 {
   public interface IAnalyzerFakes
   {
+    ITallyJDbContext DbContext { get; }
+
     ResultSummary ResultSummaryManual { get; set; }
     List<ResultTie> ResultTies { get; set; }
     List<Result> Results { get; set; }

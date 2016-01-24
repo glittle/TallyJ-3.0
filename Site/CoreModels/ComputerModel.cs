@@ -25,12 +25,12 @@ namespace TallyJ.CoreModels
     {
       Computer computer;
 
-      var computerCacher = new ComputerCacher();
+      var computerCacher = new ComputerCacher(Db);
 
       var locationGuid = UserSession.CurrentLocationGuid;
       if (locationGuid == Guid.Empty)
       {
-        UserSession.CurrentLocationGuid = locationGuid = new LocationCacher().AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
+        UserSession.CurrentLocationGuid = locationGuid = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
       }
 
       lock (ComputerModelLock)
@@ -62,7 +62,7 @@ namespace TallyJ.CoreModels
     //
     //
     //      const int maxMinutesOfNoContact = 30;
-    //      var computerCacher = new ComputerCacher();
+    //      var computerCacher = new ComputerCacher(Db);
     //
     //      var now = DateTime.Now;
     //      var computers = computerCacher.AllForThisElection;
@@ -75,7 +75,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
     public bool MoveCurrentComputerIntoLocation(int locationId)
     {
-      var location = new LocationCacher().AllForThisElection.SingleOrDefault(l => l.C_RowId == locationId);
+      var location = new LocationCacher(Db).AllForThisElection.SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
@@ -89,7 +89,7 @@ namespace TallyJ.CoreModels
 
       computer.LocationGuid = location.LocationGuid;
 
-      new ComputerCacher().UpdateComputerLocation(computer);
+      new ComputerCacher(Db).UpdateComputerLocation(computer);
 
       SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 
@@ -99,7 +99,7 @@ namespace TallyJ.CoreModels
       {
         // for single name elections, only have one ballot per computer per location. (But if altered from a normal election to a single name election, may have multiple.)
         var ballotId =
-          new BallotCacher().AllForThisElection.Where(b => b.LocationGuid == location.LocationGuid
+          new BallotCacher(Db).AllForThisElection.Where(b => b.LocationGuid == location.LocationGuid
                                                            && b.ComputerCode == computer.ComputerCode)
             .OrderBy(b => b.BallotNumAtComputer)
             .Select(b => b.C_RowId).FirstOrDefault();
@@ -166,12 +166,12 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      new ComputerCacher().UpdateLastContactOfCurrentComputer();
+      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
     }
 
     public bool ProcessPulse()
     {
-      new ComputerCacher().UpdateLastContactOfCurrentComputer();
+      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
       return true;
     }
 
@@ -180,7 +180,7 @@ namespace TallyJ.CoreModels
       var computer = UserSession.CurrentComputer;
       if (computer != null)
       {
-        new ComputerCacher().RemoveItemAndSaveCache(computer);
+        new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
       }
     }
   }

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Web;
 using System.Web.Caching;
 using System.Xml;
 using TallyJ.Code.Session;
@@ -30,11 +31,11 @@ namespace TallyJ.Code.Resources
       {
         if (isCachedByUser)
         {
-          doc = (XmlDocument)CurrentContext.Session[nameInCache];
+          doc = (XmlDocument)UserSession.CurrentContext.Session[nameInCache];
         }
         else
         {
-          doc = (XmlDocument)CurrentContext.Cache[nameInCache];
+          doc = (XmlDocument)HttpContext.Current.Cache[nameInCache];
         }
       }
 
@@ -47,11 +48,11 @@ namespace TallyJ.Code.Resources
         {
           if (isCachedByUser)
           {
-            CurrentContext.Session.Remove(nameInCache); // 'okay if not there...
+            UserSession.CurrentContext.Session.Remove(nameInCache); // 'okay if not there...
           }
           else
           {
-            CurrentContext.Cache.Remove(nameInCache); //'okay if not there...
+            HttpContext.Current.Cache.Remove(nameInCache); //'okay if not there...
           }
         }
         else
@@ -59,11 +60,11 @@ namespace TallyJ.Code.Resources
           //'got it, store it in cache
           if (isCachedByUser)
           {
-            CurrentContext.Session[nameInCache] = doc; //  ', New System.Web.Caching.CacheDependency(sPath))
+            UserSession.CurrentContext.Session[nameInCache] = doc; //  ', New System.Web.Caching.CacheDependency(sPath))
           }
           else
           {
-            CurrentContext.Cache.Insert(nameInCache, doc, new CacheDependency(path));
+            HttpContext.Current.Cache.Insert(nameInCache, doc, new CacheDependency(path));
           }
         }
       }

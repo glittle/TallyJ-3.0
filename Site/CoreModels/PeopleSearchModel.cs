@@ -17,8 +17,8 @@ namespace TallyJ.CoreModels
     {
       const int max = 30;
 
-      var personList = new PersonCacher().AllForThisElection;
-      var voteList = new VoteCacher().AllForThisElection;
+      var personList = new PersonCacher(Db).AllForThisElection;
+      var voteList = new VoteCacher(Db).AllForThisElection;
       var voteHelper = new VoteHelper(forBallot);
 
       List<SearchResult> results;

@@ -53,8 +53,8 @@ namespace TallyJ.CoreModels
     {
       var helper = new TellerHelper();
 
-      var tellerCacher = new TellerCacher();
-      var computerCacher = new ComputerCacher();
+      var tellerCacher = new TellerCacher(Db);
+      var computerCacher = new ComputerCacher(Db);
 
       var currentComputer = UserSession.CurrentComputer;
 
@@ -134,7 +134,7 @@ namespace TallyJ.CoreModels
 
     //    public static string GetTellerNames(Guid? tellerGuid1, Guid? tellerGuid2)
     //    {
-    //      var tellers = new TellerCacher().AllForThisElection;
+    //      var tellers = new TellerCacher(Db).AllForThisElection;
     //
     //      var tellersOnThisComputer = new List<Teller>
     //      {
@@ -157,7 +157,7 @@ namespace TallyJ.CoreModels
 
     public object DeleteTeller(int tellerId)
     {
-      var thisTeller = new TellerCacher().GetById(tellerId);
+      var thisTeller = new TellerCacher(Db).GetById(tellerId);
 
       if (thisTeller == null)
       {
@@ -170,7 +170,7 @@ namespace TallyJ.CoreModels
         Db.Teller.Remove(thisTeller);
         Db.SaveChanges();
 
-        new TellerCacher().RemoveItemAndSaveCache(thisTeller);
+        new TellerCacher(Db).RemoveItemAndSaveCache(thisTeller);
       }
       catch (Exception ex)
       {

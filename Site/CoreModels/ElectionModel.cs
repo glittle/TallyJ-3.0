@@ -226,7 +226,7 @@ namespace TallyJ.CoreModels
     public JsonResult SaveElection(Election electionFromBrowser)
     {
       //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
-      var electionCacher = new ElectionCacher();
+      var electionCacher = new ElectionCacher(Db);
 
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
@@ -345,7 +345,7 @@ namespace TallyJ.CoreModels
 
     private void UpgradeOldData()
     {
-      var personCacher = new PersonCacher();
+      var personCacher = new PersonCacher(Db);
       var testInfo = personCacher.MainQuery().Select(p=>new {p.CombinedInfo, p.CombinedSoundCodes}).FirstOrDefault();
 
       if (testInfo == null)
@@ -360,7 +360,7 @@ namespace TallyJ.CoreModels
       }
 
       // fix all data
-      var voteCacher = new VoteCacher();
+      var voteCacher = new VoteCacher(Db);
 
       var people = personCacher.MainQuery().ToList();
       var votes = voteCacher.MainQuery().ToList();
@@ -517,7 +517,7 @@ namespace TallyJ.CoreModels
       };
       Db.Location.Add(mainLocation);
       Db.SaveChanges();
-      new LocationCacher().UpdateItemAndSaveCache(mainLocation);
+      new LocationCacher(Db).UpdateItemAndSaveCache(mainLocation);
 
       //      var computerModel = new ComputerModel();
       //      computerModel.CreateComputerForMe();
@@ -535,7 +535,7 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      var electionCacher = new ElectionCacher();
+      var electionCacher = new ElectionCacher(Db);
       var election = UserSession.CurrentElection;
       if (election.TallyStatus != status)
       {
@@ -608,7 +608,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult UpdateElectionShowAllJson(bool showFullReport)
     {
-      var electionCacher = new ElectionCacher();
+      var electionCacher = new ElectionCacher(Db);
 
       var election = UserSession.CurrentElection;
       if (election.ShowFullReport != showFullReport)
@@ -629,7 +629,7 @@ namespace TallyJ.CoreModels
     {
       if (UserSession.IsKnownTeller)
       {
-        var electionCacher = new ElectionCacher();
+        var electionCacher = new ElectionCacher(Db);
 
         var election = UserSession.CurrentElection;
         Db.Election.Attach(election);
@@ -674,7 +674,7 @@ namespace TallyJ.CoreModels
 
           Db.SaveChanges();
 
-          new ElectionCacher().RemoveItemAndSaveCache(election);
+          new ElectionCacher(Db).RemoveItemAndSaveCache(election);
           new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
           new MainHub().DisconnectGuests();
         }
@@ -732,7 +732,7 @@ namespace TallyJ.CoreModels
     //
     //      election.ListedForPublicAsOf = now;
     //
-    //      var electionCacher = new ElectionCacher();
+    //      var electionCacher = new ElectionCacher(Db);
     //      electionCacher.UpdateItemAndSaveCache(election);
     //    }
 
@@ -744,7 +744,7 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
+      var lastContactOfTeller = (computers ?? new ComputerCacher(Db).AllForThisElection)
         .Where(c => c.AuthLevel == "Known")
         .Max(c => c.LastContact);
 
@@ -755,7 +755,7 @@ namespace TallyJ.CoreModels
            5.minutes().TotalMinutes))
       {
         currentElection.ListedForPublicAsOf = lastContactOfTeller;
-        new ElectionCacher().UpdateItemAndSaveCache(currentElection);
+        new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
       }
 
       new PublicElectionLister().UpdateThisElectionInList();

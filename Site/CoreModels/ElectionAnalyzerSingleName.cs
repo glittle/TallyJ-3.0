@@ -13,10 +13,9 @@ namespace TallyJ.CoreModels
     {
     }
 
-    public ElectionAnalyzerSingleName(IAnalyzerFakes fakes, Election election,
-      List<VoteInfo> voteinfos, List<Ballot> ballots,
-      List<Person> people)
-      : base(fakes, election, people, ballots, voteinfos)
+    public ElectionAnalyzerSingleName(IAnalyzerFakes fakes)
+      //, Election election,      List<VoteInfo> voteinfos, List<Ballot> ballots,      List<Person> people)
+      : base(fakes)//, election, people, ballots, voteinfos)
     {
     }
 

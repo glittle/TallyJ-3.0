@@ -274,7 +274,7 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      var currentPeople = new PersonCacher().AllForThisElection.ToList();
+      var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
       var personModel = new PeopleModel();
       var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
@@ -426,7 +426,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new PersonCacher().DropThisCache();
+      new PersonCacher(Db).DropThisCache();
 
       var result = new List<string>();
       result.Add("Processed {0} line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()));

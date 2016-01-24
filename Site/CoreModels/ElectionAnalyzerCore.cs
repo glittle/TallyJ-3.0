@@ -10,6 +10,9 @@ using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 using TallyJ.CoreModels.Hubs;
+using TallyJ.Code.UnityRelated;
+using System.Data.Entity.Infrastructure;
+using TallyJ.Code.Data;
 
 namespace TallyJ.CoreModels
 {
@@ -26,45 +29,50 @@ namespace TallyJ.CoreModels
     private const int ThresholdForCloseVote = 3;
     protected readonly Savers Savers;
 
-    private readonly Func<int> _saveChanges;
-    private List<Ballot> _fakeBallots;
+    //private readonly Func<int> _saveChanges;
+    //private List<Ballot> _fakeBallots;
     private Election _election;
-    private List<Person> _fakePeople;
-    private List<ResultSummary> _fakeResultSummaries;
-    private List<ResultTie> _fakeResultTies;
-    private List<Result> _fakeResults;
-    private List<VoteInfo> _fakeVoteinfos;
-    private List<Vote> _fakeVotes;
+    //private List<Person> _fakePeople;
+    //private List<ResultSummary> _fakeResultSummaries;
+    //private List<ResultTie> _fakeResultTies;
+    //private List<Result> _fakeResults;
+    //private List<VoteInfo> _fakeVoteinfos;
+    //private List<Vote> _fakeVotes;
     protected IStatusUpdateHub _hub;
-    private ResultSummaryCacher _localResultSummaryCacher;
+    //private ResultSummaryCacher _localResultSummaryCacher;
 
     protected ElectionAnalyzerCore()
     {
-      Savers = new Savers();
+      DbContext = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+      Savers = new Savers(DbContext);
       _hub = new AnalyzeHub();
     }
     protected ElectionAnalyzerCore(Election election, IStatusUpdateHub hub = null)
     {
       _election = election;
       _hub = hub ?? new AnalyzeHub();
-      Savers = new Savers();
+      DbContext = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+      Savers = new Savers(DbContext);
     }
 
-    protected ElectionAnalyzerCore(IAnalyzerFakes fakes, Election election, List<Person> people,
-      List<Ballot> ballots,
-      List<VoteInfo> voteinfos)
+    protected ElectionAnalyzerCore(IAnalyzerFakes fakes
+      //, Election election, List<Person> people, List<Ballot> ballots, List<VoteInfo> voteinfos
+      )
     {
-      Savers = new Savers(fakes);
-      _election = election;
-      _fakeResultTies = fakes.ResultTies;
-      _fakeResults = fakes.Results;
-      _fakeResultSummaries = fakes.ResultSummaries;
-      _fakeResultSummaries.Add(fakes.ResultSummaryManual);
-      _fakePeople = people;
-      _fakeBallots = ballots;
-      _fakeVoteinfos = voteinfos;
-      _fakeVotes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
-      _saveChanges = fakes.SaveChanges;
+      DbContext = fakes.DbContext;
+      Savers = new Savers(DbContext);
+
+      //_election = election;
+      //_fakeResultTies = fakes.ResultTies;
+      //_fakeResults = fakes.Results;
+      //_fakeResultSummaries = fakes.ResultSummaries;
+      //_fakeResultSummaries.Add(fakes.ResultSummaryManual);
+      //_fakePeople = people;
+      //_fakeBallots = ballots;
+      //_fakeVoteinfos = voteinfos;
+      //_fakeVotes = voteinfos.Select(vi => new Vote { C_RowId = vi.VoteId }).ToList();
+      //_saveChanges = fakes.SaveChanges;
+
       IsFaked = true;
       _hub = fakes.FakeHub;
     }
@@ -75,7 +83,7 @@ namespace TallyJ.CoreModels
 
     public ResultSummary ResultSummaryCalc { get; private set; }
     public ResultSummary ResultSummaryFinal { get; private set; }
-    public ResultSummary ResultSummaryManual { get; private set; }
+    //public ResultSummary ResultSummaryManual { get; private set; }
 
     //protected Func<Result, Result> RemoveResult
     //{
@@ -89,10 +97,10 @@ namespace TallyJ.CoreModels
     //}
     /// <Summary>Remove this result from the datastore</Summary>
     /// <Summary>Save all datastore changes</Summary>
-    protected Func<int> SaveChanges
-    {
-      get { return _saveChanges ?? Db.SaveChanges; }
-    }
+    //protected Func<int> SaveChanges
+    //{
+    //  get { return _saveChanges ?? Db.SaveChanges; }
+    //}
 
     //protected Func<IEnumerable<T>, int> BulkInsert(IEnumerable<T> objects)
     //{
@@ -119,7 +127,7 @@ namespace TallyJ.CoreModels
     //        case DbAction.Save:
     //          if (!IsFaked)
     //          {
-    //            new VoteCacher().UpdateItemAndSaveCache(vote);
+    //            new VoteCacher(Db).UpdateItemAndSaveCache(vote);
     //          }
     //          break;
     //
@@ -143,7 +151,7 @@ namespace TallyJ.CoreModels
     //        case DbAction.Save:
     //          if (!IsFaked)
     //          {
-    //            new BallotCacher().UpdateItemAndSaveCache(ballot);
+    //            new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
     //          }
     //          break;
     //
@@ -161,7 +169,7 @@ namespace TallyJ.CoreModels
     //          if (!IsFaked)
     //          {
     //            Db.Result.Add(result);
-    //            new ResultCacher().UpdateItemAndSaveCache(result);
+    //            new ResultCacher(Db).UpdateItemAndSaveCache(result);
     //          }
     //          else
     //          {
@@ -179,14 +187,14 @@ namespace TallyJ.CoreModels
     //        case DbAction.Save:
     //          if (!IsFaked)
     //          {
-    //            new ResultCacher().UpdateItemAndSaveCache(result);
+    //            new ResultCacher(Db).UpdateItemAndSaveCache(result);
     //          }
     //          break;
     //
     //        case DbAction.AttachAndRemove:
     //          if (!IsFaked)
     //          {
-    //            new ResultCacher().RemoveItemAndSaveCache(result);
+    //            new ResultCacher(Db).RemoveItemAndSaveCache(result);
     //            Db.Result.Attach(result);
     //            Db.Result.Remove(result);
     //          }
@@ -209,7 +217,7 @@ namespace TallyJ.CoreModels
     ////      {
     ////        resultSummary.C_RowId = tempRowId--;
     ////        Db.ResultSummary.Add(resultSummary);
-    ////        new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+    ////        new ResultSummaryCacher(Db).UpdateItemAndSaveCache(resultSummary);
     ////      }
     ////    }
     //
@@ -223,7 +231,7 @@ namespace TallyJ.CoreModels
     //          if (!IsFaked)
     //          {
     //            Db.ResultSummary.Add(resultSummary);
-    //            new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+    //            new ResultSummaryCacher(Db).UpdateItemAndSaveCache(resultSummary);
     //          }
     //          else
     //          {
@@ -241,14 +249,14 @@ namespace TallyJ.CoreModels
     //        case DbAction.Save:
     //          if (!IsFaked)
     //          {
-    //            new ResultSummaryCacher().UpdateItemAndSaveCache(resultSummary);
+    //            new ResultSummaryCacher(Db).UpdateItemAndSaveCache(resultSummary);
     //          }
     //          break;
     //
     //        case DbAction.AttachAndRemove:
     //          if (!IsFaked)
     //          {
-    //            new ResultSummaryCacher().RemoveItemAndSaveCache(resultSummary);
+    //            new ResultSummaryCacher(Db).RemoveItemAndSaveCache(resultSummary);
     //            Db.ResultSummary.Attach(resultSummary);
     //            Db.ResultSummary.Remove(resultSummary);
     //          }
@@ -274,7 +282,7 @@ namespace TallyJ.CoreModels
     //          {
     //            resultTie.C_RowId = tempRowId--;
     //            Db.ResultTie.Add(resultTie);
-    //            new ResultTieCacher().UpdateItemAndSaveCache(resultTie);
+    //            new ResultTieCacher(Db).UpdateItemAndSaveCache(resultTie);
     //          }
     //          else
     //          {
@@ -292,14 +300,14 @@ namespace TallyJ.CoreModels
     //        case DbAction.Save:
     //          if (!IsFaked)
     //          {
-    //            new ResultTieCacher().UpdateItemAndSaveCache(resultTie);
+    //            new ResultTieCacher(Db).UpdateItemAndSaveCache(resultTie);
     //          }
     //          break;
     //
     //        case DbAction.AttachAndRemove:
     //          if (!IsFaked && resultTie.C_RowId > 0)
     //          {
-    //            new ResultTieCacher().RemoveItemAndSaveCache(resultTie);
+    //            new ResultTieCacher(Db).RemoveItemAndSaveCache(resultTie);
     //            Db.ResultTie.Attach(resultTie);
     //            Db.ResultTie.Remove(resultTie);
     //          }
@@ -316,7 +324,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _fakePeople ?? new PersonCacher().AllForThisElection;
+        return new PersonCacher(DbContext).AllForThisElection;
       }
     }
 
@@ -325,7 +333,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _fakeResultTies ?? new ResultTieCacher().AllForThisElection;
+        return new ResultTieCacher(Db).AllForThisElection;
       }
     }
 
@@ -337,26 +345,25 @@ namespace TallyJ.CoreModels
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _fakeVotes ?? new VoteCacher().AllForThisElection; }
+      get { return new VoteCacher(Db).AllForThisElection; }
     }
 
     #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
-      get { return _fakeBallots ?? new BallotCacher().AllForThisElection; }
+      get { return new BallotCacher(Db).AllForThisElection; }
     }
 
     /// <Summary>Current Results records</Summary>
     public List<Result> Results
     {
-      //get { return _results ?? (_results = new ResultCacher().DropThisCache().AllForThisElection); }
-      get { return _fakeResults ?? new ResultCacher().AllForThisElection; }
+      get { return new ResultCacher(Db).AllForThisElection; }
     }
 
     public List<ResultSummary> ResultSummaries
     {
-      get { return _fakeResultSummaries ?? new ResultSummaryCacher().AllForThisElection; }
+      get { return new ResultSummaryCacher(Db).AllForThisElection; }
     }
 
     /// <Summary>Current VoteInfo records. They are detached, so no updates can be done</Summary>
@@ -364,7 +371,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        if (_fakeVoteinfos != null) return _fakeVoteinfos;
+        //if (_fakeVoteinfos != null) return _fakeVoteinfos;
 
         return Votes
           .JoinMatchingOrNull(People, v => v.PersonGuid, p => p.PersonGuid, (v, p) => new { v, p })
@@ -394,6 +401,8 @@ namespace TallyJ.CoreModels
       }
     }
 
+    public ITallyJDbContext DbContext { get; private set; }
+
     /// <Summary>In the Core, do some common results generation</Summary>
     public abstract ResultSummary AnalyzeEverything();
 
@@ -403,7 +412,7 @@ namespace TallyJ.CoreModels
       var electionGuid = TargetElection.ElectionGuid;
       if (!IsFaked)
       {
-        var resultSummaryCacher = new ResultSummaryCacher();
+        var resultSummaryCacher = new ResultSummaryCacher(Db);
         var summaries = resultSummaryCacher.AllForThisElection;
         resultSummaryCacher.RemoveItemsAndSaveCache(summaries.Where(rs => rs.ResultType != ResultType.Manual));
 

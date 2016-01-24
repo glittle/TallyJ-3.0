@@ -15,7 +15,7 @@ namespace TallyJ.CoreModels
     int _nonAdults = 0;
     int _alreadyLoaded = 0;
 
-    public ImportV1Community(TallyJ2dEntities db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    public ImportV1Community(ITallyJDbContext db, ImportFile file, XmlDocument xml, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
       : base(db, file, xml, people, addPerson, logHelper)
     {
     }
@@ -105,11 +105,11 @@ namespace TallyJ.CoreModels
 
       _file.ProcessingStatus = "Imported";
 
-      _db.SaveChanges();
+      Db.SaveChanges();
 
       if (_peopleAdded > 0)
       {
-        new PersonCacher().DropThisCache();
+        new PersonCacher(Db).DropThisCache();
       }
 
       ImportSummaryMessage = "Imported {0} {1}.".FilledWith(_peopleAdded, _peopleAdded.Plural("people", "person"));

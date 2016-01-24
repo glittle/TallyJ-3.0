@@ -217,6 +217,7 @@ namespace TallyJ.CoreModels.ExportImport
         }
       }
 
+
       Db.BulkInsert(new[] { _election });
       _hub.StatusUpdate("Loading <b>{0}</b>".FilledWith(_election.Name));
 

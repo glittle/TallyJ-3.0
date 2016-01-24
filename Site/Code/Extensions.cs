@@ -13,6 +13,7 @@ using System.Web.Script.Serialization;
 using RazorEngine.Text;
 using TallyJ.CoreModels;
 using TallyJ.EF;
+using TallyJ.Code.Session;
 
 namespace TallyJ.Code
 {
@@ -471,10 +472,10 @@ namespace TallyJ.Code
     [DebuggerStepThrough]
     public static T FromSession<T>(this string input, T defaultValue)
     {
-      if (HttpContext.Current == null || HttpContext.Current.Session == null) return defaultValue;
+      //if (UserSession.CurrentContext == null || CurrentContext.Session == null) return defaultValue;
       try
       {
-        var value = HttpContext.Current.Session[input];
+        var value = UserSession.CurrentContext.Session[input];
         if (value == null || value.GetType() != typeof(T))
         {
           return defaultValue;
@@ -498,12 +499,12 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static T FromPageItems<T>(this string input, T defaultValue, bool saveDefault = false)
     {
-      var value = HttpContext.Current.Items[input];
+      var value = UserSession.CurrentContext.Items[input];
       if (value == null || value.GetType() != typeof(T))
       {
         if (saveDefault)
         {
-          HttpContext.Current.Items[input] = defaultValue;
+          UserSession.CurrentContext.Items[input] = defaultValue;
         }
         return defaultValue;
       }
@@ -512,13 +513,13 @@ namespace TallyJ.Code
 
     public static T SetInSession<T>(this string input, T newValue)
     {
-      HttpContext.Current.Session[input] = newValue;
+      UserSession.CurrentContext.Session[input] = newValue;
       return newValue;
     }
 
     public static T SetInPageItems<T>(this string input, T newValue)
     {
-      HttpContext.Current.Items[input] = newValue;
+      UserSession.CurrentContext.Items[input] = newValue;
       return newValue;
     }
 

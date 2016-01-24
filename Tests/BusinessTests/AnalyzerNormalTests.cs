@@ -7,6 +7,9 @@ using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 using Tests.Support;
+using TallyJ.Code.UnityRelated;
+using TallyJ.Code.Session;
+using TallyJ.Code;
 
 namespace Tests.BusinessTests
 {
@@ -14,11 +17,15 @@ namespace Tests.BusinessTests
   public class AnalyzerNormalTests
   {
     private AnalyzerFakes _fakes;
-    private List<Person> _persons;
+    private List<Person> _samplePeople;
+    private ITallyJDbContext Db;
+    private Guid _electionGuid;
+    private Guid _locationGuid;
+    private int _rowId = 1; // can be used (and incremented) everywhere
 
     private List<Person> SamplePeople
     {
-      get { return _persons; }
+      get { return _samplePeople; }
     }
 
     [TestInitialize]
@@ -26,7 +33,22 @@ namespace Tests.BusinessTests
     {
       _fakes = new AnalyzerFakes();
 
-      _persons = new List<Person>
+      Db = _fakes.DbContext;
+      UnityInstance.Offer(Db);
+
+      _electionGuid = Guid.NewGuid();
+      _locationGuid = Guid.NewGuid();
+
+      SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
+      SessionKey.CurrentLocationGuid.SetInSession(_locationGuid);
+
+      SessionKey.CurrentComputer.SetInSession(new Computer
+      {
+        ComputerGuid = Guid.NewGuid(),
+        ComputerCode = "TEST"
+      });
+
+      _samplePeople = new List<Person>
       {
         new Person {VotingMethod = VotingMethodEnum.InPerson},
         new Person {},
@@ -35,53 +57,59 @@ namespace Tests.BusinessTests
         new Person {},
         new Person {IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person},
       };
-      _persons.ForEach(delegate (Person p)
+
+      _samplePeople.ForEach(delegate (Person p)
       {
+        p.C_RowId = _rowId++;
+        p.ElectionGuid = _electionGuid;
         p.CanVote = true;
+        p.CanReceiveVotes = true;
         p.PersonGuid = Guid.NewGuid();
       });
+
+      Db.Person.AddRange(_samplePeople);
     }
 
+    public void PrepElection(Election election)
+    {
+      Db.Election.Add(election);
+      ItemKey.CurrentElection.SetInPageItems(election);
+
+      Db.Location.Add(new Location
+      {
+        ElectionGuid = _electionGuid,
+        LocationGuid = _locationGuid
+      });
+    }
 
     [TestMethod]
     public void Ballot_TwoPeople()
     {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
+      PrepElection(new Election
       {
-        ElectionGuid = electionGuid,
+        ElectionGuid = _electionGuid,
         NumberToElect = 2,
         NumberExtra = 0,
         CanReceive = ElectionModel.CanVoteOrReceive.All
-      };
+      });
 
-      var personGuid = Guid.NewGuid();
-
-      var ballots = new List<Ballot>
+      var ballots = new[]
       {
-        new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
+        new Ballot().With(_locationGuid, _rowId++)
       };
-      var votes = new List<VoteInfo>
-      {
-        new VoteInfo {PersonGuid = personGuid},
-        new VoteInfo {PersonGuid = Guid.NewGuid()},
-      };
-      foreach (var voteInfo in votes)
-      {
-        //VoteInfo.PersonGuid = personGuid; // all for one person in this test
-        voteInfo.ElectionGuid = electionGuid;
-        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
-        voteInfo.BallotGuid = ballots.Select(b => b.BallotGuid).First();
-        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        voteInfo.PersonCanReceiveVotes = true;
-      }
+      Db.Ballot.AddRange(ballots);
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      Db.Vote.AddRange(new[]
+      {
+        new Vote().With(SamplePeople[0], ballots[0], _rowId++),
+        new Vote().With(SamplePeople[1], ballots[0], _rowId++)
+      });
+
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
-      var results = model.Results;
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
 
       results.Count.ShouldEqual(2);
 
@@ -97,6 +125,51 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
+      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+    [TestMethod]
+    public void Ballot_TwoPeople_NameChanged()
+    {
+      PrepElection(new Election
+      {
+        ElectionGuid = _electionGuid,
+        NumberToElect = 2,
+        NumberExtra = 0,
+        CanReceive = ElectionModel.CanVoteOrReceive.All
+      });
+
+      var ballots = new[]
+      {
+        new Ballot().With(_locationGuid, _rowId++)
+      };
+      Db.Ballot.AddRange(ballots);
+
+      var votes = new[] {
+        new Vote().With(SamplePeople[0], ballots[0], _rowId++),
+        new Vote().With(SamplePeople[1], ballots[0], _rowId++),
+      };
+      votes[0].PersonCombinedInfo = "yy";
+      Db.Vote.AddRange(votes);
+
+      var model = new ElectionAnalyzerNormal(_fakes); //, election, vVoteInfos, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
+
+      results.Count.ShouldEqual(0);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(1);
       resultSummaryFinal.BallotsReceived.ShouldEqual(1);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
@@ -140,11 +213,11 @@ namespace Tests.BusinessTests
         voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes);//, election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
-      var results = model.Results;
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
       results.Count.ShouldEqual(0);
 
       ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
@@ -168,109 +241,31 @@ namespace Tests.BusinessTests
     }
 
     [TestMethod]
-    public void Ballot_TwoPeople_NameChanged()
-    {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
-      {
-        ElectionGuid = electionGuid,
-        NumberToElect = 2,
-        NumberExtra = 0,
-        CanReceive = ElectionModel.CanVoteOrReceive.All
-      };
-
-      var personGuid = Guid.NewGuid();
-
-      var ballots = new List<Ballot>
-      {
-        new Ballot {BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok}
-      };
-      var vVoteInfos = new List<VoteInfo>
-      {
-        new VoteInfo {PersonGuid = personGuid},
-        new VoteInfo {PersonGuid = Guid.NewGuid()},
-      };
-      var rowId = 1;
-      foreach (var voteInfo in vVoteInfos)
-      {
-        voteInfo.VoteId = rowId++;
-        //VoteInfo.PersonGuid = personGuid; // all for one person in this test
-        voteInfo.ElectionGuid = electionGuid;
-        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
-        voteInfo.BallotGuid = ballots.Select(b => b.BallotGuid).First();
-        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-      }
-
-      vVoteInfos[0].PersonCombinedInfo = "yy";
-
-      var model = new ElectionAnalyzerNormal(_fakes, election, vVoteInfos, ballots, SamplePeople);
-
-      model.AnalyzeEverything();
-
-      var results = model.Results;
-
-      results.Count.ShouldEqual(0);
-
-      var resultSummaryFinal = model.ResultSummaryFinal;
-      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(1);
-      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
-
-      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
-      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
-      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
-      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
-      resultSummaryFinal.NumVoters.ShouldEqual(1);
-      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
-    }
-
-    [TestMethod]
     public void Election_3_people()
     {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
+      PrepElection(new Election
       {
-        ElectionGuid = electionGuid,
+        ElectionGuid = _electionGuid,
         NumberToElect = 1,
         NumberExtra = 0
-      };
-      var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+      });
 
-      var ballot1Guid = Guid.NewGuid();
-      var ballot2Guid = Guid.NewGuid();
-      var ballot3Guid = Guid.NewGuid();
-      var ballots = new List<Ballot>
+      var ballots = new[]
       {
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+        new Ballot().With(_locationGuid, _rowId++),
+        new Ballot().With(_locationGuid, _rowId++),
+        new Ballot().With(_locationGuid, _rowId++),
       };
+      Db.Ballot.AddRange(ballots);
 
-      var person1Guid = Guid.NewGuid();
-      var votes = new List<VoteInfo>
-      {
-        new VoteInfo {SingleNameElectionCount = 33, PersonGuid = person1Guid, BallotGuid = ballot1Guid},
-        new VoteInfo {SingleNameElectionCount = 5, PersonGuid = person1Guid, BallotGuid = ballot2Guid},
-        new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
+      var votes = new[] {
+        new Vote {SingleNameElectionCount = 33 }.With(SamplePeople[0], ballots[0], _rowId++),
+        new Vote {SingleNameElectionCount = 5 }.With(SamplePeople[0], ballots[1], _rowId++),
+        new Vote {SingleNameElectionCount = 2 }.With(SamplePeople[1], ballots[2], _rowId++),
       };
-      foreach (var voteInfo in votes)
-      {
-        voteInfo.ElectionGuid = electionGuid;
-        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
-        voteInfo.BallotStatusCode = ballots.Single(b => b.BallotGuid == voteInfo.BallotGuid).StatusCode;
-        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        voteInfo.PersonCanReceiveVotes = true;
-      }
+      Db.Vote.AddRange(votes);
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); //, election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -294,57 +289,37 @@ namespace Tests.BusinessTests
     [TestMethod]
     public void Election_3_people_With_Manual_Results()
     {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
+      PrepElection(new Election
       {
-        ElectionGuid = electionGuid,
+        ElectionGuid = _electionGuid,
         NumberToElect = 1,
         NumberExtra = 0
-      };
-      var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+      });
 
-      var ballot1Guid = Guid.NewGuid();
-      var ballot2Guid = Guid.NewGuid();
-      var ballot3Guid = Guid.NewGuid();
-      var ballots = new List<Ballot>
+      var ballots = new[]
       {
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot1Guid, StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot2Guid, StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = ballot3Guid, StatusCode = BallotStatusEnum.Ok}
+        new Ballot().With(_locationGuid, _rowId++),
+        new Ballot().With(_locationGuid, _rowId++),
+        new Ballot().With(_locationGuid, _rowId++),
       };
+      Db.Ballot.AddRange(ballots);
 
-      var person1Guid = Guid.NewGuid();
-      var votes = new List<VoteInfo>
-      {
-        new VoteInfo {SingleNameElectionCount = 33, PersonGuid = person1Guid, BallotGuid = ballot1Guid},
-        new VoteInfo {SingleNameElectionCount = 5, PersonGuid = person1Guid, BallotGuid = ballot2Guid},
-        new VoteInfo {SingleNameElectionCount = 2, PersonGuid = Guid.NewGuid(), BallotGuid = ballot3Guid},
+      var votes = new[] {
+        new Vote {SingleNameElectionCount = 33 }.With(SamplePeople[0], ballots[0], _rowId++),
+        new Vote {SingleNameElectionCount = 5 }.With(SamplePeople[0], ballots[1], _rowId++),
+        new Vote {SingleNameElectionCount = 2 }.With(SamplePeople[1], ballots[2], _rowId++),
       };
-      foreach (var voteInfo in votes)
-      {
-        voteInfo.ElectionGuid = electionGuid;
-        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
-        voteInfo.BallotStatusCode = ballots.Single(b => b.BallotGuid == voteInfo.BallotGuid).StatusCode;
-        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        voteInfo.PersonCanReceiveVotes = true;
-      }
-      _fakes.ResultSummaryManual = new ResultSummary
+      Db.Vote.AddRange(votes);
+
+      Db.ResultSummary.Add(new ResultSummary
       {
         ResultType = ResultType.Manual,
-        BallotsReceived = 4
-      };
+        BallotsReceived = 4 // override the real count
+      });
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); //, election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
-
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
@@ -421,7 +396,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -515,7 +490,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -600,7 +575,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -703,7 +678,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -829,7 +804,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -938,7 +913,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -1082,7 +1057,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -1236,7 +1211,7 @@ namespace Tests.BusinessTests
         voteInfo.PersonCanReceiveVotes = true;
       }
 
-      var model = new ElectionAnalyzerNormal(_fakes, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -1347,5 +1322,39 @@ namespace Tests.BusinessTests
 
     }
 
+  }
+
+  static class Ext
+  {
+
+    public static Vote With(this Vote vote, Person person, Ballot ballot, int rowId, string status = VoteHelper.VoteStatusCode.Ok)
+    {
+      vote.PersonGuid = person.PersonGuid;
+      vote.PersonCombinedInfo = person.CombinedInfo;
+      vote.InvalidReasonGuid = person.IneligibleReasonGuid;
+      vote.BallotGuid = ballot.BallotGuid;
+      vote.StatusCode = status;
+      vote.C_RowId = rowId;
+      return vote;
+    }
+
+    public static Ballot With(this Ballot ballot, BallotStatusEnum status, Guid locationGuid, int rowId)
+    {
+      ballot.BallotGuid = Guid.NewGuid();
+      ballot.C_RowId = rowId;
+      ballot.StatusCode = status;
+      ballot.LocationGuid = locationGuid;
+      return ballot;
+    }
+    /// <summary>
+    /// default to OK
+    /// </summary>
+    /// <param name="ballot"></param>
+    /// <param name="rowId"></param>
+    /// <returns></returns>
+    public static Ballot With(this Ballot ballot, Guid locationGuid, int rowId)
+    {
+      return ballot.With(BallotStatusEnum.Ok, locationGuid, rowId);
+    }
   }
 }

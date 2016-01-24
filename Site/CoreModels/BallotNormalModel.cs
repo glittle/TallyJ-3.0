@@ -13,7 +13,7 @@ namespace TallyJ.CoreModels
     {
       var computerCode = UserSession.CurrentComputerCode;
 
-      var nextBallotNum = 1 + new BallotCacher().AllForThisElection.Where(b => b.ComputerCode == computerCode)
+      var nextBallotNum = 1 + new BallotCacher(Db).AllForThisElection.Where(b => b.ComputerCode == computerCode)
                                 .OrderByDescending(b => b.BallotNumAtComputer)
                                 .Take(1)
                                 .Select(b => b.BallotNumAtComputer)
@@ -24,7 +24,7 @@ namespace TallyJ.CoreModels
 
     public override object BallotInfoForJs(Ballot b, List<Vote> allVotes)
     {
-      var spoiledCount = (allVotes ?? new VoteCacher().AllForThisElection)
+      var spoiledCount = (allVotes ?? new VoteCacher(Db).AllForThisElection)
         .Count(v => v.BallotGuid == b.BallotGuid && v.StatusCode != VoteHelper.VoteStatusCode.Ok);
       return new
       {

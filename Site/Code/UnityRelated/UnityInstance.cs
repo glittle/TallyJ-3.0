@@ -42,5 +42,9 @@ namespace TallyJ.Code.UnityRelated
 		{
 			return Container.Resolve<TService>(overrides);
 		}
+
+    public static void Offer<TService>(TService service) {
+      Container.RegisterInstance(service);
+    }
 	}
 }

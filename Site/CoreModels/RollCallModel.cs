@@ -37,7 +37,7 @@ namespace TallyJ.CoreModels
 
     private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
-      var peopleInCurrentElection = new PersonCacher().AllForThisElection;
+      var peopleInCurrentElection = new PersonCacher(Db).AllForThisElection;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
 
       return IncludeAbsentees

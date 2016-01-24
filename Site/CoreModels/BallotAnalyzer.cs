@@ -79,7 +79,7 @@ namespace TallyJ.CoreModels
 
       if (refreshVoteStatus)
       {
-        VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher().AllForThisElection, new Savers().VoteSaver);
+        VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher(Db).AllForThisElection, new Savers().VoteSaver);
       }
 
       string newStatus;
