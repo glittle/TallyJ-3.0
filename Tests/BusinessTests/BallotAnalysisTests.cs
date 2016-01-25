@@ -93,7 +93,6 @@ namespace Tests.BusinessTests
     private List<Person> _samplePeople;
     private ITallyJDbContext Db;
     private Guid _electionGuid;
-    private Guid _locationGuid;
 
     private List<Person> SamplePeople
     {
