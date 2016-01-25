@@ -89,6 +89,7 @@ namespace TallyJ.CoreModels
             InitializeSomeProperties(result);
 
             Savers.ResultSaver(DbAction.Add, result);
+            Results.Add(result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;

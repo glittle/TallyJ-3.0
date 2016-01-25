@@ -42,6 +42,17 @@ namespace Tests.BusinessTests
       return item;
     }
 
+    public override IEnumerable<TEntity> RemoveRange(IEnumerable<TEntity> entities)
+    {
+      var list = entities.ToList();
+      for (int i = list.Count - 1; i >= 0; i--)
+      {
+        _data.Remove(list[i]);
+      }
+      return entities;
+    }
+
+
     public override TEntity Attach(TEntity item)
     {
       _data.Add(item);

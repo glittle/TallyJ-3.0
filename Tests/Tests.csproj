@@ -147,6 +147,7 @@
   <ItemGroup>
     <Compile Include="BusinessTests\AnalyzerFakes.cs" />
     <Compile Include="BusinessTests\BallotAnalysisTests.cs" />
+    <Compile Include="BusinessTests\BallotTestExtensions.cs" />
     <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="BusinessTests\AnalyzerNormalTests.cs" />
     <Compile Include="BusinessTests\FakeDataContext.cs" />

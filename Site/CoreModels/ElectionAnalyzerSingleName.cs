@@ -61,9 +61,18 @@ namespace TallyJ.CoreModels
 
       var electionGuid = TargetElection.ElectionGuid;
 
+      _hub.StatusUpdate("Processing votes", true);
+      var numDone = 0;
+
       // collect only valid votes
       foreach (var voteInfo in VoteInfos.Where(vi => vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
       {
+        numDone++;
+        if (numDone % 10 == 0)
+        {
+          _hub.StatusUpdate("Processed {0} vote{1}".FilledWith(numDone, numDone.Plural()), true);
+        }
+
         // get existing result record for this person, if available
         var result =
           Results.SingleOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
@@ -82,9 +91,14 @@ namespace TallyJ.CoreModels
         var voteCount = result.VoteCount.AsInt() + voteInfo.SingleNameElectionCount;
         result.VoteCount = voteCount;
       }
+      _hub.StatusUpdate("Processed {0} unspoiled vote{1}".FilledWith(numDone, numDone.Plural()));
 
       FinalizeResultsAndTies();
       FinalizeSummaries();
+
+      _hub.StatusUpdate("Saving");
+
+      Db.SaveChanges();
 
       return ResultSummaryFinal;
     }

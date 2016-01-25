@@ -4,8 +4,12 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code.Enumerations;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 using Tests.Support;
+using TallyJ.Code.UnityRelated;
+using TallyJ.Code.Session;
+using TallyJ.Code;
 
 namespace Tests.BusinessTests
 {
@@ -85,27 +89,44 @@ namespace Tests.BusinessTests
   [TestClass]
   public class BallotAnalysisTests
   {
-    //        private Fakes _fakes;
+    private AnalyzerFakes _fakes;
+    private List<Person> _samplePeople;
+    private ITallyJDbContext Db;
+    private Guid _electionGuid;
+    private Guid _locationGuid;
 
     private List<Person> SamplePeople
     {
-      get
-      {
-        return new List<Person>
-        {
-          new Person {PersonGuid = Guid.NewGuid()},
-          new Person {PersonGuid = Guid.NewGuid()},
-          new Person {PersonGuid = Guid.NewGuid()},
-          new Person {PersonGuid = Guid.NewGuid()},
-          new Person {PersonGuid = Guid.NewGuid()},
-        };
-      }
+      get { return _samplePeople; }
     }
 
     [TestInitialize]
     public void Init()
     {
-      //            _fakes = new Fakes();
+      _fakes = new AnalyzerFakes();
+      Db = _fakes.DbContext;
+      Db.ForTests();
+      UnityInstance.Offer(Db);
+
+      _electionGuid = Guid.NewGuid();
+      SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
+      BallotTestHelper.SaveElectionGuidForTests(_electionGuid);
+
+      SessionKey.CurrentComputer.SetInSession(new Computer
+      {
+        ComputerGuid = Guid.NewGuid(),
+        ComputerCode = "TEST",
+        ElectionGuid = _electionGuid
+      });
+
+      _samplePeople = new List<Person>
+      {
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+      };
     }
 
     [TestMethod]
@@ -379,7 +400,9 @@ namespace Tests.BusinessTests
         new VoteInfo {PersonIneligibleReasonGuid = Guid.NewGuid(), VoteId=3},
       };
 
-      VoteAnalyzer.UpdateAllStatuses(votes, votes.Select(v=>new Vote{C_RowId = v.VoteId}).ToList(), new Savers(true).VoteSaver);
+      VoteAnalyzer.UpdateAllStatuses(votes, 
+        votes.Select(v=>new Vote{C_RowId = v.VoteId}).ToList(), 
+        new Savers(new TestDbContext()).VoteSaver);
 
       var model = new BallotAnalyzer(3, false);
 

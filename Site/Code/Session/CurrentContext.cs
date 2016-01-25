@@ -119,7 +119,8 @@ namespace TallyJ.Code.Session
 
     public bool Remove(string key)
     {
-      throw new NotImplementedException();
+      _session.Remove(key);
+      return true;
     }
 
     public bool TryGetValue(string key, out object value)
