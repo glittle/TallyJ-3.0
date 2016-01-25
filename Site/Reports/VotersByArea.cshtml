@@ -6,7 +6,7 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var areas = new PersonCacher(Db).AllForThisElection
+  var areas = new PersonCacher().AllForThisElection
     .GroupBy(p => p.Area)
     .OrderBy(g => g.Key)
     .Select(g => new

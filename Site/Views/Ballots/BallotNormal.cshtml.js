@@ -376,6 +376,7 @@ add to this ballot
       local.ballotId = ballot.Id;
 
       showVotes();
+      scrollVotesTo(0);
 
       updateStatusDisplay(ballot);
 
@@ -410,7 +411,7 @@ add to this ballot
 
     cancelAddMissing();
 
-    var scroll = local.votesList.scrollTop();
+    //var scroll = local.votesList.scrollTop();
 
     local.votesList.html(site.templates.NormalVoteLine.filledWithEach(votes));
     local.votesList.find('select:visible').each(function () {
@@ -420,8 +421,6 @@ add to this ballot
 
     showExtraVotes();
 
-    local.votesList.scrollTop(scroll);
-
     findAndMarkDups(local.votesList.find('.VoteHost'));
 
     var disable = votes.length > 0;
@@ -429,6 +428,13 @@ add to this ballot
       .prop('disabled', disable)
       .toggleClass('btn-warning', !disable); // only show orange if usable
   };
+
+  var scrollVotesTo = function (offset) {
+    $('#votersList').scrollTop(offset);
+    LogMessage(offset);
+  };
+
+
 
   var findAndMarkDups = function (votes) {
     var found = false;
@@ -895,6 +901,7 @@ add to this ballot
     //local.peopleHelper.AddToLocalNames(personId);
 
     showVotes();
+    scrollVotesTo(9999);
 
     var newHost = local.votesList.find('.VoteHost').last();
 
@@ -912,6 +919,7 @@ add to this ballot
     });
 
     showVotes(false);
+    scrollVotesTo(9999)
 
     var newHost = local.votesList.find('.VoteHost').last();
     var input = newHost.find('select');

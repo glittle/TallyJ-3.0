@@ -6,7 +6,7 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var people = new PersonCacher(Db).AllForThisElection
+  var people = new PersonCacher().AllForThisElection
     .Where(p => p.VotingMethod.HasContent())
     .OrderBy(p => p.FullName)
     .Select(p => new
@@ -37,15 +37,21 @@
   b {
     display: inline-block;
   }
+
   .person {
     position: relative;
   }
-  .person.first {
-    margin-top: .5em;
-  }
+
+    .person.first {
+      margin-top: .5em;
+    }
+
   .method {
     position: absolute;
     right: 0;
+    z-index: 1;
+    color: darkblue;
+    font-size: 90%;
   }
 </style>
 <div class="body">
@@ -69,7 +75,7 @@
         firstClass = " first";
       }
       var method = VotingMethodEnum.TextFor(person.VotingMethod);
-      
+
       <div class="person @firstClass">
         <span class="name">@Raw(name)</span>
         <span class="method">@method</span>

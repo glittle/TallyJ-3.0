@@ -15,6 +15,9 @@ namespace TallyJ.EF
     public ResultTieCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
+    public ResultTieCacher() : base(UserSession.DbContext)
+    {
+    }
 
     protected override object LockCacheBaseObject
     {

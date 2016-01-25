@@ -29,6 +29,9 @@ namespace TallyJ.EF
     public ResultSummaryCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
+    public ResultSummaryCacher() : base(UserSession.DbContext)
+    {
+    }
 
     protected override object LockCacheBaseObject
     {

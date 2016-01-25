@@ -6,8 +6,8 @@
 
 @{
   var section = ResultHelper.Section.Top;
-  var people = new ResultCacher(Db).AllForThisElection
-            .Join(new PersonCacher(Db).AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
+  var people = new ResultCacher().AllForThisElection
+            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
             .OrderBy(g => g.r.Rank)
             .ThenBy(g => g.p.FullNameFL)
             .Select(g =>

@@ -19,6 +19,10 @@ namespace TallyJ.EF
 
     public PersonCacher(ITallyJDbContext dbContext) : base(dbContext) {
     }
+    public PersonCacher() : base(UserSession.DbContext)
+    {
+    }
+
 
     protected override object LockCacheBaseObject
     {

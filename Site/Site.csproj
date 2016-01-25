@@ -609,6 +609,7 @@
     <None Include="Properties\PublishProfiles\tallyj - Deploy to Azure.pubxml">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Reports\VotersByLocation.cshtml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />

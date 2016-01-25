@@ -20,6 +20,14 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static ITallyJDbContext DbContext
+    {
+      get
+      {
+        return UnityInstance.Resolve<IDbContextFactory>().DbContext;
+      }
+    }
+
     /// <summary>
     ///   Logged in identity name.
     /// </summary>

@@ -19,13 +19,13 @@ namespace TallyJ.Code
       set { _db = value; }
     }
 
-    //public long LastRowVersion
-    //{
-    //  get
-    //  {
-    //    var single = Db.CurrentRowVersion();
-    //    return single;
-    //  }
-    //}
+    public long LastRowVersion
+    {
+      get
+      {
+        var single = Db.CurrentRowVersion();
+        return single;
+      }
+    }
   }
 }

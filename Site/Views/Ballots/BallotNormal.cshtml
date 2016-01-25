@@ -74,7 +74,7 @@
       </div>
       <select id="ballotFilter">
         <option value="">Show All</option>
-        @foreach (var code in new BallotCacher(Db).AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
+        @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
         {
         <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
         }

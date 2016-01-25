@@ -20,8 +20,11 @@
     { "AllPeople|Registration", "All Eligible Voters"},
     { "Voters", "Eligible Voters Who Voted"},
     { "NonVoters", "Eligible Voters Who Did Not Vote"},
-    { "VotersByArea", "Voters by Sector/Area"},
+    { "VotersByArea", "Voters by Home Area"},
   };
+  if (ContextItems.LocationModel.HasLocations) {
+    reports.Add("VotersByLocation", "Voters by Location");
+  }
   var firstHeader = false;
 }
 <div class="chooser">
