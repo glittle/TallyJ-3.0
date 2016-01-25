@@ -14,10 +14,10 @@ namespace TallyJ.CoreModels
     {
     }
 
-    public ElectionAnalyzerNormal(IAnalyzerFakes fakes, Election election,
-      List<VoteInfo> voteinfos, List<Ballot> ballots,
-      List<Person> people)
-      : base(fakes, election, people, ballots, voteinfos)
+    public ElectionAnalyzerNormal(IAnalyzerFakes fakes
+      //, Election election,      List<VoteInfo> voteinfos, List<Ballot> ballots,      List<Person> people
+      )
+      : base(fakes) //, election, people, ballots, voteinfos)
     {
     }
 
@@ -89,6 +89,7 @@ namespace TallyJ.CoreModels
             InitializeSomeProperties(result);
 
             Savers.ResultSaver(DbAction.Add, result);
+            Results.Add(result);
           }
 
           var voteCount = result.VoteCount.AsInt() + 1;
@@ -102,7 +103,7 @@ namespace TallyJ.CoreModels
 
       _hub.StatusUpdate("Saving");
 
-      SaveChanges();
+      Db.SaveChanges();
 
       return ResultSummaryFinal;
     }

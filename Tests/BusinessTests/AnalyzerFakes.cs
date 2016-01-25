@@ -19,7 +19,10 @@ namespace Tests.BusinessTests
       ResultTies = new List<ResultTie>();
       ResultSummaries = new List<ResultSummary>();
       FakeHub = new FakeHub();
+      DbContext = new TestDbContext();
     }
+
+    public ITallyJDbContext DbContext{ get; private set; }
 
     private int _rowCounter;
     private ResultSummary _resultSummaryManual;

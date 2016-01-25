@@ -13,7 +13,7 @@ namespace TallyJ.Code.Resources
     {
       var tellerName = UserSession.GetCurrentTeller(tellerIdToSelect);
 
-      return new TellerCacher().AllForThisElection
+      return new TellerCacher(Db).AllForThisElection
         .OrderBy(l => l.Name)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.Name == tellerName ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))

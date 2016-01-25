@@ -20,16 +20,16 @@ namespace TallyJ.CoreModels
 
     public ResultsModel(Election election = null, IStatusUpdateHub hub = null)
     {
-      _election = election;
+      _election = election ?? UserSession.CurrentElection;
 
       _analyzer = CurrentElection.IsSingleNameElection
-        ? new ElectionAnalyzerSingleName(election, hub) as IElectionAnalyzer
-        : new ElectionAnalyzerNormal(election, hub);
+        ? new ElectionAnalyzerSingleName(CurrentElection, hub) as IElectionAnalyzer
+        : new ElectionAnalyzerNormal(CurrentElection, hub);
     }
 
     private Election CurrentElection
     {
-      get { return _election ?? (_election = UserSession.CurrentElection); }
+      get { return _election; }
     }
 
     public JsonResult FinalResultsJson
@@ -56,8 +56,8 @@ namespace TallyJ.CoreModels
         //                var numForChart = (numToShow + numExtra) * 2;
 
         var reportVotes =
-          new ResultCacher().AllForThisElection
-            .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
+          new ResultCacher(Db).AllForThisElection
+            .Join(new PersonCacher(Db).AllForThisElection, r => r.PersonGuid, p => p.PersonGuid,
               (r, p) => new { r, PersonName = p.FullNameFL })
             .OrderBy(g => g.r.Rank)
             .Take(numToShow + numExtra);
@@ -116,17 +116,17 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var resultSummaries = new ResultSummaryCacher().AllForThisElection;
+      var ready = _analyzer.IsResultAvailable;
 
       try
       {
-        var resultSummaryFinal = resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+        var resultSummaryFinal = _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
 
 
         // don't show any details if review is needed
         if (resultSummaryFinal.BallotsNeedingReview != 0)
         {
-          var locations = new LocationCacher().AllForThisElection;
+          var locations = new LocationCacher(Db).AllForThisElection;
 
           var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
             .Join(locations, vi => vi.LocationId, l => l.C_RowId,
@@ -163,25 +163,27 @@ namespace TallyJ.CoreModels
           return new
           {
             NeedReview = needReview.Concat(needReview2).Distinct(),
-            ResultsManual =
-              (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
-               new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            ResultsFinal = _analyzer.ResultSummaryFinal
+                .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
             ResultsCalc =
-              resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
+              _analyzer.ResultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
                 .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
-            ResultsFinal =
-              resultSummaries.First(rs => rs.ResultType == ResultType.Final)
-                .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            ResultsManual = (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
+               new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+
+            //ResultsFinal =
+            //  resultSummaries.First(rs => rs.ResultType == ResultType.Final)
+            //    .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
           };
         }
 
         // show vote totals
 
-        var persons = new PersonCacher().AllForThisElection;
+        var persons = new PersonCacher(Db).AllForThisElection;
 
         var vResultInfos =
           // TODO 2012-01-21 Glen Little: Could return fewer columns for non-tied results
-          new ResultCacher().AllForThisElection
+          _analyzer.Results // new ResultCacher(Db).AllForThisElection
             .OrderBy(r => r.Rank)
             .ToList()
             .Select(r => new
@@ -202,7 +204,7 @@ namespace TallyJ.CoreModels
               r.VoteCount
             }).ToList();
 
-        var ties = new ResultTieCacher().AllForThisElection
+        var ties = _analyzer.ResultTies //  new ResultTieCacher(Db).AllForThisElection
           .OrderBy(rt => rt.TieBreakGroup)
           .Select(rt => new
           {
@@ -223,13 +225,13 @@ namespace TallyJ.CoreModels
           NumExtra = _election.NumberExtra,
           ShowCalledIn = _election.UseCallInButton,
           ResultsManual =
-            (resultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
+            (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
           ResultsCalc =
-            resultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
+            _analyzer.ResultSummaries.First(rs => rs.ResultType == ResultType.Calculated)
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
           ResultsFinal =
-            resultSummaries.First(rs => rs.ResultType == ResultType.Final)
+            _analyzer.ResultSummaries.First(rs => rs.ResultType == ResultType.Final)
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
         };
       }
@@ -263,7 +265,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var summary = new ResultSummaryCacher().AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";
@@ -326,7 +328,7 @@ namespace TallyJ.CoreModels
 
       var resultsIds = countItems.Select(ci => ci.ResultId).ToArray();
 
-      var resultCacher = new ResultCacher();
+      var resultCacher = new ResultCacher(Db);
       var results = resultCacher.AllForThisElection.Where(r => resultsIds.Contains(r.C_RowId)).ToList();
 
       foreach (var result in results)
@@ -349,7 +351,7 @@ namespace TallyJ.CoreModels
     public JsonResult SaveManualResults(ResultSummary manualResultsFromBrowser)
     {
       ResultSummary resultSummary = null;
-      var resultSummaryCacher = new ResultSummaryCacher();
+      var resultSummaryCacher = new ResultSummaryCacher(Db);
 
       if (manualResultsFromBrowser.C_RowId != 0)
       {

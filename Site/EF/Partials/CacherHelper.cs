@@ -12,7 +12,7 @@ namespace TallyJ.EF
     /// </summary>
     public void DropAllCachesForThisElection()
     {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
+      //if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
       var numExpired = CacheManager.Current.Expire(UserSession.CurrentElectionGuid.ToString());
     }
   }

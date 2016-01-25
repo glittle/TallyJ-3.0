@@ -9,15 +9,20 @@ namespace TallyJ.EF
     public override IQueryable<Ballot> MainQuery()
     {
       return CurrentDb.Ballot
-        .Join(CurrentDb.Location.Where(l => l.ElectionGuid == UserSession.CurrentElectionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b);
+        .Join(CurrentDb.Location.Where(l => l.ElectionGuid == CurrentElectionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b);
     }
 
     protected override void ItemChanged()
     {
-      new ResultSummaryCacher().VoteOrPersonChanged();
+      new ResultSummaryCacher(CurrentDb).VoteOrPersonChanged();
     }
 
     private static object _lockObject;
+
+    public BallotCacher(ITallyJDbContext dbContext) : base(dbContext)
+    {
+    }
+
     protected override object LockCacheBaseObject
     {
       get

@@ -14,7 +14,7 @@ namespace TallyJ.CoreModels
 
     public int NumberOfPeople
     {
-      get { return new PersonCacher().AllForThisElection.Count(); }
+      get { return new PersonCacher(Db).AllForThisElection.Count(); }
     }
 
     public string LocationsJson
@@ -64,7 +64,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return new TellerCacher().AllForThisElection
+        return new TellerCacher(Db).AllForThisElection
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
@@ -78,7 +78,7 @@ namespace TallyJ.CoreModels
 
     public bool HasBallots
     {
-      get { return new BallotCacher().AllForThisElection.Any(); }
+      get { return new BallotCacher(Db).AllForThisElection.Any(); }
     }
 
     //    public string InvalidReasonsJsonString()

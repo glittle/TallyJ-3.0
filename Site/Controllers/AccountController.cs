@@ -78,7 +78,7 @@ namespace TallyJ.Controllers
           UserSession.ProcessLogin();
 
           var email = Membership.GetUser(model.UserName).Email;
-          new LogHelper().Add("Logged In - {0} - {1}".FilledWith(email, Request.UserHostAddress), true);
+          new LogHelper().Add("Logged In - {0}".FilledWith(email), true);
 
           UserSession.IsKnownTeller = true;
 

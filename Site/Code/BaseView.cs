@@ -16,13 +16,13 @@ namespace TallyJ.Code
 
     public abstract class BaseView<TModel> : WebViewPage<TModel>
     {
-        private TallyJ2dEntities _db;
+        private ITallyJDbContext _db;
         private IViewResourcesHelper _viewResourcesHelper;
 
         /// <summary>
         ///     Access to the database
         /// </summary>
-        public TallyJ2dEntities DbContext
+        public ITallyJDbContext DbContext
         {
             get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
         }

@@ -9,6 +9,8 @@ namespace TallyJ.CoreModels
     /// <Summary>Current Results records</Summary>
     List<Result> Results { get; }
 
+    List<ResultTie> ResultTies { get; }
+
     List<ResultSummary> ResultSummaries { get; }
 
 

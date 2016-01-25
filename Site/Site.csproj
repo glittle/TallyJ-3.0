@@ -138,6 +138,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\OtherSources\Newtonsoft.Json.dll</HintPath>
@@ -200,6 +204,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\AllowGuestsInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
+    <Compile Include="Code\ContextItems.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
@@ -229,6 +234,8 @@
     <Compile Include="Code\Resources\XmlHelper.cs" />
     <Compile Include="Code\Session\CurrentContext.cs" />
     <Compile Include="Code\Session\ContextItems.cs" />
+    <Compile Include="Code\Session\ICurrentContext.cs" />
+    <Compile Include="Code\Session\IHttpSession.cs" />
     <Compile Include="Code\Session\ItemKey.cs" />
     <Compile Include="Code\Session\SiteInfo.cs" />
     <Compile Include="Code\Session\SessionKey.cs" />
@@ -256,6 +263,7 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="CoreModels\BallotHelper.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionDeleter.cs" />
     <Compile Include="CoreModels\ExportImport\Exporter.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionLoader.cs" />
@@ -331,6 +339,7 @@
     <Compile Include="EF\ImportFile.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\ITallyJDbContext.cs" />
     <Compile Include="EF\JoinElectionUser.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
@@ -358,6 +367,7 @@
     <Compile Include="EF\Partials\ResultSummaryCacher.cs" />
     <Compile Include="EF\Partials\ResultTie.cs" />
     <Compile Include="EF\Partials\ResultTieCacher.cs" />
+    <Compile Include="EF\Partials\TallyJ2dEntities.cs" />
     <Compile Include="EF\Partials\TellerCacher.cs" />
     <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="EF\Person.cs">

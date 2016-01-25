@@ -243,6 +243,8 @@ input.Manual {
     text-align: center;
     width: 60px;
 }
+input.Manual.Additional {
+}
 
 span.Final.changed {
     font-weight: bold;

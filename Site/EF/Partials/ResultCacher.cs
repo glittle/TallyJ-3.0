@@ -7,11 +7,15 @@ namespace TallyJ.EF
   {
     public override IQueryable<Result> MainQuery()
     {
-      var currentElectionGuid = UserSession.CurrentElectionGuid;
-      return CurrentDb.Result.Where(p => p.ElectionGuid == currentElectionGuid);
+      return CurrentDb.Result.Where(p => p.ElectionGuid == CurrentElectionGuid);
     }
 
     private static object _lockObject;
+
+    public ResultCacher(ITallyJDbContext dbContext) : base(dbContext)
+    {
+    }
+
     protected override object LockCacheBaseObject
     {
       get

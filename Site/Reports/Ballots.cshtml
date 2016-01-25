@@ -4,10 +4,10 @@
 @using TallyJ.CoreModels
 @using TallyJ.EF
 @{
-  var ballots = new BallotCacher().AllForThisElection;
-  var locations = new LocationCacher().AllForThisElection;
+  var ballots = new BallotCacher(Db).AllForThisElection;
+  var locations = new LocationCacher(Db).AllForThisElection;
   var election = UserSession.CurrentElection;
-  var votes = new VoteCacher().AllForThisElection;
+  var votes = new VoteCacher(Db).AllForThisElection;
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots

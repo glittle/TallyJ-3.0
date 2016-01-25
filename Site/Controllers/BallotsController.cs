@@ -152,7 +152,7 @@ namespace TallyJ.Controllers
     public JsonResult SortVotes(List<int> idList)
     {
       //var ids = idList.Split(new[] {','}).Select(s => s.AsInt()).ToList();
-      return CurrentBallotModel.SortVotes(idList, new VoteCacher()).AsJsonResult();
+      return CurrentBallotModel.SortVotes(idList, new VoteCacher(Db)).AsJsonResult();
     }
 
     public JsonResult NewBallot()

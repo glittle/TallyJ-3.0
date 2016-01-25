@@ -1,47 +1,27 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Hosting;
-using System.Web.SessionState;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TallyJ.Code.Session;
 
-namespace TallyJ.Code.Session
+namespace Tests.Support
 {
-  /// <summary>
-  /// Access to HttpContext.
-  /// </summary>
-  /// <remarks>Can be extended to support Testing environment.</remarks>
-  public class HttpCurrentContext : ICurrentContext
+  public class FakeSessionWrapper : ISessionWrapper
   {
-    public IDictionary Items
-    {
-      get { return HttpContext.Current.Items; }
-    }
-
-    public ISessionWrapper Session
-    {
-      get { return new SessionWrapper(); }
-    }
-  }
-
-  public interface ISessionWrapper : IDictionary<string, object> {
-  }
-
-  public class SessionWrapper : ISessionWrapper
-  {
-    HttpSessionState _session = HttpContext.Current.Session;
+    Dictionary<string, object> _dict = new Dictionary<string, object>();
 
     public object this[string key]
     {
       get
       {
-        return _session[key];
+        return _dict[key];
       }
 
       set
       {
-        _session[key] = value;
+        _dict[key] = value;
       }
     }
 
@@ -49,7 +29,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return _session.Count;
+        return _dict.Count;
       }
     }
 
@@ -57,7 +37,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return _session.IsReadOnly;
+        return false;
       }
     }
 
@@ -65,7 +45,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-      throw new NotImplementedException();
+        return _dict.Keys;
       }
     }
 
@@ -73,33 +53,33 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        throw new NotImplementedException();
+        return _dict.Values;
       }
     }
 
     public void Add(KeyValuePair<string, object> item)
     {
-      _session.Add(item.Key, item.Value);
+      _dict.Add(item.Key, item.Value);
     }
 
     public void Add(string key, object value)
     {
-      _session.Add(key, value);
+      _dict.Add(key, value);
     }
 
     public void Clear()
     {
-      _session.Clear();
+      _dict.Clear();
     }
 
     public bool Contains(KeyValuePair<string, object> item)
     {
-      throw new NotImplementedException();
+      return _dict.Contains(item);
     }
 
     public bool ContainsKey(string key)
     {
-      throw new NotImplementedException();
+      return _dict.ContainsKey(key);
     }
 
     public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
@@ -119,8 +99,7 @@ namespace TallyJ.Code.Session
 
     public bool Remove(string key)
     {
-      _session.Remove(key);
-      return true;
+      throw new NotImplementedException();
     }
 
     public bool TryGetValue(string key, out object value)

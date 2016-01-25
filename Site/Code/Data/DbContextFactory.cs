@@ -8,11 +8,11 @@ namespace TallyJ.Code.Data
 {
     public class DbContextFactory : IDbContextFactory
     {
-      private TallyJ2dEntities _tallyJ2Entities;
+      private ITallyJDbContext _tallyJ2Entities;
 
         #region IDbContextFactory Members
 
-        public TallyJ2dEntities DbContext
+        public ITallyJDbContext DbContext
         {
             get
             {
@@ -21,12 +21,8 @@ namespace TallyJ.Code.Data
                     return _tallyJ2Entities;
                 }
 
-                _tallyJ2Entities = new TallyJ2dEntities();
-
-                _tallyJ2Entities.Configuration.ValidateOnSaveEnabled = true;
-
-                // return _tallyJ2Entities;
-
+                //var x = new ITallyJDbContext();
+                //x.Configuration.ValidateOnSaveEnabled = true;
 
                 var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
 

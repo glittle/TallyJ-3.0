@@ -11,7 +11,7 @@ namespace TallyJ.Code
 {
   public abstract class BaseController : Controller
   {
-    TallyJ2dEntities _db;
+    ITallyJDbContext _db;
 
     protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
     {
@@ -21,7 +21,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>Access to the database</summary>
-    public TallyJ2dEntities Db
+    public ITallyJDbContext Db
     {
       get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
     }

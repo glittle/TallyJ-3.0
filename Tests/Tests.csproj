@@ -147,6 +147,7 @@
   <ItemGroup>
     <Compile Include="BusinessTests\AnalyzerFakes.cs" />
     <Compile Include="BusinessTests\BallotAnalysisTests.cs" />
+    <Compile Include="BusinessTests\BallotTestExtensions.cs" />
     <Compile Include="BusinessTests\ComputerTests.cs" />
     <Compile Include="BusinessTests\AnalyzerNormalTests.cs" />
     <Compile Include="BusinessTests\FakeDataContext.cs" />
@@ -156,6 +157,8 @@
     <Compile Include="BusinessTests\ImportV1ElectionTest.cs" />
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
+    <Compile Include="BusinessTests\TestDbContext.cs" />
+    <Compile Include="BusinessTests\TestDbSet.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
     <Compile Include="FrameworkTests\ReflectionHelperTests.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -166,6 +169,8 @@
     <Compile Include="Support\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BusinessTests\PeopleTests.cs" />
+    <Compile Include="Support\FakeCurrentContext.cs" />
+    <Compile Include="Support\FakeSessionWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

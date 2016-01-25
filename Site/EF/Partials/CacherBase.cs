@@ -30,19 +30,22 @@ namespace TallyJ.EF
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
     private const int CacheMinutes = 180; // 3 hours
+    private ITallyJDbContext _db;
+
+    public CacherBase(ITallyJDbContext dbContext)
+    {
+      CurrentDb = dbContext;
+    }
 
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
     protected virtual string CacheKeyRaw
     {
-      get { return typeof (T).Name + CurrentElectionGuid; }
+      get { return typeof(T).Name + CurrentElectionGuid; }
     }
 
-    protected TallyJ2dEntities CurrentDb
-    {
-      get { return UnityInstance.Resolve<IDbContextFactory>().DbContext; }
-    }
+    protected ITallyJDbContext CurrentDb { get; set; }
 
     /// <summary>
     ///   Get a single <typeparamref name="T" /> by Id. If not found, returns null
@@ -60,7 +63,7 @@ namespace TallyJ.EF
       {
         var db = CurrentDb;
 
-        if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
+        //if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
@@ -68,7 +71,7 @@ namespace TallyJ.EF
           //CacheKey internalCacheKey;
           allForThisElection = MainQuery()
             .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
-              new[] {CacheKeyRaw, CurrentElectionGuid.ToString()}).ToList();
+              new[] { CacheKeyRaw, CurrentElectionGuid.ToString() }).ToList();
         }
 
         //        if (typeof(T) == typeof(Election))
@@ -160,7 +163,7 @@ namespace TallyJ.EF
     public void ReplaceEntireCache(List<T> listFromCache)
     {
       var key = new CacheKey(MainQuery().GetCacheKey(),
-        new[] {CacheKeyRaw, CurrentElectionGuid.ToString()});
+        new[] { CacheKeyRaw, CurrentElectionGuid.ToString() });
 
       CacheManager.Current.Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)));
 
@@ -190,9 +193,10 @@ namespace TallyJ.EF
     /// </summary>
     public ICacherBase<T> DropThisCache()
     {
-      if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) {
-        return this;
-      };
+      //if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked)
+      //{
+      //  return this;
+      //};
       CacheManager.Current.Expire(CacheKeyRaw);
       return this;
     }

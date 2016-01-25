@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     private readonly Action<Vote> _storeVote;
     private int _ballotsLoaded;
 
-    public ImportV1Election(TallyJ2dEntities db, ImportFile file, XmlDocument xml,
+    public ImportV1Election(ITallyJDbContext db, ImportFile file, XmlDocument xml,
       Election election,
       Location location,
       Action<Ballot> storeBallot,
@@ -56,7 +56,7 @@ namespace TallyJ.CoreModels
 
       _file.ProcessingStatus = "Imported";
 
-      _db.SaveChanges();
+      Db.SaveChanges();
 
       ImportSummaryMessage = "Imported {0} ballot{1}.".FilledWith(_ballotsLoaded, _ballotsLoaded.Plural());
 

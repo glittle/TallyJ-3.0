@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
       var currentElection = UserSession.CurrentElection;
       VotesNeededOnBallot = currentElection.NumberToElect.AsInt();
       IsSingleNameElection = currentElection.IsSingleNameElection;
-      BallotSaver = new Savers().BallotSaver;
+      BallotSaver = new Savers(Db).BallotSaver;
     }
 
     /// <Summary>For testing</Summary>
@@ -29,7 +29,7 @@ namespace TallyJ.CoreModels
     {
       VotesNeededOnBallot = votesNeededOnBallot.AsInt();
       IsSingleNameElection = isSingleNameElection;
-      BallotSaver = new Savers(true).BallotSaver;
+      BallotSaver = new Savers(Db).BallotSaver;
     }
 
     public BallotAnalyzer(Election election, Action<DbAction, Ballot> ballotSaver)
@@ -79,7 +79,7 @@ namespace TallyJ.CoreModels
 
       if (refreshVoteStatus)
       {
-        VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher().AllForThisElection, new Savers().VoteSaver);
+        VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher(Db).AllForThisElection, new Savers(Db).VoteSaver);
       }
 
       string newStatus;

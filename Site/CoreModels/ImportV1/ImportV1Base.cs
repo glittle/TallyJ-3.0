@@ -11,7 +11,6 @@ namespace TallyJ.CoreModels
 {
   public abstract class ImportV1Base
   {
-    protected readonly TallyJ2dEntities _db;
     protected readonly ImportFile _file;
     protected readonly XmlDocument _xmlDoc;
 
@@ -21,9 +20,9 @@ namespace TallyJ.CoreModels
 
     /// <Summary>Base for Importing V1.</Summary>
     /// <remarks>Need list of people to merge into.</remarks>
-    protected ImportV1Base(TallyJ2dEntities db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
+    protected ImportV1Base(ITallyJDbContext db, ImportFile file, XmlDocument xmlDoc, List<Person> people, Action<Person> addPerson, ILogHelper logHelper)
     {
-      _db = db;
+      Db = db;
       _file = file;
       _xmlDoc = xmlDoc;
       _people = people;
@@ -32,6 +31,8 @@ namespace TallyJ.CoreModels
     }
 
     protected string ImportSummaryMessage;
+
+    public ITallyJDbContext Db { get; private set; }
 
     public JsonResult SendSummary()
     {

@@ -12,6 +12,14 @@ namespace TallyJ.Code.Session
 {
   public static class UserSession
   {
+    public static ICurrentContext CurrentContext
+    {
+      get
+      {
+        return UnityInstance.Resolve<ICurrentContext>();
+      }
+    }
+
     /// <summary>
     ///   Logged in identity name.
     /// </summary>
@@ -124,12 +132,13 @@ namespace TallyJ.Code.Session
 
         if (hasElection)
         {
-          election = new ElectionCacher().AllForThisElection.FirstOrDefault();
+          var cacher = new ElectionCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext);
+          election = cacher.AllForThisElection.FirstOrDefault();
           if (election == null)
           {
             // occasionally, when changing elections, the cacher has the old election...need to flush it
-            new ElectionCacher().DropThisCache();
-            election = new ElectionCacher().AllForThisElection.FirstOrDefault();
+            cacher.DropThisCache();
+            election = cacher.AllForThisElection.FirstOrDefault();
           }
 
           // even if have valid guid, may be null if election was just deleted
@@ -209,7 +218,7 @@ namespace TallyJ.Code.Session
           return location;
         }
 
-        var locations = new LocationCacher().AllForThisElection;
+        var locations = new LocationCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext).AllForThisElection;
 
         location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid)
                    ?? locations.First();
@@ -248,9 +257,9 @@ namespace TallyJ.Code.Session
     //    {
     //      get
     //      {
-    //        if (new ComputerCacher().GetById(CurrentComputerId) != null)
+    //        if (new ComputerCacher(Db).GetById(CurrentComputerId) != null)
     //        {
-    //          return new ComputerCacher().GetById(CurrentComputerId);
+    //          return new ComputerCacher(Db).GetById(CurrentComputerId);
     //        }
     //        return CurrentElectionGuid.HasContent() ? new ComputerModel().MakeComputerForMe() : null;
     //      }
@@ -349,17 +358,17 @@ namespace TallyJ.Code.Session
 
     public static string GetCurrentTeller(int num)
     {
-      return HttpContext.Current.Session[SessionKey.CurrentTeller + num] as string;
+      return CurrentContext.Session[SessionKey.CurrentTeller + num] as string;
     }
 
     public static void SetCurrentTeller(int num, string name)
     {
-      HttpContext.Current.Session[SessionKey.CurrentTeller + num] = name;
+      CurrentContext.Session[SessionKey.CurrentTeller + num] = name;
     }
 
     public static void ProcessLogin()
     {
-      //      HttpContext.Current.Session.Clear();
+      //      CurrentContext.Session.Clear();
       // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
     }
 
@@ -369,7 +378,7 @@ namespace TallyJ.Code.Session
 
       LeaveElection(false);
 
-      HttpContext.Current.Session.Clear();
+      CurrentContext.Session.Clear();
       FormsAuthentication.SignOut();
     }
 
@@ -411,7 +420,7 @@ namespace TallyJ.Code.Session
     {
       new CacherHelper().DropAllCachesForThisElection();
 
-      var session = HttpContext.Current.Session;
+      var session = CurrentContext.Session;
 
       session.Remove(SessionKey.CurrentBallotFilter);
       session.Remove(SessionKey.CurrentBallotId);
