@@ -26,7 +26,7 @@ namespace TallyJ.EF
 
 
     int SaveChanges();
-    //long CurrentRowVersion();
+    long CurrentRowVersion();
     void BulkInsert<T>(IEnumerable<T> entities);
     void Dispose();
   }

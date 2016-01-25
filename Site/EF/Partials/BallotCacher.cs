@@ -22,6 +22,9 @@ namespace TallyJ.EF
     public BallotCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
+    public BallotCacher() : base(UserSession.DbContext)
+    {
+    }
 
     protected override object LockCacheBaseObject
     {

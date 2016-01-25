@@ -20,7 +20,7 @@ namespace Tests.BusinessTests
       var fakes = new ImportFakes();
 
       var xmlDoc = new XmlDocument();
-      var fakeDataContext = new FakeDataContext();
+      var fakeDataContext = new TestDbContext();
 
       xmlDoc.LoadXml(Resources.SampleElection);
 

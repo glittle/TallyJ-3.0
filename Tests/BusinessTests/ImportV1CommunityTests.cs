@@ -16,7 +16,7 @@ namespace Tests.BusinessTests
       var fakeImportFile = new ImportFile();
       var fakes = new ImportFakes();
       var xmlDoc = new XmlDocument();
-      var fakeDataContext = new FakeDataContext();
+      var fakeDataContext = new TestDbContext();
 
       xmlDoc.LoadXml("<?xml version='1.0' encoding='UTF-16'?><Community><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person></Community>");
       var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, fakes.People, fakes.AddPersonToDb, fakes.LogHelper);
@@ -36,7 +36,7 @@ namespace Tests.BusinessTests
       var fakeImportFile = new ImportFile();
       var fakes = new ImportFakes();
       var xmlDoc = new XmlDocument();
-      var fakeDataContext = new FakeDataContext();
+      var fakeDataContext = new TestDbContext();
 
       xmlDoc.LoadXml("<Community><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person><Person LName='Accorti' FName='Pónt' AKAName='Paul'></Person></Community>");
       var model = new ImportV1Community(fakeDataContext, fakeImportFile, xmlDoc, fakes.People, fakes.AddPersonToDb, fakes.LogHelper);

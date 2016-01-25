@@ -4,10 +4,10 @@
 @using TallyJ.CoreModels
 @using TallyJ.EF
 @{
-  var ballots = new BallotCacher(Db).AllForThisElection;
-  var locations = new LocationCacher(Db).AllForThisElection;
+  var ballots = new BallotCacher().AllForThisElection;
+  var locations = new LocationCacher().AllForThisElection;
   var election = UserSession.CurrentElection;
-  var votes = new VoteCacher(Db).AllForThisElection;
+  var votes = new VoteCacher().AllForThisElection;
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots
@@ -31,7 +31,7 @@
         LocationId = locId,
         b.StatusCode,
         Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-        Votes = BallotModelCore.VoteInfosForBallot(b, votes)
+        Votes = new BallotHelper().VoteInfosForBallot(b, votes)
           .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
           .Select(v => new
           {

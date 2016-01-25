@@ -1,5 +1,4 @@
 ﻿@using TallyJ.Code
-@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @using TallyJ.CoreModels
 @using TallyJ.EF
@@ -7,11 +6,11 @@
 @{
   var currentElection = UserSession.CurrentElection;
 
-  var result = new ResultCacher(Db).AllForThisElection
+  var result = new ResultCacher(UserSession.DbContext).AllForThisElection
     .OrderBy(r => r.Rank)
     .Take(currentElection.NumberToElect.AsInt() + currentElection.NumberExtra.AsInt())
     .ToList()
-    .Join(new PersonCacher(Db).AllForThisElection,
+    .Join(new PersonCacher(UserSession.DbContext).AllForThisElection,
       r => r.PersonGuid,
       p => p.PersonGuid,
       (result1, person) => new { person, result1 })

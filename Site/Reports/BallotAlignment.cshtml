@@ -4,8 +4,8 @@
 @using TallyJ.CoreModels
 @using TallyJ.EF
 @{
-  var ballots = new BallotCacher(Db).AllForThisElection;
-  var votes = new VoteCacher(Db).AllForThisElection.Where(v => v.InvalidReasonGuid == null);
+  var ballots = new BallotCacher(UserSession.DbContext).AllForThisElection;
+  var votes = new VoteCacher(UserSession.DbContext).AllForThisElection.Where(v => v.InvalidReasonGuid == null);
   var election = UserSession.CurrentElection;
   var isSingleNameElection = election.IsSingleNameElection;
 
@@ -24,7 +24,7 @@
     slots.Add(i);
   }
 
-  var elected = new ResultCacher(Db).AllForThisElection
+  var elected = new ResultCacher(UserSession.DbContext).AllForThisElection
     .OrderBy(r => r.Rank)
     .Take(numElected)
     .Select(r => r.PersonGuid)
@@ -63,8 +63,8 @@
     <table class="Ballots">
       <thead>
         <tr>
-          <th>Number of Voters</th>
-          <th>Number Elected</th>
+          <th>Matching Names</th>
+          <th>How Many Voters?</th>
         </tr>
 
       </thead>
@@ -72,8 +72,8 @@
         @foreach (var alignment in aligned)
         {
           <tr>
-            <td>@alignment.sum</td>
             <td>@alignment.i</td>
+            <td>@alignment.sum</td>
           </tr>
         }
       </tbody>

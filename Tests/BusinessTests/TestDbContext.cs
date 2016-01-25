@@ -42,10 +42,10 @@ namespace Tests.BusinessTests
       throw new NotImplementedException();
     }
 
-    //public long CurrentRowVersion()
-    //{
-    //  return 1;
-    //}
+    public long CurrentRowVersion()
+    {
+      return 1;
+    }
 
     public DbSet<Users> Users { get; set; }
     public DbSet<C_Log> C_Log { get; set; }

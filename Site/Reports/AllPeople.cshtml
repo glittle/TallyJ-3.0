@@ -1,15 +1,16 @@
-﻿@using TallyJ.Code
+﻿@using TallyJ.Code.Session
+@using TallyJ.Code
 @using TallyJ.Code.Enumerations
 @using TallyJ.EF
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var people = new PersonCacher(Db).AllForThisElection
+  var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
       PersonName = p.FullName,
-      VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod, "---"),
+      VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod, "-"),
       //      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(
       //        p.IneligibleReasonGuid.AsGuid()).
       //        SurroundContentWith("[", "]")
@@ -59,6 +60,9 @@
   .method {
     position: absolute;
     right: 0;
+    z-index: 1;
+    color: darkblue;
+    font-size: 90%;
   }
 </style>
 <div class="body">

@@ -262,6 +262,7 @@ namespace TallyJ.CoreModels
         locationId = 0;
         locationText = "";
         success = true;
+        changed = false;
       }
 
       if (changed)

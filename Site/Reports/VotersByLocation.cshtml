@@ -1,0 +1,130 @@
+﻿@using System.Web;
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var locations = new PersonCacher().AllForThisElection
+    .Join(new LocationCacher().AllForThisElection, p => p.VotingLocationGuid, l => l.LocationGuid, (p, l) => new { l, p })
+    .GroupBy(g => g.l.Name)
+    .Select(g => new
+    {
+      Location = g.Key,
+      Total = g.Count(),
+      Voted = g.Count(x => !string.IsNullOrEmpty(x.p.VotingMethod)),
+      InPerson = g.Count(x => x.p.VotingMethod == VotingMethodEnum.InPerson.ToString()),
+      DroppedOff = g.Count(x => x.p.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
+      MailedIn = g.Count(x => x.p.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
+      CalledIn = g.Count(x => x.p.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+    })
+    .OrderBy(r => r.Location)
+    .ToList();
+
+}
+<style>
+  .pct {
+    color: #909090;
+    font-size: 70%;
+  }
+
+  table.Areas {
+    border-collapse: collapse;
+  }
+
+    table.Areas td,
+    table.Areas th {
+      border: 1px solid grey;
+      padding: 0 4px;
+      text-align: right;
+    }
+
+      table.Areas td.name, table.Areas th.name {
+        text-align: left;
+      }
+
+    table.Areas tr.pct td {
+      text-align: center;
+    }
+
+    table.Areas tr.total td {
+      border-top: 3px double grey;
+    }
+
+  td.voted {
+    background-color: #e7e7e7;
+  }
+
+  table.Areas tr.total td.name {
+    font-weight: bold;
+  }
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    Showing the areas of those registered on the Front Desk.
+  </p>
+  @{
+    var total = new
+    {
+      Total = locations.Sum(a => a.Total),
+      Voted = locations.Sum(a => a.Voted),
+      InPerson = locations.Sum(a => a.InPerson),
+      MailedIn = locations.Sum(a => a.MailedIn),
+      DroppedOff = locations.Sum(a => a.DroppedOff),
+      CalledIn = locations.Sum(a => a.CalledIn),
+    };
+    var showCalledIn = total.CalledIn.AsInt() > 0;
+  }
+  <table class="Areas">
+    <thead>
+      <tr>
+        <th rowspan="2" class="name">Voting Location</th>
+        <th>Voters</th>
+        <th>In Person</th>
+        <th>Mailed In</th>
+        <th>Dropped Off</th>
+        @if (showCalledIn)
+        {
+          <th>Called In</th>
+        }
+      </tr>
+      <tr class="pct">
+        <td>(% of all voters)</td>
+        <td colspan="@(3 + (showCalledIn ? 1 : 0))">(% at location)</td>
+      </tr>
+    </thead>
+    <tbody>
+      @if (locations.Count > 1)
+      {
+        foreach (var loc in locations)
+        {
+          <tr class="area">
+            <td class="name">@loc.Location</td>
+            <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
+            <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
+            <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
+            <td class="method">@loc.DroppedOff @loc.DroppedOff.PercentInSpan(loc.Voted, -1, true)</td>
+            @if (showCalledIn)
+            {
+              <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
+            }
+          </tr>
+        }
+      }
+      <tr class="total">
+        <td class="name">Total</td>
+        <td class="total">@total.Total @(total.Total.PercentInSpan(total.Total, 0, true))</td>
+        <td class="method">@total.InPerson @total.InPerson.PercentInSpan(total.Voted, -1, true)</td>
+        <td class="method">@total.MailedIn @total.MailedIn.PercentInSpan(total.Voted, -1, true)</td>
+        <td class="method">@total.DroppedOff @total.DroppedOff.PercentInSpan(total.Voted, -1, true)</td>
+        @if (showCalledIn)
+        {
+          <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
+        }
+      </tr>
+
+    </tbody>
+  </table>
+</div>
