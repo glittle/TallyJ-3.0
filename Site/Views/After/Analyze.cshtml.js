@@ -296,8 +296,8 @@
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
             + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
               info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
-            + (tie.IsResolved ? '' : ' <b>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these numbers may need to be adjusted until those elected are ')
-            + '</p>';
+            + '</p>'
+            + (tie.IsResolved ? '' : '<p>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these tie-break vote numbers may need to be adjusted until those elected are clearly indicated. For example, multiply first round counts by 100, then add second round results.</p>');
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
           });
@@ -380,20 +380,9 @@
       alert('All vote counts must be a positive number.');
       return;
     }
-    //    if (foundDup) {
-    //      var foundBeforeDup = 0;
-    //      for (var i = dups.length - 1; i >= 0; i--) {
-    //        var dup = dups[i];
-    //        if (dup > 1) break;
-    //        foundBeforeDup = foundBeforeDup + dup; // will be 1 or 0
-    //      }
-    //      if (foundBeforeDup < needed) {
-    //        alert('A tie has been entered within the top {0} vote counts.\n\nWhen the tie-breaking vote is done, tied results cannot be accepted. Please resolve those tied votes.'.filledWith(needed));
-    //      }
-    //    }
-    if (foundOkay < needed) {
-      alert('Please ensure that {0} or more votes are entered.'.filledWith(needed));
-    }
+    //if (foundOkay < needed) {
+    //  alert('Please ensure that {0} or more votes are entered.'.filledWith(needed));
+    //}
     var form = {
       counts: values
     };
