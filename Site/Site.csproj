@@ -629,6 +629,14 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Views\Account\LogOn.cshtml.js" />
+    <None Include="Views\After\ShowTies.cshtml.less" />
+    <Content Include="Views\After\ShowTies.cshtml.css">
+      <DependentUpon>ShowTies.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\After\ShowTies.cshtml.js" />
+    <Content Include="Views\After\ShowTies.cshtml.min.css">
+      <DependentUpon>ShowTies.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css">
       <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
@@ -670,6 +678,7 @@
     <Content Include="Views\Before\RollCall.cshtml.less" />
     <Content Include="Views\Ballots\SortBallots.cshtml" />
     <Content Include="Views\Ballots\SortBallots.cshtml.css" />
+    <Content Include="Views\After\ShowTies.cshtml" />
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
     <None Include="Web.Standalone.config">

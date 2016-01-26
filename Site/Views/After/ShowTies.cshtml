@@ -1,0 +1,49 @@
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@model ResultsModel
+@{
+  ContextItems.AddJavascriptForPage("beforeUrl", "showTies.getTies={0};".FilledWith(Url.Action("GetTies", "After").QuotedForJavascript()));
+
+  var tieBreakGroups = Model.GetUnresolvedTieBreakGroups();
+  ContextItems.AddJavascriptForPage("info", "showTies.ties={0};".FilledWith(tieBreakGroups.SerializedAsJsonString()));
+
+  if (tieBreakGroups.Count == 1) {
+    ContextItems.AddJavascriptForPage("tieinfo", "showTies.tieInfo={0};".FilledWith(Model.GetTies(tieBreakGroups[0].TieBreakGroup).SerializedAsJsonString()));
+  }
+}
+<div class="Main">
+
+  <div class="Nav Show">
+    <button id="btnReturn" type="button">Show Menu</button>
+    <div>F11 (full-screen)</div>
+  </div>
+
+
+
+  @if (tieBreakGroups.Count > 1)
+  {
+    <select id="selTieBreaks">
+      <option value="">Select the tie to show...</option>
+      @foreach (var tb in tieBreakGroups)
+      {
+        <option value="@tb.TieBreakGroup">Tie #@tb.TieBreakGroup (@tb.NumToElect of @tb.NumInTie)</option>
+      }
+    </select>
+  }
+  @if (tieBreakGroups.Count > 0)
+  {
+    <h1>Tie Break Information</h1>
+    <p id="TieIntro">
+    </p>
+    <div id="names">
+    </div>
+  }
+  else {
+    <div id="Wait">
+      <p>
+        There are no unresolved tie-breaks to display.
+      </p>
+    </div>
+  }
+</div>

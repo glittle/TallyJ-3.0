@@ -421,5 +421,25 @@ namespace TallyJ.CoreModels
             .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
       }.AsJsonResult();
     }
+
+    public object GetTies(int tieBreakGroup)
+    {
+      return new ResultCacher(Db).AllForThisElection
+        .Where(r => r.TieBreakGroup == tieBreakGroup)
+        .Join(new PersonCacher(Db).AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
+        .Select(j => new
+        {
+          name = j.p.FullNameFL,
+          isResolved = j.r.IsTieResolved.AsBoolean()
+        })
+        .OrderBy(x => x.name);
+    }
+    public List<ResultTie> GetUnresolvedTieBreakGroups()
+    {
+      return _analyzer.ResultTies
+        .Where(rt => !rt.IsResolved.AsBoolean())
+        .OrderBy(rt => rt.TieBreakGroup)
+        .ToList();
+    }
   }
 }
