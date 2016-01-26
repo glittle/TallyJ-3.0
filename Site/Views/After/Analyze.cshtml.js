@@ -296,7 +296,7 @@
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
             + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
               info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
-            + (tie.IsResolved ? '' : ' <b>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here.')
+            + (tie.IsResolved ? '' : ' <b>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these numbers may need to be adjusted until those elected are ')
             + '</p>';
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;

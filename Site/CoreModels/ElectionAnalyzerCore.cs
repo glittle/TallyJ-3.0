@@ -321,7 +321,8 @@ namespace TallyJ.CoreModels
     //      }
     //    }
 
-    private void ClearInMemoryCachedInfo() {
+    private void ClearInMemoryCachedInfo()
+    {
       new PersonCacher(DbContext).DropThisCache();
       new ResultTieCacher(Db).DropThisCache();
       new VoteCacher(Db).DropThisCache();
@@ -688,13 +689,16 @@ namespace TallyJ.CoreModels
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
 
+        // expressed in the positive for developers!
         var stillTied = results.Any(other => other != r
                                     && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
                                     && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
                                     );
+
         r.IsTieResolved = !stillTied;
       });
 
+      // if others are involved, set them to show
       if (groupInOther && (groupInTop || groupInExtra))
       {
         results.Where(r => r.Section == ResultHelper.Section.Other)
@@ -715,23 +719,19 @@ namespace TallyJ.CoreModels
         }
       }
 
+      var extrasToBeDistinct = 0;
       if (groupInExtra)
       {
-        if (groupInTop)
-        {
-          //resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
-          resultTie.TieBreakRequired = true;
-          //resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
-        }
-        else
+        resultTie.TieBreakRequired = true;
+        extrasToBeDistinct = results.Count(r => r.Section == ResultHelper.Section.Extra) - 1;
+
+        if (!groupInTop)
         {
           resultTie.NumToElect += results.Count(r => r.Section == ResultHelper.Section.Extra);
-          resultTie.TieBreakRequired = true;
-          //resultTie.TieBreakRequired = results.Any(r => !r.IsTieResolved.AsBool());
         }
       }
 
-      var foundBeforeDup = 0;
+      var numResolved = 0;
       if (resultTie.NumToElect > 0)
       {
         //results are in descending order already, so starting at 0 is starting at the "top"
@@ -739,19 +739,19 @@ namespace TallyJ.CoreModels
         {
           var result = results[i];
           if (!result.IsTieResolved.AsBoolean()) break;
-          foundBeforeDup += result.TieBreakCount > 0 ? 1 : 0;
+          numResolved += 1;
         }
       }
 
-      if (foundBeforeDup < resultTie.NumToElect)
+      if (numResolved < resultTie.NumToElect + extrasToBeDistinct)
       {
         resultTie.IsResolved = false;
-        results.ForEach(r => r.IsTieResolved = false);
+        //results.ForEach(r => r.IsTieResolved = false);
       }
       else
       {
         resultTie.IsResolved = true;
-        results.ForEach(r => r.IsTieResolved = true);
+        //results.ForEach(r => r.IsTieResolved = true);
       }
 
       if (resultTie.NumInTie == resultTie.NumToElect)

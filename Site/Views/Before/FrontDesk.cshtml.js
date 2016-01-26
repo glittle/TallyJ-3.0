@@ -342,9 +342,9 @@
           var selector = '#P' + this.PersonId;
           $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
           if (this.PersonId != pid) {
-            $(selector).effect('highlight', {}, 5000);
+            //$(selector).effect('highlight', {}, 5000);
           }
-          $('.KeyMatch').removeClass('KeyMatch');
+          //$('.KeyMatch').removeClass('KeyMatch');
           if (selector === '#' + current) {
             setSelection($(selector), false);
           }
