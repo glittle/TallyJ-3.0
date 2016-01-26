@@ -19,7 +19,7 @@
     </group>
     <group title="Review and Report" longtitle="Review then share the news!" showTitleInPage="false">
       <page title="Analyze Ballots" featureWhen="Tallying, Reviewing, Report" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
-      <page title="Tie-Break" featureWhen="Reviewing" controller="After" action="ShowTies" requireElection="true" role="known" desc="Show tie-break information."></page>
+      <page title="Display Tie-Breaks" featureWhen="Reviewing" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information."></page>
       <page title="Detailed Reports" featureWhen="Reviewing, Report" controller="After" action="Reports" requireElection="true" role="known" desc="Generate election reports."></page>
       <page title="Display Tellers' Report" featureWhen="Reviewing, Report" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
       <!--<page title="Export Data" controller="Setup" action="Export" requireElection="true" role="known" desc="Download election data to a local file."></page>-->
