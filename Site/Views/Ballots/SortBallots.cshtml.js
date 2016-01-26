@@ -86,7 +86,8 @@
       if (age < maxAge) {
         if (!info.active) {
           var div = $('#B_' + info.who);
-          div.effect('highlight', {queue: false}, maxAge - age);
+          // each call cancels any others currently in effect - can't change it :(
+          div.effect({ effect: 'highlight', duration: maxAge - age });
           info.active = true;
         }
         i++;
