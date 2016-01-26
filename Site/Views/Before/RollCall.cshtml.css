@@ -2,6 +2,7 @@
   width: 100%;
 }
 header,
+.CompCode,
 footer {
   display: none;
 }
