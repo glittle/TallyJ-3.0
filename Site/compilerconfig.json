@@ -14,5 +14,9 @@
   {
     "outputFile": "Views/Public/Home.cshtml.css",
     "inputFile": "Views/Public/Home.cshtml.less"
+  },
+  {
+    "outputFile": "Views/After/ShowTies.cshtml.css",
+    "inputFile": "Views/After/ShowTies.cshtml.less"
   }
 ]
