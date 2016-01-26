@@ -41,7 +41,8 @@
       for (var i = 0; i < personLines.length; i++) {
         local.recentUpdates.push({
           when: new Date(),
-          who: personLines[i].PersonId
+          who: personLines[i].PersonId,
+          active: false
         });
       }
 
@@ -73,8 +74,8 @@
 
   var highlightRecentChanges = function () {
     var i = 0;
-    var minutes = 2;
-    var maxAge = minutes * 60000;
+    var minutes = .2;
+    var maxAge = minutes * 60 * 1000;
     var now = new Date();
     while (true) {
       if (i >= local.recentUpdates.length) {
@@ -83,7 +84,11 @@
       var info = local.recentUpdates[i];
       var age = now - info.when;
       if (age < maxAge) {
-        $('#B_' + info.who).effect('highlight', {}, maxAge - age);
+        if (!info.active) {
+          var div = $('#B_' + info.who);
+          div.effect('highlight', {queue: false}, maxAge - age);
+          info.active = true;
+        }
         i++;
       } else {
         local.recentUpdates.splice(i, 1);

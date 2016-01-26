@@ -692,8 +692,10 @@ namespace Tests.BusinessTests
       // test wanted:
       //  person 0 = 1  TieBreak: 2
       //  person 1 = 1            1
-      // ---
+      // ---extra
       //  person 2 = 1            1
+      //--> not resolved
+      
       // Ballot 0: 0,1
       // Ballot 1: 2,spoiled
       var votes = new[]
@@ -772,7 +774,6 @@ namespace Tests.BusinessTests
       // not resolved
       resultTies[0].IsResolved.ShouldEqual(false);
 
-
       results[0].IsTied.ShouldEqual(true);
       results[0].TieBreakGroup.ShouldEqual(1);
       results[0].CloseToPrev.ShouldEqual(false);
@@ -780,7 +781,7 @@ namespace Tests.BusinessTests
       results[0].Section.ShouldEqual(ResultHelper.Section.Top);
       results[0].ForceShowInOther.ShouldEqual(false);
       results[0].TieBreakRequired.ShouldEqual(true);
-      results[0].IsTieResolved.ShouldEqual(false);
+      results[0].IsTieResolved.ShouldEqual(true);
 
       results[1].IsTied.ShouldEqual(true);
       results[1].TieBreakGroup.ShouldEqual(1);
@@ -804,59 +805,42 @@ namespace Tests.BusinessTests
     }
 
 
-    // Not ready yet [TestMethod]
+    [TestMethod]
     public void ElectionTieWithTieBreakTiedInExtraSection2()
     {
-      var electionGuid = Guid.NewGuid();
-      var election = new Election
+      new Election
       {
-        ElectionGuid = _electionGuid,
         NumberToElect = 2,
         NumberExtra = 2
-      };
-      var location = new Location
-      {
-        LocationGuid = Guid.NewGuid(),
-        ElectionGuid = electionGuid
-      };
+      }.ForTests();
 
       var ballots = new[]
       {
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
-        new Ballot
-        {LocationGuid = location.LocationGuid, BallotGuid = Guid.NewGuid(), StatusCode = BallotStatusEnum.Ok},
+        new Ballot().ForTests(),
+        new Ballot().ForTests(),
+        new Ballot().ForTests(),
       };
 
       // test wanted:
       //  person 0 = 2  TieBreak: 
       //  person 1 = 1            2
-      // ---
+      //  ---Extra
       //  person 2 = 1            1
       //  person 3 = 1            1
-
-      // Ballot 0: 0,1
-      // Ballot 1: 0,2
-      // Ballot 2: 3,spoiled
+      //  ---
+      //ballots:
+      //  Ballot 0: 0,1
+      //  Ballot 1: 0,2
+      //  Ballot 2: 3,spoiled
       var votes = new[]
       {
-        new VoteInfo {VoteId=1,PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[0].BallotGuid},
-        new VoteInfo {VoteId=2,PersonGuid = SamplePeople[1].PersonGuid, BallotGuid = ballots[0].BallotGuid},
-        new VoteInfo {VoteId=3,PersonGuid = SamplePeople[0].PersonGuid, BallotGuid = ballots[1].BallotGuid},
-        new VoteInfo {VoteId=4,PersonGuid = SamplePeople[2].PersonGuid, BallotGuid = ballots[1].BallotGuid},
-        new VoteInfo {VoteId=5,PersonGuid = SamplePeople[3].PersonGuid, BallotGuid = ballots[2].BallotGuid},
-        new VoteInfo {VoteId=6,VoteIneligibleReasonGuid = Guid.NewGuid(), BallotGuid = ballots[2].BallotGuid},
+        new Vote().ForTests(SamplePeople[0],ballots[0]),
+        new Vote().ForTests(SamplePeople[1],ballots[0]),
+        new Vote().ForTests(SamplePeople[0],ballots[1]),
+        new Vote().ForTests(SamplePeople[2],ballots[1]),
+        new Vote().ForTests(SamplePeople[3],ballots[2]),
+        new Vote().ForTests(IneligibleReasonEnum.Ineligible_Other,ballots[2])
       };
-      foreach (var voteInfo in votes)
-      {
-        voteInfo.ElectionGuid = electionGuid;
-        voteInfo.PersonCombinedInfo = voteInfo.PersonCombinedInfoInVote = "zz";
-        voteInfo.BallotStatusCode = BallotStatusEnum.Ok;
-        voteInfo.VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
-        voteInfo.PersonCanReceiveVotes = true;
-      }
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
@@ -880,7 +864,6 @@ namespace Tests.BusinessTests
       resultTies[0].TieBreakRequired.ShouldEqual(true);
 
       results[0].IsTied.ShouldEqual(false);
-      //results[0].TieBreakGroup.ShouldEqual(1);
       results[0].CloseToPrev.ShouldEqual(false);
       results[0].CloseToNext.ShouldEqual(true);
       results[0].Section.ShouldEqual(ResultHelper.Section.Top);
@@ -934,7 +917,6 @@ namespace Tests.BusinessTests
       resultTies[0].IsResolved.ShouldEqual(false);
 
       results[0].IsTied.ShouldEqual(false);
-      //results[0].TieBreakGroup.ShouldEqual(1);
       results[0].CloseToPrev.ShouldEqual(false);
       results[0].CloseToNext.ShouldEqual(true);
       results[0].Section.ShouldEqual(ResultHelper.Section.Top);
@@ -964,9 +946,6 @@ namespace Tests.BusinessTests
       results[3].Section.ShouldEqual(ResultHelper.Section.Extra);
       results[3].TieBreakRequired.ShouldEqual(true);
       results[3].ForceShowInOther.ShouldEqual(false);
-
-
-
     }
 
   }
