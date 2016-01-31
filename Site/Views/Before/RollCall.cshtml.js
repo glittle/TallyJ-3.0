@@ -22,11 +22,9 @@
 
     var main = $('#voterList');
 
-    if (rollCallPage.hasLocations) {
-      $.each(rollCallPage.voters, function (i, v) {
-        addInfo(v);
-      });
-    }
+    $.each(rollCallPage.voters, function (i, v) {
+      addInfo(v);
+    });
     var btnShow = '<button id=showNav>Show Instructions</button>';
     main.html(btnShow + site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
     local.nameDivs = main.children('div.Voter');
