@@ -166,6 +166,10 @@
   var changeLocation = function () {
     ShowStatusDisplay('Loading location...');
     CallAjaxHandler(publicInterface.controllerUrl + '/GetLocationInfo', null, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       showLocation(info.Location);
       showBallot(info);
     });
@@ -279,6 +283,10 @@ add to this ballot
   };
 
   var changeLocationStatus = function () {
+    if (!publicInterface.Location) {
+      ShowStatusFailed("Select a location first!");
+      return;
+    }
     var form = {
       id: publicInterface.Location.Id,
       status: $('#ddlLocationStatus').val()

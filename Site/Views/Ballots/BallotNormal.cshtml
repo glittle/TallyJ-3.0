@@ -43,7 +43,7 @@
       <div class="locationInfo">
         <div>
           <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
-            @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation.TallyStatus)
+            @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation)
           </select>
         </div>
         <div class="heading">

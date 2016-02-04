@@ -229,8 +229,13 @@ namespace TallyJ.Code.Session
         var locations = new LocationCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext).AllForThisElection;
 
         location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid);
-        if (location == null) {
-          return null;
+        if (location == null)
+        {
+          if (locations.Count > 1)
+          {
+            return null;
+          }
+          location = locations[0];
         }
 
         if (location.LocationGuid != currentLocationGuid)

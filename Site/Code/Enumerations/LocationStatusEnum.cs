@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TallyJ.EF;
 
 namespace TallyJ.Code.Enumerations
 {
@@ -36,8 +37,9 @@ namespace TallyJ.Code.Enumerations
       return item == null ? "" : item.DisplayText;
     }
 
-    public static HtmlString ForHtmlSelect(string selected = "")
+    public static HtmlString ForHtmlSelect(Location location)
     {
+      var selected = location == null ? "" : location.TallyStatus;
       return
         BaseItems
           .Select(bi => "<option value='{0}'{2}>{1}</option>"

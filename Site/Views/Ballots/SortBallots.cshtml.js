@@ -2,7 +2,7 @@
   var local = {
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>',
     ballots: {},
-    currentLocation: -2,
+    currentLocation: 0,
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     showingNames: false,
@@ -63,7 +63,7 @@
   };
 
   var changeLocation = function (highlight) {
-    var newLocation = $('#ddlTopLocation').val();
+    var newLocation = $('#ddlTopLocation').val() || -2;
     if (newLocation != local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {

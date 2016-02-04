@@ -146,13 +146,17 @@ namespace TallyJ.CoreModels
 
     public object LocationInfoForJson(Location location)
     {
+      if (location == null) {
+        return null;
+      }
+
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var sum = new BallotHelper().BallotCount(location.LocationGuid, isSingleName);
 
       return new
       {
         Id = location.C_RowId,
-        TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
+        TallyStatus = location == null ? "" : LocationStatusEnum.TextFor(location.TallyStatus),
         TallyStatusCode = location.TallyStatus,
         location.ContactInfo,
         location.BallotsCollected,

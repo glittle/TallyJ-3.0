@@ -116,6 +116,12 @@ namespace TallyJ.Controllers
     
     public JsonResult GetLocationInfo()
     {
+      var locationModel = new LocationModel();
+      if (UserSession.CurrentLocation == null)
+      {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+
       if (UserSession.CurrentElection.IsSingleNameElection)
       {
         return new
