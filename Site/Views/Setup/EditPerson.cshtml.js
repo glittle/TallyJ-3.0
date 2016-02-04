@@ -130,6 +130,10 @@
 
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       if (info.Person) {
         applyValues(null, info.Person, true);
         startEdit();

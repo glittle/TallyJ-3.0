@@ -4639,7 +4639,10 @@ body.AuthGuest .ElectionState ol li.General {
 .CurrentInfo.NotSet {
   background-color: #ff0000;
 }
-.CurrentInfo.NotSet #ddlTopTeller1 {
+#ddlTopLocation.NotSet {
+  color: #ff0000;
+}
+#ddlTopTeller1.NotSet {
   color: #ff0000;
 }
 #ddlTopTeller2.NotSet {
@@ -4722,6 +4725,21 @@ body.AuthKnown .CurrentElectionName {
 }
 .QuickLinks2.temp #quickLinks2 a:hover {
   background-color: #EFEEEF;
+}
+.QuickLinks2 span.DropDown {
+  display: block;
+  position: absolute;
+  z-index: 9999;
+  background-color: white;
+  box-shadow: 1px 6px 15px #555;
+  border-radius: 2px;
+  padding: 0;
+}
+.QuickLinks2 span.DropDown a {
+  display: block;
+  margin: 0 0 -1px 0;
+  padding: 6px 10px 6px 7px;
+  border-radius: 0;
 }
 .AuthKnown .AllowChangeElectionState.bold {
   border: 1px solid #013d7a;

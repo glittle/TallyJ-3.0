@@ -88,7 +88,7 @@
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
-                  title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")"
+                  title="@(UserSession.IsKnownTeller ? "" : "Current election status (set by head teller)")"
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>

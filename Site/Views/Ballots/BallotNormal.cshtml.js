@@ -190,6 +190,10 @@
     };
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SortVotes', form, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       if (info) {
         // no need to update client with new order
         ShowStatusSuccess("Saved");
@@ -239,6 +243,10 @@ add to this ballot
     $('.NewBallotBtns').prop('disabled', true);
 
     CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       showBallot(info);
       showBallotTab(true);
 
@@ -316,6 +324,11 @@ add to this ballot
     local.lastSearch = ''; // force a reload
     searchTextChanged();
     toggleAddMissingPanel();
+
+    if ($('#ddlTopLocation').val() == -1) {
+      ShowStatusFailed('Must select your location first!');
+      return;
+    }
 
     var person = info.Person;
     var votes = $.grep(local.votes, function (v) {
@@ -509,6 +522,10 @@ add to this ballot
     ShowStatusDisplay('Saving');
 
     CallAjaxHandler(publicInterface.controllerUrl + '/NeedsReview', { needs: checked }, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       updateStatusDisplay(info);
       updateStatusInList(info);
 
@@ -618,6 +635,12 @@ add to this ballot
   };
 
   var startSavingVote = function (host) {
+    if ($('#ddlTopLocation').val() == -1) {
+      ShowStatusFailed('Must select your location first!');
+      return;
+    }
+
+
     var input = host.find('input');
     var invalids = host.find('select:visible');
     var invalidId = invalids.val() || '';
@@ -698,7 +721,14 @@ add to this ballot
         }
       }
       else {
-        ShowStatusFailed(info.Error);
+        ShowStatusFailed(info.Error || info.Message);
+        for (i = 0; i < local.votes.length; i++) {
+          vote = local.votes[i];
+          if (vote.vid == 0) {
+            local.votes.splice(i, 1);
+          }
+        }
+        showVotes();
       }
 
     });

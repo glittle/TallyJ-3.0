@@ -315,10 +315,10 @@
         : btn.hasClass('CalledIn') ? 'C' : 'M';
     var pid = row.attr('id').substr(1);
 
-    saveBtnClick(pid, btnType);
+    saveBtnClick(pid, btnType, btn);
   };
 
-  var saveBtnClick = function (pid, btnType) {
+  var saveBtnClick = function (pid, btnType, btn) {
     var form = {
       id: pid,
       type: btnType,
@@ -329,6 +329,9 @@
     CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
+        if (btn) {
+          btn.removeClass('clicked');
+        }
       }
     });
   };

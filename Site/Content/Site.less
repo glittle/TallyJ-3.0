@@ -978,17 +978,19 @@ body.AuthGuest .ElectionState ol li.General {
 
     &.NotSet {
         background-color: #ff0000;
-
-        #ddlTopTeller1 {
-            color: #ff0000;
-        }
     }
 }
 
-
+#ddlTopLocation.NotSet {
+    color: #ff0000;
+}
+#ddlTopTeller1.NotSet {
+    color: #ff0000;
+}
 #ddlTopTeller2.NotSet {
     color: #ff0000;
 }
+
 
 body .ifAuthKnownInline, .AllowChangeElectionState, body .ifAuthKnownLI {
     display: none;
@@ -1082,6 +1084,23 @@ body.AuthKnown .CurrentElectionName {
                     background-color: #EFEEEF;
                 }
             }
+        }
+    }
+
+    span.DropDown {
+        display: block;
+        position: absolute;
+        z-index: 9999;
+        background-color: white;
+        box-shadow: 1px 6px 15px #555;
+        border-radius: 2px;
+        padding: 0;
+
+        a {
+            display: block;
+            margin: 0 0 -1px 0;
+            padding: 6px 10px 6px 7px;
+            border-radius: 0;
         }
     }
 }

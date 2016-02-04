@@ -13,19 +13,21 @@
   var preparePage = function () {
     connectToFrontDeskHub();
 
-    changeLocation($('#locations'), false);
+    $('#ddlTopLocation').prepend('<option value="-2">[All Locations]</option>')
+
+    changeLocation(false);
 
     $('#btnShowNames').click(function () {
       $(this).hide();
       $('.Names, #lists').fadeIn();
       local.showingNames = true;
     });
-    $('#locations').change(function () {
-      changeLocation($(this));
+    site.onbroadcast(site.broadcastCode.locationChanged, function () {
+      changeLocation();
     });
     $('#btnRefresh').click(function () {
       local.currentLocation = '';
-      changeLocation($('#locations'), true);
+      changeLocation(true);
     });
 
     $('#lists').on('change', '.sortSelector', sortSection);
@@ -45,7 +47,7 @@
       LogMessage('signalR: updatePeople');
 
       local.currentLocation = '';
-      changeLocation($('#locations'), true);
+      changeLocation(true);
     };
 
     activateHub(hub, function () {
@@ -80,8 +82,8 @@
     ActivateTips();
   };
 
-  var changeLocation = function (ddlLocation, highlight) {
-    var newLocation = ddlLocation.val();
+  var changeLocation = function (highlight) {
+    var newLocation = $('#ddlTopLocation').val();
     if (newLocation != local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {

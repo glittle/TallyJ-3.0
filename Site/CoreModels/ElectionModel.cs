@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
@@ -346,7 +347,7 @@ namespace TallyJ.CoreModels
     private void UpgradeOldData()
     {
       var personCacher = new PersonCacher(Db);
-      var testInfo = personCacher.MainQuery().Select(p=>new {p.CombinedInfo, p.CombinedSoundCodes}).FirstOrDefault();
+      var testInfo = personCacher.MainQuery().Select(p => new { p.CombinedInfo, p.CombinedSoundCodes }).FirstOrDefault();
 
       if (testInfo == null)
       {
@@ -364,7 +365,7 @@ namespace TallyJ.CoreModels
 
       var people = personCacher.MainQuery().ToList();
       var votes = voteCacher.MainQuery().ToList();
-        
+
       var peopleModel = new PeopleModel();
       var saveNeeded = false;
 
@@ -537,6 +538,7 @@ namespace TallyJ.CoreModels
 
       var electionCacher = new ElectionCacher(Db);
       var election = UserSession.CurrentElection;
+
       if (election.TallyStatus != status)
       {
         Db.Election.Attach(election);
@@ -595,6 +597,16 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
+      var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
+      if (status == ElectionTallyStatusEnum.Report && !readyForReports)
+      {
+        return new
+        {
+          Message = "Cannot set to \"Approved\" until Analysis is completed successfully."
+        }.AsJsonResult();
+      }
+
       SetTallyStatus(controller, status);
 
       new LogHelper().Add("Status changed to " + status, true);

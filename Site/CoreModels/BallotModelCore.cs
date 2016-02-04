@@ -81,6 +81,20 @@ namespace TallyJ.CoreModels
 
     public JsonResult StartNewBallotJson()
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+      var locationModel = new LocationModel();
+      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
+      {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+      if (UserSession.GetCurrentTeller(1).HasNoContent())
+      {
+        return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
+      }
+
       var ballotInfo = CreateAndRegisterBallot();
 
       var allVotes = new VoteCacher(Db).AllForThisElection;
@@ -129,6 +143,11 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetNeedsReview(bool needsReview)
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+
       var ballot = CurrentRawBallot();
 
       Db.Ballot.Attach(ballot);
@@ -222,6 +241,20 @@ namespace TallyJ.CoreModels
 
     public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason)
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+      var locationModel = new LocationModel();
+      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
+      {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+      if (UserSession.GetCurrentTeller(1).HasNoContent())
+      {
+        return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
+      }
+
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
 
       var ballot = GetCurrentBallot();
@@ -349,6 +382,11 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteVote(int vid)
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+
       var vote = new VoteCacher(Db).AllForThisElection.SingleOrDefault(v => v.C_RowId == vid);
       if (vote == null)
       {

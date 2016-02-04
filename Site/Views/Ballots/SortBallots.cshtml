@@ -25,13 +25,6 @@
 <div class="btnRefreshDiv">
   <button type="button" id="btnRefresh" class="btn">Refresh</button>
 </div>
-<div class="@(ContextItems.LocationModel.HasLocations ? "" : "Hidden")">
-  Showing who voted at:
-  <select id="locations">
-    <option value="-1">[All Locations]</option>
-    @ContextItems.LocationModel.GetLocationOptions()
-  </select>
-</div>
 
 <div id="lists">
 </div>
