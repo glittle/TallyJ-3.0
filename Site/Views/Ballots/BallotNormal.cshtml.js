@@ -249,6 +249,7 @@ add to this ballot
     CallAjaxHandler(publicInterface.controllerUrl + "/NewBallot", null, function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
+        $('.NewBallotBtns').prop('disabled', false);
         return;
       }
       showBallot(info);
@@ -257,6 +258,9 @@ add to this ballot
 
       local.inputField.focus().val('').change();
       local.nameList.html('');
+      $('.NewBallotBtns').prop('disabled', false);
+    }, null, function () {
+      // failed
       $('.NewBallotBtns').prop('disabled', false);
     });
   };

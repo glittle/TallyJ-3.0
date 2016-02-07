@@ -34,16 +34,16 @@
 
             <xs:attribute name="InPersonBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesInPerson" type="xs:nonNegativeInteger" use="optional" />
-            
+
             <xs:attribute name="DroppedOffBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesDroppedOff" type="xs:nonNegativeInteger" use="optional" />
-            
+
             <xs:attribute name="MailedInBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesMailedIn" type="xs:nonNegativeInteger" use="optional" />
-            
+
             <xs:attribute name="CalledInBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesCalledIn" type="xs:nonNegativeInteger" use="optional" />
-            
+
             <xs:attribute name="BallotsNeedingReview" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="SpoiledBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="SpoiledManualBallots" type="xs:nonNegativeInteger" use="optional" />
@@ -127,6 +127,7 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="Name" type="xs:string" use="required" />
+            <xs:attribute name="LocationGuid" type="xs:string" use="optional" />
             <xs:attribute name="TallyStatus" type="xs:string" use="optional" />
             <xs:attribute name="ContactInfo" type="xs:string" use="optional" />
             <xs:attribute name="BallotsCollected" type="xs:nonNegativeInteger" use="optional" />

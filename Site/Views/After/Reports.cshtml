@@ -17,13 +17,15 @@
     { "BallotAlignment", "Ballot Alignment"},
     { "ChangedPeople", "Updated People"},
 
-    { "AllPeople|Registration", "All Eligible Voters"},
-    { "Voters", "Eligible Voters Who Voted"},
+    { "AllPeopleLF|Registration", "All Eligible (by Last name)"},
+    { "AllPeopleFL", "All Eligible (by First name)"},
+    { "Voters", "Who Voted"},
     { "NonVoters", "Eligible Voters Who Did Not Vote"},
-    { "VotersByArea", "Voters by Home Area"},
+    { "VotersByArea", "Eligible and Voters by Area"},
   };
   if (ContextItems.LocationModel.HasLocations) {
     reports.Add("VotersByLocation", "Voters by Location");
+    reports.Add("VotersByLocationArea", "Voters from Area by Location");
   }
   var firstHeader = false;
 }
