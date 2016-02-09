@@ -19,17 +19,19 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SelectElection(Guid guid)
+    public JsonResult SelectElection(Guid guid, Guid? oldComputerGuid)
     {
       var electionModel = new ElectionModel();
 
-      if (electionModel.JoinIntoElection(guid))
+      if (electionModel.JoinIntoElection(guid, oldComputerGuid.AsGuid()))
       {
         return new
                  {
                    Locations = ContextItems.LocationModel.MyLocations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
                    Selected = true,
                    ElectionName = UserSession.CurrentElectionName,
+                   ElectionId = UserSession.CurrentElection.C_RowId,
+                   CompGuid = UserSession.CurrentComputer.ComputerGuid,
                    // Pulse = new PulseModel(this).Pulse()
                  }.AsJsonResult();
       }

@@ -14,9 +14,9 @@ namespace TallyJ.CoreModels
 {
   public class TellerModel : DataConnectedModel
   {
-    public JsonResult GrantAccessToGuestTeller(int electionId, string secretCode)
+    public JsonResult GrantAccessToGuestTeller(int electionId, string secretCode, Guid oldComputerGuid)
     {
-      var model = new ElectionModel();
+      var electionModel = new ElectionModel();
 
       var electionInfo = new PublicElectionLister().PublicElectionInfo(electionId);
       if (electionInfo == null)
@@ -41,11 +41,12 @@ namespace TallyJ.CoreModels
         UserSession.IsGuestTeller = true;
       }
 
-      model.JoinIntoElection(electionId);
+      electionModel.JoinIntoElection(electionId, oldComputerGuid);
 
       return new
                {
-                 LoggedIn = true
+                 LoggedIn = true,
+                 CompGuid = UserSession.CurrentComputer.ComputerGuid
                }.AsJsonResult();
     }
 

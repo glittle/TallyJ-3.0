@@ -292,7 +292,7 @@ namespace TallyJ.Code.Session
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
         if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
         {
-          return new ComputerModel().CreateAndSaveComputerForMe();
+          return new ComputerModel().GetComputerForMe(Guid.Empty);
         }
         return currentComputer;
       }
@@ -408,10 +408,10 @@ namespace TallyJ.Code.Session
       {
         new ElectionModel().CloseElection();
       }
-      if (IsLoggedIn)
-      {
-        new ComputerModel().RemoveComputerRecord();
-      }
+      //if (IsLoggedIn)
+      //{
+      //  new ComputerModel().RemoveComputerRecord();
+      //}
       if (movingToOtherElection)
       {
         ResetWhenSwitchingElections();

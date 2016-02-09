@@ -25,7 +25,7 @@ namespace TallyJ.CoreModels
 
     List<Ballot> Ballots { get; }
 
-    ResultSummary AnalyzeEverything();
+    void AnalyzeEverything();
 
     void PrepareResultSummaries();
 

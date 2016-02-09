@@ -292,16 +292,16 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    public bool JoinIntoElection(int wantedElectionId)
+    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
     {
       var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid).FirstOrDefault();
       if (electionGuid == Guid.Empty)
       {
         return false;
       }
-      return JoinIntoElection(electionGuid);
+      return JoinIntoElection(electionGuid, oldComputerGuid);
     }
-    public bool JoinIntoElection(Guid wantedElectionGuid)
+    public bool JoinIntoElection(Guid wantedElectionGuid, Guid oldComputerGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
       var exists = Db.Election.Any(e => e.ElectionGuid == wantedElectionGuid);
@@ -321,6 +321,10 @@ namespace TallyJ.CoreModels
 
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
+
+      // assign new computer code
+      var computerModel = new ComputerModel();
+      computerModel.GetComputerForMe(oldComputerGuid);
 
       string message;
       if (UserSession.IsGuestTeller)
@@ -663,7 +667,8 @@ namespace TallyJ.CoreModels
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicCalculated;
+      var election = UserSession.CurrentElection;
+      return election != null && election.ListForPublicCalculated;
     }
 
     /// <summary>
@@ -687,7 +692,8 @@ namespace TallyJ.CoreModels
           Db.SaveChanges();
 
           new ElectionCacher(Db).RemoveItemAndSaveCache(election);
-          new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+          new PublicElectionLister().UpdateThisElectionInList();
+          // new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
           new MainHub().DisconnectGuests();
         }
       }
@@ -763,7 +769,7 @@ namespace TallyJ.CoreModels
       if (lastContactOfTeller != null &&
           (currentElection.ListedForPublicAsOf == null
            ||
-           Math.Abs((lastContactOfTeller.Value - currentElection.ListedForPublicAsOf.Value).TotalMinutes) >
+           Math.Abs((DateTime.Now - lastContactOfTeller.Value).TotalMinutes) >
            5.minutes().TotalMinutes))
       {
         currentElection.ListedForPublicAsOf = lastContactOfTeller;

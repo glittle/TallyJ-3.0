@@ -100,7 +100,7 @@ var connectToElectionHub = function () {
   var closing = false;
   hub.client.electionClosed = function () {
     LogMessage('signalR: electionClosed');
-    var msg = 'This election has been closed. Thanks for your help!';
+    var msg = 'This election has been closed. Thank you for your participation!';
     //ShowStatusFailed(msg);
     if (closing) return;
     logoffSignalR();

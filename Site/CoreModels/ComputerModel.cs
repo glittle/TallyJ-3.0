@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public Computer CreateAndSaveComputerForMe()
+    public Computer GetComputerForMe(Guid oldComputerGuid)
     {
       Computer computer;
 
@@ -31,6 +31,7 @@ namespace TallyJ.CoreModels
       var hasLocations = new LocationModel().HasLocations;
       if (locationGuid == Guid.Empty && !hasLocations)
       {
+        // if only one location, learn what it is
         UserSession.CurrentLocationGuid = locationGuid = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
       }
 
@@ -38,18 +39,22 @@ namespace TallyJ.CoreModels
       {
         var allComputers = computerCacher.AllForThisElection;
 
-        computer = new Computer
+        computer = allComputers.FirstOrDefault(c => c.ComputerGuid == oldComputerGuid && c.ElectionGuid == UserSession.CurrentElectionGuid);
+        if (computer == null)
         {
-          ComputerGuid = Guid.NewGuid(),
-          ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
-          LocationGuid = locationGuid,
-          ElectionGuid = UserSession.CurrentElectionGuid,
-          LastContact = DateTime.Now,
-          AuthLevel = UserSession.AuthLevel,
-          SessionId = HttpContext.Current.Session.SessionID
-        };
+          computer = new Computer
+          {
+            ComputerGuid = Guid.NewGuid(),
+            ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
+            ElectionGuid = UserSession.CurrentElectionGuid
+          };
+          computerCacher.AddToCache(computer);
+        }
 
-        computerCacher.AddToCache(computer);
+        computer.LastContact = DateTime.Now;
+        computer.LocationGuid = locationGuid;
+        computer.AuthLevel = UserSession.AuthLevel;
+        computer.SessionId = HttpContext.Current.Session.SessionID;
       }
 
       UserSession.CurrentComputer = computer;
@@ -115,6 +120,7 @@ namespace TallyJ.CoreModels
 
     public string DetermineNextFreeComputerCode(IEnumerable<string> existingCodesSortedAsc)
     {
+      // assign a new code
       var codeToUse = 'A';
       var twoDigit = false;
       var firstDigit = (char)('A' - 1);
@@ -176,13 +182,13 @@ namespace TallyJ.CoreModels
       return true;
     }
 
-    public void RemoveComputerRecord()
-    {
-      var computer = UserSession.CurrentComputer;
-      if (computer != null)
-      {
-        new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
-      }
-    }
+    //public void RemoveComputerRecord()
+    //{
+    //  var computer = UserSession.CurrentComputer;
+    //  if (computer != null)
+    //  {
+    //    new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
+    //  }
+    //}
   }
 }

@@ -210,7 +210,8 @@
     var row = btn.parents('.Election');
     var form =
         {
-          guid: row.data('guid')
+          guid: row.data('guid'),
+          oldCompGuid: GetFromStorage('compcode_' + row.data('guid'), null)
         };
 
     ShowStatusDisplay("Opening election...");
@@ -228,6 +229,8 @@
     ResetStatusDisplay();
 
     if (info.Selected) {
+      //TODO: store computer Guid
+      SetInStorage('compcode_' + info.ElectionId, info.CompGuid);
 
       location.href = site.rootUrl + 'Dashboard';
 

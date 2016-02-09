@@ -47,9 +47,9 @@ namespace TallyJ.Controllers
       return View();
     }
 
-    public JsonResult TellerJoin(int election, string pc)
+    public JsonResult TellerJoin(int election, string pc, Guid? oldCompGuid)
     {
-      return new TellerModel().GrantAccessToGuestTeller(election, pc);
+      return new TellerModel().GrantAccessToGuestTeller(election, pc, oldCompGuid.AsGuid());
     }
 
     public JsonResult GetTimeOffset(long now, string tz)

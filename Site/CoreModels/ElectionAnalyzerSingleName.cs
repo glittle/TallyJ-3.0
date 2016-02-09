@@ -32,7 +32,7 @@ namespace TallyJ.CoreModels
     //{
     //}
 
-    public override ResultSummary AnalyzeEverything()
+    public override void AnalyzeEverything()
     {
 
       PrepareForAnalysis();
@@ -100,7 +100,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      return ResultSummaryFinal;
+      new ResultSummaryCacher(Db).DropThisCache();
     }
   }
 }

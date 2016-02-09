@@ -31,6 +31,9 @@ namespace TallyJ.EF
       var electionId = election.C_RowId;
 
       var isPublic = CachedDict.ContainsKey(electionId);
+      if (!shouldBePublic) {
+        new MainHub().DisconnectGuests();
+      }
       if (shouldBePublic == isPublic)
       {
         return;
@@ -40,7 +43,6 @@ namespace TallyJ.EF
       {
         PublicElectionInfo removedName;
         var wasRemoved = CachedDict.TryRemove(electionId, out removedName);
-        new MainHub().DisconnectGuests();
       }
       else
       {
