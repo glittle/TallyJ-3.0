@@ -63,8 +63,6 @@ namespace TallyJ.EF
       {
         var db = CurrentDb;
 
-        //if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
-
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
         {

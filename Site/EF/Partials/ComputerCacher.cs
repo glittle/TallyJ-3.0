@@ -14,20 +14,15 @@ namespace TallyJ.EF
   {
     /// This static cache is shared across all elections in active use!
     private static readonly ConcurrentDictionary<Guid, Computer> CachedDict = new ConcurrentDictionary<Guid, Computer>();
-    private ITallyJDbContext db;
-
-    public ComputerCacher(ITallyJDbContext db)
-    {
-      this.db = db;
-    }
-    public ComputerCacher()
-    {
-      this.db = UserSession.DbContext;
-    }
 
     public List<Computer> AllForThisElection
     {
-      get { return CachedDict.Values.Where(c => c.ElectionGuid == UserSession.CurrentElectionGuid).ToList(); }
+      get { return AllForElection(UserSession.CurrentElectionGuid); }
+    }
+
+    public List<Computer> AllForElection(Guid electionGuid)
+    {
+      return CachedDict.Values.Where(c => c.ElectionGuid == electionGuid).ToList();
     }
 
     /// <summary>
@@ -39,9 +34,23 @@ namespace TallyJ.EF
       var wasAdded = CachedDict.TryAdd(computer.ComputerGuid, computer);
       AssertAtRuntime.That(wasAdded, "can't add!");
 
-      new PublicElectionLister().UpdateThisElectionInList();
+      new PublicHub().TellClientsAboutVisibleElections();
     }
 
+    /// <summary>
+    /// List of Guids of all Elections that have Known tellers
+    /// </summary>
+    public List<Guid> ActiveElectionsGuids
+    {
+      get
+      {
+        var now = DateTime.Now;
+        return CachedDict.Values
+          .Where(comp => comp.AuthLevel == "Known")
+          .Where(comp => comp.LastContact.HasValue && (now - comp.LastContact.Value).TotalMinutes < 5.0)
+          .Select(comp => comp.ElectionGuid).Distinct().ToList();
+      }
+    }
 
 
     /// <summary>
@@ -62,7 +71,8 @@ namespace TallyJ.EF
       var wasRemoved = CachedDict.TryRemove(itemToRemove.ComputerGuid, out removed);
       if (wasRemoved)
       {
-        new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+        //new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+        new PublicHub().TellClientsAboutVisibleElections();
       }
     }
 
@@ -77,7 +87,12 @@ namespace TallyJ.EF
         existingComputer.LastContact = DateTime.Now;
         return existingComputer;
       });
-      new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+
+      //if (computer.AuthLevel == "Known")
+      //{
+      //  // new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+      //  new PublicHub().TellClientsAboutVisibleElections();
+      //}
     }
 
     /// <summary>

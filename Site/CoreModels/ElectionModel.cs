@@ -266,7 +266,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+        new PublicHub().TellClientsAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
       }
 
       if (currentMode != election.ElectionMode
@@ -335,10 +335,7 @@ namespace TallyJ.CoreModels
       {
         message = "Teller (" + UserSession.MemberName + ") switched into Election";
 
-        if (UserSession.CurrentElection.ListForPublicCalculated)
-        {
-          new PublicHub().ElectionsListUpdated();
-        }
+        new PublicHub().TellClientsAboutVisibleElections();
 
         UpgradeOldData();
       }
@@ -657,7 +654,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().ElectionsListUpdated();
+        new PublicHub().TellClientsAboutVisibleElections();
 
         return new { Saved = true }.AsJsonResult();
       }
@@ -668,7 +665,7 @@ namespace TallyJ.CoreModels
     public bool GuestsAllowed()
     {
       var election = UserSession.CurrentElection;
-      return election != null && election.ListForPublicCalculated;
+      return election != null && election.CanBeAvailableForGuestTellers;
     }
 
     /// <summary>
@@ -692,7 +689,9 @@ namespace TallyJ.CoreModels
           Db.SaveChanges();
 
           new ElectionCacher(Db).RemoveItemAndSaveCache(election);
-          new PublicElectionLister().UpdateThisElectionInList();
+
+          new PublicHub().TellClientsAboutVisibleElections();
+
           // new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
           new MainHub().DisconnectGuests();
         }
@@ -754,30 +753,33 @@ namespace TallyJ.CoreModels
     //      electionCacher.UpdateItemAndSaveCache(election);
     //    }
 
-    public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
-    {
-      var currentElection = UserSession.CurrentElection;
-      if (currentElection == null)
-      {
-        return;
-      }
+    //public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
+    //{
+    //  var currentElection = UserSession.CurrentElection;
+    //  if (currentElection == null)
+    //  {
+    //    return;
+    //  }
 
-      var lastContactOfTeller = (computers ?? new ComputerCacher(Db).AllForThisElection)
-        .Where(c => c.AuthLevel == "Known")
-        .Max(c => c.LastContact);
+    //  var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
+    //    .Where(c => c.AuthLevel == "Known")
+    //    .Max(c => c.LastContact);
 
-      if (lastContactOfTeller != null &&
-          (currentElection.ListedForPublicAsOf == null
-           ||
-           Math.Abs((DateTime.Now - lastContactOfTeller.Value).TotalMinutes) >
-           5.minutes().TotalMinutes))
-      {
-        currentElection.ListedForPublicAsOf = lastContactOfTeller;
-        new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
-      }
+    //  if (lastContactOfTeller != null &&
+    //      (currentElection.ListedForPublicAsOf == null
+    //       ||
+    //       Math.Abs((DateTime.Now - lastContactOfTeller.Value).TotalMinutes) >
+    //       5.minutes().TotalMinutes))
+    //  {
+    //    currentElection.ListedForPublicAsOf = lastContactOfTeller;
+    //    new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
+    //  }
 
-      new PublicElectionLister().UpdateThisElectionInList();
-    }
+    //  //new PublicElectionLister().UpdateThisElectionInList();
+    //  new PublicHub().TellClientsAboutVisibleElections();
+
+    //}
+
 
 
     public static class CanVoteOrReceive

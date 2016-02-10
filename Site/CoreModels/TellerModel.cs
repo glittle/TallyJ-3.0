@@ -14,19 +14,19 @@ namespace TallyJ.CoreModels
 {
   public class TellerModel : DataConnectedModel
   {
-    public JsonResult GrantAccessToGuestTeller(int electionId, string secretCode, Guid oldComputerGuid)
+    public JsonResult GrantAccessToGuestTeller(Guid electionGuid, string codeToTry, Guid oldComputerGuid)
     {
       var electionModel = new ElectionModel();
 
-      var electionInfo = new PublicElectionLister().PublicElectionInfo(electionId);
-      if (electionInfo == null)
+      var passcode = new PublicElectionLister().GetPasscodeIfAvailable(electionGuid);
+      if (passcode == null)
       {
         return new
                  {
                    Error = "Sorry, unknown election id"
                  }.AsJsonResult();
       }
-      if (electionInfo.Passcode != secretCode)
+      if (passcode != codeToTry)
       {
         return new
                  {
@@ -41,7 +41,7 @@ namespace TallyJ.CoreModels
         UserSession.IsGuestTeller = true;
       }
 
-      electionModel.JoinIntoElection(electionId, oldComputerGuid);
+      electionModel.JoinIntoElection(electionGuid, oldComputerGuid);
 
       return new
                {
@@ -55,7 +55,7 @@ namespace TallyJ.CoreModels
       var helper = new TellerHelper();
 
       var tellerCacher = new TellerCacher(Db);
-      var computerCacher = new ComputerCacher(Db);
+      var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
 

@@ -404,9 +404,11 @@ namespace TallyJ.Code.Session
     /// <param name="movingToOtherElection"></param>
     public static void LeaveElection(bool movingToOtherElection)
     {
-      if (IsKnownTeller)
+      var computer = UserSession.CurrentComputer;
+      if (computer != null && computer.AuthLevel == "Known")
       {
-        new ElectionModel().CloseElection();
+        computer.AuthLevel = "Left";
+        new PublicElectionLister().RefreshAndGetListOfAvailableElections();
       }
       //if (IsLoggedIn)
       //{

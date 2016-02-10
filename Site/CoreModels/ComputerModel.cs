@@ -25,7 +25,7 @@ namespace TallyJ.CoreModels
     {
       Computer computer;
 
-      var computerCacher = new ComputerCacher(Db);
+      var computerCacher = new ComputerCacher();
 
       var locationGuid = UserSession.CurrentLocationGuid;
       var hasLocations = new LocationModel().HasLocations;
@@ -37,15 +37,15 @@ namespace TallyJ.CoreModels
 
       lock (ComputerModelLock)
       {
-        var allComputers = computerCacher.AllForThisElection;
+        var allComputersInThisElection = computerCacher.AllForThisElection;
 
-        computer = allComputers.FirstOrDefault(c => c.ComputerGuid == oldComputerGuid && c.ElectionGuid == UserSession.CurrentElectionGuid);
+        computer = allComputersInThisElection.FirstOrDefault(c => c.ComputerGuid == oldComputerGuid && c.ElectionGuid == UserSession.CurrentElectionGuid);
         if (computer == null)
         {
           computer = new Computer
           {
             ComputerGuid = Guid.NewGuid(),
-            ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
+            ComputerCode = DetermineNextFreeComputerCode(allComputersInThisElection.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
             ElectionGuid = UserSession.CurrentElectionGuid
           };
           computerCacher.AddToCache(computer);
@@ -95,7 +95,7 @@ namespace TallyJ.CoreModels
 
       computer.LocationGuid = location.LocationGuid;
 
-      new ComputerCacher(Db).UpdateComputerLocation(computer);
+      new ComputerCacher().UpdateComputerLocation(computer);
 
       SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 
@@ -173,12 +173,12 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
     }
 
     public bool ProcessPulse()
     {
-      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
       return true;
     }
 

@@ -92,8 +92,8 @@
   var btnJoinClick = function () {
     var statusSpan = $('#joinStatus').removeClass('error');
 
-    var electionId = $('#ddlElections').val();
-    if (!electionId || electionId === '0') {
+    var electionGuid = $('#ddlElections').val();
+    if (!electionGuid || electionGuid === '0') {
       statusSpan.addClass('error').html('Please select an election');
       return false;
     }
@@ -107,14 +107,14 @@
     statusSpan.addClass('active').removeClass('error').text('Checking...');
 
     var form = {
-      election: electionId,
+      election: electionGuid,
       pc: passCode,
-      oldCompGuid: GetFromStorage('compcode_' + electionId, null)
+      oldCompGuid: GetFromStorage('compcode_' + electionGuid, null)
     };
 
     CallAjaxHandler(publicInterface.controllerUrl + 'TellerJoin', form, function (info) {
       if (info.LoggedIn) {
-        SetInStorage('compcode_' + electionId, info.CompGuid);
+        SetInStorage('compcode_' + electionGuid, info.CompGuid);
         statusSpan.addClass('success').removeClass('active').html('Success! &nbsp; Going to the Dashboard now...');
         location.href = publicInterface.dashBoardUrl;
         return;

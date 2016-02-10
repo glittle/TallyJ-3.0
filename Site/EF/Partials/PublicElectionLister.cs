@@ -1,73 +1,128 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using EntityFramework.Caching;
 using TallyJ.Code;
-using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
+using TallyJ.Code.UnityRelated;
+using TallyJ.Code.Data;
+using System;
 
 namespace TallyJ.EF
 {
-  public class PublicElectionInfo
-  {
-    public string Name { get; set; }
-    public string Passcode { get; set; }
-  }
+  //public class PublicElectionInfo
+  //{
+  //  public string Name { get; set; }
+  //  public string Passcode { get; set; }
+  //}
+
   public class PublicElectionLister
   {
     /// This static cache is shared across all elections in active use!
-    private static readonly ConcurrentDictionary<int, PublicElectionInfo> CachedDict = new ConcurrentDictionary<int, PublicElectionInfo>();
+    //private static readonly ConcurrentDictionary<int, PublicElectionInfo> ElectionsCurrentlyOpenToGuestTellers = new ConcurrentDictionary<int, PublicElectionInfo>();
+    private ITallyJDbContext _db;
 
-    public void UpdateThisElectionInList()
-    {
-      var election = UserSession.CurrentElection;
-      if (election == null)
-      {
-        return;
-      }
-      var shouldBePublic = election.ListForPublicCalculated;
-      var electionId = election.C_RowId;
+    //public void UpdateThisElectionInList()
+    //{
+    //  var election = UserSession.CurrentElection;
+    //  if (election == null)
+    //  {
+    //    return;
+    //  }
+    //  CheckElection(election);
+    //}
 
-      var isPublic = CachedDict.ContainsKey(electionId);
-      if (!shouldBePublic) {
-        new MainHub().DisconnectGuests();
-      }
-      if (shouldBePublic == isPublic)
-      {
-        return;
-      }
-      // something changed!
-      if (!shouldBePublic)
-      {
-        PublicElectionInfo removedName;
-        var wasRemoved = CachedDict.TryRemove(electionId, out removedName);
-      }
-      else
-      {
-        CachedDict[electionId] = new PublicElectionInfo { Name = election.Name + election.Convenor.SurroundContentWith(" (", ")"), Passcode = election.ElectionPasscode };
-      }
-      // the public listing changed
-      new PublicHub().ElectionsListUpdated();
-    }
+    //private void CheckElection(Election election)
+    //{
+    //  var canBeAvailable = election.CanBeAvailableForGuestTellers;
+    //  var electionId = election.C_RowId;
+
+    //  var isAvailable = ElectionsCurrentlyOpenToGuestTellers.ContainsKey(electionId);
+    //  if (!canBeAvailable)
+    //  {
+    //    new MainHub().DisconnectGuests();
+    //  }
+
+    //  if (canBeAvailable == isAvailable)
+    //  {
+    //    return;
+    //  }
+
+    //  // something changed!
+    //  if (!canBeAvailable)
+    //  {
+    //    PublicElectionInfo removedName;
+    //    var wasRemoved = ElectionsCurrentlyOpenToGuestTellers.TryRemove(electionId, out removedName);
+    //  }
+    //  else
+    //  {
+    //    ElectionsCurrentlyOpenToGuestTellers[electionId] = new PublicElectionInfo
+    //    {
+    //      Name = election.Name + election.Convenor.SurroundContentWith(" (", ")"),
+    //      Passcode = election.ElectionPasscode
+    //    };
+    //  }
+
+    //  // the public listing changed
+    //  new PublicHub().TellClientsAboutVisibleElections();
+    //}
 
     /// <summary>
     /// Is this election Id in the list of publically visible ids?
     /// </summary>
     /// <param name="electionId"></param>
     /// <returns></returns>
-    public PublicElectionInfo PublicElectionInfo(int electionId)
+    public string GetPasscodeIfAvailable(Guid electionGuid)
     {
-      return CachedDict.ContainsKey(electionId) ? CachedDict[electionId] : null;
+      var activeElectionGuids = new ComputerCacher().ActiveElectionsGuids.Where(g => g == electionGuid).ToList();
+      if (activeElectionGuids.Count == 0)
+      {
+        return null;
+      }
+
+      var election = new ElectionCacher().AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+      if (election == null)
+      {
+        return null;
+      }
+
+      if (election.CanBeAvailableForGuestTellers)
+      {
+        return election.ElectionPasscode;
+      }
+
+      return null;
+
+      //return ElectionsCurrentlyOpenToGuestTellers.ContainsKey(electionId) ? ElectionsCurrentlyOpenToGuestTellers[electionId] : null;
     }
 
-    public string VisibleElectionsOptions()
+    protected ITallyJDbContext Db
     {
-      const string template = "<option value=\"{0}\">{1}</option>";
-      var listing = CachedDict.OrderBy(kvp => kvp.Value.Name).Select(kvp => template.FilledWith(kvp.Key, kvp.Value.Name)).JoinedAsString();
-      return listing
-        .DefaultTo(template.FilledWith(0, "(No elections are active right now.)"));
+      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+      set { _db = value; }
+    }
+
+    /// <summary>
+    /// Refresh the list and return it.
+    /// </summary>
+    /// <returns></returns>
+    public string RefreshAndGetListOfAvailableElections()
+    {
+      const string template = "<option value=\"{0}\">{1} {2}</option>";
+
+      var activeElectionGuids = new ComputerCacher().ActiveElectionsGuids;
+
+      if (activeElectionGuids.Count == 0)
+      {
+        return template.FilledWith(0, "(No elections are active right now.)", "");
+      }
+
+      //TODO - does this hit the DB every time??
+      var elections = Db.Election.Where(e => activeElectionGuids.Contains(e.ElectionGuid)).ToList();
+
+      return elections.Where(e => e.CanBeAvailableForGuestTellers)
+        .OrderBy(e => e.Name)
+        .Select(e => template.FilledWith(e.ElectionGuid, e.Name, e.Convenor.SurroundContentWith("(", ")")))
+        .JoinedAsString();
     }
 
   }
