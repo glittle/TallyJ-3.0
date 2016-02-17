@@ -408,6 +408,7 @@ namespace TallyJ.Code.Session
       if (computer != null && computer.AuthLevel == "Known")
       {
         computer.AuthLevel = "Left";
+        new ComputerCacher().UpdateComputer(computer);
         new PublicElectionLister().RefreshAndGetListOfAvailableElections();
       }
       //if (IsLoggedIn)

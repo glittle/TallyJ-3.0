@@ -73,7 +73,7 @@ namespace TallyJ.EF
     /// <returns></returns>
     public string GetPasscodeIfAvailable(Guid electionGuid)
     {
-      var activeElectionGuids = new ComputerCacher().ActiveElectionsGuids.Where(g => g == electionGuid).ToList();
+      var activeElectionGuids = new ComputerCacher().ElectionGuidsOfActiveComputers.Where(g => g == electionGuid).ToList();
       if (activeElectionGuids.Count == 0)
       {
         return null;
@@ -109,7 +109,7 @@ namespace TallyJ.EF
     {
       const string template = "<option value=\"{0}\">{1} {2}</option>";
 
-      var activeElectionGuids = new ComputerCacher().ActiveElectionsGuids;
+      var activeElectionGuids = new ComputerCacher().ElectionGuidsOfActiveComputers;
 
       if (activeElectionGuids.Count == 0)
       {
@@ -117,9 +117,15 @@ namespace TallyJ.EF
       }
 
       //TODO - does this hit the DB every time??
-      var elections = Db.Election.Where(e => activeElectionGuids.Contains(e.ElectionGuid)).ToList();
+      var elections = Db.Election
+        .Where(e => activeElectionGuids.Contains(e.ElectionGuid)
+             && e.ListForPublic.HasValue
+             && e.ListForPublic.Value
+             && e.ElectionPasscode != null)
+        .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
+        .ToList();
 
-      return elections.Where(e => e.CanBeAvailableForGuestTellers)
+      return elections
         .OrderBy(e => e.Name)
         .Select(e => template.FilledWith(e.ElectionGuid, e.Name, e.Convenor.SurroundContentWith("(", ")")))
         .JoinedAsString();

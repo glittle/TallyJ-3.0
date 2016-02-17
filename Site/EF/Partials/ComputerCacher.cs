@@ -29,26 +29,29 @@ namespace TallyJ.EF
     ///   Add this new computer to the cache
     /// </summary>
     /// <param name="computer"></param>
-    public void AddToCache(Computer computer)
-    {
-      var wasAdded = CachedDict.TryAdd(computer.ComputerGuid, computer);
-      AssertAtRuntime.That(wasAdded, "can't add!");
-
-      new PublicHub().TellClientsAboutVisibleElections();
-    }
+    //public void AddToCache(Computer computer)
+    //{
+    //  var wasAdded = CachedDict.TryAdd(computer.ComputerGuid, computer);
+    //  AssertAtRuntime.That(wasAdded, "can't add!");
+    //}
 
     /// <summary>
     /// List of Guids of all Elections that have Known tellers
     /// </summary>
-    public List<Guid> ActiveElectionsGuids
+    public List<Guid> ElectionGuidsOfActiveComputers
     {
       get
       {
+        var maxAge = new TimeSpan(0, System.Diagnostics.Debugger.IsAttached ? 30 : 5, 0);
         var now = DateTime.Now;
+
         return CachedDict.Values
-          .Where(comp => comp.AuthLevel == "Known")
-          .Where(comp => comp.LastContact.HasValue && (now - comp.LastContact.Value).TotalMinutes < 5.0)
-          .Select(comp => comp.ElectionGuid).Distinct().ToList();
+          .Where(comp => comp.AuthLevel == "Known"
+                   && comp.LastContact.HasValue 
+                   && (now - comp.LastContact.Value) < maxAge)
+          .Select(comp => comp.ElectionGuid)
+          .Distinct()
+          .ToList();
       }
     }
 
@@ -82,10 +85,11 @@ namespace TallyJ.EF
     public void UpdateLastContactOfCurrentComputer()
     {
       var computer = UserSession.CurrentComputer;
+      computer.LastContact = DateTime.Now;
+
       CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
       {
-        existingComputer.LastContact = DateTime.Now;
-        return existingComputer;
+        return computer;
       });
 
       //if (computer.AuthLevel == "Known")
@@ -96,29 +100,24 @@ namespace TallyJ.EF
     }
 
     /// <summary>
-    ///   Update the Location in the cached computer
-    /// </summary>
-    /// <param name="computer"></param>
-    public void UpdateComputerLocation(Computer computer)
-    {
-      CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
-      {
-        existingComputer.LocationGuid = computer.LocationGuid;
-        return existingComputer;
-      });
-    }
-
-    /// <summary>
     ///   update the Teller info in the cached computer
     /// </summary>
     /// <param name="computer"></param>
-    public void UpdateTellers(Computer computer)
+    //public void UpdateTellers(Computer computer)
+    //{
+    //  CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
+    //  {
+    //    existingComputer.Teller1 = computer.Teller1;
+    //    existingComputer.Teller2 = computer.Teller2;
+    //    return existingComputer;
+    //  });
+    //}
+
+    internal void UpdateComputer(Computer computer)
     {
       CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
       {
-        existingComputer.Teller1 = computer.Teller1;
-        existingComputer.Teller2 = computer.Teller2;
-        return existingComputer;
+        return computer;
       });
     }
   }

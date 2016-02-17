@@ -48,7 +48,7 @@ namespace TallyJ.CoreModels
             ComputerCode = DetermineNextFreeComputerCode(allComputersInThisElection.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
             ElectionGuid = UserSession.CurrentElectionGuid
           };
-          computerCacher.AddToCache(computer);
+          computerCacher.UpdateComputer(computer);
         }
 
         computer.LastContact = DateTime.Now;
@@ -94,8 +94,7 @@ namespace TallyJ.CoreModels
       AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, "can't switch elections");
 
       computer.LocationGuid = location.LocationGuid;
-
-      new ComputerCacher().UpdateComputerLocation(computer);
+      new ComputerCacher().UpdateComputer(computer);
 
       SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 

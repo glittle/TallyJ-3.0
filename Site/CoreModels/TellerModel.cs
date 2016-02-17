@@ -73,7 +73,7 @@ namespace TallyJ.CoreModels
             break;
         }
 
-        computerCacher.UpdateTellers(currentComputer);
+        computerCacher.UpdateComputer(currentComputer);
 
         return new { Saved = true };
       }
@@ -120,7 +120,7 @@ namespace TallyJ.CoreModels
           break;
       }
       Db.SaveChanges();
-      computerCacher.UpdateTellers(currentComputer);
+      computerCacher.UpdateComputer(currentComputer);
 
       UserSession.SetCurrentTeller(num, teller.Name);
 

@@ -30,7 +30,7 @@ namespace TallyJ.Controllers
                    Locations = ContextItems.LocationModel.MyLocations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
                    Selected = true,
                    ElectionName = UserSession.CurrentElectionName,
-                   ElectionId = UserSession.CurrentElection.C_RowId,
+                   ElectionGuid = UserSession.CurrentElectionGuid,
                    CompGuid = UserSession.CurrentComputer.ComputerGuid,
                    // Pulse = new PulseModel(this).Pulse()
                  }.AsJsonResult();

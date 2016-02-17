@@ -5,8 +5,6 @@
   };
 
   var preparePage = function () {
-
-
     $('#btnJoin').on('click', btnJoinClick);
     $('#btnRefresh').on('click', refreshElectionList);
     $('#txtPasscode').on('keypress', function (ev) {
@@ -51,9 +49,10 @@
   };
 
   var refreshElectionList = function () {
-    CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function(info) {
-      showElections(info);
-    });
+    connectToPublicHub();
+    //CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function (info) {
+    //  showElections(info);
+    //});
   };
 
   var warnIfCompatibilityMode = function () {
