@@ -42,7 +42,7 @@ namespace TallyJ.EF
     {
       get
       {
-        var maxAge = new TimeSpan(0, System.Diagnostics.Debugger.IsAttached ? 30 : 5, 0);
+        var maxAge = new TimeSpan(1, 0, 0); // 1 hour
         var now = DateTime.Now;
 
         return CachedDict.Values
