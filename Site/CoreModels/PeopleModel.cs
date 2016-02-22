@@ -391,10 +391,15 @@ namespace TallyJ.CoreModels
       return ballotSources;
     }
 
+    const int NotSet = -1;
     const int WantAllLocations = -2;
 
     public IEnumerable<object> BallotSources(int forLocationId = WantAllLocations)
     {
+      if (forLocationId == NotSet)
+      {
+        return new List<string>();
+      }
       var forLocationGuid = forLocationId == WantAllLocations
         ? Guid.Empty
         : Locations.Where(l => l.C_RowId == forLocationId)

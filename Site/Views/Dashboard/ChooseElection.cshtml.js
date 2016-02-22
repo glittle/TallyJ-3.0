@@ -212,7 +212,7 @@
     var form =
         {
           guid: guid,
-          oldCompGuid: GetFromStorage('compcode_' + guid, null)
+          oldComputerGuid: GetFromStorage('compcode_' + guid, null)
         };
 
     ShowStatusDisplay("Opening election...");

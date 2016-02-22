@@ -236,6 +236,7 @@ namespace TallyJ.CoreModels
       var currentMode = election.ElectionMode;
       var currentCan = election.CanVote;
       var currentReceive = election.CanReceive;
+      var currentListed = election.ListForPublic;
 
       // List of fields to allow edit from setup page
       var editableFields = new
@@ -257,6 +258,11 @@ namespace TallyJ.CoreModels
         election.MaskVotingMethod
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
+      if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
+      {
+        // just turned on
+        election.ListedForPublicAsOf = DateTime.Now;
+      }
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
@@ -266,7 +272,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().TellClientsAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
+        new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
       }
 
       if (currentMode != election.ElectionMode
@@ -335,7 +341,7 @@ namespace TallyJ.CoreModels
       {
         message = "Teller (" + UserSession.MemberName + ") switched into Election";
 
-        new PublicHub().TellClientsAboutVisibleElections();
+        new PublicHub().TellPublicAboutVisibleElections();
 
         UpgradeOldData();
       }
@@ -638,6 +644,7 @@ namespace TallyJ.CoreModels
       return new { Saved = true }.AsJsonResult();
     }
 
+
     public JsonResult UpdateListOnPageJson(bool listOnPage)
     {
       if (UserSession.IsKnownTeller)
@@ -654,7 +661,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().TellClientsAboutVisibleElections();
+        new PublicHub().TellPublicAboutVisibleElections();
 
         return new { Saved = true }.AsJsonResult();
       }
@@ -676,26 +683,20 @@ namespace TallyJ.CoreModels
     {
       var election = UserSession.CurrentElection;
 
-      if (election != null)
+      if (Db.Election.Local.All(e => e.ElectionGuid != election.ElectionGuid))
       {
-        if (election.ListedForPublicAsOf.HasValue)
-        {
-          if (!Db.Election.Local.Any(e => e.ElectionGuid == election.ElectionGuid))
-          {
-            Db.Election.Attach(election);
-          }
-          election.ListedForPublicAsOf = null;
-
-          Db.SaveChanges();
-
-          new ElectionCacher(Db).RemoveItemAndSaveCache(election);
-
-          new PublicHub().TellClientsAboutVisibleElections();
-
-          // new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
-          new MainHub().DisconnectGuests();
-        }
+        Db.Election.Attach(election);
       }
+
+      election.ListedForPublicAsOf = null;
+
+      Db.SaveChanges();
+
+      new ElectionCacher(Db).RemoveItemAndSaveCache(election);
+
+      new MainHub().CloseOutGuestTellers();
+
+      new PublicHub().TellPublicAboutVisibleElections();
     }
 
     //    public bool ProcessPulse()
@@ -776,7 +777,7 @@ namespace TallyJ.CoreModels
     //  }
 
     //  //new PublicElectionLister().UpdateThisElectionInList();
-    //  new PublicHub().TellClientsAboutVisibleElections();
+    //  new PublicHub().TellPublicAboutVisibleElections();
 
     //}
 

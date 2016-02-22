@@ -23,8 +23,8 @@ namespace TallyJ.EF
       get
       {
         return ListForPublic.AsBoolean()
-               && ElectionPasscode.HasContent();
-               //&& ListedForPublicAsOf.HasValue;
+               && ElectionPasscode.HasContent()
+               && ListedForPublicAsOf.HasValue;
       }
     }
 

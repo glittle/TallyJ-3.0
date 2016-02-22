@@ -75,7 +75,7 @@ namespace TallyJ.EF
       if (wasRemoved)
       {
         //new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
-        new PublicHub().TellClientsAboutVisibleElections();
+        new PublicHub().TellPublicAboutVisibleElections();
       }
     }
 
@@ -95,7 +95,7 @@ namespace TallyJ.EF
       //if (computer.AuthLevel == "Known")
       //{
       //  // new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
-      //  new PublicHub().TellClientsAboutVisibleElections();
+      //  new PublicHub().TellPublicAboutVisibleElections();
       //}
     }
 

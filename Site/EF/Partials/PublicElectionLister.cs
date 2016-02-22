@@ -39,7 +39,7 @@ namespace TallyJ.EF
     //  var isAvailable = ElectionsCurrentlyOpenToGuestTellers.ContainsKey(electionId);
     //  if (!canBeAvailable)
     //  {
-    //    new MainHub().DisconnectGuests();
+    //    new MainHub(). DisconnectGuests();
     //  }
 
     //  if (canBeAvailable == isAvailable)
@@ -63,13 +63,13 @@ namespace TallyJ.EF
     //  }
 
     //  // the public listing changed
-    //  new PublicHub().TellClientsAboutVisibleElections();
+    //  new PublicHub().TellPublicAboutVisibleElections();
     //}
 
     /// <summary>
     /// Is this election Id in the list of publically visible ids?
     /// </summary>
-    /// <param name="electionId"></param>
+    /// <param name="electionGuid"></param>
     /// <returns></returns>
     public string GetPasscodeIfAvailable(Guid electionGuid)
     {
@@ -79,20 +79,11 @@ namespace TallyJ.EF
         return null;
       }
 
-      var election = new ElectionCacher().AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
-      if (election == null)
-      {
-        return null;
-      }
-
-      if (election.CanBeAvailableForGuestTellers)
-      {
-        return election.ElectionPasscode;
-      }
-
-      return null;
-
-      //return ElectionsCurrentlyOpenToGuestTellers.ContainsKey(electionId) ? ElectionsCurrentlyOpenToGuestTellers[electionId] : null;
+      return Db.Election
+        .FirstOrDefault(e => e.ElectionGuid == electionGuid
+                                             && e.ListForPublic.HasValue
+                                             && e.ListForPublic.Value)
+        ?.ElectionPasscode;
     }
 
     protected ITallyJDbContext Db

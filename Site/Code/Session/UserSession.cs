@@ -6,6 +6,7 @@ using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Code.Session
@@ -404,17 +405,25 @@ namespace TallyJ.Code.Session
     /// <param name="movingToOtherElection"></param>
     public static void LeaveElection(bool movingToOtherElection)
     {
-      var computer = UserSession.CurrentComputer;
+      var computer = CurrentComputer;
       if (computer != null && computer.AuthLevel == "Known")
       {
         computer.AuthLevel = "Left";
-        new ComputerCacher().UpdateComputer(computer);
-        new PublicElectionLister().RefreshAndGetListOfAvailableElections();
+        var computerCacher = new ComputerCacher();
+        computerCacher.UpdateComputer(computer);
+
+        var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
+        if (numKnownTellers == 0)
+        {
+          new ElectionModel().CloseElection();
+        }
+        else
+        {
+          new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
+        }
       }
-      //if (IsLoggedIn)
-      //{
-      //  new ComputerModel().RemoveComputerRecord();
-      //}
+
+
       if (movingToOtherElection)
       {
         ResetWhenSwitchingElections();
