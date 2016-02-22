@@ -79,11 +79,11 @@ namespace TallyJ.EF
         return null;
       }
 
-      return Db.Election
+      var election = Db.Election
         .FirstOrDefault(e => e.ElectionGuid == electionGuid
-                                             && e.ListForPublic.HasValue
-                                             && e.ListForPublic.Value)
-        ?.ElectionPasscode;
+                             && e.ListForPublic.HasValue
+                             && e.ListForPublic.Value);
+      return election == null ? null : election.ElectionPasscode;
     }
 
     protected ITallyJDbContext Db
