@@ -1,198 +1,215 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 .content-wrapper {
-    width: 100%;
+  width: 100%;
 }
 
-header,
-.CompCode,
-footer {
-    display: none;
+#voterList {
+  margin: 50px 0 2000px 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+footer,
+.CompCode {
+  display: none;
 }
 
 .main-content {
-    background-image: none;
-    padding: 0;
+  background-image: none;
+  padding: 0;
 }
 
 .Main {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .TopLine {
-    background-position: right center;
-    background-image: url(../../Images/LogoSm.png);
-    width: 100px;
-    height: 60pt;
-    z-index: 3;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    background-repeat: no-repeat;
+  background-position: right center;
+  background-image: url(../../Images/LogoSm.png);
+  width: 100px;
+  height: 60pt;
+  z-index: 3;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background-repeat: no-repeat;
 }
 
 .NextUp {
-    height: 50pt;
-    font-size: 20pt;
-    z-index: 10;
-    color: #013d7a;
-    position: fixed;
-    top: 183pt;
-    left: 20pt;
+  height: 50pt;
+  font-size: 20pt;
+  z-index: 10;
+  color: #013d7a;
+  position: fixed;
+  top: 183pt;
+  left: 20pt;
 }
 
 body.OthersDim {
-    .Voter.Other {
-        color: #85b082;
+  .Voter.Other {
+    color: #85b082;
 
-        &.Current {
-            background-color: #fafffa !important;
-        }
-
-        div {
-        }
-    }
-
-    .Voter.NotLocal {
-        b, span {
-            display: none;
-        }
-    }
-}
-
-body.OthersHidden {
-    .Voter.Other {
-        display: none;
-    }
-}
-
-.Voter {
-    position: relative;
-    z-index: 2;
-    padding: 0 3px 11px 3px;
-    font-size: 55pt; /* 50 for most, 60 for Petpetua */
-    clear: both;
-    border-radius: 2px;
-    box-shadow: 0 3px 9px #555;
-    margin: 0 7px 9px 6px;
-
-    &.VM_BLANK {
-        box-shadow: none;
-        height: 50px;
+    &.Current {
+      background-color: #fafffa !important;
     }
 
     div {
-        margin: 0 200px 0 60px;
-        z-index: 1;
     }
+  }
 
-    &.Current {
-        background-color: white !important;
-        color: black;
+  .Voter.NotLocal {
+    b, span {
+      display: none;
     }
+  }
+}
 
-    &.Present {
-        background: url(../../Images/walk.png) no-repeat;
-        background-position: 10px 30px;
-        background-size: 24px;
-    }
+body.OthersHidden {
+  .Voter.Other {
+    display: none;
+  }
+}
 
-    b {
-        position: absolute;
-        left: 5px;
-        text-align: right;
-        min-width: 27px;
-        top: 15px;
-        font-size: 23pt;
-        font-weight: normal;
-        color: @tallyJBlue;
-    }
+.Voter {
+  position: relative;
+  z-index: 2;
+  padding: 0 3px 11px 3px;
+  font-size: 55pt; /* 50 for most, 60 for Petpetua */
+  clear: both;
+  border-radius: 2px;
+  box-shadow: 0 3px 9px #555;
+  margin: 0 7px 9px 6px;
 
-    &.NotCurrent {
-        background-color: #efeeef;
-        color: #666;
-    }
+  &.VM_BLANK {
+    box-shadow: none;
+    height: 95px;
+  }
 
-    u {
-        display: none;
-    }
+  div {
+    margin: 0 200px 0 60px;
+    z-index: 1;
+  }
 
-    i, em {
-        display: none;
-        font-style: normal;
-        font-size: 19pt;
-        color: @tallyJGreen;
-        position: absolute;
-        bottom: 6px;
-        right: 7px;
-    }
+  &.Current {
+    background-color: white !important;
+    color: black;
+  }
+
+  &.Present {
+    background: url(../../Images/walk.png) no-repeat;
+    background-position: 10px 30px;
+    background-size: 24px;
+  }
+
+  b {
+    position: absolute;
+    left: 5px;
+    text-align: right;
+    min-width: 27px;
+    top: 15px;
+    font-size: 23pt;
+    font-weight: normal;
+    color: @tallyJBlue;
+  }
+
+  &.NotCurrent {
+    background-color: #efeeef;
+    color: #666;
+  }
+
+  u {
+    display: none;
+  }
+
+  i, em {
+    display: none;
+    font-style: normal;
+    font-size: 19pt;
+    color: @tallyJGreen;
+    position: absolute;
+    bottom: 6px;
+    right: 7px;
+  }
 }
 
 body.ShowLocations_i {
-    .Voter {
-        i {
-            display: block;
-        }
+  .Voter {
+    i {
+      display: block;
     }
+  }
 }
 
 body.ShowLocations_em {
-    .Voter {
-        em {
-            display: block;
-        }
+  .Voter {
+    em {
+      display: block;
     }
+  }
 }
 
 body.ShowEnvReason {
-    .Voter {
-        u {
-            display: inline;
-            text-decoration: none;
-            position: absolute;
-            top: 6px;
-            right: 7px;
-            font-size: 19pt;
-            color: @tallyJBlue;
-        }
+  .Voter {
+    u {
+      display: inline;
+      text-decoration: none;
+      position: absolute;
+      top: 6px;
+      right: 7px;
+      font-size: 19pt;
+      color: @tallyJBlue;
     }
+  }
 }
 
 #showNav {
-    float: right;
+  float: right;
 }
 
+
 .Nav {
-    display: none;
-    position: fixed;
-    top: 95px;
-    right: 20px;
-    z-index: 10;
-    /*opacity: 0.01;*/
-    padding: 9px;
-    border-radius: 2px;
-    box-shadow: 0 3px 9px #555;
-    background-color: #fff;
+  display: none;
+  width: 90%;
+  margin: 10px auto 10px auto;
+  padding: 9px;
+  border-radius: 2px;
+  box-shadow: 0 3px 9px #555;
+  background-color: #fff;
 
-    h3 {
-        margin-top: 0;
-        line-height: normal;
+  h2 {
+    font-size: 1.2em;
+    margin-top: 0;
+    line-height: normal;
+
+    &.newSection {
+      margin-top: 1.5em;
     }
+  }
 
+  .instructions {
     p {
-        margin: 4px 0;
-    }
-
-    .comment {
-        font-size: 80%;
+      span {
         color: #999;
-        float: right;
+      }
     }
+  }
+
+  p {
+    margin: 4px 0;
+  }
+
+  .comment {
+    font-size: 80%;
+    color: #999;
+    float: right;
+  }
 }
 
 .Nav.Show { //, .Nav:hover
-    /*opacity: 1;*/
-    display: block;
+  display: block;
 }
 
 
@@ -200,31 +217,31 @@ body.ShowEnvReason {
 
 
 @media only screen and (max-width: 1024px) {
-    @smallfont: 14pt;
+  @smallfont: 14pt;
 
-    .Voter {
-        font-size: 36pt;
+  .Voter {
+    font-size: 36pt;
 
-        u {
-            font-size: @smallfont;
-        }
-
-        &.Current {
-        }
-
-        &.NotCurrent {
-            //background-color: #efeeef;
-        }
-
-        &.Present {
-            background-size: 20px;
-            background-position-y: 13px;
-        }
+    u {
+      font-size: @smallfont;
     }
 
-    body.ShowLocations {
-        .Voter i {
-            font-size: @smallfont;
-        }
+    &.Current {
     }
+
+    &.NotCurrent {
+      //background-color: #efeeef;
+    }
+
+    &.Present {
+      background-size: 20px;
+      background-position-y: 13px;
+    }
+  }
+
+  body.ShowLocations {
+    .Voter i {
+      font-size: @smallfont;
+    }
+  }
 }

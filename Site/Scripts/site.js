@@ -426,6 +426,7 @@ function PrepareTopLocationAndTellers() {
     if (form.id == '-2') {
       // some pages add -2 for [All Locations] -- but we don't store it
       site.broadcast(site.broadcastCode.locationChanged);
+      setTopInfo();
       return;
     }
 
@@ -477,9 +478,17 @@ function PrepareTopLocationAndTellers() {
   setTopInfo();
 }
 var setTopInfo = function () {
-  $('.CurrentInfo').toggleClass('NotSet', $('#ddlTopLocation').val() == '-1' || +$('#ddlTopTeller1').val() <= 0);
-  $('#ddlTopLocation').toggleClass('NotSet', +$('#ddlTopLocation').val() <= 0);
-  $('#ddlTopTeller1').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+  var ddlLocation = $('#ddlTopLocation');
+  var location = +ddlLocation.val();
+  var locationNeeded = ddlLocation.is(':visible') && location === -1;
+
+  var ddlTeller1 = $('#ddlTopTeller1');
+  var teller1Needed = ddlTeller1.is(':visible') && ddlTeller1.val() <= 0;
+  
+  $('.CurrentInfo').toggleClass('NotSet', locationNeeded || teller1Needed);
+  ddlLocation.toggleClass('NotSet', locationNeeded);
+  ddlTeller1.toggleClass('NotSet', teller1Needed);
+
   $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
 }
 

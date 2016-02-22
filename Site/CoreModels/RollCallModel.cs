@@ -45,7 +45,7 @@ namespace TallyJ.CoreModels
         : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
     }
 
-    public IEnumerable<object> Voters(int numBlanksBefore = 2, int numBlanksAfter = 6)
+    public IEnumerable<object> Voters(int numBlanksBefore = 3, int numBlanksAfter = 6)
     {
       return PersonLines(PeopleInCurrentElection(), numBlanksBefore, numBlanksAfter, IncludeAbsentees);
     }
