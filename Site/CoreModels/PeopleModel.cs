@@ -248,6 +248,11 @@ namespace TallyJ.CoreModels
 
     public JsonResult SavePerson(Person personFromInput)
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+
       var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
       var changed = false;
 
@@ -257,7 +262,7 @@ namespace TallyJ.CoreModels
         {
           return new
           {
-            Status = "Unknown ID"
+            Message = "Unknown ID"
           }.AsJsonResult();
         }
 
@@ -386,9 +391,16 @@ namespace TallyJ.CoreModels
       return ballotSources;
     }
 
-    public IEnumerable<object> BallotSources(int forLocationId = -1)
+    const int NotSet = -1;
+    const int WantAllLocations = -2;
+
+    public IEnumerable<object> BallotSources(int forLocationId = WantAllLocations)
     {
-      var forLocationGuid = forLocationId == -1
+      if (forLocationId == NotSet)
+      {
+        return new List<string>();
+      }
+      var forLocationGuid = forLocationId == WantAllLocations
         ? Guid.Empty
         : Locations.Where(l => l.C_RowId == forLocationId)
           .Select(l => l.LocationGuid)
@@ -397,7 +409,7 @@ namespace TallyJ.CoreModels
 
       var ballotSources = PeopleInElection // start with everyone
         .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
-        .Where(p => forLocationId == -1 || p.VotingLocationGuid == forLocationGuid)
+        .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
         .ToList()
         .OrderBy(p => p.VotingMethod)
         .ThenByDescending(p => p.RegistrationTime)
@@ -501,6 +513,16 @@ namespace TallyJ.CoreModels
 
     public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
     {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report) {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+      var locationModel = new LocationModel();
+      if (locationModel.HasLocations && UserSession.CurrentLocation == null) {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+      if (UserSession.GetCurrentTeller(1).HasNoContent()) {
+        return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
+      }
       if (!VotingMethodEnum.Exists(voteType))
       {
         return new { Message = "Invalid type" }.AsJsonResult();
@@ -561,7 +583,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      person.Teller1 = UserSession.GetCurrentTeller(1).DefaultTo(UserSession.CurrentComputerCode);
+      person.Teller1 = UserSession.GetCurrentTeller(1);
       person.Teller2 = UserSession.GetCurrentTeller(2);
 
       Db.SaveChanges();

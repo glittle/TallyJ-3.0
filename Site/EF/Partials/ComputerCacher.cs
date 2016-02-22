@@ -14,34 +14,46 @@ namespace TallyJ.EF
   {
     /// This static cache is shared across all elections in active use!
     private static readonly ConcurrentDictionary<Guid, Computer> CachedDict = new ConcurrentDictionary<Guid, Computer>();
-    private ITallyJDbContext db;
-
-    public ComputerCacher(ITallyJDbContext db)
-    {
-      this.db = db;
-    }
-    public ComputerCacher()
-    {
-      this.db = UserSession.DbContext;
-    }
 
     public List<Computer> AllForThisElection
     {
-      get { return CachedDict.Values.Where(c => c.ElectionGuid == UserSession.CurrentElectionGuid).ToList(); }
+      get { return AllForElection(UserSession.CurrentElectionGuid); }
+    }
+
+    public List<Computer> AllForElection(Guid electionGuid)
+    {
+      return CachedDict.Values.Where(c => c.ElectionGuid == electionGuid).ToList();
     }
 
     /// <summary>
     ///   Add this new computer to the cache
     /// </summary>
     /// <param name="computer"></param>
-    public void AddToCache(Computer computer)
+    //public void AddToCache(Computer computer)
+    //{
+    //  var wasAdded = CachedDict.TryAdd(computer.ComputerGuid, computer);
+    //  AssertAtRuntime.That(wasAdded, "can't add!");
+    //}
+
+    /// <summary>
+    /// List of Guids of all Elections that have Known tellers
+    /// </summary>
+    public List<Guid> ElectionGuidsOfActiveComputers
     {
-      var wasAdded = CachedDict.TryAdd(computer.ComputerGuid, computer);
-      AssertAtRuntime.That(wasAdded, "can't add!");
+      get
+      {
+        var maxAge = new TimeSpan(1, 0, 0); // 1 hour
+        var now = DateTime.Now;
 
-      new PublicElectionLister().UpdateThisElectionInList();
+        return CachedDict.Values
+          .Where(comp => comp.AuthLevel == "Known"
+                   && comp.LastContact.HasValue 
+                   && (now - comp.LastContact.Value) < maxAge)
+          .Select(comp => comp.ElectionGuid)
+          .Distinct()
+          .ToList();
+      }
     }
-
 
 
     /// <summary>
@@ -62,7 +74,8 @@ namespace TallyJ.EF
       var wasRemoved = CachedDict.TryRemove(itemToRemove.ComputerGuid, out removed);
       if (wasRemoved)
       {
-        new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+        //new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+        new PublicHub().TellPublicAboutVisibleElections();
       }
     }
 
@@ -72,38 +85,39 @@ namespace TallyJ.EF
     public void UpdateLastContactOfCurrentComputer()
     {
       var computer = UserSession.CurrentComputer;
-      CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
-      {
-        existingComputer.LastContact = DateTime.Now;
-        return existingComputer;
-      });
-      new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
-    }
+      computer.LastContact = DateTime.Now;
 
-    /// <summary>
-    ///   Update the Location in the cached computer
-    /// </summary>
-    /// <param name="computer"></param>
-    public void UpdateComputerLocation(Computer computer)
-    {
       CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
       {
-        existingComputer.LocationGuid = computer.LocationGuid;
-        return existingComputer;
+        return computer;
       });
+
+      //if (computer.AuthLevel == "Known")
+      //{
+      //  // new ElectionModel().UpdateElectionWhenComputerFreshnessChanges(AllForThisElection);
+      //  new PublicHub().TellPublicAboutVisibleElections();
+      //}
     }
 
     /// <summary>
     ///   update the Teller info in the cached computer
     /// </summary>
     /// <param name="computer"></param>
-    public void UpdateTellers(Computer computer)
+    //public void UpdateTellers(Computer computer)
+    //{
+    //  CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
+    //  {
+    //    existingComputer.Teller1 = computer.Teller1;
+    //    existingComputer.Teller2 = computer.Teller2;
+    //    return existingComputer;
+    //  });
+    //}
+
+    internal void UpdateComputer(Computer computer)
     {
       CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
       {
-        existingComputer.Teller1 = computer.Teller1;
-        existingComputer.Teller2 = computer.Teller2;
-        return existingComputer;
+        return computer;
       });
     }
   }

@@ -47,9 +47,9 @@ namespace TallyJ.Controllers
       return View();
     }
 
-    public JsonResult TellerJoin(int election, string pc)
+    public JsonResult TellerJoin(Guid electionGuid, string pc, Guid? oldCompGuid)
     {
-      return new TellerModel().GrantAccessToGuestTeller(election, pc);
+      return new TellerModel().GrantAccessToGuestTeller(electionGuid, pc, oldCompGuid.AsGuid());
     }
 
     public JsonResult GetTimeOffset(long now, string tz)
@@ -62,18 +62,18 @@ namespace TallyJ.Controllers
       UserSession.TimeOffsetServerAhead = diff.AsInt();
       UserSession.TimeOffsetKnown = true;
       return new
-               {
-                 timeOffset = diff
-               }.AsJsonResult();
+      {
+        timeOffset = diff
+      }.AsJsonResult();
     }
 
 
     public JsonResult OpenElections()
     {
       return new
-               {
-                 html = new PublicElectionLister().VisibleElectionsOptions()
-               }.AsJsonResult();
+      {
+        html = new PublicElectionLister().RefreshAndGetListOfAvailableElections()
+      }.AsJsonResult();
     }
 
     public JsonResult PublicHub(string connId)
@@ -86,10 +86,12 @@ namespace TallyJ.Controllers
     {
       // removed [Authorize]... just ignore if we don't like the call
 
-      if (UserSession.CurrentElectionGuid == Guid.Empty) {
+      if (UserSession.CurrentElectionGuid == Guid.Empty)
+      {
         return;
       }
-      if (electionGuid.AsGuid() == Guid.Empty) {
+      if (electionGuid.AsGuid() == Guid.Empty)
+      {
         return;
       }
 

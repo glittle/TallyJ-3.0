@@ -2,7 +2,7 @@
   var local = {
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>{StatusCode}</span></div>',
     ballots: {},
-    currentLocation: -1,
+    currentLocation: 0,
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     showingNames: false,
@@ -14,19 +14,25 @@
   var preparePage = function () {
     connectToFrontDeskHub();
 
-    changeLocation($('#locations'), false);
+    $('#ddlTopLocation').prepend('<option value="-2">[All Locations]</option>')
+
+    changeLocation(false);
 
     $('#btnShowNames').click(function () {
       $(this).hide();
       $('.Names, #lists').fadeIn();
       local.showingNames = true;
     });
-    $('#locations').change(function () {
-      changeLocation($(this));
+    site.onbroadcast(site.broadcastCode.locationChanged, function () {
+      changeLocation();
     });
+
+    //$('#locations').change(function () {
+    //  changeLocation($(this));
+    //});
     $('#btnRefresh').click(function () {
-      local.currentLocation = -1;
-      changeLocation($('#locations'), true);
+      local.currentLocation = -2;
+      changeLocation(true);
     });
 
     $('#lists').on('change', '.sortSelector', sortSection);
@@ -47,7 +53,7 @@
       }
 
       local.currentLocation = '';
-      changeLocation($('#locations'), true);
+      changeLocation(true);
     };
 
     activateHub(hub, function () {
@@ -56,8 +62,8 @@
     });
   };
 
-  var changeLocation = function (ddlLocation, highlight) {
-    var newLocation = ddlLocation.val();
+  var changeLocation = function (highlight) {
+    var newLocation = $('#ddlTopLocation').val() || -2;
     if (newLocation != local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {

@@ -14,19 +14,19 @@ namespace TallyJ.CoreModels
 {
   public class TellerModel : DataConnectedModel
   {
-    public JsonResult GrantAccessToGuestTeller(int electionId, string secretCode)
+    public JsonResult GrantAccessToGuestTeller(Guid electionGuid, string codeToTry, Guid oldComputerGuid)
     {
-      var model = new ElectionModel();
+      var electionModel = new ElectionModel();
 
-      var electionInfo = new PublicElectionLister().PublicElectionInfo(electionId);
-      if (electionInfo == null)
+      var passcode = new PublicElectionLister().GetPasscodeIfAvailable(electionGuid);
+      if (passcode == null)
       {
         return new
                  {
                    Error = "Sorry, unknown election id"
                  }.AsJsonResult();
       }
-      if (electionInfo.Passcode != secretCode)
+      if (passcode != codeToTry)
       {
         return new
                  {
@@ -41,11 +41,12 @@ namespace TallyJ.CoreModels
         UserSession.IsGuestTeller = true;
       }
 
-      model.JoinIntoElection(electionId);
+      electionModel.JoinIntoElection(electionGuid, oldComputerGuid);
 
       return new
                {
-                 LoggedIn = true
+                 LoggedIn = true,
+                 CompGuid = UserSession.CurrentComputer.ComputerGuid
                }.AsJsonResult();
     }
 
@@ -54,7 +55,7 @@ namespace TallyJ.CoreModels
       var helper = new TellerHelper();
 
       var tellerCacher = new TellerCacher(Db);
-      var computerCacher = new ComputerCacher(Db);
+      var computerCacher = new ComputerCacher();
 
       var currentComputer = UserSession.CurrentComputer;
 
@@ -72,7 +73,7 @@ namespace TallyJ.CoreModels
             break;
         }
 
-        computerCacher.UpdateTellers(currentComputer);
+        computerCacher.UpdateComputer(currentComputer);
 
         return new { Saved = true };
       }
@@ -119,7 +120,7 @@ namespace TallyJ.CoreModels
           break;
       }
       Db.SaveChanges();
-      computerCacher.UpdateTellers(currentComputer);
+      computerCacher.UpdateComputer(currentComputer);
 
       UserSession.SetCurrentTeller(num, teller.Name);
 

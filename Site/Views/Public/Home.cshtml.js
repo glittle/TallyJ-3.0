@@ -5,8 +5,6 @@
   };
 
   var preparePage = function () {
-
-
     $('#btnJoin').on('click', btnJoinClick);
     $('#btnRefresh').on('click', refreshElectionList);
     $('#txtPasscode').on('keypress', function (ev) {
@@ -51,9 +49,10 @@
   };
 
   var refreshElectionList = function () {
-    CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function(info) {
-      showElections(info);
-    });
+    connectToPublicHub();
+    //CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function (info) {
+    //  showElections(info);
+    //});
   };
 
   var warnIfCompatibilityMode = function () {
@@ -92,8 +91,8 @@
   var btnJoinClick = function () {
     var statusSpan = $('#joinStatus').removeClass('error');
 
-    var electionCode = $('#ddlElections').val();
-    if (!electionCode || electionCode === '0') {
+    var electionGuid = $('#ddlElections').val();
+    if (!electionGuid || electionGuid === '0') {
       statusSpan.addClass('error').html('Please select an election');
       return false;
     }
@@ -107,17 +106,20 @@
     statusSpan.addClass('active').removeClass('error').text('Checking...');
 
     var form = {
-      election: electionCode,
-      pc: passCode
+      electionGuid: electionGuid,
+      pc: passCode,
+      oldCompGuid: GetFromStorage('compcode_' + electionGuid, null)
     };
 
     CallAjaxHandler(publicInterface.controllerUrl + 'TellerJoin', form, function (info) {
       if (info.LoggedIn) {
+        SetInStorage('compcode_' + electionGuid, info.CompGuid);
         statusSpan.addClass('success').removeClass('active').html('Success! &nbsp; Going to the Dashboard now...');
         location.href = publicInterface.dashBoardUrl;
         return;
       }
 
+      refreshElectionList();
       statusSpan.addClass('error').removeClass('active').html(info.Error);
     });
     return false;

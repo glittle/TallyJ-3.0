@@ -18,12 +18,13 @@ namespace TallyJ.EF
       get { return NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0; }
     }
 
-    public bool ListForPublicCalculated {
+    public bool CanBeAvailableForGuestTellers
+    {
       get
       {
         return ListForPublic.AsBoolean()
                && ElectionPasscode.HasContent()
-               && ListedForPublicAsOf.HasValue;  //  <= 5.minutes(); // 2014-2-1 - time-out not working!
+               && ListedForPublicAsOf.HasValue;
       }
     }
 

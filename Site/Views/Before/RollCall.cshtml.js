@@ -4,68 +4,66 @@
     currentVoterDiv: null,
     currentLocation: -1,
     nameDivs: [],
+    hasLocations: false,
     settingPrefix: 'rollCall_'
   };
 
-  var preparePage = function () {
+  function preparePage() {
+
+    var ddlLocations = $('#locations');
+    local.hasLocations = ddlLocations.find('option').length > 0;
 
     local.currentLocation = rollCallPage.location;
-
-    var currentLocOption = $('#locations option[value="{0}"]'.filledWith(local.currentLocation));
+    var currentLocOption = ddlLocations.find('option[value="{0}"]'.filledWith(local.currentLocation));
     currentLocOption.html(currentLocOption.html() + ' *');
 
-    recallSetting('locations')
-    recallSetting('includeMethod')
-    recallSetting('showOthers')
-    recallSetting('showLocations')
-    recallSetting('showEnvReason')
+    recallSetting('locations');
+    if (local.hasLocations && !ddlLocations.val()) {
+      ddlLocations.val(local.currentLocation);
+      saveSetting(ddlLocations[0]);
+    }
 
+    recallSetting('includeMethod');
+    recallSetting('showOthers');
+    recallSetting('showLocations');
+    recallSetting('showEnvReason');
     var main = $('#voterList');
 
     $.each(rollCallPage.voters, function (i, v) {
       addInfo(v);
     });
-    var btnShow = '<button id=showNav>Show Instructions</button>';
-    main.html(btnShow + site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
+
+    main.html(site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
     local.nameDivs = main.children('div.Voter');
     updateVisibility();
 
-    site.qTips.push({ selector: '#qTipWhyMask', title: 'Masking Voting Methods', text: 'If only one or two people have used a voting method, it may be desired to mask the voting method.' });
+    //<span class="ui-icon ui-icon-info" id="qTipWhyMask"></span>  
+    //site.qTips.push({ selector: '#qTipWhyMask', title: 'Show Ballot Delivery Methods', text: 'If only one or two people have used a voting method, consider not showing the delivery methods.' });
 
-    $('.Nav').show();
-
-    scrollToMe(local.nameDivs[1]);
+    //scrollToMe(local.nameDivs[1]);
 
     connectToRollCallHub();
 
-    // ActivateHeartbeat(true, 15); // faster
+    attachHandlers();
+  }
 
-    //    site.onbroadcast(site.broadcastCode.pulse, function (ev, info) {
-    //      processPulse(info);
-    //    });
+  function attachHandlers() {
 
-    //setTimeout(function () {
-    //  $('.Nav').animate({ opacity: 0 }, 1500, null, function () {
-    //    $('.Nav').removeClass('Show').css({
-    //      opacity: ''
-    //    });
-    //  });
-    //}, 3000);
-
-    $('#hideNav').click(function () {
-      $('.Nav').removeClass('Show');
-      $(document).focus();
-      //$('.Nav').animate({ opacity: 0 }, 1000, null, function () {
-      //  $('.Nav').removeClass('Show').css({
-      //    opacity: ''
-      //  });
-      //  $(document).blur();
-      //});
+    $('#btnStart').click(function () {
+      $('#voterList').focus();
+      local.currentNameNum = 0;
+      scrollToMe(local.nameDivs[0]);
     });
-    $('#showNav').click(function (ev) {
-      $('.Nav').addClass('Show').filter(':input').focus();
-      ev.stopPropagation();
-    });
+
+    //$('#hideNav').click(function () {
+    //  $('.Nav').removeClass('Show');
+    //  $(document).focus();
+    //});
+
+    //$('#showNav').click(function (ev) {
+    //  $('.Nav').addClass('Show').filter(':input').focus();
+    //  ev.stopPropagation();
+    //});
 
     $('#locations').change(function () {
       updateVisibility();
@@ -88,32 +86,26 @@
       SetInStorage('rollCall_showEnvReason', $(this).prop('checked') ? 'Y' : 'N');
     });
 
-
     $(document).keydown(keyDown);
+
     $('#voterList').click(function (ev) {
       ev.which = 32;
       keyDown(ev);
     });
 
-    //        main.animate({
-    //            marginTop: '0%'
-    //        }, 5000, 'linear', function () {
-    //            // Animation complete.
-    //        });
+    //$('#btnReturn').click(function () {
+    //  var isShowing = $('header').is(':visible');
+    //  $('header').toggle(!isShowing);
 
-    $('#btnReturn').click(function () {
-      var isShowing = $('header').is(':visible');
-      $('header').toggle(!isShowing);
-
-      isShowing = !isShowing;
-      $(this).text(isShowing ? 'Hide Menus' : 'Show Menus');
-      $('.Nav').toggleClass('Show', isShowing);
-      window.scrollTo(0, 0);
-      return false;
-    });
+    //  isShowing = !isShowing;
+    //  $(this).text(isShowing ? 'Hide Menus' : 'Show Menus');
+    //  $('.Nav').toggleClass('Show', isShowing);
+    //  window.scrollTo(0, 0);
+    //  return false;
+    //});
   };
 
-  var recallSetting = function (id, key) {
+  function recallSetting(id, key) {
     var notSet = 'NOTSET';
     if (typeof key === 'undefined') {
       key = id;
@@ -124,14 +116,14 @@
     }
     var input = $('#' + id);
     if (input.attr('type') === 'checkbox') {
-      input.prop('checked', value == 'Y');
+      input.prop('checked', value === 'Y');
       return;
     }
 
     input.val(value);
-  }
+  };
 
-  var addInfo = function (v) {
+  function addInfo(v) {
     //var currentDisplayLocation = $('#locations').val();
     //if (v.Loc != currentDisplayLocation) {
     v.Location = rollCallPage.hasLocations ? rollCallPage.locations[v.Loc] : '';
@@ -145,13 +137,11 @@
       v.EnvInfo = v.Env;
       v.VotingInfo = '{VotingMethod}'.filledWith(v);
     }
-  }
-
-  var saveSetting = function (dom) {
+  };
+  function saveSetting(dom) {
     SetInStorage(local.settingPrefix + dom.id, $(dom).val());
-  }
-
-  var updateVisibility = function () {
+  };
+  function updateVisibility() {
     var locToShow = $('#locations').val() || 0; // may not exist; 0 means ALL
     var methodToShow = $('#includeMethod').val() || '';
     var othersHidden = $('#showOthers').val() == 'hidden';
@@ -184,9 +174,8 @@
 
     value = $('#showEnvReason').prop('checked');
     $('body').toggleClass('ShowEnvReason', value);
-  }
-
-  var connectToRollCallHub = function () {
+  };
+  function connectToRollCallHub() {
     var hub = $.connection.rollCallHubCore;
 
     hub.client.updatePeople = function (info) {
@@ -201,8 +190,8 @@
     });
   };
 
-  //  var refreshHubConnection = function () {
-  //    var resetHubConnectionTimer = function () {
+  //  function refreshHubConnection = () {
+  //    function resetHubConnectionTimer () {
   //      clearTimeout(local.reconnectHubTimeout);
   //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
   //    };
@@ -214,14 +203,14 @@
   //    });
   //  };
 
-  var changeLocation = function (ddlLocation) {
+  function changeLocation(ddlLocation) {
     var newLocation = ddlLocation.val();
     if (newLocation != local.currentLocation && newLocation) {
       LogMessage('Change location');
     }
   };
 
-  var updatePeople = function (info) {
+  function updatePeople(info) {
     var updated = false;
     if (info.removedId) {
       var line = $('#P' + info.removedId);
@@ -256,7 +245,7 @@
     }
     site.lastVersionNum = info.NewStamp;
   };
-  //  var processPulse = function (info) {
+  //  function processPulse (info) {
   //    var people = info.MorePeople;
   //    if (people) {
   //      var firstBlankAtEnd = $('div.Voter#P-100');
@@ -265,7 +254,7 @@
   //    }
   //  };
 
-  var keyDown = function (ev) {
+  function keyDown(ev) {
     var delta = 0;
     switch (ev.which) {
       case 75: // k
@@ -286,28 +275,23 @@
         delta = 1;
         ev.preventDefault();
         break;
-      case 36: // home
-        delta = 1 - local.currentNameNum;
-        ev.preventDefault();
-        break;
+      //case 36: // home
+      //  delta = 1 - local.currentNameNum;
+      //  ev.preventDefault();
+      //  break;
 
-      case 35: // end
-        delta = local.nameDivs.length - local.currentNameNum - 1;
-        ev.preventDefault();
-        break;
+      //case 35: // end
+      //  delta = local.nameDivs.length - local.currentNameNum - 1;
+      //  ev.preventDefault();
+      //  break;
 
       case 34: // page down
         delta = 4;
         ev.preventDefault();
         break;
 
-      case 27: //esc
-        $('.Nav').toggleClass('Show');
-        ev.preventDefault();
-        return;
-
       default:
-        //LogMessage(ev.which);
+        LogMessage(ev.which);
         return;
     }
     if ($(ev.target).closest('.Nav, header').length) {
@@ -332,7 +316,7 @@
     }
   };
 
-  var scrollToMe = function (nameDiv) {
+  function scrollToMe(nameDiv) {
     var voter = $(nameDiv);
 
     if (local.currentVoterDiv) {
@@ -343,7 +327,7 @@
     var showAtTop = voter.prev().length ? voter.prev() : voter;
 
     var top = showAtTop.offset().top;
-    var fudge = 0;//-83;
+    var fudge = -10;//-83;
     var time = 100;
 
     $('html,body').animate({
@@ -356,8 +340,11 @@
     local.currentVoterDiv = voter;
   };
 
+  function returnToTop() {
+    $('html,body').scrollTop(0);
+  }
 
-  //    var goFullScreen = function (div) {
+  //    function goFullScreen (div) {
   //        if (div.webkitRequestFullScreen) {
   //            div.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
   //        }

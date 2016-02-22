@@ -416,7 +416,7 @@ namespace TallyJ.CoreModels
     public ITallyJDbContext DbContext { get; private set; }
 
     /// <Summary>In the Core, do some common results generation</Summary>
-    public abstract ResultSummary AnalyzeEverything();
+    public abstract void AnalyzeEverything();
 
     public void PrepareForAnalysis()
     {

@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -603,13 +604,15 @@
     <Content Include="Scripts\jquery-1.11.0.min.map" />
     <Content Include="Reports\Voters.cshtml" />
     <Content Include="Reports\NonVoters.cshtml" />
-    <Content Include="Reports\AllPeople.cshtml" />
+    <Content Include="Reports\AllPeopleLF.cshtml" />
     <Content Include="Reports\VotersByArea.cshtml" />
     <None Include="Properties\PublishProfiles\tallyj - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyj - Deploy to Azure.pubxml">
       <SubType>Designer</SubType>
     </None>
     <Content Include="Reports\VotersByLocation.cshtml" />
+    <Content Include="Reports\AllPeopleFL.cshtml" />
+    <Content Include="Reports\VotersByLocationArea.cshtml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />

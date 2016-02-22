@@ -100,7 +100,7 @@ var connectToElectionHub = function () {
   var closing = false;
   hub.client.electionClosed = function () {
     LogMessage('signalR: electionClosed');
-    var msg = 'This election has been closed. Thanks for your help!';
+    var msg = 'This election has been closed. Thank you for your participation!';
     //ShowStatusFailed(msg);
     if (closing) return;
     logoffSignalR();
@@ -239,6 +239,11 @@ function AttachHandlers() {
     return false;
   });
 
+  var dropDownTimeout = null;
+  var closeDropDown = function () {
+    $('#quickLinks2 span.DropDown').removeClass('DropDown');
+  };
+
   $('body.AuthKnown #electionState li').not('.General').on('click', function () {
     var item = $(this);
     var form = {
@@ -246,15 +251,53 @@ function AttachHandlers() {
     };
     ShowStatusDisplay('Saving...');
     CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
       ResetStatusDisplay();
       site.broadcast(site.broadcastCode.electionStatusChanged, info);
     });
   });
-  // $('#electionState').on('mouseenter', 'li', HoverQuickLink);
+
+  $('body.AuthKnown #electionState').on('mouseover', 'li.Active_False', function (ev) {
+    clearTimeout(dropDownTimeout);
+    var item = $(ev.target);
+    var state = item.data('state');
+    if ($('#menu' + state).is(':visible')) {
+      return;
+    }
+    closeDropDown();
+    $('#menu' + state)
+      .addClass('DropDown')
+      .css({
+        left: getFullOffsetLeft(item) + 'px',
+        top: (item.offset().top + item.height() - 3) + 'px'
+      });
+  })
+  .on('mouseout', 'li.Active_False', function (ev) {
+    clearTimeout(dropDownTimeout);
+    dropDownTimeout = setTimeout(closeDropDown, 200);
+  });
+
+  $('body').on('mouseover', '.DropDown', function () {
+    clearTimeout(dropDownTimeout);
+  }).on('mouseout', '.DropDown', function () {
+    clearTimeout(dropDownTimeout);
+    dropDownTimeout = setTimeout(closeDropDown, 200);
+  });
+
 
   $('body').on('click', 'a[href="/Account/Logoff"]', function () {
     logoffSignalR();
   });
+}
+
+function getFullOffsetLeft(item) {
+  if (item.hasClass('content-wrapper')) {
+    return 0 - item.offset().left;
+  }
+  return item.offset().left + getFullOffsetLeft(item.offsetParent());
 }
 
 function updateElectionStatus(ev, info) {
@@ -294,8 +337,8 @@ function showMenu(state, permanent, slow) {
   //  var temp = target.data('temp') || target.data('state');
   // LogMessage('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
   //  if (state != temp) {
-  $('#quickLinks2 span:visible').stop(true).hide();
-  $('#menu' + state).fadeIn(slow ? 'slow' : 'fast');
+  $('#quickLinks2 span:visible').addClass('Hidden').removeClass('DropDown');
+  $('#menu' + state).removeClass('Hidden').removeClass('DropDown');
   //  }
 
   //$('.QuickLinks2').toggleClass('temp', site.electionState != state);
@@ -374,12 +417,23 @@ function CheckTimeOffset() {
 function PrepareTopLocationAndTellers() {
   $('#ddlTopLocation').change(function () {
     ShowStatusDisplay('Saving...');
+    var ddl = $(this);
     var form = {
-      id: $(this).val()
+      id: ddl.val()
     };
+    ddl.find('option[value="-1"]').remove();
+
+    if (form.id == '-2') {
+      // some pages add -2 for [All Locations] -- but we don't store it
+      site.broadcast(site.broadcastCode.locationChanged);
+      setTopInfo();
+      return;
+    }
+
     CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
       ShowStatusSuccess('Saved');
       site.broadcast(site.broadcastCode.locationChanged);
+      setTopInfo();
     });
   });
 
@@ -414,15 +468,27 @@ function PrepareTopLocationAndTellers() {
         otherDll.val(otherValue);
       }
 
-      $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
-      $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
+      setTopInfo();
     });
   }).each(function () {
     var ddl = $(this);
     ddl.data('current', ddl.val());
   });
 
-  $('.CurrentInfo').toggleClass('NotSet', +$('#ddlTopTeller1').val() <= 0);
+  setTopInfo();
+}
+var setTopInfo = function () {
+  var ddlLocation = $('#ddlTopLocation');
+  var location = +ddlLocation.val();
+  var locationNeeded = ddlLocation.is(':visible') && location === -1;
+
+  var ddlTeller1 = $('#ddlTopTeller1');
+  var teller1Needed = ddlTeller1.is(':visible') && ddlTeller1.val() <= 0;
+  
+  $('.CurrentInfo').toggleClass('NotSet', locationNeeded || teller1Needed);
+  ddlLocation.toggleClass('NotSet', locationNeeded);
+  ddlTeller1.toggleClass('NotSet', teller1Needed);
+
   $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
 }
 
@@ -437,7 +503,7 @@ function AttachHelp() {
     var title = pi.data('title') || 'Instructions';
     pi.before($('<div class=PullInstructionsHandle data-title="{0}"><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class="buttonDiv"><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> {0}</span></div>'.filledWith(title)));
   });
-  
+
   var showHelp = function (handle, show, fast) {
     var next = handle.next();
     if (fast) {
@@ -537,11 +603,11 @@ function HasErrors(data) {
 function LogMessage(msg) {
   /// <summary>Log the message to the console, if the browser supports it
   /// </summary>
-//  if (typeof console != 'undefined' && console) {
-//    console.log(JSON.stringify(msg));
-//  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
-//    window.console.log(msg);
-//  }
+  //  if (typeof console != 'undefined' && console) {
+  //    console.log(JSON.stringify(msg));
+  //  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
+  //    window.console.log(msg);
+  //  }
 
   if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
     if (/rv:1/.test(navigator.userAgent) && typeof msg === 'object') {

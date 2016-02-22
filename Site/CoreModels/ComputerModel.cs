@@ -21,34 +21,40 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public Computer CreateAndSaveComputerForMe()
+    public Computer GetComputerForMe(Guid oldComputerGuid)
     {
       Computer computer;
 
-      var computerCacher = new ComputerCacher(Db);
+      var computerCacher = new ComputerCacher();
 
       var locationGuid = UserSession.CurrentLocationGuid;
-      if (locationGuid == Guid.Empty)
+      var hasLocations = new LocationModel().HasLocations;
+      if (locationGuid == Guid.Empty && !hasLocations)
       {
+        // if only one location, learn what it is
         UserSession.CurrentLocationGuid = locationGuid = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
       }
 
       lock (ComputerModelLock)
       {
-        var allComputers = computerCacher.AllForThisElection;
+        var allComputersInThisElection = computerCacher.AllForThisElection;
 
-        computer = new Computer
+        computer = allComputersInThisElection.FirstOrDefault(c => c.ComputerGuid == oldComputerGuid && c.ElectionGuid == UserSession.CurrentElectionGuid);
+        if (computer == null)
         {
-          ComputerGuid = Guid.NewGuid(),
-          ComputerCode = DetermineNextFreeComputerCode(allComputers.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
-          LocationGuid = locationGuid,
-          ElectionGuid = UserSession.CurrentElectionGuid,
-          LastContact = DateTime.Now,
-          AuthLevel = UserSession.AuthLevel,
-          SessionId = HttpContext.Current.Session.SessionID
-        };
+          computer = new Computer
+          {
+            ComputerGuid = Guid.NewGuid(),
+            ComputerCode = DetermineNextFreeComputerCode(allComputersInThisElection.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
+            ElectionGuid = UserSession.CurrentElectionGuid
+          };
+          computerCacher.UpdateComputer(computer);
+        }
 
-        computerCacher.AddToCache(computer);
+        computer.LastContact = DateTime.Now;
+        computer.LocationGuid = locationGuid;
+        computer.AuthLevel = UserSession.AuthLevel;
+        computer.SessionId = HttpContext.Current.Session.SessionID;
       }
 
       UserSession.CurrentComputer = computer;
@@ -88,8 +94,7 @@ namespace TallyJ.CoreModels
       AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, "can't switch elections");
 
       computer.LocationGuid = location.LocationGuid;
-
-      new ComputerCacher(Db).UpdateComputerLocation(computer);
+      new ComputerCacher().UpdateComputer(computer);
 
       SessionKey.CurrentLocationGuid.SetInSession(location.LocationGuid);
 
@@ -114,6 +119,7 @@ namespace TallyJ.CoreModels
 
     public string DetermineNextFreeComputerCode(IEnumerable<string> existingCodesSortedAsc)
     {
+      // assign a new code
       var codeToUse = 'A';
       var twoDigit = false;
       var firstDigit = (char)('A' - 1);
@@ -166,22 +172,22 @@ namespace TallyJ.CoreModels
         return;
       }
 
-      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
     }
 
     public bool ProcessPulse()
     {
-      new ComputerCacher(Db).UpdateLastContactOfCurrentComputer();
+      new ComputerCacher().UpdateLastContactOfCurrentComputer();
       return true;
     }
 
-    public void RemoveComputerRecord()
-    {
-      var computer = UserSession.CurrentComputer;
-      if (computer != null)
-      {
-        new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
-      }
-    }
+    //public void RemoveComputerRecord()
+    //{
+    //  var computer = UserSession.CurrentComputer;
+    //  if (computer != null)
+    //  {
+    //    new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
+    //  }
+    //}
   }
 }

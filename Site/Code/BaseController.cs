@@ -16,7 +16,7 @@ namespace TallyJ.Code
     protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
     {
       new ComputerModel().RefreshLastContact();
-      Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+      //Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
       return base.BeginExecuteCore(callback, state);
     }
 

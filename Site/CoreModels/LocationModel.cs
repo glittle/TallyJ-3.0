@@ -47,11 +47,14 @@ namespace TallyJ.CoreModels
     /// <param name="guid"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public int IdFor(Guid? guid, int defaultValue = 0) {
-      if (!guid.HasValue) {
+    public int IdFor(Guid? guid, int defaultValue = 0)
+    {
+      if (!guid.HasValue)
+      {
         return defaultValue;
       }
-      if (LocationIdMap.ContainsKey(guid.Value)) {
+      if (LocationIdMap.ContainsKey(guid.Value))
+      {
         return LocationIdMap[guid.Value];
       }
       return defaultValue;
@@ -68,7 +71,7 @@ namespace TallyJ.CoreModels
       get { return MyLocations.Count > 1; }
     }
 
-    public HtmlString GetLocationOptions()
+    public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true)
     {
       var currentLocation = UserSession.CurrentLocation;
       var selected = 0;
@@ -76,12 +79,15 @@ namespace TallyJ.CoreModels
       {
         selected = currentLocation.C_RowId;
       }
-
-      return MyLocations
+      
+      return
+        (
+        (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
+        MyLocations
         .OrderBy(l => l.SortOrder)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
-        .JoinedAsString()
+        .JoinedAsString())
         .AsRawHtml();
     }
 
@@ -140,13 +146,17 @@ namespace TallyJ.CoreModels
 
     public object LocationInfoForJson(Location location)
     {
+      if (location == null) {
+        return null;
+      }
+
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var sum = new BallotHelper().BallotCount(location.LocationGuid, isSingleName);
 
       return new
       {
         Id = location.C_RowId,
-        TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
+        TallyStatus = location == null ? "" : LocationStatusEnum.TextFor(location.TallyStatus),
         TallyStatusCode = location.TallyStatus,
         location.ContactInfo,
         location.BallotsCollected,

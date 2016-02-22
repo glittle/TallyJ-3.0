@@ -67,7 +67,7 @@
       }
       @if (Request.IsAuthenticated)
       {
-        var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
+        //var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
 
         @*        <div id="MasterMenu" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
         @*          @Html.Partial("MasterMenu")*@
@@ -76,11 +76,14 @@
           <span class="CurrentElectionName" title="Election Name">
             @UserSession.CurrentElectionDisplayNameAndInfo
           </span>
-          @if (publicInfo != null)
+          @{
+            var passcode = new PublicElectionLister().GetPasscodeIfAvailable(UserSession.CurrentElectionGuid);
+          }
+          @if (passcode != null)
           {
             <span class="publicInfo topArea"><span class="ui-icon ui-icon-info" id="qTipPasscode"></span>open</span>
             <script>
-              site.qTips.push({ selector: '#qTipPasscode', title: 'Election Open for Tellers', text: 'Tellers can join this election using the pass code <b>"@publicInfo.Passcode.Replace("'", "\\'")"</b> on the home page.' });
+              site.qTips.push({ selector: '#qTipPasscode', title: 'Election Open for Tellers', text: 'Tellers can join this election using the pass code <b>"@passcode.Replace("'", "\\'")"</b> on the home page.' });
             </script>
           }
           @if (UserSession.CurrentElection != null)
@@ -88,7 +91,7 @@
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <ol id="electionState"
-                  title="@(UserSession.IsKnownTeller ? "Change state" : "Current election status (set by head teller)")"
+                  title="@(UserSession.IsKnownTeller ? "" : "Current election status (set by head teller)")"
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
               </ol>
@@ -112,7 +115,7 @@
             <div class="Spacer"></div>
           }
         </div>
-      }
+            }
       @if (ScreenMode != "Full")
       {
         if (ScreenMode == "Mini")

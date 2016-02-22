@@ -6,6 +6,7 @@ using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Code.Session
@@ -228,8 +229,16 @@ namespace TallyJ.Code.Session
 
         var locations = new LocationCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext).AllForThisElection;
 
-        location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid)
-                   ?? locations.First();
+        location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid);
+        if (location == null)
+        {
+          if (locations.Count > 1)
+          {
+            return null;
+          }
+          location = locations[0];
+        }
+
         if (location.LocationGuid != currentLocationGuid)
         {
           CurrentLocationGuid = location.LocationGuid;
@@ -284,7 +293,7 @@ namespace TallyJ.Code.Session
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
         if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
         {
-          return new ComputerModel().CreateAndSaveComputerForMe();
+          return new ComputerModel().GetComputerForMe(Guid.Empty);
         }
         return currentComputer;
       }
@@ -396,14 +405,25 @@ namespace TallyJ.Code.Session
     /// <param name="movingToOtherElection"></param>
     public static void LeaveElection(bool movingToOtherElection)
     {
-      if (IsKnownTeller)
+      var computer = CurrentComputer;
+      if (computer != null && computer.AuthLevel == "Known")
       {
-        new ElectionModel().CloseElection();
+        computer.AuthLevel = "Left";
+        var computerCacher = new ComputerCacher();
+        computerCacher.UpdateComputer(computer);
+
+        var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
+        if (numKnownTellers == 0)
+        {
+          new ElectionModel().CloseElection();
+        }
+        else
+        {
+          new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
+        }
       }
-      if (IsLoggedIn)
-      {
-        new ComputerModel().RemoveComputerRecord();
-      }
+
+
       if (movingToOtherElection)
       {
         ResetWhenSwitchingElections();

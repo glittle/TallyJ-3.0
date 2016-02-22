@@ -1,0 +1,70 @@
+﻿@using System.Web;
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var locations = new PersonCacher().AllForThisElection
+    .Where(p => p.CanVote.HasValue && p.CanVote.Value && p.VotingMethod == VotingMethodEnum.InPerson.ToString())
+    .Join(new LocationCacher().AllForThisElection, p => p.VotingLocationGuid, l => l.LocationGuid, (p, l) => new { l, p })
+    .GroupBy(g => g.l.Name)
+    .Select(g => new
+    {
+      LocationName = g.Key,
+      Areas = g.GroupBy(g2 => g2.p.Area).OrderBy(x => x.Key)
+    })
+    .OrderBy(g => g.LocationName)
+  .ToList();
+
+}
+<style>
+  .locArea th {
+    text-align: left;
+  }
+
+  tr.area td:first-child {
+    width: 1em;
+  }
+  
+  tr.area td:last-child {
+    text-align: right;
+    min-width: 2em;
+  }
+  tr.loc td, tr.loc th {
+    padding-top: 1em;
+  }
+
+    tr.loc th span {
+      font-weight: normal;
+      margin-left: 10px;
+    }
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    For those who voted in person, what area are they from and which location did they attend?
+  </p>
+  <table class="locArea">
+    @foreach (var loc in locations)
+    {
+      <tr class="loc">
+        <th colspan="3">
+          @loc.LocationName
+          <span>
+            @loc.Areas.Count()
+          </span>
+        </th>
+      </tr>
+      foreach (var area in loc.Areas)
+      {
+        <tr class="area">
+          <td></td>
+          <td>@area.Key</td>
+          <td>@area.Count()</td>
+        </tr>
+      }
+    }
+  </table>
+</div>

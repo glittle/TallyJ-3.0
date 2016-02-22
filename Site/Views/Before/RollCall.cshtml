@@ -8,7 +8,7 @@
   ContextItems.AddJavascriptForPage("locs", "rollCallPage.locations={0};".FilledWith(new LocationModel().LocationRowIdMap));
   ContextItems.AddJavascriptForPage("methods", "rollCallPage.methods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
-  ContextItems.AddJavascriptForPage("voters", "rollCallPage.voters={0};".FilledWith(Model.Voters().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("voters", "rollCallPage.voters={0};".FilledWith(Model.Voters(2, 3).SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
@@ -16,14 +16,14 @@
   <div class="NextUp"></div>
   <div class="Nav Show">
     <span class="comment">* are recommended</span>
-    <h3>Display Options</h3>
+    <h2>Display Options</h2>
     @if (ContextItems.LocationModel.HasLocations)
     {
       <p>
         Highlight those who voted at
         <select id="locations">
           <option value="">All Locations</option>
-          @ContextItems.LocationModel.GetLocationOptions()
+          @ContextItems.LocationModel.GetLocationOptions(false)
         </select>
       </p>
     }
@@ -45,7 +45,7 @@
     @if (ContextItems.LocationModel.HasLocations)
     {
       <p>
-        Show voter's 
+        Show voter's
         <select id="showLocations">
           <option value="em">home area *</option>
           <option value="i">voting location</option>
@@ -56,19 +56,18 @@
     <p>
       <label>
         <input checked type="checkbox" id="showEnvReason" />
-        Show ballot delivery method *
+        Show ballot delivery methods *
       </label>
     </p>
-    <h3>Instructions</h3>
-    <p>Press F11 to view in full-screen!</p>
-    <p>Click mouse, or press Space, Enter, Up/Down, Home/End, PgUp/PgDn to move names.</p>
-    <p>
-      <button type="button" id="hideNav" accesskey="H"><u>H</u>ide these Instruction</button>
-      &nbsp;
-      <button id="btnReturn" type="button">Show Site Menus</button>
-    </p>
-    <p>Scroll to the top of the page for a button to show these instructions again. Or, press Esc.</p>
-
+    <h2 class="newSection">Instructions</h2>
+    <div class="instructions">
+      <p>To <strong>return</strong> to these instructions: <span>Press Home or scroll back to the top of this page.</span></p>
+      <p>To view in <strong>full-screen</strong> mode: <span>Press F11.</span></p>
+      <p>To <strong>back up</strong> to the previous name: <span>Press Up or K.</span></p>
+      <p>To <strong>move quickly</strong> through the list: <span>Press Up/Down, PgUp/PgDn.</span></p>
+      <p>To <strong>advance</strong> to the next name: <span>Press Space, Enter, J, Down Arrow or Click any name in the list.</span></p>
+      <p><button type="button" id="btnStart">Start Roll Call Now</button></p>
+    </div>
   </div>
   <div id="voterList" tabindex="1"></div>
 </div>

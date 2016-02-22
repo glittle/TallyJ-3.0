@@ -52,16 +52,10 @@ Global
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Standalone|Any CPU.ActiveCfg = Standalone|Any CPU
 		{A22FBFB0-0240-4BE0-8E12-18C01D4D604D}.Standalone|Any CPU.Build.0 = Standalone|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.Build.0 = Debug|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureDebug|Any CPU.Deploy.0 = Debug|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.Build.0 = Release|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.AzureRelease|Any CPU.Deploy.0 = Release|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{318A3641-8822-4B4E-9848-80C3538A03D7}.Standalone|Any CPU.ActiveCfg = Standalone|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.Standalone|Any CPU.Build.0 = Standalone|Any CPU
-		{318A3641-8822-4B4E-9848-80C3538A03D7}.Standalone|Any CPU.Deploy.0 = Standalone|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

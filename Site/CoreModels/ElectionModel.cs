@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
@@ -235,6 +236,7 @@ namespace TallyJ.CoreModels
       var currentMode = election.ElectionMode;
       var currentCan = election.CanVote;
       var currentReceive = election.CanReceive;
+      var currentListed = election.ListForPublic;
 
       // List of fields to allow edit from setup page
       var editableFields = new
@@ -256,6 +258,11 @@ namespace TallyJ.CoreModels
         election.MaskVotingMethod
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
+      if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
+      {
+        // just turned on
+        election.ListedForPublicAsOf = DateTime.Now;
+      }
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
@@ -265,7 +272,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
+        new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
       }
 
       if (currentMode != election.ElectionMode
@@ -291,16 +298,16 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    public bool JoinIntoElection(int wantedElectionId)
+    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
     {
       var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid).FirstOrDefault();
       if (electionGuid == Guid.Empty)
       {
         return false;
       }
-      return JoinIntoElection(electionGuid);
+      return JoinIntoElection(electionGuid, oldComputerGuid);
     }
-    public bool JoinIntoElection(Guid wantedElectionGuid)
+    public bool JoinIntoElection(Guid wantedElectionGuid, Guid oldComputerGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
       var exists = Db.Election.Any(e => e.ElectionGuid == wantedElectionGuid);
@@ -321,6 +328,10 @@ namespace TallyJ.CoreModels
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
+      // assign new computer code
+      var computerModel = new ComputerModel();
+      computerModel.GetComputerForMe(oldComputerGuid);
+
       string message;
       if (UserSession.IsGuestTeller)
       {
@@ -330,10 +341,7 @@ namespace TallyJ.CoreModels
       {
         message = "Teller (" + UserSession.MemberName + ") switched into Election";
 
-        if (UserSession.CurrentElection.ListForPublicCalculated)
-        {
-          new PublicHub().ElectionsListUpdated();
-        }
+        new PublicHub().TellPublicAboutVisibleElections();
 
         UpgradeOldData();
       }
@@ -346,7 +354,7 @@ namespace TallyJ.CoreModels
     private void UpgradeOldData()
     {
       var personCacher = new PersonCacher(Db);
-      var testInfo = personCacher.MainQuery().Select(p=>new {p.CombinedInfo, p.CombinedSoundCodes}).FirstOrDefault();
+      var testInfo = personCacher.MainQuery().Select(p => new { p.CombinedInfo, p.CombinedSoundCodes }).FirstOrDefault();
 
       if (testInfo == null)
       {
@@ -364,7 +372,7 @@ namespace TallyJ.CoreModels
 
       var people = personCacher.MainQuery().ToList();
       var votes = voteCacher.MainQuery().ToList();
-        
+
       var peopleModel = new PeopleModel();
       var saveNeeded = false;
 
@@ -537,6 +545,7 @@ namespace TallyJ.CoreModels
 
       var electionCacher = new ElectionCacher(Db);
       var election = UserSession.CurrentElection;
+
       if (election.TallyStatus != status)
       {
         Db.Election.Attach(election);
@@ -595,6 +604,16 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetTallyStatusJson(Controller controller, string status)
     {
+      var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+      var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
+      if (status == ElectionTallyStatusEnum.Report && !readyForReports)
+      {
+        return new
+        {
+          Message = "Cannot set to \"Approved\" until Analysis is completed successfully."
+        }.AsJsonResult();
+      }
+
       SetTallyStatus(controller, status);
 
       new LogHelper().Add("Status changed to " + status, true);
@@ -625,6 +644,7 @@ namespace TallyJ.CoreModels
       return new { Saved = true }.AsJsonResult();
     }
 
+
     public JsonResult UpdateListOnPageJson(bool listOnPage)
     {
       if (UserSession.IsKnownTeller)
@@ -641,7 +661,7 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        new PublicHub().ElectionsListUpdated();
+        new PublicHub().TellPublicAboutVisibleElections();
 
         return new { Saved = true }.AsJsonResult();
       }
@@ -651,7 +671,8 @@ namespace TallyJ.CoreModels
 
     public bool GuestsAllowed()
     {
-      return UserSession.CurrentElection != null && UserSession.CurrentElection.ListForPublicCalculated;
+      var election = UserSession.CurrentElection;
+      return election != null && election.CanBeAvailableForGuestTellers;
     }
 
     /// <summary>
@@ -662,23 +683,20 @@ namespace TallyJ.CoreModels
     {
       var election = UserSession.CurrentElection;
 
-      if (election != null)
+      if (Db.Election.Local.All(e => e.ElectionGuid != election.ElectionGuid))
       {
-        if (election.ListedForPublicAsOf.HasValue)
-        {
-          if (!Db.Election.Local.Any(e => e.ElectionGuid == election.ElectionGuid))
-          {
-            Db.Election.Attach(election);
-          }
-          election.ListedForPublicAsOf = null;
-
-          Db.SaveChanges();
-
-          new ElectionCacher(Db).RemoveItemAndSaveCache(election);
-          new PublicHub().ElectionsListUpdated(); // in case the name, or ListForPublic, etc. has changed
-          new MainHub().DisconnectGuests();
-        }
+        Db.Election.Attach(election);
       }
+
+      election.ListedForPublicAsOf = null;
+
+      Db.SaveChanges();
+
+      new ElectionCacher(Db).RemoveItemAndSaveCache(election);
+
+      new MainHub().CloseOutGuestTellers();
+
+      new PublicHub().TellPublicAboutVisibleElections();
     }
 
     //    public bool ProcessPulse()
@@ -736,30 +754,33 @@ namespace TallyJ.CoreModels
     //      electionCacher.UpdateItemAndSaveCache(election);
     //    }
 
-    public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
-    {
-      var currentElection = UserSession.CurrentElection;
-      if (currentElection == null)
-      {
-        return;
-      }
+    //public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
+    //{
+    //  var currentElection = UserSession.CurrentElection;
+    //  if (currentElection == null)
+    //  {
+    //    return;
+    //  }
 
-      var lastContactOfTeller = (computers ?? new ComputerCacher(Db).AllForThisElection)
-        .Where(c => c.AuthLevel == "Known")
-        .Max(c => c.LastContact);
+    //  var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
+    //    .Where(c => c.AuthLevel == "Known")
+    //    .Max(c => c.LastContact);
 
-      if (lastContactOfTeller != null &&
-          (currentElection.ListedForPublicAsOf == null
-           ||
-           Math.Abs((lastContactOfTeller.Value - currentElection.ListedForPublicAsOf.Value).TotalMinutes) >
-           5.minutes().TotalMinutes))
-      {
-        currentElection.ListedForPublicAsOf = lastContactOfTeller;
-        new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
-      }
+    //  if (lastContactOfTeller != null &&
+    //      (currentElection.ListedForPublicAsOf == null
+    //       ||
+    //       Math.Abs((DateTime.Now - lastContactOfTeller.Value).TotalMinutes) >
+    //       5.minutes().TotalMinutes))
+    //  {
+    //    currentElection.ListedForPublicAsOf = lastContactOfTeller;
+    //    new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
+    //  }
 
-      new PublicElectionLister().UpdateThisElectionInList();
-    }
+    //  //new PublicElectionLister().UpdateThisElectionInList();
+    //  new PublicHub().TellPublicAboutVisibleElections();
+
+    //}
+
 
 
     public static class CanVoteOrReceive

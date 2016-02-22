@@ -71,7 +71,7 @@ namespace TallyJ
             configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
 
             configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-            configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+            //configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
 
             configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
 

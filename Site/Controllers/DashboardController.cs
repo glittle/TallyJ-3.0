@@ -11,10 +11,10 @@ namespace TallyJ.Controllers
 {
   public class DashboardController : BaseController
   {
+    [AllowGuestsInActiveElection]
     public ActionResult Index()
     {
-      if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null 
-         || UserSession.CurrentLocationGuid == Guid.Empty ||  UserSession.CurrentLocation == null)
+      if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null)
       {
         return UserSession.IsKnownTeller
                  ? RedirectToAction("ChooseElection")
@@ -40,7 +40,7 @@ namespace TallyJ.Controllers
     [AllowGuestsInActiveElection]
     public JsonResult ChooseLocation(int id)
     {
-      return new {Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id)}.AsJsonResult();
+      return new { Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id) }.AsJsonResult();
     }
 
 

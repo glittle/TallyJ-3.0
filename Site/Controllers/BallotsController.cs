@@ -6,6 +6,7 @@ using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using System.Linq;
 using TallyJ.EF;
+using TallyJ.Code.Enumerations;
 
 namespace TallyJ.Controllers
 {
@@ -115,6 +116,12 @@ namespace TallyJ.Controllers
     
     public JsonResult GetLocationInfo()
     {
+      var locationModel = new LocationModel();
+      if (UserSession.CurrentLocation == null)
+      {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+
       if (UserSession.CurrentElection.IsSingleNameElection)
       {
         return new
@@ -151,7 +158,11 @@ namespace TallyJ.Controllers
 
     public JsonResult SortVotes(List<int> idList)
     {
-      //var ids = idList.Split(new[] {','}).Select(s => s.AsInt()).ToList();
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      {
+        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+      }
+
       return CurrentBallotModel.SortVotes(idList, new VoteCacher(Db)).AsJsonResult();
     }
 

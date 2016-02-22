@@ -48,7 +48,7 @@ namespace TallyJ.CoreModels
                                     {
                                       ComputerCode = g.Key,
                                       BallotsAtComputer = new BallotHelper().BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
-                                      Computers = new ComputerCacher(Db).AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
+                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
                                          .OrderBy(c => c.ComputerCode)
                                          .Select(c => new
                                          {

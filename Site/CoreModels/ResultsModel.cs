@@ -404,8 +404,9 @@ namespace TallyJ.CoreModels
 
       resultSummaryCacher.UpdateItemAndSaveCache(resultSummary);
 
-      _analyzer.PrepareResultSummaries();
-      _analyzer.FinalizeSummaries();
+      _analyzer.AnalyzeEverything();
+      //.PrepareResultSummaries();
+      //_analyzer.FinalizeSummaries();
 
       var resultSummaries = _analyzer.ResultSummaries;
 

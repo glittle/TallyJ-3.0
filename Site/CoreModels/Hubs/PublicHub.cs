@@ -26,9 +26,10 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Groups.Add(connectionId, HubNameForPublic);
     }
 
-    public void ElectionsListUpdated()
+    public void TellPublicAboutVisibleElections()
     {
-      CoreHub.Clients.Group(HubNameForPublic).ElectionsListUpdated(new PublicElectionLister().VisibleElectionsOptions());
+      var list = new PublicElectionLister().RefreshAndGetListOfAvailableElections();
+      CoreHub.Clients.Group(HubNameForPublic).ElectionsListUpdated(list);
     }
   }
 

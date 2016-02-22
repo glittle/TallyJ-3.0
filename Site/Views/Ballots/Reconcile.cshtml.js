@@ -6,6 +6,7 @@
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     showingNames: false,
+    hasLocations: false,
     ballotMethods: [],
     sortSelector: '<select class=sortSelector><option value=Time>Sort by Time</option><option value=Env>Sort by Envelope Number</option><option value=Name>Sort by Name</option></select>'
   };
@@ -13,19 +14,32 @@
   var preparePage = function () {
     connectToFrontDeskHub();
 
-    changeLocation($('#locations'), false);
+    var ddlLocations = $('#ddlTopLocation');
+    local.hasLocations = ddlLocations.is(':visible');
+
+    if (local.hasLocations) {
+      var firstOption = ddlLocations.find('option[value="-1"]');
+      var htmlAllOptions = '<option value="-2">[All Locations]</option>';
+      if (firstOption.length) {
+        firstOption.after(htmlAllOptions);
+      } else {
+        ddlLocations.prepend(htmlAllOptions);
+      }
+    }
+
+    changeLocation(false);
 
     $('#btnShowNames').click(function () {
       $(this).hide();
       $('.Names, #lists').fadeIn();
       local.showingNames = true;
     });
-    $('#locations').change(function () {
-      changeLocation($(this));
+    site.onbroadcast(site.broadcastCode.locationChanged, function () {
+      changeLocation(false);
     });
     $('#btnRefresh').click(function () {
-      local.currentLocation = '';
-      changeLocation($('#locations'), true);
+      local.currentLocation = 0;
+      changeLocation(true);
     });
 
     $('#lists').on('change', '.sortSelector', sortSection);
@@ -38,14 +52,14 @@
 
   };
 
-  var connectToFrontDeskHub = function () {
+  function connectToFrontDeskHub() {
     var hub = $.connection.frontDeskHubCore;
 
     hub.client.updatePeople = function () {
       LogMessage('signalR: updatePeople');
 
-      local.currentLocation = '';
-      changeLocation($('#locations'), true);
+      local.currentLocation = 0;
+      changeLocation(true);
     };
 
     activateHub(hub, function () {
@@ -67,22 +81,25 @@
   //  };
 
   var showOld = function (list) {
-    if (!list.length) return;
+    if (!list.length) {
+      return;
+    }
     var ballotList = ('<div title="{Tellers}" data-time="{RegistrationTime}"><span><span>{C_FullName}</span>'
       + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
       + '</span>'
       + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
       + '{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}'
       + '</div>').filledWithEach(extend(list));
-    $('#lists').append('<div><h3>Un-used Envelopes & Un-registered: {0} <span class="ui-icon ui-icon-info" id="qTipUn"></span></h3><div class="Names oldEnv">{^1}</div></div>'.filledWith(
-        list.length, ballotList));
+    $('#lists').append(
+      '<div><h3>Un-used Envelopes & Un-registered{0}: {1}'.filledWith(local.hasLocations ? ' for all Locations': '', list.length) +
+      '<span class="ui-icon ui-icon-info" id="qTipUn"></span></h3><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList));
 
     ActivateTips();
   };
 
-  var changeLocation = function (ddlLocation, highlight) {
-    var newLocation = ddlLocation.val();
-    if (newLocation != local.currentLocation && newLocation) {
+  function changeLocation(highlight) {
+    var newLocation = local.hasLocations ? +$('#ddlTopLocation').val() : -2;
+    if (newLocation !== local.currentLocation && newLocation) {
       ShowStatusDisplay('Loading ballot information');
       CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
         if (highlight) {
@@ -92,9 +109,9 @@
         processBallots(info.Ballots);
         publicInterface.oldEnvelopes = info.OldEnvelopes;
 
-        if (newLocation == -1) {
-          showOld(publicInterface.oldEnvelopes);
-        }
+        //        if (newLocation === -1) {
+        showOld(publicInterface.oldEnvelopes);
+        //        }
 
         ActivateTips(true);
         ResetStatusDisplay();
@@ -103,7 +120,7 @@
   };
 
 
-  var extend2 = function (ballot) {
+  function extend2(ballot) {
     ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
     ballot.EnvInfo = ballot.EnvNum ? '<span class=EnvNum data-num="{EnvNum}">#{EnvNum}</span>'.filledWith(ballot) : '';
     var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
@@ -112,7 +129,7 @@
     return ballot;
   }
 
-  var processBallots = function (ballots) {
+  function processBallots(ballots) {
     local.groupedBallots = {};
     local.ballotMethods = [];
 
@@ -196,7 +213,7 @@
     }
   };
 
-  var extend = function (ballots) {
+  function extend(ballots) {
     if (!ballots) return null;
     $.each(ballots, function () {
       //this.WhenText = FormatDate(this.When, ' ', true, true);

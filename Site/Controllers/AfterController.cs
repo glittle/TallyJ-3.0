@@ -26,7 +26,7 @@ namespace TallyJ.Controllers
       return View(resultsModel);
     }
 
-    [ForAuthenticatedTeller]
+    //[ForAuthenticatedTeller]
     public ActionResult Reports()
     {
       return View("Reports");
@@ -87,7 +87,7 @@ namespace TallyJ.Controllers
       return new ElectionModel().UpdateListOnPageJson(listOnPage);
     }
 
-    [ForAuthenticatedTeller]
+    //[ForAuthenticatedTeller]
     public JsonResult GetReportData(string code)
     {
       return new ResultsModel().GetReportData(code);

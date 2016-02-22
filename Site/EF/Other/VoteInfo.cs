@@ -24,9 +24,9 @@ namespace TallyJ.EF
       C_BallotCode = ballot.C_BallotCode;
 
       //Location
-      LocationId = location.C_RowId;
-      //LocationTallyStatus = location.TallyStatus;
-      ElectionGuid = location.ElectionGuid;
+      LocationId = location == null ? 0 : location.C_RowId;
+
+      ElectionGuid = election.ElectionGuid;
 
       if (person != null)
       {

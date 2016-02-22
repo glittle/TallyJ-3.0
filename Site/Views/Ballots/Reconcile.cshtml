@@ -5,8 +5,6 @@
 @{
   ContextItems.AddJavascriptForPage("pageUrl", "reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("beforeUrl", "reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
-  //ContextItems.AddJavascriptForPage("ballotList", "reconcilePage.ballots={0};".FilledWith(Model.BallotSources().SerializedAsJsonString()));
-  //ContextItems.AddJavascriptForPage("oldEnvelopes", "reconcilePage.oldEnvelopes={0};".FilledWith(Model.OldEnvelopes().SerializedAsJsonString()));
 }
 <div class="PullInstructions">
   <ol>
@@ -20,13 +18,6 @@
 </div>
 <div class="btnRefreshDiv">
   <button type="button" id="btnRefresh" class="btn">Refresh</button>
-</div>
-<div class="@(ContextItems.LocationModel.HasLocations ? "" : "Hidden")">
-  Showing who voted at:
-  <select id="locations">
-    <option value="-1">[All Locations]</option>
-    @ContextItems.LocationModel.GetLocationOptions()
-  </select>
 </div>
 
 <div class="Totals Count">

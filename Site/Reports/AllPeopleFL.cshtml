@@ -1,19 +1,19 @@
-﻿@using System.Web;
-@using TallyJ.Code.Enumerations
+﻿@using TallyJ.Code.Session
 @using TallyJ.Code
-@using TallyJ.Code.Session
+@using TallyJ.Code.Enumerations
 @using TallyJ.EF
-@using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .Where(p => p.VotingMethod.HasContent())
-    .OrderBy(p => p.FullName)
+    .OrderBy(p => p.FullNameFL)
     .Select(p => new
     {
-      PersonName = p.FullName,
-      p.VotingMethod,
+      PersonName = p.FullNameFL,
+      VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod, "-"),
+      //      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(
+      //        p.IneligibleReasonGuid.AsGuid()).
+      //        SurroundContentWith("[", "]")
     });
 }
 <style>
@@ -47,6 +47,16 @@
       margin-top: .5em;
     }
 
+    .person.ineligible {
+      text-decoration: line-through;
+      color: red;
+    }
+
+  .reason {
+    position: absolute;
+    right: 20px;
+  }
+
   .method {
     position: absolute;
     right: 0;
@@ -58,7 +68,7 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
-    Showing who was registered on the Front Desk and what method of voting they used.
+    Showing all eligible voters, and how they were registered on the Front Desk, if they were.
   </p>
   <div class="Voters">
     @{
@@ -73,13 +83,18 @@
       {
         initial = first;
         name = "<b>" + initial + "</b>" + name.Substring(1);
-        firstClass = " first";
+        firstClass = "first";
       }
-      var method = VotingMethodEnum.TextFor(person.VotingMethod);
+//      var ineligible = "";
+//      if (person.InvalidReasonDesc.HasContent())
+//      {
+//        ineligible = "ineligible";
+//        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
+//      }
 
       <div class="person @firstClass">
         <span class="name">@Raw(name)</span>
-        <span class="method">@method</span>
+        <span class="method">@person.VotingMethod</span>
       </div>
     }
   </div>
