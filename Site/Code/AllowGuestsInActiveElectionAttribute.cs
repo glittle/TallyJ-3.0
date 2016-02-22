@@ -74,10 +74,10 @@ namespace TallyJ.Code
     static DateTime _last = DateTime.Now;
     void LogTime(string msg = "")
     {
-      var now = DateTime.Now;
-      var diff = now - _last;
-      Debugger.Log(1, "timing", $"{diff.ToString("c")} {msg}\r\n");
-      _last = now;
+      //var now = DateTime.Now;
+      //var diff = now - _last;
+      //Debugger.Log(1, "timing", "{0} {1}\r\n".FilledWith(diff.ToString("c"), msg));
+      //_last = now;
     }
   }
 }
