@@ -434,9 +434,6 @@
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
     </Content>
-    <Content Include="Content\Site.min.css">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -570,9 +567,6 @@
       <LastGenOutput>DbContextGen.cs</LastGenOutput>
       <DependentUpon>DbModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Content\Site.css.map">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\css\bootstrap.css.map">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>
@@ -637,21 +631,12 @@
       <DependentUpon>ShowTies.cshtml.less</DependentUpon>
     </Content>
     <Content Include="Views\After\ShowTies.cshtml.js" />
-    <Content Include="Views\After\ShowTies.cshtml.min.css">
-      <DependentUpon>ShowTies.cshtml.css</DependentUpon>
-    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css">
       <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
     </Content>
-    <Content Include="Views\Before\FrontDesk.cshtml.min.css">
-      <DependentUpon>FrontDesk.cshtml.css</DependentUpon>
-    </Content>
     <Content Include="Views\Before\RollCall.cshtml.css">
       <DependentUpon>RollCall.cshtml.less</DependentUpon>
-    </Content>
-    <Content Include="Views\Before\RollCall.cshtml.min.css">
-      <DependentUpon>RollCall.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
@@ -662,20 +647,11 @@
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
-    <Content Include="Views\Public\Home.cshtml.min.css">
-      <DependentUpon>Home.cshtml.css</DependentUpon>
-    </Content>
     <Content Include="Xslt\FormatExport1.xslt" />
     <Content Include="Views\Public\Home.cshtml.less">
       <DependentUpon>Home.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Shared\Footer.cshtml" />
-    <Content Include="Views\Public\Home.cshtml.css.map">
-      <DependentUpon>Home.cshtml.css</DependentUpon>
-    </Content>
-    <Content Include="Views\Dashboard\Index.cshtml.css.map">
-      <DependentUpon>Index.cshtml.css</DependentUpon>
-    </Content>
     <Content Include="Views\Dashboard\DashItems.cshtml" />
     <Content Include="Views\Before\FrontDesk.cshtml.less" />
     <Content Include="Views\Before\RollCall.cshtml.less" />
