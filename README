@@ -1,7 +1,12 @@
-TallyJ is designed for use at the location of the election, with the completed paper ballots in hand. 
+TallyJ facilitates the recording of ballots and votes at a Bahá'í election. 
+
+It is designed for use at the location of the election, with the completed paper ballots in hand. 
 
 All names on the ballots are typed into one or more computers and on-screen reports provide instant results.
 
 Can be accessed on the web, or installed locally.
 
 See more info at: https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/
+
+Moved to github in March 2016.
+Edit 2 - clean up readme
