@@ -320,7 +320,6 @@
 		-ms-filter:"progid:DXImageTransform.Microsoft.Shadow(Color='gray', Direction=135, Strength=3)";
 
 		_margin-bottom: -3px; /* IE6 */
-		.margin-bottom: -3px; /* IE7 */
 	}
 
 
@@ -363,7 +362,6 @@
 	.ui-tooltip-youtube .ui-tooltip-titlebar,
 	.ui-tooltip-youtube .ui-tooltip-content{
 		_margin-bottom: 0; /* IE6 */
-		.margin-bottom: 0; /* IE7 */
 
 		background: transparent;
 		background: rgba(0, 0, 0, 0.85);
@@ -465,7 +463,6 @@
 	.ui-tooltip-tipsy .ui-tooltip-titlebar,
 	.ui-tooltip-tipsy .ui-tooltip-content{
 		_margin-bottom: 0; /* IE6 */
-		.margin-bottom: 0; /* IE7 */
 
 		background: transparent;
 		background: rgba(0, 0, 0, .87);
@@ -483,11 +480,11 @@
 	}
 
 	.ui-tooltip-tipsy .ui-tooltip-titlebar{
-		padding: 6px 35px 0 10;
+		padding: 6px 35px 0 10px;
 	}
 
 	.ui-tooltip-tipsy .ui-tooltip-content{
-		padding: 6px 10;
+		padding: 6px 10px;
 	}
 	
 	.ui-tooltip-tipsy .ui-tooltip-icon{
