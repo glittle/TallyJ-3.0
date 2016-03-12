@@ -73,7 +73,7 @@ namespace TallyJ.CoreModels
 
         var tallyStatus = CurrentElection.TallyStatus;
 
-        if (tallyStatus != ElectionTallyStatusEnum.Report)
+        if (tallyStatus != ElectionTallyStatusEnum.Finalized)
         {
           return new
           {
@@ -116,7 +116,7 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var ready = _analyzer.IsResultAvailable;
+      //var ready = _analyzer.IsResultAvailable;
 
       try
       {
@@ -262,6 +262,16 @@ namespace TallyJ.CoreModels
     {
       return _analyzer.IsResultAvailable ? GetCurrentResults() : null;
     }
+
+    //public bool HasTies()
+    //{
+    //  if (_analyzer.IsResultAvailable)
+    //  {
+    //    return _analyzer.ResultTies.Count > 0;
+    //  }
+
+    //  return false;
+    //}
 
     public JsonResult GetReportData(string code)
     {

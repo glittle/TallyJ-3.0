@@ -606,7 +606,7 @@ namespace TallyJ.CoreModels
     {
       var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
-      if (status == ElectionTallyStatusEnum.Report && !readyForReports)
+      if (status == ElectionTallyStatusEnum.Finalized && !readyForReports)
       {
         return new
         {

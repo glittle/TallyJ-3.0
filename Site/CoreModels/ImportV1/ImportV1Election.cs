@@ -68,7 +68,7 @@ namespace TallyJ.CoreModels
     private void ImportCommunityInfo()
     {
       _election.ShowAsTest = true; // default to show as a test election
-      _election.TallyStatus = ElectionTallyStatusEnum.Reviewing; // default to reviewing
+      _election.TallyStatus = ElectionTallyStatusEnum.Finalized; // default to reviewing
 
 
       var commXml = _xmlDoc.DocumentElement;

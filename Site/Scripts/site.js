@@ -260,7 +260,7 @@ function AttachHandlers() {
     });
   });
 
-  $('body.AuthKnown #electionState').on('mouseover', 'li.Active_False', function (ev) {
+  $('#electionState').on('mouseover', 'li.Active_False', function (ev) {
     clearTimeout(dropDownTimeout);
     var item = $(ev.target);
     var state = item.data('state');

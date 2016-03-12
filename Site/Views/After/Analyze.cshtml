@@ -25,7 +25,7 @@
         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
         </select>
-        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")>
+        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullFinalized.AsBool() ? " checked" : "")>
     <label for="chkShowAll">
         Show "full report" with all votes on report screens?</label>* @
     </div>*@
@@ -298,7 +298,7 @@
             Once all are resolved, review the results carefully and determine if they are approved.
           </li>
           <li>
-            When approved, set the "Election State" to "@ElectionTallyStatusEnum.Report.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
+            When approved, set the "Election State" to "@ElectionTallyStatusEnum.Finalized.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
           </li>
         </ol>
       </td>

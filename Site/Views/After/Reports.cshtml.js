@@ -38,7 +38,7 @@
 
     $('#Status').hide();
 
-    if (info.ElectionStatus != 'Report') {
+    if (info.ElectionStatus != 'Finalized') {
       local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
     }
 

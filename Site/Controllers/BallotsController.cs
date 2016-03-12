@@ -158,7 +158,7 @@ namespace TallyJ.Controllers
 
     public JsonResult SortVotes(List<int> idList)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
         return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
       }

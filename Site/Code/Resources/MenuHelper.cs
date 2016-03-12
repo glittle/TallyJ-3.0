@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels;
 using TallyJ.EF;
 
 namespace TallyJ.Code.Resources
@@ -198,6 +200,11 @@ namespace TallyJ.Code.Resources
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
       if (hasElection && hidePreBallotPages && node.GetAttribute("isPreBallot") == "true") return false;
+      //if (node.GetAttribute("hasTies") == "true")
+      //{
+      //  if (!UserSession.HasTies)
+      //    return false;
+      //}
 
       // true tests
       if (role == "*" || role.HasNoContent()) return true;

@@ -248,7 +248,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult SavePerson(Person personFromInput)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
         return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
       }
@@ -513,7 +513,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report) {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized) {
         return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
       }
       var locationModel = new LocationModel();
