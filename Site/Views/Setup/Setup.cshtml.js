@@ -1,4 +1,4 @@
-﻿var SetupIndexPage = function () {
+﻿function SetupIndexPage() {
   var cachedRules = {
     // temporary cache of rules, for the life of this page
   };
@@ -9,11 +9,12 @@
     dateKnown: false,
     isJalal13: null
   };
-  var preparePage = function () {
+
+  function preparePage() {
 
     $(document).on('change keyup', '#ddlType', function (ev) {
       startToAdjustByType(ev);
-      $('.showJalal13').toggle($('#ddlType').val() == 'LSA');
+      $('.showJalal13').toggle($('#ddlType').val() === 'LSA');
       getBadiDate();
     });
 
@@ -97,7 +98,7 @@
   //        });
   //    };
 
-  var getBadiDate = function () {
+  function getBadiDate() {
     settings.dateKnown = true;
     var dateStr = $('#txtDate').val();
     var dateParts = dateStr.split('-');
@@ -111,25 +112,29 @@
     settings.badiDateGetter.refresh({
       currentTime: d,
       onReady: function (di) {
-        showBadiInfo(di, $('#badiDateBefore'), 'Starting before sunset? &rarr; ');
+        var startWord = di.frag1 > new Date() ? 'Starting' : 'Started';
+
+        showBadiInfo(di, $('#badiDateBefore'), startWord + ' before sunset? &rarr; ');
 
         d.setDate(d.getDate() + 1);
         settings.badiDateGetter.refresh({
           currentTime: d,
           onReady: function (di) {
-            showBadiInfo(di, $('#badiDateAfter'), 'Starting after sunset? &rarr; ');
+            showBadiInfo(di, $('#badiDateAfter'), startWord + ' after sunset? &rarr; ');
             showMoreBadiInfo(di);
           }
         });
       }
     });
   }
-  var showMoreBadiInfo = function (di) {
+  function showMoreBadiInfo(di) {
     var isFuture = di.frag1 > new Date();
     if (!di.location) {
       di.location = 'your area';
     }
-    var msg = di.longitude ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' at {startingSunsetDesc} on the election day.' : ''
+    var msg = di.longitude
+      ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' at {startingSunsetDesc} on the election day.'
+      : '';
     $('#badiDateIntro').html(msg.filledWith(di));
 
     // found 1st Ridvan for an LSA election?
@@ -141,7 +146,7 @@
     $('.showJalal13').toggleClass('missing', $('#ddlType').val() == 'LSA' && !found);
   }
 
-  var showBadiInfo = function (di, target, intro) {
+  function showBadiInfo(di, target, intro) {
     if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() == 'LSA') {
       settings.isJalal13 = target;
     }
@@ -150,7 +155,7 @@
     target.html(msg.filledWith(di));
   }
 
-  var showLocations = function (locations) {
+  function showLocations(locations) {
     //        if (locations == null) {
     //            $('#locationList').html('[None]');
     //            return;
@@ -161,7 +166,7 @@
     setupLocationSortable();
   };
 
-  var showTellers = function (tellers) {
+  function showTellers(tellers) {
     //        if (tellers == null) {
     //            $('#tellersList').html('[None]');
     //            return;
@@ -172,7 +177,7 @@
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
   };
 
-  var resetAllCanVote = function () {
+  function resetAllCanVote() {
 
     ShowStatusDisplay("Updating...");
     CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
@@ -181,7 +186,7 @@
 
   };
 
-  var deleteTeller = function (ev) {
+  function deleteTeller(ev) {
     ShowStatusDisplay('Deleting...');
     var icon = $(ev.target);
     var targetDiv = $(icon.parent());
@@ -197,7 +202,7 @@
     });
   };
 
-  var locationChanged = function (input, deleteThis) {
+  function locationChanged(input, deleteThis) {
     var form = {
       id: input.data('id'),
       text: deleteThis ? '' : input.val()
@@ -222,7 +227,7 @@
     });
   };
 
-  var setupLocationSortable = function () {
+  function setupLocationSortable() {
     $('#locationList').sortable({
       handle: '.ui-icon',
       stop: orderChanged,
@@ -234,7 +239,8 @@
     var multiple = $('#locationList > div').length > 1;
     $('#locationList .ui-icon').toggle(multiple);
   };
-  var orderChanged = function (ev, ui) {
+
+  function orderChanged(ev, ui) {
     var ids = [];
     $('#locationList input').each(function () {
       var id = $(this).data('id');
@@ -252,7 +258,7 @@
     });
   };
 
-  var addLocation = function () {
+  function addLocation() {
     var location = {
       C_RowId: -1
     };
@@ -262,7 +268,7 @@
     setupLocationSortable();
   };
 
-  var applyValues = function (election) {
+  function applyValues(election) {
     if (election == null) {
       return;
     };
@@ -296,7 +302,7 @@
     startToAdjustByType();
   };
 
-  var saveChanges = function () {
+  function saveChanges() {
     var form = {
       C_RowId: publicInterface.Election ? publicInterface.Election.C_RowId : 0
     };
@@ -327,13 +333,13 @@
     });
   };
 
-  var startToAdjustByType = function () {
+  function startToAdjustByType() {
 
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
-    if (type == 'Con') {
-      if (mode == "B") {
+    if (type === 'Con') {
+      if (mode === "B") {
         mode = "N";
         $("#ddlMode").val("N");
       }
@@ -344,16 +350,16 @@
     }
 
     var classes = [];
-    if (type == 'NSA') {
+    if (type === 'NSA') {
       classes.push('NoteN');
     }
-    if (mode == 'B') {
+    if (mode === 'B') {
       classes.push('NoteB');
     }
-    if (mode == 'T') {
+    if (mode === 'T') {
       classes.push('NoteT');
     }
-    $('#VariationNotice').removeClass().addClass(classes.join(' ')).toggle(classes.length != 0);
+    $('#VariationNotice').removeClass().addClass(classes.join(' ')).toggle(classes.length !== 0);
 
     var combined = type + '.' + mode;
     var cachedRule = cachedRules[combined];
