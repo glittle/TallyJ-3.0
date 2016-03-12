@@ -6,6 +6,12 @@
     "options": { "sourceMap": true }
   },
   {
+    "outputFile": "Views/After/ShowTies.cshtml.css",
+    "inputFile": "Views/After/ShowTies.cshtml.less",
+    "minify": { "enabled": false },
+    "options": { "sourceMap": true }
+  },
+  {
     "outputFile": "Views/Before/FrontDesk.cshtml.css",
     "inputFile": "Views/Before/FrontDesk.cshtml.less",
     "minify": { "enabled": false },
@@ -18,14 +24,14 @@
     "options": { "sourceMap": true }
   },
   {
-    "outputFile": "Views/Public/Home.cshtml.css",
-    "inputFile": "Views/Public/Home.cshtml.less",
+    "outputFile": "Views/Dashboard/Index.cshtml.css",
+    "inputFile": "Views/Dashboard/Index.cshtml.less",
     "minify": { "enabled": false },
     "options": { "sourceMap": true }
   },
   {
-    "outputFile": "Views/After/ShowTies.cshtml.css",
-    "inputFile": "Views/After/ShowTies.cshtml.less",
+    "outputFile": "Views/Public/Home.cshtml.css",
+    "inputFile": "Views/Public/Home.cshtml.less",
     "minify": { "enabled": false },
     "options": { "sourceMap": true }
   }
