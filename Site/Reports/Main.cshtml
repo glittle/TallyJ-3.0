@@ -52,114 +52,113 @@
   </style>
 }
 <div class="body">
-  <div class="body">
-    <h2>
-      @currentElection.Name
-    </h2>
-    <table class="resultInfo">
+  <h2>
+    @currentElection.Name
+  </h2>
+  <table class="resultInfo">
+    <tr>
+      <td>
+        Number of eligible voters
+      </td>
+      <td>
+        @Model.NumEligibleToVote
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Number of ballots cast in person
+      </td>
+      <td>
+        @Model.InPersonBallots
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Number of ballots received by mail
+      </td>
+      <td>
+        @Model.MailedInBallots
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Number of hand-delivered ballots
+      </td>
+      <td>
+        @Model.DroppedOffBallots
+      </td>
+    </tr>
+    <tr class="rpt1Detail @(Model.CalledInBallots == 0 ? "Hidden" : "")">
+      <td>
+        Number of phoned-in ballots
+      </td>
+      <td>
+        @Model.CalledInBallots
+      </td>
+    </tr>
+    <tr class="rpt1Total">
+      <td>
+        Total number of ballots received
+      </td>
+      <td>
+        @Model.SumOfEnvelopesCollected
+      </td>
+    </tr>
+    <tr class="rpt1Detail Warning @(Model.SumOfEnvelopesCollected == Model.NumBallotsWithManual ? "Hidden" : "")">
+      <td>
+        Total number of ballots processed
+      </td>
+      <td>
+        @Model.NumBallotsWithManual
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Percentage of participation
+      </td>
+      <td>
+        @((Model.PercentParticipation / 100.0).ToString("P0"))
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Number of spoiled ballots
+      </td>
+      <td>
+        @Model.SpoiledBallots
+      </td>
+    </tr>
+    <tr class="rpt1Detail">
+      <td>
+        Number of spoiled votes
+      </td>
+      <td>
+        @Model.SpoiledVotes
+      </td>
+    </tr>
+  </table>
+  <h2 class="SectionTitle">
+    Elected
+  </h2>
+  <table class="result1">
+    <thead>
       <tr>
-        <td>
-          Number of eligible voters
-        </td>
-        <td>
-          @Model.NumEligibleToVote
-        </td>
+        <th>#</th>
+        <th>Name</th>
+        <th>Bahá'í Id</th>
+        <th>Votes</th>
       </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Number of ballots cast in person
-        </td>
-        <td>
-          @Model.InPersonBallots
-        </td>
-      </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Number of ballots received by mail
-        </td>
-        <td>
-          @Model.MailedInBallots
-        </td>
-      </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Number of hand-delivered ballots
-        </td>
-        <td>
-          @Model.DroppedOffBallots
-        </td>
-      </tr>
-      <tr class="rpt1Detail @(Model.CalledInBallots == 0 ? "Hidden" : "")">
-        <td>
-          Number of phoned-in ballots
-        </td>
-        <td>
-          @Model.CalledInBallots
-        </td>
-      </tr>
-      <tr class="rpt1Total">
-        <td>
-          Total number of ballots received
-        </td>
-        <td>
-          @Model.SumOfEnvelopesCollected
-        </td>
-      </tr>
-      <tr class="rpt1Detail Warning @(Model.SumOfEnvelopesCollected == Model.NumBallotsWithManual ? "Hidden" : "")">
-        <td>
-          Total number of ballots processed
-        </td>
-        <td>
-          @Model.NumBallotsWithManual
-        </td>
-      </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Percentage of participation
-        </td>
-        <td>
-          @((Model.PercentParticipation / 100.0).ToString("P0"))
-        </td>
-      </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Number of spoiled ballots
-        </td>
-        <td>
-          @Model.SpoiledBallots
-        </td>
-      </tr>
-      <tr class="rpt1Detail">
-        <td>
-          Number of spoiled votes
-        </td>
-        <td>
-          @Model.SpoiledVotes
-        </td>
-      </tr>
-    </table>
-    <h2 class="SectionTitle">
-      Elected
-    </h2>
-    <table class="result1">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Bahá'í Id</th>
-          <th>Votes</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var row in rows)
+    </thead>
+    <tbody>
+      @foreach (var row in rows)
       {
-          <tr>
-            <td>@row.Rank</td>
-            <td>@row.Name</td>
-            <td>@row.BahaiId</td>
-            <td>@row.VoteCountPlus</td>
-          </tr>
+        <tr>
+          <td>@row.Rank</td>
+          <td>@row.Name</td>
+          <td>@row.BahaiId</td>
+          <td>@row.VoteCountPlus</td>
+        </tr>
         }
-      </tbody>
-    </table>
-  </div>
+    </tbody>
+  </table>
+</div>
