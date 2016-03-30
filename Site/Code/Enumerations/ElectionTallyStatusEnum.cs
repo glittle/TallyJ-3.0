@@ -20,7 +20,7 @@ namespace TallyJ.Code.Enumerations
     public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Processing Ballots", true);
     //public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing", false);
     //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
-    public static readonly ElectionTallyStatusEnum Finalized = new ElectionTallyStatusEnum("Report", "Approved", false);
+    public static readonly ElectionTallyStatusEnum Finalized = new ElectionTallyStatusEnum("Finalized", "Finalized", true);
     public bool Visible { get; }
 
     static ElectionTallyStatusEnum()
@@ -55,7 +55,7 @@ namespace TallyJ.Code.Enumerations
 
     public static HtmlString ForHtmlList(string currentState = "", bool showAll = true)
     {
-      const string liTemplate = "<li data-state='{0}' class='Active_{2} {0}'>{1}</li>";
+      const string liTemplate = "<span data-state='{0}' class='state Active_{2} {0}'>{1}</span>";
       var mainList = BaseItems
         .Where(bi => bi.Visible)
         .Where(bi => showAll || ShowAsSelected(bi, currentState))
@@ -70,10 +70,10 @@ namespace TallyJ.Code.Enumerations
       {
         return true;
       }
-      if (testItem == Tallying)
-      {
-        return currentState == Finalized.Value;
-      }
+      //if (testItem == Tallying)
+      //{
+      //  return currentState == Finalized.Value;
+      //}
       return false;
     }
 

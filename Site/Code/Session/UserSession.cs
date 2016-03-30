@@ -389,6 +389,8 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static string FinalizedNoChangesMessage = "Election is Finalized. No changes allowed!";
+
     public static string GetCurrentTeller(int num)
     {
       return CurrentContext.Session[SessionKey.CurrentTeller + num] as string;

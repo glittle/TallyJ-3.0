@@ -44,7 +44,7 @@
     tFoot.html('');
 
     site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
-      if (info.Code == 'Finalized') {
+      if (info.StateName === 'Finalized') {
         getReportData();
       }
       else {

@@ -343,7 +343,8 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _resultTies ?? (_resultTies = new ResultTieCacher(Db).AllForThisElection);
+        if (_resultTies != null) return _resultTies;
+        return _resultTies = new ResultTieCacher(Db).AllForThisElection;
       }
     }
 

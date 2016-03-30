@@ -626,11 +626,18 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Views\Account\LogOn.cshtml.js" />
-    <None Include="Views\After\ShowTies.cshtml.less" />
+    <Content Include="Views\After\Analyze.cshtml.css">
+      <DependentUpon>Analyze.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Analyze.cshtml.less">
+      <DependentUpon>Analyze.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\After\ShowTies.cshtml.css">
       <DependentUpon>ShowTies.cshtml.less</DependentUpon>
     </Content>
-    <Content Include="Views\After\ShowTies.cshtml.js" />
+    <Content Include="Views\After\ShowTies.cshtml.js">
+      <DependentUpon>ShowTies.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css">
       <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
@@ -658,6 +665,10 @@
     <Content Include="Views\Ballots\SortBallots.cshtml" />
     <Content Include="Views\Ballots\SortBallots.cshtml.css" />
     <Content Include="Views\After\ShowTies.cshtml" />
+    <Content Include="Views\Dashboard\OtherItems.cshtml" />
+    <Content Include="Views\After\ShowTies.cshtml.less">
+      <DependentUpon>ShowTies.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
     <None Include="Web.Standalone.config">
@@ -842,9 +853,6 @@
   <ItemGroup>
     <Content Include="Views\Ballots\BallotNormal.cshtml" />
     <Content Include="Views\After\Analyze.cshtml" />
-    <Content Include="Views\After\Analyze.cshtml.css">
-      <DependentUpon>Analyze.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\After\Analyze.cshtml.js">
       <DependentUpon>Analyze.cshtml</DependentUpon>
     </Content>
@@ -957,6 +965,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -982,6 +993,9 @@
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <servers defaultServer="SelfHostServer">
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:55484/" workingDir="" />
+          </servers>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

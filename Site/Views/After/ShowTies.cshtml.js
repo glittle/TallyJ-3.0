@@ -33,7 +33,7 @@
     }
   };
 
-  var clickReturn = function () {
+  function clickReturn() {
     var isShowing = $('header').is(':visible');
     $('header').toggle(!isShowing);
 
@@ -42,7 +42,8 @@
     $('.Nav').toggleClass('Show', isShowing);
     return false;
   };
-  var displayNamesInfoAndNames = function (tieIndex, info) {
+
+  function displayNamesInfoAndNames(tieIndex, info) {
     var tie = showTies.ties[tieIndex];
     var normal = true;
     var num = tie.NumToElect;

@@ -390,65 +390,23 @@ div.MainDashboard, section.features.bottom {
   }
 }
 
-div.QuickDash {
+span.other.QuickDash {
   border: 1px solid #eee;
   -webkit-box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
   -moz-box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
   box-shadow: 0px 3px 8px 0px rgba(50, 50, 50, 0.75);
-  background-color: #EFffEF;
+  background-color: #fff;
   z-index: 99;
-  padding: 5px 10px 5px 10px;
   display: none;
   position: absolute;
-  right: 172px;
-  top: 50px;
 
   .home {
-    font-weight: bold;
-  }
-
-  section.features {
     display: block;
-    padding-left: 10px;
+    padding: 7px 10px;
+    white-space: nowrap;
 
-    a {
-      vertical-align: top;
-      text-align: left;
-      padding: 3px 5px;
-      margin: 1px 1px 1px 1px;
-      display: block;
-      //height: 60px;
-      width: 180px;
-
-      section {
-        h3 {
-          font-size: 12px;
-          margin: 0;
-          padding: 0;
-          line-height: normal;
-          display: inline;
-        }
-
-        p {
-          display: none;
-        }
-
-        &.Projector {
-          background-position: right 0;
-          background-image: url('../Images/SlideProjector.gif');
-          background-repeat: no-repeat;
-          display: inline;
-          padding-right: 25px;
-        }
-      }
-    }
-
-    h2 {
-      font-size: 14px;
-      margin: 6px 0 3px -10px;
-      padding: 0;
-      line-height: normal;
-      font-style: italic;
+    &:hover {
+      background-color: #EFEEEF;
     }
   }
 }
@@ -766,7 +724,7 @@ a.twitter {
   font-weight: bold;
 }
 
-.ElectionState li.Active_True {
+.ElectionState span.state.Active_True {
   color: @tallyJBlue;
   font-weight: bold;
   box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75);
@@ -787,22 +745,30 @@ a.twitter {
     color: @tallyJGreen;
   }
 
-  ol {
+  #qTipFinalized {
+    margin-left: -26px;
+  }
+
+  #electionState {
     display: inline-block;
     margin: 4px 0 1px 0;
     padding: 0;
 
-    li {
+    span.state {
       display: inline-block;
       margin: 0 3px;
       color: #333;
       text-decoration: none;
       border: 1px solid @tallyJBlue;
       padding: 0 8px;
-      -webkit-border-radius: 12px;
-      -moz-border-radius: 12px;
-      border-radius: 12px;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
 
+      &.Finalized {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding-right: 20px;
+      }
 
       &.General {
         color: #bbb;
@@ -821,12 +787,23 @@ a.twitter {
   }
 }
 
-body.AuthKnown .ElectionState ol li.Active_False:hover {
-  cursor: pointer;
-  background-color: #EFffEF;
+body.AuthKnown .ElectionState span.state.Active_False {
+  &:hover {
+    cursor: pointer;
+    background-color: #EFffEF;
+  }
+
+  &.Finalized:hover {
+    cursor: default;
+    background-color: #fff;
+  }
 }
 
-.ElectionState ol li {
+.ElectionState span.state {
+  &:hover {
+    cursor: default;
+  }
+
   &.Active_True {
     cursor: default;
   }
@@ -837,8 +814,8 @@ body.AuthKnown .ElectionState ol li.Active_False:hover {
   }
 }
 
-body.AuthGuest .ElectionState ol {
-  li {
+body.AuthGuest #ElectionState {
+  span.state {
     border-color: #eee;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
@@ -853,6 +830,12 @@ body.AuthGuest .ElectionState ol {
       display: inline-block;
     }
   }
+}
+
+span.other {
+  margin-left: 15px;
+  font-size: 85%;
+  display: inline-block;
 }
 
 /*.ChangeElectionState {

@@ -1,286 +1,259 @@
 ﻿table {
-    border-collapse: separate;
-    border-spacing: 0px 0px;
-    margin-bottom: 30px;
+  border-collapse: separate;
+  border-spacing: 0px 0px;
+  margin-bottom: 30px;
 }
-
-thead th, thead td {
-    border-bottom: 1px solid #000;
+thead th,
+thead td {
+  border-bottom: 1px solid #000;
 }
-
 .Main {
-    margin-top: 20px;
+  margin-top: 20px;
 }
-
-    .Main td {
-        text-align: center;
-        min-width: 40px;
-        padding: 2px 7px;
-        border-left: 1px solid #e0e0e0;
-    }
-
+.Main td {
+  text-align: center;
+  min-width: 40px;
+  padding: 2px 7px;
+  border-left: 1px solid #e0e0e0;
+}
 tr.xxOdd {
-    background-color: #ddd;
+  background-color: #ddd;
 }
-
 tr.Odd td {
-    border-left: 1px solid #d0d0d0;
+  border-left: 1px solid #d0d0d0;
 }
-
 tr.Resolved {
-    color: green;
+  color: green;
 }
-
 tr.SectionT.Tied {
-    color: red;
-    font-weight: bold;
+  color: red;
+  font-weight: bold;
 }
-
 tr.SectionE {
-    background-color: #d9d9d9;
+  background-color: #d9d9d9;
 }
-
-    tr.SectionE.Tied {
-        color: red;
-        font-weight: bold;
-    }
-
+tr.SectionE.Tied {
+  color: red;
+  font-weight: bold;
+}
 tr.SectionO {
-    background-color: #aaa;
+  background-color: #aaa;
 }
-
-    tr.SectionO.Tied.Force {
-        color: red;
-        font-weight: bold;
-    }
-
+tr.SectionO.Tied.Force {
+  color: red;
+  font-weight: bold;
+}
 .LeftHalf {
-    width: 59%;
-    margin-right: 2%;
-    float: left;
-    display: none;
+  width: 59%;
+  margin-right: 2%;
+  float: left;
 }
-
 .RightHalf {
-    width: 38%;
-    float: left;
-    display: none;
+  width: 38%;
+  float: left;
 }
-
-#chart {
-    width: 380px;
-    height: 540px;
-    margin-left: 4px;
+body.ready #loadingLog {
+  width: auto;
 }
-
-
-table.Main, table#invalids {
-    display: none;
-    clear: right;
+body.analyzing .RightHalf {
+  width: auto;
+  float: none;
+  text-align: center;
 }
-
+body.analyzing .LeftHalf {
+  display: none;
+}
+body.analyzing #btnRefreshDiv .setStatus {
+  display: none;
+}
+body.analyzing .RightHalfOther {
+  display: none;
+}
+body.notReady .overallWarning {
+  display: block;
+}
+body.notReady #btnRefreshDiv .setStatus {
+  color: #999;
+  border-color: rgba(255, 0, 0, 0.5);
+}
+table.Main,
 table#invalids {
-    width: 100%;
-    margin-top: 35px;
+  display: none;
+  clear: right;
 }
-
+table#invalids {
+  width: 100%;
+  margin-top: 35px;
+}
 table caption {
-    font-weight: bold;
-    font-size: 110%;
-    text-align: left;
+  font-weight: bold;
+  font-size: 110%;
+  text-align: left;
 }
-
 #invalids caption {
-    color: red;
+  color: red;
 }
-
 td.Left {
-    text-align: left;
+  text-align: left;
 }
-
 #btnRefresh {
-    display: block;
-    margin-top: 2px;
+  display: block;
+  margin-top: 2px;
 }
-
 #btnRefreshDiv {
-    float: right;
-    text-align: right;
-    display: none;
+  margin-bottom: 10px;
 }
-
+#btnRefreshDiv .setStatus {
+  display: inline-block;
+  text-align: left;
+  vertical-align: top;
+  padding: 3px 8px 3px 4px;
+  border-radius: 3px;
+  border: 1px solid #8dc63e;
+}
+#btnRefreshDiv .setStatus label {
+  display: block;
+}
+#btnRefreshDiv .buttons {
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  margin-right: 20px;
+}
+#btnRefreshDiv .buttons button {
+  margin-bottom: 1px;
+}
 #HasCloseVote td {
-    color: #666;
+  color: #666;
 }
-
 #InitialMsg {
-    font-weight: bold;
-    font-size: 105%;
-    margin: 10px 0 25px 0;
-    text-align: center;
-    clear: both;
+  font-weight: bold;
+  font-size: 105%;
+  margin: 10px 0 25px 0;
+  text-align: center;
+  clear: both;
 }
-
-    #InitialMsg.bad {
-        color: red;
-    }
-
-
+#InitialMsg.bad {
+  color: red;
+}
 table#totalCounts tr {
-    height: 24px;
+  height: 24px;
 }
-
 table#totalCounts th {
-    text-align: left;
+  text-align: left;
 }
-
 table#totalCounts td {
-    text-align: center;
-    min-width: 75px;
-    margin: 0 2px;
-    padding: 0 5px;
+  text-align: center;
+  min-width: 75px;
+  margin: 0 2px;
+  padding: 0 5px;
 }
-
 #totalCounts tr td:first-child {
-    padding-right: 5px;
-    text-align: left;
+  padding-right: 5px;
+  text-align: left;
 }
-
 #totalCounts tr.totalBallots td {
-    border-top: solid 1px grey;
+  border-top: solid 1px grey;
 }
-
 #totalCounts tbody.ballotCounts td {
-    background-color: #d9d9d9;
+  background-color: #d9d9d9;
 }
-
 #tieResultsBody td {
-    vertical-align: top;
+  vertical-align: top;
 }
-
 #tieResultsBody p {
-    margin-top: 0;
-    margin-bottom: 0.5em;
+  margin-top: 0;
+  margin-bottom: 0.5em;
 }
-
 .TieBreakGroup {
-    font-weight: bold;
-    padding: 0 6px 6px 6px;
+  font-weight: bold;
+  padding: 0 6px 6px 6px;
 }
-
 .TieBreakNeeded td {
-    color: red;
-    padding-bottom: 20px;
+  color: red;
+  padding-bottom: 20px;
 }
-
 .TieBreakNeeded button,
 .TieBreakNeeded div {
-    margin-left: 25px;
+  margin-left: 25px;
 }
-
 input.TieBreakCount {
-    width: 40px;
-    margin-right: 15px;
-    display: inline-block;
-    text-align: right;
+  width: 40px;
+  margin-right: 15px;
+  display: inline-block;
+  text-align: right;
 }
-
 .ChartLine {
-    height: 3px;
-    background-color: #1aee1a;
-    width: 5%;
+  height: 3px;
+  background-color: #1aee1a;
+  width: 5%;
 }
-
 .ChartLineTie {
-    height: 3px;
-    background-color: blue;
-    width: 0;
+  height: 3px;
+  background-color: blue;
+  width: 0;
 }
-
 .SectionE .ChartLine {
-    background-color: rgb(255, 229, 0);
+  background-color: #ffe500;
 }
-
 .SectionO .ChartLine {
-    background-color: #ccc;
+  background-color: #ccc;
 }
-
 tr.Tied .ChartLine {
-    background-color: red;
+  background-color: red;
 }
-
-
-
-
-
-
 .PersonColumn {
-    width: 290px;
+  width: 290px;
 }
-
 #trCountMismatch {
-    display: none;
+  display: none;
 }
-
 table#totalCounts tr#trCountMismatch td {
-    text-align: right;
-    padding-right: 5px;
-    color: red;
-    font-weight: bold;
+  text-align: right;
+  padding-right: 5px;
+  color: red;
+  font-weight: bold;
 }
-
 #totalCounts.mismatch .IfMismatch {
-    background-color: red;
-    font-weight: bold;
+  background-color: red;
+  font-weight: bold;
 }
-
 #totalCounts.mismatch #trCountMismatch {
-    display: table-row;
+  display: table-row;
 }
-
-
 input.Manual {
-    text-align: center;
-    width: 60px;
+  text-align: center;
+  width: 60px;
 }
-input.Manual.Additional {
-}
-
 span.Final.changed {
-    font-weight: bold;
+  font-weight: bold;
 }
-
 span.Calc.changed {
-    color: #888;
-    padding: 0 4px;
-    text-decoration: line-through;
+  color: #888;
+  padding: 0 4px;
+  text-decoration: line-through;
 }
-
 .overallWarning {
-    color: red;
-    font-weight: bold;
-    font-size: 105%;
-    margin: 10px 0 25px 0;
-    text-align: center;
-    display: none;
+  color: red;
+  font-weight: bold;
+  font-size: 105%;
+  margin: 10px 0 25px 0;
+  text-align: center;
+  display: none;
 }
-
-body.notReady .overallWarning {
-    display: block;
-}
-
 #body {
-    min-height: 500px;
+  min-height: 500px;
 }
-
 #instructions li {
-    line-height: normal;
+  line-height: normal;
 }
-
 #loadingLog {
-    background-color: white;
-    margin: 1px auto 0 auto;
-    padding: 3px 10px;
-    width: 50%;
-    display: none;
+  background-color: white;
+  margin: 5px auto 0 auto;
+  padding: 8px 10px;
+  display: none;
+  min-height: 1em;
+  text-align: left;
+  width: 50%;
 }
+/*# sourceMappingURL=data:application/json;base64,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 */

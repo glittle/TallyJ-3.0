@@ -4,6 +4,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
 using EntityFramework.BulkInsert.Extensions;
+using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.CoreModels
@@ -100,6 +101,12 @@ namespace TallyJ.CoreModels
 
       FinalizeResultsAndTies();
       FinalizeSummaries();
+
+      var readyForReports = ResultSummaryFinal.UseOnReports.AsBoolean();
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized && !readyForReports)
+      {
+        new ElectionModel().SetTallyStatus(ElectionTallyStatusEnum.Tallying);
+      }
 
       _hub.StatusUpdate("Saving");
 

@@ -5,21 +5,23 @@
       <page title="Configure this Election" featureWhen="NotStarted" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>
-      <page title="Edit People's Names" featureWhen="NotStarted,NamesReady" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
+      <page title="Edit People's Names" featureWhen="NotStarted" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
     </group>
-    <group title="Voting" longtitle="Collecting Ballots - Registration and voting" showTitleInPage="false">
+    <group title="Voting" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
       <page title="Sort Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
     </group>
-    <group title="Tallying" longtitle="Processing Ballots" showTitleInPage="false">
+    <group title="Tallying" longtitle="Processing Ballots - Tallying and Reporting" showTitleInPage="false">
       <page title="Count Envelopes" featureWhen="Tallying" controller="Ballots" showLocationSelector="true" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
       <page title="Enter Ballots" featureWhen="Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Monitor Progress" featureWhen="Tallying" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
-      <page title="Analyze Ballots" featureWhen="Tallying" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
-      <page title="View Detailed Reports" featureWhen="Tallying" controller="After" action="Finalizeds" requireElection="true" role="guest" desc="Generate election reports."></page>
-      <page title="Display Tie-Breaks" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
-      <page title="Display Tellers' Report" featureWhen="Tallying" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
+      <page title="Analyze Ballots" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
+      <page title="View Detailed Reports" featureWhen="Tallying,Finalized" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
+    </group>
+    <group title="Done" longtitle="Processing Ballots - Tallying and Reporting" showTitleInPage="false">
+      <page title="Display Tie-Breaks" featureWhen="Finalized" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
+      <page title="Display Tellers' Report" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
     </group>
     <group title="general" longtitle="General pages" showTitleInPage="false">
       <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="true" requireElection="false" role="*" desc="Welcome page"></page>

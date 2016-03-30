@@ -250,7 +250,7 @@ namespace TallyJ.CoreModels
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
       var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
@@ -514,7 +514,7 @@ namespace TallyJ.CoreModels
     public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized) {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
       if (locationModel.HasLocations && UserSession.CurrentLocation == null) {

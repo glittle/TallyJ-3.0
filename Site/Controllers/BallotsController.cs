@@ -160,7 +160,7 @@ namespace TallyJ.Controllers
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
       return CurrentBallotModel.SortVotes(idList, new VoteCacher(Db)).AsJsonResult();

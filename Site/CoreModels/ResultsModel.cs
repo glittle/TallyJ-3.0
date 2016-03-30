@@ -217,9 +217,12 @@ namespace TallyJ.CoreModels
 
         //var spoiledVotesSummary = Db.vVoteInfoes.where
 
+
+
         return new
         {
           Votes = vResultInfos,
+          UserSession.CurrentElectionStatus,
           Ties = ties,
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,

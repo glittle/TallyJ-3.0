@@ -6,6 +6,12 @@
     "options": { "sourceMap": true }
   },
   {
+    "outputFile": "Views/After/Analyze.cshtml.css",
+    "inputFile": "Views/After/Analyze.cshtml.less",
+    "minify": { "enabled": false },
+    "options": { "sourceMap": true }
+  },
+  {
     "outputFile": "Views/After/ShowTies.cshtml.css",
     "inputFile": "Views/After/ShowTies.cshtml.less",
     "minify": { "enabled": false },

@@ -1,4 +1,4 @@
-﻿var AnalyzePage = function () {
+﻿function AnalyzePage() {
   var settings = {
     rowTemplate: '',
     info: {},
@@ -11,7 +11,9 @@
     calledInTotal: 0
   };
 
-  var preparePage = function () {
+  function preparePage() {
+    setReadyStatus(site.electionState === 'Finalized');
+
     site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots Not Entered', text: 'It is best if every ballot is entered into TallyJ, even if it is spoiled.  However, if some spoiled ballots were not entered into TallyJ, enter the number here. ' });
 
     $('#btnRefresh').click(function () {
@@ -24,6 +26,7 @@
 
     $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
+    $('#body').on('change', 'input[name=status]', changeStatus);
 
     var tableBody = $('#mainBody');
     settings.rowTemplate = tableBody.html();
@@ -53,9 +56,39 @@
       //  runAnalysis(true);
       //}, 0);
     }
+
+    site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
+      LogMessage(info);
+      var id = info.StateName === 'Finalized' ? '#rbFinalized' : '#rbNotFinalized';
+      $(id).prop('checked', true);
+    });
   };
 
-  var showLog = function (display) {
+  function setReadyStatus(ready) {
+    $('body').removeClass('analyzing ready notReady');
+    $('body').addClass(ready ? 'ready' : 'notReady');
+    $('.setStatus input').prop('disabled', !ready);
+  }
+
+  function changeStatus(ev) {
+    var rb = $(ev.target);
+
+    var form = {
+      state: (rb.val() === 'Finalized' && rb.prop('checked')) ? 'Finalized' : 'Tallying'
+    };
+    ShowStatusDisplay('Saving...');
+    CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
+      if (info.Message) {
+        ShowStatusFailed(info.Message);
+        return;
+      }
+      ResetStatusDisplay();
+      site.broadcast(site.broadcastCode.electionStatusChanged, info);
+    });
+
+  }
+
+  function showLog(display) {
     var wasShowing = $('#loadingLog').is(':visible');
     if (typeof display != 'undefined') {
       wasShowing = !display;
@@ -64,7 +97,7 @@
     $('#btnShowLog').html(wasShowing ? 'Show Analysis Log' : 'Hide Analysis Log');
   }
 
-  var connectToAnalyzeHub = function () {
+  function connectToAnalyzeHub() {
     var hub = $.connection.analyzeHubCore;
 
     hub.client.loadStatus = function (msg, isTemp) {
@@ -96,10 +129,10 @@
   };
 
 
-  var runAnalysis = function (firstLoad) {
+  function runAnalysis(firstLoad) {
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
-    $('body').removeClass('notReady');
-    $('.LeftHalf, .RightHalf').fadeOut();
+    $('body').removeClass('notReady ready');
+    $('body').addClass('analyzing');
     $('#InitialMsg').text('Analyzing all ballots...').removeClass('bad').show();
 
     showLog(true);
@@ -109,7 +142,7 @@
     CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
   };
 
-  var showInfo = function (info, firstLoad) {
+  function showInfo(info, firstLoad) {
     $('#btnRefresh').text('Re-run Analysis');
     $('#btnRefreshDiv').show();
 
@@ -184,7 +217,6 @@
       votesTable.hide();
       invalidsTable.show();
       instructionsTable.hide();
-      $('#chart').hide();
 
       $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
     }
@@ -196,11 +228,9 @@
     summarizeCounts();
 
     table.show();
-    $('.LeftHalf, .RightHalf').fadeIn();
-
   };
 
-  var summarizeCounts = function () {
+  function summarizeCounts() {
     $('#calledIn').toggle(settings.calledInTotal > 0 || settings.info.ShowCalledIn);
     $('#totalCounts tr').each(function () {
       var row = $(this);
@@ -213,12 +243,13 @@
       finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
       //calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
     });
-    $('#totalCounts').toggleClass('mismatch', settings.info.ResultsFinal.NumBallotsWithManual != settings.info.ResultsFinal.SumOfEnvelopesCollected);
-    $('body').toggleClass('ready', settings.info.ResultsFinal.UseOnReports);
-    $('body').toggleClass('notReady', !settings.info.ResultsFinal.UseOnReports);
+
+    var countsMatch = settings.info.ResultsFinal.NumBallotsWithManual === settings.info.ResultsFinal.SumOfEnvelopesCollected;
+    $('#totalCounts').toggleClass('mismatch', !countsMatch);
+    setReadyStatus(settings.info.ResultsFinal.UseOnReports && countsMatch);
   };
 
-  var fillValues = function (name, results) {
+  function fillValues(name, results) {
     if (results.CalledInBallots) {
       settings.calledInTotal += results.CalledInBallots;
     }
@@ -235,7 +266,7 @@
 
   };
 
-  var expandInvalids = function (needReview) {
+  function expandInvalids(needReview) {
     $.each(needReview, function () {
       this.Ballot = '<a target=L{LocationId} href="../Ballots?l={LocationId}&b={BallotId}">{Ballot}</a>'.filledWith(this);
       this.Link = this.PositionOnBallot;
@@ -243,7 +274,7 @@
     return needReview;
   };
 
-  var expand = function (results) {
+  function expand(results) {
     settings.hasCloseVote = false;
     $.each(results, function (i) {
       if (!this.TieBreakRequired) {
@@ -269,7 +300,7 @@
     return results;
   };
 
-  var showTies = function (info) {
+  function showTies(info) {
     var votes = info.Votes;
     var groups = info.Ties;
 
@@ -324,7 +355,7 @@
 
   };
 
-  var saveManualCounts = function () {
+  function saveManualCounts() {
     var form = {
       C_RowId: settings.info.ResultsManual.C_RowId
     };
@@ -343,6 +374,7 @@
         fillValues('Final', settings.info.ResultsFinal = info.ResultsFinal);
         summarizeCounts();
         ShowStatusSuccess('Saved');
+        showLog(false);
       } else {
         ShowStatusSuccess(info.Message);
       }
@@ -350,7 +382,7 @@
 
   };
 
-  var saveTieCounts = function () {
+  function saveTieCounts() {
     var btn = $(this);
     var counts = btn.parent().find('input');
     var needed = +btn.parent().find('.Needed').text();
