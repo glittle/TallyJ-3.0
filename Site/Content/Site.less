@@ -759,7 +759,7 @@ a.twitter {
       margin: 0 3px;
       color: #333;
       text-decoration: none;
-      border: 1px solid @tallyJBlue;
+      border: 1px solid @tallyJGreen;
       padding: 0 8px;
       border-top-right-radius: 12px;
       border-bottom-right-radius: 12px;
@@ -787,10 +787,12 @@ a.twitter {
   }
 }
 
+@backgroundGreen: lighten(@tallyJGreen, 30%);
+
 body.AuthKnown .ElectionState span.state.Active_False {
   &:hover {
     cursor: pointer;
-    background-color: #EFffEF;
+    background-color: @backgroundGreen;
   }
 
   &.Finalized:hover {
@@ -810,13 +812,13 @@ body.AuthKnown .ElectionState span.state.Active_False {
 
   &.Active_Temp {
     cursor: pointer;
-    background-color: #EFffEF;
+    background-color: @backgroundGreen;
   }
 }
 
-body.AuthGuest #ElectionState {
+body.AuthGuest .ElectionState #electionState {
   span.state {
-    border-color: #eee;
+    border-color: lighten(@tallyJGreen, 30%); 
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -1031,7 +1033,7 @@ body.AuthKnown .CurrentElectionName {
   a {
     color: #333;
     text-decoration: none;
-    border: 1px solid @tallyJGreen;
+    border: 1px solid lighten(@tallyJBlue, 30%);
     padding: 0 4px 0 4px;
     margin: 0 3px 2px 3px;
     display: inline-block;
@@ -1048,7 +1050,7 @@ body.AuthKnown .CurrentElectionName {
   a.Active {
     color: @tallyJBlue;
     font-weight: bold;
-    background-color: #d2ff92;
+    background-color: lighten(@tallyJBlue, 65%);
     /*&:hover {
       background-color: inherit;
     }*/

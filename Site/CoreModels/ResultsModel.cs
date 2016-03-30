@@ -279,16 +279,17 @@ namespace TallyJ.CoreModels
     public JsonResult GetReportData(string code)
     {
       var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
-      var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";
+      var currentElection = CurrentElection;
       var electionStatus = CurrentElection.TallyStatus;
+
+      var readyForReports = summary != null && summary.UseOnReports.AsBoolean() && electionStatus == ElectionTallyStatusEnum.Finalized;
 
       var html = "";
       switch (code)
       {
         case "SimpleResults":
-          var currentElection = CurrentElection;
           if (summary == null)
           {
             status = "Results not available. Please view 'Analyze' page first.";
@@ -450,6 +451,9 @@ namespace TallyJ.CoreModels
     }
     public List<ResultTie> GetUnresolvedTieBreakGroups()
     {
+      // was caching old info
+      new ResultTieCacher(Db).DropThisCache();
+
       return _analyzer.ResultTies
         .Where(rt => !rt.IsResolved.AsBoolean())
         .OrderBy(rt => rt.TieBreakGroup)

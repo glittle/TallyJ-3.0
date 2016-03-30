@@ -16,8 +16,7 @@
     });
   };
 
-  var warningMsg = '<p>Warning: There are unresolved issues that may affect this report.</p>'
-                 + '<p>Warning: This report may be incomplete and/or showing wrong information.</p>';
+  var warningMsg = '<p>Warning: The election is not yet finalized. This report may be incomplete and/or showing wrong information.</p>';
 
   var getReport = function (code, title) {
     ShowStatusDisplay('Getting report...');
@@ -43,7 +42,7 @@
     }
 
     local.reportHolder.removeClass().addClass('Report' + codeTitle.code).fadeIn().html(info.Html);
-    if (!info.Ready) {
+    if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
       $('#Status').html(warningMsg).show();
     }
     $('#title').text(codeTitle.title);
