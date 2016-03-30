@@ -21,7 +21,7 @@ namespace TallyJ.Code.Enumerations
     //public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing", false);
     //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
     public static readonly ElectionTallyStatusEnum Finalized = new ElectionTallyStatusEnum("Finalized", "Finalized", true);
-    public bool Visible { get; }
+    public bool Visible { get; private set; }
 
     static ElectionTallyStatusEnum()
     {
