@@ -81,9 +81,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult StartNewBallotJson()
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
       if (locationModel.HasLocations && UserSession.CurrentLocation == null)
@@ -143,9 +143,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult SetNeedsReview(bool needsReview)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
       var ballot = CurrentRawBallot();
@@ -241,9 +241,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
       if (locationModel.HasLocations && UserSession.CurrentLocation == null)
@@ -382,9 +382,9 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteVote(int vid)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Report)
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
-        return new { Message = "Election is Approved. No changes allowed!" }.AsJsonResult();
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
       var vote = new VoteCacher(Db).AllForThisElection.SingleOrDefault(v => v.C_RowId == vid);

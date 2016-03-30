@@ -186,10 +186,15 @@ function PrepareQTips(doNow) {
 
   // global tips
   site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available using the "All Pages" button.' });
-  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate. Use "All Pages" to go to a page not shown.' });
+  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 
+  if ($('body').hasClass('AuthKnown')) {
+    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set the election to this state using the buttons on the Analyze page. When Finalized, no further inputs or changes are permitted.' });
+  } else {
+    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set by the head teller. When Finalized, no further inputs or changes are permitted.' });
+  }
   // add some tips for pages without dedicated js
   if ($('#qTipReg1').length) {
     site.qTips.push({ selector: '#qTipReg1', title: 'Account Name', text: 'This is your personal account name, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.' });
@@ -234,17 +239,16 @@ function ActivateTips(forceRecreate) {
 function AttachHandlers() {
   site.onbroadcast(site.broadcastCode.electionStatusChanged, updateElectionStatus);
 
-  $('#AllPages').on('click', function () {
-    showAllPages(this);
-    return false;
-  });
-
   var dropDownTimeout = null;
   var closeDropDown = function () {
     $('#quickLinks2 span.DropDown').removeClass('DropDown');
+    $('.QuickDash').fadeOut('fast');
   };
+  $('body.AuthKnown #electionState span.Finalized').on('click', function () {
+    $('#qTipElectionStatus').trigger('click');
+  });
 
-  $('body.AuthKnown #electionState li').not('.General').on('click', function () {
+  $('body.AuthKnown #electionState span.state').not('.General, .Finalized').on('click', function () {
     var item = $(this);
     var form = {
       state: item.data('state')
@@ -260,7 +264,18 @@ function AttachHandlers() {
     });
   });
 
-  $('body.AuthKnown #electionState').on('mouseover', 'li.Active_False', function (ev) {
+  $('#electionState').on('mouseover', '#AllPages', function () {
+    clearTimeout(dropDownTimeout);
+    closeDropDown();
+    showAllPages(this);
+  })
+  .on('mouseout', '#AllPages', function() {
+      clearTimeout(dropDownTimeout);
+      dropDownTimeout = setTimeout(closeDropDown, 200);
+  });
+
+
+  $('#electionState').on('mouseover', 'span.state', function (ev) {
     clearTimeout(dropDownTimeout);
     var item = $(ev.target);
     var state = item.data('state');
@@ -275,14 +290,14 @@ function AttachHandlers() {
         top: (item.offset().top + item.height() - 3) + 'px'
       });
   })
-  .on('mouseout', 'li.Active_False', function (ev) {
+  .on('mouseout', 'span.state', function (ev) {
     clearTimeout(dropDownTimeout);
     dropDownTimeout = setTimeout(closeDropDown, 200);
   });
 
-  $('body').on('mouseover', '.DropDown', function () {
+  $('body').on('mouseover', '.DropDown,.QuickDash', function () {
     clearTimeout(dropDownTimeout);
-  }).on('mouseout', '.DropDown', function () {
+  }).on('mouseout', '.DropDown,.QuickDash', function () {
     clearTimeout(dropDownTimeout);
     dropDownTimeout = setTimeout(closeDropDown, 200);
   });
@@ -307,14 +322,13 @@ function updateElectionStatus(ev, info) {
 
 function showAllPages(btnRaw) {
   var btn = $(btnRaw);
-
-  var btnOffset = btn.offset();
-  var quickDash = $('div.QuickDash');
-
+  var quickDash = $('span.QuickDash');
+  
   quickDash.css({
-    left: Math.max(btnOffset.left - quickDash.width(), 0),
+    //left: Math.max(btnOffset.left - quickDash.width(), 0),
+    left: getFullOffsetLeft(btn) - 15, //- $('.TopInfo').offset().left - 5 + btn.width() - quickDash.width(),
     right: 'auto',
-    top: btnOffset.top + btn.height() + 2
+    top: btn.offset().top + btn.height() - 2
   }).show();
 
   $('.ElectionState .General').addClass('GeneralActive');
@@ -326,7 +340,7 @@ function showAllPages(btnRaw) {
 var quickDashCloser = function (ev) {
   LogMessage($(ev.srcElement).closest('.QuickDash'));
   if ($(ev.srcElement).closest('.QuickDash').length == 0) {
-    $('div.QuickDash').fadeOut('fast');
+    $('.QuickDash').fadeOut('fast');
     $('.ElectionState .General').removeClass('GeneralActive');
     $(document).off('click', quickDashCloser);
   }
@@ -345,7 +359,7 @@ function showMenu(state, permanent, slow) {
 
   //  target.data('temp', state);
 
-  var mainItem = target.find('li[data-state={0}]'.filledWith(state));
+  var mainItem = target.find('span.state[data-state={0}]'.filledWith(state));
 
   //$('#qmenuTitle').text(mainItem.text());
 
@@ -354,7 +368,7 @@ function showMenu(state, permanent, slow) {
   //  if (permanent) {
   site.electionState = state;
   target.data('state', state);
-  target.find('li').removeClass('Active_True Active_Temp').addClass('Active_False');
+  target.find('span.state').removeClass('Active_True Active_Temp').addClass('Active_False');
   mainItem.removeClass('Active_False Active_Temp').addClass('Active_True');
   //  } else {
   //    target.find('li').removeClass('Active_Temp');

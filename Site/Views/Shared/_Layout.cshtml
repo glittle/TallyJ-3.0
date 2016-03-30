@@ -90,11 +90,15 @@
           {
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
-              <ol id="electionState"
-                  title="@(UserSession.IsKnownTeller ? "" : "Current election status (set by head teller)")"
+              <div id="electionState"
                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
-              </ol>
+                <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
+                <span class="other"><a href="#" id="AllPages" title="Go to another page">Other Pages</a></span>
+                <span class="QuickDash other">
+                  @Html.Partial("../Dashboard/OtherItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })
+                </span>
+              </div>
 
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
@@ -103,11 +107,8 @@
                 <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>:
               </div>
               <div class="right">
-                <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span><span><a href="#" id="AllPages" title="Go to any page">All Pages</a></span>
+                <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
               </div>
-            </div>
-            <div class="QuickDash">
-              @Html.Partial("../Dashboard/DashItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })
             </div>
           }
           else

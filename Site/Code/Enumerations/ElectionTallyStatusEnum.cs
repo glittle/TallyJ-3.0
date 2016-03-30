@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web;
 using TallyJ.EF;
 
@@ -14,26 +15,28 @@ namespace TallyJ.Code.Enumerations
     //<option value="Report">Reports Ready to Announce!</option>
 
 
-    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Initial Setup");
-    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Before Tallying");
-    public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Tallying Ballots");
-    public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing");
+    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setup", true);
+    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Gathering Ballots", true);
+    public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Processing Ballots", true);
+    //public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing", false);
     //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
-    public static readonly ElectionTallyStatusEnum Report = new ElectionTallyStatusEnum("Report", "Approved");
+    public static readonly ElectionTallyStatusEnum Finalized = new ElectionTallyStatusEnum("Finalized", "Finalized", true);
+    public bool Visible { get; }
 
     static ElectionTallyStatusEnum()
     {
       AddAsDefault(NotStarted);
       Add(NamesReady);
       Add(Tallying);
-      Add(Reviewing);
+      //Add(Reviewing);
       //Add(TieBreakNeeded);
-      Add(Report);
+      Add(Finalized);
     }
 
-    public ElectionTallyStatusEnum(string key, string display)
+    public ElectionTallyStatusEnum(string key, string display, bool visible)
       : base(key, display)
     {
+      Visible = visible;
     }
 
     public static HtmlString ForHtmlList(Election selected, bool showAll = true)
@@ -50,16 +53,28 @@ namespace TallyJ.Code.Enumerations
       get { return BaseItems; }
     }
 
-    public static HtmlString ForHtmlList(string selected = "", bool showAll = true)
+    public static HtmlString ForHtmlList(string currentState = "", bool showAll = true)
     {
-      const string liTemplate = "<li data-state='{0}' class='Active_{2} {0}'>{1}</li>";
+      const string liTemplate = "<span data-state='{0}' class='state Active_{2} {0}'>{1}</span>";
       var mainList = BaseItems
-        .Where(bi => showAll || bi.Value == selected)
-        .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, bi.Value == selected))
+        .Where(bi => bi.Visible)
+        .Where(bi => showAll || ShowAsSelected(bi, currentState))
+        .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, ShowAsSelected(bi, currentState)))
         .JoinedAsString();
-     
-//      return (mainList + liTemplate.FilledWith("General", "All Pages", "General" == selected)).AsRawHtml();
       return mainList.AsRawHtml();
+    }
+
+    private static bool ShowAsSelected(ElectionTallyStatusEnum testItem, string currentState)
+    {
+      if (testItem.Value == currentState)
+      {
+        return true;
+      }
+      //if (testItem == Tallying)
+      //{
+      //  return currentState == Finalized.Value;
+      //}
+      return false;
     }
 
     public static string TextFor(string status)

@@ -44,7 +44,7 @@
     tFoot.html('');
 
     site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
-      if (info.Code == 'Report') {
+      if (info.StateName === 'Finalized') {
         getReportData();
       }
       else {
@@ -78,7 +78,7 @@
 
     ResetStatusDisplay();
 
-    if (info.Status != 'Report') {
+    if (info.Status != 'Finalized') {
       $('#Results').hide();
       $('#Wait').show();
       $('#Status').text(info.StatusText);

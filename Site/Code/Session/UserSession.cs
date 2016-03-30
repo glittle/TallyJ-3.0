@@ -205,6 +205,22 @@ namespace TallyJ.Code.Session
       }
     }
 
+    //public static bool HasTies
+    //{
+    //  get
+    //  {
+    //    var key = SessionKey.HasTies + CurrentElection.RowVersionInt;
+    //    var currentAnswer = (bool?) CurrentContext.Session[key];
+    //    if (currentAnswer.HasValue)
+    //    {
+    //      return currentAnswer.Value;
+    //    }
+    //    currentAnswer = new ResultsModel().HasTies();
+    //    CurrentContext.Session[key] = currentAnswer;
+    //    return currentAnswer.Value;
+    //  }
+    //}
+
     public static Guid CurrentLocationGuid
     {
       get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
@@ -372,6 +388,8 @@ namespace TallyJ.Code.Session
           : election.TallyStatus;
       }
     }
+
+    public static string FinalizedNoChangesMessage = "Election is Finalized. No changes allowed!";
 
     public static string GetCurrentTeller(int num)
     {

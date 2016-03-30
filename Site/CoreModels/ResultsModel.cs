@@ -73,7 +73,7 @@ namespace TallyJ.CoreModels
 
         var tallyStatus = CurrentElection.TallyStatus;
 
-        if (tallyStatus != ElectionTallyStatusEnum.Report)
+        if (tallyStatus != ElectionTallyStatusEnum.Finalized)
         {
           return new
           {
@@ -116,7 +116,7 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      var ready = _analyzer.IsResultAvailable;
+      //var ready = _analyzer.IsResultAvailable;
 
       try
       {
@@ -217,9 +217,12 @@ namespace TallyJ.CoreModels
 
         //var spoiledVotesSummary = Db.vVoteInfoes.where
 
+
+
         return new
         {
           Votes = vResultInfos,
+          UserSession.CurrentElectionStatus,
           Ties = ties,
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,
@@ -263,19 +266,30 @@ namespace TallyJ.CoreModels
       return _analyzer.IsResultAvailable ? GetCurrentResults() : null;
     }
 
+    //public bool HasTies()
+    //{
+    //  if (_analyzer.IsResultAvailable)
+    //  {
+    //    return _analyzer.ResultTies.Count > 0;
+    //  }
+
+    //  return false;
+    //}
+
     public JsonResult GetReportData(string code)
     {
       var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
-      var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
 
       var status = "ok";
+      var currentElection = CurrentElection;
       var electionStatus = CurrentElection.TallyStatus;
+
+      var readyForReports = summary != null && summary.UseOnReports.AsBoolean() && electionStatus == ElectionTallyStatusEnum.Finalized;
 
       var html = "";
       switch (code)
       {
         case "SimpleResults":
-          var currentElection = CurrentElection;
           if (summary == null)
           {
             status = "Results not available. Please view 'Analyze' page first.";
@@ -437,6 +451,9 @@ namespace TallyJ.CoreModels
     }
     public List<ResultTie> GetUnresolvedTieBreakGroups()
     {
+      // was caching old info
+      new ResultTieCacher(Db).DropThisCache();
+
       return _analyzer.ResultTies
         .Where(rt => !rt.IsResolved.AsBoolean())
         .OrderBy(rt => rt.TieBreakGroup)

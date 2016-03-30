@@ -46,6 +46,7 @@
     <xs:attribute name="showLocationSelector" type="xs:boolean" use="optional" />
     <xs:attribute name="showTellerSelector" type="xs:boolean" use="optional" />
     <xs:attribute name="isPreBallot" type="xs:boolean" use="optional" />
+    <xs:attribute name="hasTies" type="xs:boolean" use="optional" />
   </xs:complexType>
 
 </xs:schema>

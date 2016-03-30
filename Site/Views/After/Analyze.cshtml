@@ -8,24 +8,18 @@
   ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("AnalyzeHub", "Elections").QuotedForJavascript()));
+
+  var approvedForReporting = UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized;
 }
-<div id="btnRefreshDiv">
-  <button type="button" id="btnRefresh" class="btn" accesskey="A">Start Analysis</button>
-  <button type="button" id="btnShowLog" class="btn btn-mini">Show Analysis Log</button>
-</div>
-<div class="overallWarning">Issues highlighted in red below must be resolved before accurate reports can be made.</div>
+<div class="overallWarning">Issues highlighted in red below must be resolved before election can be finalized for reporting.</div>
 <div id="InitialMsg"></div>
-<div id="loadingLog">
-  <div id="log"></div>
-  <div id="tempLog"></div>
-</div>
 <div class="LeftHalf">
   @*    <div class="float-left">
         <b>Election Status</b> (set by head teller)<br />
         <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
             @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
         </select>
-        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullReport.AsBool() ? " checked" : "")>
+        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullFinalized.AsBool() ? " checked" : "")>
     <label for="chkShowAll">
         Show "full report" with all votes on report screens?</label>* @
     </div>*@
@@ -274,68 +268,91 @@
   </table>
 </div>
 <div class="RightHalf">
-  <table id="invalids">
-    <caption>
-      These ballots need to be fixed before results can be determined
-    </caption>
-    <tbody id="invalidsBody">
+  <div id="btnRefreshDiv">
+    <div class="buttons">
+      <button type="button" id="btnRefresh" class="btn" accesskey="A">Start Analysis</button>
+      <button type="button" id="btnShowLog" class="btn btn-mini">Show Analysis Log</button>
+    </div>
+    <div class="setStatus">
+      Set Election Status:
+      <label>
+        <input id="rbNotFinalized" type="radio" name="status" value="NotFinalized" @(!approvedForReporting ? "checked" : "") />
+        Not Finalized
+      </label>
+      <label>
+        <input id="rbFinalized" type="radio" name="status" value="Finalized" @(approvedForReporting ? "checked" : "") />
+        Finalized
+      </label>
+    </div>
+
+    <div id="loadingLog">
+      <div id="log"></div>
+      <div id="tempLog"></div>
+    </div>
+  </div>
+  <div class="RightHalfOther">
+    <table id="invalids">
+      <caption>
+        These ballots need to be fixed before results can be determined
+      </caption>
+      <tbody id="invalidsBody">
+        <tr>
+          <td>
+            {^Ballot} - {Status}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table id="instructions">
+      <caption>
+        Instructions
+      </caption>
       <tr>
         <td>
-          {^Ballot} - {Status}
+          <ol>
+            <li>If there are any errors shown in red, they need to be resolved.</li>
+            <li>
+              Once all are resolved, review the results carefully and determine if they are approved.
+            </li>
+            <li>
+              When approved, set the "Election Status" to "@ElectionTallyStatusEnum.Finalized.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
+            </li>
+          </ol>
         </td>
       </tr>
-    </tbody>
-  </table>
-  <table id="instructions">
-    <caption>
-      Instructions
-    </caption>
-    <tr>
-      <td>
-        <ol>
-          <li>If there are any errors shown in red, they need to be resolved.</li>
-          <li>
-            Once all are resolved, review the results carefully and determine if they are approved.
-          </li>
-          <li>
-            When approved, set the "Election State" to "@ElectionTallyStatusEnum.Report.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
-          </li>
-        </ol>
-      </td>
-    </tr>
-  </table>
-  <table id="HasCloseVote">
-    <caption>
-      Review Needed
-    </caption>
-    <tr>
-      <td>
-        Some results are very close to a <span>tie</span><span class="HasTie">, or are actually tied</span>. A careful review is recommended to ensure that each of the ballots
-        has been entered correctly.
-      </td>
-    </tr>
-  </table>
-  <table id="tieResults">
-    <caption>
-      Tie Analysis
-    </caption>
-    <tbody id="tieResultsBody">
-      <tr class="{rowClass}">
-        <td class="TieBreakGroup">
-          {^TieBreakGroup}
-        </td>
-        <td>
-          {^Conclusion} <p>{^People} {^Buttons}</p> {^After}
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
+    </table>
+    <table id="HasCloseVote">
+      <caption>
+        Review Needed
+      </caption>
       <tr>
-        <td></td>
-        <td><em>Remaining ties among those not elected are not reported.</em></td>
+        <td>
+          Some results are very close to a <span>tie</span><span class="HasTie">, or are actually tied</span>. A careful review is recommended to ensure that each of the ballots
+          has been entered correctly.
+        </td>
       </tr>
-    </tfoot>
-  </table>
-  <div id="chart">
+    </table>
+    <table id="tieResults">
+      <caption>
+        Tie Analysis
+      </caption>
+      <tbody id="tieResultsBody">
+        <tr class="{rowClass}">
+          <td class="TieBreakGroup">
+            {^TieBreakGroup}
+          </td>
+          <td>
+            {^Conclusion}
+            <p>{^People} {^Buttons}</p> {^After}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td></td>
+          <td><em>Any remaining ties do not affect election results and are not reported.</em></td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
 </div>

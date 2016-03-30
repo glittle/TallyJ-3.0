@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code.Enumerations
+﻿@using Microsoft.Practices.ObjectBuilder2
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code
 @using TallyJ.Code.Session
 @using TallyJ.EF
@@ -20,9 +21,12 @@
                 ShowBreak = showBreak,
                 g.r.VoteCount,
                 g.r.TieBreakCount,
-                g.r.TieBreakRequired
+                g.r.TieBreakRequired,
+                g.r.Section
               };
-            });
+            })
+            .ToList();
+  var electedClass = "elected";
 }
 <style>
   .Votes {
@@ -41,22 +45,31 @@
     -ms-column-rule-width: 4px;
     -o-column-rule-width: 4px;
     column-rule-width: 4px;
+    min-height: 200px;
   }
 
   .person {
     text-indent: -2em;
     margin-left: 2em;
   }
+
+  .elected {
+    font-weight: bold;
+  }
+
   .Break {
     border-top: 1px solid #999;
     height: 1px;
   }
 </style>
-<div class="body">
+<div class="body WarnIfNotFinalized">
   <h1 id="title"></h1>
   <p class="Comment">
     "If the assembled friends choose to have a full Tellers’ Report including the names
-    of all who are voted for and the number of votes received, this is acceptable."  (Spoiled votes and names on spoiled ballots are not included.)
+    of all who are voted for and the number of votes received, this is acceptable." (Spoiled votes and names on spoiled ballots are not included.)
+  </p>
+  <p>
+    Showing those with <select id="limitNum"></select> or more votes cast for them (<span id="numShown"></span> people).
   </p>
   <div class="Votes">
     @foreach (var person in people)
@@ -64,11 +77,38 @@
       if (person.ShowBreak)
       {
         <div class="Break"></div>
+        electedClass = "";
       }
-      <div class="person">
+      <div class="person @electedClass" data-num="@person.VoteCount">
         <span class="small1">@person.VoteCount @(person.TieBreakRequired.AsBoolean() ? " / " + person.TieBreakCount : "") - </span>
         <span class="name">@person.PersonName</span>
       </div>
     }
   </div>
 </div>
+<script>
+  var list = [@String.Join(",", people.Where(p => p.Section!= ResultHelper.Section.Top).Select(p => p.VoteCount).Distinct().ToArray())];
+  $('#limitNum')
+    .html('<option>{0}</option>'.filledWithEach(list))
+    .val(localStorage.getItem('votesByNumLimit') || 1)
+    .change(updateList);
+
+  function updateList() {
+    var limit = +$('#limitNum').val();
+    localStorage.setItem('votesByNumLimit', limit);
+    $('.person').each(function (i, el) {
+      var p = $(el);
+      var num = +p.data('num');
+      p.toggle(num >= limit);
+    });
+    showCount();
+  }
+
+  function showCount() {
+    $('#numShown').text($('.person:visible').length);
+  }
+
+  setTimeout(function() {
+    updateList();
+  }, 0);
+</script>

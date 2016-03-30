@@ -536,7 +536,7 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    public void SetTallyStatus(Controller controller, string status)
+    public void SetTallyStatus(string status)
     {
       if (UserSession.IsGuestTeller)
       {
@@ -602,19 +602,19 @@ namespace TallyJ.CoreModels
     //      }
     //    }
 
-    public JsonResult SetTallyStatusJson(Controller controller, string status)
+    public JsonResult SetTallyStatusJson(string status)
     {
       var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
       var readyForReports = summary != null && summary.UseOnReports.AsBoolean();
-      if (status == ElectionTallyStatusEnum.Report && !readyForReports)
+      if (status == ElectionTallyStatusEnum.Finalized && !readyForReports)
       {
         return new
         {
-          Message = "Cannot set to \"Approved\" until Analysis is completed successfully."
+          Message = "Cannot set to \"Finalized\" until Analysis is completed successfully."
         }.AsJsonResult();
       }
 
-      SetTallyStatus(controller, status);
+      SetTallyStatus(status);
 
       new LogHelper().Add("Status changed to " + status, true);
 

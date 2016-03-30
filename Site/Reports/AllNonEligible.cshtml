@@ -5,24 +5,21 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var people = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .OrderBy(p => p.FullNameFL)
+    .Where(p => !p.CanVote.GetValueOrDefault() || !p.CanVote.GetValueOrDefault())
+    .OrderBy(p => p.FullName)
     .Select(p => new
     {
-      PersonName = p.FullNameFL,
-      VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod, "-"),
-      //      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(
-      //        p.IneligibleReasonGuid.AsGuid()).
-      //        SurroundContentWith("[", "]")
+      PersonName = p.FullName,
+      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
     });
 }
 <style>
   .Voters {
-    -webkit-column-width: 15em;
-    -moz-column-width: 15em;
-    -ms-column-width: 15em;
-    -o-column-width: 15em;
-    column-width: 15em;
+    -webkit-column-width: 25em;
+    -moz-column-width: 25em;
+    -ms-column-width: 25em;
+    -o-column-width: 25em;
+    column-width: 25em;
     -webkit-column-gap: 1em;
     -moz-column-gap: 1em;
     -ms-column-gap: 1em;
@@ -69,7 +66,7 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
-    Showing all eligible voters, and how they were registered on the Front Desk, if they were.
+    Showing all who cannot vote and all who cannot be voted for in this election.
   </p>
   <div class="Voters">
     @{
@@ -95,7 +92,7 @@
 
       <div class="person @firstClass">
         <span class="name">@Raw(name)</span>
-        <span class="method">@person.VotingMethod</span>
+        <span class="method">@person.InvalidReasonDesc</span>
       </div>
     }
   </div>

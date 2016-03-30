@@ -42,7 +42,7 @@ namespace Tests.BusinessTests
       election.NumberExtra.ShouldEqual(0);
       election.NumberToElect.ShouldEqual(9);
       election.ShowAsTest.ShouldEqual(true, "Imported elections are marked as Test");
-      election.TallyStatus.ShouldEqual(ElectionTallyStatusEnum.Reviewing, "Imported elections set to Review mode");
+      election.TallyStatus.ShouldEqual(ElectionTallyStatusEnum.Finalized, "Imported elections set to Finalized mode");
 
       fakes.ResultSummaries.Count.ShouldEqual(1);
       var resultSummary = fakes.ResultSummaries[0];

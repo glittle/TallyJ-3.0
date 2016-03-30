@@ -40,5 +40,7 @@ namespace TallyJ.EF
       // delete ballots in all locations... cascading will delete votes
       db.Ballot.Where(b => db.Location.Where(x => x.ElectionGuid == electionGuid).Select(l => l.LocationGuid).Contains(b.LocationGuid)).Delete();
     }
+
+    public long RowVersionInt => BitConverter.ToInt64(C_RowVersion, 0);
   }
 }

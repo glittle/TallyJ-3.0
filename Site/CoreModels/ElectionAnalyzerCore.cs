@@ -49,6 +49,7 @@ namespace TallyJ.CoreModels
     private List<Ballot> _ballots;
     private List<Vote> _votes;
     private List<Person> _people;
+    private ITallyJDbContext _dbContext;
 
     //private ResultSummaryCacher _localResultSummaryCacher;
 
@@ -56,17 +57,13 @@ namespace TallyJ.CoreModels
     {
       _election = UserSession.CurrentElection;
       _hub = new AnalyzeHub();
-      DbContext = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-      Savers = new Savers(DbContext);
-      ClearInMemoryCachedInfo();
+      Savers = new Savers(Db);
     }
     protected ElectionAnalyzerCore(Election election, IStatusUpdateHub hub = null)
     {
       _election = election;
       _hub = hub ?? new AnalyzeHub();
-      DbContext = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-      Savers = new Savers(DbContext);
-      ClearInMemoryCachedInfo();
+      Savers = new Savers(Db);
     }
 
     protected ElectionAnalyzerCore(IAnalyzerFakes fakes)
@@ -75,9 +72,8 @@ namespace TallyJ.CoreModels
 
       _election = UserSession.CurrentElection;
       _hub = fakes.FakeHub;
-      DbContext = fakes.DbContext;
-      Savers = new Savers(DbContext);
-      ClearInMemoryCachedInfo();
+      Db = fakes.DbContext;
+      Savers = new Savers(Db);
     }
 
     public IStatusUpdateHub AnalyzeHub { get { return _hub; } }
@@ -323,7 +319,7 @@ namespace TallyJ.CoreModels
 
     private void ClearInMemoryCachedInfo()
     {
-      new PersonCacher(DbContext).DropThisCache();
+      new PersonCacher(Db).DropThisCache();
       new ResultTieCacher(Db).DropThisCache();
       new VoteCacher(Db).DropThisCache();
       new BallotCacher(Db).DropThisCache();
@@ -338,7 +334,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _people ?? (_people = new PersonCacher(DbContext).AllForThisElection);
+        return _people ?? (_people = new PersonCacher(Db).AllForThisElection);
       }
     }
 
@@ -347,7 +343,8 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _resultTies ?? (_resultTies = new ResultTieCacher(Db).AllForThisElection);
+        if (_resultTies != null) return _resultTies;
+        return _resultTies = new ResultTieCacher(Db).AllForThisElection;
       }
     }
 
@@ -413,13 +410,17 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public ITallyJDbContext DbContext { get; private set; }
+    //public ITallyJDbContext DbContext {
+    //  get { return _dbContext ?? (_dbContext = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+    //}
 
     /// <Summary>In the Core, do some common results generation</Summary>
     public abstract void AnalyzeEverything();
 
     public void PrepareForAnalysis()
     {
+      ClearInMemoryCachedInfo();
+
       _hub.StatusUpdate("Starting Analysis from computer " + UserSession.CurrentComputerCode);
       var electionGuid = TargetElection.ElectionGuid;
       //if (!IsFaked)
@@ -652,6 +653,8 @@ namespace TallyJ.CoreModels
 
         AnalyzeTieGroup(resultTie, Results.Where(r => r.TieBreakGroup == code).OrderBy(r => r.Rank).ToList());
       }
+
+      // set global value
     }
 
     private void AnalyzeTieGroup(ResultTie resultTie, List<Result> results)

@@ -1,0 +1,29 @@
+﻿@model ElectionsListViewModel
+@using System.Xml
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+
+@{
+  var menuItems = new MenuHelper(this.Url).TrimmedMenu().ChildNodes;
+}
+
+<a class="home" href="@Url.Action("Index", "Dashboard")">
+  Home Dashboard
+</a>
+
+@foreach (var item in menuItems.Cast<XmlElement>().Where(mi => mi.GetAttribute("title") == "general"))
+{
+  foreach (var child in item.ChildNodes
+            .Cast<XmlNode>()
+            .Where(n => n.NodeType == XmlNodeType.Element)
+            .Cast<XmlElement>()
+            .Where(c => c.GetAttribute("showOnDashboard").DefaultTo("true") == "true"))
+  {
+      <a href="@Url.Action(child.GetAttribute("action"), child.GetAttribute("controller"))" class="home">
+            @child.GetAttribute("title")
+      </a>
+    }
+    <div class="Clear">
+    </div>
+}
+
