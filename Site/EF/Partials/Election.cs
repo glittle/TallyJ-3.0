@@ -43,7 +43,14 @@ namespace TallyJ.EF
 
     public long RowVersionInt
     {
-      get { return BitConverter.ToInt64(C_RowVersion, 0); }
+      get
+      {
+        if (C_RowVersion == null)
+        {
+          return 0;
+        }
+        return BitConverter.ToInt64(C_RowVersion, 0);
+      }
     }
   }
 }

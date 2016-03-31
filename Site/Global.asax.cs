@@ -190,6 +190,8 @@ namespace TallyJ
       logger.FatalException(
           "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
 
+      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + mainException.StackTrace, true);
+
       var url = siteInfo.RootUrl;
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
       //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
