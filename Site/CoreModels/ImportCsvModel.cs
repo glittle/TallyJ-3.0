@@ -274,6 +274,15 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
+      var mappedFields = dbFields.Where(f => validMappings.Select(m => m[1]).Contains(f)).ToList();
+      if (!mappedFields.Contains("LastName"))
+      {
+        return new
+        {
+          result = new[] { "Last Name must be mapped" }
+        }.AsJsonResult();
+      }
+
       var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
       var personModel = new PeopleModel();
       var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
