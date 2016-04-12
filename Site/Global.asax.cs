@@ -190,13 +190,13 @@ namespace TallyJ
       logger.FatalException(
           "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
 
-      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + mainException.StackTrace, true);
+      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), true);
 
       var url = siteInfo.RootUrl;
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
       //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
       Response.Write(String.Format("Exception: {0}<br>", msgs.JoinedAsString("<br>")));
-      Response.Write(String.Format("{0}", mainException.StackTrace.Replace("\n", "<br>")));
+      Response.Write(String.Format("{0}", FilteredStack(mainException.StackTrace).Replace("\n", "<br>")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
       {
         //Response.Write("Error on site");
@@ -207,6 +207,25 @@ namespace TallyJ
         //Response.Write("Error on site");
       }
       Response.End();
+    }
+
+    private string FilteredStack(string stackTrace)
+    {
+      var parts = stackTrace.Split(new[] {'\n', '\r'}).Reverse().ToList();
+      var newParts = new List<string>();
+      var foundOurCode = false;
+      foreach (var part in parts)
+      {
+        if (part.Contains("at TallyJ."))
+        {
+          foundOurCode = true;
+        }
+        if (foundOurCode)
+        {
+          newParts.Add(part);
+        }
+      }
+      return newParts.Select(s => s).Reverse().JoinedAsString("\r\n");
     }
 
 
