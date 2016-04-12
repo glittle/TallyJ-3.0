@@ -4,23 +4,21 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using RazorEngine.Text;
+using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.EF;
-using TallyJ.Code.Session;
 
 namespace TallyJ.Code
 {
   public static class Extensions
   {
     /// <summary>
-    ///     Not IsNullOrEmpty
+    ///   Not IsNullOrEmpty
     /// </summary>
     public static bool HasContent(this string input)
     {
@@ -34,7 +32,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Return true if the input is empty or null.
+    ///   Return true if the input is empty or null.
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
@@ -49,7 +47,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Format for display in an MVC page.
+    ///   Format for display in an MVC page.
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
@@ -59,7 +57,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Format for display in an MVC page.
+    ///   Format for display in an MVC page.
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
@@ -70,19 +68,19 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///     Split using a single separator
+    ///   Split using a single separator
     /// </summary>
     public static string[] SplitWithString(this string input, string separator,
-                                           StringSplitOptions stringSplitOptions =
-                                               StringSplitOptions.RemoveEmptyEntries)
+      StringSplitOptions stringSplitOptions =
+        StringSplitOptions.RemoveEmptyEntries)
     {
       return input == null
-                 ? null
-                 : input.Split(new[] { separator }, stringSplitOptions);
+        ? null
+        : input.Split(new[] {separator}, stringSplitOptions);
     }
 
     /// <summary>
-    ///     Use the input string as the format with string.Format
+    ///   Use the input string as the format with string.Format
     /// </summary>
     public static string FilledWithList<T>(this string input, IEnumerable<T> values)
     {
@@ -96,7 +94,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Fill template with named items
+    ///   Fill template with named items
     /// </summary>
     /// <typeparam name="T"> </typeparam>
     /// <param name="input"> </param>
@@ -137,7 +135,7 @@ namespace TallyJ.Code
     /// <Summary>Returns true if this bool? is true</Summary>
     public static bool AsBoolean(this bool? input, bool? defaultValue = null)
     {
-      return input.HasValue ? input.Value : (defaultValue.HasValue && defaultValue.Value);
+      return input.HasValue ? input.Value : defaultValue.HasValue && defaultValue.Value;
     }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
@@ -145,7 +143,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfTrue(this bool? input)
     {
-      return input.HasValue && input.Value ? (bool?)true : null;
+      return input.HasValue && input.Value ? (bool?) true : null;
     }
 
     /// <Summary>Returns a false bool? if the input is false, or null if it is true</Summary>
@@ -153,7 +151,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfFalse(this bool? input)
     {
-      return input.HasValue && input.Value ? null : (bool?)false;
+      return input.HasValue && input.Value ? null : (bool?) false;
     }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
@@ -161,7 +159,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfTrue(this bool input)
     {
-      return input ? (bool?)true : null;
+      return input ? (bool?) true : null;
     }
 
     /// <Summary>Returns null if this is null or an empty string</Summary>
@@ -175,7 +173,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfFalse(this bool input)
     {
-      return input ? null : (bool?)false;
+      return input ? null : (bool?) false;
     }
 
     public static bool AsBoolean(this string input)
@@ -265,7 +263,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (int)Math.Truncate(Convert.ToDouble(input));
+        return (int) Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -283,7 +281,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (long)Math.Truncate(Convert.ToDouble(input));
+        return (long) Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -291,13 +289,13 @@ namespace TallyJ.Code
       }
     }
 
-    public static IEncodedString PercentInSpan(this int num, int total, int decimals = 0, bool surroundWithParen = false, bool showZero = true)
+    public static IEncodedString PercentInSpan(this int num, int total, int decimals = 0, bool surroundWithParen = false,
+      bool showZero = true)
     {
       return new RawString("<span class=pct>" + num.PercentOf(total, decimals, surroundWithParen, showZero) + "</span>");
     }
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="num"></param>
     /// <param name="total"></param>
@@ -305,14 +303,15 @@ namespace TallyJ.Code
     /// <param name="surroundWithParen"></param>
     /// <param name="showZero"></param>
     /// <returns></returns>
-    public static string PercentOf(this int num, int total, int decimals = 0, bool surroundWithParen = false, bool showZero = true)
+    public static string PercentOf(this int num, int total, int decimals = 0, bool surroundWithParen = false,
+      bool showZero = true)
     {
       if (total == 0 || num == 0 && !showZero) return "-";
 
       var isMax = decimals < 0;
       decimals = Math.Abs(decimals);
 
-      var pct = Math.Round(num * 100.0 / total, decimals, MidpointRounding.ToEven);
+      var pct = Math.Round(num*100.0/total, decimals, MidpointRounding.ToEven);
 
       var numRaw = pct.ToString("F" + decimals);
       while (isMax && decimals > 0)
@@ -335,7 +334,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Use the input string as the format with string.Format
+    ///   Use the input string as the format with string.Format
     /// </summary>
     public static string FilledWith(this string input, params object[] values)
     {
@@ -360,17 +359,17 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Return the URL to the content file, with a version number based on the timestamp.
+    ///   Return the URL to the content file, with a version number based on the timestamp.
     /// </summary>
     public static string AsClientFileWithVersion(this string contentFilePath, string productionNameModifier = "",
-                                                 string debuggingNameModifier = "")
+      string debuggingNameModifier = "")
     {
       var UseDebugFiles = true; //TODO: move to config
 
       if (productionNameModifier.HasContent() || debuggingNameModifier.HasContent())
       {
         contentFilePath =
-            contentFilePath.FilledWith(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
+          contentFilePath.FilledWith(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
       }
 
       var rawPath = HttpContext.Current.Request.MapPath(contentFilePath);
@@ -381,17 +380,17 @@ namespace TallyJ.Code
       }
 
       var version = fileInfo.LastWriteTime.Ticks.ToString();
-      var trimmed = version.TrimEnd(new[] { '0' });
+      var trimmed = version.TrimEnd(new[] {'0'});
       const int sizeToUse = 5;
 
       var shortVersion = trimmed.Length <= sizeToUse
-                             ? trimmed
-                             : trimmed.Substring(trimmed.Length - sizeToUse, sizeToUse);
+        ? trimmed
+        : trimmed.Substring(trimmed.Length - sizeToUse, sizeToUse);
       return VirtualPathUtility.ToAbsolute(contentFilePath) + "?v=" + shortVersion;
     }
 
     /// <summary>
-    ///     For an enumeration of strings, join them.
+    ///   For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list)
     {
@@ -399,7 +398,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     For an enumeration of strings, join them.
+    ///   For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator)
     {
@@ -407,7 +406,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     For an enumeration of strings, join them.
+    ///   For an enumeration of strings, join them.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator, bool skipBlanks)
     {
@@ -415,19 +414,19 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     For an enumeration of strings, join them. Each item has itemLeft and itemRight added.
+    ///   For an enumeration of strings, join them. Each item has itemLeft and itemRight added.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator, string itemLeft,
-                                        string itemRight, bool skipBlanks)
+      string itemRight, bool skipBlanks)
     {
       List<string> list2 = null;
       return list == null || (list2 = list.ToList()).Count() == 0
-                 ? string.Empty
-                 : string.Join(separator,
-                               list2.Where(s => !skipBlanks || s.HasContent())
-                                    .Select(s => itemLeft + s + itemRight)
-                                    .
-                                     ToArray());
+        ? string.Empty
+        : string.Join(separator,
+          list2.Where(s => !skipBlanks || s.HasContent())
+            .Select(s => itemLeft + s + itemRight)
+            .
+            ToArray());
     }
 
     public static string SurroundWith(this string input, string bothSides)
@@ -441,7 +440,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Surround with left and right strings. If the input has no content, an empty string is returned.
+    ///   Surround with left and right strings. If the input has no content, an empty string is returned.
     /// </summary>
     public static string SurroundContentWith(this string input, string left, string right)
     {
@@ -453,7 +452,7 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///     Add new item to the end of the enumeration
+    ///   Add new item to the end of the enumeration
     /// </summary>
     public static IEnumerable<T> AddTo<T>(this IEnumerable<T> input, List<T> addToThis)
     {
@@ -463,7 +462,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Get a named object from Session.
+    ///   Get a named object from Session.
     /// </summary>
     /// <typeparam name="T"> The type of the stored object </typeparam>
     /// <param name="input"> Name in Session </param>
@@ -476,12 +475,11 @@ namespace TallyJ.Code
       try
       {
         var value = UserSession.CurrentContext.Session[input];
-        if (value == null || value.GetType() != typeof(T))
+        if (value == null || value.GetType() != typeof (T))
         {
           return defaultValue;
         }
-        return (T)value;
-
+        return (T) value;
       }
       catch (Exception)
       {
@@ -490,7 +488,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Get a named object from Page Items.
+    ///   Get a named object from Page Items.
     /// </summary>
     /// <typeparam name="T"> The type of the stored object </typeparam>
     /// <param name="input"> Name in list </param>
@@ -500,7 +498,7 @@ namespace TallyJ.Code
     public static T FromPageItems<T>(this string input, T defaultValue, bool saveDefault = false)
     {
       var value = UserSession.CurrentContext.Items[input];
-      if (value == null || value.GetType() != typeof(T))
+      if (value == null || value.GetType() != typeof (T))
       {
         if (saveDefault)
         {
@@ -508,7 +506,7 @@ namespace TallyJ.Code
         }
         return defaultValue;
       }
-      return (T)value;
+      return (T) value;
     }
 
     public static T SetInSession<T>(this string input, T newValue)
@@ -525,7 +523,7 @@ namespace TallyJ.Code
 
 
     /// <summary>
-    ///     If input is empty, use <paramref name="defaultValue" />
+    ///   If input is empty, use <paramref name="defaultValue" />
     /// </summary>
     public static string DefaultTo(this object input, object defaultValue)
     {
@@ -535,7 +533,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     If input is empty, use <paramref name="defaultValue" />
+    ///   If input is empty, use <paramref name="defaultValue" />
     /// </summary>
     public static string DefaultTo(this string input, string defaultValue)
     {
@@ -543,7 +541,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     If input is 0, use <paramref name="defaultValue" />
+    ///   If input is 0, use <paramref name="defaultValue" />
     /// </summary>
     public static int DefaultTo(this int input, int defaultValue)
     {
@@ -551,20 +549,20 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     If input is 0, use <paramref name="defaultValue" />
+    ///   If input is 0, use <paramref name="defaultValue" />
     /// </summary>
     public static int DefaultTo(this int? input, int defaultValue)
     {
-      return (input.HasValue && input.Value == 0) ? input.Value : defaultValue;
+      return input.HasValue && input.Value == 0 ? input.Value : defaultValue;
     }
 
 
     public static string QuotedForJavascript(this string input)
     {
       return String.Format("\"{0}\"", input
-                                          .CleanedForJavascriptStrings()
-                                          .Replace("\"", "\\\"")
-          );
+        .CleanedForJavascriptStrings()
+        .Replace("\"", "\\\"")
+        );
     }
 
     //public static string CleanedForSearching(this string input)
@@ -579,14 +577,14 @@ namespace TallyJ.Code
       if (input.HasNoContent())
         return string.Empty;
       return input
-          .Replace(@"\", @"\\")
-          .Replace("\n", "\\n")
-          .Replace("\r", string.Empty);
+        .Replace(@"\", @"\\")
+        .Replace("\n", "\\n")
+        .Replace("\r", string.Empty);
     }
 
 
     /// <summary>
-    ///     Converts this object to a JSON string
+    ///   Converts this object to a JSON string
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
@@ -595,23 +593,22 @@ namespace TallyJ.Code
       return new JavaScriptSerializer().Serialize(input);
     }
 
-
     /// <summary>
-    ///     Wrap object for returning to client as a JsonResult
+    ///   Wrap object for returning to client as a JsonResult
     /// </summary>
     /// <param name="input"> </param>
     /// <param name="behavior"> Behavior to use, usually only POST is allowed. </param>
     /// <returns> </returns>
     public static JsonResult AsJsonResult(this object input,
-                                          JsonRequestBehavior behavior = JsonRequestBehavior.DenyGet)
+      JsonRequestBehavior behavior = JsonRequestBehavior.DenyGet)
     {
       var jsonResult = new JsonResult
-          {
-            ContentType = "text/plain",
-            // allow client full control over reading response (don't send as JSON type)
-            Data = input,
-            JsonRequestBehavior = behavior
-          };
+      {
+        ContentType = "text/plain",
+        // allow client full control over reading response (don't send as JSON type)
+        Data = input,
+        JsonRequestBehavior = behavior
+      };
       return jsonResult;
     }
 
@@ -638,10 +635,10 @@ namespace TallyJ.Code
       if (input == null) return "";
 
       var list = new List<string>
-                {
-                    input.Message,
-                    input.InnerException.GetAllMsgs(sep)
-                };
+      {
+        input.Message,
+        input.InnerException.GetAllMsgs(sep)
+      };
       return list.JoinedAsString(sep, true);
     }
 
@@ -652,7 +649,7 @@ namespace TallyJ.Code
 
     /// <Summary>Copy byte array using this codepage.</Summary>
     /// <remarks>
-    ///     See http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx for values
+    ///   See http://msdn.microsoft.com/en-us/library/system.text.encoding.aspx for values
     /// </remarks>
     public static string AsString(this byte[] input, int codePage)
     {
@@ -670,7 +667,7 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Returns <paramref name="pluralOrZero" /> if input is not 1, empty string if it is.
+    ///   Returns <paramref name="pluralOrZero" /> if input is not 1, empty string if it is.
     /// </summary>
     /// <param name="input"> </param>
     /// <param name="pluralOrZero"> </param>
@@ -680,9 +677,9 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Returns <paramref name="pluralOrZero" /> if input is not 1,
-    ///     <param name="single" />
-    ///     if it is.
+    ///   Returns <paramref name="pluralOrZero" /> if input is not 1,
+    ///   <param name="single" />
+    ///   if it is.
     /// </summary>
     /// <param name="input"> </param>
     /// <param name="pluralOrZero"> </param>
@@ -693,7 +690,8 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    ///     Returns <paramref name="plural" /> if input is > 1, <paramref name="single" /> if it is 1, <paramref name="zero" /> if it is 0.
+    ///   Returns <paramref name="plural" /> if input is > 1, <paramref name="single" /> if it is 1, <paramref name="zero" />
+    ///   if it is 0.
     /// </summary>
     /// <param name="input"> </param>
     /// <param name="plural"> </param>
@@ -730,7 +728,7 @@ namespace TallyJ.Code
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>
-    ///     Adapted from http://blogs.msdn.com/b/michkap/archive/2007/05/14/2629747.aspx
+    ///   Adapted from http://blogs.msdn.com/b/michkap/archive/2007/05/14/2629747.aspx
     /// </remarks>
     public static string WithoutDiacritics(this string input, bool toLower = false)
     {
@@ -738,11 +736,11 @@ namespace TallyJ.Code
       var sb = new StringBuilder();
 
       foreach (
-          var ch in
-              from n in normalized
-              let uc = CharUnicodeInfo.GetUnicodeCategory(n)
-              where uc != UnicodeCategory.NonSpacingMark
-              select n)
+        var ch in
+          from n in normalized
+          let uc = CharUnicodeInfo.GetUnicodeCategory(n)
+          where uc != UnicodeCategory.NonSpacingMark
+          select n)
       {
         sb.Append(ch);
       }
@@ -753,14 +751,15 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Simple convert of <see cref="Person"/> to <see cref="SearchResult"/> 
+    ///   Simple convert of <see cref="Person" /> to <see cref="SearchResult" />
     /// </summary>
     /// <param name="input"></param>
     /// <param name="matchType"></param>
     /// <param name="voteHelper"></param>
     /// <param name="forBallot"></param>
     /// <returns></returns>
-    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType, VoteHelper voteHelper, bool forBallot)
+    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType,
+      VoteHelper voteHelper, bool forBallot)
     {
       return input.Select(p => p.AsSearchResult(matchType, voteHelper, forBallot));
     }
@@ -775,7 +774,8 @@ namespace TallyJ.Code
         Name = p.FullNameAndArea,
         CanReceiveVotes = canReceiveVotes,
         CanVote = p.CanVote.AsBoolean(true),
-        Ineligible = forBallot && canReceiveVotes ? null : p.IneligibleReasonGuid, //   voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes, forBallot),
+        Ineligible = forBallot && canReceiveVotes ? null : p.IneligibleReasonGuid,
+        //   voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes, forBallot),
         RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
         BestMatch = 0, // count of votes
         MatchType = matchType
@@ -783,7 +783,8 @@ namespace TallyJ.Code
     }
 
     /// <summary>
-    /// Replace non-characters with <param name="sep"></param>
+    ///   Replace non-characters with
+    ///   <param name="sep"></param>
     /// </summary>
     /// <param name="input"></param>
     /// <param name="sep">Character to use</param>
@@ -793,16 +794,18 @@ namespace TallyJ.Code
       var array = input.ToCharArray();
 
       return new string(array.Select(c => char.IsLetterOrDigit(c) ? c : sep) // remove all punctuation
-                             .ToArray());
+        .ToArray());
     }
 
 
-    public static IEnumerable<TResult> JoinMatchingOrNull<TSource, TInner, TKey, TResult>(this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey, Func<TSource, TInner, TResult> res)
+    public static IEnumerable<TResult> JoinMatchingOrNull<TSource, TInner, TKey, TResult>(
+      this IEnumerable<TSource> source, IEnumerable<TInner> other, Func<TSource, TKey> func, Func<TInner, TKey> innerkey,
+      Func<TSource, TInner, TResult> res)
     {
       return from f in source
-             join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
-             from result in g.DefaultIfEmpty()
-             select res.Invoke(f, result);
+        join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
+        from result in g.DefaultIfEmpty()
+        select res.Invoke(f, result);
     }
   }
 }
