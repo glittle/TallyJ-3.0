@@ -244,6 +244,7 @@ namespace TallyJ.CoreModels
       {
         return new
         {
+          failed = true,
           result = new[] { "File not found" }
         }.AsJsonResult();
       }
@@ -253,6 +254,7 @@ namespace TallyJ.CoreModels
       {
         return new
         {
+          failed = true,
           result = new[] { "Mapping not defined" }
         }.AsJsonResult();
       }
@@ -270,7 +272,18 @@ namespace TallyJ.CoreModels
       {
         return new
         {
+          failed = true,
           result = new[] { "Mapping not defined" }
+        }.AsJsonResult();
+      }
+
+      var mappedFields = dbFields.Where(f => validMappings.Select(m => m[1]).Contains(f)).ToList();
+      if (!mappedFields.Contains("LastName"))
+      {
+        return new
+        {
+          failed = true,
+          result = new[] { "Last Name must be mapped" }
         }.AsJsonResult();
       }
 
@@ -428,9 +441,11 @@ namespace TallyJ.CoreModels
 
       new PersonCacher(Db).DropThisCache();
 
-      var result = new List<string>();
-      result.Add("Processed {0} line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()));
-      result.Add("Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person")));
+      var result = new List<string>
+      {
+        "Processed {0} line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()),
+        "Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person"))
+      };
       if (peopleSkipped > 0)
       {
         result.Add("{0} {1} matched.".FilledWith(peopleSkipped, peopleSkipped.Plural("people", "person")));

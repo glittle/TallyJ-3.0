@@ -113,7 +113,7 @@
 
       CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
         if (info.result) {
-          $('#importResults').html(info.result.join('<br>')).show();
+          $('#importResults').html(info.result.join('<br>')).show().toggleClass('failed', info.failed === true);
         }
         ResetStatusDisplay();
       });
@@ -184,6 +184,18 @@
     }
     $('#listOfStatusReasons').html('<dl>{^0}</dl>'.filledWith(html.join('')));
   }
+
+  function showSelectorsStatus() {
+    $('#fieldSelector').children().each(function () {
+      var div = $(this);
+      var select = div.find('select');
+      if (select.length === 0) {
+        return;
+      }
+      div.toggleClass('mapped', !!select.val());
+    });
+  }
+
   var fieldMapChanged = function () {
     var mappings = [];
 
@@ -218,6 +230,8 @@
       }
     });
 
+    showSelectorsStatus();
+
     var $err = $('#mappingError');
     if (dups) {
       $err.text('Duplicate mappings found. Each TallyJ field can only be mapped to one data column.');
@@ -246,12 +260,16 @@
       }
       return { value: f, text: ExpandName(f) };
     }));
-    var template1 = '<div{extra}><h5>{field}</h5><div>{^sampleDivs}</div><select data-num={num}><option class=Ignore value="">(ignore)</option>' + options + '</select></div>';
+    var template1 = '<div class="Col{extra}">' +
+      '<h5>{field}</h5>' +
+      '<select data-num={num}><option class=Ignore value="">(ignore)</option>' + options + '</select>' +
+      '<div>{^sampleDivs}</div>' +
+      '</div>';
     var count = 1;
     $.each(info.csvFields, function () {
       this.sampleDivs = '<div>{0}&nbsp;</div>'.filledWithEach(this.sample);
-      if (count == 1) {
-        this.extra = " class=FirstCol";
+      if (count === 1) {
+        this.extra = " FirstCol";
       }
       this.num = count++;
       host.append(template1.filledWith(this));
@@ -263,6 +281,7 @@
     site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers as found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
     site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown above, select the TallyJ field that is the best match for the information in the column.' });
     ActivateTips();
+    showSelectorsStatus();
   };
 
   var showUploads = function (info) {
