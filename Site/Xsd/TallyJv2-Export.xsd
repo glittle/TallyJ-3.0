@@ -170,6 +170,7 @@
       <xs:attribute name="Exported" type="xs:dateTime" use="optional" />
       <xs:attribute name="ByUser" type="xs:string" use="optional" />
       <xs:attribute name="Server" type="xs:string" use="optional" />
+      <xs:attribute name="Version" type="xs:string" use="optional" />
       <xs:attribute name="UserEmail" type="xs:string" use="optional" />
       <xs:attribute name="userEmail" type="xs:string" use="optional" />
       <xs:attribute name="Environment" type="xs:string" use="optional" />
