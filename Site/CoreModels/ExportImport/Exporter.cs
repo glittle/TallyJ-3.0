@@ -74,9 +74,13 @@ namespace TallyJ.CoreModels.ExportImport
         }
 
         var value = property.Value;
-        if (value is String || value is Int32 || value is DateTime || value is Guid)
+        if (value is String || value is Int32|| value is Guid)
         {
           _writer.WriteAttributeString(property.Key, value.ToString());
+        }
+        else if (value is DateTime)
+        {
+          _writer.WriteAttributeString(property.Key, ((DateTime) value).ToString("o"));
         }
         else if (value is Boolean)
         {
