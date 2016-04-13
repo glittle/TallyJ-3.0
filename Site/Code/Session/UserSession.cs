@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
@@ -386,6 +388,16 @@ namespace TallyJ.Code.Session
         return election == null || election.TallyStatus.HasNoContent()
           ? ElectionTallyStatusEnum.NotStarted
           : election.TallyStatus;
+      }
+    }
+
+    public static string SiteVersion {
+      get
+      {
+        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
+        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
+        var version = regex.Success ? regex.Groups["version"].Value : "?";
+        return version;
       }
     }
 

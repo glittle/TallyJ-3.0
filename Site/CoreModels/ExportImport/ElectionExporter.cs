@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -48,12 +50,14 @@ namespace TallyJ.CoreModels.ExportImport
 
       var site = new SiteInfo();
 
+      
       var blob = new
       {
         Exported = DateTime.Now.ToString("o"),
         ByUser = UserSession.MemberName,
         UserEmail = UserSession.MemberEmail,
         Server = site.ServerName,
+        Version = UserSession.SiteVersion,
         Environment = site.CurrentEnvironment,
         // elements
         election = ExportElection(_election),
