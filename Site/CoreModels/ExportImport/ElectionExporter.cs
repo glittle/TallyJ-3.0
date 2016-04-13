@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
-using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 
@@ -50,7 +48,7 @@ namespace TallyJ.CoreModels.ExportImport
 
       var site = new SiteInfo();
 
-      
+
       var blob = new
       {
         Exported = DateTime.Now.ToString("o"),
@@ -259,7 +257,7 @@ namespace TallyJ.CoreModels.ExportImport
           rt.NumInTie,
           rt.IsResolved,
           rt.TieBreakRequired,
-          NumToElect = rt.NumToElect == 0 ? null : (int?)rt.NumToElect,
+          NumToElect = rt.NumToElect == 0 ? null : (int?) rt.NumToElect,
         }).ToList();
     }
 
