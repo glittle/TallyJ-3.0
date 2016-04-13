@@ -346,7 +346,7 @@ namespace TallyJ.CoreModels
         UpgradeOldData();
       }
 
-      new LogHelper().Add(message, true);
+      new LogHelper().Add("{0} (Comp {1})".FilledWith(message, UserSession.CurrentComputerCode), true);
 
       return true;
     }
