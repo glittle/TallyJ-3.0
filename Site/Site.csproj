@@ -639,6 +639,9 @@
     <Content Include="Views\After\ShowTies.cshtml.js">
       <DependentUpon>ShowTies.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\BallotNormal.cshtml.css">
+      <DependentUpon>BallotNormal.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js" />
     <Content Include="Views\Before\FrontDesk.cshtml.css">
       <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
@@ -669,6 +672,9 @@
     <Content Include="Views\Dashboard\OtherItems.cshtml" />
     <Content Include="Views\After\ShowTies.cshtml.less">
       <DependentUpon>ShowTies.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotNormal.cshtml.less">
+      <DependentUpon>BallotNormal.cshtml</DependentUpon>
     </Content>
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
@@ -724,9 +730,6 @@
     </Content>
     <Content Include="Views\After\Presenter.cshtml.js">
       <DependentUpon>Presenter.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Ballots\BallotNormal.cshtml.css">
-      <DependentUpon>BallotNormal.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Ballots\BallotNormal.cshtml.js">
       <DependentUpon>BallotNormal.cshtml</DependentUpon>

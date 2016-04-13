@@ -2,43 +2,81 @@
   {
     "outputFile": "Content/Site.css",
     "inputFile": "Content/Site.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/After/Analyze.cshtml.css",
     "inputFile": "Views/After/Analyze.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/After/ShowTies.cshtml.css",
     "inputFile": "Views/After/ShowTies.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/Before/FrontDesk.cshtml.css",
     "inputFile": "Views/Before/FrontDesk.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/Before/RollCall.cshtml.css",
     "inputFile": "Views/Before/RollCall.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/Dashboard/Index.cshtml.css",
     "inputFile": "Views/Dashboard/Index.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   },
   {
     "outputFile": "Views/Public/Home.cshtml.css",
     "inputFile": "Views/Public/Home.cshtml.less",
-    "minify": { "enabled": false },
-    "options": { "sourceMap": true }
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Ballots/BallotNormal.cshtml.css",
+    "inputFile": "Views/Ballots/BallotNormal.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
   }
 ]

@@ -20,6 +20,7 @@
 
 .personEdit .topLine td {
   background-color: #ddd;
+  vertical-align: top;
 }
 
 .overrides {
