@@ -84,13 +84,13 @@
             <xs:attribute name="TellerGuid" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
-        <xs:element name="user" maxOccurs="unbounded">
+        <xs:element name="user" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="UserName" type="xs:string" use="required" />
             <xs:attribute name="LastActivityDate" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
-        <xs:element name="location" maxOccurs="unbounded">
+        <xs:element name="location" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
               <xs:element minOccurs="0" maxOccurs="unbounded" name="computer">
@@ -133,7 +133,7 @@
             <xs:attribute name="BallotsCollected" type="xs:nonNegativeInteger" use="optional" />
           </xs:complexType>
         </xs:element>
-        <xs:element maxOccurs="unbounded" name="person">
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="person">
           <xs:complexType>
             <xs:attribute name="PersonGuid" type="xs:string" use="required" />
             <xs:attribute name="LastName" type="xs:string" use="required" />
@@ -157,7 +157,7 @@
             <xs:attribute name="Changed" type="xs:boolean" use="optional" />
           </xs:complexType>
         </xs:element>
-        <xs:element maxOccurs="unbounded" name="reason">
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="reason">
           <xs:complexType>
             <xs:attribute name="Value" type="xs:string" use="required" />
             <xs:attribute name="CanVote" type="xs:boolean" use="required" />
