@@ -109,21 +109,21 @@ namespace TallyJ
       //ConfigureRedis();
     }
 
-//    private void ConfigureRedis()
-//    {
-//      if (new SiteInfo().CurrentEnvironment != "Azure")
-//      {
-//        return;
-//      }
-//
-//      // https://github.com/welegan/RedisSessionProvider 
-//
-//      RedisConfigOpts = ConfigurationOptions.Parse("tallyj.redis.cache.windows.net:6379");
-//      RedisConfigOpts.Password = ConfigurationManager.AppSettings["REDIS_KEY"];
-//
-//      RedisConnectionConfig.GetSERedisServerConfig =
-//        context => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
-//    }
+    //    private void ConfigureRedis()
+    //    {
+    //      if (new SiteInfo().CurrentEnvironment != "Azure")
+    //      {
+    //        return;
+    //      }
+    //
+    //      // https://github.com/welegan/RedisSessionProvider 
+    //
+    //      RedisConfigOpts = ConfigurationOptions.Parse("tallyj.redis.cache.windows.net:6379");
+    //      RedisConfigOpts.Password = ConfigurationManager.AppSettings["REDIS_KEY"];
+    //
+    //      RedisConnectionConfig.GetSERedisServerConfig =
+    //        context => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
+    //    }
 
     private void ConfigureNLog()
     {
@@ -169,6 +169,16 @@ namespace TallyJ
 
       msgs.Add(mainMsg);
 
+      // April 2016 - trying to determine source of ths error
+      if (mainMsg.StartsWith("A public action method"))
+      {
+        msgs.Add(Request.Url.AbsolutePath);
+        if (Request.UrlReferrer != null)
+        {
+          msgs.Add("From: " + Request.UrlReferrer.AbsolutePath);
+        }
+      }
+
       var ex = mainException;
       while (ex != null)
       {
@@ -211,7 +221,7 @@ namespace TallyJ
 
     private string FilteredStack(string stackTrace)
     {
-      var parts = stackTrace.Split(new[] {'\n', '\r'}).Reverse().ToList();
+      var parts = stackTrace.Split(new[] { '\n', '\r' }).Where(s => !string.IsNullOrEmpty(s)).Reverse().ToList();
       var newParts = new List<string>();
       var foundOurCode = false;
       foreach (var part in parts)
