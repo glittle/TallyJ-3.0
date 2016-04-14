@@ -241,6 +241,7 @@ function AttachHandlers() {
 
   var dropDownTimeout = null;
   var closeDropDown = function () {
+    $('#quickLinks2 span.HighlightMenu').removeClass('HighlightMenu');
     $('#quickLinks2 span.DropDown').removeClass('DropDown');
     $('.QuickDash').fadeOut('fast');
   };
@@ -253,6 +254,11 @@ function AttachHandlers() {
     var form = {
       state: item.data('state')
     };
+
+    if (form.state === site.electionState) {
+      return;
+    }
+
     ShowStatusDisplay('Saving...');
     CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
       if (info.Message) {
@@ -269,9 +275,9 @@ function AttachHandlers() {
     closeDropDown();
     showAllPages(this);
   })
-  .on('mouseout', '#AllPages', function() {
-      clearTimeout(dropDownTimeout);
-      dropDownTimeout = setTimeout(closeDropDown, 200);
+  .on('mouseout', '#AllPages', function () {
+    clearTimeout(dropDownTimeout);
+    dropDownTimeout = setTimeout(closeDropDown, 200);
   });
 
 
@@ -279,11 +285,14 @@ function AttachHandlers() {
     clearTimeout(dropDownTimeout);
     var item = $(ev.target);
     var state = item.data('state');
-    if ($('#menu' + state).is(':visible')) {
+    var menu = $('#menu' + state);
+    closeDropDown();
+    if (menu.is(':visible')) {
+      menu.addClass('HighlightMenu');
+      dropDownTimeout = setTimeout(closeDropDown, 700);
       return;
     }
-    closeDropDown();
-    $('#menu' + state)
+    menu
       .addClass('DropDown')
       .css({
         left: getFullOffsetLeft(item) + 'px',
@@ -323,7 +332,7 @@ function updateElectionStatus(ev, info) {
 function showAllPages(btnRaw) {
   var btn = $(btnRaw);
   var quickDash = $('span.QuickDash');
-  
+
   quickDash.css({
     //left: Math.max(btnOffset.left - quickDash.width(), 0),
     left: getFullOffsetLeft(btn) - 15, //- $('.TopInfo').offset().left - 5 + btn.width() - quickDash.width(),
@@ -498,7 +507,7 @@ var setTopInfo = function () {
 
   var ddlTeller1 = $('#ddlTopTeller1');
   var teller1Needed = ddlTeller1.is(':visible') && ddlTeller1.val() <= 0;
-  
+
   $('.CurrentInfo').toggleClass('NotSet', locationNeeded || teller1Needed);
   ddlLocation.toggleClass('NotSet', locationNeeded);
   ddlTeller1.toggleClass('NotSet', teller1Needed);

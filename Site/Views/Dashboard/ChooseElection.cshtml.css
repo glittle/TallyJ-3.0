@@ -1,132 +1,120 @@
 ﻿.Election {
-    border-bottom: 1px solid #ccc;
-    padding: 9px 0 9px 5px;
+  border-bottom: 1px solid #ccc;
+  padding: 3px 0 4px 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-    .Election.true .Detail {
-        color: #8dc63e;
-        font-weight: bold;
-    }
-
-    .Election.deleting {
-        background-color: rgb(255, 178, 178);
-    }
-
-    .Election.justloaded {
-        background-color: rgb(178,255,178);
-    }
-
-.Detail i {
-    font-size: 80%;
-    font-style: normal;
+.Election.deleting {
+  background-color: #ffb2b2;
 }
-
-.numVoters {
-    font-size: 80%;
+.Election.justloaded {
+  background-color: #b2ffb2;
 }
-
-.Locations .true button {
-    opacity: .5;
+.Election.true .Detail {
+  color: #8dc63e;
+  font-weight: bold;
 }
-
-.Detail {
-    position: relative;
-    min-height: 21px;
-}
-
-.buttons {
-    display: block;
-    position: absolute;
-    right: 0;
-    margin-top: -5px;
-}
-
-.btnSelectElection {
-    margin-right: 20px;
-}
-
-button.active {
-    background-color: greenyellow;
-}
-
-.Locations {
-    display: none;
-    margin-left: 150px;
-}
-
-.SelectLocation {
-    margin-left: 120px;
-    display: none;
-}
-
 .Election.true .SelectLocation,
 .Election.true .Locations {
-    display: block;
+  display: block;
 }
-
+.Detail i {
+  font-size: 80%;
+  font-style: normal;
+}
+.numVoters {
+  font-size: 80%;
+}
+.Locations .true button {
+  opacity: .5;
+}
+.Detail {
+  position: relative;
+  min-height: 21px;
+}
+.buttons {
+  display: block;
+  margin-left: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btnSelectElection {
+  margin-right: 15px;
+}
+button.active {
+  background-color: greenyellow;
+}
+.Locations {
+  display: none;
+  margin-left: 150px;
+}
+.SelectLocation {
+  margin-left: 120px;
+  display: none;
+}
 .Locations .true {
-    color: #8dc63e;
-    font-weight: bold;
+  color: #8dc63e;
+  font-weight: bold;
 }
-
 .MakeNew {
-    margin-top: 25px;
+  margin-top: 25px;
 }
-
 .MakeNewList li {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
-
 .TestElection {
-    color: #bbb;
+  color: #bbb;
 }
-
 .Test {
-    display: none;
+  display: none;
 }
-
 .TestElection .Test {
-    display: inline-block;
+  display: inline-block;
 }
-
 #fileName {
-    xdisplay: none;
+  xdisplay: none;
 }
-
 #file-uploader {
-    display: inline-block;
-    margin-left: 20px;
+  display: inline-block;
+  margin-left: 20px;
 }
-
 #form2 {
-    float: right;
+  float: right;
 }
-
 #formLoadFile {
-    margin: 0;
+  margin: 0;
 }
-
-    #formLoadFile input {
-        display: block;
-        margin-left: 37px;
-    }
-
+#formLoadFile input {
+  display: block;
+  margin-left: 37px;
+}
 div.Comment {
-    color: #666;
-    font-size: 90%;
-    font-style: italic;
-    margin: -10px 0px 9px 0px;
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
+  margin: -10px 0 9px 0;
 }
-
 li.Comment {
-    color: #666;
-    font-size: 90%;
-    font-style: italic;
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
 }
-
 #loadingLog {
-    background-color: white;
-    margin: 5px 100px 0 50px;
-    padding: 3px 10px;
-    display: none;
+  background-color: white;
+  margin: 5px 100px 0 50px;
+  padding: 3px 10px;
+  display: none;
 }
+@media only screen and (max-width: 750px) {
+  .buttons {
+    white-space: normal;
+  }
+  .buttons .btnSelectElection {
+    margin-right: 0;
+  }
+  .buttons .btn-group {
+    margin-top: 2px;
+  }
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkNob29zZUVsZWN0aW9uLmNzaHRtbC5sZXNzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsNkJBQUE7RUFDQSxzQkFBQTtFQUNBLGFBQUE7RUFDQSw4QkFBQTtFQUNBLG1CQUFBOztBQUVBLFNBQUM7RUFDQyx5QkFBQTs7QUFHRixTQUFDO0VBQ0MseUJBQUE7O0FBR0YsU0FBQyxLQUNDO0VBQ0UsY0FBQTtFQUNBLGlCQUFBOztBQUhKLFNBQUMsS0FNQztBQU5GLFNBQUMsS0FPQztFQUNFLGNBQUE7O0FBT04sT0FBUTtFQUNOLGNBQUE7RUFDQSxrQkFBQTs7QUFHRjtFQUNFLGNBQUE7O0FBR0YsVUFBVyxNQUFNO0VBQ2YsV0FBQTs7QUFHRjtFQUNFLGtCQUFBO0VBQ0EsZ0JBQUE7O0FBR0Y7RUFDRSxjQUFBO0VBQ0EsZ0JBQUE7RUFDQSxtQkFBQTtFQUNBLGNBQUE7O0FBR0Y7RUFDRSxrQkFBQTs7QUFHRixNQUFNO0VBQ0osNkJBQUE7O0FBR0Y7RUFDRSxhQUFBO0VBQ0Esa0JBQUE7O0FBR0Y7RUFDRSxrQkFBQTtFQUNBLGFBQUE7O0FBSUYsVUFBVztFQUNULGNBQUE7RUFDQSxpQkFBQTs7QUFHRjtFQUNFLGdCQUFBOztBQUdGLFlBQWE7RUFDWCxtQkFBQTs7QUFHRjtFQUNFLFdBQUE7O0FBR0Y7RUFDRSxhQUFBOztBQUdGLGFBQWM7RUFDWixxQkFBQTs7QUFHRjtFQUNFLGNBQUE7O0FBR0Y7RUFDRSxxQkFBQTtFQUNBLGlCQUFBOztBQUdGO0VBQ0UsWUFBQTs7QUFHRjtFQUNFLFNBQUE7O0FBR0YsYUFBYztFQUNaLGNBQUE7RUFDQSxpQkFBQTs7QUFHRixHQUFHO0VBQ0QsV0FBQTtFQUNBLGNBQUE7RUFDQSxrQkFBQTtFQUNBLHFCQUFBOztBQUdGLEVBQUU7RUFDQSxXQUFBO0VBQ0EsY0FBQTtFQUNBLGtCQUFBOztBQUdGO0VBQ0UsdUJBQUE7RUFDQSx3QkFBQTtFQUNBLGlCQUFBO0VBQ0EsYUFBQTs7QUFnQkYsd0JBYjBDO0VBQ3hDO0lBQ0UsbUJBQUE7O0VBREYsUUFHRTtJQUNFLGVBQUE7O0VBSkosUUFPRTtJQUNFLGVBQUEiLCJmaWxlIjoidW5kZWZpbmVkIn0= */

@@ -818,7 +818,7 @@ body.AuthKnown .ElectionState span.state.Active_False {
 
 body.AuthGuest .ElectionState #electionState {
   span.state {
-    border-color: lighten(@tallyJGreen, 30%); 
+    border-color: lighten(@tallyJGreen, 30%);
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -1032,15 +1032,19 @@ body.AuthKnown .CurrentElectionName {
 
   a {
     color: #333;
+    background-color: #fff;
     text-decoration: none;
     border: 1px solid lighten(@tallyJBlue, 30%);
     padding: 0 4px 0 4px;
-    margin: 0 3px 2px 3px;
     display: inline-block;
     white-space: nowrap;
     border-radius: 2px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
+  }
+
+  a + a {
+    margin-left: 3px;
   }
 
   a:hover {
@@ -1099,6 +1103,11 @@ body.AuthKnown .CurrentElectionName {
       padding: 6px 10px 6px 7px;
       border-radius: 0;
     }
+  }
+
+  span.HighlightMenu {
+    box-shadow: 0px 0px 5px #555;
+    background-color: #bcbcbc;
   }
 }
 
@@ -1363,8 +1372,12 @@ section.features.bottom {
 
 
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 750px) {
   .CurrentInfo {
     width: auto;
+  }
+
+  .QuickLinks2 div.right {
+    margin-left: 0;
   }
 }

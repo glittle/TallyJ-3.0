@@ -1,0 +1,154 @@
+﻿.Election {
+  border-bottom: 1px solid #ccc;
+  padding: 3px 0 4px 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &.deleting {
+    background-color: rgb(255, 178, 178);
+  }
+
+  &.justloaded {
+    background-color: rgb(178,255,178);
+  }
+
+  &.true {
+    .Detail {
+      color: #8dc63e;
+      font-weight: bold;
+    }
+
+    .SelectLocation,
+    .Locations {
+      display: block;
+    }
+  }
+}
+
+
+
+.Detail i {
+  font-size: 80%;
+  font-style: normal;
+}
+
+.numVoters {
+  font-size: 80%;
+}
+
+.Locations .true button {
+  opacity: .5;
+}
+
+.Detail {
+  position: relative;
+  min-height: 21px;
+}
+
+.buttons {
+  display: block;
+  margin-left: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btnSelectElection {
+  margin-right: 15px;
+}
+
+button.active {
+  background-color: greenyellow;
+}
+
+.Locations {
+  display: none;
+  margin-left: 150px;
+}
+
+.SelectLocation {
+  margin-left: 120px;
+  display: none;
+}
+
+
+.Locations .true {
+  color: #8dc63e;
+  font-weight: bold;
+}
+
+.MakeNew {
+  margin-top: 25px;
+}
+
+.MakeNewList li {
+  margin-bottom: 14px;
+}
+
+.TestElection {
+  color: #bbb;
+}
+
+.Test {
+  display: none;
+}
+
+.TestElection .Test {
+  display: inline-block;
+}
+
+#fileName {
+  xdisplay: none;
+}
+
+#file-uploader {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+#form2 {
+  float: right;
+}
+
+#formLoadFile {
+  margin: 0;
+}
+
+#formLoadFile input {
+  display: block;
+  margin-left: 37px;
+}
+
+div.Comment {
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
+  margin: -10px 0 9px 0;
+}
+
+li.Comment {
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
+}
+
+#loadingLog {
+  background-color: white;
+  margin: 5px 100px 0 50px;
+  padding: 3px 10px;
+  display: none;
+}
+
+@media only screen and (max-width: 750px) {
+  .buttons {
+    white-space: normal;
+
+    .btnSelectElection {
+      margin-right: 0;
+    }
+
+    .btn-group {
+      margin-top: 2px;
+    }
+  }
+}

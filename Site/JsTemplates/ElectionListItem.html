@@ -1,20 +1,17 @@
 ﻿<div class="Election {IsCurrent}{TestClass}" data-guid="{ElectionGuid}">
-    <div class="Detail">
-        <!--<button type="button" class="btnCopyElection">
-                Copy</button>-->
-        <span class="buttons">
-            <button type="button" class="btn btn-primary btnSelectElection">
-                Open</button>
-            <div class="btn-group">
-                <button type="button" class="btn btn-info btn-mini btnExport" title="Export and download the complete election to a file on your computer">Save to File</button>
-                <button type="button" class="btn btn-danger btn-mini btnDelete" title="Delete the election from this system">Remove</button>
-            </div>
-        </span>
-        {DateOfElection} 
-        <b>{Name}</b>
-        <span class="Test">(TEST)</span>
-        - <i>{Type} {Mode}</i>
-        - <span class="numVoters">{NumVoters} voter{#Plural({NumVoters})}</span>
-        - <span class="numVoters">{NumBallots} ballot{#Plural({NumBallots})}</span>
+  <div class="Detail">
+    {DateOfElection}
+    <b>{Name}</b>
+    <span class="Test">(TEST)</span>
+    - <i>{Type} {Mode}</i>
+    - <span class="numVoters">{NumVoters} voter{#Plural({NumVoters})}</span>
+    - <span class="numVoters">{NumBallots} ballot{#Plural({NumBallots})}</span>
+  </div>
+  <div class="buttons">
+    <button type="button" class="btn btn-primary btnSelectElection">Open</button>
+    <div class="btn-group">
+      <button type="button" class="btn btn-info btn-mini btnExport" title="Export and download the complete election to a file on your computer">Save to File</button>
+      <button type="button" class="btn btn-danger btn-mini btnDelete" title="Delete the election from this system">Remove</button>
     </div>
+  </div>
 </div>

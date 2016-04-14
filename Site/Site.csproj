@@ -649,6 +649,9 @@
     <Content Include="Views\Before\RollCall.cshtml.css">
       <DependentUpon>RollCall.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
+      <DependentUpon>ChooseElection.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
     </Content>
@@ -675,6 +678,9 @@
     </Content>
     <Content Include="Views\Ballots\BallotNormal.cshtml.less">
       <DependentUpon>BallotNormal.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Dashboard\ChooseElection.cshtml.less">
+      <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
@@ -751,9 +757,6 @@
     </Content>
     <Content Include="Views\Before\FrontDesk.cshtml.js">
       <DependentUpon>FrontDesk.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
-      <DependentUpon>ChooseElection.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Dashboard\ChooseElection.cshtml.js">
       <DependentUpon>ChooseElection.cshtml</DependentUpon>
