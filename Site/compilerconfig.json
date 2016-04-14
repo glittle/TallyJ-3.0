@@ -88,5 +88,16 @@
     "options": {
       "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Views/Setup/ImportCsv.cshtml.css",
+    "inputFile": "Views/Setup/ImportCsv.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+
   }
 ]

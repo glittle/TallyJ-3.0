@@ -8,6 +8,25 @@
     statusFieldName: 'IneligibleReasonGuid'
   };
 
+  function copyReason(ev) {
+    var node = ev.target;
+    var txt = '';
+    var range;
+    if (document.selection) {
+      range = document.body.createTextRange();
+      range.moveToElementText(node);
+      range.select();
+      txt = range.toString();
+    } else if (window.getSelection) {
+      range = document.createRange();
+      range.selectNodeContents(node);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      txt = range.toString();
+    }
+    window.prompt("Copy this text and use it in the CSV data file!", txt);
+  }
+
   var staticSetup = function () {
     $('#importResults').css('display', 'inline-block').hide();
 
@@ -16,23 +35,8 @@
 
     showStatusReasons();
 
-    $('#listOfStatusReasons').on('click', 'dd', function () {
-      var node = this;
-      var txt = '';
-      if (document.selection) {
-        var range = document.body.createTextRange();
-        range.moveToElementText(node);
-        range.select();
-        txt = range.toString();
-      } else if (window.getSelection) {
-        var range = document.createRange();
-        range.selectNodeContents(node);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        txt = range.toString();
-      }
-      window.prompt("To copy to the clipboard, press Ctrl+C", txt);
-    });
+    $('#listOfStatusReasons').on('click', 'dd', copyReason);
+    $('.reasonSamples').on('click', 'strong', copyReason);
     $('#btnPrepareFields').live('click', function () {
       if (!local.activeFileRowId) {
         alert('Please select a file from the list first.');

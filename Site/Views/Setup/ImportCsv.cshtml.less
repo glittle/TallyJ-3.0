@@ -1,0 +1,308 @@
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+#chooseFile {
+  display: block;
+  width: 700px;
+  border: 1px solid #ccc;
+}
+
+.ui-icon {
+  display: inline-block;
+}
+
+.uploadList {
+  margin-left: 10px;
+}
+
+.uploadList h4 {
+  margin-left: -10px;
+}
+
+.uploadList table {
+  border-collapse: collapse;
+}
+
+.uploadList table td {
+  border: 1px solid #ccc;
+  padding: 0 6px 0 6px;
+}
+
+
+.qq-uploader {
+  position: relative;
+  width: 100%;
+}
+
+.qq-upload-button {
+  display: block; /* or inline-block */
+  width: 105px;
+  padding: 7px 0;
+  text-align: center;
+  background: @tallyJGreen;
+  border-bottom: 1px solid #ddd;
+  color: #fff;
+}
+
+.qq-upload-button-hover {
+  background: #7db62e;
+}
+
+.qq-upload-button-focus {
+  outline: 1px dotted black;
+}
+
+.qq-upload-drop-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 70px;
+  z-index: 2;
+  background: #FF9797;
+  text-align: center;
+}
+
+.qq-upload-drop-area span {
+  display: block;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -8px;
+  font-size: 16px;
+}
+
+.qq-upload-drop-area-active {
+  background: #FF7171;
+}
+
+.qq-upload-list {
+  display: none; /* don't need for tallyj */
+  margin: 15px 35px;
+  padding: 0;
+  list-style: disc;
+}
+
+.qq-upload-list li {
+  margin: 0;
+  padding: 0;
+  line-height: 15px;
+  font-size: 12px;
+}
+
+.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-failed-text {
+  margin-right: 7px;
+}
+
+.qq-upload-file {
+}
+
+.qq-upload-spinner {
+  display: inline-block;
+  background: url("loading.gif");
+  width: 15px;
+  height: 15px;
+  vertical-align: text-bottom;
+}
+
+.qq-upload-size, .qq-upload-cancel {
+  font-size: 11px;
+}
+
+.qq-upload-failed-text {
+  display: none;
+}
+
+.qq-upload-fail .qq-upload-failed-text {
+  display: inline;
+}
+
+tr.Active {
+  background-color: #fff;
+}
+
+.Actions {
+  text-align: center;
+}
+
+.Actions div:hover {
+  background-color: #ddd;
+}
+
+.Actions div {
+  cursor: pointer;
+  font-size: 80%;
+  margin-bottom: 3px;
+  text-align: center;
+  color: #00c600;
+}
+
+span.MakeActive:hover {
+  text-decoration: underline;
+}
+
+tr.Active .Actions div {
+  display: none;
+}
+
+tr.Active .Actions span {
+}
+
+tr.NotActive .Actions span {
+  display: none;
+}
+
+tr.Uploaded .CopyMap {
+  display: none;
+}
+
+#fieldSelector {
+  white-space: nowrap;
+  clear: right;
+  position: relative;
+  overflow-x: auto;
+}
+
+#fieldSelector > div {
+  width: 100px;
+  display: inline-block;
+  background-color: #ddd;
+  margin: 0 0 0 1px;
+  overflow: hidden;
+}
+
+#fieldSelector > div.Col.FirstCol {
+  margin-left: 22px;
+}
+
+#fieldSelector > div.Col {
+  color: #aaa;
+}
+
+#fieldSelector > div.Col.mapped {
+  background-color: #e9ffe9;
+  color: #000;
+}
+
+
+#fieldSelector select {
+  display: block;
+  margin-top: 5px;
+  width: 100px;
+  color: #005800;
+}
+
+#fieldSelector select.Mapped {
+  color: black;
+  font-weight: bold;
+}
+
+#fieldSelector div div {
+  overflow: hidden;
+  padding: 0 0 0 2px;
+}
+
+#fieldSelector h5 {
+  margin: 0 0 2px 2px;
+}
+
+
+#btnPrepareFields {
+  float: right;
+}
+
+#fieldSelector > div.ImportTips {
+  height: 100%;
+  position: absolute;
+  width: 20px;
+  background-color: transparent;
+}
+
+.ImportTips span {
+  display: inline-block;
+  position: absolute;
+  right: 0px;
+  top: 2px;
+}
+
+.ImportTips span#qTipImportFoot {
+  top: 27px;
+}
+
+#mappingError {
+  color: red;
+  font-size: 110%;
+  margin: 4px 0 0 23px;
+}
+
+.reasonExamples {
+  display: flex;
+  justify-content: space-between;
+}
+
+.reasonExamples h3 {
+  margin: 0;
+}
+
+.reasonSamples {
+  dt {
+    color: darken(@tallyJGreen, 15%);
+    text-decoration: underline;
+  }
+
+  dd {
+    strong {
+      display: block;
+      margin: 0 0 0 45px;
+      border: 1px solid transparent;
+      padding: 0 2px 0 4px;
+      margin-bottom: -1px;
+      cursor: pointer;
+
+      &:hover {
+        border-color: @tallyJGreen;
+      }
+    }
+  }
+}
+
+dl {
+  margin-top: 0;
+}
+
+#listOfStatusReasons {
+  dt {
+    font-weight: normal;
+    font-style: italic;
+    text-decoration: underline;
+  }
+
+  dd {
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid transparent;
+    padding: 0 2px 0 4px;
+    margin-bottom: -1px;
+
+    &:hover {
+      border-color: @tallyJGreen;
+    }
+  }
+}
+
+
+#importResults {
+  display: none;
+  margin: 0 0 0 10px;
+  vertical-align: top;
+  text-align: left;
+  border-radius: 2px;
+  padding: 8px 10px;
+  background-color: white;
+  box-shadow: 0 3px 9px #555;
+}
+
+#importResults.failed {
+  background-color: #ffd9d9;
+  color: #9A0000;
+}
