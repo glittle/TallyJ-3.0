@@ -182,12 +182,12 @@
       var item = importCsvPage.statusNames[i];
       if (group != item.Group) {
         group = item.Group;
-        html.push('<dt>{0}</dt>'.filledWith(group))
+        html.push('<dt>{0}</dt>'.filledWith(group));
       }
-      html.push('<dd>{0}</dd>'.filledWith(item.Description))
+      html.push('<dd>{0}</dd>'.filledWith(item.Description));
     }
     $('#listOfStatusReasons').html('<dl>{^0}</dl>'.filledWith(html.join('')));
-  }
+  };
 
   function showSelectorsStatus() {
     $('#fieldSelector').children().each(function () {

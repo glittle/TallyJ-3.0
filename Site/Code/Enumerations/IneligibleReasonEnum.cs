@@ -9,9 +9,9 @@ namespace TallyJ.Code.Enumerations
   {
     public static class GroupName
     {
-      public static readonly string Ineligible = "Ineligible to Participate";
-      public static readonly string IneligiblePartial1 = "Can Vote but not be Voted For";
-      public static readonly string IneligiblePartial2 = "Cannot Vote but can be Voted For";
+      public static readonly string Ineligible = "Cannot Vote or be Voted For";
+      public static readonly string IneligiblePartial1 = "Cannot be Voted For";
+      public static readonly string IneligiblePartial2 = "Cannot Vote";
       public static readonly string Unidentifiable = "Unidentifiable";
       public static readonly string Unreadable = "Unreadable";
     }
@@ -23,14 +23,15 @@ namespace TallyJ.Code.Enumerations
 
     public static readonly IneligibleReasonEnum Ineligible_Deceased = new IneligibleReasonEnum("D227534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Deceased");
     public static readonly IneligibleReasonEnum Ineligible_Moved_elsewhere_recently = new IneligibleReasonEnum("CF27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Moved elsewhere recently");
-    public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not registered Bahá'í");
+    public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not a registered Bahá'í");
     public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("CC27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Under 21 years old");
     public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Other");
     public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Resides elsewhere");
     public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Rights removed (entirely)");
+    public static readonly IneligibleReasonEnum Ineligible_NotDelegate_OnOther = new IneligibleReasonEnum("E027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not a delegate and on other Institution");
 
     public static readonly IneligibleReasonEnum IneligiblePartial1_On_Institution_already = new IneligibleReasonEnum("C05EAE49-B01B-E111-A7FB-002269C41D11", GroupName.IneligiblePartial1, "By-election: On Institution already", true);
-    public static readonly IneligibleReasonEnum IneligiblePartial1_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.IneligiblePartial1, "On other Institution (eg. Counselor)", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.IneligiblePartial1, "On other Institution (e.g. Counsellor)", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_Rights_removed = new IneligibleReasonEnum("920A1A55-C4A5-42E5-9BCE-31756B6A20B9", GroupName.IneligiblePartial1, "Rights removed (cannot be voted for)", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.IneligiblePartial1, "Tie-break: Not tied", true);
 
@@ -52,9 +53,10 @@ namespace TallyJ.Code.Enumerations
       Add(Ineligible_Not_Adult);
       Add(Ineligible_Resides_elsewhere);
       Add(Ineligible_Moved_elsewhere_recently);
-      Add(Ineligible_Rights_removed);
-      Add(Ineligible_Non_Bahai);
       Add(Ineligible_Deceased);
+      Add(Ineligible_NotDelegate_OnOther);
+      Add(Ineligible_Non_Bahai);
+      Add(Ineligible_Rights_removed);
       Add(Ineligible_Other);
 
       Add(IneligiblePartial1_On_other_Institution);
