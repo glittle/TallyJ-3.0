@@ -7,7 +7,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var people = new ResultCacher().AllForThisElection
-    .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new {r, p})
+    .Join(new PersonCacher().AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
     .OrderBy(g => g.p.FullName)
     .Select(g => new
     {
@@ -35,6 +35,7 @@
     -o-column-rule-width: 4px;
     column-rule-width: 4px;
   }
+
   b {
     display: inline-block;
     padding-top: 5px;
@@ -44,7 +45,10 @@
   <h1 id="title"></h1>
   <p class="Comment">
     "If the assembled friends choose to have a full Tellers’ Report including the names
-    of all who are voted for and the number of votes received, this is acceptable."  (Spoiled votes and names on spoiled ballots are not included.)
+    of all who are voted for and the number of votes received, this is acceptable." (Spoiled votes and names on spoiled ballots are not included.)
+  </p>
+  <p class="Comment">
+    Showing those with <select id="limitNum"></select> or more votes cast for them (<span id="numShown"></span> people).
   </p>
   <div class="Votes">
     @{
@@ -59,10 +63,36 @@
         initial = first;
         name = "<b>" + initial + "</b>" + name.Substring(1);
       }
-      <div class="person">
+      <div class="person" data-num="@person.VoteCount">
         <span class="name">@Raw(name)</span>
         <span class="small1">(@(person.VoteCount + (person.TieBreakRequired.AsBoolean() ? " / " + person.TieBreakCount : "")))</span>
       </div>
     }
   </div>
 </div>
+<script>
+  var list = [@String.Join(",", people.Select(p => p.VoteCount).Distinct().OrderByDescending(n=>n).ToArray())];
+  $('#limitNum')
+    .html('<option>{0}</option>'.filledWithEach(list))
+    .val(localStorage.getItem('votesByNumLimit') || 1)
+    .change(updateList);
+
+  function updateList() {
+    var limit = +$('#limitNum').val() || 1;
+    localStorage.setItem('votesByNumLimit', limit);
+    $('.person').each(function (i, el) {
+      var p = $(el);
+      var num = +p.data('num');
+      p.toggle(num >= limit);
+    });
+    showCount();
+  }
+
+  function showCount() {
+    $('#numShown').text($('.person:visible').length);
+  }
+
+  setTimeout(function () {
+    updateList();
+  }, 0);
+</script>

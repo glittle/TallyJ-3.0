@@ -1,0 +1,135 @@
+﻿@using Microsoft.Practices.ObjectBuilder2
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+
+@{
+  var people = new BallotCacher().AllForThisElection
+            .Where(bi => bi.StatusCode == BallotStatusEnum.Ok)
+            .Join(new VoteCacher().AllForThisElection, b => b.BallotGuid, v => v.BallotGuid, (b, v) => new { b, v })
+            .Join(new PersonCacher().AllForThisElection, bv => bv.v.PersonGuid, p => p.PersonGuid, (bv, p) => new { bv.b, bv.v, p })
+            .GroupBy(g => g.p, (p, bvp) => new
+            {
+              p,
+              VoteCount = bvp.Count()
+            })
+            .OrderBy(g => g.p.FullNameFL)
+            .Select(g => new
+            {
+              PersonName = g.p.FullNameFL,
+              InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(g.p.IneligibleReasonGuid.AsGuid()),
+              g.VoteCount
+            })
+            .Select(g => new
+            {
+              g.PersonName,
+              g.InvalidReasonDesc,
+              g.VoteCount,
+              CssClass = g.InvalidReasonDesc.HasContent() ? "spoiled" : "ok"
+            })
+            .ToList();
+}
+<style>
+  .Votes {
+    -webkit-column-width: 15em;
+    -moz-column-width: 15em;
+    -ms-column-width: 15em;
+    -o-column-width: 15em;
+    column-width: 15em;
+    -webkit-column-gap: 1em;
+    -moz-column-gap: 1em;
+    -ms-column-gap: 1em;
+    -o-column-gap: 1em;
+    column-gap: 1em;
+    -webkit-column-rule-width: 4px;
+    -moz-column-rule-width: 4px;
+    -ms-column-rule-width: 4px;
+    -o-column-rule-width: 4px;
+    column-rule-width: 4px;
+    min-height: 200px;
+  }
+
+  .person {
+    text-indent: -2em;
+    margin-left: 2em;
+  }
+
+  .spoiled .name {
+    text-decoration: line-through;
+  }
+
+  .Invalid {
+    color: red;
+    font-style: italic;
+    font-size: 90%;
+  }
+</style>
+<div class="body WarnIfNotFinalized">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    Showing <select id="showWhat">
+      <option value="all">all valid and all spoiled</option>
+      @*<option value="ok">only valid</option>*@
+      <option value="spoiled">only spoiled</option>
+    </select> votes from <strong>valid</strong> ballots
+    @*for those who received <select id="limitNum"></select> or more votes*@
+    (<span id="numShown"></span> names).
+  </p>
+  <div class="Votes">
+    @foreach (var person in people)
+    {
+      <div data-num="@person.VoteCount" class="person @person.CssClass">
+        <span class="small1">@person.VoteCount - </span>
+        <span class="name">@person.PersonName</span>
+        <span class="Invalid">@person.InvalidReasonDesc</span>
+      </div>
+    }
+  </div>
+</div>
+<script>
+  var list = [@String.Join(",", people.Select(p => p.VoteCount).Distinct().OrderByDescending(n => n).ToArray())];
+  $('#limitNum')
+    .html('<option>{0}</option>'.filledWithEach(list))
+    .val(localStorage.getItem('votesByNumLimit') || 1)
+    .change(updateList);
+
+  $('#showWhat')
+    .val(localStorage.getItem('withInvalidShowWhat') || 'all')
+    .change(updateShowWhat);
+
+  function updateList() {
+    var limit = +$('#limitNum').val() || 1;
+    localStorage.setItem('votesByNumLimit', limit);
+    $('.person').each(function (i, el) {
+      var p = $(el);
+      var num = +p.data('num');
+      p.toggle(num >= limit);
+    });
+    showCount();
+  }
+
+  function updateShowWhat() {
+    var what = $('#showWhat').val() || 'all';
+    localStorage.setItem('withInvalidShowWhat', what);
+    if (what === 'all') {
+      $('.person').show();
+    } else {
+      $('.person').hide();
+      $('.person.' + what).show();
+    }
+    showCount();
+  }
+
+
+
+  function showCount() {
+    $('#numShown').text($('.person:visible').length);
+  }
+
+  setTimeout(function () {
+    updateList();
+    updateShowWhat();
+  }, 0);
+</script>

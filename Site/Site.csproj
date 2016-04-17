@@ -608,6 +608,7 @@
     <Content Include="Reports\AllPeopleFL.cshtml" />
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
+    <Content Include="Reports\VotesWithInvalid.cshtml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
