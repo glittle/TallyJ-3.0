@@ -259,6 +259,7 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
+      var start = DateTime.Now;
       var textReader = new StringReader(file.Contents.AsString(file.CodePage));
       var csv = new CsvReader(textReader, true) { SkipEmptyLines = true };
 
@@ -467,7 +468,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      result.Add("Import complete.");
+      result.Add("Import completed in " + (DateTime.Now - start).TotalSeconds.ToString("#.0") + " s.");
 
       new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(), true);
 
