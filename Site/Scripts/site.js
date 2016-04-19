@@ -38,7 +38,7 @@ var site = {
     $(document).on(broadcastCode, null, eventData, fn);
   },
   timeOffset: 0,
-  rootUrl: ''
+  rootUrl: '/'
 };
 var storageKey = {
   MonitorRefresh: 'MonitorRefresh'
