@@ -217,10 +217,9 @@
 
     ShowStatusDisplay("Opening election...");
 
-    CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
-
     clearElectionRelatedStorageItems();
 
+    CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
   };
 
   var afterSelectElection = function (info) {
