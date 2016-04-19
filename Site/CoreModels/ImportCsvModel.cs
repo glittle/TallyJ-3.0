@@ -468,9 +468,9 @@ namespace TallyJ.CoreModels
         }
       }
 
-      result.Add("Import completed in " + (DateTime.Now - start).TotalSeconds.ToString("#.0") + " s.");
+      result.Add("Import completed in " + (DateTime.Now - start).TotalSeconds.ToString("0.0") + " s.");
 
-      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(), true);
+      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(" "), true);
 
       return new
       {
