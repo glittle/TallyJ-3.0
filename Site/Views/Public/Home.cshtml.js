@@ -15,6 +15,8 @@
     $('#btnChooseJoin').click(startJoinClick);
     $('#btnChooseLogin').click(startJoinClick);
 
+    clearElectionRelatedStorageItems();
+
     warnIfCompatibilityMode();
 
     connectToPublicHub();

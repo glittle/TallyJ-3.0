@@ -2,16 +2,7 @@
   //  var local = {
   //    uploader: null
   //  };
-  var clearElectionRelatedStorageItems = function () {
-    for (var key in localStorage) {
-      if (key.substr(0, 5) == 'name_') {
-        localStorage.removeItem(key);
-      } else if (key == 'ActiveUploadRowId') {
-        localStorage.removeItem(key);
-      }
-    }
 
-  };
   var preparePage = function () {
     $(document).on('click', '.btnSelectElection', null, selectElection);
 

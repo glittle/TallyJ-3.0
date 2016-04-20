@@ -89,6 +89,21 @@ function HighlightActiveLink() {
   });
 }
 
+function clearElectionRelatedStorageItems() {
+  for (var key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      if (key.substr(0, 5) === 'name_') {
+        localStorage.removeItem(key);
+      } else if (key === 'ActiveUploadRowId') {
+        localStorage.removeItem(key);
+      }
+    }
+  }
+  localStorage.removeItem('locationKnown');
+
+};
+
+
 var connectToElectionHub = function () {
   var hub = $.connection.mainHubCore;
 
