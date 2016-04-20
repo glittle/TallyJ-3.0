@@ -450,8 +450,7 @@ namespace TallyJ.CoreModels
     public void RefreshBallotStatuses()
     {
       // first refresh person vote statuses
-      _hub.StatusUpdate("Reviewing people");
-      new PeopleModel().EnsureFlagsAreRight(People, Savers.PersonSaver);
+      new PeopleModel().EnsureFlagsAreRight(People, _hub, Savers.PersonSaver);
 
       // then refresh all votes
       _hub.StatusUpdate("Reviewing votes");

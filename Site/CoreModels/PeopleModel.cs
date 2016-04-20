@@ -161,40 +161,60 @@ namespace TallyJ.CoreModels
     ///   Ensure the flags match the Guid
     /// </summary>
     /// <param name="people"></param>
+    /// <param name="hub"></param>
     /// <param name="personSaver"></param>
-    public void EnsureFlagsAreRight(List<Person> people, Action<DbAction, Person> personSaver)
+    public void EnsureFlagsAreRight(List<Person> people, IStatusUpdateHub hub, Action<DbAction, Person> personSaver)
     {
+      hub.StatusUpdate("Reviewing people", true);
+      var currentElectionGuid = UserSession.CurrentElectionGuid;
+
+      var numDone = 0;
       foreach (var person in people)
       {
         var changesMade = false;
-        var canVote = true;
-        var canReceiveVotes = true;
-        var unknownGuid = false;
+        var unknownIneligibleGuid = false;
+
+        numDone++;
+        if (numDone % 10 == 0)
+        {
+          hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone), true);
+        }
+
+        if (currentElectionGuid != person.ElectionGuid)
+        {
+          hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
+          hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullNameFL);
+        }
 
         if (person.IneligibleReasonGuid.HasValue)
         {
           var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
           if (reason == null)
           {
-            unknownGuid = true;
+            unknownIneligibleGuid = true;
           }
           else
           {
-            canVote = reason.CanVote;
-            canReceiveVotes = reason.CanReceiveVotes;
+            var canVote = reason.CanVote;
+            var canReceiveVotes = reason.CanReceiveVotes;
+
+            if (canVote != person.CanVote || canReceiveVotes != person.CanReceiveVotes)
+            {
+              personSaver(DbAction.Attach, person);
+              person.CanVote = canVote;
+              person.CanReceiveVotes = canReceiveVotes;
+              changesMade = true;
+            }
           }
         }
-        if (canVote != person.CanVote || canReceiveVotes != person.CanReceiveVotes)
+        if (unknownIneligibleGuid)
         {
           personSaver(DbAction.Attach, person);
-          person.CanVote = canVote;
-          person.CanReceiveVotes = canReceiveVotes;
-          changesMade = true;
-        }
-        if (unknownGuid)
-        {
-          personSaver(DbAction.Attach, person);
-          person.IneligibleReasonGuid = null;
+          person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
+
+          hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
+          hub.StatusUpdate("Found unknown ineligible reason. Set to Unknown. Name: " + person.C_FullNameFL);
+
           changesMade = true;
         }
         if (changesMade)
@@ -202,6 +222,7 @@ namespace TallyJ.CoreModels
           personSaver(DbAction.Save, person);
         }
       }
+      hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
     }
 
     public JsonResult DetailsFor(int personId)
