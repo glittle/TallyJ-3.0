@@ -13,7 +13,8 @@ namespace TallyJ.CoreModels
   {
     public const string ReasonGroupIneligible = "Ineligible";
 
-    public BallotModelCore() {
+    public BallotModelCore()
+    {
       _helper = new BallotHelper();
     }
 
@@ -27,10 +28,10 @@ namespace TallyJ.CoreModels
       get { return _analyzer ?? (_analyzer = new BallotAnalyzer()); }
     }
 
-//    protected VoteHelper VoteHelperLocal
-//    {
-//      get { return _voteHelper ?? (_voteHelper = new VoteHelper(true)); }
-//    }
+    //    protected VoteHelper VoteHelperLocal
+    //    {
+    //      get { return _voteHelper ?? (_voteHelper = new VoteHelper(true)); }
+    //    }
 
     #region IBallotModel Members
 
@@ -58,7 +59,7 @@ namespace TallyJ.CoreModels
 
     public bool SortVotes(List<int> ids, VoteCacher voteCacher)
     {
-      
+
       var ballotGuid = CurrentRawBallot().BallotGuid;
 
       var allVotes = voteCacher.AllForThisElection;
@@ -113,7 +114,23 @@ namespace TallyJ.CoreModels
     /// <Summary>Delete a ballot, but only if already empty</Summary>
     public JsonResult DeleteBallotJson()
     {
-      var ballot = CurrentRawBallot();
+      Ballot ballot;
+      try
+      {
+        ballot = CurrentRawBallot();
+      }
+      catch (Exception e)
+      {
+        if (e.Message == "Sequence contains no matching element")
+        {
+          return new
+          {
+            Deleted = false,
+            Message = "Ballot not found"
+          }.AsJsonResult();
+        }
+        throw;
+      }
       var ballotGuid = ballot.BallotGuid;
 
       var hasVotes = new VoteCacher(Db).AllForThisElection.Any(v => v.BallotGuid == ballotGuid);
@@ -326,7 +343,7 @@ namespace TallyJ.CoreModels
 
       var person = new PersonCacher(Db).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
 
-      var ok = person != null || invalidReasonGuid != Guid.Empty;
+      var ok = person != null || (invalidReason != null && invalidReasonGuid != Guid.Empty);
 
       if (ok)
       {
@@ -377,7 +394,7 @@ namespace TallyJ.CoreModels
       }
 
       // don't recognize person id
-      return new { Updated = false, Error = "Invalid person" }.AsJsonResult();
+      return new { Updated = false, Error = "Invalid person. Please try again." }.AsJsonResult();
     }
 
     public JsonResult DeleteVote(int vid)
@@ -515,7 +532,7 @@ namespace TallyJ.CoreModels
         if (refresh)
         {
           Db.Ballot.Attach(ballot);
-          var voteCacher = new VoteCacher(Db); 
+          var voteCacher = new VoteCacher(Db);
           var votes = voteCacher.AllForThisElection;
           var voteInfos = VoteInfosFor(ballot, votes);
 
