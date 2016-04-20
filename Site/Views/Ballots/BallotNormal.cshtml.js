@@ -603,7 +603,7 @@ add to this ballot
   };
 
   function highlightBallotInList() {
-    let ballotList = $('#ballotList');
+    var ballotList = $('#ballotList');
     var highlighted = ballotList.children().removeClass('selected').end().find('#B{0}'.filledWith(local.ballotId)).addClass('selected');
     scrollIntoView(highlighted, ballotList);
   };
@@ -1181,7 +1181,7 @@ add to this ballot
   };
 
   function ballotClick(ev) {
-    let ballotId = $(ev.target).closest('div').attr('id');
+    var ballotId = $(ev.target).closest('div').attr('id');
     loadBallot(ballotId);
   };
 

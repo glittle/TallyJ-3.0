@@ -28,7 +28,7 @@
   };
 
   function changedIneligible() {
-    let ddl = $(this);
+    var ddl = $(this);
     var ineligible = ddl.val();
     ddl[0].size = 1;
 
