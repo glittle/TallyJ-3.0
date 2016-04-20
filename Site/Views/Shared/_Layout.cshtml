@@ -65,6 +65,14 @@
              target="gdoc">Status and Feedback</a> document for current updates!
         </div>
       }
+      @if (UserSession.IsKnownTeller)
+      {
+        <div class="topHelpLink">
+          <a title="View document"
+             href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
+             target="gdoc">Help & System Information</a>
+        </div>
+      }
       @if (Request.IsAuthenticated)
       {
         //var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
@@ -91,7 +99,7 @@
             <div class="ElectionState">
               <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <div id="electionState"
-                  data-state="@UserSession.CurrentElectionStatus">
+                   data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
                 <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
                 <span class="other"><a href="#" id="AllPages" title="Go to another page">Other Pages</a></span>
