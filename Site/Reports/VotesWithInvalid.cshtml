@@ -19,8 +19,11 @@
             .Select(g => new
             {
               PersonName = g.p.FullNameFL,
-              InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(g.p.IneligibleReasonGuid.AsGuid()),
-              g.VoteCount
+              g.VoteCount,
+              InvalidReasonDesc =
+                UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
+                ? null : IneligibleReasonEnum.DescriptionFor(g.p.IneligibleReasonGuid.AsGuid()),
+              g.p.IneligibleReasonGuid
             })
             .Select(g => new
             {
