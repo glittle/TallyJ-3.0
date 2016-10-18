@@ -1,179 +1,147 @@
 ﻿table.Demographics {
-    float: left;
-    margin-right: 15px;
-    padding: 10px 10px 10px 10px;
-    border-spacing: 0;
-    border: 1px solid #8DC63E;
-    border-radius: 3px;
-    max-width: 600px;
+  float: left;
+  margin-right: 15px;
+  padding: 10px 10px 10px 10px;
+  border-spacing: 0;
+  border: 1px solid #8DC63E;
+  border-radius: 3px;
+  max-width: 600px;
 }
-
 .badiDate {
-    display: block;
-    margin: 0 0 0 5px;
-    line-height: normal;
+  display: block;
+  margin: 0 0 0 5px;
+  line-height: normal;
 }
-
 .badiDateName {
-    margin-left: 15px;
+  margin-left: 15px;
 }
-
 .badiDateValue {
-    font-weight: bold;
+  font-weight: bold;
 }
-
 .isJalal13 {
-    font-weight: bold;
-    color: green;
+  font-weight: bold;
+  color: green;
 }
-
 .showJalal13 {
-    color: green;
-    white-space: nowrap;
-    display: none;
+  color: green;
+  white-space: nowrap;
+  display: none;
 }
-
-    .showJalal13.missing {
-        color: red;
-        font-weight: bold;
-        display: block;
-    }
-
+.showJalal13.missing {
+  color: red;
+  font-weight: bold;
+  display: block;
+}
 .More {
-    float: left;
+  float: left;
 }
-
 div.More h3 {
-    margin: 0;
+  margin: 0;
 }
-
-table.Demographics td, table.Demographics td label {
-    font-size: 94%;
+table.Demographics td,
+table.Demographics td label {
+  font-size: 94%;
 }
-
-table.More th, table.Demographics th {
-    text-align: right;
-    padding: 5px 10px 5px 0;
-    white-space: nowrap;
-    vertical-align: top;
+table.More th,
+table.Demographics th {
+  text-align: right;
+  padding: 5px 10px 5px 0;
+  white-space: nowrap;
+  vertical-align: top;
 }
-
-table.More th, table.More td {
-    vertical-align: top;
+table.More th,
+table.More td {
+  vertical-align: top;
 }
-
 input[type='text'] {
-    width: 200px;
+  width: 200px;
 }
-
 input[type='number'] {
-    width: 60px;
+  width: 60px;
 }
-
 input[type='date'] {
-    width: 140px;
+  width: 140px;
 }
-
 .Locations {
-    border: 1px solid #8dc63e;
-    border-radius: 3px;
-    width: 250px;
-    padding: 10px 10px 20px 20px;
+  border: 1px solid #8dc63e;
+  border-radius: 3px;
+  width: 250px;
+  padding: 10px 10px 20px 20px;
 }
-
 tr.electionDetail TD {
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
 }
-
 tr.electionDetailT TD {
-    border-top: 1px solid #666;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
+  border-top: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
 }
-
 tr.electionDetailB TD {
-    border-bottom: 1px solid #666;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    background-color: #ddd;
+  border-bottom: 1px solid #666;
+  border-left: 1px solid #666;
+  border-right: 1px solid #666;
+  background-color: #ddd;
 }
-
 .ui-icon {
-    display: inline-block;
+  display: inline-block;
 }
-
 .More.Misc {
-    padding: 10px 10px 20px 20px;
-    width: 272px;
+  padding: 10px 10px 20px 20px;
+  width: 272px;
 }
-
 .techInfo {
-    font-size: 75%;
-    color: #ccc;
+  font-size: 75%;
+  color: #ccc;
 }
-
 div.More h3.TellerTitle {
-    margin-top: 50px;
+  margin-top: 50px;
 }
-
 .ui-icon-trash {
-    display: inline-block;
-    cursor: pointer;
+  display: inline-block;
+  cursor: pointer;
 }
-
 button.Primary {
-    margin-left: 0;
+  margin-left: 0;
 }
-
 .accessCode {
-    padding-left: 29px;
+  padding-left: 29px;
 }
-
 #btnAddLocation {
-    margin-top: 2px;
+  margin-top: 2px;
 }
-
 #btnResetList {
-    margin-top: -24px;
+  margin-top: -24px;
 }
-
 #qTipLocked {
-    display: none;
+  display: none;
 }
-
 #VariationNotice {
-    font-weight: bold;
-    display: none;
+  font-weight: bold;
+  display: none;
 }
-
-    #VariationNotice .ui-icon {
-        display: none;
-    }
-
+#VariationNotice .ui-icon {
+  display: none;
+}
 .NoteT #qTipNoteT {
-    display: inline-block;
+  display: inline-block;
 }
-
 .NoteB #qTipNoteB {
-    display: inline-block;
+  display: inline-block;
 }
-
 .NoteN #qTipNoteN {
-    display: inline-block;
+  display: inline-block;
 }
-
 option:disabled {
-    color: #ddd;
+  color: #ddd;
 }
-
 #txtDateTip {
-    display: none;
+  display: none;
 }
-
 .locationDetail {
-    cursor: help;
-    text-decoration: underline;
+  cursor: help;
+  text-decoration: underline;
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlNldHVwLmNzaHRtbC5sZXNzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLEtBQUs7RUFDRCxXQUFBO0VBQ0Esa0JBQUE7RUFDQSw0QkFBQTtFQUNBLGlCQUFBO0VBQ0EseUJBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBOztBQUdKO0VBQ0ksY0FBQTtFQUNBLGlCQUFBO0VBQ0EsbUJBQUE7O0FBR0o7RUFDSSxpQkFBQTs7QUFHSjtFQUNJLGlCQUFBOztBQUdKO0VBQ0ksaUJBQUE7RUFDQSxZQUFBOztBQUdKO0VBQ0ksWUFBQTtFQUNBLG1CQUFBO0VBQ0EsYUFBQTs7QUFHQSxZQUFZO0VBQ1IsVUFBQTtFQUNBLGlCQUFBO0VBQ0EsY0FBQTs7QUFHUjtFQUNJLFdBQUE7O0FBR0osR0FBRyxLQUFNO0VBQ0wsU0FBQTs7QUFHSixLQUFLLGFBQWM7QUFBSSxLQUFLLGFBQWMsR0FBRztFQUN6QyxjQUFBOztBQUdKLEtBQUssS0FBTTtBQUFJLEtBQUssYUFBYztFQUM5QixpQkFBQTtFQUNBLHVCQUFBO0VBQ0EsbUJBQUE7RUFDQSxtQkFBQTs7QUFHSixLQUFLLEtBQU07QUFBSSxLQUFLLEtBQU07RUFDdEIsbUJBQUE7O0FBR0osS0FBSztFQUNELFlBQUE7O0FBR0osS0FBSztFQUNELFdBQUE7O0FBR0osS0FBSztFQUNELFlBQUE7O0FBR0o7RUFDSSx5QkFBQTtFQUNBLGtCQUFBO0VBQ0EsWUFBQTtFQUNBLDRCQUFBOztBQUdKLEVBQUUsZUFBZ0I7RUFDZCwyQkFBQTtFQUNBLDRCQUFBO0VBQ0Esc0JBQUE7O0FBR0osRUFBRSxnQkFBaUI7RUFDZiwwQkFBQTtFQUNBLDJCQUFBO0VBQ0EsNEJBQUE7RUFDQSxzQkFBQTs7QUFHSixFQUFFLGdCQUFpQjtFQUNmLDZCQUFBO0VBQ0EsMkJBQUE7RUFDQSw0QkFBQTtFQUNBLHNCQUFBOztBQUdKO0VBQ0kscUJBQUE7O0FBR0osS0FBSztFQUNELDRCQUFBO0VBQ0EsWUFBQTs7QUFHSjtFQUNJLGNBQUE7RUFDQSxXQUFBOztBQUdKLEdBQUcsS0FBTSxHQUFFO0VBQ1AsZ0JBQUE7O0FBR0o7RUFDSSxxQkFBQTtFQUNBLGVBQUE7O0FBR0osTUFBTTtFQUNGLGNBQUE7O0FBR0o7RUFDSSxrQkFBQTs7QUFHSjtFQUNJLGVBQUE7O0FBR0o7RUFDSSxpQkFBQTs7QUFHSjtFQUNJLGFBQUE7O0FBR0o7RUFDSSxpQkFBQTtFQUNBLGFBQUE7O0FBR0EsZ0JBQWlCO0VBQ2IsYUFBQTs7QUFHUixNQUFPO0VBQ0gscUJBQUE7O0FBR0osTUFBTztFQUNILHFCQUFBOztBQUdKLE1BQU87RUFDSCxxQkFBQTs7QUFHSixNQUFNO0VBQ0YsV0FBQTs7QUFHSjtFQUNJLGFBQUE7O0FBR0o7RUFDSSxZQUFBO0VBQ0EsMEJBQUEiLCJmaWxlIjoidW5kZWZpbmVkIn0= */

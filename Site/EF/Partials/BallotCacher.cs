@@ -26,6 +26,11 @@ namespace TallyJ.EF
     {
     }
 
+    public Ballot GetByComputerCode()
+    {
+      return AllForThisElection.FirstOrDefault(t => t.ComputerCode == UserSession.CurrentComputerCode);
+    }
+
     protected override object LockCacheBaseObject
     {
       get
@@ -33,6 +38,5 @@ namespace TallyJ.EF
         return _lockObject ?? (_lockObject = new object());
       }
     }
-
   }
 }

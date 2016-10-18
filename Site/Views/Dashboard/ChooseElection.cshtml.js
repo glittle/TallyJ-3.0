@@ -175,6 +175,8 @@
         this.Locations = site.templates.LocationSelectItem.filledWithEach(this.Locations);
       }
       this.TestClass = this.IsTest ? ' TestElection' : '';
+      this.RowClass = this.IsSingleNameElection ? ' SingleName' : '';
+      this.RowClass += this.IsFuture ? ' IsFuture' : '';
     });
 
     $('#ElectionList').html(site.templates.ElectionListItem.filledWithEach(info));

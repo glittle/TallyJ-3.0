@@ -6,13 +6,12 @@
   ViewBag.Title = "Ballots";
   ViewBag.Message = "Tally the votes for a single position";
 
-  ContextItems.AddJavascriptForPage("pageUrl", "ballotSinglePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("peopleUrl", "ballotSinglePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("invalids", "ballotSinglePage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
-  ContextItems.AddJavascriptForPage("ballot", "ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("location", "ballotSinglePage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  //  ContextItems.AddJavascriptForPage("locationSingle?", "ballotSinglePage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballots", "ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
+  ContextItems.AddJavascriptForPage("ballotSinglePage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.SingleVoteLine);
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -35,12 +34,12 @@
 <div class="float-left div1">
   <div id="tabs" class="tabs">
     <ul>
-      <li><a href="#tabBallots" id="tabBallotTitle">Ballot Groups</a></li>
+      <li><a href="#tabBallots" id="tabBallotTitle">Teller Computers</a></li>
       <li><a href="#tabNameSearch">Add another person</a></li>
     </ul>
 
     <div id="tabBallots" class="locationInfo">
-      <h5>Ballot Groups <span class="ui-icon ui-icon-info" id="qTipBallotGroups"></span></h5>
+      <h5>Teller Computers <span class="ui-icon ui-icon-info" id="qTipBallotGroups"></span></h5>
       <div id="ballotList" class="ballotList">
       </div>
     </div>
@@ -63,7 +62,7 @@
       </div>
       <div class="actionHolder Clear">
         <div class="tip1">
-          Use &uarr; &darr; to move in the list. Press Enter when found.
+          Use &uarr; &darr; keys to move in the list. Press Enter to add.
         </div>
       </div>
       <ul id="nameList" class="nameList"></ul>
@@ -131,7 +130,7 @@
 </div>
 <div id="addMissingPanel" class="votesPanel">
   <h3>
-    Add Missing Person
+    Adding Name Not in List
   </h3>
   @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
   <button id="btnCancelAddMissing" type="button" class="btn btn-warning">

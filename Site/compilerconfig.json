@@ -100,4 +100,16 @@
     }
 
   }
+,
+  {
+    "outputFile": "Views/Setup/Setup.cshtml.css",
+    "inputFile": "Views/Setup/Setup.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+
+  }
 ]

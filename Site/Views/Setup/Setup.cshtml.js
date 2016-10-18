@@ -14,7 +14,7 @@
 
     $(document).on('change keyup', '#ddlType', function (ev) {
       startToAdjustByType(ev);
-      $('.showJalal13').toggle($('#ddlType').val() === 'LSA');
+      $('.showJalal13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
@@ -49,7 +49,7 @@
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
-    $('.showJalal13').toggle($('#ddlType').val() == 'LSA');
+    $('.showJalal13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
     $('#txtName').focus();
 
     site.qTips.push({ selector: '#qTipLocked', title: 'Election Locked', text: 'The core settings for the election are locked after ballots have been entered.' });
@@ -143,15 +143,15 @@
     if (found) {
       settings.isJalal13.addClass('isJalal13');
     }
-    $('.showJalal13').toggleClass('missing', $('#ddlType').val() == 'LSA' && !found);
+    $('.showJalal13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
   }
 
   function showBadiInfo(di, target, intro) {
-    if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() == 'LSA') {
+    if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N') {
       settings.isJalal13 = target;
     }
 
-    var msg = intro + '<span class=badiDateValue>{bDay} {bMonthNameAr} {bYear}</span>  ({bMonthMeaning})';
+    var msg = intro + '<span class=badiDateValue>{bDay} {bMonthMeaning} ({bMonthNameAr}) {bYear}</span>';
     target.html(msg.filledWith(di));
   }
 

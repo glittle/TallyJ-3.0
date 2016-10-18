@@ -646,7 +646,6 @@ function LogMessage(msg) {
   //  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
   //    window.console.log(msg);
   //  }
-
   if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
     if (/rv:1/.test(navigator.userAgent) && typeof msg === 'object') {
       // in IE11, log is not useful

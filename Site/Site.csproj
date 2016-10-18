@@ -665,6 +665,9 @@
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\Setup.cshtml.css">
+      <DependentUpon>Setup.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Xslt\FormatExport1.xslt" />
     <Content Include="Views\Public\Home.cshtml.less">
       <DependentUpon>Home.cshtml</DependentUpon>
@@ -688,6 +691,9 @@
     </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.less">
       <DependentUpon>ImportCsv.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Setup.cshtml.less">
+      <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
@@ -801,9 +807,6 @@
     </Content>
     <Content Include="Views\Setup\People.cshtml.js">
       <DependentUpon>People.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Setup\Setup.cshtml.css">
-      <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\Setup.cshtml.js">
       <DependentUpon>Setup.cshtml</DependentUpon>

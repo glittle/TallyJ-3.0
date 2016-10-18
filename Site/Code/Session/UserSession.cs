@@ -401,7 +401,7 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static string FinalizedNoChangesMessage = "Election is Finalized. No changes allowed!";
+    public static string FinalizedNoChangesMessage = "Election is Finalized. No further changes allowed!";
 
     public static string GetCurrentTeller(int num)
     {

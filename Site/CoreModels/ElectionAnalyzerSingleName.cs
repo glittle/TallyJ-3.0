@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
@@ -68,11 +69,11 @@ namespace TallyJ.CoreModels
       foreach (var voteInfo in VoteInfos.Where(vi => vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
       {
         numDone++;
-        if (numDone % 10 == 0)
-        {
-          _hub.StatusUpdate("Processed {0} vote{1}".FilledWith(numDone, numDone.Plural()), true);
-        }
-
+//        if (numDone % 10 == 0)
+//        {
+//          _hub.StatusUpdate("Processed {0} vote{1}".FilledWith(numDone, numDone.Plural()), true);
+//        }
+//
         // get existing result record for this person, if available
         var result =
           Results.SingleOrDefault(r => r.ElectionGuid == electionGuid && r.PersonGuid == voteInfo.PersonGuid);
@@ -84,7 +85,7 @@ namespace TallyJ.CoreModels
             PersonGuid = voteInfo.PersonGuid.AsGuid()
           };
           InitializeSomeProperties(result);
-          //Savers.ResultSaver(DbAction.Add, result);
+          Savers.ResultSaver(DbAction.Add, result);
           Results.Add(result);
         }
 
@@ -95,6 +96,12 @@ namespace TallyJ.CoreModels
 
       FinalizeResultsAndTies();
       FinalizeSummaries();
+
+      var readyForReports = ResultSummaryFinal.UseOnReports.AsBoolean();
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized && !readyForReports)
+      {
+        new ElectionModel().SetTallyStatus(ElectionTallyStatusEnum.Tallying);
+      }
 
       _hub.StatusUpdate("Saving");
 

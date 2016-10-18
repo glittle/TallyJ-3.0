@@ -516,14 +516,19 @@ namespace TallyJ.CoreModels
     /// <Summary>Current Ballot... could be null</Summary>
     public Ballot GetCurrentBallot(bool refresh = false)
     {
-      var createIfNeeded = UserSession.CurrentElection.IsSingleNameElection;
+      var isSingleNameElection = UserSession.CurrentElection.IsSingleNameElection;
       var currentBallotId = SessionKey.CurrentBallotId.FromSession(0);
 
       var ballotCacher = new BallotCacher(Db);
 
       var ballot = ballotCacher.GetById(currentBallotId);
 
-      if (ballot == null && createIfNeeded)
+      if (ballot == null && isSingleNameElection)
+      {
+        ballot = ballotCacher.GetByComputerCode();
+      }
+
+      if (ballot == null && isSingleNameElection)
       {
         ballot = CreateAndRegisterBallot();
       }
@@ -543,6 +548,11 @@ namespace TallyJ.CoreModels
           ballotCacher.UpdateItemAndSaveCache(ballot);
           Db.SaveChanges();
         }
+      }
+
+      if (ballot != null && ballot.C_RowId != currentBallotId)
+      {
+        SessionKey.CurrentBallotId.SetInSession(ballot.C_RowId);
       }
 
       return ballot;

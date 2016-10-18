@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
@@ -13,18 +14,6 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        //                var locationModel = ContextItems.LocationModel;
-        //                var locations = locationModel.Locations
-        //                                             .OrderBy(l => l.SortOrder)
-        //                                             .Select(
-        //                                                 l =>
-        //                                                 new
-        //                                                     {
-        //                                                         l.Name,
-        //                                                         l.C_RowId,
-        //                                                         IsCurrent = l.LocationGuid == UserSession.CurrentLocationGuid
-        //                                                     });
-
         var list = MyElections()
           .OrderBy(e => e.ShowAsTest.AsBoolean())
           .ThenByDescending(e => e.DateOfElection)
@@ -36,7 +25,8 @@ namespace TallyJ.CoreModels
             e.DateOfElection,
             e.ElectionType,
             e.ElectionMode,
-            e.ShowAsTest
+            e.ShowAsTest,
+            e.IsSingleNameElection
           }).ToList();
 
         var electionGuids = list.Select(e => e.ElectionGuid).ToList();
@@ -65,12 +55,14 @@ namespace TallyJ.CoreModels
                                     info.DateOfElection.HasValue
                                         ? info.DateOfElection.AsString("yyyy-MMM-dd")
                                         : "",
+                                IsFuture = info.DateOfElection.HasValue && info.DateOfElection > DateTime.Today,
                                 IsCurrent = isCurrent,
                                 // Locations = isCurrent ? locations : null,
                                 Type = ElectionTypeEnum.TextFor(info.ElectionType),
                                 Mode =
                                     ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
                                 IsTest = info.ShowAsTest.AsBoolean(),
+                                info.IsSingleNameElection,
                                 NumVoters = personCounts == null ? 0 : personCounts.Num,
                                 NumBallots = ballotCounts == null ? 0 : ballotCounts.Num
                               };
