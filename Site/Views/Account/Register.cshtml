@@ -16,7 +16,7 @@
     characters in length.
 </p>*@
 @Html.ValidationSummary(true, "Account creation was unsuccessful. Please correct the errors and try again.")
-@using (Html.BeginForm((string)ViewBag.FormAction, "Account", FormMethod.Post, new { action = Url.Action((string)ViewBag.FormAction, "Account", null, UserSession.WebProtocol) }))
+@using (Html.BeginForm((string)ViewBag.FormAction, "Account", FormMethod.Post, new { action = Url.Action((string)ViewBag.FormAction, "Account") }))
 {
     <fieldset>
         <legend>Registration Form</legend>

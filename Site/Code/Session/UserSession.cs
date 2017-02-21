@@ -350,10 +350,10 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static string WebProtocol
-    {
-      get { return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http"; }
-    }
+//    public static string WebProtocol
+//    {
+//      get { return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http"; }
+//    }
 
     /// <Summary>Has the client/server time difference been figured out?</Summary>
     public static bool TimeOffsetKnown

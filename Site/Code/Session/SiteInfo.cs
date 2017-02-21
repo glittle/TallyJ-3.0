@@ -10,7 +10,7 @@ namespace TallyJ.Code.Session
     {
         Iis,
         AppHarbor,
-                SelfHostCassini,
+        SelfHostCassini,
         GlenDev,
         Unknown
     }

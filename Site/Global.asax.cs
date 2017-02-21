@@ -14,11 +14,10 @@ using System.Web.Mvc;
 using System.Web.Profile;
 using System.Web.Routing;
 using FluentSecurity;
-//using Microsoft.Web.Redis;
 using NLog;
 using NLog.Targets;
-//using RedisSessionProvider.Config;
-//using StackExchange.Redis;
+using RedisSessionProvider.Config;
+using StackExchange.Redis;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.Helpers;
@@ -106,24 +105,26 @@ namespace TallyJ
           siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
       ConfigureNLog();
-      //ConfigureRedis();
+      ConfigureRedis();
     }
 
-    //    private void ConfigureRedis()
-    //    {
-    //      if (new SiteInfo().CurrentEnvironment != "Azure")
-    //      {
-    //        return;
-    //      }
-    //
-    //      // https://github.com/welegan/RedisSessionProvider 
-    //
-    //      RedisConfigOpts = ConfigurationOptions.Parse("tallyj.redis.cache.windows.net:6379");
-    //      RedisConfigOpts.Password = ConfigurationManager.AppSettings["REDIS_KEY"];
-    //
-    //      RedisConnectionConfig.GetSERedisServerConfig =
-    //        context => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
-    //    }
+    public ConfigurationOptions RedisConfigOpts { get; set; }
+
+    private void ConfigureRedis()
+    {
+      if (new SiteInfo().CurrentEnvironment != "Azure")
+      {
+        return;
+      }
+
+      // https://github.com/welegan/RedisSessionProvider 
+
+      
+      RedisConfigOpts = ConfigurationOptions.Parse(ConfigurationManager.AppSettings["REDIS_Config"]);
+
+      RedisConnectionConfig.GetSERedisServerConfig =
+        arg => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
+    }
 
     private void ConfigureNLog()
     {

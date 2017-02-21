@@ -43,6 +43,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <PublishDatabaseSettings>
+      <Objects>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -143,6 +147,10 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Web.RedisSessionStateProvider, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.RedisSessionStateProvider.2.2.2\lib\net40\Microsoft.Web.RedisSessionStateProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\OtherSources\Newtonsoft.Json.dll</HintPath>
@@ -158,6 +166,13 @@
     <Reference Include="RazorEngine, Version=3.4.1.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RazorEngine.3.4.1\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="RedisSessionProvider, Version=1.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RedisSessionProvider.1.2.8.0\lib\net45\RedisSessionProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis">
+      <HintPath>..\packages\StackExchange.Redis.1.0.333\lib\net45\StackExchange.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -589,6 +604,7 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Properties\PublishProfiles\old Azure - not transforming.pubxml" />
     <None Include="Properties\PublishProfiles\Local 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files.pubxml" />
@@ -600,15 +616,15 @@
     <Content Include="Reports\NonVoters.cshtml" />
     <Content Include="Reports\AllPeopleLF.cshtml" />
     <Content Include="Reports\VotersByArea.cshtml" />
-    <None Include="Properties\PublishProfiles\tallyj - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\tallyj - Deploy to Azure.pubxml">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Reports\VotersByLocation.cshtml" />
     <Content Include="Reports\AllPeopleFL.cshtml" />
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
     <Content Include="Reports\VotesWithInvalid.cshtml" />
+    <None Include="Properties\PublishProfiles\TallyJ3 - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\TallyJ3 - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\Azure Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\TallyJ3 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.11.0-vsdoc.js" />
     <Content Include="Scripts\jquery-1.11.0.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />

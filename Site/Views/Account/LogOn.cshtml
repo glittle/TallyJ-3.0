@@ -24,7 +24,7 @@
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
 @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new
 {
-  action = Url.Action("LogOn", "Account", null, UserSession.WebProtocol)
+  action = Url.Action("LogOn", "Account")
 }))
 { // (string)ViewBag.FormAction
   <fieldset>
