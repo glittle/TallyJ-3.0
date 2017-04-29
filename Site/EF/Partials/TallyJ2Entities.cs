@@ -1,14 +1,21 @@
-﻿using System.Data.Common;
+﻿using EntityFramework.BulkInsert.Extensions;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace TallyJ.EF
 {
-  public partial class TallyJ2dEntities
+  public partial class TallyJ2dEntities : ITallyJDbContext
   {
     public TallyJ2dEntities(DbConnection connection)
       : base(connection, true)
     {
+      Database.CommandTimeout = 180; // default 30 seconds is too short
+    }
+    public void BulkInsert<T>(IEnumerable<T> entities)
+    {
+      this.BulkInsert(entities, 500);
     }
 
     /// <summary>

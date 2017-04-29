@@ -383,7 +383,6 @@
     <Compile Include="EF\Partials\ResultSummaryCacher.cs" />
     <Compile Include="EF\Partials\ResultTie.cs" />
     <Compile Include="EF\Partials\ResultTieCacher.cs" />
-    <Compile Include="EF\Partials\TallyJ2dEntities.cs" />
     <Compile Include="EF\Partials\TellerCacher.cs" />
     <Compile Include="EF\Partials\Vote.cs" />
     <Compile Include="EF\Person.cs">

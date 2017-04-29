@@ -830,7 +830,7 @@ function PrepareStatusDisplay() {
 
 function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
   statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
-       (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 60 * 1000;
+       (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 600 * 1000;
   if (statusDisplay.minDisplayTimeBeforeStatusReset) {
     clearTimeout(statusDisplay.resetTimer);
     statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
