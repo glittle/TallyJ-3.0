@@ -534,14 +534,17 @@ namespace TallyJ.CoreModels
 
     public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
     {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized) {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
+      {
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
-      if (locationModel.HasLocations && UserSession.CurrentLocation == null) {
+      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
+      {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }
-      if (UserSession.GetCurrentTeller(1).HasNoContent()) {
+      if (UserSession.GetCurrentTeller(1).HasNoContent())
+      {
         return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
       }
       if (!VotingMethodEnum.Exists(voteType))
@@ -724,17 +727,22 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteAllPeople()
     {
-      int rows;
+      var rows = 0;
+      var newRows = 0;
       try
       {
-        rows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Delete();
+        do
+        {
+          newRows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
+          rows += newRows;
+        } while (newRows > 0);
       }
-      catch (SqlException)
+      catch (SqlException ex)
       {
         return
           new
           {
-            Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people"
+            Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people. " + ex.GetAllMsgs("; ")
           }.
             AsJsonResult();
       }
