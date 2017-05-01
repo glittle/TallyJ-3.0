@@ -24,10 +24,10 @@ namespace TallyJ.CoreModels.ExportImport
       if (target == null)
       {
         return new
-          {
-            Deleted = false,
-            Error = "Cannot find specified election."
-          }.AsJsonResult();
+        {
+          Deleted = false,
+          Error = "Cannot find specified election."
+        }.AsJsonResult();
       }
       var electionName = target.Name;
 
@@ -35,17 +35,17 @@ namespace TallyJ.CoreModels.ExportImport
       if (user == null || !Db.JoinElectionUser.Any(j => j.ElectionGuid == _electionGuid && j.UserId == user.UserId))
       {
         return new
-          {
-            Deleted = false,
-            Error = "Specified election not accessible to you."
-          }.AsJsonResult();
+        {
+          Deleted = false,
+          Error = "Specified election not accessible to you."
+        }.AsJsonResult();
       }
 
       // delete everything...
       // don't rely on stored procedures
-      using (var transaction = new TransactionScope())
+      using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(10)))
       {
-        
+
         //var electionGuidName = ReflectionHelper.GetName(() => default(Election).ElectionGuid);
 
         try
@@ -72,7 +72,7 @@ namespace TallyJ.CoreModels.ExportImport
 
           Election.EraseBallotsAndResults(_electionGuid);
 
-//          Db.Computer.Where(x => x.ElectionGuid == _electionGuid);
+          //          Db.Computer.Where(x => x.ElectionGuid == _electionGuid);
           Db.Location.Where(x => x.ElectionGuid == _electionGuid).Delete();
           Db.Person.Where(x => x.ElectionGuid == _electionGuid).Delete();
           Db.Teller.Where(x => x.ElectionGuid == _electionGuid).Delete();
@@ -94,14 +94,14 @@ namespace TallyJ.CoreModels.ExportImport
           {
             Deleted = true
           }.AsJsonResult();
-      
+
         }
         catch (Exception ex)
         {
           return new
           {
             Deleted = false,
-            Message = ex.GetAllMsgs("<br>")            
+            Message = ex.GetAllMsgs("<br>")
           }.AsJsonResult();
 
         }
