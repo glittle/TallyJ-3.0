@@ -1,4 +1,4 @@
-﻿function AnalyzePage() {
+﻿Bfunction AnalyzePage() {
   var settings = {
     rowTemplate: '',
     info: {},

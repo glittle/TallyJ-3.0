@@ -25,94 +25,100 @@
       </div>*@
   </section>
 }
-<section class="features middle">
-  <section class="featureBig JoinPanel">
-    <div class="top">
-    </div>
-    <h3>Join an election as a teller</h3>
-    <ol>
-      <li>
-        <p>
-          Select the election: 
-          <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
-        </p>
-        <div class="table">
-          <select id="ddlElections" size="4"></select>
-        </div>
-      </li>
-      <li>
-        <p>
-          Type in the access code you were given:
-        </p>
-        <div>
-          <input id="txtPasscode" type="text" maxlength="50" />
-        </div>
-      </li>
-      <li>
-        <p>
-          Join the election:
-        </p>
-        <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
-        @*<button type="button" id="btnJoin">
-          Join Now</button>*@ <span id="joinStatus" class="idle"></span>
-      </li>
-    </ol>
-  </section>
-  <section class="featureBig CenterPanel">
-    <div class="top">
-    </div>
-    <h2 id="introTitle">Choose an Option!</h2>
-    <div class="centerbuttons">
-      <div class="centerL qTip" title="You do not need to register, but will need to know the code for the election you are joining.">
-        <button class="btn btn-primary" id="btnChooseJoin" accesskey="J"><u>J</u>oin an Election</button>
-        <p>Join an election as a teller</p>
+  <section class="features middle">
+    <section class="featureBig CenterPanel">
+      <div class="top">
       </div>
-      <div class="centerR qTip"
-           title="Create and manage an election. If you do not have an account yet, you can register here.">
-        <button class="btn btn-success" id="btnChooseLogin" accesskey="L"><u>L</u>og In</button>
-        <p>Log in to create and manage your elections</p>
+      <h2 id="introTitle">Choose an Option to Start</h2>
+      <div class="centerbuttons">
+        <div class="centerL qTip" title="Assist with an election.">
+          <button class="btn btn-primary" id="btnChooseJoin" accesskey="J"><u>J</u>oin an Election</button>
+          <p>Join an election as a teller</p>
+        </div>
+        <div class="centerR qTip"
+             title="Create and manage elections. If you do not have an account yet, you can register here.">
+          <button class="btn btn-success" id="btnChooseLogin" accesskey="L"><u>L</u>og In</button>
+          <p>Log in to create and manage your elections</p>
 
+        </div>
       </div>
-    </div>
-    <!--[if gt IE 6]>
+      <!--[if gt IE 6]>
     <div class="browser ie">
         Please note that TallyJ works best with Chrome and Firefox.<br>
         Other browsers have not been fully tested.
     </div>
     <![endif]-->
-    <!--[if !IE]> -->
-    <div class="browser">
-      Please note that TallyJ works best with Chrome and Firefox.<br>
-      Other browsers have not been fully tested.
+      <!--[if !IE]> -->
+      <div class="browser">
+        Please note that TallyJ works best with Chrome and Firefox.<br>
+        Other browsers have not been fully tested.
+      </div>
+      <![endif]-->
+    </section>
+    <section class="featureBig JoinPanel">
+      <div class="closer">
+        <img src="~/Images/close.png" class="closer">
+      </div>
+      <div class="top">
+      </div>
+      <h3>Join an election as a teller</h3>
+      <ol>
+        <li>
+          <p>
+            Select the election:
+            <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
+          </p>
+          <div class="table">
+            <select id="ddlElections" size="4"></select>
+          </div>
+        </li>
+        <li>
+          <p>
+            Type in the access code you were given:
+          </p>
+          <div>
+            <input id="txtPasscode" type="text" maxlength="50" />
+          </div>
+        </li>
+        <li>
+          <p>
+            Join the election:
+          </p>
+          <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
+          @*<button type="button" id="btnJoin">
+          Join Now</button>*@ <span id="joinStatus" class="idle"></span>
+        </li>
+      </ol>
+    </section>
+    <section class="featureBig LoginPanel">
+      <div class="closer">
+        <img src="~/Images/close.png" class="closer">
+      </div>
+      <div class="top">
+      </div>
+      <h3>Log in to make an election or access your elections</h3>
+      @if (UserSession.IsKnownTeller)
+  {
+    <p class="AlreadyIn">
+      You are still logged in!
+    </p>
+    <p class="AlreadyIn">
+      Go to the
+      <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+    </p>
+    <p class="AlreadyIn">
+      or
+      <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+    </p>
+}
+else
+{
+Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
+}
+    </section>
+    <div class="clear-fix">
     </div>
-    <![endif]-->
   </section>
-  <section class="featureBig LoginPanel">
-    <div class="top">
-    </div>
-    <h3>Log in to make an election or access your elections</h3>
-    @if (UserSession.IsKnownTeller)
-    {
-      <p class="AlreadyIn">
-        You are still logged in!
-      </p>
-      <p class="AlreadyIn">
-        Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
-      </p>
-      <p class="AlreadyIn">
-        or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
-      </p>
-    }
-    else
-    {
-      Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
-    }
-  </section>
-  <div class="clear-fix">
-  </div>
-</section>
 <section class="features bottom">
   <a href="@Url.Action("Learning")">
     <section class="feature">

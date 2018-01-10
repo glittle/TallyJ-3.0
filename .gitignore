@@ -1,3 +1,6 @@
+.vs
+.cr
+packages/
 _ReSharper*
 Site.csproj.dotsettings.user
 Site/bin/*/*

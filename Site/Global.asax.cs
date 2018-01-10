@@ -16,8 +16,7 @@ using System.Web.Routing;
 using FluentSecurity;
 using NLog;
 using NLog.Targets;
-using RedisSessionProvider.Config;
-using StackExchange.Redis;
+//using StackExchange.Redis;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.Helpers;
@@ -105,26 +104,26 @@ namespace TallyJ
           siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
       ConfigureNLog();
-      ConfigureRedis();
+      //ConfigureRedis();
     }
 
-    public ConfigurationOptions RedisConfigOpts { get; set; }
+    //public ConfigurationOptions RedisConfigOpts { get; set; }
 
-    private void ConfigureRedis()
-    {
-      if (new SiteInfo().CurrentEnvironment != "Azure")
-      {
-        return;
-      }
+    //private void ConfigureRedis()
+    //{
+    //  if (new SiteInfo().CurrentEnvironment != "Azure")
+    //  {
+    //    return;
+    //  }
 
-      // https://github.com/welegan/RedisSessionProvider 
+    //  // https://github.com/welegan/RedisSessionProvider 
 
       
-      RedisConfigOpts = ConfigurationOptions.Parse(ConfigurationManager.AppSettings["REDIS_Config"]);
+    //  RedisConfigOpts = ConfigurationOptions.Parse(ConfigurationManager.AppSettings["REDIS_Config"]);
 
-      RedisConnectionConfig.GetSERedisServerConfig =
-        arg => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
-    }
+    //  RedisConnectionConfig.GetSERedisServerConfig =
+    //    arg => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
+    //}
 
     private void ConfigureNLog()
     {

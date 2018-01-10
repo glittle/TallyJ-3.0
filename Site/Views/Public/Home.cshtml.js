@@ -14,6 +14,7 @@
     });
     $('#btnChooseJoin').click(startJoinClick);
     $('#btnChooseLogin').click(startJoinClick);
+    $('img.closer').click(cancelStart);
 
     clearElectionRelatedStorageItems();
 
@@ -80,15 +81,21 @@
     $('.CenterPanel').addClass('chosen');
 
     if (src.attr('id') == 'btnChooseJoin') {
-      $('.JoinPanel').fadeIn();
       $('.LoginPanel').hide();
+      $('.JoinPanel').fadeIn();
     }
     else {
-      $('.LoginPanel').fadeIn();
       $('.JoinPanel').hide();
+      $('.LoginPanel').fadeIn();
     }
     $('input:visible').eq(0).focus();
   };
+
+  function cancelStart() {
+    $('.CenterPanel').removeClass('chosen');
+    $('.JoinPanel').hide();
+    $('.LoginPanel').hide();
+  }
 
   var btnJoinClick = function () {
     var statusSpan = $('#joinStatus').removeClass('error');

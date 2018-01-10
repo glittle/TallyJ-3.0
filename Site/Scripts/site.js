@@ -200,15 +200,15 @@ function PrepareQTips(doNow) {
   }
 
   // global tips
-  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available using the "All Pages" button.' });
-  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state when appropriate.' });
+  site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available by hovering over other State buttons.' });
+  site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state by clicking these buttons as appropriate.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
 
   if ($('body').hasClass('AuthKnown')) {
-    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set the election to this state using the buttons on the Analyze page. When Finalized, no further inputs or changes are permitted.' });
+    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set the election to this state using the buttons on the Analyze page. When "Finalized", no further inputs or changes are permitted.' });
   } else {
-    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set by the head teller. When Finalized, no further inputs or changes are permitted.' });
+    site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set by the head teller. When "Finalized", no further inputs or changes are permitted.' });
   }
   // add some tips for pages without dedicated js
   if ($('#qTipReg1').length) {
@@ -228,7 +228,7 @@ function ActivateTips(forceRecreate) {
       viewport: true
     },
     style: {
-      classes: 'ui-tooltip-green ui-tooltip-shadow'
+      classes: 'qtip-tallyj qtip-rounded qtip-shadow'
     }
   };
 
@@ -548,7 +548,17 @@ function AttachHelp() {
       next.toggle(show);
     }
     else {
-      next.slideToggle(show);
+      if (show) {
+        next.slideDown({
+          easing: 'linear'
+        })
+      }
+      else {
+        next.slideUp({
+          easing: 'linear'
+        });
+      }
+      //next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
     handle.find('.buttonDiv').toggleClass('btn btn-mini', show);
