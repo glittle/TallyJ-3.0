@@ -212,7 +212,7 @@ function PrepareQTips(doNow) {
   }
   // add some tips for pages without dedicated js
   if ($('#qTipReg1').length) {
-    site.qTips.push({ selector: '#qTipReg1', title: 'Account Name', text: 'This is your personal account name, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.' });
+    site.qTips.push({ selector: '#qTipReg1', title: 'Login ID', text: 'This is your personal login ID, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.' });
     site.qTips.push({ selector: '#qTipReg2', title: 'Email Address', text: 'Please use a valid address where you can be notified when there is important news regarding TallyJ. It will not be given to anyone else or used for other purposes.' });
     site.qTips.push({ selector: '#qTipReg3', title: 'Password', text: 'Needs to be at least 6 characters long. It will be encrypted when stored, so cannot be viewed by anyone.' });
   }

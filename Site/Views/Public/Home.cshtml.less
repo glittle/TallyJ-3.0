@@ -58,6 +58,8 @@ div.closer {
   min-height: 300px;
   margin: 5px auto;
   padding: 10px 15px 20px 10px;
+  border: 1px solid grey;
+  border-radius: 2px;
   text-align: center;
   background-color: #fcfcfc;
 }
@@ -154,7 +156,7 @@ div.or {
 }
 
 section.CenterPanel {
-  min-height: 210px;
+  min-height: 220px;
 }
 
 section.CenterPanel.chosen {
@@ -172,7 +174,7 @@ section.CenterPanel.chosen:hover {
 
 .JoinPanel {
   display: none;
-  background-color: rgba(0, 125, 204, 0.04);
+  background-color: #eaebee;
 
   li {
     margin: 20px 0;
@@ -181,7 +183,7 @@ section.CenterPanel.chosen:hover {
 
 .LoginPanel {
   display: none;
-  background-color: rgba(95, 191, 95, 0.04);
+  background-color: #e7ece7;
 }
 
 fieldset input[type="text"], fieldset input[type="password"] {
@@ -222,20 +224,25 @@ fieldset input[type="text"], fieldset input[type="password"] {
 }
 
 .bottom {
-  margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.CenterPanel div.browser {
-  position: absolute;
-  bottom: 22px;
+div.notes {
+  width: 75%;
+  margin: 16px auto;
+  padding: 10px 10px 1px 10px;
   text-align: center;
-  width: 95%;
-  font-size: 90%;
-  color: #999;
+  font-size: 85%;
+  color: #666;
+  background: #f8f8f8;
+
+  a {
+    color: @tallyJOrange;
+  }
 }
+
 
 .CenterPanel div.browser.ie {
   color: red;
@@ -289,19 +296,15 @@ fieldset input[type="text"], fieldset input[type="password"] {
 }
 
 
-@media only screen and (max-width: 1010px) {
+@media screen and (max-width: 500px) {
   section.features.middle {
     margin: 0;
   }
 
   section.featureBig {
-    width: 44%;
-    min-width: 400px;
-    border: 1px solid grey;
-    border-radius: 2px;
-
-    .top {
-      display: none;
-    }
+    width: 90%;
+    margin: 0 auto;
+    max-width: 390px;
+    min-width: 300px;
   }
 }

@@ -13,8 +13,8 @@
 }
 
 <hgroup class="title">
-  <h2>Log On.</h2>
-  <h4>Enter your account name and password below.</h4>
+  <h2>Log In.</h2>
+  <p>Enter your account name and password below.</p>
 </hgroup>
 <p>
   If you don't have an account, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
@@ -31,7 +31,7 @@
     <legend>Log On Form</legend>
     <ol>
       <li>
-        @Html.LabelFor(m => m.UserName, "Account Name")
+        @Html.LabelFor(m => m.UserName, "Login ID (not email)")
         @Html.TextBoxFor(m => m.UserName)
         @Html.ValidationMessageFor(m => m.UserName)
       </li>

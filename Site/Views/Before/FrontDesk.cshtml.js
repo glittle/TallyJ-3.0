@@ -175,6 +175,9 @@
   var setSelection = function (el, move) {
     $('.Voter.Selection').removeClass('Selection');
     if (move) {
+
+      // not working??
+
       scrollToMe(el, function () {
         el.addClass('Selection');
       });
@@ -188,8 +191,10 @@
     var top = el.offset().top;
     var gap = 40;
     var time = 100;
+    var where = top - gap - local.headerSpace;
 
-    $('body').scrollTop(top - gap - local.headerSpace);
+    //$('body').scrollTop(where);
+    $('html, body').animate({ scrollTop: where }, 200)
     after();
     //return;
 
@@ -209,6 +214,10 @@
     clearTimeout(local.timer);
     local.matches.length = 0;
     local.focusedOnMatches = false;
+    if (!local.currentSearch) {
+      $('.Voter').removeClass('KeyMatch Focused Selection');
+      // press ESC twice to clear
+    }
     local.currentSearch = '';
     local.currentTop = 0;
     $('#search').fadeOut();
@@ -265,6 +274,7 @@
     focusOnMatches();
   };
   var focusOnMatches = function () {
+    $('.Voter').removeClass('KeyMatch Focused Selection');
     if (!local.matches.length) {
       local.focusedOnMatches = false;
       return;
@@ -273,17 +283,17 @@
 
     local.currentTop = desired;
 
-    $('.Voter').removeClass('KeyMatch Focused Selection');
     local.matches.addClass('KeyMatch'); //$(this).switchClass('KeyMatch', 'AfterMatch', 5000, 'linear');
     var num = local.matches.length;
     if (local.focusedOnMatches) {
       local.matches.addClass('Focused');
     }
-    setSelection(local.matches.eq(Math.floor((num - 1) / 2)).first(), true);
+    //setSelection(local.matches.eq(Math.floor((num - 1) / 2)).first(), true);
+    setSelection(local.matches.first(), true);
   };
   var voteBtnClicked = function (target, overrideConfirm) {
     var btn = $(target);
-    
+
     if (!overrideConfirm && btn.hasClass('True')) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
@@ -311,7 +321,7 @@
     setSelection(row, false);
 
     var btnType = btn.hasClass('InPerson') ? 'P'
-        : btn.hasClass('DroppedOff') ? 'D'
+      : btn.hasClass('DroppedOff') ? 'D'
         : btn.hasClass('CalledIn') ? 'C' : 'M';
     var pid = row.attr('id').substr(1);
 
