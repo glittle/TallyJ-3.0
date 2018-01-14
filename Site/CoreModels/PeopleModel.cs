@@ -491,7 +491,7 @@ namespace TallyJ.CoreModels
         {
           PersonId = p.C_RowId,
           p.FullName,
-          NameLower = p.FullName.WithoutDiacritics(true).ReplacePunctuation(' ').Replace("\"", "\\\""),
+          NameLower = (p.FullName + p.BahaiId).WithoutDiacritics(true).ReplacePunctuation(' ').Replace(" ", "").Replace("\"", "\\\""),
           p.Area,
           VotedAt = new[]
           {

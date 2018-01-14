@@ -4,31 +4,31 @@
 }
 
 .Voter {
-    clear: both;
-    border: 2px solid transparent;
-    overflow: auto;
+  clear: both;
+  border: 2px solid transparent;
+  overflow: auto;
 
-    div.Btn {
-        &:hover {
-            border-color: #80ff80;
-        }
-
-        &.clicked {
-            background-color: #9bff9b;
-        }
+  div.Btn {
+    &:hover {
+      border-color: #80ff80;
     }
 
-    &.Selection {
-        border-color: #00ff00;
+    &.clicked {
+      background-color: #9bff9b;
     }
+  }
 
-    &.KeyMatch {
-        background-color: #ffff99;
-    }
+  &.KeyMatch {
+    background-color: #ffff99;
+  }
 
-    b {
-        margin-left: 5px;
-    }
+  &.Selection {
+    background-color: #ccffcc;
+  }
+
+  b {
+    margin-left: 5px;
+  }
 }
 
 #selectorTip {
@@ -36,7 +36,6 @@
     position: absolute;
     left: 16px;
     font-size: 90%;
-    font-style: italic;
     color: green;
     background-color: #f9f9f9;
     padding: 3px 4px;

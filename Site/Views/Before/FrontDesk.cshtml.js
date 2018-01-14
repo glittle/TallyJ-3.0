@@ -95,7 +95,7 @@
         }
       });
     }
-    else if (/[\w\'\-]/.test(letter)) {
+    else if (/[\w]/.test(letter)) {
       if (!local.focusedOnMatches) {
         local.currentSearch = local.currentSearch + letter.toLowerCase();
         doSearch = true;
@@ -127,7 +127,11 @@
       case 8: //backspace
         if (!inSelectionMode()) {
           local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
-          doSearch = true;
+          if (!local.currentSearch) {
+            resetSearch();
+          } else {
+            doSearch = true;
+          }
         }
         ev.preventDefault();
         break;
@@ -139,7 +143,7 @@
     if (doSearch) {
       clearTimeout(local.timer);
       applyFilter();
-      local.timer = setTimeout(resetSearch, 3000);
+      //local.timer = setTimeout(resetSearch, 3000);
     }
   };
 
@@ -164,10 +168,10 @@
       var moveTo = [];
       switch (delta) {
         case -1:
-          moveTo = current.prev('.Voter');
+          moveTo = current.prevAll('.Voter:visible').eq(0);
           break;
         case 1:
-          moveTo = current.next('.Voter');
+          moveTo = current.nextAll('.Voter:visible').eq(0);
           break;
       }
       if (moveTo.length) {
@@ -217,10 +221,11 @@
     clearTimeout(local.timer);
     local.matches.length = 0;
     local.focusedOnMatches = false;
-    if (!local.currentSearch) {
-      $('.Voter').removeClass('KeyMatch Focused Selection');
-      // press ESC twice to clear
-    }
+    //if (!local.currentSearch) {
+    $('.Voter').removeClass('KeyMatch Focused Selection');
+    hideUnMatched(false);
+    // press ESC twice to clear
+    //}
     local.currentSearch = '';
     local.currentTop = 0;
     $('#search').fadeOut();
@@ -273,7 +278,7 @@
   };
   var applyFilter = function () {
     $('#search').fadeIn().html('Last name: <span>' + local.currentSearch + '</span> (Esc to clear)');
-    local.matches = $('.Voter[data-name^="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
+    local.matches = $('.Voter[data-name*="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
     focusOnMatches();
   };
   var focusOnMatches = function () {
@@ -293,7 +298,17 @@
     }
     //setSelection(local.matches.eq(Math.floor((num - 1) / 2)).first(), true);
     setSelection(local.matches.first(), true);
+    setTimeout(function () {
+      hideUnMatched(true);
+    }, 0);
   };
+  var hideUnMatched = function (hide) {
+    if (hide) {
+      $('.Voter').show().not('.KeyMatch').hide();
+    } else {
+      $('.Voter').show();
+    }
+  }
   var voteBtnClicked = function (target, overrideConfirm) {
     var btn = $(target);
 
