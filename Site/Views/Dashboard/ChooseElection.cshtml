@@ -27,19 +27,15 @@
 </div>
 @if (UserSession.IsKnownTeller)
 {
-  <h3 class="MakeNew">Preparing a New Election?</h3>
-  <div class="Comment">You can start a new election, load a saved election, or import a copy from version 1.85 of TallyJ.</div>
+  <h3 class="MakeNew">Preparing for an Election?</h3>
   <ul class="MakeNewList">
     <li>
-      Start a
+      Start a new election:
       <button type="button" class="btn  btn-primary" id="btnCreate">New Election</button>
-      <ul>
-        <li class="Comment">Choose this if you plan to import a copy from version 1.85 of TallyJ.</li>
-      </ul>
     </li>
     <li>
       <form name="formLoadFile" id="formLoadFile">
-        <label for="loadFile">Load a previous Election from file saved from this page:</label>
+        <label for="loadFile">Or, load a previously saved Election file:</label>
         <input id="loadFile" name="loadFile" type="file" />
       </form>
       <div id="loadingLog">

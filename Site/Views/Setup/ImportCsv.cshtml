@@ -9,47 +9,25 @@
   ViewBag.Title = "Import Names";
 }
 <script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
-<div class="PullInstructionsHandle">Instructions & Tips</div>
+<div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
     <li>
-      When using TallyJ, the list of adults in the community who are eligible to vote,
-      or be voted for, can be loaded using this page.
-    </li>
-    <li>
-      To load the list of names, you must first prepare a comma-separated value (CSV file)
-      with all the people's names in it.<ul>
-        <li>The first line of the file must be a "headers row" with the names of each column. The headers should not include any accented words, such Bah&aacute;'&iacute;...</li>
-        <li>
-          The file should be saved as a normal Windows text/CSV file, or using UTF-8 or UTF-16
-          encoding.
-        </li>
+      To load people, you will need to prepare a comma-separated value (CSV) file with all the people's names in it.<ul>
+        <li>You can use Excel to do this or export a CSV file from your membership records system.</li>
+        <li>The first line of the file must be a "headers row" with the title for each column. The header titles should not include any accents in words, such Bah&aacute;'&iacute;.</li>
+        <li>The file should be saved as a normal Windows text/CSV file or using UTF-8 or UTF-16 encoding.</li>
       </ul>
     </li>
     <li>
-      This file must only contain the names of eligible adults. If it includes children
+      This file usually contains only the list of eligible adults. However, if it includes children
       and youth, or people no longer in the community or not eligible to vote, you should
-      fix the CSV file before uploading it.
-      <ul>
-        <li>
-          If the file is exported from a database or other tool, see if you can export it
-          again, with only the eligible adults included.
-        </li>
-        <li>
-          You can also open the CSV file with a spreadsheet program, like Microsoft Excel,
-          and edit it there.
-        </li>
-      </ul>
+      first adjust the CSV file and include an "Eligibility Status" column (see below for exact details).
     </li>
     <li>
-      Once the CSV is ready to upload and process, proceed to Step 1 below to upload the
-      file.
-    </li>
-    <li>
-      In TallyJ, each person has a First and Last name. They also have other optional
-      fields for more information, such as a maiden name or nickname. These fields are
-      listed below. For each of the columns from the CSV file, select which TallyJ field
-      it should be put into, if any.
+      In TallyJ, each person must have a First and Last name. The CSV file may also have other optional
+      fields, such as Bahá'í ID, area, maiden name, nickname, etc. The columns in the file will be displayed below.
+      For each of the columns, select which TallyJ field it should be mapped to, if any.
     </li>
     <li>
       If you find that accented characters are not being processed correctly, you may
@@ -140,6 +118,7 @@
   If you have already done that, it does not need to be done again.
 </p>
 <div class="fieldSelector">
+  <span>Number of columns found: <span id="numColumns">-</span></span>
   <button type="button" id="btnPrepareFields">
     Re-analyze the file and get column names
   </button>
@@ -147,15 +126,17 @@
   </div>
   <div id="mappingError"></div>
 </div>
-<p>
-  To preset the "Eligibility Status" of anyone being imported, map a colum to the Eligibility Status field. The values in the file
-  must exactly match one of the reasons below. (Click a Reason to copy it.) Leave their Eligibility Status blank to use the default settings for this type of election.
+<p class="aboutEligibility">
+  To set the "Eligibility Status" of anyone being imported, map a colum to the Eligibility Status field.
+  If a person has a blank entry, they will use the default settings for this type of election, usually Eligible.
+  Any value in this column must <strong>exactly</strong> match one of the reasons below to be recognized. (Click a Reason to copy it.).
 </p>
-<div class="PullInstructionsHandle">Eligibility Status Reasons</div>
+<div class="PullInstructionsHandle btn btn-mini">Eligibility Status Reasons</div>
 <div class="PullInstructions">
   <div class="reasonExamples">
-    <div>
-      <h3>Recognized Eligibility Status Reasons</h3>
+    <div class="reasonList">
+      <h3>Valid "Eligibility Status" Reasons</h3>
+      (If blank, the person Can Vote and be Voted For.)
       <div id="listOfStatusReasons"></div>
     </div>
     <div class="reasonSamples">
@@ -169,7 +150,7 @@
         <dd>All others should have a status of: <strong>Tie-break: Not tied</strong></dd>
         <dt>For a National Convention</dt>
         <dd>Delegates should be blank</dd>
-        <dd>People that can be voted for should have a status of: <strong>Not a delegate in this election</strong></dd>
+        <dd>People that can be voted for (but are not delegates) should have a status of: <strong>Not a delegate in this election</strong></dd>
         <dd>Counsellors living in this country should have a status of: <strong>Not a delegate and on other Institution</strong></dd>
         <dd>Others (youth, recently moved, etc) should have an appropriate status reason.</dd>
       </dl>
@@ -188,9 +169,9 @@
   <button type="button" id="btnImport">
     Import now
   </button>
-  <div id="importResults">
-  </div>
   <button type="button" id="btnClearAll" class="float-right">
     Delete all People Records
   </button>
+  <div class="DbCount float-right"><span>@Model.NumberOfPeople</span> people</div>
+  <div id="importResults"></div>
 </div>

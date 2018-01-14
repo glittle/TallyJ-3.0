@@ -28,7 +28,7 @@
   }
 
   var staticSetup = function () {
-    $('#importResults').css('display', 'inline-block').hide();
+    $('#importResults').hide();
 
     local.uploadListBody = $('#uploadListBody');
     local.uploadListTemplate = local.uploadListBody.html();
@@ -37,7 +37,7 @@
 
     $('#listOfStatusReasons').on('click', 'dd', copyReason);
     $('.reasonSamples').on('click', 'strong', copyReason);
-    $('#btnPrepareFields').live('click', function () {
+    $('#btnPrepareFields').on('click', function () {
       if (!local.activeFileRowId) {
         alert('Please select a file from the list first.');
         return;
@@ -45,25 +45,50 @@
       getFieldsInfo();
     });
 
-    $('.MakeActive').live('click', function () {
-      var rowId = +$(this).parents('tr').data('rowid');
-      setActiveUploadRowId(rowId, true);
-    });
+    $('#uploadListBody')
+      .on('click', '.MakeActive', function () {
+        var rowId = +$(this).parents('tr').data('rowid');
+        setActiveUploadRowId(rowId, true);
+      })
+      .on('click', '.CopyMap', function () {
+        if (!local.activeFileRowId) {
+          alert('Please select a file from the list first.');
+        }
+        var rowId = +$(this).parents('tr').data('rowid');
 
-    $('.CopyMap').live('click', function () {
-      if (!local.activeFileRowId) {
-        alert('Please select a file from the list first.');
-      }
-      var rowId = +$(this).parents('tr').data('rowid');
+        ShowStatusDisplay('Saving...');
+        CallAjaxHandler(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId }, function (info) {
+          ShowStatusSuccess('Saved');
+          showFields(info);
+        });
+      })
+      .on('click', 'button.deleteFile', function () {
+        if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
+          return;
+        }
+        ShowStatusDisplay('Deleting...');
 
-      ShowStatusDisplay('Saving...');
-      CallAjaxHandler(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId }, function (info) {
-        ShowStatusSuccess('Saved');
-        showFields(info);
+        var parentRow = $(this).parents('tr');
+        parentRow.css('background-color', 'red');
+        var rowId = parentRow.data('rowid');
+        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteFile', { id: rowId }, function (info) {
+          if (info.previousFiles) {
+            showUploads(info);
+          }
+          if (rowId == local.activeFileRowId) {
+            local.activeFileRowId = 0;
+          }
+          ShowStatusSuccess('Deleted');
+        });
+      })
+      .on('click', 'button.download', function () {
+        top.location.href = '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
       });
 
-    });
-    $('#btnClearAll').live('click', function () {
+
+    ;
+
+    $('#btnClearAll').on('click', function () {
       if (!confirm('Are you sure you want to permanently delete all the People records in this election?')) {
         return;
       }
@@ -72,29 +97,11 @@
       CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
         ShowStatusSuccess('Deleted');
         $('#importResults').html(info.Results).show();
+        $('.DbCount span').text(info.count);
       });
     });
 
-    $('button.deleteFile').live('click', function () {
-      if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
-        return;
-      }
-      ShowStatusDisplay('Deleting...');
-
-      var parentRow = $(this).parents('tr');
-      parentRow.css('background-color', 'red');
-      var rowId = parentRow.data('rowid');
-      CallAjaxHandler(publicInterface.controllerUrl + '/DeleteFile', { id: rowId }, function (info) {
-        if (info.previousFiles) {
-          showUploads(info);
-        }
-        if (rowId == local.activeFileRowId) {
-          local.activeFileRowId = 0;
-        }
-        ShowStatusSuccess('Deleted');
-      });
-    });
-    $('#uploadListBody select').live('change', function () {
+    $('#uploadListBody').on('change', 'select', function () {
       var select = $(this);
       ShowStatusDisplay('Saving...');
       CallAjaxHandler(publicInterface.controllerUrl + '/FileCodePage', { id: select.parents('tr').data('rowid'), cp: select.val() }, function (info) {
@@ -107,31 +114,29 @@
       });
     });
 
-    $('#btnImport').live('click', function () {
+    $('#btnImport').on('click', function () {
       if (!local.activeFileRowId) {
         alert('Please select a file from the list first.');
         return;
       }
       ShowStatusDisplay('Processing');
-      $('#importResults').hide();
+      $('#importResults').html('Processing').removeClass('failed').show();
 
       CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
         if (info.result) {
           $('#importResults').html(info.result.join('<br>')).show().toggleClass('failed', info.failed === true);
+          $('.DbCount span').text(info.count);
         }
         ResetStatusDisplay();
       });
     });
 
-    $('#fieldSelector select').live('change', fieldMapChanged);
+    $('#fieldSelector').on('change', 'select', fieldMapChanged);
 
-    $('button.download').live('click', function () {
-      top.location.href = '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
-    });
 
-    $('#upload_target').load(function (ev) {
-      ResetStatusDisplay();
-    });
+    //$('#upload_target').load(function (ev) {
+    //  ResetStatusDisplay();
+    //});
 
     local.uploader = new qq.FileUploader({
       element: $('#file-uploader')[0],
@@ -281,9 +286,11 @@
       select.val(this.map);
       select.toggleClass('Mapped', select.val() !== '');
     });
+    console.log(info.csvFields);
+    $('#numColumns').text(count - 1);
 
-    site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers as found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
-    site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown above, select the TallyJ field that is the best match for the information in the column.' });
+    site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
+    site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown here, select the TallyJ field that is the best match for the information in the column.' });
     ActivateTips();
     showSelectorsStatus();
   };

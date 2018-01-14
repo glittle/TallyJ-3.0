@@ -36,7 +36,7 @@ namespace TallyJ.CoreModels
                        "OtherInfo",
                      };
 
-        // screen this hardcoded list against the Person object to ensure we aren't using old field names
+        // screen this hard-coded list against the Person object to ensure we aren't using old field names
         var sample = new Person();
         return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name));
       }
@@ -296,9 +296,11 @@ namespace TallyJ.CoreModels
       var rowsSkipped = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
+      var peopleSkipWarningGiven = false;
 
       var hub = new ImportHub();
       var peopleToLoad = new List<Person>();
+      var result = new List<string>();
 
       var unexpectedReasons = new Dictionary<string, int>();
       var validReasons = 0;
@@ -338,12 +340,15 @@ namespace TallyJ.CoreModels
                 {
                   // tried but didn't match a valid reason!
                   reason = defaultReason;
+                  value = HttpUtility.HtmlEncode(value);
+                  result.Add("Invalid Eligibility Status reason on line {0}: {1}".FilledWith(rowsProcessed + 1, value));
 
                   if (unexpectedReasons.ContainsKey(value))
                   {
                     unexpectedReasons[value] += 1;
                   }
-                  else {
+                  else
+                  {
                     unexpectedReasons.Add(value, 1);
                   }
                 }
@@ -394,10 +399,22 @@ namespace TallyJ.CoreModels
         if (!valuesSet || !namesFoundInRow)
         {
           rowsSkipped++;
+          result.Add("Skipping line " + rowsProcessed);
         }
         else if (query.Any())
         {
           peopleSkipped++;
+          if (peopleSkipped < 10)
+          {
+            result.Add("Duplicate on line " + (rowsProcessed + 1));
+          }
+          else {
+            if (!peopleSkipWarningGiven)
+            {
+              result.Add("More duplicates... (Only the first 10 are noted.)");
+              peopleSkipWarningGiven = true;
+            }
+          }
         }
         else
         {
@@ -442,14 +459,14 @@ namespace TallyJ.CoreModels
 
       new PersonCacher(Db).DropThisCache();
 
-      var result = new List<string>
+      result.AddRange(new[]
       {
-        "Processed {0} line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()),
+        "Processed {0} data line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()),
         "Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person"))
-      };
+      });
       if (peopleSkipped > 0)
       {
-        result.Add("{0} {1} matched.".FilledWith(peopleSkipped, peopleSkipped.Plural("people", "person")));
+        result.Add("{0} duplicate{1} ignored.".FilledWith(peopleSkipped, peopleSkipped.Plural()));
       }
       if (rowsSkipped > 0)
       {
@@ -457,11 +474,11 @@ namespace TallyJ.CoreModels
       }
       if (validReasons > 0)
       {
-        result.Add("{0} eligibility status{1} recognized.".FilledWith(validReasons, validReasons.Plural("es")));
+        result.Add("{0} Eligibility Status reason{1} recognized.".FilledWith(validReasons, validReasons.Plural()));
       }
       if (unexpectedReasons.Count > 0)
       {
-        result.Add("Status Reason{0} not recognized: ".FilledWith(unexpectedReasons.Count.Plural()));
+        result.Add("Eligibility Status Reason{0} not recognized: ".FilledWith(unexpectedReasons.Count.Plural()));
         foreach (var r in unexpectedReasons)
         {
           result.Add("- \"{0}\"{1}".FilledWith(r.Key, r.Value == 1 ? "" : " x" + r.Value));
@@ -474,8 +491,14 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        result
+        result,
+        count = NumberOfPeople
       }.AsJsonResult();
+    }
+
+    public int NumberOfPeople
+    {
+      get { return new PersonCacher(Db).AllForThisElection.Count(); }
     }
 
     public JsonResult SaveCodePage(int id, int codepage)

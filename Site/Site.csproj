@@ -284,10 +284,7 @@
     <Compile Include="CoreModels\Hubs\MainHub.cs" />
     <Compile Include="CoreModels\Hubs\FrontDeskHub.cs" />
     <Compile Include="CoreModels\IAnalyzerFakes.cs" />
-    <Compile Include="CoreModels\ImportV1\ImportV1Base.cs" />
-    <Compile Include="CoreModels\ImportV1\ImportV1Community.cs" />
-    <Compile Include="CoreModels\ImportV1\ImportV1Election.cs" />
-    <Compile Include="CoreModels\ImportV1\ImportV1Model.cs" />
+    <Compile Include="CoreModels\Helper\ImportHelper.cs" />
     <Compile Include="CoreModels\PulseInfo.cs" />
     <Compile Include="CoreModels\ResultHelper.cs" />
     <Compile Include="CoreModels\RollCallModel.cs" />
@@ -794,12 +791,6 @@
     <Content Include="Views\Setup\EditPerson.cshtml.js">
       <DependentUpon>EditPerson.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Setup\ImportV1.cshtml.css">
-      <DependentUpon>ImportV1.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Setup\ImportV1.cshtml.js">
-      <DependentUpon>ImportV1.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.js">
       <DependentUpon>ImportCsv.cshtml</DependentUpon>
     </Content>
@@ -892,7 +883,6 @@
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Views\Setup\ImportV1.cshtml" />
     <Content Include="Views\Shared\Version.cshtml" />
     <Content Include="Views\Setup\EditPerson.cshtml" />
     <Content Include="Xsd\TallyJv2-Export.xsd">

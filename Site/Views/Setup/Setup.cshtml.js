@@ -39,12 +39,13 @@
 
     $('#txtDate').on('change', getBadiDate);
 
-    if (Modernizr.inputtypes.date) {
-      $('#txtDate').attr('type', 'date');
-    } else {
-      //$("#txtDate").datepicker({});  //datepicker ui is all messed up.. better to not use it :(
-      $('#txtDateTip').show();
-    }
+    $('#txtDate').attr('type', 'date');
+    //  if (Modernizr.inputtypes.date) {
+    //} else {
+    //  //$("#txtDate").datepicker({});  //datepicker ui is all messed up.. better to not use it :(
+    //  $('#txtDateTip').show();
+    //}
+
     applyValues(publicInterface.Election);
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
@@ -61,7 +62,7 @@
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
-    site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Unit Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
@@ -112,7 +113,7 @@
     settings.badiDateGetter.refresh({
       currentTime: d,
       onReady: function (di) {
-        var startWord = di.frag1 > new Date() ? 'Starting' : 'Started';
+        var startWord = di.frag1 >= new Date() ? 'Starting' : 'Started';
 
         showBadiInfo(di, $('#badiDateBefore'), startWord + ' before sunset? &rarr; ');
 
@@ -133,7 +134,7 @@
       di.location = 'your area';
     }
     var msg = di.longitude
-      ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' at {startingSunsetDesc} on the election day.'
+      ? 'Sunset in <span class=locationDetail title="{latitude}, {longitude}">{location}</span> ' + (isFuture ? 'will be' : 'was') + ' at {startingSunsetDesc} on that date.'
       : '';
     $('#badiDateIntro').html(msg.filledWith(di));
 

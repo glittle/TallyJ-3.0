@@ -749,7 +749,14 @@ namespace TallyJ.CoreModels
 
       new PersonCacher(Db).DropThisCache();
 
-      return new { Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")) }.AsJsonResult();
+      return new {
+        Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")),
+        count = NumberOfPeople
+      }.AsJsonResult();
+    }
+    private int NumberOfPeople
+    {
+      get { return new PersonCacher(Db).AllForThisElection.Count(); }
     }
   }
 }

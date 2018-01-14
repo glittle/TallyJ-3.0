@@ -13,7 +13,7 @@
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
 }
-<div class="PullInstructionsHandle">Instructions & Tips</div>
+<div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
     <li>Here is where you set up your election, especially configuring the type of election.</li>
@@ -37,48 +37,6 @@
       </button>
     </td>
   </tr>
-  <tr>
-    <th>
-      Name<span class="ui-icon ui-icon-info" id="qTipName"></span>
-    </th>
-    <td>
-      <input type="text" id="txtName" data-name="Name">
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Convenor<span class="ui-icon ui-icon-info" id="qTipConvenor"></span>
-    </th>
-    <td>
-      <input type="text" id="txtConvenor" data-name="Convenor">
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
-    </th>
-    <td>
-      <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
-      @*<span class="ui-icon ui-icon-info" id="qTipDate2"></span>*@ <span id="txtDateTip">(yyyy-mm-dd)</span>
-      <div class="badiDate">
-        <div class="showJalal13">Local Spiritual Assembly elections must begin on 13 Jalál.</div>
-        <div id="badiDateIntro"></div>
-        <div id="badiDateBefore" class="badiDateName"></div>
-        <div id="badiDateAfter" class="badiDateName"></div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
-      <label for="cbShowAsTest">
-        Show this as a Test election in my list of elections.
-      </label>
-    </td>
-  </tr>
   <tr class="electionDetailT">
     <th>
       Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
@@ -97,9 +55,9 @@
     <td>
       <select id="ddlMode" data-name="ElectionMode">
         @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                              {
-                                                {"B"," id=modeB"}
-                                              })
+                                                          {
+                                                            {"B"," id=modeB"}
+                                                          })
         @*                <option value="N">Normal Election</option>
           <option value="T">Tie-Break</option>
           <option value="B" id="modeB">By-election</option>
@@ -119,14 +77,6 @@
     </th>
     <td>
       <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>
-      Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
-    </th>
-    <td>
-      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
     </td>
   </tr>
   <tr class="electionDetail">
@@ -152,6 +102,57 @@
       <button type="button" id="btnResetList" class="btn btn-mini">Reset All People<span class="ui-icon ui-icon-info" id="qTipReset"></span></button>
     </td>
   </tr>
+  <tr>
+    <th>
+      Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
+    </th>
+    <td>
+      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+    </th>
+    <td>
+      <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
+      <span id="txtDateTip">(yyyy-mm-dd)</span>
+      <div class="badiDate">
+        <div id="badiDateIntro"></div>
+        <div id="badiDateBefore" class="badiDateName"></div>
+        <div id="badiDateAfter" class="badiDateName"></div>
+        <div class="showJalal13">Local Spiritual Assembly elections must begin on 13 Glory (Jalál).</div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Convenor<span class="ui-icon ui-icon-info" id="qTipConvenor"></span>
+    </th>
+    <td>
+      <input type="text" id="txtConvenor" data-name="Convenor">
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
+    </th>
+    <td>
+      <input type="text" id="txtName" data-name="Name">
+    </td>
+  </tr>
+  <tr>
+    <th>
+      Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
+    </th>
+    <td>
+      <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
+      <label for="cbShowAsTest">
+        Show this as a Test election in my list of elections.
+      </label>
+    </td>
+  </tr>
+
   <tr>
     <th>
       Allow Tellers Access?<span class="ui-icon ui-icon-info" id="qTipShow"></span>

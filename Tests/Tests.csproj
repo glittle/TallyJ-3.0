@@ -160,8 +160,6 @@
     <Compile Include="BusinessTests\AnalyzerNormalTests.cs" />
     <Compile Include="BusinessTests\FakeDbContextFactory.cs" />
     <Compile Include="BusinessTests\ImportFakes.cs" />
-    <Compile Include="BusinessTests\ImportV1CommunityTests.cs" />
-    <Compile Include="BusinessTests\ImportV1ElectionTest.cs" />
     <Compile Include="BusinessTests\MetaphoneTests.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
     <Compile Include="BusinessTests\TestDbContext.cs" />

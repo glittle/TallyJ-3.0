@@ -237,20 +237,29 @@ tr.Uploaded .CopyMap {
 
 .reasonExamples {
   display: flex;
-  justify-content: space-between;
 }
 
 .reasonExamples h3 {
   margin: 0;
 }
 
+.reasonList {
+  padding: 5px 9px;
+  margin: -3px 0 5px 5px;
+  background-color: #fcF6f2;
+}
+
 .reasonSamples {
+  margin: 10px 0 0 15px;
+
   dt {
-    color: darken(@tallyJGreen, 15%);
-    text-decoration: underline;
+    margin-top: 10px;
+    // color: darken(@tallyJGreen, 15%);
   }
 
   dd {
+    margin-left: 25px;
+
     strong {
       display: block;
       margin: 0 0 0 45px;
@@ -266,15 +275,19 @@ tr.Uploaded .CopyMap {
   }
 }
 
+p.aboutEligibility {
+  margin: 1em 0 0 0;
+}
+
 dl {
   margin-top: 0;
 }
 
 #listOfStatusReasons {
   dt {
+    margin: 15px 0 0 0;
     font-weight: normal;
-    font-style: italic;
-    text-decoration: underline;
+    border-bottom: 1px solid #333;
   }
 
   dd {
@@ -293,8 +306,9 @@ dl {
 
 #importResults {
   display: none;
-  margin: 0 0 0 10px;
+  margin: 10px 0 0 0;
   vertical-align: top;
+  line-height: 1.3;
   text-align: left;
   border-radius: 2px;
   padding: 8px 10px;
@@ -305,4 +319,8 @@ dl {
 #importResults.failed {
   background-color: #ffd9d9;
   color: #9A0000;
+}
+
+.DbCount {
+  margin: 5px 9px 0 0
 }

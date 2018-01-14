@@ -48,16 +48,16 @@ namespace TallyJ.Controllers
       return View(importCsvModel);
     }
 
-    [ForAuthenticatedTeller]
-    public ActionResult ImportV1(ImportV1Model importV1Model)
-    {
-      if (importV1Model == null)
-      {
-        importV1Model = new ImportV1Model();
-      }
+    //[ForAuthenticatedTeller]
+    //public ActionResult ImportV1(ImportV1Model importV1Model)
+    //{
+    //  if (importV1Model == null)
+    //  {
+    //    importV1Model = new ImportV1Model();
+    //  }
 
-      return View(importV1Model);
-    }
+    //  return View(importV1Model);
+    //}
 
 
     [ForAuthenticatedTeller]
@@ -74,19 +74,19 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
-    [ForAuthenticatedTeller]
-    public JsonResult UploadXml()
-    {
-      var model = new ImportV1Model();
-      int rowId;
-      var messages = model.ProcessUpload(out rowId);
+    //[ForAuthenticatedTeller]
+    //public JsonResult UploadXml()
+    //{
+    //  var model = new ImportV1Model();
+    //  int rowId;
+    //  var messages = model.ProcessUpload(out rowId);
 
-      return new { 
-        success = messages.HasNoContent(),
-        rowId, 
-        messages
-      }.AsJsonResult();
-    }
+    //  return new { 
+    //    success = messages.HasNoContent(),
+    //    rowId, 
+    //    messages
+    //  }.AsJsonResult();
+    //}
 
 
     [ForAuthenticatedTeller]
@@ -117,12 +117,12 @@ namespace TallyJ.Controllers
       return importCsvModel.GetUploadList();
     }
 
-    [ForAuthenticatedTeller]
-    public ActionResult GetUploadlistXml()
-    {
-      var importV1Model = new ImportV1Model();
-      return importV1Model.GetUploadList();
-    }
+    //[ForAuthenticatedTeller]
+    //public ActionResult GetUploadlistXml()
+    //{
+    //  var importV1Model = new ImportV1Model();
+    //  return importV1Model.GetUploadList();
+    //}
 
     public JsonResult SavePerson(Person person)
     {
@@ -166,11 +166,11 @@ namespace TallyJ.Controllers
       return new ImportCsvModel().Import(id);
     }
   
-    [ForAuthenticatedTeller]
-    public JsonResult ImportXml(int id)
-    {
-      return new ImportV1Model().Import(id);
-    }
+    //[ForAuthenticatedTeller]
+    //public JsonResult ImportXml(int id)
+    //{
+    //  return new ImportV1Model().Import(id);
+    //}
 
     [ForAuthenticatedTeller]
     public JsonResult SaveMapping(int id, List<string> mapping)
