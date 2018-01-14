@@ -6,7 +6,6 @@
 .Voter {
   clear: both;
   border: 2px solid transparent;
-  display: none;
   overflow: auto;
 
   div.Btn {
@@ -15,15 +14,24 @@
     }
 
     &.clicked {
+      background-color: plum;
+    }
+
+    &.true, &.True {
+      //background-color: plum;
       background-color: #9bff9b;
     }
   }
 
-  &:hover {
-    background-color: #ffffcc;
+  &.hidden {
+    display: none;
   }
 
   &.KeyMatch {
+    background-color: #ffffaa;
+  }
+
+  &:hover {
     background-color: #ffffcc;
   }
 
@@ -51,7 +59,7 @@
 
 .SearchArea {
   display: inline-block;
-  margin: 1px 0 0 20px;
+  margin: 1px 0 0 10px;
   font-weight: bold;
 
   span {
@@ -66,7 +74,7 @@
     display: inline-block;
     height: 1.6em;
     line-height: 1.6em;
-    min-width: 80px;
+    width: 80px;
     padding: 0 3px;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -92,8 +100,40 @@
   color: rgb(135, 98, 135);
 }
 
+.Counts {
+  display: inline-block;
+  float: right;
+  margin: 5px 0 10px 5px;
+  font-size: 90%;
+  color: #999;
+
+  div {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  span {
+    font-weight: bold;
+  }
+
+  div + div span {
+    padding: 0 10px 0 0;
+  }
+}
+
+div.CalledIn {
+  display: none;
+}
+
+.UseCallIn {
+  .CalledIn {
+    display: inline-block;
+  }
+}
+
 #Main {
   overflow: auto;
+  clear: both;
 
   p {
     margin: 0 0 0 5px;
@@ -118,16 +158,6 @@
     font-style: normal;
   }
 
-
-  .CalledIn {
-    display: none;
-  }
-
-  &.UseCallIn {
-    .CalledIn {
-      display: inline-block;
-    }
-  }
 
   &.WithArea u {
     margin: 0 0 0 5px;
@@ -154,10 +184,6 @@
       opacity: 1;
     }
   }
-}
-
-.Btn.true, .Btn.True {
-  background-color: plum;
 }
 
 #OLDsearch {

@@ -35,12 +35,13 @@
     $(window).on('scroll', function () {
       if ($(window).scrollTop() > local.afterList.offset().top - $(window).height() - 500) {
         if (!local.currentSearch) {
-          $('.Voter:not(:visible)').slice(0, local.pageSize).show();
+          $('.Voter:not(:visible)').slice(0, local.pageSize).removeClass('hidden');
         }
       }
     }).scroll();
 
     resetSearch();
+    updateTotals();
   };
 
   var connectToFrontDeskHub = function () {
@@ -74,6 +75,20 @@
   //    });
   //
   //  };
+
+  function updateTotals() {
+    var total = 0;
+    var sumUp = function (name) {
+      var num = $('.Voter .{0}.True, .Voter .{0}.true'.filledWith(name)).length;
+      total += num;
+      $('.Counts .{0} span'.filledWith(name)).text(num);
+    }
+    sumUp('CallIn');
+    sumUp('MailedIn');
+    sumUp('DroppedOff');
+    sumUp('InPerson');
+    $('.Counts .Total span').text(total);
+  }
 
   var searchChanged = function (ev) {
     if (local.currentSearch === ev.target.value) {
@@ -351,18 +366,18 @@
   };
   var hideUnMatched = function (hide) {
     if (hide) {
-      $('.Voter').show().not('.KeyMatch').hide();
+      $('.Voter').removeClass('hidden').not('.KeyMatch').addClass('hidden');
       if (!local.currentSearch) {
         resetSearch();
       }
     } else {
-      $('.Voter').hide().slice(0, local.pageSize).show();
+      $('.Voter').addClass('hidden').slice(0, local.pageSize).removeClass('hidden');
     }
   }
   var voteBtnClicked = function (target, overrideConfirm) {
     var btn = $(target);
 
-    if (!overrideConfirm && btn.hasClass('True')) {
+    if (!overrideConfirm && (btn.hasClass('True') || btn.hasClass('true'))) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
@@ -430,6 +445,7 @@
             setSelection($(selector), false);
           }
         });
+        updateTotals();
       }
       if (info.LastRowVersion) {
         publicInterface.lastRowVersion = info.LastRowVersion;

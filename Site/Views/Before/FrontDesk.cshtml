@@ -12,8 +12,8 @@
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li>To quickly find a person, begin to type the name or Bahá'í ID of the person you are looking for. Use the Up/Down arrow keys to move to the correct person, then press the Enter key.</li>
-    <li>If pre-registering people for the Roll Call, as people arrive at the election venue, mark them as "In Person" if they intend to cast their own ballot.</li>
+    <li>To quickly find a person, begin to type the name or Bahá'í ID of the person you are looking for into the Search Box. Use the Up/Down arrow keys to move to the correct person, then press the Enter key.</li>
+    <li>If pre-registering people for the Roll Call, mark them as "In Person" as they arrive at the election venue if they intend to cast their own ballot.</li>
   </ol>
 </div>
 <div class="SearchArea">
@@ -21,7 +21,30 @@
   <input id="search">
   <span class="info">(Esc to clear)</span>
 </div>
-<div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea " : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : ""))">
+<div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "")">
+  <div class="CalledIn">
+    Called In:
+    <span>-</span>
+  </div>
+  <div class="MailedIn">
+    Mailed In:
+    <span>-</span>
+  </div>
+  <div class="DroppedOff">
+    Dropped Off:
+    <span>-</span>
+  </div>
+  <div class="InPerson">
+    In Person:
+    <span>-</span>
+  </div>
+  <div class="Total">
+    Total:
+    <span>-</span>
+  </div>
+
+</div>
+<div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea" : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? " UseCallIn" : ""))">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
   <div id="selectorTip">
     Type a letter (<span class="CalledIn">C, </span>M, D, I) to click the corresponding button.

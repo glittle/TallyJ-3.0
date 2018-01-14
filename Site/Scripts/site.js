@@ -537,6 +537,7 @@ function AttachHelp() {
 
   pihList.each(function (i, el) {
     var pih = $(el);
+    pih[0].accessKey = "I";
     var title = pih.text() || 'Instructions & Tips';
     //pih.html('<span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> <span>{0}</span>'.filledWith(title));
     pih.html('<span class=IfOpen>Hide</span> <span>{0}</span>'.filledWith(title));
@@ -550,12 +551,14 @@ function AttachHelp() {
     else {
       if (show) {
         next.slideDown({
-          easing: 'linear'
+          easing: 'linear',
+          duration: 'fast'
         })
       }
       else {
         next.slideUp({
-          easing: 'linear'
+          easing: 'linear',
+          duration: 'fast'
         });
       }
       //next.slideToggle(show);
