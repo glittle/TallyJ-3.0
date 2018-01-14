@@ -24,7 +24,7 @@
   function resetSearch  () {
     if (local.currentAjaxSearch) {
       local.currentAjaxSearch.abort();
-      //LogMessage('aborted previous');
+      //console.log('aborted previous');
     }
   };
   function startGettingPeople(search, onNamesReady, includeMatches, usedPersonIds, forBallot) {
@@ -215,14 +215,14 @@
         };
         save = true;
       } else if (stored.Person.RowVersion !== person.RowVersion) {
-        //LogMessage('updated {Id} - {Name}'.filledWith(person));
+        //console.log('updated {Id} - {Name}'.filledWith(person));
         stored = {
           Person: person,
           nameParts: $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching)
         };
         save = true;
       } else if (stored.Person.NumVotes !== person.NumVotes) {
-        //LogMessage('vote change {Id} - {Name}'.filledWith(person));
+        //console.log('vote change {Id} - {Name}'.filledWith(person));
         stored.Person.NumVotes = person.NumVotes;
         save = true;
       }

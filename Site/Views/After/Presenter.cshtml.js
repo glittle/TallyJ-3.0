@@ -127,7 +127,7 @@
         break;
 
       default:
-        //LogMessage(ev.which);
+        //console.log(ev.which);
         break;
     }
   };

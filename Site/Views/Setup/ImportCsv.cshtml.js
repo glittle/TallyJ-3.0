@@ -376,8 +376,8 @@
       $('#importResults').html(msg).show();
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join import Hub');
+    startSignalR(function () {
+      //console.log('Joining import Hub');
       CallAjaxHandler(publicInterface.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
 
       });

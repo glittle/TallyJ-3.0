@@ -56,14 +56,14 @@
     var hub = $.connection.frontDeskHubCore;
 
     hub.client.updatePeople = function () {
-      LogMessage('signalR: updatePeople');
+      console.log('signalR: updatePeople');
 
       local.currentLocation = 0;
       changeLocation(true);
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join frontDesk Hub');
+    startSignalR(function () {
+      //console.log('Joining frontDesk Hub');
       CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
   };
@@ -73,7 +73,7 @@
   //      clearTimeout(local.reconnectHubTimeout);
   //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
   //    };
-  //    LogMessage('Join frontDeskHub');
+  //    console.log('Joining frontDeskHub');
   //    clearTimeout(local.reconnectHubTimeout);
   //    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
   //      resetHubConnectionTimer();

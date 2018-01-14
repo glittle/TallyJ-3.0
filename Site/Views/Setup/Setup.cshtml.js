@@ -293,7 +293,7 @@
       }
     });
     $('span[data-name]').each(function () {
-      //LogMessage(this.tagName);
+      //console.log(this.tagName);
       var input = $(this);
       var value = election[input.data('name')] || '';
       input.html(value);

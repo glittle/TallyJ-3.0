@@ -883,7 +883,7 @@ add to this ballot
 
     // single:
     //    local.nameList.children().removeClass('selected');
-    //    LogMessage(local.rowSelected);
+    //    console.log(local.rowSelected);
     //    local.nameList.children().eq(local.rowSelected).addClass('selected');
     setSelected(local.nameList.children(), local.rowSelected);
   };
@@ -970,7 +970,7 @@ add to this ballot
   };
 
   function addSpoiled() {
-    //    LogMessage('spoiled');
+    //    console.log('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -1114,7 +1114,7 @@ add to this ballot
         return true;
 
       default:
-        //        LogMessage(ev.which);
+        //        console.log(ev.which);
         break;
     }
     return false;

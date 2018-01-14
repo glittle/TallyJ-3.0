@@ -179,13 +179,13 @@
     var hub = $.connection.rollCallHubCore;
 
     hub.client.updatePeople = function (info) {
-      LogMessage('signalR: updatePeople');
-      //LogMessage(info);
+      console.log('signalR: updatePeople');
+      //console.log(info);
       updatePeople(info);
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join rollCallHub');
+    startSignalR(function () {
+      //console.log('Joining rollCallHub');
       CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId });
     });
   };
@@ -196,7 +196,7 @@
   //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
   //    };
   //
-  //    LogMessage('Join rollCallHub');
+  //    console.log('Joining rollCallHub');
   //    clearTimeout(local.reconnectHubTimeout);
   //    CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId }, function () {
   //      resetHubConnectionTimer();
@@ -206,7 +206,7 @@
   function changeLocation(ddlLocation) {
     var newLocation = ddlLocation.val();
     if (newLocation != local.currentLocation && newLocation) {
-      LogMessage('Change location');
+      console.log('Change location');
     }
   };
 
@@ -291,7 +291,7 @@
         break;
 
       default:
-        LogMessage(ev.which);
+        console.log(ev.which);
         return;
     }
     if ($(ev.target).closest('.Nav, header').length) {

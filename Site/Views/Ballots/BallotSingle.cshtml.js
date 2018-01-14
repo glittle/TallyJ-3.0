@@ -405,8 +405,8 @@
     var saveNow = ev.type === 'change';
     var focusOnNew = false;
     var changing = true;
-    //    LogMessage(ev.type);
-    //    LogMessage(ev.which);
+    //    console.log(ev.type);
+    //    console.log(ev.which);
 
 
     switch (ev.which) {
@@ -750,7 +750,7 @@
 
     // single:
     //    local.nameList.children().removeClass('selected');
-    //    LogMessage(local.rowSelected);
+    //    console.log(local.rowSelected);
     //    local.nameList.children().eq(local.rowSelected).addClass('selected');
     setSelected(local.nameList.children(), local.rowSelected);
   };
@@ -842,7 +842,7 @@
   };
 
   function addSpoiled() {
-    //    LogMessage('spoiled');
+    //    console.log('spoiled');
     local.votes.push({
       vid: 0,
       count: 0,
@@ -960,7 +960,7 @@
         return true;
 
       default:
-        //        LogMessage(ev.which);
+        //        console.log(ev.which);
         break;
     }
     return false;

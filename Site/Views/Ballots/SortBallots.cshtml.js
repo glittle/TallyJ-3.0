@@ -42,7 +42,7 @@
     var hub = $.connection.frontDeskHubCore;
 
     hub.client.updatePeople = function (changes) {
-      LogMessage('signalR: updatePeople');
+      console.log('signalR: updatePeople');
       var personLines = changes.PersonLines;
       for (var i = 0; i < personLines.length; i++) {
         local.recentUpdates.push({
@@ -56,8 +56,8 @@
       changeLocation(true);
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join frontDesk Hub');
+    startSignalR(function () {
+      //console.log('Joining frontDesk Hub');
       CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
   };

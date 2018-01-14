@@ -58,7 +58,7 @@
     }
 
     site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
-      LogMessage(info);
+      console.log(info);
       var id = info.StateName === 'Finalized' ? '#rbFinalized' : '#rbNotFinalized';
       $(id).prop('checked', true);
     });
@@ -118,11 +118,11 @@
       }
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join analyze Hub');
+    startSignalR(function () {
+      //console.log('Joining analyze Hub');
       CallAjaxHandler(analyzePage.analyzeHubUrl, { connId: site.signalrConnectionId }, function (info) {
         if (!info) {
-          LogMessage(info);
+          console.log(info);
         }
       });
     });
@@ -147,7 +147,7 @@
     $('#btnRefreshDiv').show();
 
     if (info.Interrupted) {
-      LogMessage(info.Msg);
+      console.log(info.Msg);
       $('#InitialMsg').addClass('bad').text('Analysis failed. This may happen if tellers are actively entering ballots.');
       return;
     }
@@ -177,7 +177,7 @@
 
       $('#HasCloseVote').toggle(settings.hasCloseVote);
       $('.HasTie').toggle(settings.hasTie);
-      //LogMessage(settings.hasTie);
+      //console.log(settings.hasTie);
 
       if (info.Votes.length != 0) {
         var max = info.Votes[0].VoteCount;

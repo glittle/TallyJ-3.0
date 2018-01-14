@@ -42,7 +42,7 @@ div.closer img.closer:hover {
   margin: 5px auto;
   padding: 10px 15px 20px 10px;
   border: 1px solid grey;
-  border-radius: 2px;
+  border-radius: 5px;
   text-align: center;
   background-color: #fcfcfc;
 }

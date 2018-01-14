@@ -32,14 +32,14 @@
     var hub = $.connection.publicHubCore;
 
     hub.client.electionsListUpdated = function (listing) {
-      LogMessage('signalR: electionsListUpdated');
+      console.log('signalR: electionsListUpdated');
 
       $('#ddlElections').html(listing);
       selectDefaultElection();
     };
 
-    activateHub(hub, function() {
-      LogMessage('Join public Hub');
+    startSignalR(function() {
+      //console.log('Joining public Hub');
       CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function(info) {
         showElections(info);
       });

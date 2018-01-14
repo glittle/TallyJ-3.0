@@ -88,7 +88,7 @@ namespace TallyJ.Controllers
       return OpenElections();
     }
 
-    public void MainHub(string connId, string electionGuid)
+    public void JoinMainHub(string connId, string electionGuid)
     {
       // removed [Authorize]... just ignore if we don't like the call
 

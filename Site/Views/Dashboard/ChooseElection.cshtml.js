@@ -23,11 +23,11 @@
       //                iframeID: 'glen1',
       //                json: true,
       //                post: function() {
-      //                    LogMessage('in post');
+      //                    console.log('in post');
       //                },
       //                complete: function(response) {
-      //                    LogMessage('in complete');
-      //                    LogMessage(response);
+      //                    console.log('in complete');
+      //                    console.log(response);
       //                    debugger;
       //                }
       //            });
@@ -93,8 +93,8 @@
       }
     };
 
-    activateHub(hub, function () {
-      LogMessage('Join import Hub');
+    startSignalR(function () {
+      //console.log('Joining import Hub');
       CallAjaxHandler(chooseElectionPage.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
 
       });
@@ -348,7 +348,7 @@
 
   var loadElection2 = function () {
     var name = $('#fileName').val();
-    LogMessage(name);
+    console.log(name);
   };
 
   //  var copyElection = function () {
@@ -392,7 +392,7 @@
       }, time);
     } catch (e) {
       // ignore error
-      LogMessage(e.message);
+      console.log(e.message);
     }
 
     setTimeout(function () {

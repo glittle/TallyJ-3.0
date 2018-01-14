@@ -19,6 +19,8 @@ var site = {
   signalrConnectionId: null,
   signalrConnecting: false,
   signalrDelayedCallbacks: [],
+  signalrDelay: null,
+  signalrReconnecting: false,
   menuShowingDefault: true,
   menuShowDelay: 1000,
   menuResetDelay: 2000,
@@ -108,13 +110,13 @@ var connectToElectionHub = function () {
   var hub = $.connection.mainHubCore;
 
   hub.client.statusChanged = function (info) {
-    LogMessage('signalR: electionStatusChanged');
+    console.log('signalR: electionStatusChanged');
     site.broadcast(site.broadcastCode.electionStatusChanged, info);
   };
 
   var closing = false;
   hub.client.electionClosed = function () {
-    LogMessage('signalR: electionClosed');
+    console.log('signalR: electionClosed');
     var msg = 'This election has been closed. Thank you for your participation!';
     //ShowStatusFailed(msg);
     if (closing) return;
@@ -124,70 +126,66 @@ var connectToElectionHub = function () {
     alert(msg);
   };
 
-  activateHub(hub, function () {
-    LogMessage('Join main Hub');
-    CallAjaxHandler(site.rootUrl + 'Public/MainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
+  startSignalR(function () {
+    console.log('Joining main Hub');
+    CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
   });
 };
 
-var activateHub = function (hub, callBack) {
-  if (site.signalrConnectionId) {
-    LogMessage('hub already connected');
+var startSignalR = function (callBack) {
+  if ($.connection.hub.id) {
+    console.log('WARNING: already connected');
     callBack();
     return;
   }
 
-  if (site.signalrConnecting) {
-    LogMessage('queuing callback');
-    site.signalrDelayedCallbacks.push(callBack);
-    return;
-  }
+  site.signalrDelayedCallbacks.push(callBack);
 
-  site.signalrConnecting = true;
+  clearTimeout(site.signalrDelay);
 
-  LogMessage('connecting hub');
-  //  $.connection.hub.logging = true;
-  $.connection.hub
-    .start()
-    .done(function () {
-      LogMessage('connected');
-      LogMessage(hub.connection.id);
-      site.signalrConnectionId = hub.connection.id;
-      callBack();
-      for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
-        site.signalrDelayedCallbacks[0]();
-      }
+  site.signalrDelay = setTimeout(function () {
+    $.connection.hub.error(function (error) {
+      console.log('error');
+      ShowStatusFailed(error.toString());
     });
 
-  var tryingToReconnect = false;
-  $.connection.hub.connectionSlow(function () {
-    LogMessage('slow');
-    ShowStatusFailed('The connection to the server is slow... please wait...');
-  });
-  $.connection.hub.reconnecting(function () {
-    LogMessage('reconnecting');
-    ShowStatusFailed('Attempting to reconnect to the server...');
-    tryingToReconnect = true;
-  });
-  $.connection.hub.reconnected(function () {
-    LogMessage('connected');
-    ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
-    tryingToReconnect = false;
-  });
-  $.connection.hub.disconnected(function () {
-    LogMessage('disconnected');
-    if (tryingToReconnect) {
-      ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
-    }
-  });
-  $.connection.hub.error(function (error) {
-    LogMessage('error');
-    ShowStatusFailed(error.toString());
-  });
+    $.connection.hub
+      .start()
+      .done(function () {
+        console.log('signalR client connected', $.connection.hub.id);
+        site.signalrConnectionId = $.connection.hub.id;
+        for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
+          site.signalrDelayedCallbacks[i]();
+        }
+      });
+
+    site.signalrReconnecting = false;
+
+    $.connection.hub.connectionSlow(function () {
+      console.log('slow');
+      ShowStatusFailed('The connection to the server is slow... please wait...');
+    });
+    $.connection.hub.reconnecting(function () {
+      console.log('reconnecting');
+      ShowStatusFailed('Attempting to reconnect to the server...');
+      site.signalrReconnecting = true;
+    });
+    $.connection.hub.reconnected(function () {
+      console.log('connected');
+      ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
+      site.signalrReconnecting = false;
+    });
+    $.connection.hub.disconnected(function () {
+      console.log('disconnected');
+      if (site.signalrReconnecting) {
+        ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
+      }
+    });
+  }, 0); // delay before calling server
 };
 
 function logoffSignalR() {
-  LogMessage('closing signalr');
+  console.log('closing signalr');
   $.connection.hub.stop();
 }
 
@@ -290,10 +288,10 @@ function AttachHandlers() {
     closeDropDown();
     showAllPages(this);
   })
-  .on('mouseout', '#AllPages', function () {
-    clearTimeout(dropDownTimeout);
-    dropDownTimeout = setTimeout(closeDropDown, 200);
-  });
+    .on('mouseout', '#AllPages', function () {
+      clearTimeout(dropDownTimeout);
+      dropDownTimeout = setTimeout(closeDropDown, 200);
+    });
 
 
   $('#electionState').on('mouseover', 'span.state', function (ev) {
@@ -314,10 +312,10 @@ function AttachHandlers() {
         top: (item.offset().top + item.height() - 3) + 'px'
       });
   })
-  .on('mouseout', 'span.state', function (ev) {
-    clearTimeout(dropDownTimeout);
-    dropDownTimeout = setTimeout(closeDropDown, 200);
-  });
+    .on('mouseout', 'span.state', function (ev) {
+      clearTimeout(dropDownTimeout);
+      dropDownTimeout = setTimeout(closeDropDown, 200);
+    });
 
   $('body').on('mouseover', '.DropDown,.QuickDash', function () {
     clearTimeout(dropDownTimeout);
@@ -362,7 +360,7 @@ function showAllPages(btnRaw) {
 }
 
 var quickDashCloser = function (ev) {
-  LogMessage($(ev.srcElement).closest('.QuickDash'));
+  console.log($(ev.srcElement).closest('.QuickDash'));
   if ($(ev.srcElement).closest('.QuickDash').length == 0) {
     $('.QuickDash').fadeOut('fast');
     $('.ElectionState .General').removeClass('GeneralActive');
@@ -373,7 +371,7 @@ var quickDashCloser = function (ev) {
 function showMenu(state, permanent, slow) {
   var target = $('#electionState');
   //  var temp = target.data('temp') || target.data('state');
-  // LogMessage('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
+  // console.log('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
   //  if (state != temp) {
   $('#quickLinks2 span:visible').addClass('Hidden').removeClass('DropDown');
   $('#menu' + state).removeClass('Hidden').removeClass('DropDown');
@@ -638,7 +636,7 @@ function HasErrors(data) {
   }
   if (/^Exception:/.test(data)) {
     ShowStatusFailed('Server Error: ' + data.substr(0, 60) + '...');
-    LogMessage(data);
+    console.log(data);
     return true;
   }
   if (/Error\:/.test(data)) {
@@ -646,25 +644,6 @@ function HasErrors(data) {
     return true;
   }
   return false;
-}
-
-function LogMessage(msg) {
-  /// <summary>Log the message to the console, if the browser supports it
-  /// </summary>
-  //  if (typeof console != 'undefined' && console) {
-  //    console.log(JSON.stringify(msg));
-  //  } else if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
-  //    window.console.log(msg);
-  //  }
-  if (typeof window != 'undefined' && window && typeof window.console != 'undefined' && window.console) {
-    if (/rv:1/.test(navigator.userAgent) && typeof msg === 'object') {
-      // in IE11, log is not useful
-      window.console.dir(msg);
-    }
-    else {
-      window.console.log(msg);
-    }
-  }
 }
 
 function GetResource(resourceKey) {
@@ -799,16 +778,16 @@ function JsonParse(json) {
     try {
       return JSON.parse(json); // if not pure JSON, may get parse error
     } catch (e) {
-      LogMessage(e);
-      LogMessage(json);
+      console.log(e);
+      console.log(json);
       ShowStatusFailed(e.message);
     }
   }
   try {
     return eval('(' + json + ')');
   } catch (e) {
-    LogMessage(e);
-    LogMessage(json);
+    console.log(e);
+    console.log(json);
   }
 }
 
@@ -831,8 +810,8 @@ function PrepareStatusDisplay() {
   var target = $('body').hasClass('Public Index') ? 'body' : '#body';
 
   $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">'
-          + '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>'
-          + '</div></div></div>');
+    + '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>'
+    + '</div></div></div>');
   //} else {
   //    $('#body').prepend('<div class="StatusOuter2 content-wrapper"><span id="statusDisplay2" class="StatusActive" style="display: none;"></span></div>');
   //}
@@ -840,7 +819,7 @@ function PrepareStatusDisplay() {
 
 function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
   statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
-       (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 600 * 1000;
+    (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 600 * 1000;
   if (statusDisplay.minDisplayTimeBeforeStatusReset) {
     clearTimeout(statusDisplay.resetTimer);
     statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
@@ -863,7 +842,7 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
   }
   var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
   var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' :
-                      showNoIcon ? '' : loaderPath;
+    showNoIcon ? '' : loaderPath;
   target.html(imageHtml + msg).show();
   if (showErrorIcon) {
     target.addClass('error');
@@ -1081,7 +1060,7 @@ function ieInnerHTML(obj, convertToLowerCase) {
     for (var i = 0; i < z.length; i++) {
       var y, zSaved = z[i], attrRE = /\=[a-zA-Z\.\:\[\]_\(\)\{\}\&\$\%#\@\!0-9]+[?\s+|?>]/g;
       z[i] = z[i]
-  .replace(/(<?\w+)|(<\/?\w+)\s/, function (a) { return a.toLowerCase(); });
+        .replace(/(<?\w+)|(<\/?\w+)\s/, function (a) { return a.toLowerCase(); });
       y = z[i].match(attrRE); //deze match
 
       if (y) {
@@ -1145,10 +1124,10 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
     return '[Invalid Date]';
   }
   if (!doNotAdjustForServerTimeOffset) {
-    LogMessage('time offset {0}'.filledWith(site.timeOffset));
-    LogMessage('  - original: {0}'.filledWith(date.toString()));
+    console.log('time offset {0}'.filledWith(site.timeOffset));
+    console.log('  - original: {0}'.filledWith(date.toString()));
     date = new Date(date.getTime() + site.timeOffset);
-    LogMessage('  - after   : {0}'.filledWith(date.toString()));
+    console.log('  - after   : {0}'.filledWith(date.toString()));
   }
 
   if (!format) {
@@ -1251,8 +1230,8 @@ String.prototype.filledWith = function () {
           value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/{/g, '&#123;');
         }
       } catch (err) {
-        LogMessage('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
-        LogMessage(values);
+        console.log('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
+        console.log(values);
         throw 'Error in filledWith';
       }
       return (typeof value == 'undefined' || value == null ? '' : ('' + value));
@@ -1347,7 +1326,7 @@ function startTimer() {
 
 function endTimer(msg) {
   if (typeof site.stTime != 'undefined' && site.stTime) {
-    LogMessage(msg + " " + (new Date().getTime() - site.stTime));
+    console.log(msg + " " + (new Date().getTime() - site.stTime));
   }
 
 }
@@ -1359,7 +1338,7 @@ function OptionsFromResourceList(resourceList, defaultValue) {
   });
 
   return '<option value="{Key}"{Selected}>{Text}</option>'
-  .filledWithEach(items);
+    .filledWithEach(items);
 }
 
 //  Storge  //////////////////////////////////////////////////
@@ -1392,8 +1371,8 @@ function SetInStorage(key, value) {
 var adjustElection = function (election) {
   return election;
   election.DateOfElection = FormatDate(
-      !isNaN(election) ? election :
-         election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
+    !isNaN(election) ? election :
+      election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
   return election;
 };
 
