@@ -127,7 +127,7 @@ var connectToElectionHub = function () {
   };
 
   startSignalR(function () {
-    console.log('Joining main Hub');
+    console.log('Joining main hub');
     CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
   });
 };
@@ -177,7 +177,7 @@ var startSignalR = function (callBack) {
     });
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
-      if (site.signalrReconnecting) {
+      if (!site.signalrReconnecting) {
         ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
       }
     });
@@ -533,11 +533,13 @@ function PrepareMainMenu() {
 }
 
 function AttachHelp() {
-  var piList = $('.PullInstructions');
-  piList.each(function (i, el) {
-    var pi = $(el);
-    var title = pi.data('title') || 'Instructions';
-    pi.before($('<div class=PullInstructionsHandle data-title="{0}"><span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class="buttonDiv"><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> {0}</span></div>'.filledWith(title)));
+  var pihList = $('.PullInstructionsHandle');
+
+  pihList.each(function (i, el) {
+    var pih = $(el);
+    var title = pih.text() || 'Instructions & Tips';
+    //pih.html('<span class="ui-icon ui-icon-info IfClosed qTip" title="Click to show more instructions"></span><span class=IfOpen>Hide</span><span class=IfClosed>Show</span> <span>{0}</span>'.filledWith(title));
+    pih.html('<span class=IfOpen>Hide</span> <span>{0}</span>'.filledWith(title));
   });
 
   var showHelp = function (handle, show, fast) {
@@ -559,7 +561,6 @@ function AttachHelp() {
       //next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
-    handle.find('.buttonDiv').toggleClass('btn btn-mini', show);
     SetInStorage('HidePI_' + location.pathname + handle.data('title'), show ? 'show' : 'hide');
   };
 

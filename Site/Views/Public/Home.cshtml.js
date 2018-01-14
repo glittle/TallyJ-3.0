@@ -39,7 +39,7 @@
     };
 
     startSignalR(function() {
-      //console.log('Joining public Hub');
+      console.log('Joining public hub');
       CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function(info) {
         showElections(info);
       });

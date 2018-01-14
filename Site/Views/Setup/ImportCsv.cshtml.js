@@ -377,7 +377,7 @@
     };
 
     startSignalR(function () {
-      //console.log('Joining import Hub');
+      console.log('Joining import hub');
       CallAjaxHandler(publicInterface.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
 
       });

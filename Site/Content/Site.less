@@ -895,24 +895,28 @@ span.other {
 
 
 .PullInstructions {
+  margin: -8px 0 5px;
+  padding: 8px 0 0 1px;
   border: 1px solid #77BBFF;
   background-color: #dce6f2;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   font-size: 95%;
-  padding: 8px 0 0 1px;
-  margin-bottom: 5px;
   display: none;
 }
 
 .PullInstructionsHandle {
-  margin: 5px 0 5px -5px;
+  display: inline-block;
+  margin: 10px 0;
   color: #77BBFF;
   cursor: pointer;
   font-size: 90%;
   clear: both;
-  font-style: italic;
+
+  span {
+    vertical-align: middle;
+  }
 
   .IfClosed {
     display: none;
@@ -921,14 +925,12 @@ span.other {
   &.Closed .IfClosed {
     display: inline-block;
   }
-
+  
   .IfOpen {
     display: inline-block;
   }
 
   &.Closed {
-    margin-bottom: 10px;
-
     .IfOpen {
       display: none;
     }

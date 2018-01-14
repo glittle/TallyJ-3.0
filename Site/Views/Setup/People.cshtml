@@ -10,12 +10,15 @@
   ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(Model.NumberOfPeople));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<div class="PullInstructionsHandle">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
     <li>To edit the information for a person, use this page.</li>
-    <li>Search for any person by typing a part of their name in the input box below, then
-            press Enter when their name is highlighted. Use the Up and Down keys to move through
-            the list of matched names.</li>
+    <li>
+      Search for any person by typing a part of their name in the input box below, then
+      press Enter when their name is highlighted. Use the Up and Down keys to move through
+      the list of matched names.
+    </li>
     <li>If this is a tie-break election, each of the people who can be voted for in the tie break must have "Can be voted for in this Tie-Break election?" checked.</li>
   </ol>
 </div>
@@ -25,9 +28,9 @@
 
   <input id="txtSearch" class="input-medium" accesskey="P" autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span> <span id="action"></span>
   <button id="btnAddNew" class="btn btn-success btn-mini" type="button" accesskey="N">
-    Add <u>N</u>ew Person</button>
-  <ul id="nameList">
-  </ul>
+    Add <u>N</u>ew Person
+  </button>
+  <ul id="nameList"></ul>
   @if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
   {
     <div>

@@ -13,6 +13,7 @@
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
 }
+<div class="PullInstructionsHandle">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
     <li>Here is where you set up your election, especially configuring the type of election.</li>
@@ -96,9 +97,9 @@
     <td>
       <select id="ddlMode" data-name="ElectionMode">
         @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                            {
-                                              {"B"," id=modeB"}
-                                            })
+                                              {
+                                                {"B"," id=modeB"}
+                                              })
         @*                <option value="N">Normal Election</option>
           <option value="T">Tie-Break</option>
           <option value="B" id="modeB">By-election</option>
@@ -188,14 +189,14 @@
     </td>
   </tr>
   @*<tr>
-    <th>
-      Mask Voting Method?<span class="ui-icon ui-icon-info" id="qTipMask"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="chkMask" data-name="MaskVotingMethod" />
-      <label for="chkMask">Show "Envelope" instead of specific methods <span class="ui-icon ui-icon-info" id="qTipWhyMask"></span></label>
-    </td>
-  </tr>*@
+      <th>
+        Mask Voting Method?<span class="ui-icon ui-icon-info" id="qTipMask"></span>
+      </th>
+      <td>
+        <input type="checkbox" id="chkMask" data-name="MaskVotingMethod" />
+        <label for="chkMask">Show "Envelope" instead of specific methods <span class="ui-icon ui-icon-info" id="qTipWhyMask"></span></label>
+      </td>
+    </tr>*@
 </table>
 <div class="More Locations">
   <h3>Locations<span class="ui-icon ui-icon-info" id="qTipLocation"></span></h3>

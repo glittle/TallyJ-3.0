@@ -119,7 +119,7 @@
     };
 
     startSignalR(function () {
-      //console.log('Joining analyze Hub');
+      console.log('Joining analyze hub');
       CallAjaxHandler(analyzePage.analyzeHubUrl, { connId: site.signalrConnectionId }, function (info) {
         if (!info) {
           console.log(info);

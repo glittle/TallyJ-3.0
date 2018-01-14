@@ -20,6 +20,7 @@
 
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
+<div class="PullInstructionsHandle">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
     <li>Each paper ballot needs to be recorded here.</li>
@@ -76,16 +77,16 @@
         <option value="">Show All</option>
         @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
         {
-        <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
+          <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
         }
       </select>
       <h5>
         Ballots
         @if (ContextItems.LocationModel.HasLocations)
         {
-        <span class="where">
-          <span>-</span> <span data-name="Name"></span>
-        </span>
+          <span class="where">
+            <span>-</span> <span data-name="Name"></span>
+          </span>
         }
 
       </h5>

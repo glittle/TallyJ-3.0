@@ -185,7 +185,7 @@
     };
 
     startSignalR(function () {
-      //console.log('Joining rollCallHub');
+      console.log('Joining rollCall hub');
       CallAjaxHandler(publicInterface.controllerUrl + '/JoinRollCallHub', { connId: site.signalrConnectionId });
     });
   };

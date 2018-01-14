@@ -63,7 +63,7 @@
     };
 
     startSignalR(function () {
-      //console.log('Joining frontDesk Hub');
+      console.log('Joining frontDesk hub');
       CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
   };

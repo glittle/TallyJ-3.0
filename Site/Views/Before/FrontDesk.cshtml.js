@@ -3,12 +3,14 @@
     currentSearch: '',
     currentTop: 0,
     lastSearch: 0,
-    timer: null,
+    scrollTimer: null,
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     matches: [],
     focusedOnMatches: false,
-    headerSpace: 0
+    headerSpace: 0,
+    pageSize: 100,
+    afterList: null
   };
   var preparePage = function () {
     $('#Main')
@@ -20,6 +22,7 @@
       });
 
     $(document).keydown(processKey);
+    $('#search').keyup(searchChanged).focus();
 
     connectToFrontDeskHub();
 
@@ -27,6 +30,17 @@
 
     $('body').animate({ scrollTop: 0 }, 0);
 
+    local.afterList = $('#afterList');
+
+    $(window).on('scroll', function () {
+      if ($(window).scrollTop() > local.afterList.offset().top - $(window).height() - 500) {
+        if (!local.currentSearch) {
+          $('.Voter:not(:visible)').slice(0, local.pageSize).show();
+        }
+      }
+    }).scroll();
+
+    resetSearch();
   };
 
   var connectToFrontDeskHub = function () {
@@ -40,7 +54,7 @@
     };
 
     startSignalR(function () {
-      console.log('Joining frontDesk Hub');
+      console.log('Joining frontDesk hub');
       CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
 
@@ -60,6 +74,22 @@
   //    });
   //
   //  };
+
+  var searchChanged = function (ev) {
+    if (local.currentSearch === ev.target.value) {
+      return;
+    }
+
+    if (inSelectionMode()) {
+      ev.target.value = local.currentSearch;
+      return;
+    }
+
+    local.currentSearch = ev.target.value;
+
+    //clearTimeout(local.timer);
+    applyFilter();
+  }
 
   var processKey = function (ev) {
     var letter, key = ev.which;
@@ -96,15 +126,23 @@
       });
     }
     else if (/[\w]/.test(letter)) {
+      console.log(local.focusedOnMatches)
       if (!local.focusedOnMatches) {
-        local.currentSearch = local.currentSearch + letter.toLowerCase();
-        doSearch = true;
-        clearTimeout(local.timer);
+        $('#search').focus();
       } else {
         handleKeyWhileFocused(ev);
       }
     }
-    //    console.log('main ' + key);
+    //else if (/[\w]/.test(letter)) {
+    //  if (!local.focusedOnMatches) {
+    //    local.currentSearch = local.currentSearch + letter.toLowerCase();
+    //    doSearch = true;
+    //    clearTimeout(local.timer);
+    //  } else {
+    //    handleKeyWhileFocused(ev);
+    //  }
+    //}
+    console.log('main ' + key);
     switch (key) {
       case 13: // enter
         if (inSelectionMode()) {
@@ -124,24 +162,24 @@
         ev.preventDefault();
         break;
 
-      case 8: //backspace
-        if (!inSelectionMode()) {
-          local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
-          if (!local.currentSearch) {
-            resetSearch();
-          } else {
-            doSearch = true;
-          }
-        }
-        ev.preventDefault();
-        break;
+      //case 8: //backspace
+      //  if (!inSelectionMode()) {
+      //    local.currentSearch = local.currentSearch.substr(0, local.currentSearch.length - 1);
+      //    if (!local.currentSearch) {
+      //      resetSearch();
+      //    } else {
+      //      doSearch = true;
+      //    }
+      //  }
+      //  ev.preventDefault();
+      //  break;
 
       default:
         //console.log(key);
         break;
     }
     if (doSearch) {
-      clearTimeout(local.timer);
+      //clearTimeout(local.timer);
       applyFilter();
       //local.timer = setTimeout(resetSearch, 3000);
     }
@@ -160,11 +198,14 @@
     $('#Main').addClass('InSelection');
   }
   var moveSelector = function (delta) {
-    if (inSelectionMode()) {
+    if (inSelectionMode() || !local.currentSearch) {
       return;
     }
     var current = $('.Voter.Selection');
-    if (current.length) {
+    if (!current.length) {
+      setSelection($('.Voter:visible').eq(0), true);
+    }
+    else {
       var moveTo = [];
       switch (delta) {
         case -1:
@@ -183,11 +224,13 @@
     $('.Voter.Selection').removeClass('Selection');
     if (move) {
 
-      // not working??
+      clearTimeout(local.scrollTimer);
 
-      scrollToMe(el, function () {
-        el.addClass('Selection');
-      });
+      local.scrollTimer = setTimeout(function () {
+        scrollToMe(el, function () {
+          el.addClass('Selection');
+        });
+      }, 100);
     } else {
       el.addClass('Selection');
     }
@@ -218,7 +261,7 @@
 
 
   var resetSearch = function () {
-    clearTimeout(local.timer);
+    //clearTimeout(local.timer);
     local.matches.length = 0;
     local.focusedOnMatches = false;
     //if (!local.currentSearch) {
@@ -228,7 +271,7 @@
     //}
     local.currentSearch = '';
     local.currentTop = 0;
-    $('#search').fadeOut();
+    $('#search').val('').focus();
   };
   var handleKeyWhileFocused = function (ev) {
     if (!local.focusedOnMatches || local.matches.length == 0) return;
@@ -277,7 +320,11 @@
     }
   };
   var applyFilter = function () {
-    $('#search').fadeIn().html('Last name: <span>' + local.currentSearch + '</span> (Esc to clear)');
+    if (!local.currentSearch) {
+      resetSearch();
+      return;
+    }
+    $('#search').val(local.currentSearch);
     local.matches = $('.Voter[data-name*="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
     focusOnMatches();
   };
@@ -305,8 +352,11 @@
   var hideUnMatched = function (hide) {
     if (hide) {
       $('.Voter').show().not('.KeyMatch').hide();
+      if (!local.currentSearch) {
+        resetSearch();
+      }
     } else {
-      $('.Voter').show();
+      $('.Voter').hide().slice(0, local.pageSize).show();
     }
   }
   var voteBtnClicked = function (target, overrideConfirm) {

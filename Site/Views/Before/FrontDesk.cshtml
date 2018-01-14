@@ -9,15 +9,18 @@
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
   TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
 }
+<div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li>As people arrive at the election venue, mark them as "In Person" if they intend to cast their own ballot.</li>
-    <li>Any "Dropped Off" ballots can be collected and marked here.</li>
-    <li>To quickly scroll the page, begin to type the <strong>last name</strong> of the person you are looking for. Use the Up/Down arrow keys to move to the correct person, then press the Enter key.</li>
-    <li>Use the mouse to correctly mark each person.</li>
+    <li>To quickly find a person, begin to type the name or Bahá'í ID of the person you are looking for. Use the Up/Down arrow keys to move to the correct person, then press the Enter key.</li>
+    <li>If pre-registering people for the Roll Call, as people arrive at the election venue, mark them as "In Person" if they intend to cast their own ballot.</li>
   </ol>
 </div>
-<div id="search"></div>
+<div class="SearchArea">
+  <span>Search box: </span>
+  <input id="search">
+  <span class="info">(Esc to clear)</span>
+</div>
 <div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea " : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : ""))">
   @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
   <div id="selectorTip">
@@ -25,3 +28,4 @@
     Press Esc or Enter when done.
   </div>
 </div>
+<div id="afterList"></div>
