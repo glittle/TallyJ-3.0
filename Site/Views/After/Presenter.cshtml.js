@@ -216,7 +216,7 @@
 
     $.each(results, function (i) {
       this.ClassName = this.Section == 'E' ? (foundExtra ? 'Extra' : ' FirstExtra') : '';
-      this.VoteDisplay = this.VoteCount + (this.TieBreakCount ? ', ' + this.TieBreakCount : '');
+      this.VoteDisplay = this.VoteCount + (this.TieBreakCount !== null ? ', ' + this.TieBreakCount : '');
       if (this.Section == 'E') {
         foundExtra = true;
       }

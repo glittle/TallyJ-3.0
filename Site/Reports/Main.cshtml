@@ -24,7 +24,7 @@
       ? "Next " + rp.result1.RankInExtra
       : rp.result1.Rank.ToString(),
     VoteCountPlus = rp.result1.VoteCount.GetValueOrDefault() +
-                    (rp.result1.IsTied.GetValueOrDefault() && rp.result1.TieBreakCount.GetValueOrDefault() > 0
+                    (rp.result1.IsTied.GetValueOrDefault()
                       ? " / {0}".FilledWith(rp.result1.TieBreakCount)
                       : ""),
   }).ToList();

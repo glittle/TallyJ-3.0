@@ -261,7 +261,7 @@
     $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
       var span = $(this);
       var value = results[span.data('name')];
-      span.text(value || '-');
+      span.text(value || '0');
     });
     $('#totalCounts').find('input.{0}[data-name]'.filledWith(name)).each(function () {
       var input = $(this);
@@ -300,7 +300,7 @@
           && (this.CloseToNext || this.CloseToPrev)) {
         settings.hasCloseVote = true;
       }
-      this.VoteDisplay = this.VoteCount + (this.TieBreakCount ? ', ' + this.TieBreakCount : '');
+      this.VoteDisplay = this.VoteCount + (this.IsTied ? ', ' + this.TieBreakCount : '');
     });
     return results;
   };
