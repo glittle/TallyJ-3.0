@@ -14,7 +14,10 @@
   function preparePage() {
     setReadyStatus(site.electionState === 'Finalized');
 
-    site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots Not Entered', text: 'It is best if every ballot is entered into TallyJ, even if it is spoiled.  However, if some spoiled ballots were not entered into TallyJ, enter the number here. ' });
+    site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots', text: 'The calculated number shows the entered ballots that were found to be spoiled. If some spoiled ballots were not entered into TallyJ, enter the number here. ' });
+    site.qTips.push({ selector: '#qTipSpoiledVotes', title: 'Spoiled Votes', text: 'These are spoiled votes that are on valid ballots.' });
+
+    
 
     $('#btnRefresh').click(function () {
       runAnalysis(false);
@@ -242,8 +245,8 @@
       var finalSpan = row.find('span.Final');
       var finalText = finalSpan.text();
 
-      finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
-      //calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
+      //finalSpan.toggleClass('changed', calcText != '' && calcText != finalText);
+      calcSpan.toggleClass('changed', finalText != '' && calcText != finalText && !calcSpan.hasClass('NoChanges'));
     });
 
     var countsMatch = settings.info.ResultsFinal.NumBallotsWithManual === settings.info.ResultsFinal.SumOfEnvelopesCollected;

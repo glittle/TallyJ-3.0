@@ -1,14 +1,14 @@
 ﻿table {
   border-collapse: separate;
   border-spacing: 0px 0px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 thead th, thead td {
   border-bottom: 1px solid #000;
 }
 
-.Main {
+.MainHolder {
   margin-top: 20px;
 }
 
@@ -135,6 +135,10 @@ table caption {
 
 td.Left {
   text-align: left;
+}
+
+td.nw {
+  white-space: nowrap;
 }
 
 #btnRefresh {
@@ -303,9 +307,11 @@ table#totalCounts tr#trCountMismatch td {
 input.Manual {
   text-align: center;
   width: 60px;
+  padding-top: 2px;
 }
 
 input.Manual.Additional {
+  width: 30px;
 }
 
 span.Final.changed {
@@ -343,4 +349,30 @@ span.Calc.changed {
   min-height: 1em;
   text-align: left;
   width: 50%;
+}
+
+.btnSaveManualCounts {
+  line-height: 1.3;
+  padding: 2px;
+}
+
+@media screen and (max-width: 750px) {
+  .MainHolder {
+    max-height: 90vh;
+    overflow: auto;
+    background: #f5f3f5;
+    padding: 4px 0 0 5px;
+    margin: 0px 0 15px 0;
+  }
+
+  .LeftHalf {
+    width: auto;
+    margin-right: 0;
+    float: none;
+  }
+
+  .RightHalf {
+    width: auto;
+    float: none;
+  }
 }

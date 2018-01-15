@@ -38,9 +38,9 @@ namespace TallyJ.EF
     {
       get
       {
-        if (BallotsReceived.HasValue || SpoiledManualBallots.HasValue)
+        if (BallotsReceived.HasValue || SpoiledBallots.HasValue)
         {
-          return BallotsReceived.GetValueOrDefault() + SpoiledManualBallots.GetValueOrDefault();
+          return BallotsReceived.GetValueOrDefault() + SpoiledBallots.GetValueOrDefault();
         }
 
         return null;

@@ -513,11 +513,10 @@ namespace TallyJ.CoreModels
 
       CombineCalcAndManualSummaries();
 
-      ResultSummaryFinal.UseOnReports = ResultSummaryFinal.BallotsNeedingReview == 0
-                                        && ResultTies.All(rt => rt.IsResolved.AsBoolean())
-                                        &&
-                                        ResultSummaryFinal.NumBallotsWithManual ==
-                                        ResultSummaryFinal.SumOfEnvelopesCollected;
+      ResultSummaryFinal.UseOnReports
+        = ResultSummaryFinal.BallotsNeedingReview == 0
+          && ResultTies.All(rt => rt.IsResolved.AsBoolean())
+          && ResultSummaryFinal.NumBallotsWithManual == ResultSummaryFinal.SumOfEnvelopesCollected;
 
     }
 
@@ -835,46 +834,49 @@ namespace TallyJ.CoreModels
     /// </summary>
     public void CombineCalcAndManualSummaries()
     {
-      var manualInput = ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual)
+      var manualOverride = ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual)
                         ?? new ResultSummary();
+
+      // allow override of some
+
+      ResultSummaryFinal.NumEligibleToVote = manualOverride.NumEligibleToVote.HasValue
+        ? manualOverride.NumEligibleToVote.Value
+        : ResultSummaryCalc.NumEligibleToVote.GetValueOrDefault();
+
+      ResultSummaryFinal.InPersonBallots = manualOverride.InPersonBallots.HasValue
+        ? manualOverride.InPersonBallots.Value
+        : ResultSummaryCalc.InPersonBallots.GetValueOrDefault();
+
+      ResultSummaryFinal.DroppedOffBallots = manualOverride.DroppedOffBallots.HasValue
+        ? manualOverride.DroppedOffBallots.Value
+        : ResultSummaryCalc.DroppedOffBallots.GetValueOrDefault();
+
+      ResultSummaryFinal.MailedInBallots = manualOverride.MailedInBallots.HasValue
+        ? manualOverride.MailedInBallots.Value
+        : ResultSummaryCalc.MailedInBallots.GetValueOrDefault();
+
+      ResultSummaryFinal.CalledInBallots = manualOverride.CalledInBallots.HasValue
+        ? manualOverride.CalledInBallots.Value
+        : ResultSummaryCalc.CalledInBallots.GetValueOrDefault();
+
+
+      // no overrides
+
+      // Received --> now is used for Valid ballots
+      ResultSummaryFinal.BallotsReceived = ResultSummaryCalc.BallotsReceived.GetValueOrDefault();
+
+      ResultSummaryFinal.NumVoters = manualOverride.NumVoters.HasValue
+        ? manualOverride.NumVoters.Value
+        : ResultSummaryCalc.NumVoters.GetValueOrDefault();
+
+      ResultSummaryFinal.SpoiledManualBallots = manualOverride.SpoiledManualBallots;
 
       ResultSummaryFinal.BallotsNeedingReview = ResultSummaryCalc.BallotsNeedingReview;
 
-      ResultSummaryFinal.BallotsReceived = manualInput.BallotsReceived.HasValue
-        ? manualInput.BallotsReceived.Value
-        : ResultSummaryCalc.BallotsReceived.GetValueOrDefault();
-
-      ResultSummaryFinal.CalledInBallots = manualInput.CalledInBallots.HasValue
-        ? manualInput.CalledInBallots.Value
-        : ResultSummaryCalc.CalledInBallots.GetValueOrDefault();
-
-      ResultSummaryFinal.DroppedOffBallots = manualInput.DroppedOffBallots.HasValue
-        ? manualInput.DroppedOffBallots.Value
-        : ResultSummaryCalc.DroppedOffBallots.GetValueOrDefault();
-
-      ResultSummaryFinal.InPersonBallots = manualInput.InPersonBallots.HasValue
-        ? manualInput.InPersonBallots.Value
-        : ResultSummaryCalc.InPersonBallots.GetValueOrDefault();
-
-      ResultSummaryFinal.MailedInBallots = manualInput.MailedInBallots.HasValue
-        ? manualInput.MailedInBallots.Value
-        : ResultSummaryCalc.MailedInBallots.GetValueOrDefault();
-
-      ResultSummaryFinal.NumEligibleToVote = manualInput.NumEligibleToVote.HasValue
-        ? manualInput.NumEligibleToVote.Value
-        : ResultSummaryCalc.NumEligibleToVote.GetValueOrDefault();
-
-      ResultSummaryFinal.NumVoters = manualInput.NumVoters.HasValue
-        ? manualInput.NumVoters.Value
-        : ResultSummaryCalc.NumVoters.GetValueOrDefault();
-
-      ResultSummaryFinal.SpoiledManualBallots = manualInput.SpoiledManualBallots;
-
-      // add manual to calculcated
-      ResultSummaryFinal.SpoiledBallots = manualInput.SpoiledBallots.HasValue
-        ? manualInput.SpoiledBallots.Value
-        : ResultSummaryCalc.SpoiledBallots.GetValueOrDefault()
-          + manualInput.SpoiledManualBallots.GetValueOrDefault();
+      // add manual to calculated
+      ResultSummaryFinal.SpoiledBallots =
+           manualOverride.SpoiledManualBallots.GetValueOrDefault()
+         + ResultSummaryCalc.SpoiledBallots.GetValueOrDefault();
 
       ResultSummaryFinal.SpoiledVotes = ResultSummaryCalc.SpoiledVotes;
 

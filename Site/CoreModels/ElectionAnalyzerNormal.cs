@@ -33,18 +33,19 @@ namespace TallyJ.CoreModels
 
       ResultSummaryCalc.BallotsNeedingReview = Ballots.Count(BallotAnalyzer.BallotNeedsReview);
 
-      ResultSummaryCalc.BallotsReceived = Ballots.Count;
-      ResultSummaryCalc.TotalVotes = ResultSummaryCalc.BallotsReceived*TargetElection.NumberToElect;
+      ResultSummaryCalc.TotalVotes = Ballots.Count * TargetElection.NumberToElect;
 
-      var invalidBallotGuids =
+      var invalidBallotGuids = 
         Ballots.Where(b => b.StatusCode != BallotStatusEnum.Ok).Select(b => b.BallotGuid).ToList();
 
       ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
       ResultSummaryCalc.SpoiledVotes =
-        VoteInfos.Count(
-          vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
+        VoteInfos.Count(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
+
+      ResultSummaryCalc.BallotsReceived = Ballots.Count - ResultSummaryCalc.SpoiledBallots;
 
       var electionGuid = TargetElection.ElectionGuid;
+
 
       // collect only valid ballots
       _hub.StatusUpdate("Processing ballots", true);

@@ -22,10 +22,10 @@
           Calculated
         </td>
         <td>
-          Manual
+          Override
         </td>
         <td>
-          Final
+          <strong>Final</strong>
         </td>
       </tr>
     </thead>
@@ -34,7 +34,7 @@
         <td></td>
         <td></td>
         <td>
-          <button class="btn btn-mini btnSaveManualCounts" type="button">Save Manual Values</button>
+          <button class="btn btn-mini btnSaveManualCounts" type="button">Save Values</button>
         </td>
         <td></td>
       </tr>
@@ -121,26 +121,13 @@
           Total Voters
         </td>
         <td>
-          <span class="Calc" data-name="SumOfEnvelopesCollected"></span>
+          <span class="Calc Ignored" data-name="SumOfEnvelopesCollected"></span>
         </td>
         <td></td>
         <td class="IfMismatch">
           <span class="Final" data-name="SumOfEnvelopesCollected"></span>
         </td>
       </tr>
-      @*<tr>
-            <td>Total Voters
-            </td>
-            <td>
-                <span class="Calc" data-name="NumVoters"></span>
-            </td>
-            <td>
-                <input class="Manual" data-name="NumVoters" type="number" min="0">
-            </td>
-            <td>
-                <span class="Final" data-name="NumVoters"></span>
-            </td>
-        </tr>*@
     </tbody>
     <tbody>
       <tr>
@@ -152,7 +139,7 @@
     <tbody class="ballotCounts">
       <tr>
         <td>
-          Ballots Entered in TallyJ
+          Valid Ballots
         </td>
         <td>
           <span class="Calc" data-name="BallotsReceived"></span>
@@ -164,12 +151,14 @@
       </tr>
       <tr>
         <td>
-          Spoiled (not entered)<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
+          Spoiled
         </td>
         <td>
           <span class="Calc NoChanges" data-name="SpoiledBallots"></span>
         </td>
         <td>
+          <span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
+          +
           <input class="Manual Additional" data-name="SpoiledManualBallots" type="number" min="0">
         </td>
         <td>
@@ -181,16 +170,17 @@
           Total Ballots
         </td>
         <td>
-          <span class="Calc" data-name="NumBallotsWithManual"></span>
+          <span class="Calc Ignored" data-name="NumBallotsWithManual"></span>
         </td>
         <td></td>
         <td class="IfMismatch">
           <span class="Final" data-name="NumBallotsWithManual"></span>
         </td>
       </tr>
-      <tr>
+      <tr class="totalBallots">
         <td>
           Spoiled Votes
+          <span class="ui-icon ui-icon-info" id="qTipSpoiledVotes"></span>
         </td>
         <td>
           <span class="Calc" data-name="SpoiledVotes"></span>
@@ -212,51 +202,53 @@
   </table>
   <div class="Clear">
   </div>
-  <table class="Main">
-    <caption>
-      Full Voting Results
-    </caption>
-    <thead>
-      <tr>
-        <th>
-          Rank
-        </th>
-        <th class="PersonColumn">
-          Person
-        </th>
-        <th>
-          Votes
-        </th>
-        <th>
-          Close?
-        </th>
-        <th>
-          Tied?
-        </th>
-      </tr>
-    </thead>
-    <tbody id="mainBody">
-      <tr class="{ClassName} TieGroup{TieBreakGroup}">
-        <td>
-          {Rank}
-        </td>
-        <td class="Left">
-          {PersonName}
-          <div class="ChartLine" data-value="{VoteCount}"></div>
-          <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
-        </td>
-        <td>
-          {VoteDisplay}
-        </td>
-        <td>
-          {^CloseUpDown}
-        </td>
-        <td>
-          {TieVote}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="MainHolder">
+    <table class="Main">
+      <caption>
+        Full Voting Results
+      </caption>
+      <thead>
+        <tr>
+          <th>
+            Rank
+          </th>
+          <th class="PersonColumn">
+            Person
+          </th>
+          <th>
+            Votes
+          </th>
+          <th>
+            Close?
+          </th>
+          <th>
+            Tied?
+          </th>
+        </tr>
+      </thead>
+      <tbody id="mainBody">
+        <tr class="{ClassName} TieGroup{TieBreakGroup}">
+          <td>
+            {Rank}
+          </td>
+          <td class="Left">
+            {PersonName}
+            <div class="ChartLine" data-value="{VoteCount}"></div>
+            <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
+          </td>
+          <td class="nw">
+            {VoteDisplay}
+          </td>
+          <td>
+            {^CloseUpDown}
+          </td>
+          <td>
+            {TieVote}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <div class="NoAnalysis">
     Analysis has not been started.
   </div>
