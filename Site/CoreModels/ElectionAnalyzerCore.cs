@@ -607,7 +607,8 @@ namespace TallyJ.CoreModels
             }
             result.TieBreakGroup = aboveResult.TieBreakGroup;
           }
-          else {
+          else
+          {
             // not tied with one above
             if (foundFirstOneInOther)
             {
@@ -686,6 +687,7 @@ namespace TallyJ.CoreModels
       }
       var groupOnlyInTop = groupInTop && !(groupInExtra || groupInOther);
       var groupOnlyInOther = groupInOther && !(groupInTop || groupInExtra);
+      var isResolved = true;
 
       results.ForEach(delegate (Result r)
       {
@@ -697,8 +699,15 @@ namespace TallyJ.CoreModels
                                     && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
                                     );
 
-        r.IsTieResolved = !stillTied;
+        if (stillTied)
+        {
+          isResolved = false;
+        }
       });
+
+      // apply to each result
+      results.ForEach(r => r.IsTieResolved = isResolved);
+      resultTie.IsResolved = isResolved;
 
       // if others are involved, set them to show
       if (groupInOther && (groupInTop || groupInExtra))
@@ -733,31 +742,30 @@ namespace TallyJ.CoreModels
         }
       }
 
-      var numResolved = 0;
-      if (resultTie.NumToElect > 0)
-      {
-        //results are in descending order already, so starting at 0 is starting at the "top"
-        for (int i = 0, max = results.Count; i < max; i++)
-        {
-          var result = results[i];
-          if (!result.IsTieResolved.AsBoolean()) break;
-          numResolved += 1;
-        }
-      }
+      //var numResolved = 0;
+      //if (resultTie.NumToElect > 0)
+      //{
+      //  //results are in descending order already, so starting at 0 is starting at the "top"
+      //  for (int i = 0, max = results.Count; i < max; i++)
+      //  {
+      //    var result = results[i];
+      //    if (!result.IsTieResolved.AsBoolean()) break;
+      //    numResolved += 1;
+      //  }
+      //}
 
-      if (numResolved < resultTie.NumToElect + extrasToBeDistinct)
-      {
-        resultTie.IsResolved = false;
-        //results.ForEach(r => r.IsTieResolved = false);
-      }
-      else
-      {
-        resultTie.IsResolved = true;
-        //results.ForEach(r => r.IsTieResolved = true);
-      }
+      //if (numResolved < resultTie.NumToElect + extrasToBeDistinct)
+      //{
+      //  resultTie.IsResolved = false;
+      //}
+      //else
+      //{
+      //  resultTie.IsResolved = true;
+      //}
 
       if (resultTie.NumInTie == resultTie.NumToElect)
       {
+        // need to vote for one less than the number to be elected
         resultTie.NumToElect--;
       }
 

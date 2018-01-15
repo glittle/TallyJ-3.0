@@ -177,7 +177,7 @@ var startSignalR = function (callBack) {
     });
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
-      if (!site.signalrReconnecting) {
+      if (site.signalrReconnecting) {
         ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
       }
     });

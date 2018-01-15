@@ -128,7 +128,7 @@ namespace TallyJ.CoreModels
               rules.Num = 9;
               rules.NumLocked = false;
 
-              rules.Extra = 3;
+              rules.Extra = 7;
               rules.ExtraLocked = false;
 
               rules.CanReceive = CanVoteOrReceive.All;
@@ -386,10 +386,10 @@ namespace TallyJ.CoreModels
         Db.SaveChanges();
 
         new LogHelper().Add("Updated person combined infos");
-
-        personCacher.DropThisCache();
-        voteCacher.DropThisCache();
       }
+
+      personCacher.DropThisCache();
+      voteCacher.DropThisCache();
     }
 
     public void AutoFix(Person person, List<Vote> voteList, PeopleModel peopleModel, ref bool saveNeeded)
@@ -489,7 +489,7 @@ namespace TallyJ.CoreModels
 
       var election = new Election
       {
-        Convenor = "[Convenor]",
+        Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
         ElectionGuid = Guid.NewGuid(),
         Name = "[New Election]",
         ElectionType = "LSA",

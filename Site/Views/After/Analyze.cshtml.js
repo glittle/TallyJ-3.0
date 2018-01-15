@@ -1,4 +1,4 @@
-﻿Bfunction AnalyzePage() {
+﻿function AnalyzePage() {
   var settings = {
     rowTemplate: '',
     info: {},
@@ -18,7 +18,9 @@
 
     $('#btnRefresh').click(function () {
       runAnalysis(false);
+      $('#btnShowLog').show();
     });
+
     $('#btnShowLog').click(function () {
       showLog();
     });
@@ -137,7 +139,6 @@
 
     showLog(true);
     $('#log, #tempLog').html('');
-    connectToAnalyzeHub(); // in case it has been lost
 
     CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
   };
@@ -167,6 +168,8 @@
     ResetStatusDisplay();
 
     if (info.Votes) {
+      $('.NoAnalysis').hide();
+
       table = votesTable;
       votesTable.show();
       invalidsTable.hide();
@@ -177,7 +180,6 @@
 
       $('#HasCloseVote').toggle(settings.hasCloseVote);
       $('.HasTie').toggle(settings.hasTie);
-      //console.log(settings.hasTie);
 
       if (info.Votes.length != 0) {
         var max = info.Votes[0].VoteCount;
@@ -285,7 +287,7 @@
           this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
           (i % 2 == 0 ? 'Even' : 'Odd'),
           (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
-      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + ' (' + (this.IsTieResolved ? 'Done' : 'Tied') + ')') : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
+      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + (this.IsTieResolved ? ' (Ok)' : '')) : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
       if (this.CloseToNext) {
         this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
       } else if (this.CloseToPrev) {
@@ -313,14 +315,14 @@
         else {
           var firstPara;
           if (tie.IsResolved) {
-            firstPara = '<p><b>This tie has been resolved.</b></p>';
+            firstPara = '<p>This tie has been resolved.</p>';
           }
           else {
             tie.rowClass = 'TieBreakNeeded';
             firstPara = '<p>A tie-break election is required to break this tie.</p>';
           }
           tie.Conclusion = firstPara
-            + '<p>Voters should vote for <span class=Needed>{0}</span> {1} from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
+            + '<p>Voters should vote for <strong><span class=Needed>{0}</span> {1}</strong> from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
             .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
           ;
           tie.After = ''
@@ -384,24 +386,17 @@
 
   function saveTieCounts() {
     var btn = $(this);
-    var counts = btn.parent().find('input');
-    var needed = +btn.parent().find('.Needed').text();
-    //    var dups = [];
-    //    var foundDup = false;
+    //Jan2018 - save all tie break numbers, not just for this tie-break
+    //var counts = btn.parent().find('input');
+    var inputs = $('#tieResults input');
     var foundOkay = 0;
     var foundNegative = false;
 
-    var values = $.map(counts, function (item) {
+    var values = $.map(inputs, function (item) {
       var $item = $(item);
       var value = +$item.val();
       if (value > 0) {
-        //        if (dups[value]) {
-        //          foundDup = true;
-        //        }
-        //        else {
         foundOkay++;
-        //        }
-        //dups[value] = (dups[value] ? dups[value] : 0) + 1;
       }
       if (value < 0) {
         foundNegative = true;
@@ -412,9 +407,6 @@
       alert('All vote counts must be a positive number.');
       return;
     }
-    //if (foundOkay < needed) {
-    //  alert('Please ensure that {0} or more votes are entered.'.filledWith(needed));
-    //}
     var form = {
       counts: values
     };

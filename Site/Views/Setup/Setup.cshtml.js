@@ -53,10 +53,11 @@
     $('.showJalal13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
     $('#txtName').focus();
 
-    site.qTips.push({ selector: '#qTipLocked', title: 'Election Locked', text: 'The core settings for the election are locked after ballots have been entered.' });
+    site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
+    site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
     site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
-    site.qTips.push({ selector: '#qTipConvenor', title: 'Convenor', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
     //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
@@ -378,6 +379,7 @@
   };
 
   function applyRules(info, combined) {
+
     var setRule = function (target, locked, value) {
       target.prop('disabled', locked);
       target.data('disabled', locked);
@@ -392,7 +394,7 @@
     setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
     var lockedAfterBallots = publicInterface.hasBallots;
-    $('.Demographics select, .Demographics input[type=number]').each(function () {
+    $('.electionDetail select, .electionDetail input[type=number]').each(function () {
       var input = $(this);
       if (!input.data('disabled')) {
         input.prop('disabled', lockedAfterBallots);

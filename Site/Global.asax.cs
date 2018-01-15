@@ -167,6 +167,11 @@ namespace TallyJ
       var siteInfo = new SiteInfo();
       var mainMsg = mainException.GetAllMsgs("; ");
 
+      if (mainMsg.Contains("dbo.Sessions")) {
+        // don't track StateServer errors...
+        return;
+      }
+
       msgs.Add(mainMsg);
 
       // April 2016 - trying to determine source of ths error

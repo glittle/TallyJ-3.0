@@ -145,7 +145,7 @@ namespace TallyJ.Code.Session
         {
           var cacher = new ElectionCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext);
           election = cacher.AllForThisElection.FirstOrDefault();
-          if (election == null)
+          if (election != null && election.ElectionGuid != currentElectionGuid)
           {
             // occasionally, when changing elections, the cacher has the old election...need to flush it
             cacher.DropThisCache();

@@ -7,22 +7,13 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "analyzePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("AnalyzeHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("JoinAnalyzeHub", "Elections").QuotedForJavascript()));
 
   var approvedForReporting = UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized;
 }
 <div class="overallWarning">Issues highlighted in red below must be resolved before election can be finalized for reporting.</div>
 <div id="InitialMsg"></div>
 <div class="LeftHalf">
-  @*    <div class="float-left">
-        <b>Election Status</b> (set by head teller)<br />
-        <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
-            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
-        </select>
-        @*    <input type="checkbox" id="chkShowAll" @(UserSession.CurrentElection.ShowFullFinalized.AsBool() ? " checked" : "")>
-    <label for="chkShowAll">
-        Show "full report" with all votes on report screens?</label>* @
-    </div>*@
   <table id="totalCounts" class="float-left">
     <thead>
       <tr>
@@ -173,7 +164,7 @@
       </tr>
       <tr>
         <td>
-          Spoiled (entered, manual)<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
+          Spoiled (not entered)<span class="ui-icon ui-icon-info" id="qTipUnEntered"></span>
         </td>
         <td>
           <span class="Calc NoChanges" data-name="SpoiledBallots"></span>
@@ -266,22 +257,25 @@
       </tr>
     </tbody>
   </table>
+  <div class="NoAnalysis">
+    Analysis has not been started.
+  </div>
 </div>
 <div class="RightHalf">
   <div id="btnRefreshDiv">
     <div class="buttons">
       <button type="button" id="btnRefresh" class="btn" accesskey="A">Start Analysis</button>
-      <button type="button" id="btnShowLog" class="btn btn-mini">Show Analysis Log</button>
+      <button type="button" id="btnShowLog" class="btn btn-mini Hidden">Show Last Analysis Log</button>
     </div>
     <div class="setStatus">
       Set Election Status:
       <label>
-        <input id="rbNotFinalized" type="radio" name="status" value="NotFinalized" @(!approvedForReporting ? "checked" : "") />
-        Not Finalized
-      </label>
-      <label>
         <input id="rbFinalized" type="radio" name="status" value="Finalized" @(approvedForReporting ? "checked" : "") />
         Finalized
+      </label>
+      <label>
+        <input id="rbNotFinalized" type="radio" name="status" value="NotFinalized" @(!approvedForReporting ? "checked" : "") />
+        Not Finalized
       </label>
     </div>
 

@@ -147,7 +147,7 @@ footer {
   clear: both;
   background-color: #e2e2e2;
   font-size: .8em;
-  height: 100px;
+  height: 50px;
   padding: 0 10px;
 }
 
@@ -194,12 +194,14 @@ body.NormalMode .site-title span {
 }
 
 .NormalMode .site-title {
-  display: block;
+  display: inline-block;
   color: #c8c8c8;
-  margin: 5px 0 0 0;
-  background-image: url('../Images/LogoSideM.png');
-  width: 400px;
-  height: 106px;
+  margin: 8px 0 0 5px;
+  background-image: none;
+  width: 384px;
+  max-width: 97vw;
+  height: auto;
+  box-sizing: border-box;
 }
 
 .NormalMode .PageTitle, .Presenter .PageTitle {
@@ -221,16 +223,13 @@ body.NormalMode .site-title span {
 .NormalMode .MainTop {
   display: block;
   position: relative;
-  height: 102px;
 }
 
 .NormalMode .Version {
-  display: block;
+  display: inline-block;
+  vertical-align: bottom;
+  margin: 5px 0 7px 10px;
   color: #ade65e;
-  text-align: right;
-  top: 100px;
-  position: absolute;
-  right: -8px;
   z-index: 1;
 }
 
@@ -896,7 +895,7 @@ span.other {
 
 .PullInstructions {
   margin: -8px 0 5px;
-  padding: 8px 0 0 1px;
+  padding: 8px 5px 0 1px;
   border: 1px solid #77BBFF;
   background-color: #dce6f2;
   border-radius: 3px;

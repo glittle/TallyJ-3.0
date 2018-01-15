@@ -59,7 +59,7 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult ImportHub(string connId)
+    public JsonResult JoinImportHub(string connId)
     {
       new ImportHub().Join(connId);
       return true.AsJsonResult();
@@ -67,7 +67,7 @@ namespace TallyJ.Controllers
 
 
     [ForAuthenticatedTeller]
-    public JsonResult AnalyzeHub(string connId)
+    public JsonResult JoinAnalyzeHub(string connId)
     {
       new AnalyzeHub().Join(connId);
       return true.AsJsonResult();

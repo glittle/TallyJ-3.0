@@ -10,11 +10,10 @@
   var electionsInfo = Model.MyElectionsInfo.ToList();
   ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("importHubUrl", "chooseElectionPage.importHubUrl={0};".FilledWith(@Url.Action("ImportHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("importHubUrl", "chooseElectionPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
   TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
 }
 @section featured {
-  <section class="featured empty"></section>
 }
 @*<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>*@
 <hgroup class="title">

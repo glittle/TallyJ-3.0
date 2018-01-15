@@ -36,16 +36,13 @@
           if (Request.IsAuthenticated)
           {
             <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
-              @*<span>Dashboard</span>*@
             </a>
           }
           else
           {
-            @Html.ActionLink(" ", "Index", "Public", null, new
-       {
-         Class = "site-title",
-         alt = "TallyJ - Bahá’í Election Tool"
-       })
+            <img src="~/Images/LogoSideM.png" class="site-title" 
+                 onclick="@Url.Action("Index", "Public")"
+                 alt="TallyJ - Bahá’í Election Tool">
           }
         }
         <div class="Version">
