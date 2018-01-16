@@ -637,6 +637,9 @@
     <Content Include="Views\After\Analyze.cshtml.less">
       <DependentUpon>Analyze.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Reports.cshtml.css">
+      <DependentUpon>Reports.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\After\ShowTies.cshtml.css">
       <DependentUpon>ShowTies.cshtml.less</DependentUpon>
     </Content>
@@ -698,6 +701,9 @@
     <Content Include="Views\Setup\Setup.cshtml.less">
       <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Reports.cshtml.less">
+      <DependentUpon>Reports.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.AzureDebug.config" />
     <None Include="Web.AzureRelease.config" />
     <None Include="Web.Standalone.config">
@@ -733,9 +739,6 @@
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\superfish.css" />
     <Content Include="Scripts\superfish.js" />
-    <Content Include="Views\After\Reports.cshtml.css">
-      <DependentUpon>Reports.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\After\Reports.cshtml.js">
       <DependentUpon>Reports.cshtml</DependentUpon>
     </Content>
@@ -996,7 +999,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:59993/</IISUrl>
+          <IISUrl>http://localhost:59994/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>

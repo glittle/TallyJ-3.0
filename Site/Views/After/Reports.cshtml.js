@@ -8,8 +8,9 @@
   var preparePage = function() {
     local.reportHolder = $('#report');
 
-    $('.chooser').on('click', 'a', function() {
-      var title = $(this).text();
+    $('.chooser').on('click', 'a', function () {
+      $('.chooser a').removeClass('selected');
+      var title = $(this).addClass('selected').text();
       setTimeout(function() {
         getReport(location.hash.substr(1), title);
       }, 0);
@@ -20,7 +21,8 @@
 
   var getReport = function (code, title) {
     ShowStatusDisplay('Getting report...');
-    local.reportHolder.fadeOut();
+    local.reportHolder.html('<div class=getting>Getting report...</div>');
+    $('#Status').hide();
     CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, { code: code, title: title });
   };
 
@@ -35,14 +37,14 @@
       return;
     }
 
-    $('#Status').hide();
-
     if (info.ElectionStatus != 'Finalized') {
       local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
     }
 
     local.reportHolder.removeClass().addClass('Report' + codeTitle.code).fadeIn().html(info.Html);
+    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
     if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
+      console.log(warningMsg);
       $('#Status').html(warningMsg).show();
     }
     $('#title').text(codeTitle.title);

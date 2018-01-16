@@ -29,8 +29,7 @@ namespace TallyJ.EF
 
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
-    private const int CacheMinutes = 180; // 3 hours
-    private ITallyJDbContext _db;
+    private const int CacheMinutes = 30; // long enough for a reasonable gap in usage
 
     public CacherBase(ITallyJDbContext dbContext)
     {

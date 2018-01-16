@@ -98,9 +98,7 @@
     "options": {
       "sourceMap": true
     }
-
-  }
-,
+  },
   {
     "outputFile": "Views/Setup/Setup.cshtml.css",
     "inputFile": "Views/Setup/Setup.cshtml.less",
@@ -110,6 +108,9 @@
     "options": {
       "sourceMap": true
     }
-
+  },
+  {
+    "outputFile": "Views/After/Reports.cshtml.css",
+    "inputFile": "Views/After/Reports.cshtml.less"
   }
 ]

@@ -118,7 +118,7 @@ namespace TallyJ
 
     //  // https://github.com/welegan/RedisSessionProvider 
 
-      
+
     //  RedisConfigOpts = ConfigurationOptions.Parse(ConfigurationManager.AppSettings["REDIS_Config"]);
 
     //  RedisConnectionConfig.GetSERedisServerConfig =
@@ -167,7 +167,8 @@ namespace TallyJ
       var siteInfo = new SiteInfo();
       var mainMsg = mainException.GetAllMsgs("; ");
 
-      if (mainMsg.Contains("dbo.Sessions")) {
+      if (mainMsg.Contains("dbo.Sessions"))
+      {
         // don't track StateServer errors...
         return;
       }
@@ -202,15 +203,30 @@ namespace TallyJ
         ex = ex.InnerException;
       }
 
-      logger.FatalException(
-          "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")), mainException);
+      logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
 
-      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), true);
+      var sendToRemoteLog = true;
+      string publicMessage = "Exception: {0}<br>".FilledWith(msgs.JoinedAsString("<br>"));
+
+      if (mainException.HResult == -2147467259)
+      {
+        Response.StatusCode = 404;
+        publicMessage = "Not found.";
+        sendToRemoteLog = false;
+      }
+      else
+      {
+        Response.StatusCode = 500;
+      }
+
+      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
 
       var url = siteInfo.RootUrl;
+
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
       //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
-      Response.Write(String.Format("Exception: {0}<br>", msgs.JoinedAsString("<br>")));
+
+      Response.Write(publicMessage);
       Response.Write(String.Format("{0}", FilteredStack(mainException.StackTrace).Replace("\n", "<br>")));
       if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
       {
@@ -263,7 +279,10 @@ namespace TallyJ
     public static void RegisterGeneralRoutes(RouteCollection routes)
     {
       routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-      routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
+
+      // not working?
+      routes.MapRoute("fav", "favicon.ico", new { controller = "Public", action = "FavIcon" });
+      //routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
     }
 
     public static void RegisterDefaultRoute(RouteCollection routes, string controllerName)

@@ -49,7 +49,6 @@ namespace TallyJ.CoreModels
     private List<Ballot> _ballots;
     private List<Vote> _votes;
     private List<Person> _people;
-    private ITallyJDbContext _dbContext;
 
     //private ResultSummaryCacher _localResultSummaryCacher;
 

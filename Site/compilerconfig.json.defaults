@@ -36,12 +36,12 @@
   },
   "minifiers": {
     "css": {
-      "enabled": true,
+      "enabled": false,
       "termSemicolons": true,
       "gzip": false
     },
     "javascript": {
-      "enabled": true,
+      "enabled": false,
       "termSemicolons": true,
       "gzip": false
     }

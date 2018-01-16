@@ -37,6 +37,11 @@ namespace TallyJ.Controllers
       return View();
     }
 
+    [AllowAnonymous]
+    public FilePathResult FavIcon() {
+      return new FilePathResult("~/images/favicon.ico", "image/x-icon");
+    }
+
     public JsonResult Heartbeat(PulseInfo info)
     {
       return new PulseModel(this, info).ProcessPulseJson();
