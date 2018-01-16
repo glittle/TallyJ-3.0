@@ -108,6 +108,7 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
 
       new ResultSummaryCacher(Db).DropThisCache();
+      new ResultTieCacher(Db).DropThisCache();
     }
   }
 }

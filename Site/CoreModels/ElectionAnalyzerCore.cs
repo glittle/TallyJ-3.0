@@ -319,13 +319,15 @@ namespace TallyJ.CoreModels
 
     private void ClearInMemoryCachedInfo()
     {
-      new PersonCacher(Db).DropThisCache();
-      new ResultTieCacher(Db).DropThisCache();
-      new VoteCacher(Db).DropThisCache();
-      new BallotCacher(Db).DropThisCache();
-      new ResultCacher(Db).DropThisCache();
-      new ResultSummaryCacher(Db).DropThisCache();
-
+      new BallotCacher().DropThisCache();
+      //new ElectionCacher().DropThisCache();
+      //new LocationCacher().DropThisCache();
+      new PersonCacher().DropThisCache();
+      new ResultCacher().DropThisCache();
+      new ResultSummaryCacher().DropThisCache();
+      new ResultTieCacher().DropThisCache();
+      //new TellerCacher().DropThisCache();
+      new VoteCacher().DropThisCache();
     }
 
 

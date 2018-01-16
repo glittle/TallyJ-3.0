@@ -76,7 +76,7 @@ namespace TallyJ.CoreModels
     /// </summary>
     public void SetInvolvementFlagsToDefault()
     {
-      var personCacher = new PersonCacher(Db);
+      var personCacher = new PersonCacher();
       personCacher.DropThisCache();
 
       var peopleInElection = personCacher.MainQuery().ToList();
@@ -742,7 +742,8 @@ namespace TallyJ.CoreModels
         return
           new
           {
-            Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people. " + ex.GetAllMsgs("; ")
+            Results = "Nothing was deleted. Once votes have been recorded, you cannot delete all the people. " + ex.GetAllMsgs("; "),
+            count = 0
           }.
             AsJsonResult();
       }

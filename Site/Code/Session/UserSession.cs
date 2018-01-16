@@ -86,8 +86,7 @@ namespace TallyJ.Code.Session
       {
         if (!UserGuidHasBeenLoaded && LoginId.HasContent())
         {
-          var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-          var user = db.Users.SingleOrDefault(u => u.UserName == LoginId);
+          var user = DbContext.Users.SingleOrDefault(u => u.UserName == LoginId);
 
           UserGuidHasBeenLoaded = true;
 
@@ -143,7 +142,7 @@ namespace TallyJ.Code.Session
 
         if (hasElection)
         {
-          var cacher = new ElectionCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext);
+          var cacher = new ElectionCacher();
           election = cacher.AllForThisElection.FirstOrDefault();
           if (election != null && election.ElectionGuid != currentElectionGuid)
           {
@@ -245,7 +244,7 @@ namespace TallyJ.Code.Session
           return location;
         }
 
-        var locations = new LocationCacher(UnityInstance.Resolve<IDbContextFactory>().DbContext).AllForThisElection;
+        var locations = new LocationCacher().AllForThisElection;
 
         location = locations.FirstOrDefault(l => l.LocationGuid == currentLocationGuid);
         if (location == null)

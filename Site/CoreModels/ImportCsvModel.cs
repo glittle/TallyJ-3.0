@@ -457,7 +457,7 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
 
-      new PersonCacher(Db).DropThisCache();
+      new PersonCacher().DropThisCache();
 
       result.AddRange(new[]
       {

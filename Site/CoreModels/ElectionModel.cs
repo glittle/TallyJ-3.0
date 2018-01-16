@@ -694,9 +694,18 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-        new ElectionCacher(Db).RemoveItemAndSaveCache(election);
-
         new MainHub().CloseOutGuestTellers();
+
+        new BallotCacher().DropThisCache();
+        //new ComputerCacher().DropThisCache();
+        new ElectionCacher().DropThisCache();
+        new LocationCacher().DropThisCache();
+        new PersonCacher().DropThisCache();
+        new ResultCacher().DropThisCache();
+        new ResultSummaryCacher().DropThisCache();
+        new ResultTieCacher().DropThisCache();
+        new TellerCacher().DropThisCache();
+        new VoteCacher().DropThisCache();
       }
 
       new PublicHub().TellPublicAboutVisibleElections();

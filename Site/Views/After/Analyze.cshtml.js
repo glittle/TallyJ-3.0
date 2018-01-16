@@ -17,7 +17,7 @@
     site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots', text: 'The calculated number shows the entered ballots that were found to be spoiled. If some spoiled ballots were not entered into TallyJ, enter the number here. ' });
     site.qTips.push({ selector: '#qTipSpoiledVotes', title: 'Spoiled Votes', text: 'These are spoiled votes that are on valid ballots.' });
 
-    
+
 
     $('#btnRefresh').click(function () {
       runAnalysis(false);
@@ -192,8 +192,8 @@
           item.animate({
             width: (item.data('value') / max * 100) + '%'
           }, {
-            duration: 2000
-          });
+              duration: 2000
+            });
         });
 
         var groupMax = 0;
@@ -210,8 +210,8 @@
             item.animate({
               width: (value / groupMax * 100) + '%'
             }, {
-              duration: 2000
-            });
+                duration: 2000
+              });
           }
         });
 
@@ -286,10 +286,10 @@
         this.TieBreakCount = 0;
       }
       this.ClassName = 'Section{0} {1} {2} {3}'.filledWith(
-          this.Section,
-          this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
-          (i % 2 == 0 ? 'Even' : 'Odd'),
-          (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
+        this.Section,
+        this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
+        (i % 2 == 0 ? 'Even' : 'Odd'),
+        (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
       this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + (this.IsTieResolved ? ' (Ok)' : '')) : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
       if (this.CloseToNext) {
         this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
@@ -297,7 +297,7 @@
         this.CloseUpDown = '&#8593;';
       }
       if ((this.Section == 'T' || this.Section == 'E')
-          && (this.CloseToNext || this.CloseToPrev)) {
+        && (this.CloseToNext || this.CloseToPrev)) {
         settings.hasCloseVote = true;
       }
       this.VoteDisplay = this.VoteCount + (this.IsTied ? ', ' + this.TieBreakCount : '');
@@ -326,8 +326,8 @@
           }
           tie.Conclusion = firstPara
             + '<p>Voters should vote for <strong><span class=Needed>{0}</span> {1}</strong> from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
-            .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
-          ;
+              .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
+            ;
           tie.After = ''
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
             + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
@@ -400,6 +400,9 @@
       var value = +$item.val();
       if (value > 0) {
         foundOkay++;
+      }
+      if (value === 0) {
+        $item.val(0); // may have been blank
       }
       if (value < 0) {
         foundNegative = true;
