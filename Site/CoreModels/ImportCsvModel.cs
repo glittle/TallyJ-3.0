@@ -474,14 +474,14 @@ namespace TallyJ.CoreModels
       }
       if (validReasons > 0)
       {
-        result.Add("{0} Eligibility Status reason{1} recognized.".FilledWith(validReasons, validReasons.Plural()));
+        result.Add("{0} Eligibility Status Reason{1} recognized.".FilledWith(validReasons, validReasons.Plural()));
       }
       if (unexpectedReasons.Count > 0)
       {
-        result.Add("Eligibility Status Reason{0} not recognized: ".FilledWith(unexpectedReasons.Count.Plural()));
+        result.Add("{0} Eligibility Status Reason{1} not recognized: ".FilledWith(unexpectedReasons.Count, unexpectedReasons.Count.Plural()));
         foreach (var r in unexpectedReasons)
         {
-          result.Add("- \"{0}\"{1}".FilledWith(r.Key, r.Value == 1 ? "" : " x" + r.Value));
+          result.Add("&nbsp; &nbsp; \"{0}\"{1}".FilledWith(r.Key, r.Value == 1 ? "" : " x" + r.Value));
         }
       }
 

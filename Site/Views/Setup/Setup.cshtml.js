@@ -12,13 +12,13 @@
 
   function preparePage() {
 
-    $(document).on('change keyup', '#ddlType', function (ev) {
+    $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
       $('.showJalal13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
-    $(document).on('change keyup', '#ddlMode', startToAdjustByType);
+    //$(document).on('change keyup', '#ddlMode', startToAdjustByType);
 
     $(document).on('click', '#btnSave', saveChanges);
     $(document).on('click', '#btnAddLocation', addLocation);
@@ -401,9 +401,9 @@
       }
     });
     if (lockedAfterBallots) {
-      $('#qTipLocked').css({ display: 'inline-block' });
+      $('#qTipLocked2').css({ display: 'inline-block' });
     } else {
-      $('#qTipLocked').hide();
+      $('#qTipLocked2').hide();
     }
 
     cachedRules[combined] = info;
