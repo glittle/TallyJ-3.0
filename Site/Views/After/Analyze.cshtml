@@ -222,7 +222,7 @@
             Close?
           </th>
           <th>
-            Tied?
+            Ties
           </th>
         </tr>
       </thead>
@@ -250,7 +250,7 @@
     </table>
   </div>
   <div class="NoAnalysis">
-    Analysis has not been started.
+    Analysis is needed.
   </div>
 </div>
 <div class="RightHalf">
@@ -296,12 +296,17 @@
       <tr>
         <td>
           <ol>
-            <li>If there are any errors shown in red, they need to be resolved.</li>
             <li>
-              Once all are resolved, review the results carefully and determine if they are approved.
+              If there are any errors shown in red, they need to be resolved.
             </li>
             <li>
-              When approved, set the "Election Status" to "@ElectionTallyStatusEnum.Finalized.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
+              If any vote counts are close, a careful review is recommended to ensure that each of the ballots has been entered correctly
+            </li>
+            <li>
+              Once all are resolved, review the results carefully and determine if they should be approved.
+            </li>
+            <li>
+              To indicate that the results are approved, set the "Election Status" to "@ElectionTallyStatusEnum.Finalized.Text" to enable the "Display Teller's Report" page and other reports to be viewed correctly.
             </li>
           </ol>
         </td>
@@ -325,7 +330,7 @@
       <tbody id="tieResultsBody">
         <tr class="{rowClass}">
           <td class="TieBreakGroup">
-            {^TieBreakGroup}
+            #{^TieBreakGroup}
           </td>
           <td>
             {^Conclusion}

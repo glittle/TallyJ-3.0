@@ -617,6 +617,8 @@
     <None Include="Properties\PublishProfiles\TallyJ3 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\Azure Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\TallyJ3 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\TallyJ3-staging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />

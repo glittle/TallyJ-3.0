@@ -557,7 +557,7 @@ namespace TallyJ.CoreModels
       foreach (
         var result in
           Results.OrderByDescending(r => r.VoteCount)
-            .ThenByDescending(r => r.TieBreakCount)
+            .ThenByDescending(r => r.TieBreakCount.GetValueOrDefault())
             .ThenBy(r => r.C_RowId))
       {
         ordinalRank++;
@@ -767,6 +767,23 @@ namespace TallyJ.CoreModels
       {
         // need to vote for one less than the number to be elected
         resultTie.NumToElect--;
+      }
+
+      if (resultTie.TieBreakRequired.Value)
+      {
+        // required? ensure each has a number
+        results.ForEach(r =>
+        {
+          if (r.TieBreakCount == null)
+          {
+            r.TieBreakCount = 0;
+          }
+        });
+      }
+      else
+      {
+        // not required? remove any counts
+        results.ForEach(r => r.TieBreakCount = null);
       }
 
       // conclusions

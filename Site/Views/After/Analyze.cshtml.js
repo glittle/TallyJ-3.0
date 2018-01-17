@@ -281,6 +281,8 @@
 
   function expand(results) {
     settings.hasCloseVote = false;
+    var okayMark = ' ✓';
+
     $.each(results, function (i) {
       if (!this.TieBreakRequired) {
         this.TieBreakCount = 0;
@@ -290,17 +292,22 @@
         this.Section == 'O' && this.ForceShowInOther ? 'Force' : '',
         (i % 2 == 0 ? 'Even' : 'Odd'),
         (this.IsTied && this.TieBreakRequired ? (this.IsTieResolved ? 'Resolved' : 'Tied') : ''));
-      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + (this.IsTieResolved ? ' (Ok)' : '')) : 'Tie ' + this.TieBreakGroup + ' (Okay)') : '';
-      if (this.CloseToNext) {
+      this.TieVote = this.IsTied ? (this.TieBreakRequired ? ('Tie ' + this.TieBreakGroup + (this.IsTieResolved ? okayMark : '')) : 'Tie ' + this.TieBreakGroup + okayMark) : '';
+
+      if (this.IsTied) {
+        this.CloseUpDown = '=';
+      }
+      else if (this.CloseToNext) {
         this.CloseUpDown = this.CloseToPrev ? '&#8597;' : '&#8595;';
       } else if (this.CloseToPrev) {
         this.CloseUpDown = '&#8593;';
       }
+
       if ((this.Section == 'T' || this.Section == 'E')
         && (this.CloseToNext || this.CloseToPrev)) {
         settings.hasCloseVote = true;
       }
-      this.VoteDisplay = this.VoteCount + (this.IsTied ? ', ' + this.TieBreakCount : '');
+      this.VoteDisplay = this.VoteCount + (this.TieBreakRequired ? ', ' + this.TieBreakCount : '');
     });
     return results;
   };
@@ -328,12 +335,14 @@
             + '<p>Voters should vote for <strong><span class=Needed>{0}</span> {1}</strong> from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
               .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
             ;
+          var tieVotesFound = votes.reduce(function (acc, v) { return acc || v.TieBreakCount > 0 }, false);
           tie.After = ''
-            + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
-            + '<p>If there are ties in the tie-break election, they are acceptable in the top {0} positions of the main election{1}.'.filledWith(info.NumToElect,
+            + (tie.IsResolved || !tieVotesFound ? '' : '<p>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these tie-break vote numbers may need to be adjusted until those elected are clearly indicated. For example, multiply first round counts by 100, then add second round results.</p>')
+            + '<p>Ties are acceptable in the top {0} positions of the election{1}.'.filledWith(info.NumToElect,
               info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
             + '</p>'
-            + (tie.IsResolved ? '' : '<p>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these tie-break vote numbers may need to be adjusted until those elected are clearly indicated. For example, multiply first round counts by 100, then add second round results.</p>');
+            + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
+            ;
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
           });
