@@ -33,14 +33,14 @@
       <div class="MainTop">
         <h1 class="SeoH1">TallyJ - Bahá’í Election Tool</h1>
         @{
-          if (Request.IsAuthenticated)
+          if (ViewBag.OnWelcome == null)
           {
             <a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
             </a>
           }
           else
           {
-            <img src="~/Images/LogoSideM.png" class="site-title" 
+            <img src="~/Images/LogoSideM.png" class="site-title"
                  onclick="@Url.Action("Index", "Public")"
                  alt="TallyJ - Bahá’í Election Tool">
           }
@@ -52,13 +52,13 @@
       @if (ScreenMode == "Normal")
       {
         @*<div class="beta1">
-          TallyJ is ready for use! Please send feedback to
-          <a title="Send email to Glen"
-             href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
-          <a title="View document"
-             href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
-             target="gdoc">Status and Feedback</a> document for current updates!
-        </div>*@
+            TallyJ is ready for use! Please send feedback to
+            <a title="Send email to Glen"
+               href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
+            <a title="View document"
+               href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
+               target="gdoc">Status and Feedback</a> document for current updates!
+          </div>*@
       }
       @if (UserSession.IsKnownTeller)
       {
@@ -119,24 +119,9 @@
             <div class="Spacer"></div>
           }
         </div>
-            }
-      @if (ScreenMode != "Full")
-      {
-        if (ScreenMode == "Mini")
-        {
-          @*<ul class="sf-menu">
-                @currentMenu.InsertMenu()
-            </ul>*@
-        }
       }
     </div>
   </header>
-
-
-
-
-
-
 
   <div id="body">
     @RenderSection("featured", false)
@@ -191,7 +176,7 @@
         }
         @RenderBody()
       </section>
-          }
+    }
   </div>
   @RenderPage("Footer.cshtml")
 
