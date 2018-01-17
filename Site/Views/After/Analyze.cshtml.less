@@ -8,10 +8,6 @@ thead th, thead td {
   border-bottom: 1px solid #000;
 }
 
-.MainHolder {
-  margin-top: 20px;
-}
-
 .Main td {
   text-align: center;
   padding: 2px 10px;
@@ -75,14 +71,14 @@ body {
   }
 
   &.analyzing {
-    .RightHalf {
-      width: auto;
-      float: none;
-      text-align: center;
-    }
+    //.RightHalf {
+    //  width: auto;
+    //  float: none;
+    //  text-align: center;
+    //}
 
     .LeftHalf {
-      display: none;
+      visibility: hidden;
     }
 
     #btnRefreshDiv {
@@ -348,6 +344,10 @@ span.Calc.changed {
   min-height: 1em;
   text-align: left;
   width: 50%;
+}
+
+#btnShowLog {
+  margin-top: 5px;
 }
 
 .btnSaveManualCounts {
