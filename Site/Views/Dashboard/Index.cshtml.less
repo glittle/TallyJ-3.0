@@ -9,10 +9,10 @@ div.MainDashboard {
   section.features a {
     text-decoration: none;
     cursor: pointer;
-    color: @textColor;
-
+    //color: @textColor;
     &:hover h3 {
-      color: @tallyJGreen;
+      //color: @tallyJGreen;
+      color: inherit;
     }
 
     section {
@@ -51,11 +51,34 @@ div.MainDashboard {
     padding-right: 10px;
     margin-bottom: 15px;
     margin-left: 38px;
+
+    &.NotStarted {
+      color: @tallyJOrange;
+
+      a {
+        color: @tallyJOrange;
+      }
+    }
+
+    &.NamesReady {
+      color: @tallyJBlue;
+
+      a {
+        color: @tallyJBlue;
+      }
+    }
+
+    &.Tallying {
+      color: @tallyJGreen;
+
+      a {
+        color: @tallyJGreen;
+      }
+    }
   }
 
   .featuresTitle {
     margin: -5px 0 0px -17px;
-    color: #06154c;
     font-weight: normal;
     font-style: italic;
     font-size: 23px;

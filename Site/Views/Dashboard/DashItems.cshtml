@@ -9,7 +9,7 @@
 
 @foreach (XmlElement item in menuItems)
 {
-  <section class="features">
+  <section class="features @item.GetAttribute("state")">
     <h2 class="featuresTitle">@item.GetAttribute("longtitle")</h2>
     @foreach (var child in item.ChildNodes
       .Cast<XmlNode>()

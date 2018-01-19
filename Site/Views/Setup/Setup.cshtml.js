@@ -51,7 +51,7 @@
     showTellers(publicInterface.Tellers);
 
     $('.showJalal13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
-    $('#txtName').focus();
+    //$('#txtName').focus();
 
     site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
     site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });

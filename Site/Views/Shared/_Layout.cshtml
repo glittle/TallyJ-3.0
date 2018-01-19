@@ -92,7 +92,7 @@
           @if (UserSession.CurrentElection != null)
           {
             <div class="ElectionState">
-              <span>Election State:</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
+              <span>Election State</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span><span>:</span>
               <div id="electionState"
                    data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
@@ -105,12 +105,12 @@
 
               @*<a href="#MasterMenu" class="ShowMasterMenu" data-toggle="modal">Go to any page...</a>*@
             </div>
-            <div class="QuickLinks2">
+            <div id="QuickLinks2">
               <div class="left">
-                <span id="qmenuTitle">Relevant Pages</span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>:
+                <span id="qmenuTitle"></span><span class="ui-icon ui-icon-info" id="qTipQuickLinks"></span>:
               </div>
               <div class="right">
-                <span id="quickLinks2">@currentMenu.QuickLinks().AsRawHtml()</span>
+                <span id="quickLinkItems">@currentMenu.QuickLinks().AsRawHtml()</span>
               </div>
             </div>
           }

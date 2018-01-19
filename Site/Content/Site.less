@@ -185,6 +185,174 @@ body.NormalMode .site-title span {
   display: none;
 }
 
+#qmenuTitle {
+  white-space: nowrap;
+
+  &.NotStarted {
+    color: @tallyJOrange;
+  }
+
+  &.NamesReady {
+    color: @tallyJBlue;
+  }
+
+  &.Tallying {
+    color: @tallyJGreen;
+  }
+}
+
+
+@finalColor: #333;
+
+#QuickLinks2 {
+  margin: 5px 0 2px 0;
+  display: flex;
+
+  a.Active {
+    font-weight: bold;
+
+    &.NotStarted {
+      background-color: @tallyJOrange;
+    }
+
+    &.NamesReady {
+      background-color: @tallyJBlue;
+    }
+
+    &.Tallying {
+      background-color: @tallyJGreen;
+    }
+  }
+
+  &.NotStarted,
+  .items.NotStarted {
+    a {
+      color: @tallyJOrange;
+      border-color: @tallyJOrange;
+
+      &.Active {
+        background-color: @tallyJOrange;
+        color: white;
+      }
+    }
+  }
+
+  &.NamesReady,
+  .items.NamesReady {
+    a {
+      color: @tallyJBlue;
+      border-color: @tallyJBlue;
+
+      &.Active {
+        background-color: @tallyJBlue;
+        color: white;
+      }
+    }
+  }
+
+  &.Tallying,
+  .items.Tallying {
+    a {
+      color: @tallyJGreen;
+      border-color: @tallyJGreen;
+
+      &.Active {
+        background-color: @tallyJGreen;
+        color: white;
+      }
+    }
+  }
+
+  &.Finalized,
+  .items.Finalized {
+    a {
+      color: @finalColor;
+      border-color: @finalColor;
+
+      &.Active {
+        background-color: @finalColor;
+        color: white;
+      }
+    }
+  }
+
+  div.right {
+    margin-left: 5px;
+  }
+
+  a {
+    background-color: #fff;
+    text-decoration: none;
+    border: 1px solid;
+    padding: 0 4px 0 4px;
+    display: inline-block;
+    white-space: nowrap;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+  }
+
+  a + a {
+    margin-left: 3px;
+  }
+
+  a:hover {
+    background-color: #EFEEEF;
+  }
+
+  #AllPages {
+    border-color: #A4D4E6;
+    color: #8899CB;
+    background-color: #EFffEF;
+  }
+
+  &.temp {
+    background-color: #efeeef;
+
+    #quickLinkItems {
+      a {
+        background-color: #fff;
+
+        &.Active {
+          background-color: #d2ff92;
+
+          &:hover {
+            background-color: inherit;
+          }
+        }
+
+        &:hover {
+          background-color: #EFEEEF;
+        }
+      }
+    }
+  }
+
+  span.DropDown {
+    display: block;
+    position: absolute;
+    z-index: 9999;
+    background-color: white;
+    box-shadow: 1px 6px 15px #555;
+    border-radius: 2px;
+    padding: 0;
+
+    a {
+      display: block;
+      margin: 0 0 -1px 0;
+      padding: 6px 10px 6px 7px;
+      border-radius: 0;
+    }
+  }
+
+  span.HighlightMenu {
+    box-shadow: 0px 0px 5px #555;
+    background-color: #bcbcbc;
+  }
+}
+
+
+
 .TopInfo {
   margin: 6px 0 0 0;
 }
@@ -232,7 +400,6 @@ body.NormalMode .site-title span {
   color: #ade65e;
   z-index: 1;
 }
-
 /* login  
 ----------------------------------------------------------* /
 #login
@@ -287,7 +454,6 @@ body.NormalMode .site-title span {
   vertical-align: bottom;
   width: 110px;
 }
-
 /* menu  
 ----------------------------------------------------------*/
 ul#menu {
@@ -313,9 +479,6 @@ ul#menu li a:hover {
   color: #333;
   text-decoration: none;
 }
-
-
-
 /* page elements  
 ----------------------------------------------------------*/
 /* featured */
@@ -343,7 +506,6 @@ ul#menu li a:hover {
 .featured p {
   font-size: 1.1em;
 }
-
 /* page titles */
 hgroup.title {
   margin-left: 1em;
@@ -380,9 +542,6 @@ h1.SeoH1 {
   position: absolute;
   z-index: -1;
 }
-
-
-
 /* features */
 div.MainDashboard, section.features.bottom {
 
@@ -424,7 +583,6 @@ span.other.QuickDash {
     }
   }
 }
-
 /* ordered list */
 ol.round {
   list-style-type: none;
@@ -447,7 +605,6 @@ ol.round li.two {
 ol.round li.three {
   background: url("../images/orderedlistThree.png") no-repeat;
 }
-
 /* content */
 article {
   padding: 1em 2em;
@@ -476,7 +633,6 @@ aside ul li {
 .label {
   font-weight: 700;
 }
-
 /* login page */
 #loginForm {
   border-right: solid 2px #c8c8c8;
@@ -494,7 +650,6 @@ aside ul li {
   float: left;
   width: 50%;
 }
-
 /* contact */
 .contact h3 {
   font-size: 1.2em;
@@ -508,7 +663,6 @@ aside ul li {
   border: solid 1px #333;
   margin: 5px 0 0 10px;
 }
-
 /* forms */
 fieldset {
   border: none;
@@ -551,7 +705,6 @@ fieldset input[type="text"], fieldset input[type="password"] {
 fieldset input[type="text"]:focus, fieldset input[type="password"]:focus {
   border: 1px solid #7ac0da;
 }
-
 /*input[type="submit"], input[type="file"], button.Primary
 {
     -webkit-border-radius: 2px;
@@ -567,7 +720,6 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus {
 input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
   /*background-color: #b6ff50;*/
 }
-
 /* ajax login/registration dialog */
 .modal-popup {
   font-size: 0.7em;
@@ -576,7 +728,6 @@ input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
 .modal-popup input[type="text"], .modal-popup input[type="password"] {
   width: 90%;
 }
-
 /* info and errors */
 .message-info {
   border: solid 1px;
@@ -606,7 +757,6 @@ input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
 .error {
   color: #e80c4d;
 }
-
 /* styles for validation helpers */
 .field-validation-error {
   color: #e80c4d;
@@ -663,9 +813,6 @@ a.gplus {
 a.twitter {
   background-position: -98px -2px;
 }
-
-
-
 /* Statuses */
 #statusDisplay, #statusDisplay2 {
   color: #000;
@@ -724,7 +871,6 @@ a.twitter {
 .StatusInner {
   display: table-cell;
 }
-
 /* End: Statuses */
 .CompCode {
   color: #bbb;
@@ -744,15 +890,28 @@ a.twitter {
 }
 
 .ElectionState span.state.Active_True {
-  color: @tallyJBlue;
   font-weight: bold;
-  box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75);
-  background-color: #b6ff50;
+  color: #fff;
+
+  &.NotStarted {
+    background-color: @tallyJOrange;
+  }
+
+  &.NamesReady {
+    background-color: @tallyJBlue;
+  }
+
+  &.Tallying {
+    background-color: @tallyJGreen;
+  }
+
+  &.Finalized{
+    background-color: @finalColor;
+  }
 }
 
 .ElectionState {
   margin-left: 0px;
-  color: @tallyJGreen;
 
   a {
     color: #333;
@@ -761,7 +920,22 @@ a.twitter {
   }
 
   span {
-    color: @tallyJGreen;
+
+    &.NotStarted {
+      color: @tallyJOrange;
+    }
+
+    &.NamesReady {
+      color: @tallyJBlue;
+    }
+
+    &.Tallying {
+      color: @tallyJGreen;
+    }
+
+    &.Finalized {
+      color: @finalColor;
+    }
   }
 
   #qTipFinalized {
@@ -776,16 +950,28 @@ a.twitter {
     span.state {
       display: inline-block;
       margin: 0 3px;
-      color: #333;
       text-decoration: none;
       border: 1px solid @tallyJGreen;
-      padding: 0 8px;
-      border-top-right-radius: 12px;
-      border-bottom-right-radius: 12px;
+      padding: 1px 8px;
+      border-radius: 12px;
+
+      &.NotStarted {
+        border-color: @tallyJOrange;
+      }
+
+      &.NamesReady {
+        border-color: @tallyJBlue;
+      }
+
+      &.Tallying {
+        border-color: @tallyJGreen;
+      }
 
       &.Finalized {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
+        border-color: @finalColor;
+        border-style: dashed;
+        //border-top-right-radius: 0;
+        //border-bottom-right-radius: 0;
         padding-right: 20px;
       }
 
@@ -811,7 +997,21 @@ a.twitter {
 body.AuthKnown .ElectionState span.state.Active_False {
   &:hover {
     cursor: pointer;
-    background-color: @backgroundGreen;
+
+    &.NotStarted {
+      background-color: @tallyJOrange;
+      color: #fff;
+    }
+
+    &.NamesReady {
+      background-color: @tallyJBlue;
+      color: #fff;
+    }
+
+    &.Tallying {
+      background-color: @tallyJGreen;
+      color: #fff;
+    }
   }
 
   &.Finalized:hover {
@@ -858,7 +1058,6 @@ span.other {
   font-size: 85%;
   display: inline-block;
 }
-
 /*.ChangeElectionState {
   display: none;
   position: absolute;
@@ -874,7 +1073,6 @@ span.other {
     margin: 0 .5em .5em 0;
   }
   */
-
 .CurrentLocationName {
 }
 
@@ -928,7 +1126,7 @@ span.other {
   &.Closed .IfClosed {
     display: inline-block;
   }
-  
+
   .IfOpen {
     display: inline-block;
   }
@@ -948,11 +1146,9 @@ span.other {
   clear: both;
   margin-top: 5px;
 }
-
 //.beta1 {
 //  display: none;
 //}
-
 .NormalMode .beta1 {
   //  display: block;
   //  top: 2px;
@@ -967,8 +1163,6 @@ span.other {
   //  padding: 0 6px;
   //  text-align: right;
 }
-
-
 //.betaImg {
 //  float: left;
 //  width: 57px;
@@ -977,10 +1171,8 @@ span.other {
 //  vertical-align: top;
 //  margin: 0 5px 5px 0;
 //}
-
-
 .CurrentInfo {
-  background: #ccffbe;
+  //background: #ccffbe;
   font-size: 10pt;
   margin: -30px 0 0 40px;
   padding: 1px 30px 2px 9px;
@@ -1040,102 +1232,6 @@ body.AuthKnown .AllowChangeElectionState {
 
 body.AuthKnown .CurrentElectionName {
   cursor: pointer;
-}
-
-.QuickLinks2 {
-  color: @tallyJBlue;
-  margin: 5px 0 2px 0;
-
-  div.left {
-    display: inline-block;
-    width: 122px;
-    float: left;
-  }
-
-  div.right {
-    display: block;
-    margin-left: 197px;
-  }
-
-  a {
-    color: #333;
-    background-color: #fff;
-    text-decoration: none;
-    border: 1px solid lighten(@tallyJBlue, 30%);
-    padding: 0 4px 0 4px;
-    display: inline-block;
-    white-space: nowrap;
-    border-radius: 2px;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-  }
-
-  a + a {
-    margin-left: 3px;
-  }
-
-  a:hover {
-    background-color: #EFEEEF;
-  }
-
-  a.Active {
-    color: @tallyJBlue;
-    font-weight: bold;
-    background-color: lighten(@tallyJBlue, 65%);
-    /*&:hover {
-      background-color: inherit;
-    }*/
-  }
-
-  #AllPages {
-    border-color: #A4D4E6;
-    color: #8899CB;
-    background-color: #EFffEF;
-  }
-
-  &.temp {
-    background-color: #efeeef;
-
-    #quickLinks2 {
-      a {
-        background-color: #fff;
-
-        &.Active {
-          background-color: #d2ff92;
-
-          &:hover {
-            background-color: inherit;
-          }
-        }
-
-        &:hover {
-          background-color: #EFEEEF;
-        }
-      }
-    }
-  }
-
-  span.DropDown {
-    display: block;
-    position: absolute;
-    z-index: 9999;
-    background-color: white;
-    box-shadow: 1px 6px 15px #555;
-    border-radius: 2px;
-    padding: 0;
-
-    a {
-      display: block;
-      margin: 0 0 -1px 0;
-      padding: 6px 10px 6px 7px;
-      border-radius: 0;
-    }
-  }
-
-  span.HighlightMenu {
-    box-shadow: 0px 0px 5px #555;
-    background-color: #bcbcbc;
-  }
 }
 
 .AuthKnown .AllowChangeElectionState.bold {
@@ -1421,7 +1517,7 @@ section.features.bottom {
     width: auto;
   }
 
-  .QuickLinks2 div.right {
+  #QuickLinks2 div.right {
     margin-left: 0;
   }
 }

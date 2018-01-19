@@ -63,6 +63,8 @@ function Onload() {
     connectToElectionHub();
   }
 
+  showMenu(site.electionState, true);
+
   CheckTimeOffset();
 
   AttachHelp();
@@ -79,7 +81,7 @@ function Onload() {
 
 function HighlightActiveLink() {
   var url = location.href;
-  $('#quickLinks2 a').each(function () {
+  $('#quickLinkItems a').each(function () {
     var matched = url == this.href;
     var a = $(this);
     if (matched) {
@@ -254,8 +256,8 @@ function AttachHandlers() {
 
   var dropDownTimeout = null;
   var closeDropDown = function () {
-    $('#quickLinks2 span.HighlightMenu').removeClass('HighlightMenu');
-    $('#quickLinks2 span.DropDown').removeClass('DropDown');
+    $('#quickLinkItems span.HighlightMenu').removeClass('HighlightMenu');
+    $('#quickLinkItems span.DropDown').removeClass('DropDown');
     $('.QuickDash').fadeOut('fast');
   };
   $('body.AuthKnown #electionState span.Finalized').on('click', function () {
@@ -373,17 +375,18 @@ function showMenu(state, permanent, slow) {
   //  var temp = target.data('temp') || target.data('state');
   // console.log('changed from {0} to {1} ({2})'.filledWith(temp, state, site.electionState));
   //  if (state != temp) {
-  $('#quickLinks2 span:visible').addClass('Hidden').removeClass('DropDown');
+  $('#quickLinkItems span:visible').addClass('Hidden').removeClass('DropDown');
   $('#menu' + state).removeClass('Hidden').removeClass('DropDown');
   //  }
 
-  //$('.QuickLinks2').toggleClass('temp', site.electionState != state);
+  //$('#QuickLinks2').toggleClass('temp', site.electionState != state);
 
   //  target.data('temp', state);
 
   var mainItem = target.find('span.state[data-state={0}]'.filledWith(state));
 
-  //$('#qmenuTitle').text(mainItem.text());
+  $('#qmenuTitle').text(mainItem.text()).removeClass().addClass(state);
+  $('#QuickLinks2').removeClass().addClass(state);
 
   site.menuShowingDefault = permanent;
 

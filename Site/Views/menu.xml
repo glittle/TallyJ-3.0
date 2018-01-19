@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
   <menu id="main">
-    <group title="Preparing" longtitle="Setup - Preparing for the election" showTitleInPage="false">
+    <group title="Preparing" state="NotStarted" longtitle="Setup - Preparing for the election" showTitleInPage="false">
       <page title="Configure this Election" featureWhen="NotStarted" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <!--<page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>-->
       <page title="Edit People's Names" featureWhen="NotStarted" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
     </group>
-    <group title="Voting" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
+    <group title="Voting" state="NamesReady" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
       <page title="Sort Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
       <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
       <page title="Count Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
     </group>
-    <group title="Tallying" longtitle="Processing Ballots - Tallying and Reporting" showTitleInPage="false">
+    <group title="Tallying" state="Tallying" longtitle="Processing Ballots - Tallying and Reporting" showTitleInPage="false">
       <page title="Enter Ballots" featureWhen="Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Monitor Progress" featureWhen="Tallying" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
       <page title="Analyze Ballots" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
