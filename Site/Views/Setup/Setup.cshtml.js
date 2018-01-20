@@ -7,25 +7,46 @@
     tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>',
     badiDateGetter: null,
     dateKnown: false,
-    isJalal13: null
+    isGlory13: null,
+    vue: null
   };
+
 
   function preparePage() {
 
+    settings.vue = new Vue({
+      el: '#setupBody',
+      components: {
+        'yes-no': YesNo
+      },
+      data: {
+        usePreBallot: true, //Todo
+        UseCallInButton: false,
+        MultipleLocations: false,
+        election: publicInterface.Election
+      },
+      computed: {
+      }
+    })
+
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
-      $('.showJalal13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
+      $('.showGlory13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
     //$(document).on('change keyup', '#ddlMode', startToAdjustByType);
 
-    $(document).on('click', '#btnSave', saveChanges);
+    $(document).on('click', '.btnSave', saveChanges);
     $(document).on('click', '#btnAddLocation', addLocation);
 
     $('.Demographics').on('change', '*:input', function () {
-      $('#btnSave').addClass('btn-primary');
+      $('.btnSave').addClass('btn-primary');
     });
+
+    $('#chkPreBallot').on('change', showForPreBallot);
+    $('#chkMultipleLocations').on('change', showLocations);
+
     $('#locationList').on('change', 'input', function () {
       locationChanged($(this));
     });
@@ -50,7 +71,7 @@
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
-    $('.showJalal13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
+    $('.showGlory13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
     //$('#txtName').focus();
 
     site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
@@ -58,7 +79,7 @@
     site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
     site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
-    site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
     //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
@@ -81,7 +102,7 @@
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     $(window).on('beforeunload', function () {
-      if ($('#btnSave').hasClass('btn-primary')) {
+      if ($('.btnSave').hasClass('btn-primary')) {
         return "Changes have been made and not saved.";
       }
     });
@@ -93,13 +114,6 @@
     getBadiDate();
   };
 
-  //    var resetVoteStatuses = function () {
-  //        ShowStatusDisplay('Updaing...');
-  //        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
-  //            ShowStatusSuccess('Done');
-  //        });
-  //    };
-
   function getBadiDate() {
     settings.dateKnown = true;
     var dateStr = $('#txtDate').val();
@@ -107,7 +121,7 @@
     if (dateStr.length != 10 || dateParts.length != 3) {
       return; // expecting 2020-04-21
     }
-    settings.isJalal13 = null;
+    settings.isGlory13 = null;
     var d = new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
 
     d.setHours(12, 0, 0, 0, 0); // noon
@@ -140,17 +154,17 @@
     $('#badiDateIntro').html(msg.filledWith(di));
 
     // found 1st Ridvan for an LSA election?
-    $('.badiDateName').removeClass('isJalal13');
-    var found = !!settings.isJalal13;
+    $('.badiDateName').removeClass('isGlory13');
+    var found = !!settings.isGlory13;
     if (found) {
-      settings.isJalal13.addClass('isJalal13');
+      settings.isGlory13.addClass('isGlory13');
     }
-    $('.showJalal13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
+    $('.showGlory13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
   }
 
   function showBadiInfo(di, target, intro) {
     if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N') {
-      settings.isJalal13 = target;
+      settings.isGlory13 = target;
     }
 
     var msg = intro + '<span class=badiDateValue>{bDay} {bMonthMeaning} ({bMonthNameAr}) {bYear}</span>';
@@ -158,14 +172,13 @@
   }
 
   function showLocations(locations) {
-    //        if (locations == null) {
-    //            $('#locationList').html('[None]');
-    //            return;
-    //        }
+    if (locations) {
+      $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
+      setupLocationSortable();
+    }
 
-    $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
-
-    setupLocationSortable();
+    var useLocations = $('#chkMultipleLocations').checked;
+    $('.locations').toggle(useLocations);
   };
 
   function showTellers(tellers) {
@@ -301,8 +314,15 @@
       input.html(value);
     });
 
+    showForPreBallot();
+
     startToAdjustByType();
   };
+
+  function showForPreBallot() {
+    var usePreBallot = $('#chkPreBallot').prop('checked');
+    $('.forPreBallot').toggle(usePreBallot);
+  }
 
   function saveChanges() {
     var form = {
@@ -329,7 +349,7 @@
         applyValues(info.Election);
         $('.CurrentElectionName').text(info.displayName);
       }
-      $('#btnSave').removeClass('btn-primary');
+      $('.btnSave').removeClass('btn-primary');
       ResetStatusDisplay();
       ShowStatusSuccess(info.Status);
     });
@@ -409,9 +429,22 @@
     cachedRules[combined] = info;
   }
 
-  //  var buildPage = function () {
-  //    $('#editArea').html(site.templates.ElectionEditScreen.filledWith(local.Election));
-  //  };
+  var YesNo = Vue.component('yes-no', {
+    template: '#yes-no',
+    props: {
+      value: Boolean
+    },
+    data: function () {
+      return {
+        yesNo: this.value ? 'Y' : 'N'
+      }
+    },
+    watch: {
+      yesNo: function (a) {
+        this.$emit('input', a === 'Y')
+      }
+    }
+  })
 
   var publicInterface = {
     controllerUrl: '',

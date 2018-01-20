@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -76,7 +77,7 @@ namespace TallyJ.Code
     {
       return input == null
         ? null
-        : input.Split(new[] {separator}, stringSplitOptions);
+        : input.Split(new[] { separator }, stringSplitOptions);
     }
 
     /// <summary>
@@ -143,7 +144,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfTrue(this bool? input)
     {
-      return input.HasValue && input.Value ? (bool?) true : null;
+      return input.HasValue && input.Value ? (bool?)true : null;
     }
 
     /// <Summary>Returns a false bool? if the input is false, or null if it is true</Summary>
@@ -151,7 +152,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfFalse(this bool? input)
     {
-      return input.HasValue && input.Value ? null : (bool?) false;
+      return input.HasValue && input.Value ? null : (bool?)false;
     }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
@@ -159,7 +160,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfTrue(this bool input)
     {
-      return input ? (bool?) true : null;
+      return input ? (bool?)true : null;
     }
 
     /// <Summary>Returns null if this is null or an empty string</Summary>
@@ -173,7 +174,7 @@ namespace TallyJ.Code
     /// <remarks>Used mainly for exporting to xml documents</remarks>
     public static bool? OnlyIfFalse(this bool input)
     {
-      return input ? null : (bool?) false;
+      return input ? null : (bool?)false;
     }
 
     public static bool AsBoolean(this string input)
@@ -263,7 +264,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (int) Math.Truncate(Convert.ToDouble(input));
+        return (int)Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -281,7 +282,7 @@ namespace TallyJ.Code
 
       try
       {
-        return (long) Math.Truncate(Convert.ToDouble(input));
+        return (long)Math.Truncate(Convert.ToDouble(input));
       }
       catch (Exception)
       {
@@ -311,7 +312,7 @@ namespace TallyJ.Code
       var isMax = decimals < 0;
       decimals = Math.Abs(decimals);
 
-      var pct = Math.Round(num*100.0/total, decimals, MidpointRounding.ToEven);
+      var pct = Math.Round(num * 100.0 / total, decimals, MidpointRounding.ToEven);
 
       var numRaw = pct.ToString("F" + decimals);
       while (isMax && decimals > 0)
@@ -364,12 +365,12 @@ namespace TallyJ.Code
     public static string AsClientFileWithVersion(this string contentFilePath, string productionNameModifier = "",
       string debuggingNameModifier = "")
     {
-      var UseDebugFiles = true; //TODO: move to config
+      var useProductionFiles = ConfigurationManager.AppSettings["UseProductionFiles"].AsBoolean(); //TODO: move to config
 
       if (productionNameModifier.HasContent() || debuggingNameModifier.HasContent())
       {
         contentFilePath =
-          contentFilePath.FilledWith(UseDebugFiles ? debuggingNameModifier : productionNameModifier);
+          contentFilePath.FilledWith(useProductionFiles ? productionNameModifier : debuggingNameModifier);
       }
 
       var rawPath = HttpContext.Current.Request.MapPath(contentFilePath);
@@ -380,7 +381,7 @@ namespace TallyJ.Code
       }
 
       var version = fileInfo.LastWriteTime.Ticks.ToString();
-      var trimmed = version.TrimEnd(new[] {'0'});
+      var trimmed = version.TrimEnd(new[] { '0' });
       const int sizeToUse = 5;
 
       var shortVersion = trimmed.Length <= sizeToUse
@@ -403,6 +404,14 @@ namespace TallyJ.Code
     public static string JoinedAsString(this IEnumerable<string> list, string separator)
     {
       return JoinedAsString(list, separator, false);
+    }
+
+    /// <summary>
+    ///   For an enumeration of strings, join them.
+    /// </summary>
+    public static string JoinedAsString(this IEnumerable<string> list, char separator)
+    {
+      return JoinedAsString(list, separator.ToString(), false);
     }
 
     /// <summary>
@@ -475,11 +484,11 @@ namespace TallyJ.Code
       try
       {
         var value = UserSession.CurrentContext.Session[input];
-        if (value == null || value.GetType() != typeof (T))
+        if (value == null || value.GetType() != typeof(T))
         {
           return defaultValue;
         }
-        return (T) value;
+        return (T)value;
       }
       catch (Exception)
       {
@@ -498,7 +507,7 @@ namespace TallyJ.Code
     public static T FromPageItems<T>(this string input, T defaultValue, bool saveDefault = false)
     {
       var value = UserSession.CurrentContext.Items[input];
-      if (value == null || value.GetType() != typeof (T))
+      if (value == null || value.GetType() != typeof(T))
       {
         if (saveDefault)
         {
@@ -506,7 +515,7 @@ namespace TallyJ.Code
         }
         return defaultValue;
       }
-      return (T) value;
+      return (T)value;
     }
 
     public static T SetInSession<T>(this string input, T newValue)
@@ -803,9 +812,9 @@ namespace TallyJ.Code
       Func<TSource, TInner, TResult> res)
     {
       return from f in source
-        join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
-        from result in g.DefaultIfEmpty()
-        select res.Invoke(f, result);
+             join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
+             from result in g.DefaultIfEmpty()
+             select res.Invoke(f, result);
     }
   }
 }

@@ -567,7 +567,7 @@ function AttachHelp() {
       //next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
-    SetInStorage('HidePI_' + location.pathname + handle.data('title'), show ? 'show' : 'hide');
+    SetInStorage('HidePI_' + location.pathname + handle.data('title') + handle.data('instance'), show ? 'show' : 'hide');
   };
 
   $(document).on('click', '.PullInstructionsHandle', function (ev) {
@@ -575,9 +575,12 @@ function AttachHelp() {
     showHelp(handle, !handle.next().is(':visible'), false);
   });
 
-  $('.PullInstructionsHandle').each(function () {
-    var handle = $(this)
-    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title'), 'show') != 'hide', true);
+  $('.PullInstructionsHandle').each(function (i, el) {
+    var handle = $(el);
+    var instance = i + 1; // don't want 0
+    console.log(instance)
+    handle.data('instance', instance);
+    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title') + instance, 'show') != 'hide', true);
   });
 
 }

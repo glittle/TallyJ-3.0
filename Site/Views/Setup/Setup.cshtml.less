@@ -1,11 +1,39 @@
-﻿table.Demographics {
-  float: left;
-  margin-right: 15px;
-  padding: 10px 10px 10px 10px;
-  border-spacing: 0;
-  border: 1px solid #8DC63E;
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+h2 {
+  margin: 0;
+}
+
+table + h2 {
+  margin-top: 30px;
+  border-top: 1px solid #aaa;
+}
+
+.PullInstructionsHandle {
+  margin-top: 0;
+}
+
+.btnSave {
+  margin: 0 0 10px 10px;
+}
+
+table.Demographics {
+  //float: left;
+  //margin-right: 15px;
+  //padding: 10px 10px 10px 10px;
+  //border-spacing: 0;
+  //border: 1px solid #8DC63E;
   border-radius: 3px;
-  max-width: 600px;
+  //max-width: 600px;
+  td {
+    table {
+      margin-left: 25px;
+
+      td {
+        vertical-align: top
+      }
+    }
+  }
 }
 
 .badiDate {
@@ -22,34 +50,34 @@
   font-weight: bold;
 }
 
-.isJalal13 {
+.isGlory13 {
   font-weight: bold;
   color: green;
 }
 
-.showJalal13 {
+.showGlory13 {
   color: green;
   white-space: nowrap;
   display: none;
 }
 
-.showJalal13.missing {
+.showGlory13.missing {
   color: red;
   font-weight: bold;
   display: block;
 }
 
 .More {
-  float: left;
+  margin: 15px 0;
 }
 
 div.More h3 {
   margin: 0;
 }
 
-table.Demographics td, table.Demographics td label {
-  font-size: 94%;
-}
+//table.Demographics td, table.Demographics td label {
+//  font-size: 94%;
+//}
 
 table.More th, table.Demographics th {
   text-align: right;
@@ -81,24 +109,24 @@ input[type='date'] {
   padding: 10px 10px 20px 20px;
 }
 
-tr.electionDetail TD {
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+tr.electionDetail {
+  //border-left: 1px solid #666;
+  //border-right: 1px solid #666;
   background-color: #ddd;
 }
 
-tr.electionDetail.T TD {
-  border-top: 1px solid #666;
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+tr.electionDetail.T {
+  //border-top: 1px solid #666;
   background-color: #ddd;
 }
 
-tr.electionDetail.B TD {
-  border-bottom: 1px solid #666;
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+tr.electionDetail.B {
+  //border-bottom: 1px solid #666;
   background-color: #ddd;
+}
+
+tr.forPreBallot {
+  color: @tallyJBlue;
 }
 
 .ui-icon {
@@ -130,6 +158,10 @@ button.Primary {
 
 .accessCode {
   padding-left: 29px;
+}
+
+.locations {
+  margin-left: 25px;
 }
 
 #btnAddLocation {
@@ -176,4 +208,19 @@ option:disabled {
 .locationDetail {
   cursor: help;
   text-decoration: underline;
+}
+
+.YN {
+  background-color: #ddd;
+  padding: 4px 0;
+  margin: 0 15px 0 0;
+  border-radius: 3px;
+
+  label {
+    margin: 0 10px;
+
+    input {
+      margin: -4px -2px 0 0;
+    }
+  }
 }

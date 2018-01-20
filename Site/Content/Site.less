@@ -161,6 +161,20 @@ footer {
   width: 55px;
   height: 59px;
   position: relative;
+  cursor: pointer;
+}
+
+
+.NormalMode .site-title {
+  display: inline-block;
+  color: #c8c8c8;
+  margin: 8px 0 0 5px;
+  background-image: url('../Images/LogoSideM.png');
+  background-repeat: no-repeat;
+  width: 384px;
+  height: 89px;
+  max-width: 97vw;
+  box-sizing: border-box;
 }
 
 .site-title span {
@@ -361,17 +375,6 @@ body.NormalMode .site-title span {
   display: none; /*     bottom: 0;     position: relative;     margin: 40px 0 0 90px;     margin-left: -50px;     top: 15px;*/
 }
 
-.NormalMode .site-title {
-  display: inline-block;
-  color: #c8c8c8;
-  margin: 8px 0 0 5px;
-  background-image: none;
-  width: 384px;
-  max-width: 97vw;
-  height: auto;
-  box-sizing: border-box;
-}
-
 .NormalMode .PageTitle, .Presenter .PageTitle {
   display: none;
 }
@@ -508,7 +511,6 @@ ul#menu li a:hover {
 }
 /* page titles */
 hgroup.title {
-  margin-left: 1em;
 
   a {
     float: right;
@@ -612,7 +614,7 @@ article {
 }
 
 .quotes {
-  margin: 0 2em;
+  //margin: 0 2em;
 }
 
 aside {
@@ -905,7 +907,7 @@ a.twitter {
     background-color: @tallyJGreen;
   }
 
-  &.Finalized{
+  &.Finalized {
     background-color: @finalColor;
   }
 }

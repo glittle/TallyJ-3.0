@@ -21,9 +21,9 @@
       <page title="Display Tie-Breaks" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
       <page title="Display Tellers' Report" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
     </group>
-    <group title="general" longtitle="General pages" showTitleInPage="false">
+    <group title="general" state="" longtitle="General pages" showTitleInPage="false">
       <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="true" requireElection="false" role="*" desc="Welcome page"></page>
-      <page title="Choose Election" featureWhen="OnDash, General" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
+      <page title="Elections List" featureWhen="OnDash, General" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
       <page title="Dashboard" featureWhen="OnDash, General" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
       <page title="Reference Materials" featureWhen="OnDash, General" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
       <page title="Change my Password" featureWhen="OnDash, General" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
