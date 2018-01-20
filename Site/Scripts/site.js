@@ -578,7 +578,6 @@ function AttachHelp() {
   $('.PullInstructionsHandle').each(function (i, el) {
     var handle = $(el);
     var instance = i + 1; // don't want 0
-    console.log(instance)
     handle.data('instance', instance);
     showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title') + instance, 'show') != 'hide', true);
   });

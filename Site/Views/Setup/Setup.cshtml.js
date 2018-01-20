@@ -20,14 +20,22 @@
         'yes-no': YesNo
       },
       data: {
-        usePreBallot: true, //Todo
+        useBallotProcess: null,
         UseCallInButton: false,
         MultipleLocations: false,
         election: publicInterface.Election
       },
       computed: {
+        usingBallotProcess: function () {
+          return this.election.BallotProcess === 'Unknown' ? null
+            : this.election.BallotProcess === 'None' ? false : true;
+        }
+      },
+      mounted: function () {
+        var vue = this;
+        vue.useBallotProcess = vue.usingBallotProcess;
       }
-    })
+    });
 
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
@@ -429,23 +437,6 @@
     cachedRules[combined] = info;
   }
 
-  var YesNo = Vue.component('yes-no', {
-    template: '#yes-no',
-    props: {
-      value: Boolean
-    },
-    data: function () {
-      return {
-        yesNo: this.value ? 'Y' : 'N'
-      }
-    },
-    watch: {
-      yesNo: function (a) {
-        this.$emit('input', a === 'Y')
-      }
-    }
-  })
-
   var publicInterface = {
     controllerUrl: '',
     hasBallots: false,
@@ -467,3 +458,21 @@ var setupIndexPage = SetupIndexPage();
 $(function () {
   setupIndexPage.PreparePage();
 });
+
+var YesNo = Vue.component('yes-no', {
+  template: '#yes-no',
+  props: {
+    value: Boolean
+  },
+  data: function () {
+    return {
+      yesNo: this.value ? 'Y' : 'N'
+    }
+  },
+  watch: {
+    yesNo: function (a) {
+      console.log('watch', a)
+      this.$emit('input', a === 'Y')
+    }
+  }
+})

@@ -10,15 +10,51 @@ namespace Tests.BusinessTests
 
   public class ElectionExtraTests {
     [TestMethod]
-    public void ExtraFakeColumnsTest() {
-      var election = new Election();
+    public void ExtraFakeTest() {
+       var election = new Election();
 
-      election.UsePreBallot.ShouldEqual(false);
+       election.BallotProcess.ShouldEqual(null);
 
-      election.UsePreBallot = true;
-      election.UsePreBallot.ShouldEqual(true);
+      election.BallotProcess = BallotProcessKey.Reg.ToString();
 
-      election.OwnerLoginId.ShouldEqual("~PreB=1");
+      election.BallotProcess.ShouldEqual("Reg");
+
+      election.BallotProcess = BallotProcessKey.None.ToString();
+      election.BallotProcess.ShouldEqual(BallotProcessKey.None.ToString());
+
+      election.BallotProcess = null;
+      election.BallotProcess.ShouldEqual(null);
+
+      election.OwnerLoginId.ShouldEqual(null);
+
     }
+
+
+    //public void ExtraFakeColumnsTest() {
+    //  var election = new Election();
+
+    //  election.UsePreBallot.ShouldEqual(false);
+
+    //  election.UsePreBallot = true;
+    //  election.OwnerLoginId.ShouldEqual("~PreB=1");
+
+    //  election.UsePreBallot.ShouldEqual(true);
+
+    //  election.Test2.ShouldEqual(null);
+    //  election.Test2 = "Hello!";
+
+    //  election.Test2.ShouldEqual("Hello!");
+
+    //  election.UsePreBallot.ShouldEqual(true);
+
+    //  election.UsePreBallot = false;
+    //  election.UsePreBallot.ShouldEqual(false);
+
+    //  election.Test2.ShouldEqual("Hello!");
+
+    //  election.Test2 = "";
+
+    //  election.OwnerLoginId.ShouldEqual(null);
+    //}
   }
 }

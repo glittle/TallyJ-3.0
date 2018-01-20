@@ -6,8 +6,9 @@
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
-    ClientFile("~/Scripts/vue{0}.js", ".min")
-  };
+ClientFile("~/Scripts/vue{0}.js", ".min"),
+ClientFile("~/Scripts/BadiDateToday.v1.js")
+};
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
@@ -57,9 +58,9 @@
       <td>
         <select id="ddlMode" data-name="ElectionMode">
           @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                                                                                                    {
-                                                                                                                      {"B"," id=modeB"}
-                                                                                                                    })
+                                                                                                                                        {
+                                                                                                                                          {"B"," id=modeB"}
+                                                                                                                                        })
           @*                <option value="N">Normal Election</option>
             <option value="T">Tie-Break</option>
             <option value="B" id="modeB">By-election</option>
@@ -157,7 +158,7 @@
       <th>
         Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
       </th>
-      <td>
+      <td colspan="2">
         <input type="text" id="txtName" data-name="Name">
       </td>
     </tr>
@@ -166,10 +167,10 @@
         Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
       </th>
       <td>
-        <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
-        <label for="cbShowAsTest">
+        <yes-no v-model="election.ShowAsTest"></yes-no>
+      </td>
+      <td>
           Show this as a Test election in my list of elections.
-        </label>
       </td>
     </tr>
 
@@ -178,16 +179,17 @@
         Allow Tellers Access?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
       </th>
       <td>
-        <input type="checkbox" id="chkList" data-name="ListForPublic" />
-        <label for="chkList">Show on Home Page?</label>
+        <yes-no v-model="election.ListForPublic"></yes-no>
+      </td>
+      <td>
+        Show on Home Page?
         (Required to allow tellers to connect)
       </td>
     </tr>
-    <tr>
+    <tr v-if="election.ListForPublic">
       <th>
-
       </th>
-      <td>
+      <td colspan="2">
         <span class="accessCode">Access Code</span><span class="ui-icon ui-icon-info" id="qTipAccess"></span><input type="text" data-name="ElectionPasscode" maxlength="50" />
       </td>
     </tr>
@@ -212,64 +214,6 @@
   <table class="Demographics">
     <tr>
       <th>
-        Use "Gathering Ballots" Pages?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
-      </th>
-      <td>
-        <yes-no code="useGatheringBallots" v-model="election.UsePreBallot"></yes-no>
-      </td>
-      <td>
-        Use TallyJ to register voters and/or collect ballots from them?
-      </td>
-    </tr>
-    <tr class="forPreBallot">
-      <th>
-        scrip
-        Gathering Ballots Process<span class="ui-icon ui-icon-info" id="qTipUseRollcall"></span>
-      </th>
-      <td colspan="2">
-        <table>
-          <tr>
-            <td>
-              <input type="radio" name="rollCall" id="process1" />
-            </td>
-            <td>
-              <label for="process1">
-                Register voters as they arrive.
-                <br>Use the Roll Call screen and have people publicly deposit their ballots.
-              </label>
-            </td>
-          </tr>
-
-        </table>
-        <table>
-          <tr>
-            <td>
-              <input type="radio" name="rollCall" id="process2" />
-            </td>
-            <td>
-              <label for="process2">
-                Preregister voters as they arrive.
-                <br>Accept ballots at tellers' stations.
-              </label>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr class="forPreBallot">
-      <th>
-        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
-      </th>
-      <td>
-        <yes-no code="useGatheringBallots" v-model="UseCallInButton"></yes-no>
-      </td>
-      <td>
-        Show "Called In" button on Front Desk?
-      </td>
-    </tr>
-    <tr>
-      <th>
         Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
       </th>
       <td>
@@ -277,13 +221,86 @@
       </td>
       <td>
         Groups of tellers in different locations are working together on this election?
-        <div class="locations">
-          <div id="locationList">
-          </div>
-          <button type="button" id="btnAddLocation" class="btn btn-small">
-            Add Location
-          </button>
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td colspan="2">
+        <div class="locations" v-if="MultipleLocations">
+          <form action="">
+            <div id="locationList">
+              &nbsp;
+            </div>
+            <button type="button" id="btnAddLocation" class="btn btn-small">
+              Add Location Name
+            </button>
+          </form>
         </div>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Use "Gathering Ballots" Pages?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.usingBallotProcess"></yes-no>
+      </td>
+      <td>
+        Use TallyJ to register voters and/or collect ballots from them?
+      </td>
+    </tr>
+    <tr v-if="election.usingBallotProcess">
+      <th>
+      </th>
+      <td colspan="2">
+        <h3>Gathering Ballots Process<span class="ui-icon ui-icon-info" id="qTipUseRollcall"></span></h3>
+        <table>
+          <tr>
+            <td>
+              <input type="radio" value="RC" name="rollCall" id="process1" />
+            </td>
+            <td>
+              <label for="process1">
+                <strong>Register</strong> voters as they arrive.
+                <br>Use the <strong>Roll Call</strong> screen and have people publicly deposit their ballots.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="radio" value="Reg" name="rollCall" id="process2" />
+            </td>
+            <td>
+              <label for="process2">
+                <strong>Preregister</strong> voters as they arrive.
+                <br>Receive ballots at <strong>tellers' stations</strong>.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="radio" value="NoReg" name="rollCall" id="process3" />
+            </td>
+            <td>
+              <label for="process3">
+                <strong>No registration</strong> of voters as they arrive.
+                <br>Receive ballots at <strong>tellers' stations</strong>, registering them at that time.
+              </label>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr v-if="election.usingBallotProcess">
+      <th>
+        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+      </th>
+      <td>
+        <yes-no v-model="UseCallInButton"></yes-no>
+      </td>
+      <td>
+        Show "Called In" button on Front Desk?
       </td>
     </tr>
   </table>
@@ -309,8 +326,6 @@
   </div>
 </div>
 
-<script src="@ClientFile("~/Scripts/vue{0}.js", ".min")" type="text/javascript"></script>
-<script src="@ClientFile("~/Scripts/BadiDateToday.v1.js")" type="text/javascript"></script>
 
 <script type="text/x-template" id="yes-no">
   <span class="YN">
