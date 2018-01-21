@@ -13,11 +13,12 @@ namespace TallyJ.EF
   enum ExtraSettingKey
   {
     // keep names as short as possible
-    Process, // use pre-ballot pages?
+    BP, // Ballot Process?
   }
 
   public enum BallotProcessKey
   {
+    // define the supported processes
     Unknown,
     None,
     RC, // register, then roll call (no confirmation)
@@ -28,22 +29,25 @@ namespace TallyJ.EF
   [Serializable]
   public partial class Election : IIndexedForCaching
   {
-    // fake column, embedded into OwnerLoginId
     /// <summary>
-    /// must be a string to serialize out to client
+    /// This is a "fake" column that is embedded into the OwnerLoginId column
     /// </summary>
+    /// <remarks>
+    /// Must be a string to serialize out to client
+    /// </remarks>
     public string BallotProcess
     {
       get
       {
-        return GetExtraSettting(ExtraSettingKey.Process);
+        return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessKey.RC.ToString();
       }
       set
       {
-        if (value != null && !Enum.IsDefined(typeof(BallotProcessKey), value)) {
+        if (value != null && !Enum.IsDefined(typeof(BallotProcessKey), value))
+        {
           throw new ApplicationException("Invalid process key: " + value);
         }
-        SetExtraSettting(ExtraSettingKey.Process, value);
+        SetExtraSettting(ExtraSettingKey.BP, value);
       }
     }
 
@@ -53,7 +57,7 @@ namespace TallyJ.EF
 
     //  get
     //  {
-    //    return GetExtraSettting(ExtraSettingKey.Test2);
+    //    return GetExtraSetting(ExtraSettingKey.Test2);
     //  }
     //  set
     //  {
@@ -105,23 +109,37 @@ namespace TallyJ.EF
 
     const char FlagChar = '~';
     const char SplitChar = ';';
-
+    private Dictionary<ExtraSettingKey, string> _extraDict;
     private Dictionary<ExtraSettingKey, string> ExtraSettings
     {
       get
       {
+        if (_extraDict != null)
+        {
+          return _extraDict;
+        }
         // column contents...  ~Flag=1;FlagB=hello
 
-        if (string.IsNullOrWhiteSpace(OwnerLoginId) || OwnerLoginId[0] != FlagChar) return new Dictionary<ExtraSettingKey, string>();
-        return OwnerLoginId
-        .Substring(1) // skip flag char
-        .Trim()
-        .Split(SplitChar)
-        .Select(s => s.Split('='))
-        .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
+        if (string.IsNullOrWhiteSpace(OwnerLoginId) || OwnerLoginId[0] != FlagChar)
+        {
+          _extraDict = new Dictionary<ExtraSettingKey, string>();
+        }
+        else
+        {
+          _extraDict = OwnerLoginId
+              .Substring(1) // skip flag char
+              .Trim()
+              .Split(SplitChar)
+              .Select(s => s.Split('='))
+              .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
+              // any that are not recognized are ignored and lost
+              .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
+        }
+
+        return _extraDict;
       }
     }
-    private string GetExtraSettting(ExtraSettingKey setting)
+    private string GetExtraSetting(ExtraSettingKey setting)
     {
       string value;
       if (ExtraSettings.TryGetValue(setting, out value))
@@ -161,8 +179,8 @@ namespace TallyJ.EF
       {
         OwnerLoginId = FlagChar + dict.Select(kvp => kvp.Key + "=" + kvp.Value).JoinedAsString(SplitChar);
       }
+
+      _extraDict = dict;
     }
-
-
   }
 }

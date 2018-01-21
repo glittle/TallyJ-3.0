@@ -3,7 +3,6 @@
     // temporary cache of rules, for the life of this page
   };
   var settings = {
-    locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>     <span class="ui-icon ui-icon-trash" title="Delete this location"></span></div>',
     tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>',
     badiDateGetter: null,
     dateKnown: false,
@@ -20,20 +19,44 @@
         'yes-no': YesNo
       },
       data: {
-        useBallotProcess: null,
-        UseCallInButton: false,
-        MultipleLocations: false,
-        election: publicInterface.Election
+        election: publicInterface.Election,
+        locations: publicInterface.Locations,
+        MultipleLocations: publicInterface.Locations.length > 0,
+        usingBallotProcess: false,
       },
       computed: {
-        usingBallotProcess: function () {
-          return this.election.BallotProcess === 'Unknown' ? null
-            : this.election.BallotProcess === 'None' ? false : true;
+      },
+      watch: {
+        MultipleLocations: function (a) {
+          if (a) {
+            startMultipleLocations();
+          }
+        },
+        usingBallotProcess: function (a) {
+          if (!a) {
+            this.election.BallotProcess = null;
+          } else {
+            if (!this.election.BallotProcess) {
+              this.election.BallotProcess = 'RC'; // old default
+              $('.btnSave').addClass('btn-primary');
+            }
+          }
+
+        },
+        locations: function (a, b) {
+          $('.btnSave').addClass('btn-primary');
         }
       },
       mounted: function () {
-        var vue = this;
-        vue.useBallotProcess = vue.usingBallotProcess;
+        var bp = this.election.BallotProcess;
+        this.usingBallotProcess =
+          bp === 'Unknown' || !bp ? null
+            : bp === 'None' ? false : true;
+      },
+      methods: {
+        removeLocation: function(i) {
+          this.locations.splice(i, 1);
+        }
       }
     });
 
@@ -53,14 +76,14 @@
     });
 
     $('#chkPreBallot').on('change', showForPreBallot);
-    $('#chkMultipleLocations').on('change', showLocations);
+    //$('#chkMultipleLocations').on('change', showLocations);
 
-    $('#locationList').on('change', 'input', function () {
-      locationChanged($(this));
-    });
-    $('#locationList').on('click', '.ui-icon-trash', function () {
-      locationChanged($(this).parent().find('input'), true);
-    });
+    //$('#locationList').on('change', 'input', function () {
+    //  locationChanged($(this));
+    //});
+    //$('#locationList').on('click', '.ui-icon-trash', function () {
+    //  locationChanged($(this).parent().find('input'), true);
+    //});
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
@@ -99,7 +122,7 @@
     site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
     site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'If checked, a "Called In" button is shown on the front desk to record phoned in votes.' });
     site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
-    site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.  For most elections, only one location should be used.  Erase a name to remove it. (Mailed-in ballots are NOT a location.)' });
+    site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
     site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
     site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
@@ -179,15 +202,6 @@
     target.html(msg.filledWith(di));
   }
 
-  function showLocations(locations) {
-    if (locations) {
-      $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
-      setupLocationSortable();
-    }
-
-    var useLocations = $('#chkMultipleLocations').checked;
-    $('.locations').toggle(useLocations);
-  };
 
   function showTellers(tellers) {
     //        if (tellers == null) {
@@ -223,6 +237,33 @@
         ShowStatusFailed(info.Error);
       }
     });
+  };
+
+
+  function addLocation() {
+    var location = {
+      C_RowId: -1
+    };
+
+    settings.vue.locations.push(location);
+
+    //var line = $(settings.locationTemplate.filledWith(location));
+    //line.appendTo('#locationList').find('input').focus();
+
+    //setupLocationSortable();
+  };
+
+  function startMultipleLocations() {
+    var count = $('#locationList div').length;
+    for (var i = count; i < 1; i++) {
+      addLocation();
+    }
+  }
+
+  function showLocations(locations) {
+    settings.vue.locations = locations;
+    //$('#locationList').html(settings.locationTemplate.filledWithEach(locations));
+    setupLocationSortable();
   };
 
   function locationChanged(input, deleteThis) {
@@ -281,16 +322,6 @@
     });
   };
 
-  function addLocation() {
-    var location = {
-      C_RowId: -1
-    };
-    var line = $(settings.locationTemplate.filledWith(location));
-    line.appendTo('#locationList').find('input').focus();
-
-    setupLocationSortable();
-  };
-
   function applyValues(election) {
     if (election == null) {
       return;
@@ -333,8 +364,14 @@
   }
 
   function saveChanges() {
+    var election = settings.vue.election;
     var form = {
-      C_RowId: publicInterface.Election ? publicInterface.Election.C_RowId : 0
+      C_RowId: election.C_RowId,
+      ShowAsTest: election.ShowAsTest,
+      BallotProcess: election.BallotProcess,
+      UseCallInButton: election.UseCallInButton,
+      ListForPublic: election.ListForPublic,
+
     };
 
     $(':input[data-name]').each(function () {

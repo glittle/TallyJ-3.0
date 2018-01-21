@@ -1,11 +1,23 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 h2 {
-  margin: 0;
+  display: inline-block;
+  margin: 0 20px 0 0;
+  color: @tallyJOrange;
+  font-weight: normal;
+
+  span {
+    color: @tallyJBlue;
+    margin-left: 11px;
+  }
 }
 
-table + h2 {
-  margin-top: 30px;
+.PullInstructions {
+  margin-top: 0;
+}
+
+.newStep {
+  margin: 50px 0 0 0;
   border-top: 1px solid #aaa;
 }
 
@@ -14,25 +26,36 @@ table + h2 {
 }
 
 .btnSave {
-  margin: 0 0 10px 10px;
+  position: fixed;
+  right: 10px;
+  top: 110px;
+
+  &.btn-primary {
+    box-shadow: 0 0 20px 7px rgba(0,0,0, 0.5);
+  }
 }
 
 table.Demographics {
   //float: left;
-  //margin-right: 15px;
+  margin-left: 20px;
   //padding: 10px 10px 10px 10px;
   //border-spacing: 0;
   //border: 1px solid #8DC63E;
-  border-radius: 3px;
   //max-width: 600px;
   td {
     table {
-      margin: 0 0 15px 10px;
+      margin: 4px 0 0 0;
+      background-color: #ddd;
 
       td {
-        vertical-align: top
+        vertical-align: top;
+        padding-left: 4px;
       }
     }
+  }
+
+  td:nth-child(3) {
+    width: 99%;
   }
 
   h3 {
@@ -85,8 +108,8 @@ div.More h3 {
 //}
 
 table.More th, table.Demographics th {
-  text-align: right;
-  padding: 5px 10px 5px 0;
+  text-align: left;
+  padding: 5px 10px 5px 5px;
   white-space: nowrap;
   vertical-align: top;
 }
@@ -161,12 +184,8 @@ button.Primary {
   margin-left: 0;
 }
 
-.accessCode {
-  padding-left: 29px;
-}
-
 .locations {
-  margin-left: 25px;
+  margin: 2px 0 10px 0;
 }
 
 #btnAddLocation {
@@ -216,10 +235,11 @@ option:disabled {
 }
 
 .YN {
-  background-color: #ddd;
-  padding: 4px 0;
   margin: 0 15px 0 0;
+  padding: 4px 0;
   border-radius: 3px;
+  background-color: #ddd;
+  white-space: nowrap;
 
   label {
     margin: 0 10px;
