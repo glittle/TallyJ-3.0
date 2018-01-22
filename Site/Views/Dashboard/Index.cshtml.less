@@ -1,5 +1,6 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
+
 div.MainDashboard {
   section.feature h3 {
     font-size: @baseFontSize * 1.2;
@@ -84,33 +85,28 @@ div.MainDashboard {
     font-size: 23px;
   }
 
-  .Projector h3 {
-    background-position: right 4px;
-    background-image: url('../../Images/SlideProjector.gif');
-    background-repeat: no-repeat;
+  .Projector {
+    .TipProjector {
+      display: inline-block;
+    }
+    //h3 {
+    //  background-position: right 4px;
+    //  background-image: url('../../Images/SlideProjector.gif');
+    //  background-repeat: no-repeat;
+    //}
   }
 
-  .Role-known h3 {
-    background-position: right 4px;
-    background-image: url('../../Images/keys.png');
-    background-repeat: no-repeat;
+  .Role-known {
+    .TipKnown {
+      display: inline-block;
+    }
+    //h3 {
+    //  background-position: right 4px;
+    //  background-image: url('../../Images/keys.png');
+    //  background-repeat: no-repeat;
+    //}
   }
 
-  .TipKnown {
-    background-image: url('../../Images/keys.png');
-    background-repeat: no-repeat;
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-  }
-
-  .TipProjector {
-    background-image: url('../../Images/SlideProjector.gif');
-    background-repeat: no-repeat;
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-  }
 
   .Featured section.feature {
   }
@@ -137,4 +133,25 @@ div.MainDashboard {
   .h2 {
     margin-top: 10px;
   }
+}
+
+
+.TipKnown {
+  background-image: url('../../Images/keys.png');
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.TipProjector {
+  background-image: url('../../Images/SlideProjector.gif');
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.TipIcon {
+  display: none;
 }

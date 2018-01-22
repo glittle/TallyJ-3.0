@@ -2,6 +2,10 @@
   background-color: #EFEEEF;
 }
 
+body {
+  color: #000;
+}
+
 .content-wrapper {
   width: 100%;
 }
@@ -69,22 +73,26 @@ table.Main td {
   text-align: center;
   vertical-align: top;
   min-width: 40px;
-  padding: 2px 7px;
+  padding: 2px 9px;
 }
-
-  table.Main td:first-child {
-    border-right: 1px solid #d0d0d0;
-  }
 
 .HolderRight tbody tr:nth-child(even) {
   background-color: #E9E8E9;
 }
 
-th:first-child {
+#mainResults tbody th {
+  font-weight: normal;
+  font-size: 70%;
+  color: #999;
+  padding: 2px 6px 2px 2px;
+  border-right: 1px solid #d0d0d0;
+}
+
+th.Left {
   text-align: left;
 }
 
-tr.FirstExtra td {
+tr.FirstExtra td, tr.FirstExtra th {
   border-top: double 3px #999;
 }
 
@@ -115,16 +123,16 @@ table.Holder {
 
 .HolderLeft {
   vertical-align: top;
-  width: 40%;
+  width: 35%;
 }
 
 .HolderRight {
   vertical-align: top;
-  width: 59%;
+  width: 64%;
 }
 
 #totalCounts {
-  width: 370px;
+  width: 100%;
   margin: 0 auto;
 }
 

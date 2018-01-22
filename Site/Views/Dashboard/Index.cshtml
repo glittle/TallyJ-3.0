@@ -10,9 +10,13 @@
 <div class="PullInstructions">
   <ol>
     <li>Shown here are the main sections and pages of TallyJ.</li>
-    <li class="ifAuthKnownLI">Pages with <span class="TipKnown"></span> are available only to you and tellers who have their own login account.</li>
+    <li>The Election State determines which pages have large buttons and appear in the second menu (above).</li>
+    @if (UserSession.IsKnownTeller)
+    {
+      <li>Pages with <span class="TipKnown"></span> are available only to you and tellers who have their own login account.</li>
+    }
     <li>Pages with <span class="TipProjector"></span> are designed to be used with a projector for display at the front of the room.</li>
-    <li>After reading these instructions at the top of a page, you can click on "Hide Instructions" just above, to hide them.</li>
+    <li>After reading these instructions at the top of a page, you can click on "Hide Instructions & Tips" just above, to hide them.</li>
   </ol>
 </div>
 <div class="MainDashboard">

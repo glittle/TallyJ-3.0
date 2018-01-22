@@ -21,7 +21,7 @@
       <span id="Status">@ElectionTallyStatusEnum.TextFor(UserSession.CurrentElection.TallyStatus)</span>
     </p>
     <p>
-      The results will be available when the tellers have completed the counting and the status is set to "@ElectionTallyStatusEnum.Finalized.Text".
+      The results will be available when the tellers finish their tallying and analysis.
     </p>
   </div>
   <div id="Results" class="Hidden">
@@ -118,7 +118,8 @@
           <table id="mainResults" class="Main">
             <thead>
               <tr>
-                <th>
+                <th>#</th>
+                <th class="Left">
                   Elected
                 </th>
                 <th>
@@ -126,19 +127,24 @@
                 </th>
               </tr>
             </thead>
-            <tbody id="mainBody">
-              <tr class="{ClassName}">
-                <td class="Left">
-                  {PersonName}
-                </td>
-                <td>
-                  {VoteDisplay}
-                </td>
-              </tr>
-            </tbody>
+            <tbody id="mainBody"></tbody>
           </table>
         </td>
       </tr>
     </table>
   </div>
 </div>
+
+<script type="text/x-template" id="mainBodyTemplate">
+  <tr class="{ClassName}">
+    <th>
+      {Rank}
+    </th>
+    <td class="Left">
+      {PersonName}
+    </td>
+    <td>
+      {VoteDisplay}
+    </td>
+  </tr>
+</script>

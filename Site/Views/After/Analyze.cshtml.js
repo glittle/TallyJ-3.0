@@ -248,7 +248,7 @@
   };
 
   function summarizeCounts() {
-    $('#calledIn').toggle(settings.calledInTotal > 0 || settings.info.ShowCalledIn);
+    $('#calledIn').toggle(settings.calledInTotal > 0 || !!settings.info.ShowCalledIn);
     $('#totalCounts tr').each(function () {
       var row = $(this);
       var calcSpan = row.find('span.Calc');
@@ -455,7 +455,8 @@
   var publicInterface = {
     controllerUrl: '',
     PreparePage: preparePage,
-    results: null
+    results: null,
+    settings: settings
   };
 
   return publicInterface;
