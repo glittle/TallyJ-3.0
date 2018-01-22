@@ -601,7 +601,6 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
-    <None Include="Properties\PublishProfiles\old Azure - not transforming.pubxml" />
     <None Include="Properties\PublishProfiles\Local 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files.pubxml" />
@@ -617,11 +616,8 @@
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
     <Content Include="Reports\VotesWithInvalid.cshtml" />
-    <None Include="Properties\PublishProfiles\TallyJ3 - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\TallyJ3 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\Azure Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\TallyJ3 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\TallyJ3-staging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - Web Deploy.pubxml" />
@@ -728,10 +724,15 @@
     <Content Include="Views\Ballots\SortBallots.cshtml.less">
       <DependentUpon>SortBallots.cshtml</DependentUpon>
     </Content>
-    <None Include="Web.AzureDebug.config" />
-    <None Include="Web.AzureRelease.config" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.TallyJ3 - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.TallyJ3-staging - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -831,9 +832,6 @@
     </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
