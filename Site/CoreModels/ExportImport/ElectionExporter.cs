@@ -302,6 +302,8 @@ namespace TallyJ.CoreModels.ExportImport
         election.CanReceive,
         election.LastEnvNum,
         election.OwnerLoginId,
+        election.ElectionGuid,
+        election.BallotProcess,
         ShowFullReport = election.ShowFullReport.OnlyIfTrue()
       };
     }

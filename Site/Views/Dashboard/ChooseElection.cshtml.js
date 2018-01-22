@@ -85,6 +85,7 @@
     var hub = $.connection.importHubCore;
 
     hub.client.loaderStatus = function (msg, isTemp) {
+      msg = msg.replace(/\n/g, '<br> &nbsp; ');
       if (isTemp) {
         $('#tempLog').html(msg);
       } else {
@@ -113,7 +114,7 @@
 
     $('#loadingLog').show();
     $('#log').html('');
-    $('#tempLog').html('Uploading the file to the server');
+    $('#tempLog').html('Sending the file to the server...');
 
     var form = $('#formLoadFile');
     var frameId = 'tempUploadFrame';
@@ -129,7 +130,7 @@
       method: 'post'
     });
 
-    var frameObject = frame.load(function () {
+    var frameObject = frame.on('load', function () {
       frameObject.unbind('load');
       $input.val(''); // blank out file name
 
@@ -307,15 +308,15 @@
 
 
     var btn = $(this);
-    var row = btn.parents('.Election');
-    var name = btn.parents('.Detail').find('b').text();
+    var row = btn.closest('.Election');
+    var name = row.find('.Detail').find('b').text();
 
     btn.addClass('active');
     row.addClass('deleting');
 
     ShowStatusDisplay('Deleting...', 0);
 
-    if (!confirm('Completely delete election this election?\n\n  {0}\n\n'.filledWith(name))) {
+    if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
       btn.removeClass('active');
       row.removeClass('deleting');
       ResetStatusDisplay();

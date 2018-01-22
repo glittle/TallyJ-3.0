@@ -1,7 +1,6 @@
 ﻿var PresenterPage = function () {
   var settings = {
     rowTemplate: '',
-    footTemplate: '',
     invalidsRowTemplate: '',
     refreshTimeout: null,
     chart: null,
@@ -35,13 +34,7 @@
       showReport();
     });
 
-    var tableBody = $('#mainBody');
-    settings.rowTemplate = tableBody.html();
-    tableBody.html('');
-
-    var tFoot = $('#mainFoot');
-    settings.footTemplate = tFoot.html();
-    tFoot.html('');
+    settings.rowTemplate = $('#mainBodyTemplate').text();
 
     site.onbroadcast(site.broadcastCode.electionStatusChanged, function (ev, info) {
       if (info.StateName === 'Finalized') {
@@ -213,8 +206,14 @@
   var expand = function (info) {
     var results = info.ReportVotes;
     var foundExtra = false;
+    var rank = 1;
+
 
     $.each(results, function (i) {
+      if (this.Section === 'E' && !foundExtra) {
+        rank = 1;
+      }
+      this.Rank = rank++;
       this.ClassName = this.Section == 'E' ? (foundExtra ? 'Extra' : ' FirstExtra') : '';
       this.VoteDisplay = this.VoteCount + (this.TieBreakCount !== null ? ', ' + this.TieBreakCount : '');
       if (this.Section == 'E') {

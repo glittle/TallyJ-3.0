@@ -112,5 +112,9 @@
   {
     "outputFile": "Views/After/Reports.cshtml.css",
     "inputFile": "Views/After/Reports.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/Reconcile.cshtml.css",
+    "inputFile": "Views/Ballots/Reconcile.cshtml.less"
   }
 ]

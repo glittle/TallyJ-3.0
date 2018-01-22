@@ -199,8 +199,21 @@ namespace TallyJ.CoreModels
     /// <returns></returns>
     public IneligibleReasonEnum GetDefaultIneligibleReason()
     {
-      var canVote = UserSession.CurrentElection.CanVote == CanVoteOrReceive.All;
-      var canReceiveVotes = UserSession.CurrentElection.CanReceive == CanVoteOrReceive.All;
+      return GetDefaultIneligibleReason(UserSession.CurrentElection);
+    }
+
+    /// <summary>
+    ///   Based on the 2 flags, get a default reason (may be null)
+    /// </summary>
+    /// <returns></returns>
+    public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
+    {
+      if (election == null) {
+        return null;
+      }
+
+      var canVote = election.CanVote == CanVoteOrReceive.All;
+      var canReceiveVotes = election.CanReceive == CanVoteOrReceive.All;
 
       if (canVote && canReceiveVotes)
       {
@@ -216,7 +229,6 @@ namespace TallyJ.CoreModels
       }
       return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
     }
-
 
     //    public Election GetFreshFromDb(Guid electionGuid)
     //    {
@@ -255,7 +267,8 @@ namespace TallyJ.CoreModels
         election.ElectionPasscode,
         election.UseCallInButton,
         election.HidePreBallotPages,
-        election.MaskVotingMethod
+        election.MaskVotingMethod,
+        election.BallotProcess
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())

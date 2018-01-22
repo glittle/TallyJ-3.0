@@ -1,11 +1,59 @@
-﻿table.Demographics {
-  float: left;
-  margin-right: 15px;
-  padding: 10px 10px 10px 10px;
-  border-spacing: 0;
-  border: 1px solid #8DC63E;
-  border-radius: 3px;
-  max-width: 600px;
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+[v-cloak] {
+  display: none;
+}
+
+h2 {
+  display: inline-block;
+  margin: 0 20px 0 0;
+  color: @tallyJOrange;
+  font-weight: normal;
+
+  span {
+    color: @tallyJBlue;
+    margin-left: 11px;
+  }
+}
+
+.PullInstructions {
+  margin-top: 0;
+}
+
+.newStep {
+  margin: 50px 0 0 0;
+  border-top: 1px solid #aaa;
+}
+
+.PullInstructionsHandle {
+  margin-top: 0;
+}
+
+.btnSave {
+  position: fixed;
+  right: 10px;
+  top: 100px;
+  box-shadow: 0 0 15px 15px #efeeef;
+
+  &.btn-primary {
+  }
+}
+
+table.Demographics {
+  //float: left;
+  margin-left: 20px;
+  //padding: 10px 10px 10px 10px;
+  //border-spacing: 0;
+  //border: 1px solid #8DC63E;
+  //max-width: 600px;
+  td:nth-child(3) {
+    width: 99%;
+  }
+
+  h3 {
+    font-size: 15px;
+    margin: -2px 0 -5px 10px;
+  }
 }
 
 .badiDate {
@@ -22,38 +70,38 @@
   font-weight: bold;
 }
 
-.isJalal13 {
+.isGlory13 {
   font-weight: bold;
   color: green;
 }
 
-.showJalal13 {
+.showGlory13 {
   color: green;
   white-space: nowrap;
   display: none;
 }
 
-.showJalal13.missing {
+.showGlory13.missing {
   color: red;
   font-weight: bold;
   display: block;
 }
 
 .More {
-  float: left;
+  margin: 15px 0;
 }
 
 div.More h3 {
   margin: 0;
 }
 
-table.Demographics td, table.Demographics td label {
-  font-size: 94%;
-}
+//table.Demographics td, table.Demographics td label {
+//  font-size: 94%;
+//}
 
 table.More th, table.Demographics th {
-  text-align: right;
-  padding: 5px 10px 5px 0;
+  text-align: left;
+  padding: 6px 10px 6px 5px;
   white-space: nowrap;
   vertical-align: top;
 }
@@ -81,28 +129,47 @@ input[type='date'] {
   padding: 10px 10px 20px 20px;
 }
 
-tr.electionDetail TD {
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+#locationList {
+  div {
+    margin: 1px 0;
+  }
+
+  .warning {
+    color: @tallyJError;
+  }
+
+  .ui-icon {
+    margin: 0 5px;
+  }
+}
+
+
+tr.electionDetail {
+  //border-left: 1px solid #666;
+  //border-right: 1px solid #666;
   background-color: #ddd;
 }
 
-tr.electionDetail.T TD {
-  border-top: 1px solid #666;
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+tr.electionDetail.T {
+  //border-top: 1px solid #666;
   background-color: #ddd;
 }
 
-tr.electionDetail.B TD {
-  border-bottom: 1px solid #666;
-  border-left: 1px solid #666;
-  border-right: 1px solid #666;
+tr.electionDetail.B {
+  //border-bottom: 1px solid #666;
   background-color: #ddd;
+}
+
+tr.forPreBallot {
+  color: @tallyJBlue;
 }
 
 .ui-icon {
   display: inline-block;
+}
+
+.ui-icon-arrow-2-n-s {
+  cursor: pointer;
 }
 
 .More.Misc {
@@ -128,8 +195,8 @@ button.Primary {
   margin-left: 0;
 }
 
-.accessCode {
-  padding-left: 29px;
+.s {
+  margin: 2px 0 10px 0;
 }
 
 #btnAddLocation {
@@ -138,6 +205,21 @@ button.Primary {
 
 #btnResetList {
   margin-top: -24px;
+}
+
+table.processOptions {
+  margin: 4px 0 0 0;
+  background-color: #dde6dd;
+
+  td, th {
+    vertical-align: top;
+    padding: 2px 0 0 4px;
+  }
+
+  label {
+    display: block;
+    margin: -2px 5px 7px 0;
+  }
 }
 
 #qTipLocked {
@@ -176,4 +258,28 @@ option:disabled {
 .locationDetail {
   cursor: help;
   text-decoration: underline;
+}
+
+.YN {
+  margin: 0 15px 0 0;
+  padding: 4px 0;
+  border-radius: 3px;
+  background-color: #ddd;
+  white-space: nowrap;
+
+  &.YNY {
+    background-color: #dde6dd;
+  }
+
+  &.YNN {
+    background-color: #e6dddd;
+  }
+
+  label {
+    margin: 0 10px;
+
+    input {
+      margin: -4px -2px 0 0;
+    }
+  }
 }

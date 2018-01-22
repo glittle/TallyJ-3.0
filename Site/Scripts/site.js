@@ -5,6 +5,7 @@ var site = {
   templates: {},
   computerActive: true,
   context: '', // controller/action
+  passcode: null,
   lastVersionNum: 0,
   infoForHeartbeat: {},
   heartbeatActive: true,
@@ -77,6 +78,28 @@ function Onload() {
   PrepareTopLocationAndTellers();
 
   PrepareQTips();
+
+  showElectionInfo()
+}
+
+function showElectionInfo() {
+  // after qtips are ready
+  $('.passcodeOkay').toggle(site.passcode != '');
+  $('.passcodeLocked').toggle(site.passcode == '');
+
+  $('.passcode').on('click', function () {
+    location.href = site.rootUrl + 'After/monitor';
+  })
+}
+
+function updatePasscodeDisplay(okay, passcode) {
+  //console.log(okay, passcode);
+  if (typeof passcode === 'string') {
+    site.passcode = passcode;
+    $('.passcodeText').text(site.passcode);
+  }
+  $('.passcodeOkay').toggle(okay && !!site.passcode);
+  $('.passcodeLocked').toggle(!okay || !site.passcode);
 }
 
 function HighlightActiveLink() {
@@ -154,7 +177,7 @@ var startSignalR = function (callBack) {
     $.connection.hub
       .start()
       .done(function () {
-        console.log('signalR client connected', $.connection.hub.id);
+        // console.log('signalR client connected', $.connection.hub.id);
         site.signalrConnectionId = $.connection.hub.id;
         for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
           site.signalrDelayedCallbacks[i]();
@@ -204,6 +227,18 @@ function PrepareQTips(doNow) {
   site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state by clicking these buttons as appropriate.' });
   site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
   site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
+  site.qTips.push({
+    selector: '#qTipPasscode',
+    title: 'Election Open for Tellers',
+    text: 'Tellers can join this election using the access code&nbsp; <b class=passcodeText></b> &nbsp;on the home page.',
+    events: {
+      render: function () {
+        // only runs on first render
+        $('.passcodeText').text(site.passcode);
+      }
+    }
+  });
+  site.qTips.push({ selector: '#qTipPasscodeLocked', title: 'Election Closed', text: 'This election is not visible on the home page.' });
 
   if ($('body').hasClass('AuthKnown')) {
     site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set the election to this state using the buttons on the Analyze page. When "Finalized", no further inputs or changes are permitted.' });
@@ -227,6 +262,12 @@ function ActivateTips(forceRecreate) {
       at: 'top center',
       viewport: true
     },
+    content: {
+      text: '',
+      title: {
+        text: ''
+      }
+    },
     style: {
       classes: 'qtip-tallyj qtip-rounded qtip-shadow'
     }
@@ -237,12 +278,14 @@ function ActivateTips(forceRecreate) {
   $.each(site.qTips, function () {
     if (!(forceRecreate || false) && $(this).data('done')) return;
 
-    var opt = $.extend({}, baseOption);
+    var opt = $.extend(true, {}, baseOption, this);
     if (this.text) {
+      opt.content.text = this.text;
       if (this.title) {
-        $.extend(opt, { content: { text: this.text, title: { text: this.title } } });
+        opt.content.title.text = this.title;
+        //$.extend(true, opt, { content: { text: this.text, title: { text: this.title } } });
       } else {
-        $.extend(opt, { content: { text: this.text } });
+        //$.extend(true, opt, { content: { text: this.text } });
       }
     }
     $(this).data('done', true);
@@ -311,7 +354,7 @@ function AttachHandlers() {
       .addClass('DropDown')
       .css({
         left: getFullOffsetLeft(item) + 'px',
-        top: (item.offset().top + item.height() - 3) + 'px'
+        top: (item.offset().top + item.height() - 2) + 'px'
       });
   })
     .on('mouseout', 'span.state', function (ev) {
@@ -567,17 +610,25 @@ function AttachHelp() {
       //next.slideToggle(show);
     }
     handle.toggleClass('Closed', !show);
-    SetInStorage('HidePI_' + location.pathname + handle.data('title'), show ? 'show' : 'hide');
+    var key = 'HidePI_' + location.pathname + handle[0].id;
+    if (show) {
+      SetInStorage(key, show ? null : 'hide');
+    } else {
+      SetInStorage(key, 'hide');
+    }
   };
 
   $(document).on('click', '.PullInstructionsHandle', function (ev) {
     var handle = $(ev.currentTarget);
+    console.log(handle, handle.data());
     showHelp(handle, !handle.next().is(':visible'), false);
   });
 
-  $('.PullInstructionsHandle').each(function () {
-    var handle = $(this)
-    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + handle.data('title'), 'show') != 'hide', true);
+  $('.PullInstructionsHandle').each(function (i, el) {
+    var handle = $(el);
+    var instance = i + 1; // don't want 0
+    el.id = 'pi' + instance;
+    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + el.id, 'show') != 'hide', true);
   });
 
 }
@@ -1367,6 +1418,10 @@ function GetFromStorage(key, defaultValue) {
 }
 
 function SetInStorage(key, value) {
+  if (!value) {
+    localStorage.removeItem(key);
+    return;
+  }
   if (typeof value === 'object') {
     var strObj = StringifyObject(value);
     value = ObjectConstant + strObj;
@@ -1395,3 +1450,48 @@ function ExpandName(s) {
   return result.join('');
 }
 
+
+// https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    value: function (predicate) {
+      // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+
+      // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+      var thisArg = arguments[1];
+
+      // 5. Let k be 0.
+      var k = 0;
+
+      // 6. Repeat, while k < len
+      while (k < len) {
+        // a. Let Pk be ! ToString(k).
+        // b. Let kValue be ? Get(O, Pk).
+        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+        // d. If testResult is true, return k.
+        var kValue = o[k];
+        if (predicate.call(thisArg, kValue, k, o)) {
+          return k;
+        }
+        // e. Increase k by 1.
+        k++;
+      }
+
+      // 7. Return -1.
+      return -1;
+    }
+  });
+}

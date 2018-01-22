@@ -3,35 +3,99 @@
     // temporary cache of rules, for the life of this page
   };
   var settings = {
-    locationTemplate: '<div><input data-id={C_RowId} type=text value="{Name}">  <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>     <span class="ui-icon ui-icon-trash" title="Delete this location"></span></div>',
     tellerTemplate: '<div data-id={C_RowId}>{Name} <span class="ui-icon ui-icon-trash" title="Delete this teller name"></span></div>',
     badiDateGetter: null,
     dateKnown: false,
-    isJalal13: null
+    isGlory13: null,
+    vue: null
   };
+
 
   function preparePage() {
 
+    settings.vue = new Vue({
+      el: '#setupBody',
+      components: {
+        'yes-no': YesNo
+      },
+      data: {
+        election: publicInterface.Election,
+        locations: publicInterface.Locations,
+        numLocations: publicInterface.Locations.length,
+        MultipleLocations: publicInterface.Locations.length > 1,
+        usingBallotProcess: false,
+      },
+      computed: {
+      },
+      watch: {
+        'election.BallotProcess': function (a) {
+          this.replaceBodyBpClass(a);
+        },
+        usingBallotProcess: function (a) {
+          if (!a) {
+            this.election.BallotProcess = 'None';
+          } else {
+            if (!this.election.BallotProcess || this.election.BallotProcess === 'None') {
+              this.election.BallotProcess = 'Roll'; // old default
+              $('.btnSave').addClass('btn-primary');
+            }
+          }
+        },
+        //locations: function (a, b) {
+        //  console.log('watch', a, b);
+        //  // $('.btnSave').addClass('btn-primary');
+        //}
+      },
+      mounted: function () {
+        var bp = this.election.BallotProcess;
+        this.usingBallotProcess =
+          bp === 'Unknown' || !bp ? null
+            : bp === 'None' ? false : true;
+      },
+      methods: {
+        removeLocation: function (domIcon) {
+          var input = $(domIcon).closest('div').find('input');
+          locationChanged(input, true);
+        },
+        replaceBodyBpClass: function (process) {
+          var list = window.document.body.classList;
+          list.forEach(function (key) {
+            if (key.substring(0, 3) === 'BP-') {
+              list.remove(key);
+            }
+          });
+          list.add('BP-' + process);
+        }
+      }
+    });
+
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
-      $('.showJalal13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
+      $('.showGlory13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
     //$(document).on('change keyup', '#ddlMode', startToAdjustByType);
 
-    $(document).on('click', '#btnSave', saveChanges);
+    $(document).on('click', '.btnSave', saveChanges);
     $(document).on('click', '#btnAddLocation', addLocation);
 
-    $('.Demographics').on('change', '*:input', function () {
-      $('#btnSave').addClass('btn-primary');
+    $('.Demographics').on('change keyup', '*:input', function () {
+      if ($(this).closest('.forLocations').length) {
+        return; // don't flag location related
+      }
+      $('.btnSave').addClass('btn-primary');
     });
+
+    $('#chkPreBallot').on('change', showForPreBallot);
+    //$('#chkMultipleLocations').on('change', showLocations);
+
     $('#locationList').on('change', 'input', function () {
       locationChanged($(this));
     });
-    $('#locationList').on('click', '.ui-icon-trash', function () {
-      locationChanged($(this).parent().find('input'), true);
-    });
+    //$('#locationList').on('click', '.ui-icon-trash', function () {
+    //  locationChanged($(this).parent().find('input'), true);
+    //});
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
@@ -50,15 +114,15 @@
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
-    $('.showJalal13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
+    $('.showGlory13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
     //$('#txtName').focus();
 
     site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
     site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
     site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
-    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
-    site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  Most elections must be held on the day designated by the National Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
     //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
@@ -68,9 +132,9 @@
     site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
     site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
-    site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'If checked, a "Called In" button is shown on the front desk to record phoned in votes.' });
+    site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
     site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
-    site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.  For most elections, only one location should be used.  Erase a name to remove it. (Mailed-in ballots are NOT a location.)' });
+    site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
     site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
     site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
     site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
@@ -81,7 +145,7 @@
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     $(window).on('beforeunload', function () {
-      if ($('#btnSave').hasClass('btn-primary')) {
+      if ($('.btnSave').hasClass('btn-primary')) {
         return "Changes have been made and not saved.";
       }
     });
@@ -93,13 +157,6 @@
     getBadiDate();
   };
 
-  //    var resetVoteStatuses = function () {
-  //        ShowStatusDisplay('Updaing...');
-  //        CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvement', null, function () {
-  //            ShowStatusSuccess('Done');
-  //        });
-  //    };
-
   function getBadiDate() {
     settings.dateKnown = true;
     var dateStr = $('#txtDate').val();
@@ -107,7 +164,7 @@
     if (dateStr.length != 10 || dateParts.length != 3) {
       return; // expecting 2020-04-21
     }
-    settings.isJalal13 = null;
+    settings.isGlory13 = null;
     var d = new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
 
     d.setHours(12, 0, 0, 0, 0); // noon
@@ -140,33 +197,23 @@
     $('#badiDateIntro').html(msg.filledWith(di));
 
     // found 1st Ridvan for an LSA election?
-    $('.badiDateName').removeClass('isJalal13');
-    var found = !!settings.isJalal13;
+    $('.badiDateName').removeClass('isGlory13');
+    var found = !!settings.isGlory13;
     if (found) {
-      settings.isJalal13.addClass('isJalal13');
+      settings.isGlory13.addClass('isGlory13');
     }
-    $('.showJalal13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
+    $('.showGlory13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
   }
 
   function showBadiInfo(di, target, intro) {
     if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N') {
-      settings.isJalal13 = target;
+      settings.isGlory13 = target;
     }
 
     var msg = intro + '<span class=badiDateValue>{bDay} {bMonthMeaning} ({bMonthNameAr}) {bYear}</span>';
     target.html(msg.filledWith(di));
   }
 
-  function showLocations(locations) {
-    //        if (locations == null) {
-    //            $('#locationList').html('[None]');
-    //            return;
-    //        }
-
-    $('#locationList').html(settings.locationTemplate.filledWithEach(locations));
-
-    setupLocationSortable();
-  };
 
   function showTellers(tellers) {
     //        if (tellers == null) {
@@ -204,27 +251,93 @@
     });
   };
 
+
+  function addLocation() {
+    var location = {
+      C_RowId: -1
+    };
+
+    settings.vue.locations.push(location);
+
+    settings.vue.numLocations++;
+
+    //var line = $(settings.locationTemplate.filledWith(location));
+    //line.appendTo('#locationList').find('input').focus();
+
+    //setupLocationSortable();
+  };
+
+  //function startMultipleLocations() {
+  //  var count = $('#locationList input').length;
+  //  console.log('add', count)
+  //  for (var i = count; i < 2; i++) {
+  //    addLocation();
+  //  }
+  //}
+
+  //function removeAdditionalLocations() {
+  //  // called when YN set to false
+  //  //remove any with -1
+  //  $('#locationList input').each(function (i, el) {
+  //    var loc = $(el);
+  //    if (loc.data('id') == -1) {
+  //      locationChanged(loc, true);
+  //    }
+  //  });
+
+  //  // remove all but one - 
+  //  var toDelete = [];
+  //  for (var i = 1; i < $('#locationList input').length; i++) {
+  //    toDelete.push($('#locationList input').eq(i));
+  //  }
+
+  //  for (i = 0; i < toDelete.length; i++) {
+  //    // fire off calls to delete these
+  //    locationChanged(toDelete[i], true);
+  //  }
+
+  //}
+
+  function showLocations(locations) {
+    // use Vue to create them, but not manage after...
+    settings.vue.locations = locations;
+    //$('#locationList').html(settings.locationTemplate.filledWithEach(locations));
+    setupLocationSortable();
+  };
+
   function locationChanged(input, deleteThis) {
     var form = {
       id: input.data('id'),
       text: deleteThis ? '' : input.val()
     };
+
+    if (form.id === -1 && !form.text) {
+      // deleting a new one
+      input.parent().remove();
+      settings.vue.numLocations = $('#locationList input').length;
+      return;
+    }
+
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
       if (info.Success) {
         ShowStatusSuccess(info.Status);
+        if (info.Id == 0) {
+          // removed
+          input.parent().remove();
+
+          // vue array is disconnected from the DOM array... need the length matches the DOM
+          settings.vue.numLocations = $('#locationList input').length;
+
+          // setupLocationSortable();
+        } else {
+          input.val(info.Text);
+          if (info.Id != form.id) {
+            input.data('id', info.Id);
+          }
+        }
       } else {
         ShowStatusFailed(info.Status);
-      }
-
-      if (info.Id == 0) {
-        input.parent().remove();
-        setupLocationSortable();
-      } else {
-        input.val(info.Text);
-        if (info.Id != form.id) {
-          input.data('id', info.Id);
-        }
       }
     });
   };
@@ -237,9 +350,6 @@
       containment: 'parent',
       tolerance: 'pointer'
     });
-
-    var multiple = $('#locationList > div').length > 1;
-    $('#locationList .ui-icon').toggle(multiple);
   };
 
   function orderChanged(ev, ui) {
@@ -258,16 +368,6 @@
     CallAjaxHandler(publicInterface.controllerUrl + '/SortLocations', form, function (info) {
       ShowStatusSuccess("Saved");
     });
-  };
-
-  function addLocation() {
-    var location = {
-      C_RowId: -1
-    };
-    var line = $(settings.locationTemplate.filledWith(location));
-    line.appendTo('#locationList').find('input').focus();
-
-    setupLocationSortable();
   };
 
   function applyValues(election) {
@@ -301,12 +401,25 @@
       input.html(value);
     });
 
+    showForPreBallot();
+
     startToAdjustByType();
   };
 
+  function showForPreBallot() {
+    var usePreBallot = $('#chkPreBallot').prop('checked');
+    $('.forPreBallot').toggle(usePreBallot);
+  }
+
   function saveChanges() {
+    var election = settings.vue.election;
     var form = {
-      C_RowId: publicInterface.Election ? publicInterface.Election.C_RowId : 0
+      C_RowId: election.C_RowId,
+      ShowAsTest: election.ShowAsTest,
+      BallotProcess: election.BallotProcess,
+      UseCallInButton: election.UseCallInButton,
+      ListForPublic: election.ListForPublic,
+
     };
 
     $(':input[data-name]').each(function () {
@@ -328,8 +441,9 @@
       if (info.Election) {
         applyValues(info.Election);
         $('.CurrentElectionName').text(info.displayName);
+        updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
       }
-      $('#btnSave').removeClass('btn-primary');
+      $('.btnSave').removeClass('btn-primary');
       ResetStatusDisplay();
       ShowStatusSuccess(info.Status);
     });
@@ -409,10 +523,6 @@
     cachedRules[combined] = info;
   }
 
-  //  var buildPage = function () {
-  //    $('#editArea').html(site.templates.ElectionEditScreen.filledWith(local.Election));
-  //  };
-
   var publicInterface = {
     controllerUrl: '',
     hasBallots: false,
@@ -434,3 +544,24 @@ var setupIndexPage = SetupIndexPage();
 $(function () {
   setupIndexPage.PreparePage();
 });
+
+var YesNo = Vue.component('yes-no', {
+  template: '#yes-no',
+  props: {
+    value: Boolean,
+    disabled: Boolean
+  },
+  data: function () {
+    return {
+      yesNo: this.value ? 'Y' : 'N'
+    }
+  },
+  watch: {
+    value: function (a) {
+      this.yesNo = a ? 'Y' : 'N'
+    },
+    yesNo: function (a) {
+      this.$emit('input', a === 'Y')
+    }
+  }
+})

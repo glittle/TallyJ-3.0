@@ -503,6 +503,7 @@ namespace TallyJ.CoreModels
           DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
           MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
           CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
+          Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
           p.BahaiId
         });
@@ -585,7 +586,7 @@ namespace TallyJ.CoreModels
 
         newVoteLocationGuid = person.VotingLocationGuid;
 
-        if (voteType != VotingMethodEnum.InPerson)
+        if (voteType != VotingMethodEnum.InPerson && UserSession.CurrentElection.BallotProcessEnum == BallotProcessKey.Roll)
         {
           if (person.EnvNum == null)
           {
@@ -750,7 +751,8 @@ namespace TallyJ.CoreModels
 
       new PersonCacher(Db).DropThisCache();
 
-      return new {
+      return new
+      {
         Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")),
         count = NumberOfPeople
       }.AsJsonResult();

@@ -57,7 +57,7 @@
     <tbody class="ballotCounts">
       <tr>
         <th colspan="4">
-          Voter Counts (from Front Desk and/or manual)
+          Voter Counts (<span class="Calc">from Front Desk and/or </span>manual)
         </th>
       </tr>
       <tr>
@@ -227,25 +227,6 @@
         </tr>
       </thead>
       <tbody id="mainBody">
-        <tr class="{ClassName} TieGroup{TieBreakGroup}">
-          <td>
-            {Rank}
-          </td>
-          <td class="Left">
-            {PersonName}
-            <div class="ChartLine" data-value="{VoteCount}"></div>
-            <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
-          </td>
-          <td class="nw">
-            {VoteDisplay}
-          </td>
-          <td>
-            {^CloseUpDown}
-          </td>
-          <td>
-            {TieVote}
-          </td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -256,11 +237,11 @@
 <div class="RightHalf">
   <div id="btnRefreshDiv">
     <div class="buttons">
-      <button type="button" id="btnRefresh" class="btn" accesskey="A">Start Analysis</button>
+      <button type="button" id="btnRefresh" class="btn" accesskey="A">Run Analysis</button>
       <button type="button" id="btnShowLog" class="btn btn-mini Hidden">Show Last Analysis Log</button>
     </div>
     <div class="setStatus">
-      Set Election State:
+      <h3>Set Election State</h3>
       <label>
         <input id="rbFinalized" type="radio" name="status" value="Finalized" @(approvedForReporting ? "checked" : "") />
         Finalized
@@ -282,11 +263,6 @@
         These ballots need to be fixed before results can be determined
       </caption>
       <tbody id="invalidsBody">
-        <tr>
-          <td>
-            {^Ballot} - {Status}
-          </td>
-        </tr>
       </tbody>
     </table>
     <table id="instructions">
@@ -316,17 +292,7 @@
       <caption>
         Analysis of Ties
       </caption>
-      <tbody id="tieResultsBody">
-        <tr class="{rowClass}">
-          <td class="TieBreakGroup">
-            #{^TieBreakGroup}
-          </td>
-          <td>
-            {^Conclusion}
-            <p>{^People} {^Buttons}</p> {^After}
-          </td>
-        </tr>
-      </tbody>
+      <tbody id="tieResultsBody"></tbody>
       <tfoot>
         <tr>
           <td></td>
@@ -336,3 +302,46 @@
     </table>
   </div>
 </div>
+
+<script type="text/x-template" id="mainTableRow">
+  <tr class="{ClassName} TieGroup{TieBreakGroup}">
+    <td>
+      {Rank}
+    </td>
+    <td class="Left">
+      {PersonName}
+      <div class="ChartLine" data-value="{VoteCount}"></div>
+      <div class="ChartLineTie" data-value="{TieBreakCount}" data-group="{TieBreakGroup}"></div>
+    </td>
+    <td class="nw">
+      {VoteDisplay}
+    </td>
+    <td>
+      {^CloseUpDown}
+    </td>
+    <td>
+      {TieVote}
+    </td>
+  </tr>
+</script>
+
+<script type="text/x-template" id="tieTableRow">
+  <tr class="{rowClass}">
+    <td class="TieBreakGroup">
+      #{^TieBreakGroup}
+    </td>
+    <td>
+      {^Conclusion}
+      <p>{^People} {^Buttons}</p> {^After}
+    </td>
+  </tr>
+</script>
+
+<script type="text/x-template" id="invalidsItem">
+  <tr>
+    <td>
+      {^Ballot} - {Status}
+    </td>
+  </tr>
+
+</script>

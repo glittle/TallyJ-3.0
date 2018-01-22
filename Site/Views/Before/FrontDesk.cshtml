@@ -5,50 +5,118 @@
   ViewBag.Title = "Front Desk";
   ViewBag.Message = "Record who is voting...";
 
+  var ballotProcess = UserSession.CurrentElection.BallotProcess;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
+
+  var inPersonName = "In Person";
+
+  switch (ballotProcessEnum)
+  {
+    case TallyJ.EF.BallotProcessKey.RegV:
+      <div class="Btn Registered {Registered}">Registered</div>
+      inPersonName = "Ballot Received";
+      break;
+  }
+
   ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
-  TemplateLoader.RequireTemplates(TemplateLoader.File.FrontDeskLine);
+  ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
+
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li>To quickly find a person, begin to type the name or Bahá'í ID of the person you are looking for into the Search Box. Use the Up/Down arrow keys to move to the correct person, then press the Enter key.</li>
-    <li>If pre-registering people for the Roll Call, mark them as "In Person" as they arrive at the election venue if they intend to cast their own ballot.</li>
+    <li>To quickly find a person, begin to type any part of the name or Bahá'í ID of the person you are looking for into the Search Box. Use the Up/Down arrow keys to move to the correct person, then press the Enter key to focus on them.</li>
+    <li>A count of people with each status is shown at the top. Click on one to filter the list to that status. Press or click Esc to remove the filter.</li>
+    @{
+    switch (ballotProcessEnum)
+    {
+      case TallyJ.EF.BallotProcessKey.Roll:
+        <li>
+          Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
+          the Roll Call is done.
+        </li>
+      break;
+    case TallyJ.EF.BallotProcessKey.RegV:
+      <li>
+        Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
+        they return to a teller to deposit their ballot, mark them as "@inPersonName"
+      </li>
+    break;
+  case TallyJ.EF.BallotProcessKey.RegC:
+    <li>
+      Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
+    </li>
+  break;
+}
+    }
   </ol>
 </div>
 <div class="SearchArea">
   <span>Search box: </span>
   <input accesskey="S" id="search">
-  <span class="info">(Esc to clear)</span>
+  <span class="info fakeEsc">(Esc to clear)</span>
 </div>
 <div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "")">
-  <div class="CalledIn">
-    Called In:
-    <span>0</span>
+  <div class="CalledIn" data-status="CalledIn">
+    Called In
+    <i>0</i>
   </div>
-  <div class="MailedIn">
-    Mailed In:
-    <span>0</span>
+  <div class="MailedIn" data-status="MailedIn">
+    Mailed In
+    <i>0</i>
   </div>
-  <div class="DroppedOff">
-    Dropped Off:
-    <span>0</span>
+  <div class="DroppedOff" data-status="DroppedOff">
+    Dropped Off
+    <i>0</i>
   </div>
-  <div class="InPerson">
-    In Person:
-    <span>0</span>
+  @if (ballotProcessEnum == TallyJ.EF.BallotProcessKey.RegV)
+  {
+  <div class="Registered" data-status="Registered">
+    Registered
+    <i>0</i>
   </div>
-  <div class="Total">
-    Total:
-    <span>0</span>
+  }
+  <div class="InPerson" data-status="InPerson">
+    @inPersonName
+    <i>0</i>
+  </div>
+  <div class="Total" data-status="Total">
+    Total
+    <i>0</i>
   </div>
 
 </div>
 <div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea" : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? " UseCallIn" : ""))">
-  @TemplateLoader.File.FrontDeskLine.FilledWithEach(Model.FrontDeskPersonLines()).AsRawHtml()
   <div id="selectorTip">
-    Type a letter (<span class="CalledIn">C, </span>M, D, I) to click the corresponding button.
+    Type a letter (<span class="CalledIn">C,&nbsp;</span>M, D, I) to click the corresponding button.
     Press Esc or Enter when done.
   </div>
 </div>
 <div id="afterList"></div>
+
+<script type="text/x-template" id="frontDeskLineTemplate">
+  <div id="P{PersonId}" class="Voter" data-name="{NameLower}">
+    <div class="Btn CalledIn {CalledIn}">Called In</div>
+    <div class="Btn MailedIn {MailedIn}">Mailed In</div>
+    <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
+    <div class="Env">
+      @if (ballotProcessEnum == TallyJ.EF.BallotProcessKey.Roll)
+      {
+        @:{EnvNum}
+      }
+    </div>
+    @switch (ballotProcessEnum)
+    {
+      case TallyJ.EF.BallotProcessKey.RegV:
+        <div class="Btn Registered {Registered}">Registered</div>
+        break;
+    }
+    <div class="Btn InPerson {InPerson}">@inPersonName</div>
+    <b>{FullName}</b>
+    <p>{BahaiId}</p>
+    <u title="Lives in">{Area}</u>
+    <i>{VotedAt}</i>
+  </div>
+</script>

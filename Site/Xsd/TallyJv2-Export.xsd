@@ -8,25 +8,27 @@
             <xs:attribute name="TallyStatus" type="xs:string" use="optional" />
             <xs:attribute name="ElectionType" type="xs:string" use="required" />
             <xs:attribute name="ElectionMode" type="xs:string" use="required" />
-            <xs:attribute name="DateOfElection" type="xs:string"  use="optional" />
+            <xs:attribute name="DateOfElection" type="xs:string" use="optional" />
             <xs:attribute name="NumberToElect" type="xs:nonNegativeInteger" use="required" />
             <xs:attribute name="NumberExtra" type="xs:nonNegativeInteger" use="required" />
             <xs:attribute name="Name" type="xs:string" use="required" />
-            <xs:attribute name="Convenor" type="xs:string"  use="optional" />
-            <xs:attribute name="ShowAsTest" type="xs:boolean"  use="optional" />
-            <xs:attribute name="ListedForPublicAsOf" type="xs:string"  use="optional" />
-            <xs:attribute name="CanVote" type="xs:string"  use="optional" />
-            <xs:attribute name="CanReceive" type="xs:string"  use="optional" />
-            <xs:attribute name="ElectionPasscode" type="xs:string"  use="optional" />
-            <xs:attribute name="LastEnvNum" type="xs:nonNegativeInteger"  use="optional" />
-            <xs:attribute name="ListForPublic" type="xs:boolean"  use="optional" />
-            <xs:attribute name="ShowFullReport" type="xs:boolean"  use="optional" />
+            <xs:attribute name="Convenor" type="xs:string" use="optional" />
+            <xs:attribute name="BallotProcess" type="xs:string" use="optional" />
+            <xs:attribute name="ShowAsTest" type="xs:boolean" use="optional" />
+            <xs:attribute name="ListedForPublicAsOf" type="xs:string" use="optional" />
+            <xs:attribute name="CanVote" type="xs:string" use="optional" />
+            <xs:attribute name="CanReceive" type="xs:string" use="optional" />
+            <xs:attribute name="ElectionPasscode" type="xs:string" use="optional" />
+            <xs:attribute name="LastEnvNum" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="ListForPublic" type="xs:boolean" use="optional" />
+            <xs:attribute name="ShowFullReport" type="xs:boolean" use="optional" />
+            <xs:attribute name="ElectionGuid" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
         <xs:element name="resultSummary" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="ResultType" type="xs:string" use="required" />
-            <xs:attribute name="NumVoters" type="xs:nonNegativeInteger"  use="optional" />
+            <xs:attribute name="NumVoters" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="NumEligibleToVote" type="xs:nonNegativeInteger" use="optional" />
 
             <xs:attribute name="BallotsReceived" type="xs:nonNegativeInteger" use="optional" />

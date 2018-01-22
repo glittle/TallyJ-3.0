@@ -15,7 +15,7 @@ namespace TallyJ.Code.Enumerations
     //<option value="Report">Reports Ready to Announce!</option>
 
 
-    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setup", true);
+    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setting Up", true);
     public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Gathering Ballots", true);
     public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Processing Ballots", true);
     //public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing", false);

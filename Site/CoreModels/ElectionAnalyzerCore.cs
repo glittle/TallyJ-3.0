@@ -845,6 +845,7 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
       ResultSummaryCalc.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
       ResultSummaryCalc.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
+      // ignore Registered
     }
 
     /// <summary>

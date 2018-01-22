@@ -5,6 +5,12 @@
 @{
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
+  ViewData["ExtraScripts"] = new[] {
+ClientFile("~/Scripts/vue{0}.js", ".min"),
+//ClientFile("~/Scripts/sortable.js"),
+//ClientFile("~/Scripts/vue-sortable.js"),
+ClientFile("~/Scripts/BadiDateToday.v1.js")
+};
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
@@ -13,213 +19,347 @@
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
 }
-<div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
-<div class="PullInstructions">
-  <ol>
-    <li>Here is where you set up your election, especially configuring the type of election.</li>
-    <li>
-      Carefully choose the Type and Variation of the Election, then if appropriate, the number
-      of names to be put on each ballot and how many to report for those with the next
-      highest number of votes.
-    </li>
-    <li>
-      After you have read these instructions, you may click on "Hide Instructions"
-      above the box to hide them or to show them again.
-    </li>
-  </ol>
-</div>
+<button type="button" class="btnSave btn" accesskey="S">
+  <u>S</u>ave Changes
+</button>
 
-<table class="Demographics">
-  <tr>
-    <th></th>
-    <td>
-      <button type="button" id="btnSave" class="btn" accesskey="S">
-        <u>S</u>ave Changes
-      </button>
-    </td>
-  </tr>
-  <tr class="electionDetail T">
-    <th>
-      Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
-    </th>
-    <td>
-      <select id="ddlType" data-name="ElectionType">
-        @ElectionTypeEnum.ForHtmlSelect()
-      </select>
-      <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
-      <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>
-      Variation<span class="ui-icon ui-icon-info" id="qTipVariation"></span>
-    </th>
-    <td>
-      <select id="ddlMode" data-name="ElectionMode">
-        @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                                          {
-                                                            {"B"," id=modeB"}
-                                                          })
-        @*                <option value="N">Normal Election</option>
-          <option value="T">Tie-Break</option>
-          <option value="B" id="modeB">By-election</option>
-        *@
-      </select>
-      <span id="VariationNotice">
-        Special Notes:
-        <span class="ui-icon ui-icon-info" id="qTipNoteN"></span>
-        <span class="ui-icon ui-icon-info" id="qTipNoteT"></span>
-        <span class="ui-icon ui-icon-info" id="qTipNoteB"></span>
-      </span>
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>
-      Spaces on Ballot<span class="ui-icon ui-icon-info" id="qTipNum"></span>
-    </th>
-    <td>
-      <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
-    </td>
-  </tr>
-  <tr class="electionDetail">
-    <th>
-      Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
-    </th>
-    <td>
-      <select id="ddlCanVote" data-name="CanVote">
-        <option value="A">Everyone on the list</option>
-        <option value="N">Named delegates</option>
-      </select>
-    </td>
-  </tr>
-  <tr class="electionDetail B">
-    <th>
-      Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
-    </th>
-    <td>
-      <select id="ddlCanReceive" data-name="CanReceive">
-        <option value="A">Everyone on the list</option>
-        <option value="N">Named individuals</option>
-      </select>
-      <button type="button" id="btnResetList" class="btn btn-mini">Reset All People<span class="ui-icon ui-icon-info" id="qTipReset"></span></button>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
-    </th>
-    <td>
-      <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
-    </th>
-    <td>
-      <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
-      <span id="txtDateTip">(yyyy-mm-dd)</span>
-      <div class="badiDate">
-        <div id="badiDateIntro"></div>
-        <div id="badiDateBefore" class="badiDateName"></div>
-        <div id="badiDateAfter" class="badiDateName"></div>
-        <div class="showJalal13">Local Spiritual Assembly elections must begin on 13 Glory (Jalál).</div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Convener<span class="ui-icon ui-icon-info" id="qTipConvener"></span>
-    </th>
-    <td>
-      <input type="text" id="txtConvener" data-name="Convenor">
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
-    </th>
-    <td>
-      <input type="text" id="txtName" data-name="Name">
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="cbShowAsTest" data-name="ShowAsTest">
-      <label for="cbShowAsTest">
-        Show this as a Test election in my list of elections.
-      </label>
-    </td>
-  </tr>
-
-  <tr>
-    <th>
-      Allow Tellers Access?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="chkList" data-name="ListForPublic" />
-      <label for="chkList">Show on Home Page?</label>
-      (Required to allow tellers to connect)
-    </td>
-  </tr>
-  <tr>
-    <th>
-
-    </th>
-    <td>
-      <span class="accessCode">Access Code</span><span class="ui-icon ui-icon-info" id="qTipAccess"></span><input type="text" data-name="ElectionPasscode" maxlength="50" />
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="chkCalled" data-name="UseCallInButton" />
-      <label for="chkCalled">Show "Called In" button on Front Desk?</label>
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Hide Pre-Ballot Pages?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
-    </th>
-    <td>
-      <input type="checkbox" id="chkPreBallot" data-name="HidePreBallotPages" />
-      <label for="chkPreBallot">If you will not be using the Front Desk and Roll Call pages, you can hide them.</label>
-    </td>
-  </tr>
-  @*<tr>
+<div id="setupBody" v-cloak>
+  <h2>
+    Step 1 <span>Define the Election</span>
+  </h2>
+  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div class="PullInstructions">
+    <ol>
+      <li>
+        Carefully define the core settings here (in grey). These will be locked down once ballots are entered into the system.
+      </li>
+      <li>
+        The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
+        is being held on the 13<sup>th</sup> day of the month of Glory.
+      </li>
+    </ol>
+  </div>
+  <table class="Demographics">
+    <tr class="electionDetail T">
       <th>
-        Mask Voting Method?<span class="ui-icon ui-icon-info" id="qTipMask"></span>
+        Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
       </th>
       <td>
-        <input type="checkbox" id="chkMask" data-name="MaskVotingMethod" />
-        <label for="chkMask">Show "Envelope" instead of specific methods <span class="ui-icon ui-icon-info" id="qTipWhyMask"></span></label>
+        <select id="ddlType" data-name="ElectionType">
+          @ElectionTypeEnum.ForHtmlSelect()
+        </select>
+        <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
+        <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
       </td>
-    </tr>*@
-</table>
-<div class="More Locations">
-  <h3>Locations<span class="ui-icon ui-icon-info" id="qTipLocation"></span></h3>
-  <div id="locationList">
-  </div>
-  <button type="button" id="btnAddLocation" class="btn btn-small">
-    Add Location
-  </button>
-  <h3 class="TellerTitle">Tellers using computers <span class="ui-icon ui-icon-info" id="qTipTellers"></span></h3>
-  <div id="tellersList">
-    <i>(Filled by tellers as needed)</i>
-  </div>
-</div>
-<div class="More">
-  <p class="techInfo" title="Technical information">
-    Internal code: <span data-name="ElectionGuid"></span>
-  </p>
-  <p>
-    Import <a href="@Url.Action("ImportV1", "Setup")">TallyJ version 1.8</a> files.
-  </p>
+    </tr>
+    <tr class="electionDetail">
+      <th>
+        Variation<span class="ui-icon ui-icon-info" id="qTipVariation"></span>
+      </th>
+      <td>
+        <select id="ddlMode" data-name="ElectionMode">
+          @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
+                                                                                                                                                                                                  {
+                                                                                                                                                                                                    {"B"," id=modeB"}
+                                                                                                                                                                                                  })
+          @*                <option value="N">Normal Election</option>
+            <option value="T">Tie-Break</option>
+            <option value="B" id="modeB">By-election</option>
+          *@
+        </select>
+        <span id="VariationNotice">
+          Special Notes:
+          <span class="ui-icon ui-icon-info" id="qTipNoteN"></span>
+          <span class="ui-icon ui-icon-info" id="qTipNoteT"></span>
+          <span class="ui-icon ui-icon-info" id="qTipNoteB"></span>
+        </span>
+      </td>
+    </tr>
+    <tr class="electionDetail">
+      <th>
+        Spaces on Ballot<span class="ui-icon ui-icon-info" id="qTipNum"></span>
+      </th>
+      <td>
+        <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
+      </td>
+    </tr>
+    <tr class="electionDetail">
+      <th>
+        Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
+      </th>
+      <td>
+        <select id="ddlCanVote" data-name="CanVote">
+          <option value="A">Everyone on the list</option>
+          <option value="N">Named delegates</option>
+        </select>
+      </td>
+    </tr>
+    <tr class="electionDetail B">
+      <th>
+        Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
+      </th>
+      <td>
+        <select id="ddlCanReceive" data-name="CanReceive">
+          <option value="A">Everyone on the list</option>
+          <option value="N">Named individuals</option>
+        </select>
+        <button type="button" id="btnResetList" class="btn btn-mini">Reset All People<span class="ui-icon ui-icon-info" id="qTipReset"></span></button>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
+      </th>
+      <td>
+        <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
+        If changed after running Analyze, run Analyze again!
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Convener<span class="ui-icon ui-icon-info" id="qTipConvener"></span>
+      </th>
+      <td>
+        <input type="text" id="txtConvener" data-name="Convenor">
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Date of Election<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+      </th>
+      <td>
+        <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
+        <span id="txtDateTip">(yyyy-mm-dd)</span>
+        <div class="badiDate">
+          <div id="badiDateIntro"></div>
+          <div id="badiDateBefore" class="badiDateName"></div>
+          <div id="badiDateAfter" class="badiDateName"></div>
+          <div class="showGlory13">Local Spiritual Assembly elections must begin on 13 Glory (Jalál).</div>
+        </div>
+      </td>
+    </tr>
+  </table>
 
+  <div class="newStep"></div>
+  <h2>
+    Step 2 <span>List the election</span>
+  </h2>
+  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div class="PullInstructions">
+    <ol>
+      <li>Provide a name for this election that you will use and see in your list of elections.</li>
+      <li>If you allow other tellers access, they will see the name and it will be listed on the TallyJ welcome page while you are active in it.</li>
+      <li>Typically the name should include your locality and the election type. For example, New York Ridvan 2018</li>
+    </ol>
+  </div>
+
+  <table class="Demographics">
+    <tr>
+      <th>
+        Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
+      </th>
+      <td colspan="2">
+        <input type="text" id="txtName" data-name="Name">
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.ShowAsTest"></yes-no>
+      </td>
+      <td>
+        Show this as a Test election in my list of elections.
+      </td>
+    </tr>
+
+    <tr>
+      <th>
+        Show on Home Page?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.ListForPublic"></yes-no>
+      </td>
+      <td>
+        Required to allow other tellers to connect.
+      </td>
+    </tr>
+    <tr v-show="election.ListForPublic">
+      <th>
+        Access Code<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+      </th>
+      <td colspan="2">
+        <input type="text" data-name="ElectionPasscode" maxlength="50" />
+        Required to allow other tellers to connect.
+      </td>
+    </tr>
+  </table>
+
+
+  <div class="newStep"></div>
+
+  <h2>
+    Step 3 <span>Configure Features</span>
+  </h2>
+  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div class="PullInstructions">
+    <ol>
+      <li>TallyJ has a number of features that you may or may not want to use.</li>
+      <li>
+        The two main features are (1) registering voters and collecting ballots, and (2) processing the ballots. You can use either or both of these processes. If not using (1), then answer
+        "No" to the first question.
+      </li>
+      <li>If you will register voters with TallyJ, choose between the three processes described below.</li>
+      <li>Registration involves validating the voter's identity and may take extra time.</li>
+      <li>For large communities, process B may prove to be the fastest.</li>
+    </ol>
+  </div>
+
+  <table class="Demographics">
+    <tr>
+      <th>
+        Use "Gathering Ballots"?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
+      </th>
+      <td>
+        <yes-no v-model="usingBallotProcess"></yes-no>
+      </td>
+      <td>
+        Use TallyJ to register voters or record the collection of ballot envelopes?
+      </td>
+    </tr>
+    <tr v-if="usingBallotProcess">
+      <th>
+        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.UseCallInButton"></yes-no>
+      </td>
+      <td>
+        Are you set up to accept ballots by telephone?
+      </td>
+    </tr>
+    <tr v-if="usingBallotProcess">
+      <th>
+        Process for gathering ballots
+      </th>
+      <td colspan="2">
+        <table class="processOptions">
+          <tr>
+            <th>A</th>
+            <td>
+              <input type="radio" value="Roll" title="Roll" v-model="election.BallotProcess" name="rollCall" id="process1" />
+            </td>
+            <td>
+              <label for="process1">
+                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
+                <br>
+                Accept Dropped Off and Mailed In ballots and issue ballot numbers for them.
+                <br>
+                Later, project the <strong>Roll Call</strong> and have people publicly deposit their ballots when their name is displayed.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <th>B</th>
+            <td>
+              <input type="radio" value="RegV" title="RegV" v-model="election.BallotProcess" name="rollCall" id="process2" />
+            </td>
+            <td>
+              <label for="process2">
+                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
+                <br>
+                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
+                <br>
+                Later, record when ballots are received at <strong>tellers' stations</strong> using the <strong>Front Desk</strong>.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <th>C</th>
+            <td>
+              <input type="radio" value="RegC" title="RegC" v-model="election.BallotProcess" name="rollCall" id="process3" />
+            </td>
+            <td>
+              <label for="process3">
+                No registration of voters as they arrive.
+                <br>
+                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
+                <br>
+                When people arrive at <strong>tellers' stations</strong> to cast their ballot, register them to record that their ballot is received, using the <strong>Front Desk</strong>.
+              </label>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr class="forLocations">
+      <th>
+        Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
+      </th>
+      <td>
+        <yes-no code="useGatheringBallots" v-model="MultipleLocations" :disabled="numLocations > 1"></yes-no>
+      </td>
+      <td>
+        Are tellers working together in different locations / polling stations for this election?
+      </td>
+    </tr>
+    <tr class="forLocations" v-show="MultipleLocations">
+      <th></th>
+      <td colspan="2">
+        <div class="locations">
+          <div id="locationList">
+            <div v-for="loc in locations">
+              <input :data-id="loc.C_RowId" type=text v-model="loc.Name">
+              <span class="ui-icon ui-icon-arrow-2-n-s" v-if="numLocations > 1" title="Drag to sort"></span>
+              <span class="ui-icon ui-icon-trash" v-if="numLocations > 1" title="Delete this location" v-on:click="removeLocation($event.target)"></span>
+              <span class="warning" v-if="!loc.Name">Name required</span>
+            </div>
+          </div>
+          <button type="button" id="btnAddLocation" class="btn btn-small">
+            Add a Location
+          </button>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
+  <div class="newStep"></div>
+  <h2>Other Information</h2>
+  <table class="Demographics">
+    <tr>
+      <th>
+        Teller Names<span class="ui-icon ui-icon-info" id="qTipTellers"></span>
+      </th>
+      <td>
+        <div id="tellersList">
+          <i>(Filled by tellers as needed)</i>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="More">
+    <p class="techInfo" title="Technical information">
+      Internal code: <span data-name="ElectionGuid"></span>
+    </p>
+  </div>
 </div>
-<script src="@ClientFile("~/Scripts/BadiDateToday.v1.js")" type="text/javascript"></script>
+
+
+<script type="text/x-template" id="yes-no">
+  <span class="YN" v-bind:class="'YN' + yesNo">
+    <label>
+      <input type="radio" value="Y" v-model="yesNo" :disabled="disabled">
+      Yes
+    </label>
+    <label>
+      <input type="radio" value="N" v-model="yesNo" :disabled="disabled">
+      No
+    </label>
+  </span>
+</script>
+
+<script type="text/x-template" id="locationTemplate">
+</script>

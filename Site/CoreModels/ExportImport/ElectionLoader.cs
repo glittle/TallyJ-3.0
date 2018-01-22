@@ -38,6 +38,8 @@ namespace TallyJ.CoreModels.ExportImport
     {
       try
       {
+        _hub = new ImportHub();
+
         VerifyFileReceived(file);
         LoadIntoXmlDoc(file);
         ValidateXml();
@@ -50,10 +52,12 @@ namespace TallyJ.CoreModels.ExportImport
       }
       catch (LoaderException ex)
       {
+        _hub.StatusUpdate(ex.GetAllMsgs("\n"));
         return new LoadResult(ex.GetAllMsgs("\n")).AsJsonResult();
       }
       catch (Exception ex)
       {
+        _hub.StatusUpdate(ex.GetAllMsgs("\n"));
         // some unexpected exception...
         return new LoadResult(ex.GetType().Name + ": " + ex.GetAllMsgs("\n")).AsJsonResult();
       }
@@ -65,6 +69,7 @@ namespace TallyJ.CoreModels.ExportImport
       {
         throw new LoaderException("No file provided");
       }
+      _hub.StatusUpdate("File received. ({0} bytes)".FilledWith(file.ContentLength));
     }
 
     private void LoadIntoXmlDoc(HttpPostedFileBase file)
@@ -104,7 +109,9 @@ namespace TallyJ.CoreModels.ExportImport
 
       if (fatal)
       {
-        throw new LoaderException("The XML document is not valid: " + issues.JoinedAsString("\n"));
+        //throw new LoaderException("The XML document is not valid: " + issues.JoinedAsString("\n"));
+        _hub.StatusUpdate("<strong>Warning</strong>: The import file is not in the expected format:\n" + issues.JoinedAsString("\n"));
+        _hub.StatusUpdate("Importing will attempt to continue but the results may not be valid.");
       }
 
       _nsm = new XmlNamespaceManager(_xmlDocument.NameTable);
@@ -118,7 +125,6 @@ namespace TallyJ.CoreModels.ExportImport
     {
       _guidMap = new Dictionary<Guid, Guid>();
       _locationsToProcess = new Dictionary<Location, XmlElement>();
-      _hub = new ImportHub();
       var start = DateTime.Now;
       //      using (var transaction = new TransactionScope())
       {
@@ -327,13 +333,14 @@ namespace TallyJ.CoreModels.ExportImport
       }
 
       _peopleModel = new PeopleModel(_election);
+      var defaultReason = ElectionModel.GetDefaultIneligibleReason(_election);
 
       _people = new List<Person>();
       var rowsProcessed = 0;
 
       foreach (XmlElement personXml in peopleXml)
       {
-        LoadPerson(personXml, _people);
+        LoadPerson(personXml, _people, defaultReason);
 
         rowsProcessed++;
         if (rowsProcessed % 100 == 0)
@@ -347,7 +354,7 @@ namespace TallyJ.CoreModels.ExportImport
       _hub.StatusUpdate("Loaded {0:n0} people.".FilledWith(rowsProcessed));
     }
 
-    private void LoadPerson(XmlElement personXml, List<Person> people)
+    private void LoadPerson(XmlElement personXml, List<Person> people, Code.Enumerations.IneligibleReasonEnum defaultReason)
     {
       // need to map Guid to new Guid
       var person = new Person();
@@ -371,6 +378,9 @@ namespace TallyJ.CoreModels.ExportImport
 
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
+
+      var reason = Code.Enumerations.IneligibleReasonEnum.Get(person.IneligibleReasonGuid) ?? defaultReason;
+      _peopleModel.SetInvolvementFlagsToDefault(person, reason);
     }
     private void LoadBallots()
     {

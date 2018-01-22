@@ -97,7 +97,7 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
-      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
@@ -139,7 +139,7 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(1);
-      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
@@ -187,7 +187,7 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
-      resultSummaryFinal.BallotsReceived.ShouldEqual(1);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
@@ -381,7 +381,7 @@ namespace Tests.BusinessTests
       model.AnalyzeEverything();
 
       var summary = model.ResultSummaryFinal;
-      summary.BallotsReceived.ShouldEqual(5);
+      summary.NumBallotsWithManual.ShouldEqual(5);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(0);
       summary.BallotsNeedingReview.ShouldEqual(0);
@@ -490,7 +490,7 @@ namespace Tests.BusinessTests
       model.AnalyzeEverything();
 
       var summary = model.ResultSummaryFinal;
-      summary.BallotsReceived.ShouldEqual(3);
+      summary.NumBallotsWithManual.ShouldEqual(3);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(0);
       summary.BallotsNeedingReview.ShouldEqual(0);
@@ -582,7 +582,7 @@ namespace Tests.BusinessTests
       model.AnalyzeEverything();
 
       var summary = model.ResultSummaryFinal;
-      summary.BallotsReceived.ShouldEqual(2);
+      summary.NumBallotsWithManual.ShouldEqual(2);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(1);
       summary.BallotsNeedingReview.ShouldEqual(0);
@@ -711,7 +711,7 @@ namespace Tests.BusinessTests
       model.AnalyzeEverything();
 
       var summary = model.ResultSummaryFinal;
-      summary.BallotsReceived.ShouldEqual(2);
+      summary.NumBallotsWithManual.ShouldEqual(2);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(1);
       summary.BallotsNeedingReview.ShouldEqual(0);
@@ -781,7 +781,7 @@ namespace Tests.BusinessTests
       results[0].Section.ShouldEqual(ResultHelper.Section.Top);
       results[0].ForceShowInOther.ShouldEqual(false);
       results[0].TieBreakRequired.ShouldEqual(true);
-      results[0].IsTieResolved.ShouldEqual(true);
+      results[0].IsTieResolved.ShouldEqual(false);
 
       results[1].IsTied.ShouldEqual(true);
       results[1].TieBreakGroup.ShouldEqual(1);
@@ -847,7 +847,7 @@ namespace Tests.BusinessTests
       model.AnalyzeEverything();
 
       var summary = model.ResultSummaryFinal;
-      summary.BallotsReceived.ShouldEqual(3);
+      summary.NumBallotsWithManual.ShouldEqual(3);
       summary.SpoiledBallots.ShouldEqual(0);
       summary.SpoiledVotes.ShouldEqual(1);
       summary.BallotsNeedingReview.ShouldEqual(0);
