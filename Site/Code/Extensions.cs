@@ -350,7 +350,7 @@ namespace TallyJ.Code
       if (values.Length == 1)
       {
         var value = values[0];
-        if (value.GetType().Namespace != "System")
+        if (value != null && value.GetType().Namespace != "System")
         {
           return input.FilledWithObject(value);
         }
@@ -434,8 +434,7 @@ namespace TallyJ.Code
         : string.Join(separator,
           list2.Where(s => !skipBlanks || s.HasContent())
             .Select(s => itemLeft + s + itemRight)
-            .
-            ToArray());
+            .ToArray());
     }
 
     public static string SurroundWith(this string input, string bothSides)

@@ -196,10 +196,20 @@ namespace TallyJ.Code.Resources
     {
       var role = node.GetAttribute("role");
       var hasElection = _currentElection != null;
+      var process = hasElection ? _currentElection.BallotProcess : "";
 
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
       if (hasElection && hidePreBallotPages && node.GetAttribute("isPreBallot") == "true") return false;
+
+      var requireProcess = node.GetAttribute("requireProcess");
+      if (requireProcess.HasContent())
+      {
+        var processes = requireProcess.Split(',');
+        if (!processes.Contains(process)) {
+          return false;
+        }
+      }
       //if (node.GetAttribute("hasTies") == "true")
       //{
       //  if (!UserSession.HasTies)

@@ -2,7 +2,6 @@
   var settings = {
     rowTemplate: '',
     info: {},
-    footTemplate: '',
     invalidsRowTemplate: '',
     tieResultRowTemplate: '',
     chart: null,
@@ -33,23 +32,20 @@
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
     $('#body').on('change', 'input[name=status]', changeStatus);
 
-    var tableBody = $('#mainBody');
-    settings.rowTemplate = tableBody.html();
-    tableBody.html('');
+    $('#body').on('change keyup', 'input.Manual', function () {
+      $('.btnSaveManualCounts').addClass('btn-primary');
+      diableAnalysisBtnIfNeeded();
+    });
+    $('#body').on('change keyup', 'input.TieBreakCount', function () {
+      $('.btnSaveTieCounts').addClass('btn-primary');
+      diableAnalysisBtnIfNeeded();
+    });
 
-    var tFoot = $('#mainFoot');
-    settings.footTemplate = tFoot.html();
-    tFoot.html('');
-
-    var invalidsBody = $('#invalidsBody');
-    settings.invalidsRowTemplate = invalidsBody.html();
-    invalidsBody.html('');
+    settings.rowTemplate = $('#mainTableRow').text();
+    settings.tieResultRowTemplate = $('#tieTableRow').text();
+    settings.invalidsRowTemplate = $('#invalidsItem').text();
 
     connectToAnalyzeHub();
-
-    var tieResultsRowTemplate = $('#tieResultsBody');
-    settings.tieResultRowTemplate = tieResultsRowTemplate.html();
-    tieResultsRowTemplate.html('');
 
     if (publicInterface.results) {
       $('#InitialMsg').text('Loading results...');
@@ -67,7 +63,19 @@
       var id = info.StateName === 'Finalized' ? '#rbFinalized' : '#rbNotFinalized';
       $(id).prop('checked', true);
     });
+
+    $(window).on('beforeunload', function () {
+      if ($('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary')) {
+        return "Changes have been made and not saved.";
+      }
+    });
+
   };
+
+  function diableAnalysisBtnIfNeeded() {
+    var disable = $('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary');
+    $('#btnRefresh').prop('disabled', disable);
+  }
 
   function setReadyStatus(ready) {
     $('body').removeClass('analyzing ready notReady');
@@ -135,6 +143,10 @@
 
 
   function runAnalysis(firstLoad) {
+    if ($('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary')) {
+
+    }
+
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
     $('body').removeClass('notReady ready');
     $('body').addClass('analyzing');
@@ -338,8 +350,8 @@
           var tieVotesFound = votes.reduce(function (acc, v) { return acc || v.TieBreakCount > 0 }, false);
           tie.After = ''
             + (tie.IsResolved || !tieVotesFound ? '' : '<p>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these tie-break vote numbers may need to be adjusted until those elected are clearly indicated. For example, multiply first round counts by 100, then add second round results.</p>')
-            + '<p>Ties are acceptable in the top {0} positions of the election{1}.'.filledWith(info.NumToElect,
-              info.NumExtra ? ' but not in the next {0} positions'.filledWith(info.NumExtra) : '')
+            + '<p>Ties are acceptable in the top {0} position{1} of the election{2}.'.filledWith(info.NumToElect, Plural(info.NumToElect),
+              info.NumExtra ? ' but not in the next {0} position{1}'.filledWith(info.NumExtra, Plural(info.NumExtra)) : '')
             + '</p>'
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'
             ;
@@ -389,6 +401,8 @@
         summarizeCounts();
         ShowStatusSuccess('Saved');
         showLog(false);
+        $('.btnSaveManualCounts').removeClass('btn-primary');
+        diableAnalysisBtnIfNeeded()
       } else {
         ShowStatusSuccess(info.Message);
       }
@@ -430,6 +444,8 @@
       if (info.Saved) {
         ShowStatusSuccess("Saved");
         runAnalysis(false);
+        $('.btnSaveTieCounts').removeClass('btn-primary');
+        diableAnalysisBtnIfNeeded()
       } else {
         ShowStatusFailed(info.Msg);
       }

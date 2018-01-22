@@ -15,9 +15,9 @@ namespace Tests.BusinessTests
 
        election.BallotProcess.ShouldEqual(null);
 
-      election.BallotProcess = BallotProcessKey.Reg.ToString();
+      election.BallotProcess = BallotProcessKey.RegC.ToString();
 
-      election.BallotProcess.ShouldEqual("Reg");
+      election.BallotProcess.ShouldEqual("RegC");
 
       election.BallotProcess = BallotProcessKey.None.ToString();
       election.BallotProcess.ShouldEqual(BallotProcessKey.None.ToString());

@@ -21,31 +21,30 @@
       data: {
         election: publicInterface.Election,
         locations: publicInterface.Locations,
-        MultipleLocations: publicInterface.Locations.length > 0,
+        numLocations: publicInterface.Locations.length,
+        MultipleLocations: publicInterface.Locations.length > 1,
         usingBallotProcess: false,
       },
       computed: {
       },
       watch: {
-        MultipleLocations: function (a) {
-          if (a) {
-            startMultipleLocations();
-          }
+        'election.BallotProcess': function (a) {
+          this.replaceBodyBpClass(a);
         },
         usingBallotProcess: function (a) {
           if (!a) {
-            this.election.BallotProcess = null;
+            this.election.BallotProcess = 'None';
           } else {
-            if (!this.election.BallotProcess) {
-              this.election.BallotProcess = 'RC'; // old default
+            if (!this.election.BallotProcess || this.election.BallotProcess === 'None') {
+              this.election.BallotProcess = 'Roll'; // old default
               $('.btnSave').addClass('btn-primary');
             }
           }
-
         },
-        locations: function (a, b) {
-          $('.btnSave').addClass('btn-primary');
-        }
+        //locations: function (a, b) {
+        //  console.log('watch', a, b);
+        //  // $('.btnSave').addClass('btn-primary');
+        //}
       },
       mounted: function () {
         var bp = this.election.BallotProcess;
@@ -54,8 +53,18 @@
             : bp === 'None' ? false : true;
       },
       methods: {
-        removeLocation: function(i) {
-          this.locations.splice(i, 1);
+        removeLocation: function (domIcon) {
+          var input = $(domIcon).closest('div').find('input');
+          locationChanged(input, true);
+        },
+        replaceBodyBpClass: function (process) {
+          var list = window.document.body.classList;
+          list.forEach(function (key) {
+            if (key.substring(0, 3) === 'BP-') {
+              list.remove(key);
+            }
+          });
+          list.add('BP-' + process);
         }
       }
     });
@@ -71,16 +80,19 @@
     $(document).on('click', '.btnSave', saveChanges);
     $(document).on('click', '#btnAddLocation', addLocation);
 
-    $('.Demographics').on('change', '*:input', function () {
+    $('.Demographics').on('change keyup', '*:input', function () {
+      if ($(this).closest('.forLocations').length) {
+        return; // don't flag location related
+      }
       $('.btnSave').addClass('btn-primary');
     });
 
     $('#chkPreBallot').on('change', showForPreBallot);
     //$('#chkMultipleLocations').on('change', showLocations);
 
-    //$('#locationList').on('change', 'input', function () {
-    //  locationChanged($(this));
-    //});
+    $('#locationList').on('change', 'input', function () {
+      locationChanged($(this));
+    });
     //$('#locationList').on('click', '.ui-icon-trash', function () {
     //  locationChanged($(this).parent().find('input'), true);
     //});
@@ -109,7 +121,7 @@
     site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
     site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
     site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
-    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What body is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
     //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
@@ -120,7 +132,7 @@
     site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
     site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
-    site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'If checked, a "Called In" button is shown on the front desk to record phoned in votes.' });
+    site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
     site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
     site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
     site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
@@ -247,20 +259,47 @@
 
     settings.vue.locations.push(location);
 
+    settings.vue.numLocations++;
+
     //var line = $(settings.locationTemplate.filledWith(location));
     //line.appendTo('#locationList').find('input').focus();
 
     //setupLocationSortable();
   };
 
-  function startMultipleLocations() {
-    var count = $('#locationList div').length;
-    for (var i = count; i < 1; i++) {
-      addLocation();
-    }
-  }
+  //function startMultipleLocations() {
+  //  var count = $('#locationList input').length;
+  //  console.log('add', count)
+  //  for (var i = count; i < 2; i++) {
+  //    addLocation();
+  //  }
+  //}
+
+  //function removeAdditionalLocations() {
+  //  // called when YN set to false
+  //  //remove any with -1
+  //  $('#locationList input').each(function (i, el) {
+  //    var loc = $(el);
+  //    if (loc.data('id') == -1) {
+  //      locationChanged(loc, true);
+  //    }
+  //  });
+
+  //  // remove all but one - 
+  //  var toDelete = [];
+  //  for (var i = 1; i < $('#locationList input').length; i++) {
+  //    toDelete.push($('#locationList input').eq(i));
+  //  }
+
+  //  for (i = 0; i < toDelete.length; i++) {
+  //    // fire off calls to delete these
+  //    locationChanged(toDelete[i], true);
+  //  }
+
+  //}
 
   function showLocations(locations) {
+    // use Vue to create them, but not manage after...
     settings.vue.locations = locations;
     //$('#locationList').html(settings.locationTemplate.filledWithEach(locations));
     setupLocationSortable();
@@ -271,22 +310,34 @@
       id: input.data('id'),
       text: deleteThis ? '' : input.val()
     };
+
+    if (form.id === -1 && !form.text) {
+      // deleting a new one
+      input.parent().remove();
+      settings.vue.numLocations = $('#locationList input').length;
+      return;
+    }
+
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
       if (info.Success) {
         ShowStatusSuccess(info.Status);
+        if (info.Id == 0) {
+          // removed
+          input.parent().remove();
+
+          // vue array is disconnected from the DOM array... need the length matches the DOM
+          settings.vue.numLocations = $('#locationList input').length;
+
+          // setupLocationSortable();
+        } else {
+          input.val(info.Text);
+          if (info.Id != form.id) {
+            input.data('id', info.Id);
+          }
+        }
       } else {
         ShowStatusFailed(info.Status);
-      }
-
-      if (info.Id == 0) {
-        input.parent().remove();
-        setupLocationSortable();
-      } else {
-        input.val(info.Text);
-        if (info.Id != form.id) {
-          input.data('id', info.Id);
-        }
       }
     });
   };
@@ -299,9 +350,6 @@
       containment: 'parent',
       tolerance: 'pointer'
     });
-
-    var multiple = $('#locationList > div').length > 1;
-    $('#locationList .ui-icon').toggle(multiple);
   };
 
   function orderChanged(ev, ui) {
@@ -393,6 +441,7 @@
       if (info.Election) {
         applyValues(info.Election);
         $('.CurrentElectionName').text(info.displayName);
+        updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
       }
       $('.btnSave').removeClass('btn-primary');
       ResetStatusDisplay();
@@ -499,7 +548,8 @@ $(function () {
 var YesNo = Vue.component('yes-no', {
   template: '#yes-no',
   props: {
-    value: Boolean
+    value: Boolean,
+    disabled: Boolean
   },
   data: function () {
     return {
@@ -507,8 +557,10 @@ var YesNo = Vue.component('yes-no', {
     }
   },
   watch: {
+    value: function (a) {
+      this.yesNo = a ? 'Y' : 'N'
+    },
     yesNo: function (a) {
-      console.log('watch', a)
       this.$emit('input', a === 'Y')
     }
   }

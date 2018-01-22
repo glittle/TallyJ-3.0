@@ -10,7 +10,8 @@ namespace TallyJ.Code.Enumerations
     public static readonly VotingMethodEnum InPerson = new VotingMethodEnum("P", "In Person");
     public static readonly VotingMethodEnum DroppedOff = new VotingMethodEnum("D", "Dropped Off");
     public static readonly VotingMethodEnum MailedIn = new VotingMethodEnum("M", "Mailed In");
-    public static readonly VotingMethodEnum CalledIn = new VotingMethodEnum("C", "Called In"); // C = Called In
+    public static readonly VotingMethodEnum CalledIn = new VotingMethodEnum("C", "Called In"); 
+    public static readonly VotingMethodEnum Registered = new VotingMethodEnum("R", "Registered");
 
     static VotingMethodEnum()
     {
@@ -18,6 +19,7 @@ namespace TallyJ.Code.Enumerations
       Add(DroppedOff);
       Add(MailedIn);
       Add(CalledIn);
+      Add(Registered);
     }
 
     public VotingMethodEnum(string key, string display)

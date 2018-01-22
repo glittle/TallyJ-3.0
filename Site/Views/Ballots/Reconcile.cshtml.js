@@ -151,9 +151,10 @@
       P: { name: 'In Person', count: 0 },
       D: { name: 'Dropped Off', count: 0 },
       M: { name: 'Mailed In', count: 0 },
+      R: { name: 'Registered, not received', count: 0 },
       C: { name: 'Called In', count: 0 }
     };
-    var methodList = ['P', 'D', 'M', 'C'];
+    var methodList = ['P', 'D', 'M', 'C', 'R'];
 
     var host = $('#lists');
     host.html('');
@@ -196,7 +197,8 @@
             //'Absent: {absent}'.filledWith(totals),
             (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
             (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
-            (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold()
+            (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),
+            (methodInfos.R.count > 0 ? ('(' + methodInfos.R.name + ': {0})'.filledWith(methodInfos.R.count)) : ''),
     ].join(' &nbsp; &nbsp; '));
 
     //        html.push(template.filledWith({ className: 'SubTotal', name: 'Absentee Ballots', count: subTotal }));

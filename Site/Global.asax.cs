@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
@@ -196,6 +197,16 @@ namespace TallyJ
                   .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
                   .JoinedAsString("; "))
               .JoinedAsString("; ");
+          logger.Debug(msg);
+          msgs.Add(msg);
+        }
+
+        var compileError = ex as HttpCompileException;
+        if (compileError != null)
+        {
+          var list = new CompilerError[0];
+          compileError.Results.Errors.CopyTo(list, 0);
+          var msg = list.Select(err => "{0}".FilledWith(err.ErrorText)).JoinedAsString("; ");
           logger.Debug(msg);
           msgs.Add(msg);
         }

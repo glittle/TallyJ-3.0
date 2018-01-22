@@ -7,12 +7,18 @@
     frontDeskHub: null,
     hubReconnectionTime: 95000,
     matches: [],
+    lastStatusFilter: '',
     focusedOnMatches: false,
     headerSpace: 0,
     pageSize: 100,
-    afterList: null
+    afterList: null,
+    lineTemplate: null
   };
   var preparePage = function () {
+    local.lineTemplate = document.getElementById('frontDeskLineTemplate').innerText;
+
+    fillList();
+
     $('#Main')
       .on('click', '.Btn', function (ev) {
         voteBtnClicked(ev.target);
@@ -21,8 +27,21 @@
         setSelection($(ev.target).closest('.Voter'), false);
       });
 
+    $('#body')
+      .on('click', '.fakeEsc', function () {
+        processKey({
+          which: 27,
+          preventDefault: function () { }
+        });
+      });
+
     $(document).keydown(processKey);
     $('#search').keyup(searchChanged).focus();
+
+
+    $('.Counts').on('click', 'div', function (ev) {
+      filterByStatus($(this));
+    });
 
     connectToFrontDeskHub();
 
@@ -61,6 +80,30 @@
 
   };
 
+  var resetFilterByStatus = function () {
+    $('.Voter').removeClass('filterHidden');
+    $('.Counts div').removeClass('filtering');
+    local.lastStatusFilter = '';
+  }
+
+  var filterByStatus = function (btn) {
+    $('.Counts div').removeClass('filtering');
+
+    var classWanted = btn.data('status');
+    local.lastStatusFilter = classWanted;
+
+    if (classWanted === 'Total') {
+      classWanted = '';
+    } else {
+      classWanted = '.' + classWanted;
+    }
+
+    $('.Voter').addClass('filterHidden');
+    $('.Voter .Btn.true' + classWanted).parent().removeClass('filterHidden hidden');
+
+    btn.addClass('filtering');
+  }
+
   //  var refreshHubConnection = function () {
   //    var resetHubConnectionTimer = function () {
   //      clearTimeout(local.reconnectHubTimeout);
@@ -81,13 +124,14 @@
     var sumUp = function (name) {
       var num = $('.Voter .{0}.True, .Voter .{0}.true'.filledWith(name)).length;
       total += num;
-      $('.Counts .{0} span'.filledWith(name)).text(num);
+      $('.Counts .{0} i'.filledWith(name)).text(num);
     }
-    sumUp('CallIn');
+    sumUp('CalledIn');
     sumUp('MailedIn');
     sumUp('DroppedOff');
     sumUp('InPerson');
-    $('.Counts .Total span').text(total);
+    sumUp('Registered');
+    $('.Counts .Total i').text(total);
   }
 
   var searchChanged = function (ev) {
@@ -157,7 +201,7 @@
     //    handleKeyWhileFocused(ev);
     //  }
     //}
-    console.log('main ' + key);
+    //console.log('main ' + key);
     switch (key) {
       case 13: // enter
         if (inSelectionMode()) {
@@ -280,7 +324,9 @@
     local.matches.length = 0;
     local.focusedOnMatches = false;
     //if (!local.currentSearch) {
-    $('.Voter').removeClass('KeyMatch Focused Selection');
+    $('.Voter').removeClass('KeyMatch Focused Selection filterHidden');
+    resetFilterByStatus();
+
     hideUnMatched(false);
     // press ESC twice to clear
     //}
@@ -314,16 +360,19 @@
       var btnCode;
       switch (String.fromCharCode(key)) {
         case 'I':
-        case 'P':
+        case 'P': // in person
           btnCode = 'P';
           break;
-        case 'C':
+        case 'C': // called in (if used)
           btnCode = 'C';
           break;
-        case 'M':
+        case 'R': // received (if used)
+          btnCode = 'R';
+          break;
+        case 'M': // mailed in
           btnCode = 'M';
           break;
-        case 'D':
+        case 'D': //dropped off
           btnCode = 'D';
           break;
         default:
@@ -334,6 +383,7 @@
       }
     }
   };
+
   var applyFilter = function () {
     if (!local.currentSearch) {
       resetSearch();
@@ -343,6 +393,7 @@
     local.matches = $('.Voter[data-name*="{0}"]'.filledWith(local.currentSearch.toLowerCase()));
     focusOnMatches();
   };
+
   var focusOnMatches = function () {
     $('.Voter').removeClass('KeyMatch Focused Selection');
     if (!local.matches.length) {
@@ -364,6 +415,7 @@
       hideUnMatched(true);
     }, 0);
   };
+
   var hideUnMatched = function (hide) {
     if (hide) {
       $('.Voter').removeClass('hidden').not('.KeyMatch').addClass('hidden');
@@ -382,7 +434,6 @@
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
       }
-      //$("#dialog-confirm").dialog({
       //  resizable: false,
       //  modal: true,
       //  buttons: {
@@ -403,9 +454,13 @@
     var row = btn.closest('.Voter');
     setSelection(row, false);
 
-    var btnType = btn.hasClass('InPerson') ? 'P'
-      : btn.hasClass('DroppedOff') ? 'D'
-        : btn.hasClass('CalledIn') ? 'C' : 'M';
+    var btnType =
+      btn.hasClass('InPerson') ? 'P'
+        : btn.hasClass('DroppedOff') ? 'D'
+          : btn.hasClass('CalledIn') ? 'C'
+            : btn.hasClass('MailedIn') ? 'M'
+              : btn.hasClass('Registered') ? 'R'
+                : '?';
     var pid = row.attr('id').substr(1);
 
     saveBtnClick(pid, btnType, btn);
@@ -429,6 +484,14 @@
     });
   };
 
+  var fillList = function () {
+    var html = [];
+    $.each(publicInterface.initial, function () {
+      html.push(local.lineTemplate.filledWith(this));
+    });
+    $('#Main').prepend(html.join(''));
+  }
+
   var updatePeople = function (info, pid) {
     ResetStatusDisplay();
     var current = $('.Voter.Selection').attr('id');
@@ -436,7 +499,8 @@
       if (info.PersonLines) {
         $.each(info.PersonLines, function () {
           var selector = '#P' + this.PersonId;
-          $(selector).replaceWith(site.templates.FrontDeskLine.filledWith(this));
+          console.log(this)
+          $(selector).replaceWith(local.lineTemplate.filledWith(this));
           if (this.PersonId != pid) {
             //$(selector).effect('highlight', {}, 5000);
           }
@@ -456,6 +520,7 @@
   var publicInterface = {
     controllerUrl: '',
     lastRowVersion: 0,
+    initial: [],
     electionGuid: null,
     PreparePage: preparePage,
     local: local

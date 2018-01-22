@@ -1,4 +1,24 @@
-﻿table {
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+body.BP-None {
+  .ballotCounts {
+    .Calc {
+      display: none !important;
+    }
+  }
+}
+
+.setStatus {
+  h3 {
+    font-size: 1.1em;
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    line-height: normal;
+  }
+}
+
+table {
   border-collapse: separate;
   border-spacing: 0px 0px;
   margin-bottom: 20px;
@@ -64,6 +84,12 @@ tr.SectionO.Tied.Force {
 
 body {
   &.ready {
+    .setStatus {
+      h3 {
+        color: @tallyJGreen;
+        font-weight: bold;
+      }
+    }
 
     #loadingLog {
       width: auto;
@@ -306,7 +332,7 @@ input.Manual {
 }
 
 input.Manual.Additional {
-  width: 30px;
+  width: 35px;
 }
 
 span.Final.changed {
@@ -334,6 +360,7 @@ span.Calc.changed {
 
 #instructions li {
   line-height: normal;
+  margin-bottom: 3px;
 }
 
 #loadingLog {

@@ -1,5 +1,9 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
+[v-cloak] {
+  display: none;
+}
+
 h2 {
   display: inline-block;
   margin: 0 20px 0 0;
@@ -28,10 +32,10 @@ h2 {
 .btnSave {
   position: fixed;
   right: 10px;
-  top: 110px;
+  top: 100px;
+  box-shadow: 0 0 15px 15px #efeeef;
 
   &.btn-primary {
-    box-shadow: 0 0 20px 7px rgba(0,0,0, 0.5);
   }
 }
 
@@ -42,18 +46,6 @@ table.Demographics {
   //border-spacing: 0;
   //border: 1px solid #8DC63E;
   //max-width: 600px;
-  td {
-    table {
-      margin: 4px 0 0 0;
-      background-color: #ddd;
-
-      td {
-        vertical-align: top;
-        padding-left: 4px;
-      }
-    }
-  }
-
   td:nth-child(3) {
     width: 99%;
   }
@@ -109,7 +101,7 @@ div.More h3 {
 
 table.More th, table.Demographics th {
   text-align: left;
-  padding: 5px 10px 5px 5px;
+  padding: 6px 10px 6px 5px;
   white-space: nowrap;
   vertical-align: top;
 }
@@ -137,6 +129,21 @@ input[type='date'] {
   padding: 10px 10px 20px 20px;
 }
 
+#locationList {
+  div {
+    margin: 1px 0;
+  }
+
+  .warning {
+    color: @tallyJError;
+  }
+
+  .ui-icon {
+    margin: 0 5px;
+  }
+}
+
+
 tr.electionDetail {
   //border-left: 1px solid #666;
   //border-right: 1px solid #666;
@@ -159,6 +166,10 @@ tr.forPreBallot {
 
 .ui-icon {
   display: inline-block;
+}
+
+.ui-icon-arrow-2-n-s {
+  cursor: pointer;
 }
 
 .More.Misc {
@@ -184,7 +195,7 @@ button.Primary {
   margin-left: 0;
 }
 
-.locations {
+.s {
   margin: 2px 0 10px 0;
 }
 
@@ -194,6 +205,21 @@ button.Primary {
 
 #btnResetList {
   margin-top: -24px;
+}
+
+table.processOptions {
+  margin: 4px 0 0 0;
+  background-color: #dde6dd;
+
+  td, th {
+    vertical-align: top;
+    padding: 2px 0 0 4px;
+  }
+
+  label {
+    display: block;
+    margin: -2px 5px 7px 0;
+  }
 }
 
 #qTipLocked {
@@ -240,6 +266,14 @@ option:disabled {
   border-radius: 3px;
   background-color: #ddd;
   white-space: nowrap;
+
+  &.YNY {
+    background-color: #dde6dd;
+  }
+
+  &.YNN {
+    background-color: #e6dddd;
+  }
 
   label {
     margin: 0 10px;

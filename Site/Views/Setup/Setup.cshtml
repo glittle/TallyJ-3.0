@@ -7,6 +7,8 @@
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
 ClientFile("~/Scripts/vue{0}.js", ".min"),
+//ClientFile("~/Scripts/sortable.js"),
+//ClientFile("~/Scripts/vue-sortable.js"),
 ClientFile("~/Scripts/BadiDateToday.v1.js")
 };
 
@@ -21,7 +23,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
   <u>S</u>ave Changes
 </button>
 
-<div id="setupBody">
+<div id="setupBody" v-cloak>
   <h2>
     Step 1 <span>Define the Election</span>
   </h2>
@@ -57,9 +59,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       <td>
         <select id="ddlMode" data-name="ElectionMode">
           @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                                                                                                                                                      {
-                                                                                                                                                                        {"B"," id=modeB"}
-                                                                                                                                                                      })
+                                                                                                                                                                                                  {
+                                                                                                                                                                                                    {"B"," id=modeB"}
+                                                                                                                                                                                                  })
           @*                <option value="N">Normal Election</option>
             <option value="T">Tie-Break</option>
             <option value="B" id="modeB">By-election</option>
@@ -122,7 +124,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
     </tr>
     <tr>
       <th>
-        Election Date<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+        Date of Election<span class="ui-icon ui-icon-info" id="qTipDate"></span>
       </th>
       <td>
         <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
@@ -182,12 +184,13 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
         Required to allow other tellers to connect.
       </td>
     </tr>
-    <tr v-if="election.ListForPublic">
+    <tr v-show="election.ListForPublic">
       <th>
         Access Code<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
       </th>
       <td colspan="2">
         <input type="text" data-name="ElectionPasscode" maxlength="50" />
+        Required to allow other tellers to connect.
       </td>
     </tr>
   </table>
@@ -209,52 +212,24 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
   <table class="Demographics">
     <tr>
       <th>
-        Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
-      </th>
-      <td>
-        <yes-no code="useGatheringBallots" v-model="MultipleLocations"></yes-no>
-      </td>
-      <td>
-        Are tellers working together in different locations/venues/polling stations on this election?
-      </td>
-    </tr>
-    <tr>
-      <th></th>
-      <td colspan="2">
-        <div class="locations" v-if="MultipleLocations">
-            <div id="locationList">
-              <div v-for="(loc, i) in locations">
-                <input :data-id="loc.C_RowId" type=text v-model="loc.Name">
-                <span class="ui-icon ui-icon-arrow-2-n-s" title="Drag to sort"></span>
-                <span class="ui-icon ui-icon-trash" title="Delete this location" v-on:click="removeLocation(i)"></span>
-              </div>
-            </div>
-            <button type="button" id="btnAddLocation" class="btn btn-small">
-              Add a Location
-            </button>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <th>
-        Use "Gathering Ballots" Pages?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
+        Use "Gathering Ballots"?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
       </th>
       <td>
         <yes-no v-model="usingBallotProcess"></yes-no>
       </td>
       <td>
-        Use TallyJ to register voters and/or collect ballots from them?
+        Use TallyJ to register voters or record the collection of ballot envelopes?
       </td>
     </tr>
     <tr v-if="usingBallotProcess">
       <th>
-        Show "Called In"?@*<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>*@
+        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
       </th>
       <td>
         <yes-no v-model="election.UseCallInButton"></yes-no>
       </td>
       <td>
-        Show "Called In" button on Front Desk?
+        Are you set up to accept ballots by telephone?
       </td>
     </tr>
     <tr v-if="usingBallotProcess">
@@ -262,41 +237,88 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
         Process for gathering ballots
       </th>
       <td colspan="2">
-        <table>
+        <table class="processOptions">
           <tr>
+            <td colspan="3">
+              <p>Registration involves validating the voter's identity and may take extra time.</p>
+              <p>For large communities, process B may be the most efficient.</p>
+            </td>
+          </tr>
+          <tr>
+            <th>A</th>
             <td>
-              <input type="radio" value="RC" v-model="election.BallotProcess" name="rollCall" id="process1" />
+              <input type="radio" value="Roll" title="Roll" v-model="election.BallotProcess" name="rollCall" id="process1" />
             </td>
             <td>
               <label for="process1">
-                <strong>Register</strong> voters as they arrive.
-                <br>Use the <strong>Roll Call</strong> screen and have people publicly deposit their ballots.
+                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
+                <br>
+                Accept Dropped Off and Mailed In ballots and issue ballot numbers for them.
+                <br>
+                Later, project the <strong>Roll Call</strong> and have people publicly deposit their ballots when their name is displayed.
               </label>
             </td>
           </tr>
           <tr>
+            <th>B</th>
             <td>
-              <input type="radio" value="Reg" v-model="election.BallotProcess" name="rollCall" id="process2" />
+              <input type="radio" value="RegV" title="RegV" v-model="election.BallotProcess" name="rollCall" id="process2" />
             </td>
             <td>
               <label for="process2">
-                <strong>Preregister</strong> voters as they arrive.
-                <br>Receive ballots at <strong>tellers' stations</strong>.
+                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
+                <br>
+                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
+                <br>
+                Later, record when ballots are received at <strong>tellers' stations</strong> using the <strong>Front Desk</strong>.
               </label>
             </td>
           </tr>
           <tr>
+            <th>C</th>
             <td>
-              <input type="radio" value="NoReg" v-model="election.BallotProcess" name="rollCall" id="process3" />
+              <input type="radio" value="RegC" title="RegC" v-model="election.BallotProcess" name="rollCall" id="process3" />
             </td>
             <td>
               <label for="process3">
-                <strong>No registration</strong> of voters as they arrive.
-                <br>Receive ballots at <strong>tellers' stations</strong>, registering them at that time.
+                No registration of voters as they arrive.
+                <br>
+                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
+                <br>
+                When people arrive at <strong>tellers' stations</strong> to cast their ballot, register them to record that their ballot is received, using the <strong>Front Desk</strong>.
               </label>
             </td>
           </tr>
         </table>
+      </td>
+    </tr>
+    <tr class="forLocations">
+      <th>
+        Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
+      </th>
+      <td>
+        <yes-no code="useGatheringBallots" v-model="MultipleLocations" :disabled="numLocations > 1"></yes-no>
+      </td>
+      <td>
+        Are tellers working together in different locations / polling stations for this election?
+      </td>
+    </tr>
+    <tr class="forLocations" v-show="MultipleLocations">
+      <th></th>
+      <td colspan="2">
+        <div class="locations">
+          <div id="locationList">
+            <div v-for="loc in locations">
+              <input :data-id="loc.C_RowId" type=text v-model="loc.Name">
+              <span class="ui-icon ui-icon-arrow-2-n-s" v-if="numLocations > 1" title="Drag to sort"></span>
+              <span class="ui-icon ui-icon-trash" v-if="numLocations > 1" title="Delete this location" v-on:click="removeLocation($event.target)"></span>
+              <span class="warning" v-if="!loc.Name">Name required</span>
+            </div>
+          </div>
+          <button type="button" id="btnAddLocation" class="btn btn-small">
+            Add a Location
+          </button>
+        </div>
       </td>
     </tr>
 
@@ -326,13 +348,13 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
 
 
 <script type="text/x-template" id="yes-no">
-  <span class="YN">
+  <span class="YN" v-bind:class="'YN' + yesNo">
     <label>
-      <input type="radio" value="Y" v-model="yesNo">
+      <input type="radio" value="Y" v-model="yesNo" :disabled="disabled">
       Yes
     </label>
     <label>
-      <input type="radio" value="N" v-model="yesNo">
+      <input type="radio" value="N" v-model="yesNo" :disabled="disabled">
       No
     </label>
   </span>

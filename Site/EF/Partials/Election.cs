@@ -19,11 +19,11 @@ namespace TallyJ.EF
   public enum BallotProcessKey
   {
     // define the supported processes
-    Unknown,
-    None,
-    RC, // register, then roll call (no confirmation)
-    Reg, // register, collect
-    NoReg, // no pre-registration, just collect 
+    Unknown, // not defined yet
+    None, // do not use any Gathering Ballots
+    Roll, // roll call
+    RegV, // register, vote, collect after
+    RegC, // register, collect together
   }
 
   [Serializable]
@@ -39,7 +39,7 @@ namespace TallyJ.EF
     {
       get
       {
-        return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessKey.RC.ToString();
+        return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessKey.Roll.ToString();
       }
       set
       {
@@ -48,6 +48,18 @@ namespace TallyJ.EF
           throw new ApplicationException("Invalid process key: " + value);
         }
         SetExtraSettting(ExtraSettingKey.BP, value);
+      }
+    }
+    public BallotProcessKey BallotProcessEnum
+    {
+      get
+      {
+        var bp = BallotProcess;
+        if (Enum.IsDefined(typeof(BallotProcessKey), bp))
+        {
+          return (BallotProcessKey)Enum.Parse(typeof(BallotProcessKey), bp);
+        }
+        return BallotProcessKey.Unknown;
       }
     }
 

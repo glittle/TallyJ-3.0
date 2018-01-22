@@ -1,38 +1,5 @@
 @import "bootstrap/css/bootstrap.less";
 
-/*html
-{
-  background-color: #e2e2e2;
-  margin: 0;
-  padding: 0;
-}
-
-body
-{
-  background-color: #fff;
-  color: #333;
-  font-size: .85em;
-  font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-  margin: 0;
-  padding: 0;
-}*/
-
-/*
-a:link, a:visited, a:active, a:hover
-{
-    color: #333;
-    outline: none;
-    padding-left: 3px; 
-    padding-right: 3px;
-    text-decoration: underline;
-}
-*/
-
-/*header, footer, hgroup nav, section
-{
-  display: block;
-}*/
-
 .float-left {
   float: left;
 }
@@ -146,9 +113,22 @@ span, div {
 footer {
   clear: both;
   background-color: #e2e2e2;
-  font-size: .8em;
+  font-size: .9em;
   height: 50px;
   padding: 0 10px;
+
+  div {
+    margin-top: 9px;
+  }
+
+  .copyright {
+    float: left;
+  }
+
+  .helpLink {
+    float: left;
+    margin-left: 30px;
+  }
 }
 
 
@@ -199,8 +179,17 @@ body.NormalMode .site-title span {
   display: none;
 }
 
+body.BP-None {
+  .NamesReady {
+    display: none !important;
+  }
+}
+
 #qmenuTitle {
+  display: inline-block;
+  min-width: 60px;
   white-space: nowrap;
+
 
   &.NotStarted {
     color: @tallyJOrange;
@@ -299,15 +288,12 @@ body.NormalMode .site-title span {
     text-decoration: none;
     border: 1px solid;
     padding: 0 4px 0 4px;
+    margin: 0 0 2px 3px;
     display: inline-block;
     white-space: nowrap;
     border-radius: 2px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
-  }
-
-  a + a {
-    margin-left: 3px;
   }
 
   a:hover {
@@ -863,11 +849,13 @@ a.twitter {
   left: 0;
   width: 100%;
   z-index: 9999;
+  pointer-events: none;
 }
 
 .StatusMiddle {
   margin: 0 auto;
   display: table;
+  pointer-events: all;
 }
 
 .StatusInner {
@@ -885,7 +873,7 @@ a.twitter {
 }
 
 .CurrentElectionName {
-  margin: 0 0 5px 0;
+  margin: 0 30px 5px 0;
   color: @tallyJBlue;
   display: inline-block;
   font-weight: bold;
@@ -1258,11 +1246,21 @@ body.AuthKnown .CurrentElectionName {
   }
 }
 
+.passcode {
+  display: none;
+}
+
 .publicInfo.topArea {
+  position: absolute;
+  top: 2px;
+  right: 10px;
   color: #A4D4E6;
-  margin-left: 20px;
-  cursor: default;
+  cursor: pointer;
   white-space: nowrap;
+
+  &.passcodeLocked {
+    color: #cd0a0a;
+  }
 }
 
 .QuickLinks {
@@ -1298,10 +1296,14 @@ body.AuthKnown .CurrentElectionName {
   background-position: -64px -16px;
 }
 
-.ui-icon-info {
+.ui-icon-info, .ui-icon-locked {
   display: inline-block;
   vertical-align: text-bottom;
   cursor: help;
+}
+
+.ui-icon-locked {
+  background-image: url(../content/themes/base/images/ui-icons_cd0a0a_256x240.png);
 }
 
 .withTip label {
@@ -1331,11 +1333,6 @@ body.AuthKnown .CurrentElectionName {
 
 .Spacer {
   height: 50px;
-}
-
-.copyright {
-  float: left;
-  margin-top: 9px;
 }
 
 a.ShowMasterMenu {

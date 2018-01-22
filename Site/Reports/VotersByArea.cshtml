@@ -19,6 +19,7 @@
       DroppedOff = g.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
       MailedIn = g.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
       CalledIn = g.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+      Registered = g.Count(p => p.VotingMethod == VotingMethodEnum.Registered.ToString()),
     })
     .ToList();
 
@@ -67,6 +68,7 @@
       MailedIn = areas.Sum(a => a.MailedIn),
       DroppedOff = areas.Sum(a => a.DroppedOff),
       CalledIn = areas.Sum(a => a.CalledIn),
+      //Registered = areas.Sum(a => a.Registered),
     };
     var showCalledIn = total.CalledIn.AsInt() > 0;
   }

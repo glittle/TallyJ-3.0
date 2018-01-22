@@ -9,8 +9,8 @@
     </group>
     <group title="Voting" state="NamesReady" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
-      <page title="Sort Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
-      <page title="Roll Call" class="Projector" featureWhen="NamesReady" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
+      <page title="Sort Envelopes" featureWhen="NamesReady" requireProcess="Roll" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
+      <page title="Roll Call" class="Projector" featureWhen="NamesReady" requireProcess="Roll" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
       <page title="Count Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
     </group>
     <group title="Tallying" state="Tallying" longtitle="Processing Ballots - Tallying and Reporting" showTitleInPage="false">
