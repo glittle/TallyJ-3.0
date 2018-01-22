@@ -127,7 +127,7 @@ namespace Tests.BusinessTests
       new ResultSummary
       {
         ResultType = ResultType.Manual,
-        BallotsReceived = 4 // override the real count
+        SpoiledManualBallots = 1 // override the real count
       }.ForTests();
 
       var model = new ElectionAnalyzerNormal(_fakes); //, election, votes, ballots, SamplePeople);
@@ -136,7 +136,7 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
-      resultSummaryFinal.BallotsReceived.ShouldEqual(4);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(4);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);

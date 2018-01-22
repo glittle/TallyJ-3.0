@@ -8,6 +8,9 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
+  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessKey.None;
+
   var reports = new Dictionary<string, string>
 {
 { "SimpleResults|Election Reports", "Main Election Report"},
@@ -18,11 +21,11 @@
 { "ChangedPeople", "Updated People"},
 { "VotesWithInvalid", "Spoiled Votes Report"},
 
-{ "AllPeopleLF|Registration Reports", "All Eligible (by Last name)"},
-{ "AllPeopleFL", "All Eligible (by First name)"},
-{ "Voters", "Who Voted"},
-{ "NonVoters", "Eligible Voters Who Did Not Vote"},
-{ "VotersByArea", "Eligible and Voted by Area"},
+{ "AllPeopleLF|Registration Reports", "Eligible Voters (by Last name)"},
+{ "AllPeopleFL", "Eligible Voters (by First name)"},
+{ "Voters", showVoters ? "Who Voted" : null},
+{ "NonVoters", showVoters? "Eligible Voters Who Did Not Vote" : null},
+{ "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
 { "AllNonEligible", "All non-eligible"},
 };
   if (ContextItems.LocationModel.HasLocations)
@@ -37,6 +40,10 @@
     <div>
       @foreach (var r in reports)
       {
+        if (r.Value.HasNoContent())
+        {
+          continue;
+        }
         var keyParts = r.Key.Split('|');
         var href = keyParts[0];
         if (keyParts.Length == 2)

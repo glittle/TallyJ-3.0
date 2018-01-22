@@ -344,7 +344,7 @@
             firstPara = '<p>A tie-break election is required to break this tie.</p>';
           }
           tie.Conclusion = firstPara
-            + '<p>Voters should vote for <strong><span class=Needed>{0}</span> {1}</strong> from this list of {2}. When the tie-break vote has been completed, enter the number of votes received by each person below.</p>'
+            + '<p>Voters should vote for <strong><span class=Needed>{0}</span> {1}</strong> from this list of {2}. When the tie-break voting has been completed, enter the number of votes received by each person below.</p>'
               .filledWith(tie.NumToElect, tie.NumToElect == 1 ? 'person' : 'people', tie.NumInTie)
             ;
           var tieVotesFound = votes.reduce(function (acc, v) { return acc || v.TieBreakCount > 0 }, false);

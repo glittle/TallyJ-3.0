@@ -6,7 +6,7 @@
 }
 div.chooser {
   flex-shrink: 0;
-  width: 200px;
+  width: 215px;
   padding: 2px;
 }
 div.chooser button {
@@ -54,7 +54,6 @@ div.chooser h2 {
 }
 .getting {
   margin: 10px 0;
-  color: #999;
 }
 #Status {
   color: red;

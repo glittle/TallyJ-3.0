@@ -22,6 +22,7 @@
             <xs:attribute name="LastEnvNum" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="ListForPublic" type="xs:boolean" use="optional" />
             <xs:attribute name="ShowFullReport" type="xs:boolean" use="optional" />
+            <xs:attribute name="ElectionGuid" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
         <xs:element name="resultSummary" minOccurs="0" maxOccurs="unbounded">

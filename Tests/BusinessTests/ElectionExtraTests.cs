@@ -13,7 +13,7 @@ namespace Tests.BusinessTests
     public void ExtraFakeTest() {
        var election = new Election();
 
-       election.BallotProcess.ShouldEqual(null);
+       election.BallotProcess.ShouldEqual(BallotProcessKey.Roll.ToString());
 
       election.BallotProcess = BallotProcessKey.RegC.ToString();
 
@@ -23,7 +23,9 @@ namespace Tests.BusinessTests
       election.BallotProcess.ShouldEqual(BallotProcessKey.None.ToString());
 
       election.BallotProcess = null;
-      election.BallotProcess.ShouldEqual(null);
+
+      // always defaults to Roll
+      election.BallotProcess.ShouldEqual(BallotProcessKey.Roll.ToString());
 
       election.OwnerLoginId.ShouldEqual(null);
 
