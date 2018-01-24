@@ -241,10 +241,13 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
     </tr>
     <tr v-if="usingBallotProcess">
       <th>
-        Process for gathering ballots
+        Process for gathering ballots<br>using the Front Desk
       </th>
-      <td colspan="2">
-        <table class="processOptions">
+      <td colspan="2" class="processOptions">
+        <p>
+          Note: For all processes, tellers can accept <strong>Dropped Off</strong> and <strong>Mailed In</strong> ballots at any time.
+        </p>
+        <table>
           <tr>
             <th>A</th>
             <td>
@@ -252,9 +255,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
             </td>
             <td>
               <label for="process1">
-                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
-                <br>
-                Accept Dropped Off and Mailed In ballots and issue ballot numbers for them.
+                As voters arrive, validate their identity at tellers' stations and mark them as <strong>In Person</strong>.
                 <br>
                 Later, project the <strong>Roll Call</strong> and have people publicly deposit their ballots when their name is displayed.
               </label>
@@ -267,11 +268,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
             </td>
             <td>
               <label for="process2">
-                <strong>Register</strong> voters as they arrive, using the <strong>Front Desk</strong>.
+                As voters arrive, validate their identity at tellers' stations and mark them as <strong>Registered</strong>.
                 <br>
-                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
-                <br>
-                Later, record when ballots are received at <strong>tellers' stations</strong> using the <strong>Front Desk</strong>.
+                Later, accept ballots at tellers' stations and mark them as <strong>Received</strong>.
               </label>
             </td>
           </tr>
@@ -282,11 +281,8 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
             </td>
             <td>
               <label for="process3">
-                No registration of voters as they arrive.
-                <br>
-                Accept Dropped Off and Mailed In ballots at any time (no ballot numbers are created).
-                <br>
-                When people arrive at <strong>tellers' stations</strong> to cast their ballot, register them to record that their ballot is received, using the <strong>Front Desk</strong>.
+                When voters come to a tellers' station, validate their identity,
+                then accept their ballot and mark them as <strong>Received</strong>.
               </label>
             </td>
           </tr>

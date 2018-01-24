@@ -3,8 +3,21 @@
 @using TallyJ.Code.Session
 @model PeopleModel
 @{
-  ContextItems.AddJavascriptForPage("pageUrl", "reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("beforeUrl", "reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
+  var ballotProcess = UserSession.CurrentElection.BallotProcess;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
+
+  var inPersonName = "In Person";
+
+  switch (ballotProcessEnum)
+  {
+    case TallyJ.EF.BallotProcessKey.RegV:
+      inPersonName = "Ballot Received";
+      break;
+  }
+
+  ContextItems.AddJavascriptForPage("reconcilePage.inPersonName={0};".FilledWith(inPersonName.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
@@ -28,3 +41,12 @@
   Show Details</button>*@
 <div id="lists">
 </div>
+
+<script type="text/x-template" id="envelopeTemplate">
+  <div data-time="{SortTime}" title="{Tellers}" class="VM-{VotingMethod}">
+    <span>{C_FullName}</span>
+    <span class="EnvNum Number{EnvNum}" data-num="{EnvNum}">#{EnvNum}</span>
+    <span class=When title="{FullTime}">{When}</span>
+    <span class='ui-icon ui-icon-person'></span>
+  </div>
+</script>

@@ -393,7 +393,7 @@ namespace TallyJ.CoreModels
       var ballotSources = PeopleInElection // start with everyone
         .Where(
           p =>
-            p.EnvNum.HasValue && (string.IsNullOrEmpty(p.VotingMethod) || p.VotingMethod == VotingMethodEnum.InPerson)
+            p.EnvNum.HasValue && string.IsNullOrEmpty(p.VotingMethod)
             || (string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1 != null || p.Teller2 != null)))
         .ToList()
         .OrderBy(p => p.EnvNum)
@@ -499,6 +499,7 @@ namespace TallyJ.CoreModels
             ShowTellers(p),
             ShowRegistrationTime(timeOffset, p)
           }.JoinedAsString("; ", true),
+          p.VotingMethod,
           InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
           DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
           MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
@@ -511,9 +512,12 @@ namespace TallyJ.CoreModels
 
     private static int? ShowEnvNum(Person p)
     {
-      return p.VotingMethod.DefaultTo(VotingMethodEnum.InPerson) == VotingMethodEnum.InPerson
-        ? null
-        : p.EnvNum;
+      return p.EnvNum;
+
+      //let client show/hide
+      //return p.VotingMethod.HasNoContent() || p.VotingMethod == VotingMethodEnum.Registered
+      //  ? null
+      //  : p.EnvNum;
     }
 
     private static string ShowTellers(Person p)
@@ -562,6 +566,9 @@ namespace TallyJ.CoreModels
 
       Db.Person.Attach(person);
 
+      person.Teller1 = UserSession.GetCurrentTeller(1);
+      person.Teller2 = UserSession.GetCurrentTeller(2);
+
       var votingMethodRemoved = false;
       Guid? oldVoteLocationGuid = null;
       Guid? newVoteLocationGuid = null;
@@ -586,37 +593,18 @@ namespace TallyJ.CoreModels
 
         newVoteLocationGuid = person.VotingLocationGuid;
 
-        if (voteType != VotingMethodEnum.InPerson && UserSession.CurrentElection.BallotProcessEnum == BallotProcessKey.Roll)
+        // make number for every method except Registered
+        var needEnvNum = person.EnvNum == null && voteType != VotingMethodEnum.Registered;
+
+        if (needEnvNum)
         {
-          if (person.EnvNum == null)
-          {
-            // create a new env number
-
-            // get election from DB, not session, as we need to update it now
-            //var election = new ElectionModel().GetFreshFromDb(currentElectionGuid);
-            var election = UserSession.CurrentElection;
-
-            var nextNum = election.LastEnvNum.AsInt() + 1;
-
-            Db.Election.Attach(election);
-
-            person.EnvNum = nextNum;
-            election.LastEnvNum = nextNum;
-
-            new ElectionCacher(Db).UpdateItemAndSaveCache(election);
-          }
+          person.EnvNum = new ElectionModel().GetNextEnvelopeNumber();
         }
       }
-
-      person.Teller1 = UserSession.GetCurrentTeller(1);
-      person.Teller2 = UserSession.GetCurrentTeller(2);
-
-      Db.SaveChanges();
 
       personCacher.UpdateItemAndSaveCache(person);
 
       UpdateFrontDeskListing(person, votingMethodRemoved);
-
 
       if (lastRowVersion == 0)
       {
@@ -624,6 +612,8 @@ namespace TallyJ.CoreModels
       }
 
       UpdateLocationCounts(newVoteLocationGuid, oldVoteLocationGuid, personCacher);
+
+      Db.SaveChanges();
 
       return true.AsJsonResult();
     }

@@ -13,8 +13,10 @@
   switch (ballotProcessEnum)
   {
     case TallyJ.EF.BallotProcessKey.RegV:
-      <div class="Btn Registered {Registered}">Registered</div>
       inPersonName = "Ballot Received";
+      break;
+    case TallyJ.EF.BallotProcessKey.RegC:
+      inPersonName = "Received";
       break;
   }
 
@@ -30,26 +32,26 @@
     <li>To quickly find a person, begin to type any part of the name or Bahá'í ID of the person you are looking for into the Search Box. Use the Up/Down arrow keys to move to the correct person, then press the Enter key to focus on them.</li>
     <li>A count of people with each status is shown at the top. Click on one to filter the list to that status. Press or click Esc to remove the filter.</li>
     @{
-    switch (ballotProcessEnum)
-    {
-      case TallyJ.EF.BallotProcessKey.Roll:
-        <li>
-          Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
-          the Roll Call is done.
-        </li>
-      break;
-    case TallyJ.EF.BallotProcessKey.RegV:
-      <li>
-        Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
-        they return to a teller to deposit their ballot, mark them as "@inPersonName"
-      </li>
-    break;
-  case TallyJ.EF.BallotProcessKey.RegC:
-    <li>
-      Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
-    </li>
-  break;
-}
+      switch (ballotProcessEnum)
+      {
+        case TallyJ.EF.BallotProcessKey.Roll:
+          <li>
+            Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
+            the Roll Call is done.
+          </li>
+          break;
+        case TallyJ.EF.BallotProcessKey.RegV:
+          <li>
+            Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
+            they return to a teller to deposit their ballot, mark them as "@inPersonName"
+          </li>
+          break;
+        case TallyJ.EF.BallotProcessKey.RegC:
+          <li>
+            Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
+          </li>
+          break;
+      }
     }
   </ol>
 </div>
@@ -73,10 +75,10 @@
   </div>
   @if (ballotProcessEnum == TallyJ.EF.BallotProcessKey.RegV)
   {
-  <div class="Registered" data-status="Registered">
-    Registered
-    <i>0</i>
-  </div>
+    <div class="Registered" data-status="Registered">
+      Registered
+      <i>0</i>
+    </div>
   }
   <div class="InPerson" data-status="InPerson">
     @inPersonName
@@ -96,16 +98,11 @@
 <div id="afterList"></div>
 
 <script type="text/x-template" id="frontDeskLineTemplate">
-  <div id="P{PersonId}" class="Voter" data-name="{NameLower}">
+  <div id="P{PersonId}" class="Voter VM-{VotingMethod}" data-name="{NameLower}">
     <div class="Btn CalledIn {CalledIn}">Called In</div>
     <div class="Btn MailedIn {MailedIn}">Mailed In</div>
     <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
-    <div class="Env">
-      @if (ballotProcessEnum == TallyJ.EF.BallotProcessKey.Roll)
-      {
-        @:{EnvNum}
-      }
-    </div>
+    <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
     {
       case TallyJ.EF.BallotProcessKey.RegV:

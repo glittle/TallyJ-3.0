@@ -13,6 +13,8 @@ namespace TallyJ.CoreModels
 {
   public class ElectionModel : DataConnectedModel
   {
+    private static object LockObject = new object();
+
     public ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
@@ -208,7 +210,8 @@ namespace TallyJ.CoreModels
     /// <returns></returns>
     public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
     {
-      if (election == null) {
+      if (election == null)
+      {
         return null;
       }
 
@@ -636,6 +639,30 @@ namespace TallyJ.CoreModels
         // QuickLinks = new MenuHelper(controller.Url).QuickLinks(),
         StateName = UserSession.CurrentElectionStatus
       }.AsJsonResult();
+    }
+
+    internal int GetNextEnvelopeNumber()
+    {
+      // create a new env number - Jan 2018 - create number for each ballot. it may be displayed or not
+
+      // do we need a transaction here to ensure no duplicates are made?
+
+      int nextNum;
+
+      lock (LockObject)
+      {
+        var election = UserSession.CurrentElection;
+        Db.Election.Attach(election);
+
+        nextNum = election.LastEnvNum.AsInt() + 1;
+        election.LastEnvNum = nextNum;
+
+        new ElectionCacher(Db).UpdateItemAndSaveCache(election);
+      }
+
+      Db.SaveChanges(); // save immediately, may include person saving
+
+      return nextNum;
     }
 
     public JsonResult UpdateElectionShowAllJson(bool showFullReport)
