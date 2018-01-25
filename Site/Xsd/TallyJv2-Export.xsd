@@ -13,7 +13,8 @@
             <xs:attribute name="NumberExtra" type="xs:nonNegativeInteger" use="required" />
             <xs:attribute name="Name" type="xs:string" use="required" />
             <xs:attribute name="Convenor" type="xs:string" use="optional" />
-            <xs:attribute name="BallotProcess" type="xs:string" use="optional" />
+            <xs:attribute name="BallotProcessRaw" type="xs:string" use="optional" />
+            <xs:attribute name="EnvNumModeRaw" type="xs:string" use="optional" />
             <xs:attribute name="ShowAsTest" type="xs:boolean" use="optional" />
             <xs:attribute name="ListedForPublicAsOf" type="xs:string" use="optional" />
             <xs:attribute name="CanVote" type="xs:string" use="optional" />

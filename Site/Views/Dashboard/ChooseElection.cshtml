@@ -5,13 +5,13 @@
   ViewBag.Title = "Elections";
   ViewBag.Message = "Select or create an election";
 
-  ContextItems.AddJavascriptForPage("url1", "chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("url2", "chooseElectionPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("chooseElectionPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("chooseElectionPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("chooseElectionPage.countsUrl={0};".FilledWith(@Url.Action("ElectionCounts", "Dashboard").QuotedForJavascript()));
   var electionsInfo = Model.MyElectionsInfo.ToList();
-  ContextItems.AddJavascriptForPage("initial", "chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("guest", "chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("importHubUrl", "chooseElectionPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
-  TemplateLoader.RequireTemplates(TemplateLoader.File.LocationSelectItem, TemplateLoader.File.ElectionListItem);
+  ContextItems.AddJavascriptForPage("chooseElectionPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("chooseElectionPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("chooseElectionPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
 }
 @section featured {
 }
@@ -49,3 +49,30 @@ else
   <p>Sorry, no elections found. Please Log Off and try again.</p>
 }
 <p>@Html.ActionLink("Log Off", "Logoff", "Account")</p>
+
+<script type="text/x-template" id="electionListItem">
+  <div class="Election {IsCurrent}{TestClass}{RowClass}" data-guid="{ElectionGuid}" id="el-{ElectionGuid}">
+    <div class="Detail">
+      {DateOfElection}
+      <b>{Name}</b>
+      <span class="Test">(TEST)</span>
+      <i>{Type} {Mode}</i>
+      <span class="numVoters"></span>
+      <span class="notSingle"><span class="numBallots"></span></span>
+    </div>
+    <div class="buttons">
+      <button type="button" class="btn btn-primary btnSelectElection">Open</button>
+      <div class="btn-group">
+        <button type="button" class="btn btn-info btn-mini btnExport" title="Export and download the complete election to a file on your computer">Save to File</button>
+        <button type="button" class="btn btn-danger btn-mini btnDelete" title="Delete the election from this system">Remove</button>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-template" id="locationSelectItem">
+  <div class="{IsCurrent}">
+    <button type="button" class="btnSelectLocation" data-id="{C_RowId}">Select</button>
+    {Name}
+  </div>
+</script>

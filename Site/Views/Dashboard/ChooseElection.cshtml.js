@@ -8,6 +8,8 @@
 
     showElections(publicInterface.elections);
 
+    getElectionCounts();
+
     if (!publicInterface.isGuest) {
       //            $(document).on('click', '.btnCopyElection', null, copyElection);
       $(document).on('click', '.btnExport', null, exportElection);
@@ -171,16 +173,19 @@
   };
 
   var showElections = function (info) {
+    var electionTemplate = $('#electionListItem').text();
+    var locationTemplate = $('#locationSelectItem').text();
+
     $.each(info, function () {
       if (this.Locations) {
-        this.Locations = site.templates.LocationSelectItem.filledWithEach(this.Locations);
+        this.Locations = locationTemplate.filledWithEach(this.Locations);
       }
       this.TestClass = this.IsTest ? ' TestElection' : '';
       this.RowClass = this.IsSingleNameElection ? ' SingleName' : '';
       this.RowClass += this.IsFuture ? ' IsFuture' : '';
     });
 
-    $('#ElectionList').html(site.templates.ElectionListItem.filledWithEach(info));
+    $('#ElectionList').html(electionTemplate.filledWithEach(info));
 
     if (publicInterface.isGuest) {
       $('#ElectionList').find('.Detail button').each(function () {
@@ -204,10 +209,10 @@
     var row = btn.parents('.Election');
     var guid = row.data('guid');
     var form =
-        {
-          guid: guid,
-          oldComputerGuid: GetFromStorage('compcode_' + guid, null)
-        };
+      {
+        guid: guid,
+        oldComputerGuid: GetFromStorage('compcode_' + guid, null)
+      };
 
     ShowStatusDisplay("Opening election...");
 
@@ -216,202 +221,212 @@
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
   };
 
-  var afterSelectElection = function (info) {
-    //    if (info.Pulse) {
-    //      ProcessPulseResult(info.Pulse);
-    //    }
-    ResetStatusDisplay();
-
-    if (info.Selected) {
-      //TODO: store computer Guid
-      SetInStorage('compcode_' + info.ElectionGuid, info.CompGuid);
-
-      location.href = site.rootUrl + 'Dashboard';
-
-      //            $('.Election.true').removeClass('true');
-      //            row.addClass('true');
-
-      //            $('.CurrentElectionName').text(info.ElectionName);
-      //            $('.CurrentLocationName').text('[No location selected]');
-
-      //            showLocations(info.Locations, row);
-
-
-      //            site.heartbeatActive = true;
-      //            ActivateHeartbeat(true);
-    }
-    else {
-      ShowStatusFailed("Unable to select");
-    }
-  };
-
-  //    var showLocations = function (list, row) {
-  //        var host = row.find('.Locations');
-  //        host.html(site.templates.LocationSelectItem.filledWithEach(list));
-  //    };
-
-  //    var selectLocation = function () {
-  //        var btn = $(this);
-  //        var form =
-  //        {
-  //            id: btn.data('id')
-  //        };
-
-  //        ShowStatusDisplay('Selecting location...');
-
-  //        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
-  //    };
-
-  //    var afterSelectLocation = function (info) {
-  //        if (info.Selected) {
-  //            location.href = site.rootUrl + 'Dashboard';
-  //            return;
-  //        }
-  //    };
-
-  var createElection = function () {
-    if (publicInterface.isGuest) return;
-
-    // get the server to make an election, then go see it
-    CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
-      //var row = $(site.templates.ElectionListItem.filledWith(info.Election)).prependTo($('#ElectionList'));
-      //afterSelectElection(info, row);
-      if (info.Success) {
-        location.href = site.rootUrl + 'Setup';
-        return;
+  var getElectionCounts = function () {
+    CallAjaxHandler(publicInterface.countsUrl, null, function (info) {
+      for (let election of info) {
+        var line = $('#el-' + election.guid);
+        line.find('.numVoters').text('- {0} voter{1}'.filledWith(election.numPeople, Plural(election.numPeople)));
+        line.find('.numBallots').text('- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots)));
       }
     });
-  };
+}
 
-  var exportElection = function () {
-    if (publicInterface.isGuest) return;
+var afterSelectElection = function (info) {
+  //    if (info.Pulse) {
+  //      ProcessPulseResult(info.Pulse);
+  //    }
+  ResetStatusDisplay();
 
-    var btn = $(this);
-    var guid = btn.parents('.Election').data('guid');
+  if (info.Selected) {
+    //TODO: store computer Guid
+    SetInStorage('compcode_' + info.ElectionGuid, info.CompGuid);
 
-    ShowStatusDisplay("Preparing file...");
+    location.href = site.rootUrl + 'Dashboard';
 
-    //var oldText = btn.text();
+    //            $('.Election.true').removeClass('true');
+    //            row.addClass('true');
 
-    btn.addClass('active');
-    var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
-    iframe.ready(function () {
-      setTimeout(function () {
-        ResetStatusDisplay();
-        btn.removeClass('active');
-      }, 1000);
-    });
-  };
+    //            $('.CurrentElectionName').text(info.ElectionName);
+    //            $('.CurrentLocationName').text('[No location selected]');
 
-  var deleteElection = function () {
-    if (publicInterface.isGuest) return;
+    //            showLocations(info.Locations, row);
 
 
-    var btn = $(this);
-    var row = btn.closest('.Election');
-    var name = row.find('.Detail').find('b').text();
+    //            site.heartbeatActive = true;
+    //            ActivateHeartbeat(true);
+  }
+  else {
+    ShowStatusFailed("Unable to select");
+  }
+};
 
-    btn.addClass('active');
-    row.addClass('deleting');
+//    var showLocations = function (list, row) {
+//        var host = row.find('.Locations');
+//        host.html(site.templates.LocationSelectItem.filledWithEach(list));
+//    };
 
-    ShowStatusDisplay('Deleting...', 0);
+//    var selectLocation = function () {
+//        var btn = $(this);
+//        var form =
+//        {
+//            id: btn.data('id')
+//        };
 
-    if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
-      btn.removeClass('active');
-      row.removeClass('deleting');
-      ResetStatusDisplay();
+//        ShowStatusDisplay('Selecting location...');
+
+//        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
+//    };
+
+//    var afterSelectLocation = function (info) {
+//        if (info.Selected) {
+//            location.href = site.rootUrl + 'Dashboard';
+//            return;
+//        }
+//    };
+
+var createElection = function () {
+  if (publicInterface.isGuest) return;
+
+  // get the server to make an election, then go see it
+  CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
+    //var row = $(site.templates.ElectionListItem.filledWith(info.Election)).prependTo($('#ElectionList'));
+    //afterSelectElection(info, row);
+    if (info.Success) {
+      location.href = site.rootUrl + 'Setup';
       return;
     }
+  });
+};
 
+var exportElection = function () {
+  if (publicInterface.isGuest) return;
 
-    var form =
-        {
-          guid: row.data('guid')
-        };
+  var btn = $(this);
+  var guid = btn.parents('.Election').data('guid');
 
-    CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
-      btn.removeClass('active');
-      if (info.Deleted) {
-        row.slideUp(1000, 0, function () {
-          row.remove();
-          ShowStatusSuccess('Deleted.');
-        });
-      } else {
-        row.removeClass('deleting');
-        ShowStatusFailed(info.Message);
-      }
-    });
-  };
+  ShowStatusDisplay("Preparing file...");
 
-  var loadElection = function () {
-    $('#fileName').show();
-  };
+  //var oldText = btn.text();
 
-  var loadElection2 = function () {
-    var name = $('#fileName').val();
-    console.log(name);
-  };
-
-  //  var copyElection = function () {
-  //    if (publicInterface.isGuest) return;
-  //
-  //    var btn = $(this);
-  //    var form =
-  //        {
-  //          guid: btn.parents('.Election').data('guid')
-  //        };
-  //
-  //    if (!confirm('Are you sure you want to make a new election based on this one?')) {
-  //      return;
-  //    }
-  //
-  //    CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
-  //
-  //      if (info.Success) {
-  //        location.href = '.';
-  //        return;
-  //      }
-  //
-  //      alert(info.Message);
-  //
-  //      site.heartbeatActive = true;
-  //      ActivateHeartbeat(true);
-  //    });
-  //  };
-
-  var scrollToMe = function (nameDiv) {
-    var target = $(nameDiv);
-    target.addClass('justloaded');
-
-    var top = target.offset().top;
-    var fudge = -83;
-    var time = 800;
-
-    try {
-      $(document).animate({
-        scrollTop: top + fudge
-      }, time);
-    } catch (e) {
-      // ignore error
-      console.log(e.message);
-    }
-
+  btn.addClass('active');
+  var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
+  iframe.ready(function () {
     setTimeout(function () {
-      target.toggleClass('justloaded', 'slow');
-    }, 10000);
-  };
+      ResetStatusDisplay();
+      btn.removeClass('active');
+    }, 1000);
+  });
+};
+
+var deleteElection = function () {
+  if (publicInterface.isGuest) return;
+
+
+  var btn = $(this);
+  var row = btn.closest('.Election');
+  var name = row.find('.Detail').find('b').text();
+
+  btn.addClass('active');
+  row.addClass('deleting');
+
+  ShowStatusDisplay('Deleting...', 0);
+
+  if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
+    btn.removeClass('active');
+    row.removeClass('deleting');
+    ResetStatusDisplay();
+    return;
+  }
+
+
+  var form =
+    {
+      guid: row.data('guid')
+    };
+
+  CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
+    btn.removeClass('active');
+    if (info.Deleted) {
+      row.slideUp(1000, 0, function () {
+        row.remove();
+        ShowStatusSuccess('Deleted.');
+      });
+    } else {
+      row.removeClass('deleting');
+      ShowStatusFailed(info.Message);
+    }
+  });
+};
+
+var loadElection = function () {
+  $('#fileName').show();
+};
+
+var loadElection2 = function () {
+  var name = $('#fileName').val();
+  console.log(name);
+};
+
+//  var copyElection = function () {
+//    if (publicInterface.isGuest) return;
+//
+//    var btn = $(this);
+//    var form =
+//        {
+//          guid: btn.parents('.Election').data('guid')
+//        };
+//
+//    if (!confirm('Are you sure you want to make a new election based on this one?')) {
+//      return;
+//    }
+//
+//    CallAjaxHandler(publicInterface.electionsUrl + '/CopyElection', form, function (info) {
+//
+//      if (info.Success) {
+//        location.href = '.';
+//        return;
+//      }
+//
+//      alert(info.Message);
+//
+//      site.heartbeatActive = true;
+//      ActivateHeartbeat(true);
+//    });
+//  };
+
+var scrollToMe = function (nameDiv) {
+  var target = $(nameDiv);
+  target.addClass('justloaded');
+
+  var top = target.offset().top;
+  var fudge = -83;
+  var time = 800;
+
+  try {
+    $(document).animate({
+      scrollTop: top + fudge
+    }, time);
+  } catch (e) {
+    // ignore error
+    console.log(e.message);
+  }
+
+  setTimeout(function () {
+    target.toggleClass('justloaded', 'slow');
+  }, 10000);
+};
 
 
 
-  var publicInterface = {
-    elections: [],
-    isGuest: false,
-    electionsUrl: '',
-    loadElectionUrl: '',
-    PreparePage: preparePage
-  };
+var publicInterface = {
+  elections: [],
+  isGuest: false,
+  electionsUrl: '',
+  loadElectionUrl: '',
+  PreparePage: preparePage
+};
 
-  return publicInterface;
+return publicInterface;
 };
 
 var chooseElectionPage = HomeIndexPage();

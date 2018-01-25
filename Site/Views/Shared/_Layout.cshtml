@@ -30,11 +30,11 @@
 </head>
 @{
   var classes = new List<string> {
-ControllerActionNamesJoined,
-ScreenMode + "Mode",
-"Auth" + UserSession.AuthLevel,
-UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcess
-};
+          ControllerActionNamesJoined,
+          ScreenMode + "Mode",
+          "Auth" + UserSession.AuthLevel,
+          UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
+        };
 }
 <body class="@classes.JoinedAsString(" ", true)">
   <header>

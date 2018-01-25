@@ -17,11 +17,11 @@ div.MainDashboard {
     }
 
     section {
-      border: 2px solid transparent;
+      border: 1px solid transparent;
     }
 
     &:hover.Featured section {
-      border: 2px solid #ddd;
+      border: 1px solid #888;
     }
 
     &:hover.NotFeatured section {
@@ -29,7 +29,7 @@ div.MainDashboard {
     }
 
     &:active section {
-      border: 2px solid #8dc63e;
+      border: 1px solid #8dc63e;
     }
   }
 
@@ -51,7 +51,7 @@ div.MainDashboard {
     padding-left: 20px;
     padding-right: 10px;
     margin-bottom: 15px;
-    margin-left: 38px;
+    margin-left: 10px;
 
     &.NotStarted {
       color: @tallyJOrange;
@@ -119,7 +119,7 @@ div.MainDashboard {
     background-image: none;
     height: 45px;
     padding: 10px 15px 20px 10px;
-    border: solid #ccc thin;
+    border: solid #ccc 1px;
   }
 
   section.features p {
@@ -132,6 +132,12 @@ div.MainDashboard {
 
   .h2 {
     margin-top: 10px;
+  }
+}
+
+body.BP-None {
+  .NamesReady {
+    display: none;
   }
 }
 

@@ -8,8 +8,8 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 
-  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
-  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessKey.None;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
+  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
 
   var reports = new Dictionary<string, string>
 {

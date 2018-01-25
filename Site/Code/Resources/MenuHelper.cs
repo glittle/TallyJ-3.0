@@ -196,7 +196,7 @@ namespace TallyJ.Code.Resources
     {
       var role = node.GetAttribute("role");
       var hasElection = _currentElection != null;
-      var process = hasElection ? _currentElection.BallotProcess : "";
+      var process = hasElection ? _currentElection.BallotProcessRaw : "";
 
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;

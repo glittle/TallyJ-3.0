@@ -6,7 +6,6 @@
 .Voter {
   clear: both;
   border: 2px solid transparent;
-  overflow: auto;
 
   div.Btn {
     &:hover {
@@ -18,8 +17,11 @@
     }
 
     &.true, &.True {
-      //background-color: plum;
       background-color: #9bff9b;
+
+      &.Registered {
+        background-color: #9bfffe;
+      }
     }
   }
 
@@ -46,6 +48,31 @@
   b {
     margin: 3px 0 0 5px;
     display: inline-block;
+  }
+}
+
+.Env {
+  visibility: hidden;
+}
+
+#Main.EnvMode-Absentee {
+  .VM-C, .VM-M, .VM-D {
+    .Env {
+      visibility: visible;
+    }
+  }
+}
+
+#Main.EnvMode-All {
+  .Env {
+    visibility: visible;
+  }
+}
+
+.VM- {
+  .Env {
+    color: #ccc;
+    text-decoration: line-through;
   }
 }
 
@@ -88,27 +115,20 @@
 
 .Btn {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 2px 4px 3px;
   border: 1px solid #8dc63e;
   border-radius: 3px;
-  margin: 1px 0;
+  margin: 0;
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
 }
 
 .Env {
-  width: 12px;
+  width: 30px;
   display: inline-block;
-  text-align: left;
-  font-weight: bold;
-  color: rgb(135, 98, 135);
-}
-
-body.BP-Roll {
-  .Env {
-    width: 27px;
-  }
+  text-align: center;
+  color: #019401;
 }
 
 .fakeEsc {
@@ -124,7 +144,7 @@ body.BP-Roll {
   div {
     display: inline-block;
     padding: 3px 4px 2px;
-    border: 1px solid #aaa;
+    border: 1px dotted #aaa;
     border-radius: 3px;
     vertical-align: middle;
     white-space: nowrap;

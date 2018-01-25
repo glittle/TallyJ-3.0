@@ -69,7 +69,7 @@ namespace TallyJ.Controllers
       return new
                {
                  Ballots = peopleModel.BallotSources(id),
-                 OldEnvelopes = peopleModel.OldEnvelopes()
+                 Deselected = peopleModel.Deselected()
                }.AsJsonResult();
     }
 

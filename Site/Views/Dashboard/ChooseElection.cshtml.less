@@ -38,13 +38,10 @@
 
 
 
-.Detail i {
-  font-size: 80%;
-  font-style: normal;
-}
 
-.numVoters {
+.numVoters, .numBallots {
   font-size: 80%;
+  white-space: nowrap;
 }
 
 .Locations .true button {
@@ -54,6 +51,17 @@
 .Detail {
   position: relative;
   min-height: 21px;
+
+  i {
+    margin-left: 15px;
+    font-size: 80%;
+    font-style: normal;
+    white-space: nowrap;
+  }
+
+  b {
+    white-space: nowrap;
+  }
 }
 
 .buttons {
@@ -101,7 +109,7 @@ button.active {
 }
 
 .TestElection {
-  color: #bbb;
+  color: #aaa;
 }
 
 .Test {
