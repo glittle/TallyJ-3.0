@@ -203,12 +203,8 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
   <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
   <div class="PullInstructions">
     <ol>
-      <li>TallyJ has a number of features that you may or may not want to use.</li>
-      <li>
-        The two main features are (1) registering voters and collecting ballots, and (2) processing the ballots. You can use either or both of these processes. If not using (1), then answer
-        "No" to the first question.
-      </li>
-      <li>If you will register voters with TallyJ, choose between the three processes described below.</li>
+      <li>If you will register voters or track envelopes with TallyJ, answer "Yes" to the first question then 
+      choose between the three processes described below.</li>
       <li>Registration involves validating the voter's identity and may take extra time.</li>
       <li>For large communities, process B may prove to be the fastest.</li>
     </ol>
@@ -231,9 +227,6 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
         Process for gathering ballots<br>using the Front Desk
       </th>
       <td colspan="2" class="processOptions">
-        <p>
-          Note: For all processes, tellers can accept absentee (<strong>Dropped Off</strong> and <strong>Mailed In</strong>) ballots at any time.
-        </p>
         <table>
           <tr>
             <th>A</th>
@@ -274,6 +267,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
             </td>
           </tr>
         </table>
+        <p>
+          <strong>Note</strong>: For all processes, tellers can accept absentee (<strong>Dropped Off</strong> and <strong>Mailed In</strong>) ballots at any time.
+        </p>
       </td>
     </tr>
     <tr v-if="usingBallotProcess">
@@ -285,16 +281,6 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
           <env-mode v-model="election.EnvNumModeRaw"></env-mode>
           <div>For whom should envelope numbers be shown on the Front Desk?</div>
         </div>
-      </td>
-    </tr>
-    <tr v-if="usingBallotProcess">
-      <th>
-        Use 24 hour time?
-      </th>
-      <td>
-        <yes-no v-model="election.T24" yes="19:30" no="7:30 pm"></yes-no>
-      </td>
-      <td>
       </td>
     </tr>
     <tr v-if="usingBallotProcess">
@@ -337,6 +323,15 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
         </div>
       </td>
     </tr>
+    <tr>
+      <th>
+        Use 24 hour time?
+      </th>
+      <td>
+        <yes-no v-model="election.T24" yes="19:30" no="7:30 pm"></yes-no>
+      </td>
+      <td></td>
+    </tr>
 
   </table>
 
@@ -364,7 +359,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
 
 
 <script type="text/x-template" id="yes-no">
-  <span class="YN" v-bind:class="'YN' + yesNo">
+  <span class="YN" v-bind:class="['YN' + yesNo, disabled ? 'disabled' : '']">
     <label>
       <input type="radio" value="Y" v-model="yesNo" :disabled="disabled">
       {{yes}}
