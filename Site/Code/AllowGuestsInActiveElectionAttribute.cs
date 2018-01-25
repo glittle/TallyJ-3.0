@@ -34,8 +34,9 @@ namespace TallyJ.Code
         return true;
       }
 
-      // only update visit every 15 minutes. Lasts for 1 hour, so could be only 45 minutes.
+      // only update visit every 5 minutes. Lasts for 1 hour, so could be only 45 minutes.
       var currentElection = UserSession.CurrentElection;
+      var delayTime = TimeSpan.FromMinutes(5);
 
       if (currentElection != null && currentElection.ListForPublic.AsBoolean())
       {
@@ -55,8 +56,8 @@ namespace TallyJ.Code
         electionCacher.UpdateItemAndSaveCache(currentElection);
         LogTime("update cache");
 
-        //if (currentElection.ListForPublic.AsBoolean() &&
-        //    (DateTime.Now - currentElection.ListedForPublicAsOf.GetValueOrDefault(DateTime.Now)).TotalMinutes > 15)
+        if (currentElection.ListForPublic.AsBoolean() &&
+            (DateTime.Now - currentElection.ListedForPublicAsOf.GetValueOrDefault(DateTime.Now.AddMinutes(-60))).TotalMinutes > delayTime.TotalMinutes)
         {
 
           db.SaveChanges();

@@ -499,12 +499,7 @@
       if (info.PersonLines) {
         $.each(info.PersonLines, function () {
           var selector = '#P' + this.PersonId;
-          console.log(this)
           $(selector).replaceWith(local.lineTemplate.filledWith(this));
-          if (this.PersonId != pid) {
-            //$(selector).effect('highlight', {}, 5000);
-          }
-          //$('.KeyMatch').removeClass('KeyMatch');
           if (selector === '#' + current) {
             setSelection($(selector), false);
           }

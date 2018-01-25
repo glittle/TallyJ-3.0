@@ -4,8 +4,8 @@
 @using TallyJ.EF
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
-  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessKey.None;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
+  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
 
   var people = new PersonCacher().AllForThisElection
 .Where(p => p.CanVote.HasValue && p.CanVote.Value)

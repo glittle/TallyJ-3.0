@@ -11,12 +11,12 @@
   };
 
   function preparePage() {
+    connectToAnalyzeHub();
+
     setReadyStatus(site.electionState === 'Finalized');
 
     site.qTips.push({ selector: '#qTipUnEntered', title: 'Spoiled Ballots', text: 'The calculated number shows the entered ballots that were found to be spoiled. If some spoiled ballots were not entered into TallyJ, enter the number here. ' });
     site.qTips.push({ selector: '#qTipSpoiledVotes', title: 'Spoiled Votes', text: 'These are spoiled votes that are on valid ballots.' });
-
-
 
     $('#btnRefresh').click(function () {
       runAnalysis(false);
@@ -26,7 +26,6 @@
     $('#btnShowLog').click(function () {
       showLog();
     });
-
 
     $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
@@ -44,8 +43,6 @@
     settings.rowTemplate = $('#mainTableRow').text();
     settings.tieResultRowTemplate = $('#tieTableRow').text();
     settings.invalidsRowTemplate = $('#invalidsItem').text();
-
-    connectToAnalyzeHub();
 
     if (publicInterface.results) {
       $('#InitialMsg').text('Loading results...');

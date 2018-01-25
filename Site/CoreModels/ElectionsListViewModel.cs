@@ -29,46 +29,57 @@ namespace TallyJ.CoreModels
             e.IsSingleNameElection
           }).ToList();
 
-        var electionGuids = list.Select(e => e.ElectionGuid).ToList();
-
-        var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
-          .GroupBy(p => p.ElectionGuid)
-          .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
-          .ToList();
-
-        var ballotCount = Db.Location.Where(p => electionGuids.Contains(p.ElectionGuid))
-          .Join(Db.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, b) => new { l.ElectionGuid, b })
-          .GroupBy(p => p.ElectionGuid)
-          .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
-          .ToList();
-
         return list.Select(info =>
                       {
-                        var isCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid;
-                        var personCounts = personCount.SingleOrDefault(c => c.ElectionGuid == info.ElectionGuid);
-                        var ballotCounts = ballotCount.SingleOrDefault(c => c.ElectionGuid == info.ElectionGuid);
                         return new
-                              {
-                                info.Name,
-                                info.ElectionGuid,
-                                DateOfElection =
+                        {
+                          info.Name,
+                          info.ElectionGuid,
+                          DateOfElection =
                                     info.DateOfElection.HasValue
                                         ? info.DateOfElection.AsString("yyyy-MMM-dd")
                                         : "",
-                                IsFuture = info.DateOfElection.HasValue && info.DateOfElection > DateTime.Today,
-                                IsCurrent = isCurrent,
-                                // Locations = isCurrent ? locations : null,
-                                Type = ElectionTypeEnum.TextFor(info.ElectionType),
-                                Mode =
-                                    ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
-                                IsTest = info.ShowAsTest.AsBoolean(),
-                                info.IsSingleNameElection,
-                                NumVoters = personCounts == null ? 0 : personCounts.Num,
-                                NumBallots = ballotCounts == null ? 0 : ballotCounts.Num
-                              };
+                          IsFuture = info.DateOfElection.HasValue && info.DateOfElection > DateTime.Today,
+                          IsCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid,
+                          Type = ElectionTypeEnum.TextFor(info.ElectionType).DefaultTo("?"),
+                          Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
+                          IsTest = info.ShowAsTest.AsBoolean(),
+                          info.IsSingleNameElection,
+                        };
                       });
       }
     }
+
+    public IEnumerable<object> ElectionCounts()
+    {
+      var electionGuids = MyElections().Select(e => e.ElectionGuid).ToList();
+
+      var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
+        .GroupBy(p => p.ElectionGuid)
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
+        .ToDictionary(g => g.ElectionGuid, g => g.Num);
+
+      var ballotCount = Db.Location.Where(p => electionGuids.Contains(p.ElectionGuid))
+        .Join(Db.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, b) => new { l.ElectionGuid, b })
+        .GroupBy(p => p.ElectionGuid)
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
+        .ToDictionary(g => g.ElectionGuid, g => g.Num);
+
+      return electionGuids.Select(guid =>
+      {
+        personCount.TryGetValue(guid, out int pc);
+        ballotCount.TryGetValue(guid, out int bc);
+
+        return new
+        {
+          guid,
+          numPeople = pc,
+          numBallots = bc
+        };
+      });
+    }
+
+
 
     private IEnumerable<Election> MyElections()
     {

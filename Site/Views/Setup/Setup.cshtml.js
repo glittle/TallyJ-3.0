@@ -28,15 +28,15 @@
       computed: {
       },
       watch: {
-        'election.BallotProcess': function (a) {
+        'election.BallotProcessRaw': function (a) {
           this.replaceBodyBpClass(a);
         },
         usingBallotProcess: function (a) {
           if (!a) {
-            this.election.BallotProcess = 'None';
+            this.election.BallotProcessRaw = 'None';
           } else {
-            if (!this.election.BallotProcess || this.election.BallotProcess === 'None') {
-              this.election.BallotProcess = 'Roll'; // old default
+            if (!this.election.BallotProcessRaw || this.election.BallotProcessRaw === 'None') {
+              this.election.BallotProcessRaw = 'Roll'; // old default
               $('.btnSave').addClass('btn-primary');
             }
           }
@@ -47,7 +47,7 @@
         //}
       },
       mounted: function () {
-        var bp = this.election.BallotProcess;
+        var bp = this.election.BallotProcessRaw;
         this.usingBallotProcess =
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
@@ -120,7 +120,7 @@
     site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
     site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
     site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
-    site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, and is included in some reports.' });
+    site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, included in some reports, and shown in the list of active elections on the Home page when desired.' });
     site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
     site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
     //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
@@ -142,6 +142,7 @@
     site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
     site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
     site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
+    site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     $(window).on('beforeunload', function () {
@@ -151,7 +152,8 @@
     });
 
     settings.badiDateGetter = BadiDateToday({
-      locationIdentification: 3
+      locationIdentification: 3,
+      use24HourClock: settings.vue.election.T24
     });
 
     getBadiDate();
@@ -416,10 +418,11 @@
     var form = {
       C_RowId: election.C_RowId,
       ShowAsTest: election.ShowAsTest,
-      BallotProcess: election.BallotProcess,
+      BallotProcessRaw: election.BallotProcessRaw,
+      EnvNumModeRaw: election.EnvNumModeRaw,
       UseCallInButton: election.UseCallInButton,
       ListForPublic: election.ListForPublic,
-
+      T24: election.T24,
     };
 
     $(':input[data-name]').each(function () {
@@ -549,7 +552,15 @@ var YesNo = Vue.component('yes-no', {
   template: '#yes-no',
   props: {
     value: Boolean,
-    disabled: Boolean
+    disabled: Boolean,
+    yes: {
+      type: String,
+      default: 'Yes'
+    },
+    no: {
+      type: String,
+      default: 'No'
+    }
   },
   data: function () {
     return {
@@ -562,6 +573,24 @@ var YesNo = Vue.component('yes-no', {
     },
     yesNo: function (a) {
       this.$emit('input', a === 'Y')
+    }
+  }
+})
+
+
+var EnvMode = Vue.component('env-mode', {
+  template: '#env-mode',
+  props: {
+    value: String
+  },
+  data: function () {
+    return {
+      mode: this.value
+    }
+  },
+  watch: {
+    mode: function (a) {
+      this.$emit('input', this.mode)
     }
   }
 })

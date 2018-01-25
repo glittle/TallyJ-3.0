@@ -75,6 +75,7 @@
       ballotTable.html(expandBallots(info.Ballots));
     }
 
+    // use election.T24 here? 
     $('#lastRefresh').html(new Date().toLocaleTimeString());
 
     startAutoMinutes();

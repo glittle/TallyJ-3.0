@@ -29,6 +29,10 @@ namespace TallyJ.Controllers
       return View(new ElectionsListViewModel());
     }
 
+    public JsonResult ElectionCounts() {
+      return new ElectionsListViewModel().ElectionCounts().AsJsonResult();
+    }
+
 
     [HttpPost]
     [AllowGuestsInActiveElection]

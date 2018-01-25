@@ -1,42 +1,68 @@
-﻿.Names > div > span:first-child {
-  max-width: 19em;
-  display: inline-block;
+﻿.VmgHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 5px 0;
 }
 .sortSelector {
-  float: right;
-  margin-top: 12px;
+  width: 125px;
+  background-color: #fafafa;
+}
+h3 {
+  margin: 0;
+  color: #013d7a;
+  white-space: nowrap;
+  line-height: normal;
 }
 .EnvNum {
-  float: right;
-  text-align: right;
-  margin-right: 6px;
+  margin-right: 15px;
 }
-.Names div {
+.EnvNum.Number {
+  display: none;
+}
+.VMG-R h3 {
+  color: #00ccc9;
+}
+.removedBallots h3 {
+  color: #7a0101;
+}
+.removedBallots div span:nth-child(1),
+.removedBallots div span:nth-child(2) {
+  text-decoration-line: line-through;
+  text-decoration-color: #7a0101;
+}
+.Names {
+  width: 400px;
+}
+.Names > div {
   border-top: dotted 1px #ccc;
+  display: flex;
   clear: both;
 }
-.Names div:first-child {
+.Names > div > span:first-child {
+  flex-grow: 2;
+}
+.Names > div:first-child {
   border-top: none;
 }
-.Names div:hover {
+.Names > div:hover {
   background-color: #ddd;
 }
-.When {
-  text-align: right;
-  float: right;
-  vertical-align: top;
+body.BP-RegC .EnvNum {
+  display: none;
 }
-.oldEnv .When {
-  float: none;
+.When {
+  font-size: 80%;
+  line-height: 1.4em;
 }
 .ui-icon {
   display: inline-block;
 }
 #lists {
-  clear: left;
+  display: flex;
+  flex-wrap: wrap;
 }
 #lists > div {
-  float: left;
   margin-right: 70px;
   margin-top: 20px;
 }
@@ -63,16 +89,6 @@ tr.Total td {
 #btnShowNames {
   float: left;
   margin: 25px 0 0 0;
-}
-.Names {
-  width: 400px;
-}
-h3 {
-  margin: 0;
-  color: #013d7a;
-}
-.oldEnv div span:first-child span:first-child {
-  text-decoration: line-through;
 }
 .btnRefreshDiv {
   float: right;

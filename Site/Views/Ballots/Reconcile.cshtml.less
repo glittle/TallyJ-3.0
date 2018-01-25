@@ -1,102 +1,139 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
-.Names > div > span:first-child {
-    max-width: 19em;
-    display: inline-block;
+.VmgHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 5px 0;
 }
 
 .sortSelector {
-    float: right;
-    margin-top: 12px;
-}
-
-.EnvNum {
-    float: right;
-    text-align: right;
-    margin-right: 6px;
-}
-
-.Names div {
-    border-top: dotted 1px #ccc;
-    clear: both;
-}
-
-    .Names div:first-child {
-        border-top: none;
-    }
-
-    .Names div:hover {
-        background-color: #ddd;
-    }
-
-.When {
-    text-align: right;
-    float: right;
-    vertical-align: top;
-}
-
-.oldEnv .When {
-    float: none;
-}
-
-.ui-icon {
-    display: inline-block;
-}
-
-#lists {
-    clear: left;
-}
-
-    #lists > div {
-        float: left;
-        margin-right: 70px;
-        margin-top: 20px;
-    }
-
-.Count {
-    margin: 2px 0 15px 0;
-    font-size: 110%;
-}
-
-.Totals {
-    margin: 15px 0 0 0;
-}
-
-    .Totals tr td:first-child {
-        font-weight: bold;
-        text-align: left;
-        width: 130px;
-    }
-
-tr.SubTotal td {
-    border-top: solid #000 1px;
-    padding-bottom: 20px;
-}
-
-tr.Total td {
-    border-top: double #000 3px;
-    padding-bottom: 20px;
-}
-
-#btnShowNames {
-    float: left;
-    margin: 25px 0 0 0;
-}
-
-.Names {
-    width: 400px;
+  width: 125px;
+  background-color: #fafafa;
 }
 
 h3 {
-    margin: 0;
-    color: @tallyJBlue;
+  margin: 0;
+  color: @tallyJBlue;
+  white-space: nowrap;
+  line-height: normal;
 }
 
-.oldEnv div span:first-child span:first-child {
-    text-decoration: line-through;
+
+.EnvNum {
+  margin-right: 15px;
+
+  &.Number {
+    display: none;
+  }
+}
+
+.VMG-R {
+  h3 {
+    color: #00ccc9;
+  }
+}
+
+.removedBallots {
+  h3 {
+    color: #7a0101;
+  }
+
+  div {
+    span:nth-child(1), span:nth-child(2) {
+      text-decoration-line: line-through;
+      text-decoration-color: #7a0101;
+    }
+  }
+}
+
+.Names {
+  width: 400px;
+
+  > div {
+    border-top: dotted 1px #ccc;
+    display: flex;
+    clear: both;
+
+    > span:first-child {
+      flex-grow: 2;
+    }
+
+    &:first-child {
+      border-top: none;
+    }
+
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+}
+
+body.BP-RegC {
+  .EnvNum {
+    display: none;
+  }
+}
+
+.When {
+  font-size: 80%;
+  line-height: 1.4em;
+}
+//.When {
+//  text-align: right;
+//  float: right;
+//  vertical-align: top;
+//}
+
+//.oldEnv .When {
+//  float: none;
+//}
+//
+.ui-icon {
+  display: inline-block;
+}
+
+#lists {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#lists > div {
+  margin-right: 70px;
+  margin-top: 20px;
+}
+
+.Count {
+  margin: 2px 0 15px 0;
+  font-size: 110%;
+}
+
+.Totals {
+  margin: 15px 0 0 0;
+}
+
+.Totals tr td:first-child {
+  font-weight: bold;
+  text-align: left;
+  width: 130px;
+}
+
+tr.SubTotal td {
+  border-top: solid #000 1px;
+  padding-bottom: 20px;
+}
+
+tr.Total td {
+  border-top: double #000 3px;
+  padding-bottom: 20px;
+}
+
+#btnShowNames {
+  float: left;
+  margin: 25px 0 0 0;
 }
 
 .btnRefreshDiv {
-    float: right;
-    margin-right: 2em;
+  float: right;
+  margin-right: 2em;
 }

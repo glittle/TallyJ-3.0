@@ -303,7 +303,7 @@ namespace TallyJ.CoreModels.ExportImport
         election.LastEnvNum,
         election.OwnerLoginId,
         election.ElectionGuid,
-        election.BallotProcess,
+        election.BallotProcessRaw,
         ShowFullReport = election.ShowFullReport.OnlyIfTrue()
       };
     }
