@@ -28,15 +28,15 @@
       computed: {
       },
       watch: {
-        'election.BallotProcess': function (a) {
+        'election.BallotProcessRaw': function (a) {
           this.replaceBodyBpClass(a);
         },
         usingBallotProcess: function (a) {
           if (!a) {
-            this.election.BallotProcess = 'None';
+            this.election.BallotProcessRaw = 'None';
           } else {
-            if (!this.election.BallotProcess || this.election.BallotProcess === 'None') {
-              this.election.BallotProcess = 'Roll'; // old default
+            if (!this.election.BallotProcessRaw || this.election.BallotProcessRaw === 'None') {
+              this.election.BallotProcessRaw = 'Roll'; // old default
               $('.btnSave').addClass('btn-primary');
             }
           }
@@ -47,7 +47,7 @@
         //}
       },
       mounted: function () {
-        var bp = this.election.BallotProcess;
+        var bp = this.election.BallotProcessRaw;
         this.usingBallotProcess =
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
@@ -142,6 +142,7 @@
     site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
     site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
     site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
+    site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
     //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     $(window).on('beforeunload', function () {
@@ -416,10 +417,11 @@
     var form = {
       C_RowId: election.C_RowId,
       ShowAsTest: election.ShowAsTest,
-      BallotProcess: election.BallotProcess,
+      BallotProcessRaw: election.BallotProcessRaw,
+      EnvNumModeRaw: election.EnvNumModeRaw,
       UseCallInButton: election.UseCallInButton,
       ListForPublic: election.ListForPublic,
-
+      T24: election.T24,
     };
 
     $(':input[data-name]').each(function () {
@@ -549,7 +551,15 @@ var YesNo = Vue.component('yes-no', {
   template: '#yes-no',
   props: {
     value: Boolean,
-    disabled: Boolean
+    disabled: Boolean,
+    yes: {
+      type: String,
+      default: 'Yes'
+    },
+    no: {
+      type: String,
+      default: 'No'
+    }
   },
   data: function () {
     return {
@@ -562,6 +572,24 @@ var YesNo = Vue.component('yes-no', {
     },
     yesNo: function (a) {
       this.$emit('input', a === 'Y')
+    }
+  }
+})
+
+
+var EnvMode = Vue.component('env-mode', {
+  template: '#env-mode',
+  props: {
+    value: String
+  },
+  data: function () {
+    return {
+      mode: this.value
+    }
+  },
+  watch: {
+    mode: function (a) {
+      this.$emit('input', this.mode)
     }
   }
 })

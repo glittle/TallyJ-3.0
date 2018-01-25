@@ -5,18 +5,15 @@
   ViewBag.Title = "Front Desk";
   ViewBag.Message = "Record who is voting...";
 
-  var ballotProcess = UserSession.CurrentElection.BallotProcess;
-  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
+  var ballotProcess = UserSession.CurrentElection.BallotProcessRaw;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
 
   var inPersonName = "In Person";
 
   switch (ballotProcessEnum)
   {
-    case TallyJ.EF.BallotProcessKey.RegV:
+    case TallyJ.EF.BallotProcessEnum.RegV:
       inPersonName = "Ballot Received";
-      break;
-    case TallyJ.EF.BallotProcessKey.RegC:
-      inPersonName = "Received";
       break;
   }
 
@@ -34,19 +31,19 @@
     @{
       switch (ballotProcessEnum)
       {
-        case TallyJ.EF.BallotProcessKey.Roll:
+        case TallyJ.EF.BallotProcessEnum.Roll:
           <li>
             Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
             the Roll Call is done.
           </li>
           break;
-        case TallyJ.EF.BallotProcessKey.RegV:
+        case TallyJ.EF.BallotProcessEnum.RegV:
           <li>
             Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
             they return to a teller to deposit their ballot, mark them as "@inPersonName"
           </li>
           break;
-        case TallyJ.EF.BallotProcessKey.RegC:
+        case TallyJ.EF.BallotProcessEnum.RegC:
           <li>
             Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
           </li>
@@ -56,7 +53,7 @@
   </ol>
 </div>
 <div class="SearchArea">
-  <span>Search box: </span>
+  <span><u>S</u>earch box: </span>
   <input accesskey="S" id="search">
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
@@ -73,7 +70,7 @@
     Dropped Off
     <i>0</i>
   </div>
-  @if (ballotProcessEnum == TallyJ.EF.BallotProcessKey.RegV)
+  @if (ballotProcessEnum == TallyJ.EF.BallotProcessEnum.RegV)
   {
     <div class="Registered" data-status="Registered">
       Registered
@@ -90,7 +87,9 @@
   </div>
 
 </div>
-<div id="Main" class="@((ContextItems.LocationModel.HasLocations ? "WithArea" : "") + (UserSession.CurrentElection.UseCallInButton.AsBoolean() ? " UseCallIn" : ""))">
+<div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
+       UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
+       "EnvMode-" + UserSession.CurrentElection.EnvNumModeRaw }.JoinedAsString(" ") )">
   <div id="selectorTip">
     Type the first letter of a button to click it. Press Esc or Enter when done.
   </div>
@@ -104,11 +103,11 @@
     <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
     <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
-    {
-      case TallyJ.EF.BallotProcessKey.RegV:
-        <div class="Btn Registered {Registered}">Registered</div>
-        break;
-    }
+        {
+          case TallyJ.EF.BallotProcessEnum.RegV:
+    <div class="Btn Registered {Registered}">Registered</div>
+            break;
+        }
     <div class="Btn InPerson {InPerson}">@inPersonName</div>
     <b>{FullName}</b>
     <p>{BahaiId}</p>

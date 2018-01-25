@@ -1,138 +1,138 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 
-div.MainDashboard {
-  section.feature h3 {
-    font-size: @baseFontSize * 1.2;
-    line-height: normal;
+//div.MainDashboard {
+
+section.feature h3 {
+  font-size: @baseFontSize * 1.2;
+  line-height: normal;
+}
+
+section.features a {
+  text-decoration: none;
+  cursor: pointer;
+  //color: @textColor;
+  &:hover h3 {
+    //color: @tallyJGreen;
+    color: inherit;
   }
 
-  section.features a {
-    text-decoration: none;
-    cursor: pointer;
-    //color: @textColor;
-    &:hover h3 {
-      //color: @tallyJGreen;
-      color: inherit;
-    }
-
-    section {
-      border: 2px solid transparent;
-    }
-
-    &:hover.Featured section {
-      border: 2px solid #ddd;
-    }
-
-    &:hover.NotFeatured section {
-      border: 1px solid #888;
-    }
-
-    &:active section {
-      border: 2px solid #8dc63e;
-    }
+  section {
+    border: 2px solid transparent;
   }
 
-  hgroup.title a {
-    float: right;
-    color: #013d7a;
-    text-decoration: none;
+  &:hover.Featured section {
+    border: 2px solid #ddd;
   }
 
-  hgroup.title a:hover {
-    text-decoration: underline;
+  &:hover.NotFeatured section {
+    border: 1px solid #888;
   }
 
-  section.todo h3, section.todo {
-    color: #ccc;
+  &:active section {
+    border: 2px solid #8dc63e;
   }
+}
 
-  section.features {
-    padding-left: 20px;
-    padding-right: 10px;
-    margin-bottom: 15px;
-    margin-left: 38px;
+hgroup.title a {
+  float: right;
+  color: #013d7a;
+  text-decoration: none;
+}
 
-    &.NotStarted {
+hgroup.title a:hover {
+  text-decoration: underline;
+}
+
+section.todo h3, section.todo {
+  color: #ccc;
+}
+
+section.features {
+  padding-left: 20px;
+  padding-right: 10px;
+  margin-bottom: 15px;
+  margin-left: 38px;
+
+  &.NotStarted {
+    color: @tallyJOrange;
+
+    a {
       color: @tallyJOrange;
-
-      a {
-        color: @tallyJOrange;
-      }
-    }
-
-    &.NamesReady {
-      color: @tallyJBlue;
-
-      a {
-        color: @tallyJBlue;
-      }
-    }
-
-    &.Tallying {
-      color: @tallyJGreen;
-
-      a {
-        color: @tallyJGreen;
-      }
     }
   }
 
-  .featuresTitle {
-    margin: -5px 0 0px -17px;
-    font-weight: normal;
-    font-style: italic;
-    font-size: 23px;
-  }
-
-  .Projector {
-    .TipProjector {
-      display: inline-block;
-    }
-    //h3 {
-    //  background-position: right 4px;
-    //  background-image: url('../../Images/SlideProjector.gif');
-    //  background-repeat: no-repeat;
-    //}
-  }
-
-  .Role-known {
-    .TipKnown {
-      display: inline-block;
-    }
-    //h3 {
-    //  background-position: right 4px;
-    //  background-image: url('../../Images/keys.png');
-    //  background-repeat: no-repeat;
-    //}
-  }
-
-
-  .Featured section.feature {
-  }
-
-  .NotFeatured h3 {
-    color: @grayLight;
-  }
-
-  .NotFeatured section.feature {
-    background-image: none;
-    height: 45px;
-    padding: 10px 15px 20px 10px;
-    border: solid #ccc thin;
-  }
-
-  section.features p {
+  &.NamesReady {
     color: @tallyJBlue;
+
+    a {
+      color: @tallyJBlue;
+    }
   }
 
-  .NotFeatured p {
-    display: none;
-  }
+  &.Tallying {
+    color: @tallyJGreen;
 
-  .h2 {
-    margin-top: 10px;
+    a {
+      color: @tallyJGreen;
+    }
   }
+}
+
+.featuresTitle {
+  margin: -5px 0 0px -17px;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 23px;
+}
+
+.Projector {
+  .TipProjector {
+    display: inline-block;
+  }
+  //h3 {
+  //  background-position: right 4px;
+  //  background-image: url('../../Images/SlideProjector.gif');
+  //  background-repeat: no-repeat;
+  //}
+}
+
+.Role-known {
+  .TipKnown {
+    display: inline-block;
+  }
+  //h3 {
+  //  background-position: right 4px;
+  //  background-image: url('../../Images/keys.png');
+  //  background-repeat: no-repeat;
+  //}
+}
+
+
+.Featured section.feature {
+}
+
+.NotFeatured h3 {
+  color: @grayLight;
+}
+
+.NotFeatured section.feature {
+  background-image: none;
+  height: 45px;
+  padding: 10px 15px 20px 10px;
+  border: solid #ccc thin;
+}
+
+section.features p {
+  color: @tallyJBlue;
+}
+
+.NotFeatured p {
+  display: none;
+}
+
+.h2 {
+  margin-top: 10px;
 }
 
 

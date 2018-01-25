@@ -9,6 +9,7 @@
 
 .sortSelector {
   width: 125px;
+  background-color: #fafafa;
 }
 
 h3 {
@@ -37,6 +38,13 @@ h3 {
   h3 {
     color: #7a0101;
   }
+
+  div {
+    span:nth-child(1), span:nth-child(2) {
+      text-decoration-line: line-through;
+      text-decoration-color: #7a0101;
+    }
+  }
 }
 
 .Names {
@@ -61,8 +69,16 @@ h3 {
   }
 }
 
+body.BP-RegC {
+  .EnvNum {
+    display: none;
+  }
+}
 
-
+.When {
+  font-size: 80%;
+  line-height: 1.4em;
+}
 //.When {
 //  text-align: right;
 //  float: right;
@@ -115,10 +131,6 @@ tr.Total td {
 #btnShowNames {
   float: left;
   margin: 25px 0 0 0;
-}
-
-.oldEnv div span:first-child span:first-child {
-  text-decoration: line-through;
 }
 
 .btnRefreshDiv {

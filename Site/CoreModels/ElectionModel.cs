@@ -271,7 +271,9 @@ namespace TallyJ.CoreModels
         election.UseCallInButton,
         election.HidePreBallotPages,
         election.MaskVotingMethod,
-        election.BallotProcess
+        election.BallotProcessRaw,
+        election.EnvNumModeRaw,
+        election.T24,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())

@@ -386,7 +386,7 @@ namespace TallyJ.CoreModels
       return matched.Name;
     }
 
-    public IEnumerable<object> OldEnvelopes()
+    public IEnumerable<object> Deselected()
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
@@ -403,7 +403,7 @@ namespace TallyJ.CoreModels
           C_FullName = p.FullName,
           VotedAt = LocationName(p.VotingLocationGuid),
           When = ShowRegistrationTime(timeOffset, p),
-          p.VotingMethod,
+          p.RegistrationTime,
           p.EnvNum,
           Tellers = ShowTellers(p)
         })
@@ -532,8 +532,9 @@ namespace TallyJ.CoreModels
 
     private static string ShowRegistrationTime(int timeOffset, Person p)
     {
+      var format = UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt";
       return p.RegistrationTime.HasValue
-        ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString("h:mm tt").ToLowerInvariant()
+        ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString(format).ToLowerInvariant()
         : "";
     }
 
@@ -579,7 +580,7 @@ namespace TallyJ.CoreModels
         // it is already set this way...turn if off
         person.VotingMethod = null;
         person.VotingLocationGuid = null;
-        person.RegistrationTime = null;
+        person.RegistrationTime = DateTime.Now;
         votingMethodRemoved = true;
       }
       else

@@ -6,7 +6,6 @@
 .Voter {
   clear: both;
   border: 2px solid transparent;
-  overflow: auto;
 
   div.Btn {
     &:hover {
@@ -50,11 +49,30 @@
     margin: 3px 0 0 5px;
     display: inline-block;
   }
+}
 
-  &.VM-, &.VM-R {
+.Env {
+  visibility: hidden;
+}
+
+#Main.EnvMode-Absentee {
+  .VM-C, .VM-M, .VM-D {
     .Env {
-      visibility: hidden;
+      visibility: visible;
     }
+  }
+}
+
+#Main.EnvMode-All {
+  .Env {
+    visibility: visible;
+  }
+}
+
+.VM- {
+  .Env {
+    color: #ccc;
+    text-decoration: line-through;
   }
 }
 

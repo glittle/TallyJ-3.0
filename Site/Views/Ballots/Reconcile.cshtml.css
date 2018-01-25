@@ -6,6 +6,7 @@
 }
 .sortSelector {
   width: 125px;
+  background-color: #fafafa;
 }
 h3 {
   margin: 0;
@@ -25,6 +26,11 @@ h3 {
 .removedBallots h3 {
   color: #7a0101;
 }
+.removedBallots div span:nth-child(1),
+.removedBallots div span:nth-child(2) {
+  text-decoration-line: line-through;
+  text-decoration-color: #7a0101;
+}
 .Names {
   width: 400px;
 }
@@ -41,6 +47,13 @@ h3 {
 }
 .Names > div:hover {
   background-color: #ddd;
+}
+body.BP-RegC .EnvNum {
+  display: none;
+}
+.When {
+  font-size: 80%;
+  line-height: 1.4em;
 }
 .ui-icon {
   display: inline-block;
@@ -76,9 +89,6 @@ tr.Total td {
 #btnShowNames {
   float: left;
   margin: 25px 0 0 0;
-}
-.oldEnv div span:first-child span:first-child {
-  text-decoration: line-through;
 }
 .btnRefreshDiv {
   float: right;

@@ -3,18 +3,21 @@
 @using TallyJ.Code.Session
 @model PeopleModel
 @{
-  var ballotProcess = UserSession.CurrentElection.BallotProcess;
-  var ballotProcessEnum = UserSession.CurrentElection.BallotProcessEnum;
+  var ballotProcess = UserSession.CurrentElection.BallotProcessRaw;
+  var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
+
+  var envNumMode = UserSession.CurrentElection.EnvNumModeRaw;
 
   var inPersonName = "In Person";
 
   switch (ballotProcessEnum)
   {
-    case TallyJ.EF.BallotProcessKey.RegV:
+    case TallyJ.EF.BallotProcessEnum.RegV:
       inPersonName = "Ballot Received";
       break;
   }
 
+  ContextItems.AddJavascriptForPage("reconcilePage.envNumMode={0};".FilledWith(envNumMode.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reconcilePage.inPersonName={0};".FilledWith(inPersonName.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
@@ -37,8 +40,7 @@
 <div class="Totals Count">
   <div id="Totals"></div>
 </div>
-@*<button type="button" id="btnShowNames" class="btn btn-info">
-  Show Details</button>*@
+
 <div id="lists">
 </div>
 

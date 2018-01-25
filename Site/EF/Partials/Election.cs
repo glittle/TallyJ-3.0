@@ -14,9 +14,11 @@ namespace TallyJ.EF
   {
     // keep names as short as possible
     BP, // Ballot Process?
+    Env, // Envelope Mode
+    T24, // use 24 hour time?
   }
 
-  public enum BallotProcessKey
+  public enum BallotProcessEnum
   {
     // define the supported processes
     Unknown, // not defined yet
@@ -25,6 +27,15 @@ namespace TallyJ.EF
     RegV, // register, vote, collect after
     RegC, // register, collect together
   }
+
+  public enum EnvNumModeEnum
+  {
+    // define the supported processes
+    None, // do not show any
+    Absentee, // only for absentee
+    All, // for all
+  }
+
 
   [Serializable]
   public partial class Election : IIndexedForCaching
@@ -35,34 +46,89 @@ namespace TallyJ.EF
     /// <remarks>
     /// Must be a string to serialize out to client
     /// </remarks>
-    public string BallotProcess
+    public string BallotProcessRaw
     {
       get
       {
-        return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessKey.Roll.ToString();
+        return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessEnum.Roll.ToString();
       }
       set
       {
-        if (value != null && !Enum.IsDefined(typeof(BallotProcessKey), value))
+        if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
         {
           throw new ApplicationException("Invalid process key: " + value);
         }
         SetExtraSettting(ExtraSettingKey.BP, value);
       }
     }
-    public BallotProcessKey BallotProcessEnum
+
+
+    public BallotProcessEnum BallotProcess
     {
       get
       {
-        var bp = BallotProcess;
-        if (Enum.IsDefined(typeof(BallotProcessKey), bp))
+        var bp = BallotProcessRaw;
+        if (Enum.IsDefined(typeof(BallotProcessEnum), bp))
         {
-          return (BallotProcessKey)Enum.Parse(typeof(BallotProcessKey), bp);
+          return (BallotProcessEnum)Enum.Parse(typeof(BallotProcessEnum), bp);
         }
-        return BallotProcessKey.Unknown;
+        return BallotProcessEnum.Unknown;
       }
     }
 
+    /// <summary>
+    /// This is a "fake" column that is embedded into the OwnerLoginId column
+    /// </summary>
+    /// <remarks>
+    /// Must be a string to serialize out to client
+    /// </remarks>
+    public string EnvNumModeRaw
+    {
+      get
+      {
+        return GetExtraSetting(ExtraSettingKey.Env) ?? EnvNumModeEnum.Absentee.ToString();
+      }
+      set
+      {
+        if (value != null && !Enum.IsDefined(typeof(EnvNumModeEnum), value))
+        {
+          throw new ApplicationException("Invalid envelope number mode: " + value);
+        }
+        SetExtraSettting(ExtraSettingKey.Env, value);
+      }
+    }
+
+    public EnvNumModeEnum EnvNumMode
+    {
+      get
+      {
+        var env = EnvNumModeRaw;
+        if (Enum.IsDefined(typeof(EnvNumModeEnum), env))
+        {
+          return (EnvNumModeEnum)Enum.Parse(typeof(EnvNumModeEnum), env);
+        }
+        return EnvNumModeEnum.Absentee;
+      }
+    }
+
+
+    /// <summary>
+    /// This is a "fake" column that is embedded into the OwnerLoginId column
+    /// </summary>
+    /// <remarks>
+    /// Must be a string to serialize out to client
+    /// </remarks>
+    public bool T24
+    {
+      get
+      {
+        return GetExtraSetting(ExtraSettingKey.T24).AsBoolean();
+      }
+      set
+      {
+        SetExtraSettting(ExtraSettingKey.T24, value ? "1" : "0");
+      }
+    }
     //public string Test2
     //{
     //  // Replace this when a second fake field is created!

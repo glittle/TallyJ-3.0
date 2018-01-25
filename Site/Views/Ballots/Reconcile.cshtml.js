@@ -7,7 +7,8 @@
     showingNames: false,
     hasLocations: false,
     ballotMethods: [],
-    sortSelector: '<select class=sortSelector><option value=Time>Sort by Time</option><option value=Env>Sort by Envelope Number</option><option value=Name>Sort by Name</option></select>'
+    sortSelector: '',
+    envelopeTemplate: ''
   };
 
   var preparePage = function () {
@@ -15,6 +16,11 @@
 
     var ddlLocations = $('#ddlTopLocation');
     local.hasLocations = ddlLocations.is(':visible');
+
+    local.envelopeTemplate = $('#envelopeTemplate').text();
+    local.sortSelector = '<select class=sortSelector><option value=Time>Sort by Time</option>'
+      + (reconcilePage.envNumMode == 'None' ? '' : '<option value=Env>Sort by Envelope Number</option>')
+      + '<option value=Name>Sort by Name</option></select>'
 
     if (local.hasLocations) {
       var firstOption = ddlLocations.find('option[value="-1"]');
@@ -46,7 +52,7 @@
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });
 
     //processBallots(publicInterface.ballots);
-    //showOld(publicInterface.oldEnvelopes);
+    //showDeselected(publicInterface.oldEnvelopes);
 
 
   };
@@ -79,19 +85,23 @@
   //    });
   //  };
 
-  var showOld = function (list) {
+  var showDeselected = function (list) {
     if (!list.length) {
       return;
     }
-    var ballotList = ('<div title="{Tellers}" data-time="{RegistrationTime}"><span><span>{C_FullName}</span>'
-      + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
-      + '</span>'
-      + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
-      + '{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}'
-      + '</div>').filledWithEach(extend(list));
+    //var ballotList = ('<div title="{Tellers}" data-time="{RegistrationTime}"><span><span>{C_FullName}</span>'
+    //  + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
+    //  + '</span>'
+    //  + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
+    //  + '{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}'
+    //  + '</div>').filledWithEach(extend(list));
+    var ballotList = local.envelopeTemplate.filledWithEach(extend(list));
     $('#lists').append(
-      '<div class=removedBallots><h3>De-selected{0}: {1}'.filledWith(local.hasLocations ? ' for all Locations': '', list.length) +
-      '<span class="ui-icon ui-icon-info" id="qTipUn"></span></h3><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList));
+
+      // <h3>{1}: {2}</h3>{^4}</div>
+
+      '<div class=removedBallots><div class=VmgHead><h3>De-selected{0}: {1}'.filledWith(local.hasLocations ? ' for all Locations' : '', list.length) +
+      '<span class="ui-icon ui-icon-info" id="qTipUn"></span></h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector));
 
     ActivateTips();
   };
@@ -106,10 +116,10 @@
         }
         local.currentLocation = newLocation;
         processBallots(info.Ballots);
-        publicInterface.oldEnvelopes = info.OldEnvelopes;
+        publicInterface.deselected = info.Deselected;
 
         //        if (newLocation === -1) {
-        showOld(publicInterface.oldEnvelopes);
+        showDeselected(publicInterface.deselected);
         //        }
 
         ActivateTips(true);
@@ -120,9 +130,11 @@
 
 
   function extend2(ballot) {
-    var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
-    ballot.FullTime = time.toString();
-    ballot.SortTime = time.getTime();
+    if (ballot.RegistrationTime) {
+      var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
+      ballot.FullTime = time.toString();
+      ballot.SortTime = time.getTime();
+    }
     return ballot;
   }
 
@@ -153,7 +165,6 @@
     };
     var methodList = ['P', 'D', 'M', 'C', 'R'];
 
-    var envelopeTemplate = $('#envelopeTemplate').text();
     var host = $('#lists');
     host.html('');
 
@@ -166,11 +177,11 @@
       var groupedBallots = local.groupedBallots[method] || null;
       if (groupedBallots) {
 
-        var ballotList = envelopeTemplate.filledWithEach(groupedBallots);
+        var ballotList = local.envelopeTemplate.filledWithEach(groupedBallots);
 
         // VMG = vote method group
         host.append('<div data-method={0} class=VMG-{0}><div class=VmgHead><h3>{1}: {2}</h3>{^4}</div><div class=Names>{^3}</div></div>'.filledWith(
-            method, methodName, groupedBallots.length, ballotList, local.sortSelector));
+          method, methodName, groupedBallots.length, ballotList, local.sortSelector));
 
         //TODO
         //if (method == 'P') {
@@ -188,13 +199,13 @@
     totals.total = totals.inPerson + totals.absent;
 
     $('#Totals').html([
-            'Total: {total}'.filledWith(totals),
-            (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
-            //'Absent: {absent}'.filledWith(totals),
-            (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
-            (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
-            (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),
-            (methodInfos.R.count > 0 ? ('(' + methodInfos.R.name + ': {0})'.filledWith(methodInfos.R.count)) : ''),
+      'Total: {total}'.filledWith(totals),
+      (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
+      //'Absent: {absent}'.filledWith(totals),
+      (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
+      (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
+      (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),
+      (methodInfos.R.count > 0 ? ('(' + methodInfos.R.name + ': {0})'.filledWith(methodInfos.R.count)) : ''),
     ].join(' &nbsp; &nbsp; '));
 
     if (local.showingNames) {
@@ -204,10 +215,12 @@
 
   function extend(ballots) {
     if (!ballots) return null;
+    var newBallots = [];
     $.each(ballots, function () {
       this.Method = this.VotingMethod == 'P' ? reconcilePage.inPersonName : this.VotingMethod;
+      newBallots.push(extend2(this));
     });
-    return ballots;
+    return newBallots;
   };
 
   var sortSection = function (ev) {
@@ -248,7 +261,8 @@
   var publicInterface = {
     controllerUrl: '',
     preparePage: preparePage,
-    ballots: []
+    ballots: [],
+    local: local
   };
 
   return publicInterface;

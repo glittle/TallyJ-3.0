@@ -262,12 +262,17 @@ option:disabled {
   display: none;
 }
 
+.flex {
+  display: flex;
+  align-items: center;
+}
+
 .locationDetail {
   cursor: help;
   text-decoration: underline;
 }
 
-.YN {
+.YN, .EnvMode {
   margin: 0 15px 0 0;
   padding: 4px 0;
   border-radius: 3px;
@@ -278,7 +283,11 @@ option:disabled {
     background-color: #dde6dd;
   }
 
-  &.YNN {
+  &.EnvMode {
+    background-color: #dde6dd;
+  }
+
+  &.YNN, &.EnvModeNone {
     background-color: #e6dddd;
   }
 
