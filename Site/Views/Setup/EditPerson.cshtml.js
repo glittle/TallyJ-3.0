@@ -145,7 +145,7 @@
 
         site.broadcast(site.broadcastCode.personSaved, info);
       }
-      ShowStatusDisplay(info.Status);
+      ShowStatusSuccess(info.Status);
     });
   };
 
