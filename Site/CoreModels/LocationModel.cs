@@ -168,6 +168,12 @@ namespace TallyJ.CoreModels
     public JsonResult UpdateNumCollected(int numCollected)
     {
       var location = UserSession.CurrentLocation;
+
+      if (location == null)
+      {
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+
       Db.Location.Attach(location);
 
       location.BallotsCollected = numCollected;
