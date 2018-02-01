@@ -39,9 +39,9 @@
       ballotListing: 1,
       location: 0
     } : {
-      ballotEdit: 1,
-      ballotListing: 0
-    };
+        ballotEdit: 1,
+        ballotListing: 0
+      };
 
     local.tabList = $('#accordion');
     local.tabList.accordion({
@@ -83,7 +83,7 @@
     });
 
     local.keyTimeShowSpan = $("#keyTimeShow"),
-    local.nameList = $('#nameList');
+      local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
     local.votesList = $('#votesList');
@@ -132,10 +132,14 @@
       var num = Math.max(0, +$(this).val());
       ShowStatusDisplay('Saving...');
       CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: num }, function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          return;
+        }
         if (info.Location) {
           showLocation(info.Location);
+          ShowStatusSuccess('Saved');
         }
-        ShowStatusSuccess('Saved');
       });
     });
     resetSearch();
@@ -592,7 +596,7 @@ add to this ballot
     var list = info.Ballots;
 
     $('#ballotList')
-        .html(local.ballotListTemplate.filledWithEach(list));
+      .html(local.ballotListTemplate.filledWithEach(list));
 
     showBallotCount(list.length, info.Total);
     local.ballotCountAtLastLoad = list.length;
@@ -1052,10 +1056,10 @@ add to this ballot
 
   function prepareReasons(onlyGroup) {
     var html = [
-          '<option value="0">Select a reason...</option>',
-          '<optgroup label="Name not in the List">',
-          '<option value="-1">Add new name (including spoiled)</option>',
-          '</optgroup>'
+      '<option value="0">Select a reason...</option>',
+      '<optgroup label="Name not in the List">',
+      '<option value="-1">Add new name (including spoiled)</option>',
+      '</optgroup>'
     ];
     var group = '';
     $.each(publicInterface.invalidReasons, function () {

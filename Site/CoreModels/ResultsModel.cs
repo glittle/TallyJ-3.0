@@ -301,6 +301,9 @@ namespace TallyJ.CoreModels
           }
           break;
 
+        case "": // not sure how this happens
+          return new { Status = "Unknown report" }.AsJsonResult();
+
         default:
           html = MvcViewRenderer.RenderRazorViewToString("~/Reports/{0}.cshtml".FilledWith(code));
           if (html.HasNoContent())
