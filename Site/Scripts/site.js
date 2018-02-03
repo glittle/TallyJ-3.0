@@ -93,10 +93,12 @@ function showElectionInfo() {
 }
 
 function updatePasscodeDisplay(okay, passcode) {
-  //console.log(okay, passcode);
   if (typeof passcode === 'string') {
     site.passcode = passcode;
     $('.passcodeText').text(site.passcode);
+  }
+  if (okay === null) {
+    okay = false;
   }
   $('.passcodeOkay').toggle(okay && !!site.passcode);
   $('.passcodeLocked').toggle(!okay || !site.passcode);
