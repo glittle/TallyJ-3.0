@@ -6,23 +6,33 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var locations = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .Join(new LocationCacher().AllForThisElection, p => p.VotingLocationGuid, l => l.LocationGuid, (p, l) => new { l, p })
-    .GroupBy(g => g.l.Name)
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CanVote.GetValueOrDefault());
+  var locations = new LocationCacher().AllForThisElection
+    .GroupJoin(people, l => l.LocationGuid, p => p.VotingLocationGuid, (l, pList) => new { l, pList })
     .Select(g => new
     {
-      Location = g.Key,
-      Total = g.Count(),
-      Voted = g.Count(x => !string.IsNullOrEmpty(x.p.VotingMethod)),
-      InPerson = g.Count(x => x.p.VotingMethod == VotingMethodEnum.InPerson.ToString()),
-      DroppedOff = g.Count(x => x.p.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
-      MailedIn = g.Count(x => x.p.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
-      CalledIn = g.Count(x => x.p.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+      Location = g.l.Name,
+      Total = g.pList.Count(),
+      Voted = g.pList.Count(x => !string.IsNullOrEmpty(x.VotingMethod)),
+      InPerson = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.InPerson.ToString()),
+      DroppedOff = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
+      MailedIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
+      CalledIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
     })
     .OrderBy(r => r.Location)
     .ToList();
 
+  var total = new
+  {
+    Total = locations.Sum(a => a.Total),
+    Voted = locations.Sum(a => a.Voted),
+    InPerson = locations.Sum(a => a.InPerson),
+    MailedIn = locations.Sum(a => a.MailedIn),
+    DroppedOff = locations.Sum(a => a.DroppedOff),
+    CalledIn = locations.Sum(a => a.CalledIn),
+  };
+
+  var showCalledIn = total.CalledIn.AsInt() > 0;
 }
 <style>
   .pct {
@@ -66,18 +76,6 @@
   <p class="Comment">
     Showing the areas of those registered on the Front Desk.
   </p>
-  @{
-    var total = new
-    {
-      Total = locations.Sum(a => a.Total),
-      Voted = locations.Sum(a => a.Voted),
-      InPerson = locations.Sum(a => a.InPerson),
-      MailedIn = locations.Sum(a => a.MailedIn),
-      DroppedOff = locations.Sum(a => a.DroppedOff),
-      CalledIn = locations.Sum(a => a.CalledIn),
-    };
-    var showCalledIn = total.CalledIn.AsInt() > 0;
-  }
   <table class="Areas">
     <thead>
       <tr>
@@ -97,7 +95,7 @@
       </tr>
     </thead>
     <tbody>
-      @if (locations.Count > 1)
+      @if (locations.Count() > 0)
       {
         foreach (var loc in locations)
         {

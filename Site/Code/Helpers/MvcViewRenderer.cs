@@ -3,6 +3,7 @@ using RazorEngine;
 using RazorEngine.Templating;
 using System.IO;
 using RazorEngine.Configuration;
+using System.Configuration;
 
 namespace TallyJ.Code.Helpers
 {
@@ -20,7 +21,7 @@ namespace TallyJ.Code.Helpers
 
       pathToView = pathToView.Replace("~", "");
 
-      if (config == null)
+      if (config == null || ConfigurationManager.AppSettings["Environment"] == "Dev")
       {
         config = new TemplateServiceConfiguration();
         config.TemplateManager = new ResolvePathTemplateManager(new[] { HostingEnvironment.MapPath("~") });

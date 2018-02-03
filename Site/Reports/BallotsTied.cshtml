@@ -6,6 +6,7 @@
 @{
   var ballots = new BallotCacher().AllForThisElection;
   var locations = new LocationCacher().AllForThisElection;
+  var results = new ResultCacher().AllForThisElection;
   var election = UserSession.CurrentElection;
   var votes = new VoteCacher().AllForThisElection;
   var isSingleNameElection = election.IsSingleNameElection;
@@ -32,15 +33,17 @@
         b.StatusCode,
         Spoiled = b.StatusCode != BallotStatusEnum.Ok,
         Votes = new BallotHelper().VoteInfosForBallot(b, votes)
-          .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
-          .Select(v => new
+          .GroupJoin(results, v => v.PersonGuid, r => r.PersonGuid, (v, rList) => new { v, tied = rList.Any(r=>r.TieBreakRequired.GetValueOrDefault()) })
+          .OrderBy(g => isSingleNameElection ? g.v.PersonFullNameFL : g.v.PositionOnBallot.ToString("0000"))
+          .Select(g => new
           {
-            v.PersonFullNameFL,
-            v.SingleNameElectionCount,
-            Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+            g.v.PersonFullNameFL,
+            g.v.SingleNameElectionCount,
+            Spoiled = g.v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+            TieBreakRequired = g.tied,
             VoteInvalidReasonDesc =
               IneligibleReasonEnum.DescriptionFor(
-                v.VoteIneligibleReasonGuid.AsGuid()).
+                g.v.VoteIneligibleReasonGuid.AsGuid()).
                 SurroundContentWith("[", "]")
           })
       };
@@ -104,11 +107,15 @@
     font-size: 60%;
   }
 
-    .Ballot .Vote .Invalid {
-      color: red;
-      font-style: italic;
-      font-size: 90%;
-    }
+  .Ballot .Vote .Invalid {
+    color: red;
+    font-style: italic;
+    font-size: 90%;
+  }
+
+  .Tied {
+    color: #ef8600;
+  }
 
   .Spoiled {
     color: red;
@@ -121,10 +128,13 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
+    This is showing the ballots that contain votes for <span class="Tied">people</span> involved in a tie-vote.
+  </p>
+  <p class="Comment">
     This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.
   </p>
   <table class="Ballots">
-    @foreach (var ballot in data)
+    @foreach (var ballot in data.Where(b => b.Votes.Any(v => v.TieBreakRequired)))
     {
       <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "")">
         <td>
@@ -135,7 +145,7 @@
         <td>
           @foreach (var vote in ballot.Votes)
           {
-            <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
+            <span class="Vote @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
               @if (isSingleNameElection)
               {
                 <span class="Person">@vote.PersonFullNameFL</span>

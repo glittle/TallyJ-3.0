@@ -14,12 +14,13 @@
   var reports = new Dictionary<string, string>
 {
 { "SimpleResults|Election Reports", "Main Election Report"},
-{ "Ballots", "All Ballots for Review"},
+{ "Ballots", "Ballots (All for Review)"},
+{ "BallotsTied", "Ballots (For Tied)"},
 { "VotesByNum", "Tellers' Report, by Votes"},
 { "VotesByName", "Tellers' Report, by Name"},
 { "BallotAlignment", "Ballot Alignment"},
 { "ChangedPeople", "Updated People"},
-{ "VotesWithInvalid", "Spoiled Votes Report"},
+{ "VotesWithInvalid", "Spoiled Votes"},
 
 { "AllPeopleLF|Registration Reports", "Eligible Voters (by Last name)"},
 { "AllPeopleFL", "Eligible Voters (by First name)"},
@@ -31,7 +32,7 @@
   if (ContextItems.LocationModel.HasLocations)
   {
     reports.Add("VotersByLocation", "Voters by Location");
-    reports.Add("VotersByLocationArea", "Voters from Area by Location");
+    reports.Add("VotersByLocationArea", "In Person by Location and Area");
   }
   var firstHeader = false;
 }

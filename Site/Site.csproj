@@ -621,6 +621,7 @@
     <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - Web Deploy.pubxml" />
+    <Content Include="Reports\BallotsTied.cshtml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />
@@ -1018,6 +1019,7 @@
           <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:59995/</IISUrl>
+          <IISUrl>http://localhost:59996/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>
