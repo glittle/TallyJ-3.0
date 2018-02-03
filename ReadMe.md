@@ -6,7 +6,7 @@ for holding elections as defined by the international Bahá'í community.
 An election has two phases for tellers - collecting ballots and tallying
 ballots. TallyJ helps with both. 
 
-When **collecting** ballots, all voters are registered and ballot are accepted. 
+When **collecting** ballots, all voters are registered and ballots are accepted. 
 Optionally, a roll call screen can be displayed.
 
 When **tallying** ballots, all names on the ballots are typed 
