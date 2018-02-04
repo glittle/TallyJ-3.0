@@ -644,6 +644,9 @@
     <Content Include="Views\After\Analyze.cshtml.less">
       <DependentUpon>Analyze.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Monitor.cshtml.css">
+      <DependentUpon>Monitor.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\After\Reports.cshtml.css">
       <DependentUpon>Reports.cshtml.less</DependentUpon>
     </Content>
@@ -725,6 +728,9 @@
     <Content Include="Views\Ballots\SortBallots.cshtml.less">
       <DependentUpon>SortBallots.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Monitor.cshtml.less">
+      <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -766,9 +772,6 @@
     <Content Include="Scripts\superfish.js" />
     <Content Include="Views\After\Reports.cshtml.js">
       <DependentUpon>Reports.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\After\Monitor.cshtml.css">
-      <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
@@ -1018,7 +1021,6 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:59995/</IISUrl>
           <IISUrl>http://localhost:59996/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>

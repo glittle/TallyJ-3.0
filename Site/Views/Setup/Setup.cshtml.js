@@ -127,7 +127,7 @@
     site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
     site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
     site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
-    site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly.' });
+    site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });
     site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
     //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
@@ -422,6 +422,7 @@
       EnvNumModeRaw: election.EnvNumModeRaw,
       UseCallInButton: election.UseCallInButton,
       ListForPublic: election.ListForPublic,
+      ElectionPasscode: election.ElectionPasscode,
       T24: election.T24,
     };
 
@@ -444,6 +445,8 @@
       if (info.Election) {
         applyValues(info.Election);
         $('.CurrentElectionName').text(info.displayName);
+        site.passcodeRaw =
+          site.passcode = info.Election.ElectionPasscode;
         updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
       }
       $('.btnSave').removeClass('btn-primary');
@@ -519,6 +522,7 @@
     });
     if (lockedAfterBallots) {
       $('#qTipLocked2').css({ display: 'inline-block' });
+      $('#qTipLocked1').hide();
     } else {
       $('#qTipLocked2').hide();
     }
