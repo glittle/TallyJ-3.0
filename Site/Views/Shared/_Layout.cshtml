@@ -10,7 +10,7 @@
   ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
   ContextItems.AddJavascriptForPage("site.passcode='{0}';".FilledWith(new PublicElectionLister().GetPasscodeIfAvailable(UserSession.CurrentElectionGuid)));
-  ContextItems.AddJavascriptForPage("site.passcodeRaw='{0}';".FilledWith(UserSession.CurrentElection.ElectionPasscode));
+  ContextItems.AddJavascriptForPage("site.passcodeRaw='{0}';".FilledWith(UserSession.CurrentElection == null ? "" : UserSession.CurrentElection.ElectionPasscode));
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
   ContextItems.AddJavascriptForPage("electionGuid", "site.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid == Guid.Empty ? "" : UserSession.CurrentElectionGuid.ToString()));
   ContextItems.AddJavascriptForPage("electionState", "site.electionState='{0}';".FilledWith(UserSession.CurrentElectionStatus));
@@ -31,11 +31,11 @@
 </head>
 @{
   var classes = new List<string> {
-          ControllerActionNamesJoined,
-          ScreenMode + "Mode",
-          "Auth" + UserSession.AuthLevel,
-          UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
-        };
+      ControllerActionNamesJoined,
+      ScreenMode + "Mode",
+      "Auth" + UserSession.AuthLevel,
+      UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
+    };
 }
 <body class="@classes.JoinedAsString(" ", true)">
   <header>
