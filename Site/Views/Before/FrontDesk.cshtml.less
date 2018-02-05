@@ -1,4 +1,10 @@
-﻿p {
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+body{
+  overflow-y: scroll; // keep scroll bar
+}
+
+p {
   margin-top: -25px;
   margin-left: 60px;
 }
@@ -141,6 +147,13 @@
   font-size: 90%;
   color: #555;
 
+  > span {
+    display: inline-block;
+    padding: 3px 4px 2px;
+    vertical-align: middle;
+    color: #999;
+  }
+
   div {
     display: inline-block;
     padding: 3px 4px 2px;
@@ -150,6 +163,10 @@
     white-space: nowrap;
     cursor: pointer;
 
+    &.Total {
+      color: @tallyJGreen;
+    }
+
     &:hover {
       border-color: #666;
     }
@@ -157,7 +174,11 @@
     &.filtering {
       color: #000;
       border-color: #000;
-      background-color: #e4e2e4;
+      background-color: #d2d2d2;
+
+      &.Total {
+        color: @tallyJGreen;
+      }
     }
   }
 
@@ -239,26 +260,16 @@ div.CalledIn, span.CalledIn {
   }
 }
 
-#OLDsearch {
-  position: fixed;
-  top: 1px;
-  left: 40%;
-  padding: 3px 10px 5px 10px;
-  background-color: white;
-  font-size: 15px;
-  display: none;
-  border-radius: 2px;
-  box-shadow: 0 3px 9px #555;
-  z-index: 1;
-
-  span {
-    font-weight: bold;
-    padding: 0 15px 0 5px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+#body {
+  margin-bottom: 45px;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 
 @media only screen and (max-width: 600px) {
   #Main {

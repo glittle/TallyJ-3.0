@@ -58,34 +58,36 @@
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
 <div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "")">
-  <div class="CalledIn" data-status="CalledIn">
+  <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
     Called In
     <i>0</i>
   </div>
-  <div class="MailedIn" data-status="MailedIn">
+  <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
     Mailed In
     <i>0</i>
   </div>
-  <div class="DroppedOff" data-status="DroppedOff">
+  <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
     Dropped Off
     <i>0</i>
   </div>
   @if (ballotProcessEnum == TallyJ.EF.BallotProcessEnum.RegV)
   {
-    <div class="Registered" data-status="Registered">
+    <div class="Registered" data-status="Registered" title="Click to filter the list">
       Registered
       <i>0</i>
     </div>
   }
-  <div class="InPerson" data-status="InPerson">
+  <div class="InPerson" data-status="InPerson" title="Click to filter the list">
     @inPersonName
     <i>0</i>
   </div>
-  <div class="Total" data-status="Total">
+  <div class="Total" data-status="Total" title="Click to filter the list">
     Total
     <i>0</i>
   </div>
-
+  <span class="Other">
+    Other <i>0</i>
+  </span>
 </div>
 <div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
        UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
@@ -97,7 +99,7 @@
 <div id="afterList"></div>
 
 <script type="text/x-template" id="frontDeskLineTemplate">
-  <div id="P{PersonId}" class="Voter VM-{VotingMethod}" data-name="{NameLower}">
+  <div id="P{PersonId}" class="Voter VM-{VotingMethod} {extraClass}" data-name="{NameLower}">
     <div class="Btn CalledIn {CalledIn}">Called In</div>
     <div class="Btn MailedIn {MailedIn}">Mailed In</div>
     <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>

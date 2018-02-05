@@ -506,6 +506,7 @@ namespace TallyJ.CoreModels
           CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
           Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
+          p.CanVote,
           p.BahaiId
         });
     }
@@ -538,7 +539,7 @@ namespace TallyJ.CoreModels
         : "";
     }
 
-    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion)
+    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion, bool forceDeselect)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
@@ -573,7 +574,7 @@ namespace TallyJ.CoreModels
       var votingMethodRemoved = false;
       Guid? oldVoteLocationGuid = null;
       Guid? newVoteLocationGuid = null;
-      if (person.VotingMethod == voteType)
+      if (person.VotingMethod == voteType || forceDeselect)
       {
         oldVoteLocationGuid = person.VotingLocationGuid;
 
