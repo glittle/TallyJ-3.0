@@ -26,9 +26,9 @@ namespace TallyJ.Controllers
       return View(new RollCallModel());
     }
 
-    public JsonResult VotingMethod(int id, string type, int last)
+    public JsonResult VotingMethod(int id, string type, int last, bool forceDeselect)
     {
-      return new PeopleModel().RegisterVotingMethod(id, type, last);
+      return new PeopleModel().RegisterVotingMethod(id, type, last, forceDeselect);
     }
 
     public void JoinFrontDeskHub(string connId)

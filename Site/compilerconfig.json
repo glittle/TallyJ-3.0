@@ -116,5 +116,9 @@
   {
     "outputFile": "Views/Ballots/Reconcile.cshtml.css",
     "inputFile": "Views/Ballots/Reconcile.cshtml.less"
+  },
+  {
+    "outputFile": "Views/After/Monitor.cshtml.css",
+    "inputFile": "Views/After/Monitor.cshtml.less"
   }
 ]

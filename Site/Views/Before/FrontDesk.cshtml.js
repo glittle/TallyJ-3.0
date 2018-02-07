@@ -87,6 +87,11 @@
   }
 
   var filterByStatus = function (btn) {
+    if (btn.hasClass('filtering')) {
+      resetFilterByStatus();
+      return;
+    }
+
     $('.Counts div').removeClass('filtering');
 
     var classWanted = btn.data('status');
@@ -132,6 +137,7 @@
     sumUp('InPerson');
     sumUp('Registered');
     $('.Counts .Total i').text(total);
+    $('.Counts .Other i').text($('.Voter.VM-').length);
   }
 
   var searchChanged = function (ev) {
@@ -426,10 +432,10 @@
       $('.Voter').addClass('hidden').slice(0, local.pageSize).removeClass('hidden');
     }
   }
-  var voteBtnClicked = function (target, overrideConfirm) {
+  var voteBtnClicked = function (target, forceDeselect) {
     var btn = $(target);
 
-    if (!overrideConfirm && (btn.hasClass('True') || btn.hasClass('true'))) {
+    if (!forceDeselect && (btn.hasClass('True') || btn.hasClass('true'))) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
@@ -463,14 +469,15 @@
                 : '?';
     var pid = row.attr('id').substr(1);
 
-    saveBtnClick(pid, btnType, btn);
+    saveBtnClick(pid, btnType, btn, forceDeselect);
   };
 
-  var saveBtnClick = function (pid, btnType, btn) {
+  var saveBtnClick = function (pid, btnType, btn, forceDeselect) {
     var form = {
       id: pid,
       type: btnType,
-      last: publicInterface.lastRowVersion || 0
+      last: publicInterface.lastRowVersion || 0,
+      forceDeselect: forceDeselect || false
     };
 
     ShowStatusDisplay("Saving...");
@@ -497,13 +504,47 @@
     var current = $('.Voter.Selection').attr('id');
     if (info) {
       if (info.PersonLines) {
-        $.each(info.PersonLines, function () {
-          var selector = '#P' + this.PersonId;
-          $(selector).replaceWith(local.lineTemplate.filledWith(this));
-          if (selector === '#' + current) {
-            setSelection($(selector), false);
+        var someHidden = false;
+        $.each(info.PersonLines, function (i, person) {
+          //console.log(person);
+          var selector = '#P' + person.PersonId;
+          var row = $(selector);
+          var hidden = local.currentSearch && !row.hasClass('KeyMatch');
+
+          if (row.hasClass('KeyMatch')) {
+            person.extraClass = 'KeyMatch';
+          }
+          else if (hidden) {
+            // if a search is active, start hidden
+            person.extraClass = 'hidden';
+            someHidden = true;
+          }
+
+          if (person.CanVote) {
+            if (row.length) {
+              row.replaceWith(local.lineTemplate.filledWith(person));
+            } else {
+              // add a new person
+              insertNewPerson(person);
+            }
+            if (selector === '#' + current) {
+              setSelection($(selector), false);
+            }
+          } else {
+            var currentBtn = row.find('.Btn.true, .Btn.True');
+            if (currentBtn.length) {
+              // unclick whatever is checked
+              voteBtnClicked(currentBtn, true);
+            }
+
+            row.slideUp(500, 0, function () {
+              row.remove();
+            });
           }
         });
+        if (someHidden) {
+          applyFilter();
+        }
         updateTotals();
       }
       if (info.LastRowVersion) {
@@ -511,6 +552,27 @@
       }
     }
   };
+
+  function insertNewPerson(person) {
+    var newName = person.NameLower;
+    console.log('new', newName);
+    var added = false;
+    $('div.Voter').each(function (i, el) {
+      var row = $(el);
+      console.log(row.data('name'));
+      if (row.data('name') < newName) {
+        return true;
+      }
+      console.log('insert before');
+      row.before(local.lineTemplate.filledWith(person));
+      added = true;
+      return false;
+    });
+    if (!added) {
+      console.log('after last');
+      $('div.Voter').last().after(local.lineTemplate.filledWith(person));
+    }
+  }
 
   var publicInterface = {
     controllerUrl: '',

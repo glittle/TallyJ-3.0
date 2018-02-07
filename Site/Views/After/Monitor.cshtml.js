@@ -150,7 +150,7 @@
     ShowStatusDisplay('Saving...');
     CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing', form, function () {
       ShowStatusSuccess('Saved');
-      updatePasscodeDisplay(form.listOnPage);
+      updatePasscodeDisplay(form.listOnPage, site.passcodeRaw);
     });
   };
 

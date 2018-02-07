@@ -150,7 +150,10 @@
     <div>
       <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
       <label for="chkList">
-        Allow tellers to join this election with the <span class="publicInfo" title="Access code: @UserSession.CurrentElection.ElectionPasscode">access code</span>.@*: <span class="AccessCode">@UserSession.CurrentElection.ElectionPasscode</span>)*@
+        Open this election to allow other tellers to participate. <span class="publicInfo" title="Access code is: @UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")"><span class="ui-icon ui-icon-info" id="qTipCode"></span>Access Code</span> 
+        @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent()) {
+          <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
+        }
       </label>
     </div>
   }

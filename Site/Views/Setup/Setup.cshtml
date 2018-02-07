@@ -57,9 +57,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       <td>
         <select id="ddlMode" data-name="ElectionMode">
           @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                                                                                                                                                                                      {
-                                                                                                                                                                                                        {"B"," id=modeB"}
-                                                                                                                                                                                                      })
+                                                                                                                                                                                                          {
+                                                                                                                                                                                                            {"B"," id=modeB"}
+                                                                                                                                                                                                          })
           @*                <option value="N">Normal Election</option>
             <option value="T">Tie-Break</option>
             <option value="B" id="modeB">By-election</option>
@@ -110,7 +110,6 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       </th>
       <td>
         <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
-        If changed after running Analyze, run Analyze again!
       </td>
     </tr>
     <tr>
@@ -119,6 +118,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       </th>
       <td>
         <input type="text" id="txtConvener" data-name="Convenor">
+        Name of the responsible Assembly
       </td>
     </tr>
     <tr>
@@ -138,7 +138,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
     </tr>
   </table>
 
-  <div class="newStep"></div>
+  <div class="newStep">
+    <a name="step2"></a>
+  </div>
   <h2>
     Step 2 <span>List the election</span>
   </h2>
@@ -174,37 +176,43 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
 
     <tr>
       <th>
-        Show on Home Page?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
-      </th>
-      <td>
-        <yes-no v-model="election.ListForPublic"></yes-no>
-      </td>
-      <td>
-        Required to allow other tellers to connect.
-      </td>
-    </tr>
-    <tr v-show="election.ListForPublic">
-      <th>
         Access Code<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
       </th>
-      <td colspan="2">
-        <input type="text" data-name="ElectionPasscode" maxlength="50" />
-        Required to allow other tellers to connect.
+      <td>
+        <input type="text" v-model="election.ElectionPasscode" maxlength="50" />
+      </td>
+      <td>
+        Other tellers will use this to join you in the election.
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Open Now?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.ListForPublic" :disabled="!election.ElectionPasscode"></yes-no>
+      </td>
+      <td>
+        Should this election be shown on the Home Page now?<br>
+        This is only effective if an Access Code is set. It can be changed here later or on the Monitor Progress page.
       </td>
     </tr>
   </table>
 
 
-  <div class="newStep"></div>
-
+  <div class="newStep">
+    <a name="step3"></a>
+  </div>
   <h2>
     Step 3 <span>Configure Features</span>
   </h2>
   <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
   <div class="PullInstructions">
     <ol>
-      <li>If you will register voters or track envelopes with TallyJ, answer "Yes" to the first question then 
-      choose between the three processes described below.</li>
+      <li>
+        If you will register voters or track envelopes with TallyJ, answer "Yes" to the first question then
+        choose between the three processes described below.
+      </li>
       <li>Registration involves validating the voter's identity and may take extra time.</li>
       <li>For large communities, process B may prove to be the fastest.</li>
     </ol>
@@ -325,7 +333,7 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
     </tr>
     <tr>
       <th>
-        Use 24 hour time?
+        Time diplay format
       </th>
       <td>
         <yes-no v-model="election.T24" yes="19:30" no="7:30 pm"></yes-no>
