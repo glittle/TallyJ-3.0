@@ -5,55 +5,87 @@
     People: [],
     nameSplitter: /[\s-']/,
     currentAjaxSearch: null,
-    localNames: loadStoredNames()
+    localNames: []
   };
 
-  function loadStoredNames() {
-    var obj = {};
-    for (var key in localStorage) {
-      if (localStorage.hasOwnProperty(key)) {
-        if (key.substr(0, 5) === 'name_') {
-          var cn = GetFromStorage(key);
-          obj[cn.Person.Id] = cn;
+  function prepare() {
+    CallAjaxHandler(local.url + '/GetAll',
+      {},
+      function (info) {
+        if (info.Error) {
+          ShowStatusFailed(info.Error);
+          return;
         }
+        local.localNames = extendPeople(info.people);
       }
-    }
-    return obj;
-  };
+    );
+  }
 
-  function resetSearch  () {
-    if (local.currentAjaxSearch) {
-      local.currentAjaxSearch.abort();
-      //console.log('aborted previous');
-    }
+  function extendPeople(arr) {
+    arr.forEach(extendPerson);
+    return arr;
+  }
+
+  function extendPerson(p) {
+    // Name-->name
+    // remove opening brackets ( [
+    p.name = p.Name.toLowerCase().replace(/[\(\[]/ig, '');
+    p.parts = p.name.split(local.nameSplitter);
+  }
+
+
+  //function loadStoredNames() {
+  //  var obj = {};
+  //  for (var key in localStorage) {
+  //    if (localStorage.hasOwnProperty(key)) {
+  //      if (key.substr(0, 5) === 'name_') {
+  //        var cn = GetFromStorage(key);
+  //        obj[cn.Person.Id] = cn;
+  //      }
+  //    }
+  //  }
+  //  return obj;
+  //};
+
+  function resetSearch() {
+    //if (local.currentAjaxSearch) {
+    //  local.currentAjaxSearch.abort();
+    //  //console.log('aborted previous');
+    //}
   };
   function startGettingPeople(search, onNamesReady, includeMatches, usedPersonIds, forBallot) {
     resetSearch();
     if (!search) {
       return;
     }
+    debugger;
 
-    ShowStatusDisplay('Searching...', 500);
+    //ShowStatusDisplay('Searching...', 500);
 
-    local.currentAjaxSearch = CallAjaxHandler(local.url + '/GetPeople', {
-      search: search,
-      includeMatches: includeMatches,
-      forBallot: forBallot
-    }, onComplete, { callback: onNamesReady, search: search, usedIds: usedPersonIds }, onFail);
-  };
+    //  local.currentAjaxSearch = CallAjaxHandler(local.url + '/GetPeople', {
+    //    search: search,
+    //    includeMatches: includeMatches,
+    //    forBallot: forBallot
+    //  }, onComplete, { callback: onNamesReady, search: search, usedIds: usedPersonIds }, onFail);
+    //};
 
-  function onComplete(info, extra) {
-    local.currentAjaxSearch = null;
+    //function onComplete(info, extra) {
+    //  local.currentAjaxSearch = null;
 
-    ResetStatusDisplay();
-    if (info && info.Error) {
-      ShowStatusFailed(info.Error);
-      return;
-    }
-    local.lastInfo = $.extend(true, {}, info);
-    local.People = info.People;
-    updateStoredPeople(info.People);
-    extra.callback(markUp(info, extra.search, extra.usedIds));
+    //  ResetStatusDisplay();
+    //if (info && info.Error) {
+    //  ShowStatusFailed(info.Error);
+    //  return;
+    //}
+    //local.lastInfo = $.extend(true, {}, info);
+    //local.People = info.People;
+    //updateStoredPeople(info.People);
+
+    var info = []; // find
+
+    //extra.callback(
+    markUp(info, extra.search, extra.usedIds)
+    //);
   };
 
   function refreshListing(search, onNamesReady, usedPersonIds) {
@@ -156,10 +188,6 @@
     //    }
   };
 
-  function prepForSearching(s) {
-    return s.replace(/[\(\[]/ig, '');
-  };
-
   //var addGroupToLocalNames = function (people) {
   //  for (var i = 0; i < people.length; i++) {
   //    var person = people[i];
@@ -203,37 +231,37 @@
   //  }
   //};
 
-  function updateStoredPeople(people) {
-    // update our local copy if the NumVotes is different
-    $.each(people, function (i, person) {
-      var stored = local.localNames[person.Id];
-      var save = false;
-      if (!stored) {
-        stored = {
-          Person: person,
-          nameParts: $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching)
-        };
-        save = true;
-      } else if (stored.Person.RowVersion !== person.RowVersion) {
-        //console.log('updated {Id} - {Name}'.filledWith(person));
-        stored = {
-          Person: person,
-          nameParts: $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching)
-        };
-        save = true;
-      } else if (stored.Person.NumVotes !== person.NumVotes) {
-        //console.log('vote change {Id} - {Name}'.filledWith(person));
-        stored.Person.NumVotes = person.NumVotes;
-        save = true;
-      }
-      if (save) {
-        // save in memory and echo into localStorage
-        stored.MatchType = 1;
-        local.localNames[person.Id] = stored;
-        SetInStorage('name_' + person.Id, stored);
-      }
-    });
-  }
+  //function updateStoredPeople(people) {
+  //  // update our local copy if the NumVotes is different
+  //  $.each(people, function (i, person) {
+  //    var stored = local.localNames[person.Id];
+  //    var save = false;
+  //    if (!stored) {
+  //      stored = {
+  //        Person: person,
+  //        nameParts: $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching)
+  //      };
+  //      save = true;
+  //    } else if (stored.Person.RowVersion !== person.RowVersion) {
+  //      //console.log('updated {Id} - {Name}'.filledWith(person));
+  //      stored = {
+  //        Person: person,
+  //        nameParts: $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching)
+  //      };
+  //      save = true;
+  //    } else if (stored.Person.NumVotes !== person.NumVotes) {
+  //      //console.log('vote change {Id} - {Name}'.filledWith(person));
+  //      stored.Person.NumVotes = person.NumVotes;
+  //      save = true;
+  //    }
+  //    if (save) {
+  //      // save in memory and echo into localStorage
+  //      stored.MatchType = 1;
+  //      //local.localNames[person.Id] = stored;
+  //      //SetInStorage('name_' + person.Id, stored);
+  //    }
+  //  });
+  //}
 
   function showMatchedLetters(searchParts, personInfo, forceMatching) {
     var name = personInfo.Name;//.replace(/<b>/ig, '');
@@ -261,14 +289,16 @@
 
   function checkSearchInName(s, names) {
     for (var j = 0; j < names.length; j++) {
-      if (s === names[j].substr(0, s.length)) {
+      if (names[j].startsWith(s)) {
         return true;
       }
     }
     return false;
   };
 
-  function  addMatchedNames  (peopleList, idsFound, searchParts, person, nameParts) {
+  function addMatchedNames(peopleList, idsFound, searchParts, person) {
+    var nameParts = person.parts;
+
     if (searchParts.length === 1) {
       // check the single search term in all name parts
       if (checkSearchInName(searchParts[0], nameParts)) {
@@ -308,61 +338,55 @@
   function quickSearch(searchText, afterQuickSearch, usedPersonIds) {
     if (!afterQuickSearch) return;
 
-
     // look through chosen names
     var info = {
       People: []
     };
     var idsFound = {};
     var searchParts = $.grep(searchText.toLowerCase().split(local.nameSplitter), function (s) { return s; });
-    //names previously seen
-    for (var id in local.localNames) {
-      if (local.localNames.hasOwnProperty(id)) {
-        var cn = local.localNames[id];
-        if (!cn.nameParts) {
-          cn.nameParts = $.map($.grep(cn.Person.Name.toLowerCase().split(local.nameSplitter), function(s) { return s; }), prepForSearching);
-        }
-        addMatchedNames(info.People, idsFound, searchParts, cn.Person, cn.nameParts);
-      }
-    }
-    // names recently loaded from the server
-    for (var p = 0; p < local.People.length; p++) {
-      var person = local.People[p];
-      if (idsFound[person.Id]) continue;
-      var nameParts = $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching);
 
-      addMatchedNames(info.People, idsFound, searchParts, person, nameParts);
+    local.localNames.forEach(function (n) {
+      addMatchedNames(info.People, idsFound, searchParts, n);
+    });
 
-      //        if (searchParts.length == 1) {
-      //          // check the single search term in all name parts
-      //          if (checkSearchInName(searchParts[0], nameParts)) {
-      //            //person.Name = showMatchedLetters(searchParts, person, true);
-      //            info.People.push(person);
-      //            continue;
-      //          }
-      //        } else {
-      //          // match each search and name part
-      //          toMatch = searchParts.length;
-      //          for (i = 0; i < searchParts.length; i++) {
-      //            searchPart = searchParts[i];
-      //            for (j = 0; j < nameParts.length; j++) {
-      //              if (searchPart == nameParts[j].substr(0, searchPart.length)) {
-      //                // matched in order
-      //                toMatch--;
-      //                break;
-      //              }
-      //            }
-      //            if (toMatch <= 0) {
-      //              info.People.push(Person);
-      //              idsFound[Person.Id] = true;
-      //              continue nameLoop2;
-      //            }
-      //          }
-    }
+    //// names recently loaded from the server
+    //for (var p = 0; p < local.People.length; p++) {
+    //  var person = local.People[p];
+    //  if (idsFound[person.Id]) continue;
+    //  var nameParts = $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching);
+
+    //  addMatchedNames(info.People, idsFound, searchParts, person, nameParts);
+
+    //  //        if (searchParts.length == 1) {
+    //  //          // check the single search term in all name parts
+    //  //          if (checkSearchInName(searchParts[0], nameParts)) {
+    //  //            //person.Name = showMatchedLetters(searchParts, person, true);
+    //  //            info.People.push(person);
+    //  //            continue;
+    //  //          }
+    //  //        } else {
+    //  //          // match each search and name part
+    //  //          toMatch = searchParts.length;
+    //  //          for (i = 0; i < searchParts.length; i++) {
+    //  //            searchPart = searchParts[i];
+    //  //            for (j = 0; j < nameParts.length; j++) {
+    //  //              if (searchPart == nameParts[j].substr(0, searchPart.length)) {
+    //  //                // matched in order
+    //  //                toMatch--;
+    //  //                break;
+    //  //              }
+    //  //            }
+    //  //            if (toMatch <= 0) {
+    //  //              info.People.push(Person);
+    //  //              idsFound[Person.Id] = true;
+    //  //              continue nameLoop2;
+    //  //            }
+    //  //          }
+    //}
 
     info.People.sort(function (a, b) {
-      return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
-    });
+        return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
+      });
     afterQuickSearch(markUp(info, searchText, usedPersonIds, null, true), true);
   };
 
@@ -374,12 +398,11 @@
   //    return person;
   //  };
   var publicInterface = {
-    Prepare: function () {
-    },
+    Prepare: prepare,
     local: local,
     ResetSearch: resetSearch,
     SearchNames: function (searchText, onNamesReady, includeMatches, usedPersonIds, forBallot) {
-      startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds, forBallot);
+      //startGettingPeople(searchText, onNamesReady, includeMatches, usedPersonIds, forBallot);
     },
     QuickSearch: function (searchText, onNamesReady, usedPersonIds) {
       quickSearch(searchText, onNamesReady, usedPersonIds);

@@ -1147,26 +1147,26 @@ add to this ballot
     }
     if (local.lastSearch === text) return;
 
-    local.keyTimeShowSpan
-      .animate({
-        height: 25
-      }, {
-        duration: local.keyTime,
-        queue: false,
-        start: resetKeyTimeShow,
-        complete: function () {
-          local.keyTimeShowSpan.addClass('searching');
-        }
-      });
+    //local.keyTimeShowSpan
+    //  .animate({
+    //    height: 25
+    //  }, {
+    //    duration: local.keyTime,
+    //    queue: false,
+    //    start: resetKeyTimeShow,
+    //    complete: function () {
+    //      local.keyTimeShowSpan.addClass('searching');
+    //    }
+    //  });
 
     local.peopleHelper.QuickSearch(text, function (info) {
       onNamesReady(info, false, true);
     }, getUsedIds());
 
-    local.keyTimer = setTimeout(function () {
-      local.lastSearch = text;
-      local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
-    }, local.keyTime);
+    //local.keyTimer = setTimeout(function () {
+    //  local.lastSearch = text;
+    //  local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
+    //}, local.keyTime);
   };
 
   function getUsedIds() {
