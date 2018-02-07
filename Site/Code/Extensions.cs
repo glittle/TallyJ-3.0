@@ -615,7 +615,8 @@ namespace TallyJ.Code
         ContentType = "text/plain",
         // allow client full control over reading response (don't send as JSON type)
         Data = input,
-        JsonRequestBehavior = behavior
+        JsonRequestBehavior = behavior,
+        MaxJsonLength = int.MaxValue
       };
       return jsonResult;
     }

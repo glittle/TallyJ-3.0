@@ -9,6 +9,7 @@
   };
 
   function prepare() {
+    ShowStatusDisplay('Loading names list');
     CallAjaxHandler(local.url + '/GetAll',
       {},
       function (info) {
