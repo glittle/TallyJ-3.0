@@ -630,7 +630,7 @@ function AttachHelp() {
 
   $(document).on('click', '.PullInstructionsHandle', function (ev) {
     var handle = $(ev.currentTarget);
-    console.log(handle, handle.data());
+    //console.log(handle, handle.data());
     showHelp(handle, !handle.next().is(':visible'), false);
   });
 

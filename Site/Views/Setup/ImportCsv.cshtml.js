@@ -286,7 +286,7 @@
       select.val(this.map);
       select.toggleClass('Mapped', select.val() !== '');
     });
-    console.log(info.csvFields);
+    //console.log(info.csvFields);
     $('#numColumns').text(count - 1);
 
     site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
@@ -378,7 +378,7 @@
 
     hub.client.importInfo = function (lines, people) {
       ResetStatusDisplay();
-      var msg = 'Processed {0} lines.<br>{1} people added'.filledWith(comma(lines), comma(people));
+      var msg = 'Processed {0} lines<br>{1} people added'.filledWith(comma(lines), comma(people));
       ShowStatusDisplay(msg, 0, 9999999);
       $('#importResults').html(msg).show();
     };
