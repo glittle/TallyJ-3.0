@@ -474,7 +474,7 @@ namespace TallyJ.CoreModels
       }
       if (validReasons > 0)
       {
-        result.Add("{0} Eligibility Status Reason{1} recognized.".FilledWith(validReasons, validReasons.Plural()));
+        result.Add("{0} {1} with recognized Eligibility Status Reasons.".FilledWith(validReasons, validReasons.Plural("people", "person")));
       }
       if (unexpectedReasons.Count > 0)
       {
