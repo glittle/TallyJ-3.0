@@ -173,11 +173,14 @@ var startSignalR = function (callBack) {
 
   site.signalrDelay = setTimeout(function () {
     $.connection.hub.error(function (error) {
-      console.log('error');
-      if (error.indexOf('The client has been inactive since') !== -1) {
+      var msg = error.toString();
+      console.log('error', error);
+      if (msg.indexOf('The client has been inactive since') !== -1) {
         ShowStatusFailed("We've been disconnected from the server for too long. Please refresh this page (press F5) to reconnect and continue.");
+      } else if (msg.indexOf('WebSocket closed')) {
+        ShowStatusDisplay("Disconnected from the server.");
       } else {
-        ShowStatusFailed(error.toString());
+        ShowStatusFailed(msg);
       }
     });
 
@@ -195,11 +198,11 @@ var startSignalR = function (callBack) {
 
     $.connection.hub.connectionSlow(function () {
       console.log('slow');
-      ShowStatusFailed('The connection to the server is slow... please wait...');
+      ShowStatusDisplay('The connection to the server is slow... please wait...');
     });
     $.connection.hub.reconnecting(function () {
       console.log('reconnecting');
-      ShowStatusFailed('Attempting to reconnect to the server...');
+      ShowStatusDisplay('Attempting to reconnect to the server...');
       site.signalrReconnecting = true;
     });
     $.connection.hub.reconnected(function () {
@@ -210,7 +213,7 @@ var startSignalR = function (callBack) {
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
       if (site.signalrReconnecting) {
-        ShowStatusFailed('Connection to the server has been lost. Please refresh this page to try again!');
+        ShowStatusFailed("We've been disconnected from the server for too long. Please refresh this page (press F5) to reconnect and continue.");
       }
     });
   }, 0); // delay before calling server
