@@ -173,7 +173,11 @@ var startSignalR = function (callBack) {
   site.signalrDelay = setTimeout(function () {
     $.connection.hub.error(function (error) {
       console.log('error');
-      ShowStatusFailed(error.toString());
+      if (error.indexOf('The client has been inactive since') !== -1) {
+        ShowStatusFailed("We've been disconnected from the server for too long. Please refresh this page (press F5) to reconnect and continue.");
+      } else {
+        ShowStatusFailed(error.toString());
+      }
     });
 
     $.connection.hub
