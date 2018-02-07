@@ -93,6 +93,7 @@ function showElectionInfo() {
 }
 
 function updatePasscodeDisplay(okay, passcode) {
+  //console.log(okay, passcode);
   if (typeof passcode === 'string') {
     site.passcode = passcode;
     $('.passcodeText').text(site.passcode);
@@ -236,7 +237,7 @@ function PrepareQTips(doNow) {
   site.qTips.push({
     selector: '#qTipPasscode',
     title: 'Election Open for Tellers',
-    text: 'Tellers can join this election using the access code&nbsp; <b class=passcodeText></b> &nbsp;on the home page.',
+    text: 'Tellers can join this election using the access code&nbsp; <b class=passcodeText></b> &nbsp;on the Home Page.',
     events: {
       render: function () {
         // only runs on first render
