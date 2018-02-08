@@ -176,7 +176,7 @@ var startSignalR = function (callBack) {
       var msg = error.toString();
       console.log('error', error);
       if (msg.indexOf('The client has been inactive since') !== -1) {
-        ShowStatusFailed("We've been disconnected from the server for too long. Please refresh this page (press F5) to reconnect and continue.");
+        ShowStatusFailed("We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
       } else if (msg.indexOf('WebSocket closed')) {
         ShowStatusDisplay("Disconnected from the server.");
       } else {
@@ -213,7 +213,7 @@ var startSignalR = function (callBack) {
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
       if (site.signalrReconnecting) {
-        ShowStatusFailed("We've been disconnected from the server for too long. Please refresh this page (press F5) to reconnect and continue.");
+        ShowStatusFailed("We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
       }
     });
   }, 0); // delay before calling server
