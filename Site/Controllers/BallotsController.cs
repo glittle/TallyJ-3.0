@@ -73,10 +73,10 @@ namespace TallyJ.Controllers
                }.AsJsonResult();
     }
 
-    public JsonResult SaveVote(int pid, int vid, int count, string invalid)
+    public JsonResult SaveVote(int pid, int vid, int count, string invalid, int lastVid)
     {
       var invalidGuid = invalid.AsNullableGuid();
-      return CurrentBallotModel.SaveVote(pid, vid, count, invalidGuid);
+      return CurrentBallotModel.SaveVote(pid, vid, count, invalidGuid, lastVid);
     }
 
     public JsonResult DeleteVote(int vid)

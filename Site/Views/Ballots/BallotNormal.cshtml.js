@@ -15,6 +15,7 @@
     ballotsPanel: null,
     btnDeleteBallot: null,
     location: {},
+    lastVid: 0,
     votesNeeded: 0,
     ballotStatus: '',
     ballotId: 0,
@@ -27,7 +28,7 @@
     rowSelected: 0,
     lastBallotRowVersion: 0,
     keyTimeShowSpan: null,
-    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {NumVotes} {MatchType}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
   };
@@ -67,7 +68,9 @@
     });
 
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
-    local.peopleHelper.Prepare();
+    local.peopleHelper.Prepare(function (lastVid) {
+      local.lastVid = lastVid;
+    });
 
     local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
     local.inputField.focus();
@@ -682,7 +685,8 @@ add to this ballot
       pid: host.data('person-id') || 0,
       vid: voteId,
       invalid: invalidId,
-      count: input.val() || 0
+      count: input.val() || 0,
+      lastVid: local.lastVid
     };
 
     if (invalidId) {
@@ -718,6 +722,7 @@ add to this ballot
           return;
         }
 
+        local.lastVid = info.LastVid;
 
         if (info.Location) {
           showLocation(info.Location);
@@ -747,7 +752,7 @@ add to this ballot
         updateStatusDisplay(info);
         updateStatusInList(info);
 
-        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
+        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds(), info);
 
         if (info.BallotStatus === 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
@@ -818,7 +823,7 @@ add to this ballot
         if (info.Location) {
           showLocation(info.Location);
         }
-        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds());
+        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds(), info);
       }
       else {
         ShowStatusFailed(info.Message);
@@ -848,7 +853,7 @@ add to this ballot
     local.People = info.People || [];
 
     if (!fromQuickSearch) {
-      resetKeyTimeShow();
+      //resetKeyTimeShow();
       //local.peopleHelper.AddGroupToLocalNames(local.People);
     }
 

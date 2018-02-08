@@ -1,14 +1,13 @@
 ﻿var PeopleHelper = function (url) {
   var local = {
     url: url,
-    lastInfo: null,
-    People: [],
     nameSplitter: /[\s-']/,
-    currentAjaxSearch: null,
     localNames: []
   };
 
-  function prepare() {
+  var soundex = new DmSoundex();
+
+  function prepare(cb) {
     ShowStatusDisplay('Loading names list');
     CallAjaxHandler(local.url + '/GetAll',
       {},
@@ -18,6 +17,9 @@
           return;
         }
         local.localNames = extendPeople(info.people);
+        if (cb) {
+          cb(info.lastVid);
+        }
       }
     );
   }
@@ -28,12 +30,94 @@
   }
 
   function extendPerson(p) {
-    // Name-->name
-    // remove opening brackets ( [
-    p.name = p.Name.toLowerCase().replace(/[\(\[]/ig, '');
+    // for searches, make lowercase
+    p.CanReceiveVotes = !!p.V[0];
+    p.CanVote = !!p.V[1];
+    p.IneligibleReasonGuid = p.IRG; // backward compatible
+    p.name = p.Name.toLowerCase().replace(/[\(\)\[\]]/ig, '');  // and remove brackets
     p.parts = p.name.split(local.nameSplitter);
+    p.soundParts = p.parts.map(soundex.process);
+    p.MatchType = 0;
+    if (p.Area) {
+      p.Name = p.Name + ' (' + p.Area + ')';
+    }
+    if (p.RowVersion > local.lastRowVersion) {
+      local.lastRowVersion = p.RowVersion;
+    }
   }
 
+  function quickSearch(searchText, afterQuickSearch, usedPersonIds) {
+    if (!afterQuickSearch) return;
+
+    // look through chosen names
+    var info = {
+      People: []
+    };
+    var idsFound = {};
+    var searchParts = searchText.toLowerCase().split(local.nameSplitter);
+
+    // add soundex of each search term
+    var searchSounds = [];
+    var numParts = searchParts.length;
+    for (var i = 0; i < numParts; i++) {
+      //searchSounds.push(dropEndingZeros(soundex.process(searchParts[i])));
+      searchSounds.push(soundex.process(searchParts[i]));
+    }
+
+    local.localNames.forEach(function (n) {
+      addMatchedNames(info.People, idsFound, searchParts, searchSounds, n);
+    });
+
+    //// names recently loaded from the server
+    //for (var p = 0; p < local.People.length; p++) {
+    //  var person = local.People[p];
+    //  if (idsFound[person.Id]) continue;
+    //  var nameParts = $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching);
+
+    //  addMatchedNames(info.People, idsFound, searchParts, person, nameParts);
+
+    //  //        if (searchParts.length == 1) {
+    //  //          // check the single search term in all name parts
+    //  //          if (checkSearchInName(searchParts[0], nameParts)) {
+    //  //            //person.Name = showMatchedLetters(searchParts, person, true);
+    //  //            info.People.push(person);
+    //  //            continue;
+    //  //          }
+    //  //        } else {
+    //  //          // match each search and name part
+    //  //          toMatch = searchParts.length;
+    //  //          for (i = 0; i < searchParts.length; i++) {
+    //  //            searchPart = searchParts[i];
+    //  //            for (j = 0; j < nameParts.length; j++) {
+    //  //              if (searchPart == nameParts[j].substr(0, searchPart.length)) {
+    //  //                // matched in order
+    //  //                toMatch--;
+    //  //                break;
+    //  //              }
+    //  //            }
+    //  //            if (toMatch <= 0) {
+    //  //              info.People.push(Person);
+    //  //              idsFound[Person.Id] = true;
+    //  //              continue nameLoop2;
+    //  //            }
+    //  //          }
+    //}
+
+    info.People.sort(function (a, b) {
+      if (a.MatchType < b.MatchType) return -1;
+      if (a.MatchType > b.MatchType) return 1;
+      return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
+    });
+    afterQuickSearch(markUp(info, searchText, usedPersonIds, null, true), true);
+  };
+
+  function dropEndingZeros(s) {
+    if (s === '000000') return '';
+    while (s.slice(-1) === '0') {
+      s = s.substring(0, s.length - 1);
+    }
+    return s;
+  }
 
   //function loadStoredNames() {
   //  var obj = {};
@@ -54,12 +138,12 @@
     //  //console.log('aborted previous');
     //}
   };
+
   function startGettingPeople(search, onNamesReady, includeMatches, usedPersonIds, forBallot) {
     resetSearch();
     if (!search) {
       return;
     }
-    debugger;
 
     //ShowStatusDisplay('Searching...', 500);
 
@@ -89,7 +173,35 @@
     //);
   };
 
-  function refreshListing(search, onNamesReady, usedPersonIds) {
+  function updateVoteCounts(info) {
+    var updates = info.VoteUpdates;
+    if (!updates || !updates.length) {
+      return;
+    }
+
+    var toFind = updates.map(function (update) { return update.PersonGuid }).join(',');
+    var numToFind = updates.length;
+
+    local.localNames.forEach(function (person) {
+      var guid = person.PersonGuid;
+      if (toFind.indexOf(guid) !== -1) {
+        // this person was updated
+        if (numToFind === 1) {
+          person.NumVotes = updates[0].Count;
+        } else {
+          var update = updates.find(function (update) {
+            return update.PersonGuid = guid;
+          });
+          if (update) {
+            person.NumVotes = update.Count;
+          }
+        }
+      }
+    });
+  }
+
+  function refreshListing(search, onNamesReady, usedPersonIds, info) {
+    updateVoteCounts(info);
     quickSearch(search, onNamesReady, usedPersonIds);
     //    var info = $.extend(true, {}, local.lastInfo);
     //    onNamesReady(markUp(info, search, usedPersonIds), true);
@@ -122,12 +234,13 @@
           highestNumVotes = personInfo.NumVotes;
         }
         if (currentType == 0) currentType = personInfo.MatchType;
+        
         var classes = [];
         classes.push('Match' + personInfo.MatchType);
-        if (personInfo.MatchType !== currentType && !inQuickSearch) {
-          currentType = personInfo.MatchType;
-          personInfo.Classes = ' class=First';
-        }
+        //if (personInfo.MatchType !== currentType) { // && !inQuickSearch) {
+        //  currentType = personInfo.MatchType;
+        //  personInfo.Classes = ' class=First';
+        //}
         //personInfo.RawName = personInfo.RawName || personInfo.Name;
         personInfo.DisplayName = showMatchedLetters(searchParts, personInfo, forceMatching);
 
@@ -155,28 +268,37 @@
       var foundBest = false;
       info.BestRowNum = 1;
 
-      if (currentFocusId) {
-        $.each(results, function (i, item) {
-          if (item.Id == currentFocusId) {
-            info.BestRowNum = i;
-            foundBest = true;
-            return false;
-          }
-        });
-      }
-      if (!foundBest) {
-        for (var matchType = 1; matchType <= 4; matchType++) {
-          for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
-            $.each(results, function (i, item) {
-              if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
-                info.BestRowNum = i;
-                foundBest = true;
-                return false;
-              }
-            });
-          }
+      //if (currentFocusId) {
+      //  $.each(results, function (i, item) {
+      //    if (item.Id == currentFocusId && item.MatchType === 1) {
+      //      info.BestRowNum = i;
+      //      foundBest = true;
+      //      return false;
+      //    }
+      //  });
+      //}
+      //if (!foundBest) {
+      //2018-Feb only look in type 1; only in 2 if none were in 1
+
+      for (var matchType = 1; matchType <= 2; matchType++) {
+        var foundInType = false;
+        for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
+          $.each(results, function (i, item) {
+            if (item.MatchType === matchType) {
+              found = true;
+            }
+            if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
+              info.BestRowNum = i;
+              foundBest = true;
+              return false;
+            }
+          });
+        }
+        if (matchType === 1 && foundInType) {
+          break;
         }
       }
+      //}
       info.People = results;
     }
     return info;
@@ -297,107 +419,76 @@
     return false;
   };
 
-  function addMatchedNames(peopleList, idsFound, searchParts, person) {
+  function addMatchedNames(peopleList, idsFound, searchParts, searchSounds, person) {
     var nameParts = person.parts;
 
-    if (searchParts.length === 1) {
-      // check the single search term in all name parts
-      if (checkSearchInName(searchParts[0], nameParts)) {
+    // match each search and name part
+    var matchedParts = [];
+    var toMatch = searchParts.length;
+    for (var i = 0; i < searchParts.length; i++) {
+      var searchPart = searchParts[i];
+      var matched = false;
+      for (var j = 0; j < nameParts.length; j++) {
+        if (nameParts[j].startsWith(searchPart)) {
+          if ($.inArray(j, matchedParts) === -1) {
+            toMatch--;
+            matched = true;
+            matchedParts.push(j);
+            break;
+          }
+        }
+      }
+      if (!matched) {
+        // if a search term did not match, abort -- all must match
+        addMatchedSounds(peopleList, idsFound, searchSounds, person);
+      }
+      if (toMatch <= 0) {
+        person.MatchType = 1;
         peopleList.push(person);
         idsFound[person.Id] = true;
         return;
       }
-    } else {
-      // match each search and name part
-      var matchedParts = [];
-      var toMatch = searchParts.length;
-      for (var i = 0; i < searchParts.length; i++) {
-        var searchPart = searchParts[i];
-        var matched = false;
-        for (var j = 0; j < nameParts.length; j++) {
-          if (searchPart === nameParts[j].substr(0, searchPart.length)) {
-            if ($.inArray(j, matchedParts) === -1) {
-              toMatch--;
-              matched = true;
-              matchedParts.push(j);
-              break;
-            }
+    }
+
+  }
+
+  function addMatchedSounds(peopleList, idsFound, searchSounds, person) {
+    // match each search and name part
+    var toMatch = searchSounds.length;
+    if (toMatch === 1 && !searchSounds[0]) {
+      return;
+    }
+
+    var matchedParts = [];
+    var nameParts = person.soundParts;
+
+    for (var i = 0; i < searchSounds.length; i++) {
+      var searchPart = searchSounds[i];
+      var matched = false;
+      for (var j = 0; j < nameParts.length; j++) {
+        if (nameParts[j].startsWith(searchPart)) {
+          if ($.inArray(j, matchedParts) === -1) {
+            toMatch--;
+            matched = true;
+            matchedParts.push(j);
+            break;
           }
         }
-        if (!matched) {
-          // if a search term did not match, abort -- all must match
-          return;
-        }
-        if (toMatch <= 0) {
-          peopleList.push(person);
-          idsFound[person.Id] = true;
-          return;
-        }
+      }
+      if (!matched) {
+        // if a search term did not match, abort -- all must match
+        return;
+      }
+      if (toMatch <= 0) {
+        person.MatchType = 2;
+        peopleList.push(person);
+        idsFound[person.Id] = true;
+        return;
       }
     }
   }
-  function quickSearch(searchText, afterQuickSearch, usedPersonIds) {
-    if (!afterQuickSearch) return;
 
-    // look through chosen names
-    var info = {
-      People: []
-    };
-    var idsFound = {};
-    var searchParts = $.grep(searchText.toLowerCase().split(local.nameSplitter), function (s) { return s; });
 
-    local.localNames.forEach(function (n) {
-      addMatchedNames(info.People, idsFound, searchParts, n);
-    });
-
-    //// names recently loaded from the server
-    //for (var p = 0; p < local.People.length; p++) {
-    //  var person = local.People[p];
-    //  if (idsFound[person.Id]) continue;
-    //  var nameParts = $.map($.grep(person.Name.toLowerCase().split(local.nameSplitter), function (s) { return s; }), prepForSearching);
-
-    //  addMatchedNames(info.People, idsFound, searchParts, person, nameParts);
-
-    //  //        if (searchParts.length == 1) {
-    //  //          // check the single search term in all name parts
-    //  //          if (checkSearchInName(searchParts[0], nameParts)) {
-    //  //            //person.Name = showMatchedLetters(searchParts, person, true);
-    //  //            info.People.push(person);
-    //  //            continue;
-    //  //          }
-    //  //        } else {
-    //  //          // match each search and name part
-    //  //          toMatch = searchParts.length;
-    //  //          for (i = 0; i < searchParts.length; i++) {
-    //  //            searchPart = searchParts[i];
-    //  //            for (j = 0; j < nameParts.length; j++) {
-    //  //              if (searchPart == nameParts[j].substr(0, searchPart.length)) {
-    //  //                // matched in order
-    //  //                toMatch--;
-    //  //                break;
-    //  //              }
-    //  //            }
-    //  //            if (toMatch <= 0) {
-    //  //              info.People.push(Person);
-    //  //              idsFound[Person.Id] = true;
-    //  //              continue nameLoop2;
-    //  //            }
-    //  //          }
-    //}
-
-    info.People.sort(function (a, b) {
-        return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
-      });
-    afterQuickSearch(markUp(info, searchText, usedPersonIds, null, true), true);
-  };
-
-  //  var wrapPerson = function (flatPerson) {
-  //    var person = {};
-  //    $.each(local.Columns.Num, function (i, value) {
-  //      person[value] = flatPerson[i];
-  //    });
-  //    return person;
-  //  };
   var publicInterface = {
     Prepare: prepare,
     local: local,
@@ -408,8 +499,8 @@
     QuickSearch: function (searchText, onNamesReady, usedPersonIds) {
       quickSearch(searchText, onNamesReady, usedPersonIds);
     },
-    RefreshListing: function (searchText, onNamesReady, usedPersonIds) {
-      refreshListing(searchText, onNamesReady, usedPersonIds);
+    RefreshListing: function (searchText, onNamesReady, usedPersonIds, info) {
+      refreshListing(searchText, onNamesReady, usedPersonIds, info);
     }
     //AddToLocalNames: addToLocalNames,
     //AddGroupToLocalNames: addGroupToLocalNames
@@ -418,3 +509,186 @@
   return publicInterface;
 };
 
+
+var DmSoundex = function () {
+  // adapted from https://github.com/NaturalNode/natural/blob/master/lib/natural/phonetics/dm_soundex.js
+  var codes = {
+    a: {
+      0: [0, -1, -1],
+      i: [[0, 1, -1]],
+      j: [[0, 1, -1]],
+      y: [[0, 1, -1]],
+      u: [[0, 7, -1]]
+    },
+    b: [[7, 7, 7]],
+    c: {
+      0: [5, 5, 5],
+      z: { 0: [4, 4, 4], s: [[4, 4, 4]] },
+      s: { 0: [4, 4, 4], z: [[4, 4, 4]] },
+      k: [[5, 5, 5], [45, 45, 45]],
+      h: { 0: [5, 5, 5], s: [[5, 54, 54]] }
+    },
+    d: {
+      0: [3, 3, 3],
+      t: [[3, 3, 3]],
+      z: { 0: [4, 4, 4], h: [[4, 4, 4]], s: [[4, 4, 4]] },
+      s: { 0: [4, 4, 4], h: [[4, 4, 4]], z: [[4, 4, 4]] },
+      r: { s: [[4, 4, 4]], z: [[4, 4, 4]] }
+    },
+    e: {
+      0: [0, -1, -1],
+      i: [[0, 1, -1]],
+      j: [[0, 1, -1]],
+      y: [[0, 1, -1]],
+      u: [[1, 1, -1]],
+      w: [[1, 1, -1]]
+    },
+    f: {
+      0: [7, 7, 7],
+      b: [[7, 7, 7]]
+    },
+    g: [[5, 5, 5]],
+    h: [[5, 5, -1]],
+    i: {
+      0: [0, -1, -1],
+      a: [[1, -1, -1]],
+      e: [[1, -1, -1]],
+      o: [[1, -1, -1]],
+      u: [[1, -1, -1]]
+    },
+    j: [[4, 4, 4]],
+    k: {
+      0: [5, 5, 5],
+      h: [[5, 5, 5]],
+      s: [[5, 54, 54]]
+    },
+    l: [[8, 8, 8]],
+    m: {
+      0: [6, 6, 6],
+      n: [[66, 66, 66]]
+    },
+    n: {
+      0: [6, 6, 6],
+      m: [[66, 66, 66]]
+    },
+    o: {
+      0: [0, -1, -1],
+      i: [[0, 1, -1]],
+      j: [[0, 1, -1]],
+      y: [[0, 1, -1]]
+    },
+    p: {
+      0: [7, 7, 7],
+      f: [[7, 7, 7]],
+      h: [[7, 7, 7]]
+    },
+    q: [[5, 5, 5]],
+    r: {
+      0: [9, 9, 9],
+      z: [[94, 94, 94], [94, 94, 94]],
+      s: [[94, 94, 94], [94, 94, 94]]
+    },
+    s: {
+      0: [4, 4, 4],
+      z: { 0: [4, 4, 4], t: [[2, 43, 43]], c: { z: [[2, 4, 4]], s: [[2, 4, 4]] }, d: [[2, 43, 43]] },
+      d: [[2, 43, 43]],
+      t: { 0: [2, 43, 43], r: { z: [[2, 4, 4]], s: [[2, 4, 4]] }, c: { h: [[2, 4, 4]] }, s: { h: [[2, 4, 4]], c: { h: [[2, 4, 4]] } } },
+      c: { 0: [2, 4, 4], h: { 0: [4, 4, 4], t: { 0: [2, 43, 43], s: { c: { h: [[2, 4, 4]] }, h: [[2, 4, 4]] }, c: { h: [[2, 4, 4]] } }, d: [[2, 43, 43]] } },
+      h: { 0: [4, 4, 4], t: { 0: [2, 43, 43], c: { h: [[2, 4, 4]] }, s: { h: [[2, 4, 4]] } }, c: { h: [[2, 4, 4]] }, d: [[2, 43, 43]] }
+    },
+    t: {
+      0: [3, 3, 3],
+      c: { 0: [4, 4, 4], h: [[4, 4, 4]] },
+      z: { 0: [4, 4, 4], s: [[4, 4, 4]] },
+      s: { 0: [4, 4, 4], z: [[4, 4, 4]], h: [[4, 4, 4]], c: { h: [[4, 4, 4]] } },
+      t: { s: { 0: [4, 4, 4], z: [[4, 4, 4]], c: { h: [[4, 4, 4]] } }, c: { h: [[4, 4, 4]] }, z: [[4, 4, 4]] },
+      h: [[3, 3, 3]],
+      r: { z: [[4, 4, 4]], s: [[4, 4, 4]] }
+    },
+    u: {
+      0: [0, -1, -1],
+      e: [[0, -1, -1]],
+      i: [[0, 1, -1]],
+      j: [[0, 1, -1]],
+      y: [[0, 1, -1]]
+    },
+    v: [[7, 7, 7]],
+    w: [[7, 7, 7]],
+    x: [[5, 54, 54]],
+    y: [[1, -1, -1]],
+    z: {
+      0: [4, 4, 4],
+      d: { 0: [2, 43, 43], z: { 0: [2, 4, 4], h: [[2, 4, 4]] } },
+      h: { 0: [4, 4, 4], d: { 0: [2, 43, 43], z: { h: [[2, 4, 4]] } } },
+      s: { 0: [4, 4, 4], h: [[4, 4, 4]], c: { h: [[4, 4, 4]] } }
+    }
+  };
+
+
+  function process(word) {
+    var codeLength = 6;
+    var output = '';
+
+    var pos = 0, lastCode = -1;
+    while (pos < word.length) {
+      var substr = word.slice(pos);
+      var rules = findRules(substr);
+
+      var code;
+      if (pos == 0) {
+        // at the beginning of the word
+        code = rules.mapping[0];
+      } else if (substr[rules.length] && findRules(substr[rules.length]).mapping[0] == 0) {
+        // before a vowel
+        code = rules.mapping[1];
+      } else {
+        // any other situation
+        code = rules.mapping[2];
+      }
+
+      if ((code != -1) && (code != lastCode)) output += code;
+      lastCode = code;
+      pos += rules.length;
+    }
+
+    return normalizeLength(output, codeLength);
+  }
+
+
+  function findRules(str) {
+    var state = codes[str[0]];
+    var legalState = state || [[-1, -1, -1]],
+      charsInvolved = 1;
+
+    for (var offs = 1; offs < str.length; offs++) {
+      if (!state || !state[str[offs]]) break;
+
+      state = state[str[offs]];
+      if (state[0]) {
+        legalState = state;
+        charsInvolved = offs + 1;
+      }
+    }
+
+    return {
+      length: charsInvolved,
+      mapping: legalState[0]
+    };
+  }
+
+
+  /**
+   * Pad right with zeroes or cut excess symbols to fit length
+   */
+  function normalizeLength(token, length) {
+    length = length || 6;
+    if (token.length < length) {
+      token += (new Array(length - token.length + 1)).join('0');
+    }
+    return token.slice(0, length);
+  }
+
+  return {
+    process: process
+  }
+}

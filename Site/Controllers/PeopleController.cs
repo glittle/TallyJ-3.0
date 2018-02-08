@@ -42,15 +42,16 @@ namespace TallyJ.Controllers
         {
           Id = p.C_RowId,
           p.PersonGuid,
-          Name = p.FullNameAndArea,
-          p.CanReceiveVotes,
-          p.CanVote,
-          p.IneligibleReasonGuid,
+          Name = p.FullNameFL,
+          p.Area,
+          V = (p.CanReceiveVotes.GetValueOrDefault() ? "1" : "0") + (p.CanVote.GetValueOrDefault() ? "1" : "0"),
+          IRG = p.IneligibleReasonGuid,
           RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
-          Count = isSingleNameElection
+          NumVotes = isSingleNameElection
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
             : votes.Count(v => v.PersonGuid == p.PersonGuid)
-        })
+        }),
+        lastVid = votes.Max(v=>v.C_RowId)
       }.AsJsonResult();
     }
 
