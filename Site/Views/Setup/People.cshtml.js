@@ -13,8 +13,7 @@
     showPersonId: null,
     selectByVoteCount: false,
     maintainCurrentRow: false,
-    //template: '<li id=P{Id}>{^Name}</li>',
-    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {Id}</li>'
+    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>'
   };
 
 
@@ -134,36 +133,6 @@
     editPersonPage.applyValues(panel, person, true);
 
   };
-
-  //    var saveChanges = function () {
-  //        var form = {};
-  //        $(':input[data-name]').each(function () {
-  //            var input = $(this);
-  //            var value;
-  //            switch (input.attr('type')) {
-  //                case 'checkbox':
-  //                    value = input.prop('checked');
-  //                    break;
-  //                default:
-  //                    value = input.val();
-  //                    break;
-  //            }
-  //            form[input.data('name')] = value;
-  //        });
-
-  //        ShowStatusDisplay("Saving...");
-  //        CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
-  //            if (info.Person) {
-  //                applyValues(info.Person);
-  //                var searchText = $('#txtSearch').val();
-  //                if (searchText) {
-  //                    local.peopleHelper.SearchNames(searchText, displaySearchResults, false);
-  //                }
-  //            }
-  //            ShowStatusDisplay(info.Status);
-  //        });
-  //    };
-
 
   var navigating = function (ev) {
     switch (ev.which) {

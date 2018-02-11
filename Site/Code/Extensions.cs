@@ -598,7 +598,9 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static string SerializedAsJsonString(this object input)
     {
-      return new JavaScriptSerializer().Serialize(input);
+      return new JavaScriptSerializer {
+        MaxJsonLength = int.MaxValue
+      }.Serialize(input);
     }
 
     /// <summary>

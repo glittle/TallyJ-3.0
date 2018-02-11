@@ -8,6 +8,7 @@
   ViewBag.Message = "Tally the votes";
 
   ContextItems.AddJavascriptForPage("ballotNormalPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotNormalPage.frontDeskUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("ballotNormalPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("ballotNormalPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
   ContextItems.AddJavascriptForPage("ballotNormalPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
@@ -16,7 +17,7 @@
   ContextItems.AddJavascriptForPage("ballotNormalPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
   ContextItems.AddJavascriptForPage("ballotNormalPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
 
-  TemplateLoader.RequireTemplates(TemplateLoader.File.NormalVoteLine);
+  //TemplateLoader.RequireTemplates(TemplateLoader.File.NormalVoteLine);
 
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -57,7 +58,6 @@
       </div>
     }
     <h3><span>Ballots</span></h3>
-    @*<span id="collectedVsEnteredTitle"></span>*@
     <div id="tabBallots" class="locationInfo">
       <div class="float-right">
         <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
@@ -164,3 +164,24 @@
     Cancel
   </button>
 </div>
+
+<script type="text/x-template" id="NormalVoteLine">
+  <div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <span class="VoteNum">{pos}</span>
+    <span class="NameInfo">
+      <span class="Duplicate">Duplicate: </span>
+      <span class="Invalid">Spoiled: </span>
+      <span class="Name">{^Display}</span>
+      <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
+        {^InvalidReasons}
+      </select>
+    </span>
+    <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
+    <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
+    <div class="Invalid InvalidPerson">{InvalidDescription}</div>
+    <div class="ChangedMessage">
+      This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!
+      <button type="button" class="btnClearChangeError">Verified correct</button>
+    </div>
+  </div>
+</script>

@@ -256,7 +256,7 @@ namespace TallyJ.CoreModels
         });
     }
 
-    public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason, int lastVid)
+    public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason, int lastVid, bool verifying)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
@@ -336,7 +336,8 @@ namespace TallyJ.CoreModels
           ballotStatusInfo.SpoiledCount,
           LocationBallotsEntered = sum,
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
-          LastVid = vote.C_RowId
+          LastVid = vote.C_RowId,
+          Name = verifying ? person1.C_FullNameFL : null,
         }.AsJsonResult();
       };
 

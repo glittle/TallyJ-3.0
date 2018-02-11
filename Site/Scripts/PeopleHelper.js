@@ -8,12 +8,12 @@
   var soundex = new Metaphone();
 
   function prepare(cb) {
-    ShowStatusDisplay('Loading names list');
-    loadAllNames(cb);
+    startLoadingAllNames(cb);
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
   }
 
-  function loadAllNames(cb) {
+  function startLoadingAllNames(cb) {
+    ShowStatusDisplay('Loading names list');
     CallAjaxHandler(local.url + '/GetAll',
       {},
       function (info) {
@@ -34,10 +34,7 @@
   }
 
   function personSaved(ev, info) {
-    console.log('helper', info);
-
     var editedPerson = info.Person;
-
 
     // find this person
     var i = local.localNames.findIndex(function (person) {
@@ -64,6 +61,38 @@
 
       extendPersonCore(old);
     }
+  }
+
+  function updatePeople(info) {
+    // from changes when a person's info changes
+    info.PersonLines.forEach(function (editedPerson) {
+
+      // find this person
+      var i = local.localNames.findIndex(function (person) {
+        return person.Id === editedPerson.PersonId;
+      });
+
+      if (i === -1) {
+        // new person, adjust to fit
+        editedPerson.Name = editedPerson.FullName;
+        editedPerson.Id = editedPerson.PersonId;
+        editedPerson.NumVotes = 0;
+
+        extendPersonCore(editedPerson);
+
+        local.localNames.push(editedPerson);
+      }
+      else {
+        var old = local.localNames[i];
+
+        old.Name = editedPerson.FullName;
+        old.CanVote = editedPerson.CanVote;
+        //old.CanReceiveVotes = editedPerson.CanReceiveVotes;
+        //old.Ineligible = editedPerson.IneligibleReasonGuid;
+
+        extendPersonCore(old);
+      }
+    });
   }
 
   function extendPeople(arr) {
@@ -116,10 +145,12 @@
       searchSounds.push(soundex.process(searchParts[i]));
     }
 
-    console.log(searchParts, searchSounds);
+    //console.log(searchParts, searchSounds);
 
     local.localNames.forEach(function (n) {
-      addMatchedNames(n, result.People, searchParts, searchSounds);
+      if (result.People.length < 25) {
+        addMatchedNames(n, result.People, searchParts, searchSounds);
+      }
     });
 
     sortResults(result);
@@ -310,9 +341,9 @@
     });
   }
 
-  function refreshListing(search, onNamesReady, usedPersonIds, info) {
+  function refreshListing(searchTerm, onNamesReady, usedPersonIds, info) {
     updateVoteCounts(info);
-    search(search, onNamesReady, usedPersonIds);
+    search(searchTerm, onNamesReady, usedPersonIds);
   };
 
   function showMatchedLetters(searchParts, personInfo) {
@@ -359,6 +390,9 @@
     local: local,
     Search: function (searchText, onNamesReady, usedPersonIds) {
       search(searchText, onNamesReady, usedPersonIds);
+    },
+    UpdatePeople: function (info) {
+      updatePeople(info);
     },
     Special: function (searchText, onNamesReady) {
       special(searchText, onNamesReady);

@@ -313,7 +313,6 @@
     <Compile Include="CoreModels\LocationModel.cs" />
     <Compile Include="CoreModels\MonitorModel.cs" />
     <Compile Include="CoreModels\PeopleModel.cs" />
-    <Compile Include="CoreModels\PeopleSearchModel.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="EF\Ballot.cs">
@@ -756,7 +755,6 @@
     <Content Include="Images\shadow.png" />
     <Content Include="Images\SlideProjector.gif" />
     <Content Include="JsTemplates\RollCallLine.html" />
-    <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\EditPerson.html" />
     <Content Include="JsTemplates\SingleVoteLine.html" />
     <Content Include="JsTemplates\LocationSelectItem.html" />

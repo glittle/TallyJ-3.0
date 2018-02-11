@@ -17,7 +17,8 @@
   var preparePage = function () {
     local.lineTemplate = document.getElementById('frontDeskLineTemplate').innerText;
 
-    fillList();
+    connectToFrontDeskHub();
+    startGettingPeople();
 
     $('#Main')
       .on('click', '.Btn', function (ev) {
@@ -43,7 +44,6 @@
       filterByStatus($(this));
     });
 
-    connectToFrontDeskHub();
 
     local.headerSpace = $('header').outerHeight();
 
@@ -60,7 +60,6 @@
     }).scroll();
 
     resetSearch();
-    updateTotals();
   };
 
   var connectToFrontDeskHub = function () {
@@ -490,6 +489,16 @@
       }
     });
   };
+
+  var startGettingPeople = function () {
+    ShowStatusDisplay('Getting names');
+    CallAjaxHandler(publicInterface.controllerUrl + '/PeopleForFrontDesk', {}, function (list) {
+      publicInterface.initial = list;
+      fillList();
+      updateTotals();
+    });
+
+  }
 
   var fillList = function () {
     var html = [];

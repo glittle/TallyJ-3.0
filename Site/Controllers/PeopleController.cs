@@ -54,20 +54,20 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
-    public JsonResult GetPeople(string search, bool includeMatches = false, bool forBallot = true)
-    {
-      var currentElection = UserSession.CurrentElection;
-      if (currentElection == null)
-      {
-        return new
-        {
-          Error = "Election not selected"
-        }.AsJsonResult();
-      }
+    //public JsonResult GetPeople(string search, bool includeMatches = false, bool forBallot = true)
+    //{
+    //  var currentElection = UserSession.CurrentElection;
+    //  if (currentElection == null)
+    //  {
+    //    return new
+    //    {
+    //      Error = "Election not selected"
+    //    }.AsJsonResult();
+    //  }
 
-      var model = new PeopleSearchModel();
-      return model.Search2(search, includeMatches, forBallot);
-    }
+    //  var model = new PeopleSearchModel();
+    //  return model.Search2(search, includeMatches, forBallot);
+    //}
 
     public JsonResult GetDetail(int id)
     {

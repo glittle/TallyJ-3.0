@@ -27,11 +27,10 @@ namespace TallyJ.CoreModels
     public static string DetermineStatus(VoteInfo voteInfo)
     {
       return voteInfo.VoteIneligibleReasonGuid.HasValue
-//             || voteInfo.PersonIneligibleReasonGuid.HasValue
              || !voteInfo.PersonCanReceiveVotes
         ? VoteHelper.VoteStatusCode.Spoiled
-        : voteInfo.PersonCombinedInfo.HasContent() && voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote
-          ? VoteHelper.VoteStatusCode.Changed
+        //: voteInfo.PersonCombinedInfo.HasContent() && voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote
+        //  ? VoteHelper.VoteStatusCode.Changed
           : VoteHelper.VoteStatusCode.Ok;
     }
 

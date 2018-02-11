@@ -28,13 +28,15 @@
     rowSelected: 0,
     lastBallotRowVersion: 0,
     keyTimeShowSpan: null,
-    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {NumVotes} {MatchType} {soundParts} {matchedParts}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
   };
   var tabNum = {};
 
   function preparePage() {
+    local.NormalVoteLineTemplate = $('#NormalVoteLine').text();
+
     tabNum = publicInterface.HasLocations ? {
       ballotEdit: 2,
       ballotListing: 1,
@@ -167,6 +169,26 @@
     showBallot(publicInterface);
 
     $('#votesPanel, .div1').show();
+
+    connectToFrontDeskHub();
+
+  };
+
+  var connectToFrontDeskHub = function () {
+    $.connection().logging = true;
+    var hub = $.connection.frontDeskHubCore;
+
+    hub.client.updatePeople = function (info) {
+      console.log('signalR: updatePeople');
+      local.peopleHelper.UpdatePeople(info);
+      searchTextChanged();
+      startToRefreshBallotList();
+    };
+
+    startSignalR(function () {
+      console.log('Joining frontDesk hub');
+      CallAjaxHandler(publicInterface.frontDeskUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
+    });
 
   };
 
@@ -450,7 +472,7 @@ add to this ballot
 
     //var scroll = local.votesList.scrollTop();
 
-    local.votesList.html(site.templates.NormalVoteLine.filledWithEach(votes));
+    local.votesList.html(local.NormalVoteLineTemplate.filledWithEach(votes));
     local.votesList.find('select:visible').each(function () {
       var select = $(this);
       select.val(select.data('invalid'));
@@ -666,10 +688,10 @@ add to this ballot
 
   function resaveVote(ev) {
     var host = $(ev.target).parents('.VoteHost');
-    startSavingVote(host);
+    startSavingVote(host, true);
   };
 
-  function startSavingVote(host) {
+  function startSavingVote(host, verifying) {
     if ($('#ddlTopLocation').val() == -1) {
       ShowStatusFailed('Must select your location first!');
       return;
@@ -686,7 +708,8 @@ add to this ballot
       vid: voteId,
       invalid: invalidId,
       count: input.val() || 0,
-      lastVid: local.lastVid
+      lastVid: local.lastVid,
+      verifying: verifying
     };
 
     if (invalidId) {
@@ -747,8 +770,12 @@ add to this ballot
           }
         }
 
+        if (verifying && info.Name) {
+          // name will has changed
+          host.find('.Name').html(info.Name);
+        }
+
         scrollToVote(host, info.pos);
-        //setBallotStatus(info.BallotStatus, info.BallotStatusText, true, info.SpoiledCount);
         updateStatusDisplay(info);
         updateStatusInList(info);
 
@@ -852,7 +879,7 @@ add to this ballot
   function displaySearchResults(info, beingRefreshed, fromQuickSearch) {
     local.People = info.People || [];
 
-    console.log(local.People);
+    //console.log(local.People);
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
@@ -1050,7 +1077,7 @@ add to this ballot
     if (missing) {
       var emptyVote = { pos: '-', Fake: 'Fake' };
       for (var i = 0; i < missing; i++) {
-        local.votesList.append(site.templates.NormalVoteLine.filledWith(emptyVote));
+        local.votesList.append(local.NormalVoteLineTemplate.filledWith(emptyVote));
       }
     }
 

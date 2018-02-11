@@ -127,6 +127,7 @@ namespace TallyJ.CoreModels
         if (resultSummaryFinal.BallotsNeedingReview != 0)
         {
           var locations = new LocationCacher(Db).AllForThisElection;
+          var multipleLocations = locations.Count() > 1;
 
           var needReview = _analyzer.VoteInfos.Where(VoteAnalyzer.VoteNeedReview)
             .Join(locations, vi => vi.LocationId, l => l.C_RowId,
@@ -139,8 +140,8 @@ namespace TallyJ.CoreModels
                 x.vi.BallotStatusCode == "Review"
                   ? BallotStatusEnum.Review.DisplayText
                   : "Verification Needed",
-              Ballot =
-                string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name)
+              Ballot = multipleLocations ? 
+                string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name) : x.vi.C_BallotCode
             })
             .Distinct()
             .OrderBy(x => x.Ballot);
@@ -156,8 +157,8 @@ namespace TallyJ.CoreModels
                 x.b.StatusCode == "Review"
                   ? BallotStatusEnum.Review.DisplayText
                   : "Verification Needed",
-              Ballot =
-                string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name)
+              Ballot = multipleLocations ?
+                string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name) : x.b.C_BallotCode
             });
 
           return new

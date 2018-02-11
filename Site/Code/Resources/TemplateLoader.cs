@@ -20,7 +20,6 @@ namespace TallyJ.Code.Resources
       LocationSelectItem,
       SingleVoteLine,
       EditPerson,
-      NormalVoteLine,
       RollCallLine,
     }
 

@@ -108,13 +108,13 @@ namespace TallyJ.CoreModels
     {
       person.CombinedInfoAtStart = person.CombinedInfo = person.MakeCombinedInfo();
 
-      person.UpdateCombinedSoundCodes();
+      // person.UpdateCombinedSoundCodes();
     }
 
     public void SetCombinedInfos(Person person)
     {
       person.CombinedInfo = person.MakeCombinedInfo();
-      person.UpdateCombinedSoundCodes();
+      //person.UpdateCombinedSoundCodes();
     }
 
     //public void ResetVotingRecords(Person person)
@@ -700,7 +700,7 @@ namespace TallyJ.CoreModels
         PersonLines = FrontDeskPersonLines(new List<Person> { person }),
         LastRowVersion = person.C_RowVersionInt
       };
-      new FrontDeskHub().UpdateAllConnectedClients(updateInfo);
+      new FrontDeskHub().UpdatePeople(updateInfo);
 
 
       var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed

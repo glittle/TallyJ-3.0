@@ -19,7 +19,7 @@
 
   ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
-  ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
+  //ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
 
 }
