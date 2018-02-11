@@ -120,5 +120,9 @@
   {
     "outputFile": "Views/After/Monitor.cshtml.css",
     "inputFile": "Views/After/Monitor.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/People.cshtml.css",
+    "inputFile": "Views/Setup/People.cshtml.less"
   }
 ]

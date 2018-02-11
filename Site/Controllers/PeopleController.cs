@@ -41,12 +41,11 @@ namespace TallyJ.Controllers
         people = new PersonCacher(Db).AllForThisElection.Select(p => new
         {
           Id = p.C_RowId,
-          p.PersonGuid,
+          //p.PersonGuid,
           Name = p.FullNameFL,
           p.Area,
           V = (p.CanReceiveVotes.GetValueOrDefault() ? "1" : "0") + (p.CanVote.GetValueOrDefault() ? "1" : "0"),
           IRG = p.IneligibleReasonGuid,
-          RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
           NumVotes = isSingleNameElection
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
             : votes.Count(v => v.PersonGuid == p.PersonGuid)

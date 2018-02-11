@@ -14,9 +14,44 @@
     selectByVoteCount: false,
     maintainCurrentRow: false,
     //template: '<li id=P{Id}>{^Name}</li>',
-    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>'
+    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {Id}</li>'
   };
-  var onNamesReady = function (info) {
+
+
+  var preparePage = function () {
+    local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl, false);
+    local.peopleHelper.Prepare(function () {
+      if (local.totalOnFile < 25) {
+        specialSearch('All');
+      } else {
+        local.nameList.html('<li class=Match2>(Ready for searching)</li>');
+      }
+    });
+
+    local.inputField = $('#txtSearch').focus();
+    local.inputField.bind('keyup paste', runSearch);
+    local.actionTag = $('#action');
+    local.nameList = $('#nameList');
+    $(document).on('click', '#nameList li', nameClick).focus();
+    $(document).on('click', '#btnAddNew', addNewPerson);
+
+    local.totalOnFile = publicInterface.namesOnFile;
+
+    //$('#btnListVoters').click(function () {
+    //  specialSearch('Voters');
+    //});
+    //$('#btnListTied').click(function () {
+    //  specialSearch('Tied');
+    //});
+
+    resetSearch();
+
+    site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+
+    site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
+  };
+
+  var displaySearchResults = function (info) {
     local.People = info.People;
     local.nameList.html(local.template2.filledWithEach(local.People));
     $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
@@ -25,9 +60,9 @@
       local.nameList.append('<li>...no matches found...</li>');
     }
     else {
-      if (info.MoreFound && local.lastSearch) {
-        local.nameList.append('<li>...more matched...</li>');
-      }
+      //if (info.MoreFound && local.lastSearch) {
+      //  local.nameList.append('<li>...more matched...</li>');
+      //}
       if (local.showPersonId) {
         local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
         local.showPersonId = 0;
@@ -122,7 +157,7 @@
   //                applyValues(info.Person);
   //                var searchText = $('#txtSearch').val();
   //                if (searchText) {
-  //                    local.peopleHelper.SearchNames(searchText, onNamesReady, false);
+  //                    local.peopleHelper.SearchNames(searchText, displaySearchResults, false);
   //                }
   //            }
   //            ShowStatusDisplay(info.Status);
@@ -159,7 +194,6 @@
   };
 
   var runSearch = function (ev) {
-    clearTimeout(local.keyTimer);
     var input = $(this);
     var text = input.val();
     if (navigating(ev)) {
@@ -170,26 +204,17 @@
       resetSearch();
       return;
     }
-    local.actionTag.addClass('delaying');
-    input.addClass('delaying');
 
-    local.keyTimer = setTimeout(function () {
-      local.lastSearch = text;
-      local.actionTag.removeClass('delaying');
-      input.removeClass('delaying');
-      local.actionTag.addClass('searching');
-      input.addClass('searching');
+    local.lastSearch = text;
 
-      local.peopleHelper.SearchNames(text, onNamesReady, false, null, false);
-    }, local.keyTime);
+    local.peopleHelper.Search(text, displaySearchResults);
   };
   var resetSearch = function () {
     $('#txtSearch').val('');
     local.actionTag.removeClass('delaying');
     local.inputField.removeClass('delaying');
-    local.peopleHelper.ResetSearch();
     local.lastSearch = '';
-    onNamesReady({
+    displaySearchResults({
       People: [],
       MoreFound: moreFound(local.totalOnFile)
     });
@@ -220,53 +245,19 @@
   };
 
 
-  var preparePage = function () {
-    local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
-    local.peopleHelper.Prepare();
-
-    local.inputField = $('#txtSearch').focus();
-    local.inputField.bind('keyup paste', runSearch);
-    local.actionTag = $('#action');
-    local.nameList = $('#nameList');
-    $(document).on('click', '#nameList li', nameClick).focus();
-    $(document).on('click', '#btnAddNew', addNewPerson);
-
-    $('#btnListVoters').click(function () {
-      specialSearch('~~Voters~~');
-    });
-    $('#btnListTied').click(function () {
-      specialSearch('~~Tied~~');
-    });
-
-    local.totalOnFile = publicInterface.namesOnFile;
-
-    resetSearch();
-
-    if (local.totalOnFile < 25) {
-      setTimeout(function () {
-        specialSearch('~~All~~');
-      }, 500);
-    } else {
-      local.nameList.html('<li class=Match2>(Ready for searching)</li>');
-    }
-
-    site.onbroadcast(site.broadcastCode.personSaved, personSaved);
-
-    site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
-  };
-
   var specialSearch = function (code) {
     resetSearch();
-    local.peopleHelper.SearchNames(code, onNamesReady, false, null, false);
+    local.peopleHelper.Special(code, displaySearchResults);
   };
 
   var personSaved = function (ev, info) {
+
     var searchText = $('#txtSearch').val();
     local.totalOnFile = info.OnFile;
     if (searchText) {
       local.maintainCurrentRow = true;
       local.showPersonId = info.Person.C_RowId;
-      local.peopleHelper.SearchNames(searchText, onNamesReady, false, null, false);
+      local.peopleHelper.Search(searchText, displaySearchResults);
     }
     else {
       $('#more').html(moreFound(info.OnFile));
@@ -275,8 +266,10 @@
 
   var publicInterface = {
     peopleUrl: '',
-    namesOnFile: 0,
-    PreparePage: preparePage
+    PreparePage: preparePage,
+    peopleHelper: function () {
+      return local.peopleHelper;
+    }
   };
   return publicInterface;
 };

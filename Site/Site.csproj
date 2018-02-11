@@ -692,6 +692,9 @@
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\People.cshtml.css">
+      <DependentUpon>People.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\Setup.cshtml.css">
       <DependentUpon>Setup.cshtml.less</DependentUpon>
     </Content>
@@ -730,6 +733,9 @@
     </Content>
     <Content Include="Views\After\Monitor.cshtml.less">
       <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\People.cshtml.less">
+      <DependentUpon>People.cshtml</DependentUpon>
     </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
@@ -825,9 +831,6 @@
       <DependentUpon>ImportCsv.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\loading.gif" />
-    <Content Include="Views\Setup\People.cshtml.css">
-      <DependentUpon>People.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\Setup\People.cshtml.js">
       <DependentUpon>People.cshtml</DependentUpon>
     </Content>

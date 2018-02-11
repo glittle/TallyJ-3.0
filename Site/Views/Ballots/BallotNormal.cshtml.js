@@ -28,7 +28,7 @@
     rowSelected: 0,
     lastBallotRowVersion: 0,
     keyTimeShowSpan: null,
-    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {NumVotes} {MatchType}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName} {NumVotes} {MatchType} {soundParts} {matchedParts}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
   };
@@ -67,7 +67,7 @@
       }
     });
 
-    local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl);
+    local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl, true);
     local.peopleHelper.Prepare(function (lastVid) {
       local.lastVid = lastVid;
     });
@@ -752,7 +752,7 @@ add to this ballot
         updateStatusDisplay(info);
         updateStatusInList(info);
 
-        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds(), info);
+        local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
 
         if (info.BallotStatus === 'Ok') {
           local.tabList.accordion('option', 'active', tabNum.ballotListing);
@@ -823,7 +823,7 @@ add to this ballot
         if (info.Location) {
           showLocation(info.Location);
         }
-        local.peopleHelper.RefreshListing(local.inputField.val(), onNamesReady, getUsedIds(), info);
+        local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
       }
       else {
         ShowStatusFailed(info.Message);
@@ -849,13 +849,10 @@ add to this ballot
     });
   };
 
-  function onNamesReady(info, beingRefreshed, fromQuickSearch) {
+  function displaySearchResults(info, beingRefreshed, fromQuickSearch) {
     local.People = info.People || [];
 
-    if (!fromQuickSearch) {
-      //resetKeyTimeShow();
-      //local.peopleHelper.AddGroupToLocalNames(local.People);
-    }
+    console.log(local.People);
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
@@ -871,7 +868,7 @@ add to this ballot
       if (beingRefreshed) {
 
       } else {
-        local.rowSelected = info.BestRowNum;
+        local.rowSelected = 0; //info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
         var li = $(item);
@@ -1164,14 +1161,9 @@ add to this ballot
     //    }
     //  });
 
-    local.peopleHelper.QuickSearch(text, function (info) {
-      onNamesReady(info, false, true);
+    local.peopleHelper.Search(text, function (info) {
+      displaySearchResults(info, false, true);
     }, getUsedIds());
-
-    //local.keyTimer = setTimeout(function () {
-    //  local.lastSearch = text;
-    //  local.peopleHelper.SearchNames(text, onNamesReady, true, getUsedIds(), true);
-    //}, local.keyTime);
   };
 
   function getUsedIds() {
@@ -1183,7 +1175,7 @@ add to this ballot
   function resetSearch() {
     local.lastSearch = '';
     local.inputField.val('');
-    onNamesReady({
+    displaySearchResults({
       People: [],
       MoreFound: ''
     }, false);

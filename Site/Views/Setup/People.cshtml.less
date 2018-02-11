@@ -1,6 +1,7 @@
 ﻿.sideBySide {
   display: flex;
 }
+
 #nameList {
   height: 220px;
   width: 348px;
@@ -8,78 +9,100 @@
   padding: 4px;
   margin: 2px 0 0 2px;
   overflow: auto;
+
+  u {
+    text-decoration: none;
+  }
+
+  li {
+    border: 1px solid transparent;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+  }
+
+  li:hover {
+    border-color: #ddd;
+  }
+
+
+  li.selected {
+    background-color: #c1f1b4;
+    border-color: #999;
+  }
+
+  li span {
+    display: block;
+    text-indent: -20px;
+    padding-left: 20px;
+  }
+
+  .CannotReceiveVotes:after {
+    content: ' 🞛';
+  }
+
+  .CannotVote {
+    text-decoration: line-through;
+  }
+
+  .Fuzzy {
+    font-style: italic;
+  }
+
+  .First {
+    padding-top: 3px;
+    border-top: 3px double #ccc;
+    width: 100%;
+    display: block;
+  }
 }
-#nameList u {
-  text-decoration: none;
-}
-#nameList li {
-  border: 1px solid transparent;
-  cursor: pointer;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-}
-#nameList li:hover {
-  border-color: #ddd;
-}
-#nameList li.selected {
-  background-color: #c1f1b4;
-  border-color: #999;
-}
-#nameList li span {
-  display: block;
-  text-indent: -20px;
-  padding-left: 20px;
-}
-#nameList .CannotReceiveVotes:after {
-  content: ' 🞛';
-}
-#nameList .CannotVote {
-  text-decoration: line-through;
-}
-#nameList .Fuzzy {
-  font-style: italic;
-}
-#nameList .First {
-  padding-top: 3px;
-  border-top: 3px double #ccc;
-  width: 100%;
-  display: block;
-}
+
 #action {
   width: 20px;
   height: 1em;
   display: inline-block;
 }
+
 span.ZZdelaying {
   background-color: #f8f541;
 }
+
 span.ZZsearching {
   background-color: #c1f1b4;
 }
+
 input.delaying {
   background-color: #fffebf;
 }
+
 input.searching {
   background-color: #ffe8e2;
 }
+
+
 #editPanel {
   float: left;
   margin-left: 20px;
   display: none;
 }
+
 .Ineligible {
   text-decoration: line-through;
 }
+
 .searchlabel {
   display: block;
 }
+
 #more {
   float: right;
   font-size: 90%;
 }
+
 #btnAddNew {
   float: right;
 }
+
 .Match1 {
   font-style: italic;
 }

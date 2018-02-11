@@ -20,10 +20,8 @@
       personInfo.CanVote = reason.CanVote;
       personInfo.CanReceiveVotes = reason.CanReceiveVotes;
     }
-    //    IneligibleReasonGuid: ineligible,
-    //      CanVote: ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
-    //      CanReceiveVotes: ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
     applyValues(panel, personInfo, true);
+
     startEdit();
   };
 
@@ -44,6 +42,9 @@
       CanVote: canVote, //ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
       CanReceiveVotes: canReceiveVotes // ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
     }, false);
+
+    $('#trCanVote').toggleClass('IsNo', !canVote);
+    $('#trCanReceiveVotes').toggleClass('IsNo', !canReceiveVotes);
   };
 
   function startEdit() {
@@ -96,6 +97,9 @@
         }
       }
     }
+
+    $('#trCanVote').toggleClass('IsNo', !person.CanVote);
+    $('#trCanReceiveVotes').toggleClass('IsNo', !person.CanReceiveVotes);
 
     panel.fadeIn();
     // panel.find('[data-name="FirstName"]').focus();

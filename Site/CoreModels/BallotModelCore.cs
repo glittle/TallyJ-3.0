@@ -419,6 +419,8 @@ namespace TallyJ.CoreModels
     /// <summary>
     /// This works only for the person deleting the vote. Other tellers will not know that their count of votes for this person
     /// should be reduced. However, when another vote is made for this person, all tellers will eventually know about it.
+    /// The counts returned are not guaranteed as one teller's computer may get out of sync with the real total. Refreshing the
+    /// teller's page should fix it.
     /// </summary>
     /// <param name="personGuid"></param>
     /// <param name="voteCacher"></param>
@@ -431,9 +433,14 @@ namespace TallyJ.CoreModels
         .Select(g => new
         {
           PersonGuid = g.Key,
-          Count = g.Sum(v => isSingleName ? v.SingleNameElectionCount : 1)
+          Count = g.Sum(v => isSingleName ? v.SingleNameElectionCount : 1).DefaultTo(0)
         })
         .ToList();
+
+      if (!counts.Any(v => v.PersonGuid == personGuid)) {
+        counts.Add(new { PersonGuid = personGuid, Count = 0 });
+      }
+
       return counts;
     }
 
