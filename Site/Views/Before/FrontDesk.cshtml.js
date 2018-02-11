@@ -190,7 +190,7 @@
       });
     }
     else if (/[\w]/.test(letter)) {
-      console.log(local.focusedOnMatches)
+      //console.log(local.focusedOnMatches)
       if (!local.focusedOnMatches) {
         $('#search').focus();
       } else {
@@ -529,6 +529,8 @@
             someHidden = true;
           }
 
+          person.DisplayLog = '';
+
           if (person.CanVote) {
             if (row.length) {
               row.replaceWith(local.lineTemplate.filledWith(person));
@@ -564,21 +566,21 @@
 
   function insertNewPerson(person) {
     var newName = person.NameLower;
-    console.log('new', newName);
+    //console.log('new', newName);
     var added = false;
     $('div.Voter').each(function (i, el) {
       var row = $(el);
-      console.log(row.data('name'));
+      //console.log(row.data('name'));
       if (row.data('name') < newName) {
         return true;
       }
-      console.log('insert before');
+      //console.log('insert before');
       row.before(local.lineTemplate.filledWith(person));
       added = true;
       return false;
     });
     if (!added) {
-      console.log('after last');
+      //console.log('after last');
       $('div.Voter').last().after(local.lineTemplate.filledWith(person));
     }
   }

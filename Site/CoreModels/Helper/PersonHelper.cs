@@ -16,7 +16,6 @@ namespace TallyJ.CoreModels.Helper
         person.LastName,
         person.OtherNames,
         person.OtherLastNames,
-        // additional - for searching
         //person.Area,
         person.OtherInfo,
         person.BahaiId
@@ -25,20 +24,5 @@ namespace TallyJ.CoreModels.Helper
         .ReplacePunctuation(WordSeparator[0])
         .WithoutDiacritics(true);
     }
-
-    //public static void UpdateCombinedSoundCodes(this Person person)
-    //{
-    //  person.CombinedSoundCodes = new[]
-    //  {
-    //    person.FirstName,
-    //    person.LastName,
-    //    person.OtherNames,
-    //    person.OtherLastNames,
-    //    // additional - for searching
-    //    person.Area,
-    //    person.OtherInfo
-    //  }
-    //    .GenerateDoubleMetaphone(" ");
-    //}
   }
 }

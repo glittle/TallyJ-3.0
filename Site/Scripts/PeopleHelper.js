@@ -5,6 +5,7 @@
     localNames: []
   };
 
+  var maxToShow = 60;
   var soundex = new Metaphone();
 
   function prepare(cb) {
@@ -148,7 +149,7 @@
     //console.log(searchParts, searchSounds);
 
     local.localNames.forEach(function (n) {
-      if (result.People.length < 25) {
+      if (result.People.length < maxToShow) {
         addMatchedNames(n, result.People, searchParts, searchSounds);
       }
     });

@@ -89,12 +89,6 @@
     if (!list.length) {
       return;
     }
-    //var ballotList = ('<div title="{Tellers}" data-time="{RegistrationTime}"><span><span>{C_FullName}</span>'
-    //  + '<span class=When>{#("{Method}"=="") ? "" : " --> "}{Method} {When}</span>'
-    //  + '</span>'
-    //  + '{#("{Tellers}"==""?"":" <span class=\'ui-icon ui-icon-person EnvNum\'></span>")}'
-    //  + '{#("{EnvNum}"=="") ? "" : "<span class=EnvNum>#{EnvNum}</span>"}'
-    //  + '</div>').filledWithEach(extend(list));
     var ballotList = local.envelopeTemplate.filledWithEach(extend(list));
     $('#lists').append(
 
