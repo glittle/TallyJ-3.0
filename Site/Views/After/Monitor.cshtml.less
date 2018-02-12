@@ -1,4 +1,6 @@
-﻿.ui-icon {
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+.ui-icon {
   display: inline-block;
 }
 
@@ -35,6 +37,7 @@ tbody th {
 .publicInfo {
   color: #555;
 }
+
 .warning {
   color: red;
 
@@ -44,19 +47,32 @@ tbody th {
   }
 }
 
+#lastRefreshArea {
+  position: relative;
 
+  .countdown {
+    position: absolute;
+    display: block;
+    bottom: -2px;
+    height: 3px;
+    left: 0;
+    width: 0%;
+    background-color: @tallyJGreen;
+    transition: all .5s;
+  }
+}
 
 table.compList {
   width: 100%;
 }
 
-  table.compList thead th {
-    font-weight: normal;
-    font-style: italic;
-    color: #999;
-    font-size: 80%;
-    white-space: nowrap;
-  } 
+table.compList thead th {
+  font-weight: normal;
+  font-style: italic;
+  color: #999;
+  font-size: 80%;
+  white-space: nowrap;
+}
 
 
 .AutoButtons {
@@ -79,9 +95,11 @@ table.compList {
   color: #999;
   font-size: 80%;
 }
+
 .tellers {
   font-size: 80%;
 }
+
 .AccessCode {
   color: #999;
 }

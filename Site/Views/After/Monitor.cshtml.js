@@ -3,7 +3,8 @@
     rowTemplateMain: '',
     rowTemplateExtra: '',
     rowTemplateBallot: '',
-    refreshTimeout: null
+    refreshTimeout: null,
+    refreshCounter: null,
   };
 
   var preparePage = function () {
@@ -75,8 +76,8 @@
       ballotTable.html(expandBallots(info.Ballots));
     }
 
-    // use election.T24 here? 
-    $('#lastRefresh').html(new Date().toLocaleTimeString());
+    var now = new Date();
+    $('#lastRefresh').html(monitorPage.T24 ? now.toLocaleTimeString() : now.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true }));
 
     startAutoMinutes();
     setAutoRefresh();
@@ -130,17 +131,44 @@
   var setAutoRefresh = function (ev) {
     var wantAutorefresh = $('#chkAutoRefresh').prop('checked');
     clearTimeout(settings.refreshTimeout);
+    clearInterval(settings.refreshCounter);
 
     if (wantAutorefresh) {
+      var seconds = $('#ddlRefresh').val();
+
       settings.refreshTimeout = setTimeout(function () {
+        clearInterval(settings.refreshCounter);
+        showCountDown(0, seconds);
+
         refresh();
-      }, 1000 * $('#ddlRefresh').val());
+      }, 1000 * seconds);
+
+
+      showCountDown(seconds, seconds);
+
+      var remaining = seconds - .5;
+      var speed = seconds / 40;
+
+      setTimeout(function () {
+        clearInterval(settings.refreshCounter);
+        settings.refreshCounter = setInterval(function () {
+          remaining -= speed;
+          showCountDown(remaining, seconds);
+        }, speed * 1000);
+      }, 100);
 
       if (ev) { // called from a handler
         refresh();
       }
+    } else {
+      showCountDown(1, 1);
     }
   };
+
+  function showCountDown(remaining, original) {
+    var pct = 100 - Math.max(0, remaining / original * 100);
+    $('#lastRefreshArea .countdown').width(pct + '%');
+  }
 
   var updateListing = function () {
     var chk = $('#chkList');
