@@ -577,7 +577,7 @@ namespace TallyJ.CoreModels
         var log = person.RegistrationLog;
         log.Add(new[] {
           ShowRegistrationTime(timeOffset, person),
-          "Unregistered",
+          "De-selected",
           ShowTellers(person),
           LocationName(UserSession.CurrentLocationGuid),
         }.JoinedAsString("; ", true));

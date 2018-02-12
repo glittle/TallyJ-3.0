@@ -319,8 +319,6 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-
-
         var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
         var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
@@ -328,13 +326,19 @@ namespace TallyJ.CoreModels
 
         new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
 
+        var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
+          .Where(v => v.BallotGuid == ballot.BallotGuid)
+          .Sum(v => v.SingleNameElectionCount) : 0;
+
         return new
         {
           Updated = true,
           BallotStatus = ballotStatusInfo.Status.Value,
           BallotStatusText = ballotStatusInfo.Status.DisplayText,
           ballotStatusInfo.SpoiledCount,
+          BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
+          SingleBallotCount = ballotCounts, 
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
           LastVid = vote.C_RowId,
           Name = verifying ? person1.C_FullNameFL : null,
@@ -385,6 +389,10 @@ namespace TallyJ.CoreModels
 
         new BallotCacher(Db).UpdateItemAndSaveCache(rawBallot);
 
+        var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
+          .Where(v => v.BallotGuid == ballot.BallotGuid)
+          .Sum(v => v.SingleNameElectionCount) : 0;
+
         return new
         {
           Updated = true,
@@ -393,7 +401,9 @@ namespace TallyJ.CoreModels
           BallotStatus = ballotStatusInfo.Status.Value,
           BallotStatusText = ballotStatusInfo.Status.DisplayText,
           ballotStatusInfo.SpoiledCount,
+          BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
+          SingleBallotCount = ballotCounts,
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
           LastVid = vote.C_RowId
 
@@ -405,7 +415,11 @@ namespace TallyJ.CoreModels
     }
 
     private object GetVoteUpdates(int lastVoteId, VoteCacher voteCacher, bool isSingleName) {
-      var peopleInRecentVotes = voteCacher.AllForThisElection.Where(v => v.C_RowId > lastVoteId).Select(v=>v.PersonGuid).Distinct();
+      if (lastVoteId == 0) {
+        // single name elections
+        return null;
+      }
+      var peopleInRecentVotes = voteCacher.AllForThisElection.Where(v => v.C_RowId > lastVoteId && v.PersonGuid != null).Select(v=>v.PersonGuid).Distinct();
       var counts = voteCacher.AllForThisElection.Where(v => peopleInRecentVotes.Contains(v.PersonGuid))
         .GroupBy(v => v.PersonGuid)
         .Select(g => new
@@ -717,12 +731,9 @@ namespace TallyJ.CoreModels
 
     private object BallotsInfoList(List<Ballot> ballots, int totalCount)
     {
-      var maxRowVersion = ballots.Count == 0 ? 0 : ballots.Max(b => b.RowVersionInt);
-
       return new
       {
         Ballots = ballots.ToList().Select(ballot => BallotInfoForJs(ballot, new VoteCacher(Db).AllForThisElection)),
-        Last = maxRowVersion,
         Total = totalCount
       };
     }

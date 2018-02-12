@@ -658,6 +658,9 @@
     <Content Include="Views\Ballots\BallotNormal.cshtml.css">
       <DependentUpon>BallotNormal.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.css">
+      <DependentUpon>BallotSingle.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\Reconcile.cshtml.css">
       <DependentUpon>Reconcile.cshtml.less</DependentUpon>
     </Content>
@@ -736,6 +739,9 @@
     <Content Include="Views\Setup\People.cshtml.less">
       <DependentUpon>People.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.less">
+      <DependentUpon>BallotSingle.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -756,7 +762,6 @@
     <Content Include="Images\SlideProjector.gif" />
     <Content Include="JsTemplates\RollCallLine.html" />
     <Content Include="JsTemplates\EditPerson.html" />
-    <Content Include="JsTemplates\SingleVoteLine.html" />
     <Content Include="JsTemplates\LocationSelectItem.html" />
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
@@ -788,9 +793,6 @@
     </Content>
     <Content Include="Views\Ballots\BallotNormal.cshtml.js">
       <DependentUpon>BallotNormal.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Ballots\BallotSingle.cshtml.css">
-      <DependentUpon>BallotSingle.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Ballots\BallotSingle.cshtml.js">
       <DependentUpon>BallotSingle.cshtml</DependentUpon>

@@ -56,24 +56,6 @@ namespace TallyJ.CoreModels
     /// <returns>Returns the updated status code</returns>
     public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes, bool refreshVoteStatus)
     {
-      if (IsSingleNameElection)
-      {
-        if (ballot.StatusCode != BallotStatusEnum.Ok)
-        {
-          BallotSaver(DbAction.Attach, ballot);
-
-          ballot.StatusCode = BallotStatusEnum.Ok;
-
-          BallotSaver(DbAction.Save, ballot);
-        }
-        return new BallotStatusWithSpoilCount
-          {
-            Status = BallotStatusEnum.Ok,
-            SpoiledCount = 0
-          };
-      }
-
-
       //double check:
       currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
 
@@ -85,6 +67,25 @@ namespace TallyJ.CoreModels
       string newStatus;
       int spoiledCount;
 
+
+      //if (IsSingleNameElection)
+      //{
+      //  if (ballot.StatusCode != BallotStatusEnum.Ok)
+      //  {
+      //    BallotSaver(DbAction.Attach, ballot);
+
+      //    ballot.StatusCode = BallotStatusEnum.Ok;
+
+      //    BallotSaver(DbAction.Save, ballot);
+      //  }
+      //  return new BallotStatusWithSpoilCount
+      //    {
+      //      Status = BallotStatusEnum.Ok,
+      //      SpoiledCount = 0
+      //    };
+      //}
+
+      
       if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount))
       {
         BallotSaver(DbAction.Attach, ballot);
@@ -115,15 +116,15 @@ namespace TallyJ.CoreModels
         return false;
       }
 
-      if (IsSingleNameElection)
-      {
-        return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
-      }
-
-      var needsVerification = voteInfos.Any(v => v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      var needsVerification = voteInfos.Any(v => v.PersonCombinedInfo.HasContent() && !v.PersonCombinedInfo.StartsWith(v.PersonCombinedInfoInVote));
       if (needsVerification)
       {
         return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);
+      }
+
+      if (IsSingleNameElection)
+      {
+        return StatusChanged(BallotStatusEnum.Ok, currentStatusCode, out statusCode);
       }
 
       // check counts

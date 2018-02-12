@@ -8,6 +8,10 @@
   display: none;
 }
 
+body {
+  overflow-y: scroll;
+}
+
 /* overrides to fix UI */
 .ui-tabs-panel {
   padding: 3px 2px 5px 5px;
@@ -200,9 +204,14 @@ span.Vote {
 }
 
 input.Vote {
-  width: 60px;
-  margin-right: 5px;
+  width: 50px;
+  margin-right: 15px;
+  margin-left: 10px;
   text-align: right;
+  font-size: 110%;
+  padding-right: 4px;
+  vertical-align: top;
+  margin-top: 2px;
 }
 
 .titleDiv {
@@ -213,7 +222,7 @@ input.Vote {
 }
 
 .titleDiv div {
-  margin: -3px 0 0 0;
+  margin: -7px 0 0 0;
 }
 
 button.smallButton {
@@ -265,8 +274,8 @@ select.Invalid {
 
   &.Valid span.Name {
     display: inline-block;
-  }
-}
+  } 
+} 
 
 .NameInfo {
   white-space: normal;
@@ -325,7 +334,7 @@ div.heading {
 }
 
 .txtNumCollected {
-  width: 40px;
+  width: 50px;
   text-align: right;
   margin-right: 5px;
 }
@@ -347,17 +356,8 @@ div.heading {
 
 #votesList {
   padding-top: 5px;
-  margin-bottom: 20px;
   max-height: 400px;
-  overflow-y: auto;
-  width: 530px;
-  position: relative;
-}
-
-@media screen and (min-height: 900px) {
-  #votesList {
-    max-height: 9999px;
-  }
+  overflow: auto;
 }
 
 .VoteNum {

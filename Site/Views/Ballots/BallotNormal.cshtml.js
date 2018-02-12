@@ -4,8 +4,6 @@
   var local = {
     People: [],
     peopleHelper: null,
-    keyTimer: null,
-    keyTime: 1200,
     lastSearch: '',
     //    actionTag: null,
     inputField: null,
@@ -26,11 +24,10 @@
     invalidReasonsHtml: null,
     invalidReasonsShortHtml: null,
     rowSelected: 0,
-    lastBallotRowVersion: 0,
-    keyTimeShowSpan: null,
     searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
-    ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+    ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
+    NormalVoteLineTemplate: null
   };
   var tabNum = {};
 
@@ -76,19 +73,8 @@
 
     local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
     local.inputField.focus();
-    $(document).on('keydown', function (ev) {
-      if ($(ev.target).is(':text')) {
-        return;
-      }
-      switch (ev.which) {
-        case 8:
-          ev.preventDefault();
-          return;
-      }
-    });
 
-    local.keyTimeShowSpan = $("#keyTimeShow"),
-      local.nameList = $('#nameList');
+    local.nameList = $('#nameList');
     local.searchPanel = $('#nameSearch');
     local.ballotsPanel = $('#ballots');
     local.votesList = $('#votesList');
@@ -249,16 +235,6 @@
       local.tabList.accordion('option', 'active', tabNum.ballotEdit);
     }
   };
-
-  /*
-  
-
-add to this ballot
- - show if name search NOT visible and ballot is displayed
- - hide if search is visible
-
-  */
-
 
   function showAddToThisBtn(show) {
     if (show) {
@@ -470,8 +446,6 @@ add to this ballot
 
     cancelAddMissing();
 
-    //var scroll = local.votesList.scrollTop();
-
     local.votesList.html(local.NormalVoteLineTemplate.filledWithEach(votes));
     local.votesList.find('select:visible').each(function () {
       var select = $(this);
@@ -627,8 +601,6 @@ add to this ballot
     local.ballotCountAtLastLoad = list.length;
 
     $('#showingWhat').text($('#ballotFilter').val() || 'All');
-
-    local.lastBallotRowVersion = info.Last;
   };
 
   function highlightBallotInList() {
@@ -992,8 +964,6 @@ add to this ballot
       ineligible: selectedPersonLi.data('ineligible')
     });
 
-    //local.peopleHelper.AddToLocalNames(personId);
-
     showVotes();
     scrollVotesTo(9999);
 
@@ -1137,8 +1107,6 @@ add to this ballot
         return true;
 
       case 27: // esc
-        clearTimeout(local.keyTimer);
-        resetKeyTimeShow();
         if (local.lastKey === 27) {
           // pressed esc twice - clear inputs
           local.inputField.val('');
@@ -1152,15 +1120,8 @@ add to this ballot
     }
     return false;
   };
-  function resetKeyTimeShow() {
-    local.keyTimeShowSpan
-      .stop(true, true)
-      .removeClass('searching')
-      .css({ height: 0 });
-  };
+
   function searchTextChanged(ev) {
-    clearTimeout(local.keyTimer);
-    resetKeyTimeShow();
     var input = local.inputField;
     var text = input.val();
     if (ev) {
@@ -1175,18 +1136,6 @@ add to this ballot
       return;
     }
     if (local.lastSearch === text) return;
-
-    //local.keyTimeShowSpan
-    //  .animate({
-    //    height: 25
-    //  }, {
-    //    duration: local.keyTime,
-    //    queue: false,
-    //    start: resetKeyTimeShow,
-    //    complete: function () {
-    //      local.keyTimeShowSpan.addClass('searching');
-    //    }
-    //  });
 
     local.peopleHelper.Search(text, function (info) {
       displaySearchResults(info, false, true);
@@ -1256,8 +1205,8 @@ add to this ballot
   return publicInterface;
 };
 
-var ballotNormalPage = BallotNormalPageFunc();
+var ballotPage = BallotNormalPageFunc();
 
 $(function () {
-  ballotNormalPage.PreparePage();
+  ballotPage.PreparePage();
 });

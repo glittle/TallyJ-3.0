@@ -49,7 +49,7 @@
 
     $('#lists').on('change', '.sortSelector', sortSection);
 
-    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "un-registered", they show here.' });
+    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "del-selected", they show here.' });
 
     //processBallots(publicInterface.ballots);
     //showDeselected(publicInterface.oldEnvelopes);

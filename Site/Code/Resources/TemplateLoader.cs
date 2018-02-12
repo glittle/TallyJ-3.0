@@ -18,7 +18,6 @@ namespace TallyJ.Code.Resources
       // This enum is manually created and maintained. Add a new item when needed, matching file names
       ElectionListItem,
       LocationSelectItem,
-      SingleVoteLine,
       EditPerson,
       RollCallLine,
     }
