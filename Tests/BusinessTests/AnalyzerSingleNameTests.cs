@@ -373,8 +373,9 @@ namespace Tests.BusinessTests
       summary.BallotsNeedingReview.ShouldEqual(1);
       summary.SpoiledBallots.ShouldEqual(1);
       summary.SpoiledVotes.ShouldEqual(27 + 27);
-      summary.SumOfEnvelopesCollected.ShouldEqual(0);
-      summary.NumBallotsWithManual.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
+      summary.SumOfEnvelopesCollected.ShouldEqual(1); // sample data has 1 voting method
+      summary.BallotsReceived.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
+      summary.NumBallotsWithManual.ShouldEqual(1 + 33 + 5 + 5 + 5 + 27 + 27 + 27);
 
       results.Count.ShouldEqual(4);
 
