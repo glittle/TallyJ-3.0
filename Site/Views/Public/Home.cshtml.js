@@ -1,7 +1,8 @@
 ﻿var HomeIndexPage = function () {
   var local = {
     reconnectHubTimeout: null,
-    hubReconnectionTime: 95000
+    hubReconnectionTime: 95000,
+    warmupDone: false
   };
 
   var preparePage = function () {
@@ -87,9 +88,18 @@
     else {
       $('.JoinPanel').hide();
       $('.LoginPanel').fadeIn();
+      warmupServer();
     }
     $('input:visible').eq(0).focus();
   };
+
+  function warmupServer() {
+    if (local.warmupDone) {
+      return;
+    }
+    local.warmupDone = true;
+    CallAjaxHandler(publicInterface.controllerUrl + 'Warmup');
+  }
 
   function cancelStart() {
     $('.CenterPanel').removeClass('chosen');

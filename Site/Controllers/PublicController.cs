@@ -52,6 +52,12 @@ namespace TallyJ.Controllers
       return View();
     }
 
+    public JsonResult Warmup() {
+      // force the server to contact the database to ensure that it is warmed up and ready for action
+      UserSession.DbContext.Election.First();
+      return null;
+    }
+
     public JsonResult TellerJoin(Guid electionGuid, string pc, Guid? oldCompGuid)
     {
       return new TellerModel().GrantAccessToGuestTeller(electionGuid, pc, oldCompGuid.AsGuid());
