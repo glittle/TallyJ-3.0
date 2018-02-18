@@ -256,7 +256,7 @@ namespace TallyJ.CoreModels
         });
     }
 
-    public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason, int lastVid, bool verifying)
+    public JsonResult SaveVote(int personId, int voteId, Guid? invalidReason, int lastVid, int count, bool verifying)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
