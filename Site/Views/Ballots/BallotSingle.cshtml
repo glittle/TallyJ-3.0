@@ -39,112 +39,116 @@
   </ol>
 </div>
 <div data-comment="empty div"></div>
-<div class="float-left div1">
-  <div id="accordion">
-    @if (ContextItems.LocationModel.HasLocations)
-    {
-      <h3>Location Status</h3>
-      <div class="locationInfo">
-        <div>
-          <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
-            @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation)
-          </select>
+<div class="Panels">
+  <div class="sidePanel">
+    <div id="accordion">
+      @if (ContextItems.LocationModel.HasLocations)
+      {
+        <h3>Location Status <span class="LocationStatus"></span></h3>
+        <div class="locationInfo">
+          <div>
+            <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
+              @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation)
+            </select>
+          </div>
+          <div class="heading">
+            Contact Info:
+          </div>
+          <div>
+            <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" />
+          </div>
         </div>
-        <div class="heading">
-          Contact Info:
-        </div>
-        <div>
-          <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" />
-        </div>
-      </div>
-    }
-    <h3><span>Computers</span></h3>
-    <div id="tabBallots" class="locationInfo">
-      <div class="float-right">
-        <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
-          Refresh Statuses
-        </button>
-      </div>
-      <h5>
-        Ballots
-        @if (ContextItems.LocationModel.HasLocations)
+      }
+      <h3>
+        <span>Computers</span> @if (ContextItems.LocationModel.HasLocations)
         {
           <span class="where">
-            <span>-</span> <span data-name="Name"></span>
+            <span>-</span> <span class="LocationName" data-name="Name"></span>
           </span>
         }
-      </h5>
-      <div class="ballotDiv1">
-        Ballots to enter:
-        <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
-      </div>
-      <div>
-        Ballots entered: <span id="lblNumEntered" class="lblNumEntered"></span>
-      </div>
-      <div id="ballotList" class="ballotList">
-      </div>
-    </div>
-    <h3><span>Add another Person</span></h3>
-    <div id="tabNameSearch">
-      <div class="action float-right">
-        <span id="action"></span><span id="more"></span>
-      </div>
-      <div class="heading">
-        Add a person
-      </div>
-      <div>
-        Search for a <u>p</u>erson:
-        <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
-      </div>
-      <div class="float-right">
-        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
-          <u>A</u>dd new or spoiled
-        </button>
-      </div>
-      <div class="float-left" id="searchInput">
-        <span id="keyTimeShow"></span>
-        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
-      </div>
-      <div class="actionHolder Clear">
-        <div class="tip1">
-          Use &uarr; &darr; keys to move in the list. Press Enter to add.
+      </h3>
+      <div id="tabBallots" class="locationInfo">
+        <div class="float-right">
+          <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
+            Refresh List
+          </button>
+        </div>
+        <div class="ballotDiv1">
+          Ballots to enter:
+          <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
+        </div>
+        <div>
+          Ballots entered: <span id="lblNumEntered" class="lblNumEntered"></span>
+        </div>
+        <div id="ballotList" class="ballotList">
         </div>
       </div>
-      <ul id="nameList" class="nameList"></ul>
-      <div class="Clear5">
+      <h3><span>Add another Person</span></h3>
+      <div id="tabNameSearch">
+        <div class="action float-right">
+          <span id="action"></span><span id="more"></span>
+        </div>
+        <div class="heading">
+          Add a person
+        </div>
+        <div>
+          Search for a <u>p</u>erson:
+          <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
+        </div>
+        <div class="float-right">
+          <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
+          <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
+            <u>A</u>dd new or spoiled
+          </button>
+        </div>
+        <div class="float-left" id="searchInput">
+          <span id="keyTimeShow"></span>
+          <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
+        </div>
+        <div class="actionHolder Clear">
+          <div class="tip1">
+            Use &uarr; &darr; keys to move in the list. Press Enter to add.
+          </div>
+        </div>
+        <ul id="nameList" class="nameList"></ul>
+        <div class="Clear5">
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div id="votesPanel" class="votesPanel">
-  <div class="titleDiv">
-    <span># Votes<span class="ui-icon ui-icon-info" id="qTipNumVotes"></span></span>
-    &nbsp; Name of person <span class="NotBold">(in any order)</span>
+  <div id="votesPanel" class="votesPanel">
+    <div class="titleDiv">
+      <span># Votes<span class="ui-icon ui-icon-info" id="qTipNumVotes"></span></span>
+      &nbsp; Name of person <span class="NotBold">(in any order)</span>
+    </div>
+    <div id="votesList">
+    </div>
   </div>
-  <div id="votesList">
+  <div id="addMissingPanel" class="votesPanel">
+    <h3>
+      Adding Name Not in List
+    </h3>
+    <button id="btnCancelAddMissing" type="button" class="btn btn-warning">
+      Cancel
+    </button>
+    @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
   </div>
-</div>
-<div id="addMissingPanel" class="votesPanel">
-  <h3>
-    Adding Name Not in List
-  </h3>
-  @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
-  <button id="btnCancelAddMissing" type="button" class="btn btn-warning">
-    Cancel
-  </button>
 </div>
 
 <script type="text/x-template" id="SingleVoteLine">
   <div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
-    <input class="Vote" type="number" min="0" value='{count}' tabindex="2">
-    <span class="Invalid">Spoiled: </span>
-    <span class="Name">{^Display}</span>
-    <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="2" size="1">
-      {^InvalidReasons}
-    </select>
-    <span class="ui-icon ui-icon-trash" title="Delete this person's ballots from this teller computer"></span>
-    <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
+    <div class="Top">
+      <input class="Vote" type="number" min="0" value='{count}' tabindex="2">
+      <span class="Invalid">Spoiled: </span>
+      <span class="Name">{^Display}</span>
+      <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
+        {^InvalidReasons}
+      </select>
+      <span class="icons">
+        <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
+        <span class="ui-icon ui-icon-trash" title="Delete this person's ballots from this teller computer"></span>
+      </span>
+    </div>
     <div class="Invalid InvalidPerson">{InvalidDescription}</div>
     <div class="ChangedMessage">
       This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!

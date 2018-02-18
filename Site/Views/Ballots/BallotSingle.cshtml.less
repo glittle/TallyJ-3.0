@@ -1,17 +1,26 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
-.div1 {
+.Panels {
+  display: flex;
+}
+
+#votesPanel, .sidePanel {
+  display: none;
+}
+
+.sidePanel {
   width: 330px;
 }
 
-#votesPanel, .div1 {
-  display: none;
+tr.overrides {
+  td {
+    white-space: nowrap;
+  }
 }
 
 body {
   overflow-y: scroll;
 }
-
 /* overrides to fix UI */
 .ui-tabs-panel {
   padding: 3px 2px 5px 5px;
@@ -31,14 +40,15 @@ body {
 }
 
 .nameList {
+  position: relative;
   height: 300px;
+  width: 100%;
   margin: 0;
-  width: 300px;
-  border: solid 1px #999;
   padding: 0;
+  box-sizing: border-box;
+  border: solid 1px #999;
   line-height: 1.5;
   overflow: auto;
-  position: relative;
 
   u {
     text-decoration: none;
@@ -174,8 +184,9 @@ input.ZZsearching {
 
 .votesPanel {
   margin-left: 15px;
-  float: left;
-  width: 530px;
+  flex: 1 1 auto;
+  //float: left;
+  //width: 530px;
 }
 
 .ui-icon-arrow-2-n-s {
@@ -215,14 +226,21 @@ input.Vote {
 }
 
 .titleDiv {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1px 0;
   font-weight: bold;
   font-size: 12pt;
-  border-bottom: 1px solid #ccc;
-  padding-right: 4px;
-}
 
-.titleDiv div {
-  margin: -7px 0 0 0;
+  .ballotCode {
+    padding-left: 3px;
+    font-size: 16pt;
+    color: #75a531;
+  }
+
+  div {
+    margin: -3px 0 0 0;
+  }
 }
 
 button.smallButton {
@@ -241,7 +259,7 @@ button.smallButton {
 
 .InvalidP div.InvalidPerson {
   color: #e80c4d;
-  margin: 0 0 0 117px;
+  padding: 0 0 3px 85px;
 }
 
 select.Invalid {
@@ -249,39 +267,6 @@ select.Invalid {
   color: #e80c4d;
 }
 
-.VoteHost {
-  .ui-icon {
-    visibility: visible;
-    float: right;
-    margin: 5px 10px 0 10px;
-    z-index: 1;
-  }
-
-
-  span.Name {
-    display: none;
-    font-size: 14pt;
-    padding: 0 9px 0 0;
-    text-indent: -20px;
-    margin-left: 20px;
-  }
-
-  &.InvalidP span.Name {
-    display: inline;
-    font-size: 1em;
-    text-decoration: line-through;
-  }
-
-  &.Valid span.Name {
-    display: inline-block;
-  } 
-} 
-
-.NameInfo {
-  white-space: normal;
-  width: 400px;
-  display: inline-block;
-}
 
 .InvalidBallot, .Ineligible, span.Invalid {
   color: #e80c4d;
@@ -334,7 +319,7 @@ div.heading {
 }
 
 .txtNumCollected {
-  width: 50px;
+  width: 40px;
   text-align: right;
   margin-right: 5px;
 }
@@ -354,10 +339,11 @@ div.heading {
   color: green;
 }
 
-#votesList {
-  padding-top: 5px;
-  max-height: 400px;
-  overflow: auto;
+
+@media screen and (min-height: 900px) {
+  #votesList {
+    max-height: 9999px;
+  }
 }
 
 .VoteNum {
@@ -366,7 +352,7 @@ div.heading {
   text-align: right;
   margin-right: 12px;
   font-size: 80%;
-  color: #aaa;
+  color: #999;
   vertical-align: top;
   margin-top: 3px;
 }
@@ -375,16 +361,6 @@ div.heading {
   color: @tallyJOrange;
 }
 
-.titleDiv .ballotStatus {
-  padding-right: 20px;
-  vertical-align: top;
-  font-size: 16pt;
-}
-
-.titleDiv .ballotCode {
-  padding-left: 3px;
-  font-size: 16pt;
-}
 
 .duplicateVote {
   .Name {
@@ -400,10 +376,60 @@ div.heading {
   }
 }
 
-.VoteHost {
-  background-color: #eeffd6;
-  margin: 2px 0;
-  min-height: 1.4em;
+#votesList {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  padding-top: 5px;
+  max-height: 60vh;
+
+  .VoteHost {
+    width: 100%;
+    margin: 2px 0;
+    min-height: 1.4em;
+    background-color: #eeffd6;
+
+    span.Name {
+      display: none;
+      font-size: 14pt;
+      padding: 0 9px 0 0;
+      text-indent: -20px;
+      margin-left: 20px;
+    }
+
+    &.InvalidP span.Name {
+      display: inline;
+      margin-left: 3px;
+      text-indent: 0;
+      font-size: 1em;
+      text-decoration: line-through;
+    }
+
+    &.Valid span.Name {
+      display: inline-block;
+    }
+
+    .ui-icon {
+      visibility: visible;
+      margin: 2px 10px 0px 5px;
+      z-index: 1;
+    } 
+
+    .Top {
+      display: flex;
+      align-items: baseline;
+    }
+
+    .NameInfo {
+      flex: 2 1 auto;
+      white-space: normal;
+      display: inline-block;
+    }
+
+    .icons {
+      flex: 0 0 auto;
+    }
+  }
 }
 
 .ExtraVote {
@@ -433,6 +459,15 @@ div.heading {
 
 #addMissingPanel {
   display: none;
+
+  > h3 {
+    display: inline-block;
+  }
+
+  #btnCancelAddMissing {
+    display: inline-block;
+    margin-left: 20px;
+  }
 }
 
 h5 {
@@ -464,7 +499,7 @@ span.HideZero0 {
 
 .ui-accordion-content {
   border-top: none;
-  padding: 10px 4px 6px 6px;
+  padding: 10px 6px 2px 6px;
 }
 
 .ballotDiv1 {
@@ -500,21 +535,20 @@ span.HideZero0 {
   position: relative;
 }
 
-#btnCancelAddMissing {
-  margin: 9px 0 0 225px;
-}
+@media only screen and (max-width: 600px) {
+  .Panels {
+    display: block;
+  }
 
-
-@media only screen and (max-width: 930px) {
   #votesList {
-    width: 400px;
+    //width: 400px;
   }
 
   #votesPanel {
-    width: 400px;
+    //width: 400px;
   }
 
   .NameInfo {
-    width: 270px;
+    //width: 270px;
   }
 }

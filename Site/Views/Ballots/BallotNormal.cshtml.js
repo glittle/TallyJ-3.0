@@ -720,7 +720,7 @@
     };
 
     function resaveVote(ev) {
-        var host = $(ev.target).parents('.VoteHost');
+        var host = $(ev.target).closest('.VoteHost');
         startSavingVote(host, true);
     };
 
@@ -844,7 +844,7 @@
         }
     };
     function deleteVote(ev) {
-        var host = $(ev.target).parents('.VoteHost');
+        var host = $(ev.target).closest('.VoteHost');
         var voteId = host.data('vote-id') || 0;
         var form = {
             vid: voteId
@@ -945,10 +945,6 @@
         //    local.actionTag.text('');
         //    local.inputField.removeClass('searching');
 
-        // single:
-        //    local.nameList.children().removeClass('selected');
-        //    console.log(local.rowSelected);
-        //    local.nameList.children().eq(local.rowSelected).addClass('selected');
         setSelected(local.nameList.children(), local.rowSelected);
     };
 
@@ -967,14 +963,8 @@
 
         var rowNum = typeof local.rowSelected == 'undefined' ? -1 : local.rowSelected;
         rowNum = rowNum + delta;
-        //    if (wraparound) {
-        //      if (rowNum < 0) { rowNum = numChildren - 1; }
-        //      if (rowNum >= numChildren) { rowNum = 0; }
-        //    }
-        //    else {
         if (rowNum < 0) { rowNum = 0; }
         if (rowNum >= numChildren) { rowNum = numChildren - 1; }
-        //    }
         setSelected(children, rowNum);
     };
 
