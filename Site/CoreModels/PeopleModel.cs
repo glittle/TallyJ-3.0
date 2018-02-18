@@ -489,6 +489,8 @@ namespace TallyJ.CoreModels
           Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
           p.CanVote,
+          p.CanReceiveVotes, // for ballot entry page
+          p.IneligibleReasonGuid, // for ballot entry page
           p.BahaiId
         });
     }
