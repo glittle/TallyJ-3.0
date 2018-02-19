@@ -63,12 +63,13 @@
   }
 </style>
 <div class="body WarnIfNotFinalized">
+  <button class="btn btn-mini btnDownloadCsv" data-divs=".Selection, .person" data-splitter=" - " type="button" title="Download in CSV format for Excel">Export</button>
   <h1 id="title"></h1>
   <p class="Comment">
     "If the assembled friends choose to have a full Tellers’ Report including the names
     of all who are voted for and the number of votes received, this is acceptable." (Spoiled votes and names on spoiled ballots are not included.)
   </p>
-  <p class="Comment">
+  <p class="Comment Selection">
     Showing those elected and those with <select id="limitNum"></select> or more votes cast for them (<span id="numShown"></span> people).
   </p>
   <div class="Votes">

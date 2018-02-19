@@ -7,34 +7,31 @@
   ViewBag.Message = "Report the results";
 
   ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("reportsPage.electionTitle={0};".FilledWith(UserSession.CurrentElectionName.QuotedForJavascript()));
 
   var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
   var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
+  var hasLocations = ContextItems.LocationModel.HasLocations;
+  var firstHeader = false;
 
   var reports = new Dictionary<string, string>
-{
-{ "SimpleResults|Election Reports", "Main Election Report"},
-{ "Ballots", "Ballots (All for Review)"},
-{ "BallotsTied", "Ballots (For Tied)"},
-{ "VotesByNum", "Tellers' Report, by Votes"},
-{ "VotesByName", "Tellers' Report, by Name"},
-{ "BallotAlignment", "Ballot Alignment"},
-{ "ChangedPeople", "Updated People"},
-{ "VotesWithInvalid", "Spoiled Votes"},
-
-{ "AllPeopleLF|Registration Reports", "Eligible Voters (by Last name)"},
-{ "AllPeopleFL", "Eligible Voters (by First name)"},
-{ "Voters", showVoters ? "Who Voted" : null},
-{ "NonVoters", showVoters? "Eligible Voters Who Did Not Vote" : null},
-{ "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
-{ "AllNonEligible", "All non-eligible"},
-};
-  if (ContextItems.LocationModel.HasLocations)
   {
-    reports.Add("VotersByLocation", "Voters by Location");
-    reports.Add("VotersByLocationArea", "In Person by Location and Area");
-  }
-  var firstHeader = false;
+  { "SimpleResults|Ballot Reports", "Main Election Report"},
+  { "VotesByNum", "Tellers' Report, by Votes"},
+  { "VotesByName", "Tellers' Report, by Name"},
+  { "Ballots", "Ballots (All for Review)"},
+  { "BallotsTied", "Ballots (For Tied)"},
+  { "VotesWithInvalid", "Spoiled Votes"},
+  { "BallotAlignment", "Ballot Alignment"},
+  { "BallotsSame", "Duplicate Ballots"},
+
+  { "ChangedPeople|Voter Reports", "Updated People Records"},
+  { "Voters", showVoters ? "Participation" : null},
+  { "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
+  {"VotersByLocation", hasLocations ? "Voters by Location" : null},
+  { "VotersByLocationArea", hasLocations ? "Attendance by Location and Area" : null },
+  { "AllNonEligible", "Non-voters on file"},
+  };
 }
 <div class="reportsPage">
   <div class="chooser">

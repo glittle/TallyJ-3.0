@@ -10,6 +10,7 @@
 
 .sidePanel {
   width: 330px;
+  flex: 0 0 auto;
 }
 
 tr.overrides {
@@ -118,8 +119,9 @@ tr.overrides {
 
 .ballotList {
   overflow: auto;
-  padding: 20px 15px 30px 15px;
-  max-height: 300px;
+  padding: 5px 0px 0px 0px;
+  max-height: ~"calc(100vh - 400px)";
+  min-height: 150px;
 
   div {
     border: 1px solid transparent;
@@ -313,7 +315,7 @@ div.heading {
   .ChangedMessage {
     display: block;
     color: #e80c4d;
-    margin-left: 70px;
+    margin-left: 32px;
     padding-bottom: 5px;
   }
 }
@@ -400,6 +402,7 @@ div.heading {
     &.InvalidP span.Name {
       display: inline;
       margin-left: 3px;
+      text-indent: 0;
       font-size: 1em;
       text-decoration: line-through;
     }
@@ -416,6 +419,7 @@ div.heading {
 
     .Top {
       display: flex;
+      align-items: baseline;
     }
 
     .NameInfo {
@@ -505,10 +509,7 @@ span.HideZero0 {
 }
 
 #ballotFilter {
-  float: right;
-  width: auto;
-  clear: right;
-  margin-top: 9px;
+  margin-top: 3px;
   font-size: 80%;
 }
 

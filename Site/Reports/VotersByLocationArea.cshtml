@@ -33,6 +33,10 @@
     min-width: 2em;
   }
 
+  .summary {
+    font-style: italic;
+  }
+
   tr.loc td, tr.loc th {
     padding-top: 1em;
   }
@@ -52,14 +56,14 @@
     {
       <tr class="loc">
         <th colspan="3">
-          @loc.LocationName
+          Voting Location - @loc.LocationName
         </th>
       </tr>
       foreach (var area in loc.Areas)
       {
         <tr class="area">
           <td></td>
-          <td>@area.Key</td>
+          <td>@area.Key.DefaultTo("(unknown)")</td>
           <td>@area.Count()</td>
         </tr>
       }
@@ -67,7 +71,7 @@
       var numAreas = loc.Areas.Count();
       if (numAreas > 3)
       {
-        <tr>
+        <tr class="summary">
           <td></td>
           <td>
             @loc.Areas.Count() areas

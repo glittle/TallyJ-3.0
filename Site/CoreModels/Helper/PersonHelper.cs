@@ -14,11 +14,11 @@ namespace TallyJ.CoreModels.Helper
       {
         person.FirstName,
         person.LastName,
+        person.BahaiId,
         person.OtherNames,
         person.OtherLastNames,
-        //person.Area,
         person.OtherInfo,
-        person.BahaiId
+        //person.Area,
       }
         .JoinedAsString(WordSeparator, true)
         .ReplacePunctuation(WordSeparator[0])

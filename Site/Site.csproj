@@ -607,11 +607,8 @@
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
     <Content Include="Reports\Voters.cshtml" />
-    <Content Include="Reports\NonVoters.cshtml" />
-    <Content Include="Reports\AllPeopleLF.cshtml" />
     <Content Include="Reports\VotersByArea.cshtml" />
     <Content Include="Reports\VotersByLocation.cshtml" />
-    <Content Include="Reports\AllPeopleFL.cshtml" />
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
     <Content Include="Reports\VotesWithInvalid.cshtml" />
@@ -621,6 +618,7 @@
     <None Include="Properties\PublishProfiles\tallyjuat - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - Web Deploy.pubxml" />
     <Content Include="Reports\BallotsTied.cshtml" />
+    <Content Include="Reports\BallotsSame.cshtml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />

@@ -159,14 +159,14 @@
         var info = markUp(result, searchParts, usedPersonIds);
 
         cbAfterSearch(info, true);
-    };
+    }
 
     function addMatchedNames(person, matchedPeople, searchParts, searchSounds) {
         var nameParts = person.parts;
         var nameSounds = person.soundParts; // same length as nameParts
 
         // match each search and name part
-        person.matchedParts = nameParts.map(function() { return 0 }); // fill array of correct length with 0
+        person.matchedParts = nameParts.map(function() { return 0; }); // fill array of correct length with 0
         var toMatch = searchParts.length;
         var found = 0;
 
@@ -235,7 +235,7 @@
         var rawId = currentFocus.attr('id');
         var currentFocusId = rawId ? +rawId.substr(1) : 0;
 
-        if (info && typeof info.People != 'undefined') {
+        if (info && typeof info.People !== 'undefined') {
             var highestNumVotes = 0;
 
             $.each(info.People, function(i, personInfo) {
@@ -313,7 +313,7 @@
             info.People = results;
         }
         return info;
-    };
+    }
 
     function updateVoteCounts(info) {
         var updates = info.VoteUpdates;
@@ -321,7 +321,7 @@
             return;
         }
 
-        var toFind = updates.map(function(update) { return update.PersonGuid }).join(',');
+        var toFind = updates.map(function(update) { return update.PersonGuid; }).join(',');
         var numToFind = updates.length;
 
         local.localNames.forEach(function(person) {
@@ -345,7 +345,7 @@
     function refreshListing(searchTerm, onNamesReady, usedPersonIds, info) {
         updateVoteCounts(info);
         search(searchTerm, onNamesReady, usedPersonIds);
-    };
+    }
 
     function showMatchedLetters(searchParts, personInfo) {
         var name = personInfo.Name;
@@ -373,7 +373,7 @@
                 var space2 = part.slice(-1) === ' ' ? ' ' : '';
 
                 nameSplit[i] = space1 + '##3' + part.trim() + '##4' + space2;
-            })
+            });
 
             name = nameSplit.join('');
         }
@@ -384,7 +384,7 @@
             .replace(/##3/g, '<i>')
             .replace(/##4/g, '</i>');
 
-    };
+    }
 
     var publicInterface = {
         Prepare: prepare,
@@ -556,11 +556,11 @@ var Metaphone = function() {
             token = token.substring(0, maxLength);
 
         return token;
-    };
+    }
 
     return {
         process: process
     };
-}
+};
 
 

@@ -317,7 +317,8 @@
         }
         var select = statusDdl[0];
         if (select.selectedIndex === -1) {
-            $('.LocationStatus').text('- Unknown')
+            $('.LocationStatus').text('- Unknown');
+            return;
         }
         var text = select.options[select.selectedIndex].text;
         $('.LocationStatus').text('- ' + text)

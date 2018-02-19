@@ -20,7 +20,6 @@ namespace TallyJ.CoreModels
 
     private List<Location> _locations;
     private List<Person> _people;
-    //private List<Person> _peopleforFrontDesk;
 
     public PeopleModel()
     {
@@ -95,13 +94,6 @@ namespace TallyJ.CoreModels
 
       Db.SaveChanges();
     }
-
-    //public void ResetAllInfo(Person person)
-    //{
-    //  ResetCombinedInfos(person);
-    //  ResetVotingRecords(person);
-    //  ResetInvolvementFlags(person);
-    //}
 
     /// <Summary>Only to be done before an election</Summary>
     public void SetCombinedInfoAtStart(Person person)

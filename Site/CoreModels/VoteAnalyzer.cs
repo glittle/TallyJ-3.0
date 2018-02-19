@@ -8,22 +8,6 @@ namespace TallyJ.CoreModels
 {
   public class VoteAnalyzer
   {
-//    /// <Summary>Is this Vote valid?</Summary>
-//    public static bool VoteIsValid(VoteInfo voteInfo)
-//    {
-//      if (!voteInfo.ValidationResult.HasValue)
-//      {
-//        voteInfo.VoteStatusCode = DetermineStatus(voteInfo);
-//        voteInfo.ValidationResult = voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok;
-////          !voteInfo.VoteIneligibleReasonGuid.HasValue
-////                                    && !voteInfo.PersonIneligibleReasonGuid.HasValue
-////                                    && voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.Ok
-////                                    && voteInfo.PersonCanReceiveVotes
-////                                    && voteInfo.PersonCombinedInfo == voteInfo.PersonCombinedInfoInVote;
-//      }
-//      return voteInfo.ValidationResult.Value;
-//    }
-
     public static string DetermineStatus(VoteInfo voteInfo)
     {
       return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
@@ -36,9 +20,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>
     public static bool VoteNeedReview(VoteInfo voteInfo)
     {
-      return voteInfo.PersonCombinedInfo != voteInfo.PersonCombinedInfoInVote;
-      //      || voteInfo.VoteStatusCode!= VoteHelper.VoteStatusCode.Ok;
-      //       || voteInfo.BallotStatusCode == BallotStatusEnum.Review;
+      return voteInfo.PersonCombinedInfo.HasContent() && !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote);
     }
 
 //    /// <Summary>Is this Vote not valid?</Summary>

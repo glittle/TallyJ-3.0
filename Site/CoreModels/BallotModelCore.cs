@@ -249,7 +249,7 @@ namespace TallyJ.CoreModels
           pid = vi.PersonId,
           pos = vi.PositionOnBallot,
           name = vi.PersonFullNameFL,
-          changed = !Equals(vi.PersonCombinedInfo, vi.PersonCombinedInfoInVote),
+          changed = vi.PersonCombinedInfo.HasContent() && !vi.PersonCombinedInfo.StartsWith(vi.PersonCombinedInfoInVote),
           invalid = vi.VoteIneligibleReasonGuid,
           ineligible = vi.PersonIneligibleReasonGuid,
           //ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)

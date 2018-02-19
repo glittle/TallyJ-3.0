@@ -8,36 +8,42 @@
 @{
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .Where(p => p.VotingMethod.HasContent())
+    .Where(p => p.IneligibleReasonGuid == null)
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
       PersonName = p.FullName,
       p.VotingMethod,
+      p.BahaiId,
+      p.VotingLocationGuid,
+      p.RegistrationTime
     });
+
+  var locationModel = new LocationModel();
+
+  var hasLocations = locationModel.HasLocations;
+  var locations = locationModel.AllLocations.ToDictionary(l => l.LocationGuid, l => l.Name);
 }
 <style>
-  .Voters {
-    -webkit-column-width: 15em;
-    -moz-column-width: 15em;
-    -ms-column-width: 15em;
-    -o-column-width: 15em;
-    column-width: 15em;
-    -webkit-column-gap: 1em;
-    -moz-column-gap: 1em;
-    -ms-column-gap: 1em;
-    -o-column-gap: 1em;
-    column-gap: 1em;
-    -webkit-column-rule-width: 4px;
-    -moz-column-rule-width: 4px;
-    -ms-column-rule-width: 4px;
-    -o-column-rule-width: 4px;
-    column-rule-width: 4px;
-  }
-
   b {
     display: inline-block;
   }
+
+  tr {
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
+
+  td {
+    padding-left: 2px;
+    padding-right: 6px;
+  }
+
 
   .person {
     position: relative;
@@ -47,40 +53,50 @@
       margin-top: .5em;
     }
 
+  .first::first-letter {
+    font-weight: bold;
+  }
+
   .method {
-    position: absolute;
-    right: 0;
-    z-index: 1;
-    color: darkblue;
-    font-size: 90%;
   }
 </style>
 <div class="body">
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
   <h1 id="title"></h1>
   <p class="Comment">
-    Showing who was registered on the Front Desk and what method of voting they used.
+    Shows all potential voters and how they voted.
   </p>
-  <div class="Voters">
-    @{
-      var initial = ' ';
-    }
-    @foreach (var person in people)
-    {
-      var name = person.PersonName;
-      var first = name.ToUpper()[0];
-      var firstClass = "";
-      if (first != initial)
+  <table class="Voters">
+    <thead>
+      <tr>
+        <td>Person</td>
+        <td>Id</td>
+        <td>How</td>
+        @if (hasLocations)
+        {
+          <td>Where</td>
+        }
+        <td>When</td>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var person in people)
       {
-        initial = first;
-        name = "<b>" + initial + "</b>" + name.Substring(1);
-        firstClass = " first";
+        <tr>
+          <td class="name">@Raw(person.PersonName)</td>
+          <td class="id">@person.BahaiId</td>
+          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("No Vote")</td>
+          @if (hasLocations)
+          {
+            string locName;
+            if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName)) {
+              locName = null;
+            }
+            <td class="where">@locName</td>
+          }
+          <td class="when">@person.RegistrationTime</td>
+        </tr>
       }
-      var method = VotingMethodEnum.TextFor(person.VotingMethod);
-
-      <div class="person @firstClass">
-        <span class="name">@Raw(name)</span>
-        <span class="method">@method</span>
-      </div>
-    }
-  </div>
+    </tbody>
+  </table>
 </div>

@@ -721,21 +721,6 @@ namespace TallyJ.Code
       }
     }
 
-    //    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
-    //    {
-    //      return inputs.Select(VoteInfo => new Vote
-    //          {
-    //            C_RowId = VoteInfo.VoteId,
-    //            BallotGuid = VoteInfo.BallotGuid,
-    //            C_RowVersion = null,
-    //            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
-    //            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
-    //            PersonGuid = VoteInfo.PersonGuid,
-    //            PositionOnBallot = VoteInfo.PositionOnBallot,
-    //            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
-    //            StatusCode = VoteInfo.VoteStatusCode
-    //          });
-    //    }
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>
