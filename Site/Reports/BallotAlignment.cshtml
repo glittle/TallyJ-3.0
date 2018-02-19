@@ -48,11 +48,12 @@
   }
 </style>
 <div class="body WarnIfNotFinalized">
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Ballots" type="button" title="Download in CSV format for Excel">Export</button>
   <h1 id="title"></h1>
   <p class="Comment">
     A count of the alignment of ballots to the final results.  For example, the first row shows
-    how many people voted for all @numElected of the elected, while the last line shows the how
-    many voted for none of those elected.
+    how many ballots where for all @numElected of the elected, while the last line shows how
+    many ballots had none of those elected.
   </p>
   @if (message.HasContent())
   {
@@ -64,7 +65,7 @@
       <thead>
         <tr>
           <th>Matching Names</th>
-          <th>How Many Voters?</th>
+          <th>How Many Ballots?</th>
         </tr>
 
       </thead>

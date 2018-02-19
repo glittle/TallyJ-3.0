@@ -20,7 +20,6 @@ namespace TallyJ.CoreModels
 
     private List<Location> _locations;
     private List<Person> _people;
-    //private List<Person> _peopleforFrontDesk;
 
     public PeopleModel()
     {
@@ -79,7 +78,7 @@ namespace TallyJ.CoreModels
       var personCacher = new PersonCacher();
       personCacher.DropThisCache();
 
-      var peopleInElection = personCacher.MainQuery().ToList();
+      var peopleInElection = personCacher.AllForThisElection;
       var reason = new ElectionModel().GetDefaultIneligibleReason();
       var counter = 0;
       foreach (var person in peopleInElection)
@@ -96,53 +95,25 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
     }
 
-    //public void ResetAllInfo(Person person)
-    //{
-    //  ResetCombinedInfos(person);
-    //  ResetVotingRecords(person);
-    //  ResetInvolvementFlags(person);
-    //}
-
     /// <Summary>Only to be done before an election</Summary>
     public void SetCombinedInfoAtStart(Person person)
     {
       person.CombinedInfoAtStart = person.CombinedInfo = person.MakeCombinedInfo();
 
-      person.UpdateCombinedSoundCodes();
+      // person.UpdateCombinedSoundCodes();
     }
 
     public void SetCombinedInfos(Person person)
     {
       person.CombinedInfo = person.MakeCombinedInfo();
-      person.UpdateCombinedSoundCodes();
+      //person.UpdateCombinedSoundCodes();
     }
-
-    //public void ResetVotingRecords(Person person)
-    //{
-    //  person.RegistrationTime = null;
-    //  person.VotingLocationGuid = null;
-    //  person.VotingMethod = null;
-    //  person.EnvNum = null;
-    //}
 
     /// <summary>
     ///   Set person's flag based on what is default for this election
     /// </summary>
     public void SetInvolvementFlagsToDefault(Person person, IneligibleReasonEnum reason)
     {
-      //var canVote = true; // person.AgeGroup.HasNoContent() || person.AgeGroup == AgeGroup.Adult;
-      //person.IneligibleReasonGuid = canVote ? null : IneligibleReasonEnum.Ineligible_Not_Adult;
-
-      //      if (person.IneligibleReasonGuid.HasValue)
-      //      {
-      //        var reason1 = IneligibleReasonEnum.Get(person.IneligibleReasonGuid.Value);
-      //
-      //        person.CanVote = reason1.CanVote;
-      //        person.CanReceiveVotes = reason1.CanReceiveVotes;
-      //        return;
-      //      }
-
-      //      var reason = new ElectionModel().GetDefaultIneligibleReason();
       if (reason != null)
       {
         person.IneligibleReasonGuid = reason;
@@ -404,6 +375,7 @@ namespace TallyJ.CoreModels
           VotedAt = LocationName(p.VotingLocationGuid),
           When = ShowRegistrationTime(timeOffset, p),
           p.RegistrationTime,
+          Log = FormatRegistrationLog(p),
           p.EnvNum,
           Tellers = ShowTellers(p)
         })
@@ -441,6 +413,7 @@ namespace TallyJ.CoreModels
           VotedAt = LocationName(p.VotingLocationGuid),
           When = ShowRegistrationTime(timeOffset, p),
           p.RegistrationTime,
+          Log = FormatRegistrationLog(p),
           p.VotingMethod,
           EnvNum = ShowEnvNum(p),
           Tellers = ShowTellers(p)
@@ -495,9 +468,10 @@ namespace TallyJ.CoreModels
           p.Area,
           VotedAt = new[]
           {
-            showLocations ? LocationName(p.VotingLocationGuid) : "",
+            ShowRegistrationTime(timeOffset, p),
             ShowTellers(p),
-            ShowRegistrationTime(timeOffset, p)
+            showLocations ? LocationName(p.VotingLocationGuid) : "",
+            FormatRegistrationLog(p),
           }.JoinedAsString("; ", true),
           p.VotingMethod,
           InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
@@ -507,8 +481,16 @@ namespace TallyJ.CoreModels
           Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
           p.CanVote,
+          p.CanReceiveVotes, // for ballot entry page
+          p.IneligibleReasonGuid, // for ballot entry page
           p.BahaiId
         });
+    }
+
+    private string FormatRegistrationLog(Person p) {
+      return p.RegistrationLog.Count > 1 
+        ? p.RegistrationLog.JoinedAsString("\n").SurroundContentWith("<span class=Log title=\"", "\"></span>") 
+        : "";
     }
 
     private static int? ShowEnvNum(Person p)
@@ -566,6 +548,8 @@ namespace TallyJ.CoreModels
         return new { Message = "Unknown person" }.AsJsonResult();
       }
 
+      var timeOffset = UserSession.TimeOffsetServerAhead;
+
       Db.Person.Attach(person);
 
       person.Teller1 = UserSession.GetCurrentTeller(1);
@@ -583,6 +567,15 @@ namespace TallyJ.CoreModels
         person.VotingLocationGuid = null;
         person.RegistrationTime = DateTime.Now;
         votingMethodRemoved = true;
+
+        var log = person.RegistrationLog;
+        log.Add(new[] {
+          ShowRegistrationTime(timeOffset, person),
+          "De-selected",
+          ShowTellers(person),
+          LocationName(UserSession.CurrentLocationGuid),
+        }.JoinedAsString("; ", true));
+        person.RegistrationLog = log;
       }
       else
       {
@@ -594,6 +587,15 @@ namespace TallyJ.CoreModels
         person.RegistrationTime = DateTime.Now;
 
         newVoteLocationGuid = person.VotingLocationGuid;
+
+        var log = person.RegistrationLog;
+        log.Add(new[] {
+          ShowRegistrationTime(timeOffset, person),
+          VotingMethodEnum.TextFor(person.VotingMethod),
+          ShowTellers(person),
+          LocationName(person.VotingLocationGuid),
+        }.JoinedAsString("; ", true));
+        person.RegistrationLog = log;
 
         // make number for every method except Registered
         var needEnvNum = person.EnvNum == null && voteType != VotingMethodEnum.Registered;
@@ -700,7 +702,7 @@ namespace TallyJ.CoreModels
         PersonLines = FrontDeskPersonLines(new List<Person> { person }),
         LastRowVersion = person.C_RowVersionInt
       };
-      new FrontDeskHub().UpdateAllConnectedClients(updateInfo);
+      new FrontDeskHub().UpdatePeople(updateInfo);
 
 
       var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed

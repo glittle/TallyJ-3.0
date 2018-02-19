@@ -372,15 +372,14 @@ namespace TallyJ.CoreModels
     private void UpgradeOldData()
     {
       var personCacher = new PersonCacher(Db);
-      var testInfo = personCacher.MainQuery().Select(p => new { p.CombinedInfo, p.CombinedSoundCodes }).FirstOrDefault();
+      var testInfo = personCacher.AllForThisElection.Select(p => new { p.CombinedInfo }).FirstOrDefault();
 
       if (testInfo == null)
       {
         return;
       }
 
-      if (testInfo.CombinedInfo.HasContent() && testInfo.CombinedSoundCodes.HasContent() &&
-          !testInfo.CombinedInfo.Contains("^") && !testInfo.CombinedSoundCodes.Contains("^"))
+      if (testInfo.CombinedInfo.HasContent() && !testInfo.CombinedInfo.Contains("^"))
       {
         return;
       }
@@ -388,8 +387,8 @@ namespace TallyJ.CoreModels
       // fix all data
       var voteCacher = new VoteCacher(Db);
 
-      var people = personCacher.MainQuery().ToList();
-      var votes = voteCacher.MainQuery().ToList();
+      var people = personCacher.AllForThisElection;
+      var votes = voteCacher.AllForThisElection;
 
       var peopleModel = new PeopleModel();
       var saveNeeded = false;
@@ -413,11 +412,10 @@ namespace TallyJ.CoreModels
     public void AutoFix(Person person, List<Vote> voteList, PeopleModel peopleModel, ref bool saveNeeded)
     {
       var oldCombined = person.CombinedInfo;
-      var oldSounds = person.CombinedSoundCodes;
 
       peopleModel.SetCombinedInfos(person);
 
-      if (person.CombinedInfo == oldCombined && person.CombinedSoundCodes == oldSounds)
+      if (person.CombinedInfo == oldCombined)
       {
         //didn't need to fix it
         return;

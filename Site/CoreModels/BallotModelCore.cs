@@ -249,14 +249,14 @@ namespace TallyJ.CoreModels
           pid = vi.PersonId,
           pos = vi.PositionOnBallot,
           name = vi.PersonFullNameFL,
-          changed = !Equals(vi.PersonCombinedInfo, vi.PersonCombinedInfoInVote),
+          changed = vi.PersonCombinedInfo.HasContent() && !vi.PersonCombinedInfo.StartsWith(vi.PersonCombinedInfoInVote),
           invalid = vi.VoteIneligibleReasonGuid,
           ineligible = vi.PersonIneligibleReasonGuid,
           //ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)
         });
     }
 
-    public JsonResult SaveVote(int personId, int voteId, int count, Guid? invalidReason)
+    public JsonResult SaveVote(int personId, int voteId, Guid? invalidReason, int lastVid, int count, bool verifying)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
@@ -284,6 +284,7 @@ namespace TallyJ.CoreModels
       Db.Ballot.Attach(ballot);
 
       var voteCacher = new VoteCacher(Db);
+      var personCacher = new PersonCacher(Db);
 
       if (voteId != 0)
       {
@@ -299,11 +300,11 @@ namespace TallyJ.CoreModels
         }
         if (vote.BallotGuid != ballot.BallotGuid)
         {
-          // problem... client is focused on a differnt ballot!
+          // problem... client is focused on a different ballot!
           return new { Updated = false, Error = "Invalid vote/ballot id" }.AsJsonResult();
         }
 
-        var person1 = new PersonCacher(Db).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+        var person1 = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
 
         Db.Vote.Attach(vote);
 
@@ -318,8 +319,6 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges();
 
-
-
         var votes = voteCacher.UpdateItemAndSaveCache(vote).AllForThisElection;
 
         var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
@@ -327,21 +326,30 @@ namespace TallyJ.CoreModels
 
         new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
 
+        var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
+          .Where(v => v.BallotGuid == ballot.BallotGuid)
+          .Sum(v => v.SingleNameElectionCount) : 0;
+
         return new
         {
           Updated = true,
           BallotStatus = ballotStatusInfo.Status.Value,
           BallotStatusText = ballotStatusInfo.Status.DisplayText,
           ballotStatusInfo.SpoiledCount,
-          LocationBallotsEntered = sum
+          BallotId = ballot.C_RowId,
+          LocationBallotsEntered = sum,
+          SingleBallotCount = ballotCounts, 
+          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
+          LastVid = vote.C_RowId,
+          Name = verifying ? person1.C_FullNameFL : null,
         }.AsJsonResult();
-      }
+      };
 
       // make a new Vote record
 
       var invalidReasonGuid = DetermineInvalidReasonGuid(invalidReason);
 
-      var person = new PersonCacher(Db).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+      var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
 
       var ok = person != null || (invalidReason != null && invalidReasonGuid != Guid.Empty);
 
@@ -381,6 +389,10 @@ namespace TallyJ.CoreModels
 
         new BallotCacher(Db).UpdateItemAndSaveCache(rawBallot);
 
+        var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
+          .Where(v => v.BallotGuid == ballot.BallotGuid)
+          .Sum(v => v.SingleNameElectionCount) : 0;
+
         return new
         {
           Updated = true,
@@ -389,12 +401,62 @@ namespace TallyJ.CoreModels
           BallotStatus = ballotStatusInfo.Status.Value,
           BallotStatusText = ballotStatusInfo.Status.DisplayText,
           ballotStatusInfo.SpoiledCount,
-          LocationBallotsEntered = sum
+          BallotId = ballot.C_RowId,
+          LocationBallotsEntered = sum,
+          SingleBallotCount = ballotCounts,
+          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
+          LastVid = vote.C_RowId
+
         }.AsJsonResult();
       }
 
       // don't recognize person id
       return new { Updated = false, Error = "Invalid person. Please try again." }.AsJsonResult();
+    }
+
+    private object GetVoteUpdates(int lastVoteId, VoteCacher voteCacher, bool isSingleName) {
+      if (lastVoteId == 0) {
+        // single name elections
+        return null;
+      }
+      var peopleInRecentVotes = voteCacher.AllForThisElection.Where(v => v.C_RowId > lastVoteId && v.PersonGuid != null).Select(v=>v.PersonGuid).Distinct();
+      var counts = voteCacher.AllForThisElection.Where(v => peopleInRecentVotes.Contains(v.PersonGuid))
+        .GroupBy(v => v.PersonGuid)
+        .Select(g => new
+        {
+          PersonGuid = g.Key,
+          Count = g.Sum(v => isSingleName ? v.SingleNameElectionCount : 1)
+        })
+        .ToList();
+      return counts;
+    }
+
+    /// <summary>
+    /// This works only for the person deleting the vote. Other tellers will not know that their count of votes for this person
+    /// should be reduced. However, when another vote is made for this person, all tellers will eventually know about it.
+    /// The counts returned are not guaranteed as one teller's computer may get out of sync with the real total. Refreshing the
+    /// teller's page should fix it.
+    /// </summary>
+    /// <param name="personGuid"></param>
+    /// <param name="voteCacher"></param>
+    /// <param name="isSingleName"></param>
+    /// <returns></returns>
+    private object GetVoteUpdatesOnDelete(Guid? personGuid, VoteCacher voteCacher, bool isSingleName)
+    {
+      var counts = voteCacher.AllForThisElection.Where(v => v.PersonGuid == personGuid)
+        .GroupBy(v => v.PersonGuid)
+        .Select(g => new
+        {
+          PersonGuid = g.Key,
+          Count = g.Sum(v => isSingleName ? v.SingleNameElectionCount : 1).DefaultTo(0)
+        })
+        .ToList();
+
+      if (!counts.Any(v => v.PersonGuid == personGuid)) {
+        counts.Add(new { PersonGuid = personGuid, Count = 0 });
+      }
+
+      return counts;
     }
 
     public JsonResult DeleteVote(int vid)
@@ -404,7 +466,9 @@ namespace TallyJ.CoreModels
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
-      var vote = new VoteCacher(Db).AllForThisElection.SingleOrDefault(v => v.C_RowId == vid);
+      VoteCacher voteCacher = new VoteCacher(Db);
+
+      var vote = voteCacher.AllForThisElection.SingleOrDefault(v => v.C_RowId == vid);
       if (vote == null)
       {
         return new { Message = "Not found" }.AsJsonResult();
@@ -414,7 +478,7 @@ namespace TallyJ.CoreModels
       Db.Vote.Remove(vote);
       Db.SaveChanges();
 
-      var allVotes = new VoteCacher(Db).RemoveItemAndSaveCache(vote).AllForThisElection;
+      var allVotes = voteCacher.RemoveItemAndSaveCache(vote).AllForThisElection;
 
       UpdateVotePositions(vote.BallotGuid, allVotes);
 
@@ -434,7 +498,8 @@ namespace TallyJ.CoreModels
         BallotStatus = ballotStatusInfo.Status.Value,
         BallotStatusText = ballotStatusInfo.Status.DisplayText,
         ballotStatusInfo.SpoiledCount,
-        LocationBallotsEntered = sum
+        LocationBallotsEntered = sum,
+        VoteUpdates = GetVoteUpdatesOnDelete(vote.PersonGuid, voteCacher, isSingleName),
       }.AsJsonResult();
     }
 
@@ -666,12 +731,9 @@ namespace TallyJ.CoreModels
 
     private object BallotsInfoList(List<Ballot> ballots, int totalCount)
     {
-      var maxRowVersion = ballots.Count == 0 ? 0 : ballots.Max(b => b.RowVersionInt);
-
       return new
       {
         Ballots = ballots.ToList().Select(ballot => BallotInfoForJs(ballot, new VoteCacher(Db).AllForThisElection)),
-        Last = maxRowVersion,
         Total = totalCount
       };
     }

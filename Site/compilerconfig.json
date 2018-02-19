@@ -81,13 +81,7 @@
   },
   {
     "outputFile": "Views/Ballots/BallotNormal.cshtml.css",
-    "inputFile": "Views/Ballots/BallotNormal.cshtml.less",
-    "minify": {
-      "enabled": false
-    },
-    "options": {
-      "sourceMap": true
-    }
+    "inputFile": "Views/Ballots/BallotNormal.cshtml.less"
   },
   {
     "outputFile": "Views/Setup/ImportCsv.cshtml.css",
@@ -120,5 +114,13 @@
   {
     "outputFile": "Views/After/Monitor.cshtml.css",
     "inputFile": "Views/After/Monitor.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/People.cshtml.css",
+    "inputFile": "Views/Setup/People.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/BallotSingle.cshtml.css",
+    "inputFile": "Views/Ballots/BallotSingle.cshtml.less"
   }
 ]

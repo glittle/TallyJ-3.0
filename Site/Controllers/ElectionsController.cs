@@ -27,7 +27,7 @@ namespace TallyJ.Controllers
       {
         return new
                  {
-                   Locations = ContextItems.LocationModel.MyLocations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
+                   Locations = ContextItems.LocationModel.AllLocations.OrderBy(l => l.SortOrder).Select(l => new { l.Name, l.C_RowId }),
                    Selected = true,
                    ElectionName = UserSession.CurrentElectionName,
                    ElectionGuid = UserSession.CurrentElectionGuid,

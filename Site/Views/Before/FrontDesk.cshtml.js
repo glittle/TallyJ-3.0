@@ -17,7 +17,8 @@
   var preparePage = function () {
     local.lineTemplate = document.getElementById('frontDeskLineTemplate').innerText;
 
-    fillList();
+    connectToFrontDeskHub();
+    startGettingPeople();
 
     $('#Main')
       .on('click', '.Btn', function (ev) {
@@ -43,7 +44,6 @@
       filterByStatus($(this));
     });
 
-    connectToFrontDeskHub();
 
     local.headerSpace = $('header').outerHeight();
 
@@ -60,7 +60,6 @@
     }).scroll();
 
     resetSearch();
-    updateTotals();
   };
 
   var connectToFrontDeskHub = function () {
@@ -191,7 +190,7 @@
       });
     }
     else if (/[\w]/.test(letter)) {
-      console.log(local.focusedOnMatches)
+      //console.log(local.focusedOnMatches)
       if (!local.focusedOnMatches) {
         $('#search').focus();
       } else {
@@ -491,6 +490,16 @@
     });
   };
 
+  var startGettingPeople = function () {
+    ShowStatusDisplay('Getting names');
+    CallAjaxHandler(publicInterface.controllerUrl + '/PeopleForFrontDesk', {}, function (list) {
+      publicInterface.initial = list;
+      fillList();
+      updateTotals();
+    });
+
+  }
+
   var fillList = function () {
     var html = [];
     $.each(publicInterface.initial, function () {
@@ -519,6 +528,8 @@
             person.extraClass = 'hidden';
             someHidden = true;
           }
+
+          person.DisplayLog = '';
 
           if (person.CanVote) {
             if (row.length) {
@@ -555,21 +566,21 @@
 
   function insertNewPerson(person) {
     var newName = person.NameLower;
-    console.log('new', newName);
+    //console.log('new', newName);
     var added = false;
     $('div.Voter').each(function (i, el) {
       var row = $(el);
-      console.log(row.data('name'));
+      //console.log(row.data('name'));
       if (row.data('name') < newName) {
         return true;
       }
-      console.log('insert before');
+      //console.log('insert before');
       row.before(local.lineTemplate.filledWith(person));
       added = true;
       return false;
     });
     if (!added) {
-      console.log('after last');
+      //console.log('after last');
       $('div.Voter').last().after(local.lineTemplate.filledWith(person));
     }
   }

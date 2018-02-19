@@ -152,6 +152,7 @@
             <xs:attribute name="CanReceiveVotes" type="xs:boolean" use="optional" />
             <xs:attribute name="IneligibleReasonGuid" type="xs:string" use="optional" />
             <xs:attribute name="RegistrationTime" type="xs:string" use="optional" />
+            <xs:attribute name="CombinedSoundCodes" type="xs:string" use="optional" />
             <xs:attribute name="VotingLocationGuid" type="xs:string" use="optional" />
             <xs:attribute name="VotingMethod" type="xs:string" use="optional" />
             <xs:attribute name="EnvNum" type="xs:positiveInteger" use="optional" />

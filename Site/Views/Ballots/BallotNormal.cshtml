@@ -7,25 +7,29 @@
   ViewBag.Title = "Ballots";
   ViewBag.Message = "Tally the votes";
 
-  ContextItems.AddJavascriptForPage("ballotNormalPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.BallotStatus={0};".FilledWith(BallotStatusEnum.Listing.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotNormalPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
-
-  TemplateLoader.RequireTemplates(TemplateLoader.File.NormalVoteLine);
-
+  ContextItems.AddJavascriptForPage("ballotPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotPage.frontDeskUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotPage.peopleUrl={0};".FilledWith(@Url.Action("Index", "People").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("ballotPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.BallotStatus={0};".FilledWith(BallotStatusEnum.Listing.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li>Each paper ballot needs to be recorded here.</li>
-    <li>The Ballot is automatically saved as Votes are added to it.</li>
-    <li>Duplicate names will be noticed and marked.</li>
+    <li>
+      Each paper ballot needs to be recorded here.
+    </li>
+    <li>
+      The Ballot is automatically saved as Votes are added to it.
+    </li>
+    <li>
+      Duplicate names will be noticed and marked.
+    </li>
     @if (ContextItems.LocationModel.HasLocations)
     {
       <li>
@@ -37,130 +41,154 @@
   </ol>
 </div>
 <div data-comment="empty div"></div>
-<div class="float-left div1">
-  <div id="accordion">
-    @if (ContextItems.LocationModel.HasLocations)
-    {
-      <h3>Location Status</h3>
-      <div class="locationInfo">
-        <div>
-          <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
-            @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation)
-          </select>
+<div class="Panels">
+  <div class="sidePanel">
+    <div id="accordion">
+      @if (ContextItems.LocationModel.HasLocations)
+      {
+        <h3>Location Status <span class="LocationStatus"></span></h3>
+        <div class="locationInfo">
+          <div>
+            <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
+              @LocationStatusEnum.ForHtmlSelect(UserSession.CurrentLocation)
+            </select>
+          </div>
+          <div class="heading">
+            Contact Info:
+          </div>
+          <div>
+            <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" />
+          </div>
         </div>
-        <div class="heading">
-          Contact Info:
-        </div>
-        <div>
-          <input id="txtContact" class="txtContact" maxlength="250" data-name="ContactInfo" />
-        </div>
-      </div>
-    }
-    <h3><span>Ballots</span></h3>
-    @*<span id="collectedVsEnteredTitle"></span>*@
-    <div id="tabBallots" class="locationInfo">
-      <div class="float-right">
-        <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
-          Refresh Statuses
-        </button>
-      </div>
-      <div class="ballotDiv1">
-        Ballots to enter:
-        <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
-      </div>
-      <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right" accesskey="N">
-        Start <u>N</u>ew Ballot
-      </button>
-      <div>
-        Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
-      </div>
-      <select id="ballotFilter">
-        <option value="">Show All</option>
-        @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
-        {
-          <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
-        }
-      </select>
-      <h5>
-        Ballots
-        @if (ContextItems.LocationModel.HasLocations)
+      }
+      <h3>
+        <span>Ballots</span> @if (ContextItems.LocationModel.HasLocations)
         {
           <span class="where">
-            <span>-</span> <span data-name="Name"></span>
+            <span>-</span> <span class="LocationName" data-name="Name"></span>
           </span>
         }
-
-      </h5>
-      <div id="ballotList" class="ballotList">
-      </div>
-    </div>
-    <h3><span>Add to Ballot <span class="ballotCode"></span></span></h3>
-    <div id="tabNameSearch">
-      <div class="action float-right">
-        <span id="action"></span><span id="more"></span>
-      </div>
-      <div class="heading">
-        Add votes to Ballot # <span class="ballotCode"></span>
-      </div>
-      <div>
-        Search for a <u>p</u>erson:
-        <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
-      </div>
-      <div class="float-right">
-        <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
-        <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
-          <u>A</u>dd new or spoiled
+      </h3>
+      <div id="tabBallots" class="locationInfo">
+        <div class="float-right">
+          <button type="button" id="btnRefreshBallotList" class="btn btn-mini" title="Refresh the list of Ballots">
+            Refresh List
+          </button>
+        </div>
+        <div class="ballotDiv1">
+          Ballots to enter:
+          <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
+        </div>
+        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right" accesskey="N">
+          Start <u>N</u>ew Ballot
         </button>
-      </div>
-      <div class="float-left" id="searchInput">
-        <span id="keyTimeShow"></span>
-        <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
-      </div>
-      <div class="actionHolder Clear">
-        <div class="tip1">
-          Use &uarr; &darr; keys to move in the list. Press Enter to add.
+        <div>
+          Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
+        </div>
+        <select id="ballotFilter">
+          <option value="">Show All</option>
+          @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
+          {
+            <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
+          }
+        </select>
+        <div id="ballotList" class="ballotList">
         </div>
       </div>
-      <ul id="nameList" class="nameList"></ul>
-      <div class="Clear5">
+      <h3><span>Add to Ballot <span class="ballotCode"></span></span></h3>
+      <div id="tabNameSearch">
+        <div class="action float-right">
+          <span id="action"></span><span id="more"></span>
+        </div>
+        <div class="heading">
+          Add votes to Ballot # <span class="ballotCode"></span>
+        </div>
+        <div>
+          Search for a <u>p</u>erson:
+          <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
+        </div>
+        <div class="float-right">
+          <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
+          <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
+            <u>A</u>dd new or spoiled
+          </button>
+        </div>
+        <div class="float-left" id="searchInput">
+          <span id="keyTimeShow"></span>
+          <input id="txtSearch" accesskey="P" tabindex="1" autocomplete="off" class="input-medium">
+        </div>
+        <div class="actionHolder Clear">
+          <div class="tip1">
+            Use &uarr; &darr; keys to move in the list. Press Enter to add.
+          </div>
+        </div>
+        <ul id="nameList" class="nameList"></ul>
+        <div class="Clear5">
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div id="votesPanel" class="votesPanel">
-  <div class="titleDiv">
-    <div class="float-right">
-      <span class="ballotStatus"></span>Ballot #<span class="ballotCode"></span>
+  <div id="votesPanel" class="votesPanel">
+    <div class="ballotStatus"></div>
+    <div class="titleDiv">
+      <div class="float-right">
+        Ballot # <span class="ballotCode"></span>
+      </div>
+      <span class="VoteNum">#</span> Names on the ballot
     </div>
-    <span class="VoteNum">#</span> Names on the ballot
+    <div id="votesList">
+    </div>
+    <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
+            accesskey="N" tabindex="2">
+      Start <u>N</u>ew Ballot
+    </button>
+    <button type="button" id="btnAddToThis" class="btn btn-mini">
+      Add to Ballot
+    </button>
+    <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if ballot status or vote lines and numbers appear to be wrong.">
+      Refresh Ballot
+    </button>
+    <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
+      Delete this empty ballot
+    </button>
+    <div class="review">
+      <label for="cbReview">
+        If this ballot needs review by the head teller, tick here
+      </label><input type="checkbox" id="cbReview" />
+    </div>
   </div>
-  <div id="votesList">
-  </div>
-  <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
-          accesskey="N" tabindex="2">
-    Start <u>N</u>ew Ballot
-  </button>
-  <button type="button" id="btnAddToThis" class="btn btn-mini">
-    Add to Ballot
-  </button>
-  <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if ballot status or vote lines and numbers appear to be wrong.">
-    Refresh Ballot
-  </button>
-  <button type="button" id="btnDeleteBallot" disabled class="btn btn-mini" title="Delete after all votes have been deleted">
-    Delete this empty ballot
-  </button>
-  <div class="review">
-    <label for="cbReview">
-      If this ballot needs review by the head teller, tick here
-    </label><input type="checkbox" id="cbReview" />
+  <div id="addMissingPanel" class="votesPanel">
+    <h3>
+      Adding Name Not in List
+    </h3>
+    <button id="btnCancelAddMissing" type="button" class="btn btn-warning">
+      Cancel
+    </button>
+    @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
   </div>
 </div>
-<div id="addMissingPanel" class="votesPanel">
-  <h3>
-    Adding Name Not in List
-  </h3>
-  @{ Html.RenderPartial("~/Views/Setup/EditPerson.cshtml", new SetupModel()); }
-  <button id="btnCancelAddMissing" type="button" class="btn btn-warning">
-    Cancel
-  </button>
-</div>
+
+<script type="text/x-template" id="NormalVoteLine">
+  <div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <div class="Top">
+      <span class="VoteNum">{pos}</span>
+      <span class="NameInfo">
+        <span class="Duplicate">Duplicate: </span>
+        <span class="Invalid">Spoiled: </span>
+        <span class="Name">{^Display}</span>
+        <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
+          {^InvalidReasons}
+        </select>
+      </span>
+      <span class="icons">
+        <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
+        <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
+      </span>
+    </div>
+    <div class="Invalid InvalidPerson">{InvalidDescription}</div>
+    <div class="ChangedMessage">
+      This person's identifying information was changed since this vote was recorded. Please verify that this is still for the same person as recorded on the paper ballot!
+      <button type="button" class="btnClearChangeError">Verified correct</button>
+    </div>
+  </div>
+</script>

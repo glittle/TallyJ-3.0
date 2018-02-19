@@ -1,8 +1,24 @@
-﻿body {
+﻿.Panels {
+  display: flex;
+}
+#votesPanel,
+.sidePanel {
+  display: none;
+}
+.sidePanel {
+  width: 330px;
+  flex: 0 0 auto;
+}
+tr.overrides td {
+  white-space: nowrap;
+}
+body {
   overflow-y: scroll;
 }
-
 /* overrides to fix UI */
+.ui-tabs-panel {
+  padding: 3px 2px 5px 5px;
+}
 .ui-tabs-nav {
   list-style: none;
   padding: 0;
@@ -10,175 +26,147 @@
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-
-  .ui-tabs-nav li {
-    display: inline-block;
-    padding: 0 6px 0 6px;
-  }
-
-.div1 {
-  width: 414px;
+.ui-tabs-nav li {
+  display: inline-block;
+  padding: 0 6px 0 6px;
 }
-
-.tabs {
-  min-height: 300px;
-}
-
-.ui-tabs-panel {
-  padding: 4px;
-}
-
 .nameList {
-  margin: 0 0 10px 0;
-  height: 400px;
-  width: 300px;
+  position: relative;
+  height: 300px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   border: solid 1px #999;
-  padding: 4px;
-  font-size: 110%;
   line-height: 1.5;
   overflow: auto;
-  position: relative;
 }
-
-  .nameList u {
-    text-decoration: none;
-  }
-
-  .nameList li {
-    border: 1px solid transparent;
-    cursor: pointer;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-  }
-
-    .nameList li:hover {
-      border-color: #ddd;
-    }
-
-    .nameList li.selected {
-      background-color: #c1f1b4;
-      border-color: #999;
-    }
-
-  .nameList .CannotReceiveVotes {
-    text-decoration: line-through;
-  }
-
-  /*.nameList .CannotVote:after {
-    content: ' **';
-  }*/
-
-
-  .nameList .Match2,
-  .nameList .Match4 {
-    background-color: #efeeef;
-    font-style: italic;
-  }
-
-  .nameList .First {
-    padding: 3px 0 3px 0;
-    border-top: 3px double #ccc;
-    width: 100%;
-    display: block;
-  }
-
+.nameList u {
+  text-decoration: none;
+}
+.nameList li {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 2px 0 5px;
+  color: #000;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+.nameList li:hover {
+  background-color: rgba(204, 255, 190, 0.5);
+}
+.nameList li.selected {
+  background-color: #c1f1b4;
+}
+.nameList li.HasVotes {
+  background-image: linear-gradient(to right, #8dc63e 0%, rgba(0, 0, 0, 0) 3%);
+}
+.nameList li i {
+  border-bottom: 1px #666 dashed;
+}
+.nameList li.Match1 {
+  color: #567a24;
+  font-style: italic;
+}
+.nameList li.Match1 i {
+  border-bottom: 1px #666 dashed;
+  font-style: normal;
+}
+.nameList li.Match1.HasVotes {
+  background-image: linear-gradient(to right, #8dc63e 0%, rgba(0, 0, 0, 0) 3%), linear-gradient(45deg, #f6941e 0%, rgba(0, 0, 0, 0) 5%);
+}
+.nameList li.HasVotes + li.NoVotes {
+  padding-top: 2px;
+  border-top: 3px double #ccc;
+}
+.nameList li.Match2Only + li.Match1 {
+  padding-top: 2px;
+  border-top: 3px double #8dc63e;
+}
+.nameList .CannotReceiveVotes {
+  text-decoration: line-through;
+}
+.nameList .First {
+  padding-top: 2px;
+  border-top: 3px double #ccc;
+  width: 100%;
+  display: block;
+}
 .ballotList {
   overflow: auto;
-  padding: 2px;
-  height: 250px;
-  width: 320px;
+  padding: 20px 15px 30px 15px;
+  max-height: 300px;
 }
-
-  .ballotList div {
-    border: 1px solid transparent;
-    cursor: pointer;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-  }
-
-    .ballotList div span {
-      color: #666;
-    }
-
-    .ballotList div:hover {
-      border-color: #ddd;
-    }
-
-    .ballotList div.selected {
-      background-color: #c1f1b4;
-      border-color: #999;
-    }
-
-
-
+.ballotList div {
+  border: 1px solid transparent;
+  cursor: pointer;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+.ballotList div span {
+  color: #666;
+}
+.ballotList div:hover {
+  background-color: #ddffcf;
+  background-color: rgba(204, 255, 190, 0.5);
+  border-color: #ddd;
+}
+.ballotList div.selected {
+  background-color: #c1f1b4;
+  border-color: #999;
+}
 .action {
   font-size: 11px;
   min-width: 100px;
   display: block;
+  margin-left: 3px;
 }
-
 .actionHolder {
   margin-top: -5px;
   margin-bottom: 5px;
 }
-
 .tip1 {
   color: #aaa;
   font-size: 10px;
   display: inline-block;
 }
-
 span.ZZdelaying {
   background-color: #f8f541;
 }
-
 span.ZZsearching {
   background-color: #f1c1b4;
 }
-
 input.ZZdelaying {
   background-color: #fffebf;
 }
-
 input.ZZsearching {
   background-color: #ffe8e2;
 }
-
-#votesPanel, .div1 {
-  display: none;
-}
-
 .votesPanel {
   margin-left: 15px;
-  float: left;
-  width: 530px;
+  flex: 1 1 auto;
 }
-
 .ui-icon-arrow-2-n-s {
   display: inline-block;
   margin-left: 15px;
   cursor: ns-resize;
   visibility: hidden;
 }
-
 .ui-icon-trash {
   display: inline-block;
   margin-left: 7px;
   cursor: pointer;
   visibility: hidden;
 }
-
 .CannotReceiveVotes {
   text-decoration: line-through;
 }
-
 span.Vote {
   width: 60px;
   display: inline-block;
   text-align: right;
   margin-right: 9px;
 }
-
 input.Vote {
   width: 50px;
   margin-right: 15px;
@@ -189,261 +177,236 @@ input.Vote {
   vertical-align: top;
   margin-top: 2px;
 }
-
 .titleDiv {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 1px 0;
   font-weight: bold;
   font-size: 12pt;
-  border-bottom: 1px solid #ccc;
-  padding-right: 4px;
 }
-
-  .titleDiv div {
-    margin: -7px 0 0 0;
-  }
-
+.titleDiv .ballotCode {
+  padding-left: 3px;
+  font-size: 16pt;
+  color: #75a531;
+}
+.titleDiv div {
+  margin: -3px 0 0 0;
+}
 button.smallButton {
   font-size: 12px;
   font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
 }
-
-.Valid .Invalid {
+.Valid .Invalid,
+.Valid .Duplicate {
   display: none;
 }
-
-.InvalidP .InvalidCustom, .InvalidC .InvalidPerson {
+.InvalidP .InvalidCustom,
+.InvalidC .InvalidPerson {
   display: none;
 }
-
 .InvalidP div.InvalidPerson {
   color: #e80c4d;
-  margin: -6px 0 0 117px;
+  padding: 0 0 3px 85px;
 }
-
 select.Invalid {
   vertical-align: top;
   color: #e80c4d;
 }
-
-.VoteHost .ui-icon {
-  visibility: visible;
-  float: right;
-  margin: 5px 10px 0 10px;
-  z-index: 1;
-}
-
-.VoteHost span.Name {
-  display: none;
-  font-size: 14pt;
-  padding: 0 9px 0 0;
-}
-
-.VoteHost.InvalidP span.Name {
-  display: inline;
-  font-size: 1em;
-  text-decoration: line-through;
-}
-
-.VoteHost.Valid span.Name {
-  display: inline-block;
-  max-width: 340px;
-}
-
-.InvalidBallot, .Ineligible, span.Invalid {
+.InvalidBallot,
+.Ineligible,
+span.Invalid {
   color: #e80c4d;
   font-weight: bold;
-  margin-left: 22px;
 }
-
 .Ok {
   color: #0ce84d;
 }
-
 .Confirmed {
   font-weight: bold;
 }
-
 .NotConfirmed {
   opacity: .5;
 }
-
 .txtContact {
   width: 260px;
 }
-
 div.heading {
   font-weight: bold;
   margin: 0 0 4px 0;
 }
-
-#txtContact {
-  width: 393px;
-}
-
-table.locationInfo {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.divLocationInfo {
-  border: solid 1px #ccc;
-  padding: 0 1em 0 4px;
-  margin-bottom: 15px;
-}
-
-table.locationInfo td {
-  vertical-align: middle;
-}
-
 .ui-widget {
   font-size: .85em;
 }
-
 .ui-helper-reset {
   font-size: 12px;
 }
-
 .ChangedMessage {
   display: none;
 }
-
+.Changedtrue {
+  border: 1px solid red;
+  background-color: #ffcccc;
+}
 .Changedtrue .ChangedMessage {
   display: block;
   color: #e80c4d;
   margin-left: 70px;
   padding-bottom: 5px;
 }
-
-.Changedtrue {
-  border: 1px solid red;
-  background-color: #ffcccc;
-}
-
-input.changing {
-  background-color: #cfc;
-}
-
-#txtNumCollected {
-  width: 60px;
+.txtNumCollected {
+  width: 40px;
   text-align: right;
   margin-right: 5px;
 }
-
-.lblNumEntered {
-}
-
-.countsBad, .countsGood, .countsNeutral {
+.countsBad,
+.countsGood,
+.countsNeutral {
   margin: 4px 0 3px 0;
 }
-
 .countsBad {
   color: red;
 }
-
 .countsGood {
   color: green;
 }
-
-#votesList {
-  padding-top: 5px;
-  max-height: 400px;
-  overflow: auto;
+@media screen and (min-height: 900px) {
+  #votesList {
+    max-height: 9999px;
+  }
 }
-
 .VoteNum {
   display: inline-block;
   width: 20px;
   text-align: right;
   margin-right: 12px;
   font-size: 80%;
-  color: #aaa;
+  color: #999;
+  vertical-align: top;
+  margin-top: 3px;
 }
-
 .InUse {
   color: #f6941e;
 }
-
-.titleDiv .ballotStatus {
-  padding-right: 20px;
-  vertical-align: top;
-  font-size: 16pt;
-}
-
-.titleDiv .ballotCode {
-  padding-left: 3px;
-  font-size: 16pt;
-}
-
 .duplicateVote .Name {
   color: #e80c4d;
 }
-
 .duplicateVote .Duplicate {
   color: #e80c4d;
   margin-right: 2px;
   font-weight: bold;
   display: inline-block;
   font-size: 1em;
-  margin-left: 25px;
 }
-
-.VoteHost {
+#votesList {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  padding-top: 5px;
+  max-height: 60vh;
+}
+#votesList .VoteHost {
+  width: 100%;
+  margin: 2px 0;
+  min-height: 1.4em;
   background-color: #eeffd6;
-  line-height: 1.5;
 }
-
+#votesList .VoteHost span.Name {
+  display: none;
+  font-size: 14pt;
+  padding: 0 9px 0 0;
+  text-indent: -20px;
+  margin-left: 20px;
+}
+#votesList .VoteHost.InvalidP span.Name {
+  display: inline;
+  margin-left: 3px;
+  text-indent: 0;
+  font-size: 1em;
+  text-decoration: line-through;
+}
+#votesList .VoteHost.Valid span.Name {
+  display: inline-block;
+}
+#votesList .VoteHost .ui-icon {
+  visibility: visible;
+  margin: 2px 10px 0px 5px;
+  z-index: 1;
+}
+#votesList .VoteHost .Top {
+  display: flex;
+  align-items: baseline;
+}
+#votesList .VoteHost .NameInfo {
+  flex: 2 1 auto;
+  white-space: normal;
+  display: inline-block;
+}
+#votesList .VoteHost .icons {
+  flex: 0 0 auto;
+}
 .ExtraVote {
   border-top: 1px solid black;
   margin-top: 5px;
 }
-
-.ExtraVote, .ExtraVotes {
+.ExtraVote,
+.ExtraVotes {
   background-color: #ffe3c2;
   line-height: 1.2;
 }
-
 .ballotList li:hover {
   background-color: #cfc;
 }
-
-#btnRefreshBallotList {
-  margin: 14px 0 -3px 0;
-}
-
 #btnAddMissing {
   float: right;
 }
-
 .review {
   margin-top: 1em;
 }
-
 #addMissingPanel {
   display: none;
 }
-
-h5 {
-  margin-top: 1em;
+#addMissingPanel > h3 {
+  display: inline-block;
 }
-
+#addMissingPanel #btnCancelAddMissing {
+  display: inline-block;
+  margin-left: 20px;
+}
+h5 {
+  margin-top: 0;
+}
 span.HideZero,
 span.HideZero0 {
   display: none;
 }
-
 .SpoiledCount {
   display: inline-block;
   margin-left: 15px;
 }
-
-#btnDeleteBallot {
-  display: none;
+#ddlLocationStatus {
+  margin: 0 0 10px 5px;
 }
-
-.NotBold {
-  font-weight: normal;
+.ui-accordion-header {
+  line-height: 110%;
+  font-weight: bold;
+  font-size: 12pt;
+  padding: 4px 4px 4px 4px;
+  margin: 3px 0 0 0;
+  cursor: pointer;
 }
-.addSpoiled {
-  margin-top: 16px;
+.ui-accordion-content {
+  border-top: none;
+  padding: 10px 6px 2px 6px;
+}
+.ballotDiv1 {
+  margin: 2px 0 5px 0;
+}
+#ballotFilter {
+  float: right;
+  width: auto;
+  clear: right;
+  margin-top: 9px;
+  font-size: 80%;
 }
 #keyTimeShow {
   width: 3px;
@@ -459,11 +422,12 @@ span.HideZero0 {
 #txtSearch {
   margin-left: 5px;
 }
-
 #searchInput {
   position: relative;
 }
-
-#btnCancelAddMissing {
-  margin: 9px 0 0 225px;
+@media only screen and (max-width: 600px) {
+  .Panels {
+    display: block;
+  }
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkJhbGxvdFNpbmdsZS5jc2h0bWwubGVzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFFQTtFQUNFLGFBQUE7O0FBR0Y7QUFBYTtFQUNYLGFBQUE7O0FBR0Y7RUFDRSxZQUFBO0VBQ0EsY0FBQTs7QUFHRixFQUFFLFVBQ0E7RUFDRSxtQkFBQTs7QUFJSjtFQUNFLGtCQUFBOzs7QUFHRjtFQUNFLHdCQUFBOztBQUdGO0VBQ0UsZ0JBQUE7RUFDQSxVQUFBO0VBQ0EsU0FBQTtFQUNBLDZCQUFBO0VBQ0EsNEJBQUE7O0FBR0YsWUFBYTtFQUNYLHFCQUFBO0VBQ0Esb0JBQUE7O0FBR0Y7RUFDRSxrQkFBQTtFQUNBLGFBQUE7RUFDQSxXQUFBO0VBQ0EsU0FBQTtFQUNBLFVBQUE7RUFDQSxzQkFBQTtFQUNBLHNCQUFBO0VBQ0EsZ0JBQUE7RUFDQSxjQUFBOztBQVRGLFNBV0U7RUFDRSxxQkFBQTs7QUFaSixTQWVFO0VBQ0UsZ0NBQUE7RUFDQSxvQkFBQTtFQUNBLFdBQUE7RUFDQSxlQUFBO0VBQ0Esc0JBQUE7RUFDQSx5QkFBQTs7QUFFQSxTQVJGLEdBUUc7RUFDQywwQ0FBQTs7QUFJRixTQWJGLEdBYUc7RUFDQyx5QkFBQTs7QUFJRixTQWxCRixHQWtCRztFQUNDLGtCQUFrQiwwREFBbEI7O0FBbENOLFNBZUUsR0FzQkU7RUFFRSw4QkFBQTs7QUFHRixTQTNCRixHQTJCRztFQUNDLGNBQUE7RUFDQSxrQkFBQTs7QUFGRixTQTNCRixHQTJCRyxPQUlDO0VBRUUsOEJBQUE7RUFDQSxrQkFBQTs7QUFHRixTQXJDSixHQTJCRyxPQVVFO0VBQ0Msa0JBQWtCLDREQUE4RCx1REFBaEY7O0FBckRSLFNBMERFLEdBQUUsU0FBVSxLQUFJO0VBQ2QsZ0JBQUE7RUFDQSwyQkFBQTs7QUE1REosU0ErREUsR0FBRSxXQUFZLEtBQUk7RUFDaEIsZ0JBQUE7RUFDQSw4QkFBQTs7QUFqRUosU0FvRUU7RUFDRSw2QkFBQTs7QUFyRUosU0F3RUU7RUFDRSxnQkFBQTtFQUNBLDJCQUFB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 */

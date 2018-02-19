@@ -106,9 +106,6 @@
   var extend2 = function (ballot) {
     ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
     ballot.EnvInfo = '<b data-num="{EnvNum}">{EnvNum}</b>'.filledWith(ballot);
-    //var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
-    //ballot.FullTime = time.toString();
-    //ballot.SortTime = time.getTime();
     return ballot;
   }
 

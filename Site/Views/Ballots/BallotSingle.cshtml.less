@@ -19,6 +19,9 @@ tr.overrides {
   }
 }
 
+body {
+  overflow-y: scroll;
+}
 /* overrides to fix UI */
 .ui-tabs-panel {
   padding: 3px 2px 5px 5px;
@@ -119,9 +122,8 @@ tr.overrides {
 
 .ballotList {
   overflow: auto;
-  padding: 5px 0px 0px 0px;
-  max-height: ~"calc(100vh - 400px)";
-  min-height: 150px;
+  padding: 20px 15px 30px 15px;
+  max-height: 300px;
 
   div {
     border: 1px solid transparent;
@@ -214,17 +216,14 @@ span.Vote {
 }
 
 input.Vote {
-  width: 60px;
-  margin-right: 5px;
+  width: 50px;
+  margin-right: 15px;
+  margin-left: 10px;
   text-align: right;
-}
-
-
-.ballotStatus {
-  text-align: right;
-  padding: 0 0 3px 0;
-  font-weight: bold;
-  font-size: 16pt;
+  font-size: 110%;
+  padding-right: 4px;
+  vertical-align: top;
+  margin-top: 2px;
 }
 
 .titleDiv {
@@ -261,7 +260,7 @@ button.smallButton {
 
 .InvalidP div.InvalidPerson {
   color: #e80c4d;
-  padding: 0 0 6px 33px;
+  padding: 0 0 3px 85px;
 }
 
 select.Invalid {
@@ -315,7 +314,7 @@ div.heading {
   .ChangedMessage {
     display: block;
     color: #e80c4d;
-    margin-left: 32px;
+    margin-left: 70px;
     padding-bottom: 5px;
   }
 }
@@ -509,7 +508,10 @@ span.HideZero0 {
 }
 
 #ballotFilter {
-  margin-top: 3px;
+  float: right;
+  width: auto;
+  clear: right;
+  margin-top: 9px;
   font-size: 80%;
 }
 

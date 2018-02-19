@@ -17,7 +17,7 @@ namespace TallyJ.CoreModels
     private Dictionary<Guid, int> _idMap;
 
     /// <Summary>List of Locations</Summary>
-    public List<Location> MyLocations
+    public List<Location> AllLocations
     {
       get { return _locations ?? (_locations = new LocationCacher(Db).AllForThisElection); }
     }
@@ -26,14 +26,14 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _idMap ?? (_idMap = MyLocations.ToDictionary(l => l.LocationGuid, l => l.C_RowId));
+        return _idMap ?? (_idMap = AllLocations.ToDictionary(l => l.LocationGuid, l => l.C_RowId));
       }
     }
     public string LocationRowIdMap
     {
       get
       {
-        return MyLocations
+        return AllLocations
           .Select(l => "{0}:{1}".FilledWith(l.C_RowId, l.Name.SerializedAsJsonString()))
           .JoinedAsString(", ")
           .SurroundContentWith("{", "}");
@@ -62,13 +62,13 @@ namespace TallyJ.CoreModels
 
     public string ShowDisabled
     {
-      get { return MyLocations.Count == 1 ? " disabled" : ""; }
+      get { return AllLocations.Count == 1 ? " disabled" : ""; }
     }
 
     /// <Summary>Does this election have more than one location?</Summary>
     public bool HasLocations
     {
-      get { return MyLocations.Count > 1; }
+      get { return AllLocations.Count > 1; }
     }
 
     public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true)
@@ -83,7 +83,7 @@ namespace TallyJ.CoreModels
       return
         (
         (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
-        MyLocations
+        AllLocations
         .OrderBy(l => l.SortOrder)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
@@ -101,7 +101,7 @@ namespace TallyJ.CoreModels
     {
       var locationCacher = new LocationCacher(Db);
 
-      var location = MyLocations.SingleOrDefault(l => l.C_RowId == locationId);
+      var location = AllLocations.SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
@@ -234,7 +234,7 @@ namespace TallyJ.CoreModels
       if (text.HasNoContent() && location.C_RowId > 0)
       {
         // don't delete last location
-        if (MyLocations.Count() > 1)
+        if (AllLocations.Count() > 1)
         {
           // delete existing if we can
           var used = new BallotCacher(Db).AllForThisElection.Any(b => b.LocationGuid == location.LocationGuid);

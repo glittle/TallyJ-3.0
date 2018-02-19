@@ -10,13 +10,6 @@ using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.EF
 {
-  enum ExtraSettingKey
-  {
-    // keep names as short as possible
-    BP, // Ballot Process?
-    Env, // Envelope Mode
-    T24, // use 24 hour time?
-  }
 
   public enum BallotProcessEnum
   {
@@ -40,6 +33,14 @@ namespace TallyJ.EF
   [Serializable]
   public partial class Election : IIndexedForCaching
   {
+    enum ExtraSettingKey
+    {
+      // keep names as short as possible
+      BP, // Ballot Process?
+      Env, // Envelope Mode
+      T24, // use 24 hour time?
+    }
+
     /// <summary>
     /// This is a "fake" column that is embedded into the OwnerLoginId column
     /// </summary>

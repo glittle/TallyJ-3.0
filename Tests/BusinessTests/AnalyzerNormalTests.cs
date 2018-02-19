@@ -47,7 +47,7 @@ namespace Tests.BusinessTests
 
       _samplePeople = new List<Person>
       {
-        new Person {VotingMethod = VotingMethodEnum.InPerson}.ForTests(),
+        new Person {CombinedInfo="abc", CombinedInfoAtStart="abc", VotingMethod = VotingMethodEnum.InPerson}.ForTests(),
         new Person {}.ForTests(),
         new Person {}.ForTests(),
         new Person {}.ForTests(),
@@ -127,7 +127,7 @@ namespace Tests.BusinessTests
         new Vote().ForTests(SamplePeople[0], ballots[0]),
         new Vote().ForTests(SamplePeople[1], ballots[0]),
       };
-      votes[0].PersonCombinedInfo = "yy";
+      votes[0].PersonCombinedInfo = "very different";
 
       var model = new ElectionAnalyzerNormal(_fakes); //, election, vVoteInfos, ballots, SamplePeople);
 
@@ -139,6 +139,48 @@ namespace Tests.BusinessTests
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(1);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+    [TestMethod]
+    public void Ballot_TwoPeople_NameExtended()
+    {
+      new Election
+      {
+        NumberToElect = 2,
+        NumberExtra = 0,
+        CanReceive = ElectionModel.CanVoteOrReceive.All
+      }.ForTests();
+
+      var ballots = new[]
+      {
+        new Ballot().ForTests()
+      };
+
+      var votes = new[] {
+        new Vote().ForTests(SamplePeople[0], ballots[0]),
+        new Vote().ForTests(SamplePeople[1], ballots[0]),
+      };
+      votes[0].PersonCombinedInfo = "ab"; // info in the vote is smaller, from an original version of the person
+
+      var model = new ElectionAnalyzerNormal(_fakes); //, election, vVoteInfos, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
+
+      results.Count.ShouldEqual(2);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
       resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);

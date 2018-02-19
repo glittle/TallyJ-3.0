@@ -461,7 +461,7 @@ namespace TallyJ.CoreModels
 
       result.AddRange(new[]
       {
-        "Processed {0} data line{1}.".FilledWith(rowsProcessed, rowsProcessed.Plural()),
+        "Processed {0} data line{1}".FilledWith(rowsProcessed, rowsProcessed.Plural()),
         "Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person"))
       });
       if (peopleSkipped > 0)
@@ -474,7 +474,7 @@ namespace TallyJ.CoreModels
       }
       if (validReasons > 0)
       {
-        result.Add("{0} Eligibility Status Reason{1} recognized.".FilledWith(validReasons, validReasons.Plural()));
+        result.Add("{0} {1} with recognized Eligibility Status Reasons.".FilledWith(validReasons, validReasons.Plural("people", "person")));
       }
       if (unexpectedReasons.Count > 0)
       {

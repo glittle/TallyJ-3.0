@@ -38,25 +38,21 @@
   <tr id="trCanVote" class="topLine overrides">
     <td colspan="2">
       <label for="input2">Can vote in this election?</label>
-      @*<input type="checkbox" readonly data-name="CanVote" id="input2" />*@
       <select data-name="CanVote" disabled="disabled">
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-      <span class="sample">(** if No)</span>
-      @*<span class="ui-icon ui-icon-info" id="qTipCnVote"></span>*@
+      <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
     </td>
   </tr>
   <tr id="trCanReceiveVotes" class="topLine overrides">
     <td colspan="2">
       <label for="input1">Can be voted for in this election?</label>
-      @*<input type="checkbox" readonly id="input1" data-name="CanReceiveVotes" />*@
       <select data-name="CanReceiveVotes" disabled="disabled">
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-      <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
-      @*<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>*@
+      <span class="sample">(<span>🞛</span> if No)</span>
     </td>
   </tr>
 
@@ -71,7 +67,7 @@
   </tr>
   <tr>
     <td>
-      Other Last Name(s) / Maiden Name
+      Other Last Name(s)
     </td>
     <td>
       <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />

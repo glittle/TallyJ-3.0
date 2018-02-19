@@ -138,6 +138,7 @@ namespace TallyJ.CoreModels.ExportImport
           p.VotingMethod,
           p.EnvNum,
           RegistrationTime = p.RegistrationTime.AsString("o").OnlyIfHasContent(),
+          p.CombinedSoundCodes, // now used for extra fake columns
           p.VotingLocationGuid,
           TellerAtKeyboard = p.Teller1,
           TellerAssisting = p.Teller2,

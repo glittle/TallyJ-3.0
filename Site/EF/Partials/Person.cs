@@ -15,18 +15,15 @@ namespace TallyJ.EF
   [MetadataType(typeof(PersonMetadata))]
   public partial class Person : IIndexedForCaching
   {
-    //public long RowVersionInt {
-    //  get
-    //  {
-    //    return BitConverter.ToInt64(C_RowVersion, 0);
-    //  }
-    //}
+    enum ExtraSettingKey
+    {
+      // keep names as short as possible
+      RegLog, // registration log
+    }
 
     public string FullName {
       get
       {
-        // ((((([LastName]+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+', ')+coalesce([FirstName],''))
-        // +coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')',''))
         return new[]
         {
           LastName,
@@ -45,8 +42,6 @@ namespace TallyJ.EF
     public string FullNameFL {
       get
       {
-        // ((((coalesce([FirstName]+' ','')+[LastName])+coalesce((' ['+nullif([OtherNames],''))+']',''))+
-        //  coalesce((' ['+nullif([OtherLastNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')',''))
         return new[]
         {
           FirstName.SurroundContentWith("", " "),
@@ -64,31 +59,104 @@ namespace TallyJ.EF
       public object RegistrationTime { get; set; }
     }
 
-    ///// <summary>
-    ///// Get all people for this election
-    ///// </summary>
-    //public static IEnumerable<Person> AllPeopleCached
-    //{
-    //  get
-    //  {
-    //    var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+    /// <summary>
+    /// This is a "fake" column that is embedded into the old CombinedSoundCodes column.
+    /// </summary>
+    /// <remarks>
+    /// The values in the string must not contain <see cref="FlagChar"/> ~ or <see cref="SplitChar"/> ~ or <see cref="ArraySplit"/> |
+    /// </remarks>
+    public List<string> RegistrationLog
+    {
+      get
+      {
+        var raw = GetExtraSetting(ExtraSettingKey.RegLog);
+        return raw.HasContent() ? raw.Split(ArraySplit).ToList() : new List<string>();
+      }
+      set
+      {
+        SetExtraSettting(ExtraSettingKey.RegLog, value.JoinedAsString(ArraySplit));
+      }
+    }
 
-    //    if (db.IsFaked) throw new ApplicationException("Can't be used in tests");
 
-    //    var currentElectionGuid = UserSession.CurrentElectionGuid;
+    const char FlagChar = '~';
+    const char SplitChar = '~';
+    const char ArraySplit = '|'; // for when the value is an array or List<string>
 
-    //    return db.Person.Where(p => p.ElectionGuid == currentElectionGuid).FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(60)), new[] { "AllPeople" + currentElectionGuid });
-    //  }
-    //}
+    private Dictionary<ExtraSettingKey, string> _extraDict;
+    private Dictionary<ExtraSettingKey, string> ExtraSettings
+    {
+      get
+      {
+        if (_extraDict != null)
+        {
+          return _extraDict;
+        }
+        // column contents...  ~Flag=1;FlagB=hello
 
-    ///// <summary>
-    ///// Drop the cache of people for this election
-    ///// </summary>
-    //public static void DropCachedPeople()
-    //{
-    //  if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked) return;
+        if (string.IsNullOrWhiteSpace(CombinedSoundCodes) || CombinedSoundCodes[0] != FlagChar)
+        {
+          _extraDict = new Dictionary<ExtraSettingKey, string>();
+        }
+        else
+        {
+          _extraDict = CombinedSoundCodes
+              .Substring(1) // skip flag char
+              .Trim()
+              .Split(SplitChar)
+              .Select(s => s.Split('='))
+              .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
+              // any that are not recognized are ignored and lost
+              .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
+        }
 
-    //  CacheManager.Current.Expire("AllPeople" + UserSession.CurrentElectionGuid);
-    //}
+        return _extraDict;
+      }
+    }
+
+
+    private string GetExtraSetting(ExtraSettingKey setting)
+    {
+      string value;
+      if (ExtraSettings.TryGetValue(setting, out value))
+      {
+        return value;
+      }
+      return null;
+    }
+
+    private void SetExtraSettting(ExtraSettingKey setting, string value)
+    {
+      var s = value ?? "";
+      if (s.Contains("=") || s.Contains(SplitChar))
+      {
+        throw new ApplicationException("Invalid value for extra settings: " + s);
+      }
+
+      var dict = ExtraSettings;
+
+      if (s == "")
+      {
+        if (dict.ContainsKey(setting))
+        {
+          dict.Remove(setting);
+        }
+      }
+      else
+      {
+        dict[setting] = s;
+      }
+
+      if (dict.Count == 0)
+      {
+        CombinedSoundCodes = null;
+      }
+      else
+      {
+        CombinedSoundCodes = FlagChar + dict.Select(kvp => kvp.Key + "=" + kvp.Value).JoinedAsString(SplitChar);
+      }
+
+      _extraDict = dict;
+    }
   }
 }

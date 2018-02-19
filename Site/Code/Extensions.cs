@@ -598,7 +598,9 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static string SerializedAsJsonString(this object input)
     {
-      return new JavaScriptSerializer().Serialize(input);
+      return new JavaScriptSerializer {
+        MaxJsonLength = int.MaxValue
+      }.Serialize(input);
     }
 
     /// <summary>
@@ -615,7 +617,8 @@ namespace TallyJ.Code
         ContentType = "text/plain",
         // allow client full control over reading response (don't send as JSON type)
         Data = input,
-        JsonRequestBehavior = behavior
+        JsonRequestBehavior = behavior,
+        MaxJsonLength = int.MaxValue
       };
       return jsonResult;
     }
@@ -718,21 +721,6 @@ namespace TallyJ.Code
       }
     }
 
-    //    public static IEnumerable<Vote> AsVotes(this IEnumerable<VoteInfo> inputs)
-    //    {
-    //      return inputs.Select(VoteInfo => new Vote
-    //          {
-    //            C_RowId = VoteInfo.VoteId,
-    //            BallotGuid = VoteInfo.BallotGuid,
-    //            C_RowVersion = null,
-    //            InvalidReasonGuid = VoteInfo.VoteIneligibleReasonGuid,
-    //            PersonCombinedInfo = VoteInfo.PersonCombinedInfoInVote,
-    //            PersonGuid = VoteInfo.PersonGuid,
-    //            PositionOnBallot = VoteInfo.PositionOnBallot,
-    //            SingleNameElectionCount = VoteInfo.SingleNameElectionCount,
-    //            StatusCode = VoteInfo.VoteStatusCode
-    //          });
-    //    }
 
     /// <Summary>Return the string without accents.</Summary>
     /// <remarks>

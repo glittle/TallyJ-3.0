@@ -8,38 +8,61 @@
 
 @{
   var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart || p.IneligibleReasonGuid != null)
-    .OrderBy(p => p.FullNameFL)
     .Select(p => new
     {
+      Change = p.CombinedInfoAtStart.HasContent() ? "Changed" : p.IneligibleReasonGuid == null ? "Added" : "New Spoiled",
       p.FirstName,
       p.LastName,
       p.OtherNames,
       p.OtherLastNames,
       p.OtherInfo,
-      p.BahaiId
-    });
+      p.BahaiId,
+      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
+    })
+    .OrderBy(p => p.Change)
+    .ThenBy(p => p.LastName)
+    .ThenBy(p => p.FirstName);
 }
 <style>
   thead {
     display: table-header-group;
     font-weight: bold;
   }
-  thead td {
-    padding-left: 2px;
-    padding-right: 6px;
+
+  td {
+      padding-left: 2px;
+      padding-right: 6px;
+    }
+
+  td.Added {
+    color: green;
+    font-weight: bold;
   }
+
+  td.Changed {
+    color: red;
+    font-weight: bold;
+  }
+
+  td.Spoiled {
+  }
+
+
   tr {
     -moz-page-break-inside: avoid;
     page-break-inside: avoid;
   }
+
   table.People {
     margin: 1em;
   }
-  table.People tbody td {
-    border-top: 1px solid #ddd;
-  }
+
+    table.People tbody td {
+      border-top: 1px solid #ddd;
+    }
 </style>
 <div class="body">
+  <button class="btn btn-mini btnDownloadCsv" data-table=".People" type="button" title="Download in CSV format for Excel">Export</button>
   <h1 id="title"></h1>
   <p class="Comment">
     This shows all people who where added or changed since the list of names was first imported.  (Unfortunately, the list does not indicate exactly which names have been changed.)
@@ -47,8 +70,10 @@
   <table class="People">
     <thead>
       <tr>
-        <td>First Name</td>
+        <td>Update</td>
         <td>Last Name</td>
+        <td>First Name</td>
+        <td>Eligibility</td>
         <td>Other First Names</td>
         <td>Other Last Names</td>
         <td>Other Info</td>
@@ -59,8 +84,10 @@
       @foreach (var p in people)
       {
         <tr class="person">
-          <td>@p.FirstName</td>
+          <td class="@p.Change">@p.Change</td>
           <td>@p.LastName</td>
+          <td>@p.FirstName</td>
+          <td>@p.InvalidReasonDesc</td>
           <td>@p.OtherNames</td>
           <td>@p.OtherLastNames</td>
           <td>@p.OtherInfo</td>

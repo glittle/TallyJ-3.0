@@ -313,7 +313,6 @@
     <Compile Include="CoreModels\LocationModel.cs" />
     <Compile Include="CoreModels\MonitorModel.cs" />
     <Compile Include="CoreModels\PeopleModel.cs" />
-    <Compile Include="CoreModels\PeopleSearchModel.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="EF\Ballot.cs">
@@ -608,11 +607,8 @@
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
     <Content Include="Reports\Voters.cshtml" />
-    <Content Include="Reports\NonVoters.cshtml" />
-    <Content Include="Reports\AllPeopleLF.cshtml" />
     <Content Include="Reports\VotersByArea.cshtml" />
     <Content Include="Reports\VotersByLocation.cshtml" />
-    <Content Include="Reports\AllPeopleFL.cshtml" />
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
     <Content Include="Reports\VotesWithInvalid.cshtml" />
@@ -622,6 +618,7 @@
     <None Include="Properties\PublishProfiles\tallyjuat - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\tallyjuat - Web Deploy.pubxml" />
     <Content Include="Reports\BallotsTied.cshtml" />
+    <Content Include="Reports\BallotsSame.cshtml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.2.1.js" />
     <Content Include="Scripts\jquery-3.2.1.min.js" />
@@ -659,6 +656,9 @@
     <Content Include="Views\Ballots\BallotNormal.cshtml.css">
       <DependentUpon>BallotNormal.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.css">
+      <DependentUpon>BallotSingle.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\Reconcile.cshtml.css">
       <DependentUpon>Reconcile.cshtml.less</DependentUpon>
     </Content>
@@ -691,6 +691,9 @@
     </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\People.cshtml.css">
+      <DependentUpon>People.cshtml.less</DependentUpon>
     </Content>
     <Content Include="Views\Setup\Setup.cshtml.css">
       <DependentUpon>Setup.cshtml.less</DependentUpon>
@@ -731,6 +734,12 @@
     <Content Include="Views\After\Monitor.cshtml.less">
       <DependentUpon>Monitor.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\People.cshtml.less">
+      <DependentUpon>People.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.less">
+      <DependentUpon>BallotSingle.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -750,9 +759,7 @@
     <Content Include="Images\shadow.png" />
     <Content Include="Images\SlideProjector.gif" />
     <Content Include="JsTemplates\RollCallLine.html" />
-    <Content Include="JsTemplates\NormalVoteLine.html" />
     <Content Include="JsTemplates\EditPerson.html" />
-    <Content Include="JsTemplates\SingleVoteLine.html" />
     <Content Include="JsTemplates\LocationSelectItem.html" />
     <Content Include="JsTemplates\ElectionListItem.html">
       <SubType>Code</SubType>
@@ -784,9 +791,6 @@
     </Content>
     <Content Include="Views\Ballots\BallotNormal.cshtml.js">
       <DependentUpon>BallotNormal.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Ballots\BallotSingle.cshtml.css">
-      <DependentUpon>BallotSingle.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Ballots\BallotSingle.cshtml.js">
       <DependentUpon>BallotSingle.cshtml</DependentUpon>
@@ -825,9 +829,6 @@
       <DependentUpon>ImportCsv.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\loading.gif" />
-    <Content Include="Views\Setup\People.cshtml.css">
-      <DependentUpon>People.cshtml</DependentUpon>
-    </Content>
     <Content Include="Views\Setup\People.cshtml.js">
       <DependentUpon>People.cshtml</DependentUpon>
     </Content>

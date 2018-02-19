@@ -47,14 +47,14 @@ namespace Tests.BusinessTests
 
       _samplePeople = new List<Person>
       {// 0 - 7
-        new Person {VotingMethod=VotingMethodEnum.InPerson}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
+        new Person {CombinedInfo="person", VotingMethod=VotingMethodEnum.InPerson}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {CombinedInfo="person"}.ForTests(),
       };
     }
 
@@ -295,14 +295,12 @@ namespace Tests.BusinessTests
                     {
                       new Vote() {SingleNameElectionCount = 33}.ForTests(SamplePeople[0], ballots[0]),
                       new Vote() {SingleNameElectionCount = 5}.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 2}.ForTests(SamplePeople[2], ballots[0],VoteHelper.VoteStatusCode.Changed),
+                      new Vote() {SingleNameElectionCount = 2}.ForTests(SamplePeople[2], ballots[0]),
                       new Vote() {SingleNameElectionCount = 4 }.ForTests(SamplePeople[3], ballots[1]),
                       new Vote() {SingleNameElectionCount = 27}.ForTests(SamplePeople[4], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[0]),
+                      new Vote() {SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[0]),// 5 - will require review
                       new Vote() {SingleNameElectionCount = 27}.ForTests(new Person { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests(), ballots[0]),
                     };
-      //votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
-      //votes[4].BallotStatusCode = "TooFew";
       votes[5].PersonCombinedInfo = "different"; // these will be invalid
 
       //votes[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
@@ -314,13 +312,13 @@ namespace Tests.BusinessTests
 
       var results = model.Results.OrderBy(r => r.Rank).ToList();
 
-      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
+      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Verify);
       ballots[1].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
 
       var summary = model.ResultSummaryFinal;
-      summary.SpoiledBallots.ShouldEqual(0);
-      summary.BallotsNeedingReview.ShouldEqual(1); // single name election - ballots don't have status
-      summary.SpoiledVotes.ShouldEqual(54);
+      summary.SpoiledBallots.ShouldEqual(1);
+      summary.BallotsNeedingReview.ShouldEqual(1);
+      summary.SpoiledVotes.ShouldEqual(0); // all are on the spoiled ballot
 
       results.Count.ShouldEqual(5);
     }
@@ -338,25 +336,25 @@ namespace Tests.BusinessTests
                       {
                         new Ballot().ForTests(),
                         new Ballot().ForTests(),
-                        new Ballot().ForTests(BallotStatusEnum.TooFew),
+                        new Ballot().ForTests(),
                       };
+
+      SamplePeople[5].IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased;
 
       var votes = new[]
                     {
                       new Vote{SingleNameElectionCount = 33}.ForTests(SamplePeople[0], ballots[0]),
                       new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[1], ballots[0]),
                       new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[2], ballots[0]),
-                      new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[3], ballots[0],VoteHelper.VoteStatusCode.Changed),
-                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[4], ballots[2]),
-                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[1]),// spoiled
-                      new Vote{SingleNameElectionCount = 27}.ForTests(new Person { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests(), ballots[1]),// spoiled
-                    };
-      //votes[3].VoteStatusCode = VoteHelper.VoteStatusCode.Changed;
-      //votes[4].BallotStatusCode = "TooFew"; // will be reset to Okay
-      votes[5].PersonCombinedInfo = "different";
+                      new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[3], ballots[0]),
 
-      //votes[6].PersonIneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
-      //votes[6].PersonCanReceiveVotes = IneligibleReasonEnum.Ineligible_Other.CanReceiveVotes;
+                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[1]), // spoiled person
+                      new Vote{SingleNameElectionCount = 27}.ForTests(new Person { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests(), ballots[1]),// spoiled
+
+                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[4], ballots[2]),// #6 - will be Needs Review
+                    };
+
+      votes[6].PersonCombinedInfo = "different"; // force a Review
 
       var model = new ElectionAnalyzerSingleName(_fakes); //election, voteInfos, ballots, SamplePeople);
 
@@ -373,11 +371,13 @@ namespace Tests.BusinessTests
 
       var summary = model.ResultSummaryFinal;
       summary.BallotsNeedingReview.ShouldEqual(1);
-      summary.NumBallotsWithManual.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
-      summary.SpoiledBallots.ShouldEqual(0);
+      summary.SpoiledBallots.ShouldEqual(1);
       summary.SpoiledVotes.ShouldEqual(27 + 27);
+      summary.SumOfEnvelopesCollected.ShouldEqual(1); // sample data has 1 voting method
+      summary.BallotsReceived.ShouldEqual(33 + 5 + 5 + 5 + 27 + 27 + 27);
+      summary.NumBallotsWithManual.ShouldEqual(1 + 33 + 5 + 5 + 5 + 27 + 27 + 27);
 
-      results.Count.ShouldEqual(5);
+      results.Count.ShouldEqual(4);
 
       var result1 = results[0];
       result1.VoteCount.ShouldEqual(33);
@@ -386,9 +386,9 @@ namespace Tests.BusinessTests
       result1.TieBreakRequired = false;
 
       var result2 = results[1];
-      result2.VoteCount.ShouldEqual(27);
+      result2.VoteCount.ShouldEqual(5);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
-      result2.IsTied.ShouldEqual(false);
+      result2.IsTied.ShouldEqual(true);
       result2.TieBreakRequired = false;
       result2.ForceShowInOther = false;
 
@@ -396,7 +396,7 @@ namespace Tests.BusinessTests
       result3.VoteCount.ShouldEqual(5);
       result3.Section.ShouldEqual(ResultHelper.Section.Other);
       result3.IsTied.ShouldEqual(true);
-      result3.TieBreakRequired = true;
+      result3.TieBreakRequired = false;
       result3.ForceShowInOther = false;
     }
 

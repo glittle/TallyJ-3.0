@@ -15,22 +15,21 @@
               p,
               VoteCount = bvp.Count()
             })
-            .OrderBy(g => g.p.FullNameFL)
+            .OrderBy(g => g.p.C_FullName)
             .Select(g => new
             {
-              PersonName = g.p.FullNameFL,
+              PersonName = g.p.C_FullName,
               g.VoteCount,
               InvalidReasonDesc =
                 UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
                 ? null : IneligibleReasonEnum.DescriptionFor(g.p.IneligibleReasonGuid.AsGuid()),
-              g.p.IneligibleReasonGuid
             })
+            .Where(g => g.InvalidReasonDesc.HasContent())
             .Select(g => new
             {
               g.PersonName,
               g.InvalidReasonDesc,
               g.VoteCount,
-              CssClass = g.InvalidReasonDesc.HasContent() ? "spoiled" : "ok"
             })
             .ToList();
 }
@@ -63,29 +62,28 @@
     text-decoration: line-through;
   }
 
-  .Invalid {
+  .Invalid, p.Invalid {
     color: red;
-    font-style: italic;
     font-size: 90%;
   }
 </style>
 <div class="body WarnIfNotFinalized">
+  <button class="btn btn-mini btnDownloadCsv" data-divs=".person" data-splitter=" - " type="button" title="Download in CSV format for Excel">Export</button>
   <h1 id="title"></h1>
   <p class="Comment">
-    Showing <select id="showWhat">
-      <option value="all">all valid and all spoiled</option>
-      @*<option value="ok">only valid</option>*@
-      <option value="spoiled">only spoiled</option>
-    </select> votes from <strong>valid</strong> ballots
-    @*for those who received <select id="limitNum"></select> or more votes*@
+    Showing invalid (spoiled) votes appearing on <strong>valid</strong> ballots
     (<span id="numShown"></span> names).
   </p>
+  @if (people.Count() == 0)
+  {
+    <p class="Comment Invalid">None Found</p>
+  }
   <div class="Votes">
     @foreach (var person in people)
     {
-      <div data-num="@person.VoteCount" class="person @person.CssClass">
+      <div data-num="@person.VoteCount" class="person">
         <span class="small1">@person.VoteCount - </span>
-        <span class="name">@person.PersonName</span>
+        <span class="name">@person.PersonName - </span>
         <span class="Invalid">@person.InvalidReasonDesc</span>
       </div>
     }

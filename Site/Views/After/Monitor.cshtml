@@ -8,6 +8,7 @@
   ContextItems.AddJavascriptForPage("pageUrl", "monitorPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("locations", "monitorPage.LocationInfos={0};".FilledWith(Model.LocationInfoJson));
   ContextItems.AddJavascriptForPage("guest", "monitorPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("monitorPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 }
 <table class="Main">
   <thead>
@@ -143,15 +144,19 @@
     <button type="button" class="btn btn-mini" id="btnRefesh" accesskey="R">
       <u>R</u>efresh Now
     </button>
-    Last Refresh at <span id="lastRefresh"></span>
+    <span id="lastRefreshArea">
+      Refreshed at <span id="lastRefresh"></span>
+      <span class="countdown"></span>
+    </span>
   </div>
   @if (UserSession.IsKnownTeller)
   {
     <div>
       <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
       <label for="chkList">
-        Open this election to allow other tellers to participate. <span class="publicInfo" title="Access code is: @UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")"><span class="ui-icon ui-icon-info" id="qTipCode"></span>Access Code</span> 
-        @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent()) {
+        Open this election to allow other tellers to participate. <span class="publicInfo" title="Access code is: @UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")"><span class="ui-icon ui-icon-info" id="qTipCode"></span>Access Code</span>
+        @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent())
+        {
           <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
         }
       </label>

@@ -35,7 +35,7 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Groups.Add(connectionId, HubNameForCurrentElection);
     }
 
-    public void UpdateAllConnectedClients(object message)
+    public void UpdatePeople(object message)
     {
       CoreHub.Clients.Group(HubNameForCurrentElection).updatePeople(message);
     }

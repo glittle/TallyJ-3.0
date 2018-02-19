@@ -14,31 +14,15 @@ namespace TallyJ.CoreModels.Helper
       {
         person.FirstName,
         person.LastName,
+        person.BahaiId,
         person.OtherNames,
         person.OtherLastNames,
-        // additional - for searching
-        //person.Area,
         person.OtherInfo,
-        person.BahaiId
+        //person.Area,
       }
         .JoinedAsString(WordSeparator, true)
         .ReplacePunctuation(WordSeparator[0])
         .WithoutDiacritics(true);
-    }
-
-    public static void UpdateCombinedSoundCodes(this Person person)
-    {
-      person.CombinedSoundCodes = new[]
-      {
-        person.FirstName,
-        person.LastName,
-        person.OtherNames,
-        person.OtherLastNames,
-        // additional - for searching
-        person.Area,
-        person.OtherInfo
-      }
-        .GenerateDoubleMetaphone(" ");
     }
   }
 }

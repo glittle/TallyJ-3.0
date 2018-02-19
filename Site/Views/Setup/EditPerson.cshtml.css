@@ -24,10 +24,13 @@
 }
 
 .overrides {
-  font-style: italic;
   color: #666;
   font-size: 85%;
 }
+
+  .overrides.IsNo select {
+    color: red;
+  }
 
   .overrides td {
     text-align: right;
@@ -50,6 +53,10 @@
     width: 87px;
     text-align: left;
   }
+
+    .overrides .sample span {
+      font-style: normal;
+    }
 
 .CannotReceiveVotesSample {
   text-decoration: line-through;

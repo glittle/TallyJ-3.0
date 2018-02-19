@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -19,20 +21,53 @@ namespace TallyJ.Controllers
       return null;
     }
 
-    public JsonResult GetPeople(string search, bool includeMatches = false, bool forBallot = true)
+
+    public JsonResult GetAll()
     {
       var currentElection = UserSession.CurrentElection;
       if (currentElection == null)
       {
         return new
-                 {
-                   Error = "Election not selected"
-                 }.AsJsonResult();
+        {
+          Error = "Election not selected"
+        }.AsJsonResult();
       }
 
-      var model = new PeopleSearchModel();
-      return model.Search2(search, includeMatches, forBallot);
+      var isSingleNameElection = currentElection.IsSingleNameElection;
+      var votes = new VoteCacher(Db).AllForThisElection;
+
+      return new
+      {
+        people = new PersonCacher(Db).AllForThisElection.Select(p => new
+        {
+          Id = p.C_RowId,
+          //p.PersonGuid,
+          Name = p.FullNameFL,
+          p.Area,
+          V = (p.CanReceiveVotes.GetValueOrDefault() ? "1" : "0") + (p.CanVote.GetValueOrDefault() ? "1" : "0"),
+          IRG = p.IneligibleReasonGuid,
+          NumVotes = isSingleNameElection
+            ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
+            : votes.Count(v => v.PersonGuid == p.PersonGuid)
+        }),
+        lastVid = votes.Max(v=>v.C_RowId)
+      }.AsJsonResult();
     }
+
+    //public JsonResult GetPeople(string search, bool includeMatches = false, bool forBallot = true)
+    //{
+    //  var currentElection = UserSession.CurrentElection;
+    //  if (currentElection == null)
+    //  {
+    //    return new
+    //    {
+    //      Error = "Election not selected"
+    //    }.AsJsonResult();
+    //  }
+
+    //  var model = new PeopleSearchModel();
+    //  return model.Search2(search, includeMatches, forBallot);
+    //}
 
     public JsonResult GetDetail(int id)
     {
