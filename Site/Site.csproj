@@ -744,9 +744,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.TallyJ3 - Web Deploy.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
     <None Include="Web.TallyJ3-staging - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
