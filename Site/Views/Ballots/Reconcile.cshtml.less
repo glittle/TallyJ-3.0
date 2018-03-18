@@ -5,6 +5,12 @@
   justify-content: space-between;
   align-items: center;
   margin: 0 0 5px 0;
+  //width: 40vw;
+  h3 {
+    .allLoc {
+      font-size: 60%;
+    }
+  }
 }
 
 .sortSelector {
@@ -50,7 +56,7 @@ h3 {
     color: #7a0101;
   }
 
-  div {
+  div.Names {
     span:nth-child(1), span:nth-child(2) {
       text-decoration-line: line-through;
       text-decoration-color: #7a0101;
@@ -59,7 +65,7 @@ h3 {
 }
 
 .Names {
-  width: 400px;
+  min-width: 300px;
 
   > div {
     border-top: dotted 1px #ccc;
@@ -105,13 +111,20 @@ body.BP-RegC {
 }
 
 #lists {
-  display: flex;
-  flex-wrap: wrap;
+  margin: 20px 0 0 0;
+  //display: flex;
+  //flex-wrap: wrap;
+  column-count: 2;
 }
 
 #lists > div {
-  margin-right: 70px;
+  width: 95%;
   margin-top: 20px;
+  break-inside: avoid;
+
+  &:first-child {
+    margin-top: 0px;
+  }
 }
 
 .Count {

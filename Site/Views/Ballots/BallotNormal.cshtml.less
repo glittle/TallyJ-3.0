@@ -1,7 +1,22 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
+.PullInstructionsHandle{
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  margin: 0;
+}
+.PullInstructions {
+  margin: 9px 0 -5px 0;
+}
+
+.main-content {
+  padding: 30px 15px 0;
+}
+
 .Panels {
   display: flex;
+  margin: 15px 0 0 0;
 }
 
 #votesPanel, .sidePanel {
@@ -222,7 +237,7 @@ input.Vote {
 
 .ballotStatus {
   text-align: right;
-  padding: 0 0 3px 0;
+  padding: 7px 0 4px 0;
   font-weight: bold;
   font-size: 16pt;
 }
@@ -378,12 +393,32 @@ div.heading {
   }
 }
 
+.showAll {
+  display: none;
+  float: right;
+  margin: -17px -2px 0 0;
+  font-size: 10px;
+  color: #777;
+
+  label {
+    font-size: 10px;
+    line-height: normal;
+  }
+}
+
+#votesPanel.showAllVotes{
+  #votesList{
+    max-height: none;
+  }
+}
+
 #votesList {
   position: relative;
   width: 100%;
   margin-bottom: 20px;
   padding-top: 5px;
-  max-height: 60vh;
+  max-height: 50vh;
+  overflow-y: auto;
 
   .VoteHost {
     width: 100%;

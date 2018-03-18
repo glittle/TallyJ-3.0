@@ -135,6 +135,10 @@
     This indicates any groups of ballots that are identical. (Because ballots are anonymous, we cannot determine who cast these ballots.)
   </p>
 
+  @if (!data.Any()) {
+    <p>None found.</p>
+  }
+
   <div class="group">
     @foreach (var group in data)
     {

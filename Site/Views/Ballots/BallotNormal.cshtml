@@ -46,7 +46,7 @@
     <div id="accordion">
       @if (ContextItems.LocationModel.HasLocations)
       {
-        <h3>Location Status <span class="LocationStatus"></span></h3>
+        <h3>Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
           <div>
             <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
@@ -138,6 +138,11 @@
     </div>
     <div id="votesList">
     </div>
+    <div class="showAll"><label>Show All?<input type="checkbox" id="cbShowAll"></label></div>
+    <button type="button" id="btnCloseBallot" class="btn btn-mini"
+            accesskey="L" tabindex="2">
+      C<u>l</u>ose Ballot
+    </button>
     <button type="button" id="btnNewBallot" class="NewBallotBtns btn btn-mini btn-success"
             accesskey="N" tabindex="2">
       Start <u>N</u>ew Ballot

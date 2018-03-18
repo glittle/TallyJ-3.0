@@ -1,5 +1,12 @@
 @import "bootstrap/css/bootstrap.less";
 
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 100vh;
+}
+
 .float-left {
   float: left;
 }
@@ -91,10 +98,11 @@ span, div {
 }
 
 #body {
-  background-color: #efeeef;
-  clear: both;
-  padding-bottom: 35px;
   position: relative;
+  flex: 1 1 auto;
+  clear: both;
+  padding-bottom: 10px;
+  background-color: #efeeef;
 }
 
 .PageTitle {
@@ -112,10 +120,9 @@ span, div {
 
 footer {
   clear: both;
-  background-color: #e2e2e2;
-  font-size: .9em;
-  height: 50px;
   padding: 0 10px;
+  font-size: .9em;
+  background-color: #e2e2e2;
 
   div {
     margin-top: 9px;
@@ -128,6 +135,10 @@ footer {
   .helpLink {
     float: left;
     margin-left: 30px;
+  }
+
+  ul {
+    margin: -7px 0 0px 25px
   }
 }
 

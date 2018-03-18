@@ -49,7 +49,7 @@
 
     $('#lists').on('change', '.sortSelector', sortSection);
 
-    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "del-selected", they show here.' });
+    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "de-selected", they show here.' });
 
     //processBallots(publicInterface.ballots);
     //showDeselected(publicInterface.oldEnvelopes);
@@ -91,11 +91,12 @@
     }
     var ballotList = local.envelopeTemplate.filledWithEach(extend(list));
     $('#lists').append(
+      '<div class="removedBallots VMG VMG-X"><div class=VmgHead><h3>De-selected: {0}'.filledWith(list.length)
+      + ' <span class="ui-icon ui-icon-info" id="qTipUn"></span>{^2}</h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector, local.hasLocations ? ' <span class=allLoc>(All Locations)</span>' : ''));
 
-      // <h3>{1}: {2}</h3>{^4}</div>
+    $('.VMG-X select option[value="Time"]').remove();
 
-      '<div class=removedBallots><div class=VmgHead><h3>De-selected{0}: {1}'.filledWith(local.hasLocations ? ' for all Locations' : '', list.length) +
-      '<span class="ui-icon ui-icon-info" id="qTipUn"></span></h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector));
+    updateSort('X');
 
     ActivateTips();
   };
@@ -131,6 +132,19 @@
     }
     return ballot;
   }
+
+  function updateSort(method) {
+    //console.log('sort', method);
+    var sort = GetFromStorage('Reconcile-{0}'.filledWith(method), '');
+    if (sort) {
+      var select = $('#lists .VMG-{0} .sortSelector'.filledWith(method));
+      select.val(sort);
+      setTimeout(function () {
+        select.trigger('change');
+      }, 0);
+    }
+  }
+
 
   function processBallots(ballots) {
     local.groupedBallots = {};
@@ -174,13 +188,10 @@
         var ballotList = local.envelopeTemplate.filledWithEach(groupedBallots);
 
         // VMG = vote method group
-        host.append('<div data-method={0} class=VMG-{0}><div class=VmgHead><h3>{1}: {2}</h3>{^4}</div><div class=Names>{^3}</div></div>'.filledWith(
+        host.append('<div data-method={0} class="VMG VMG-{0}"><div class=VmgHead><h3>{1}: {2}</h3>{^4}</div><div class=Names>{^3}</div></div>'.filledWith(
           method, methodName, groupedBallots.length, ballotList, local.sortSelector));
 
-        //TODO
-        //if (method == 'P') {
-        //  host.find('.sortSelector option[value="Env"]').remove();
-        //}
+        updateSort(method);
 
         methodInfo.count = groupedBallots.length;
       }
@@ -219,11 +230,15 @@
 
   var sortSection = function (ev) {
     var select = $(ev.target);
-    var section = select.parent().find('.Names');
-    var rows = section.children();
     var sortType = select.val();
+    var section = select.closest('.VMG');
 
-    $.each(rows, function (i, r) {
+    var namesHost = section.find('.Names');
+    var names = namesHost.children();
+
+    SetInStorage('Reconcile-{0}'.filledWith(section.data('method') || 'X'), sortType);
+
+    $.each(names, function (i, r) {
       r.sortValue = null;
     });
 
@@ -234,7 +249,7 @@
           value = $(a).children().eq(0).text();
           break;
         case 'Time':
-          value = 0 - +$(a).data('time'); // reverse sort!
+          value = +$(a).data('time'); // forward time
           break;
         case 'Env':
           value = +($(a).find('.EnvNum').data('num') || 0);
@@ -243,13 +258,13 @@
       return value;
     }
 
-    rows.sort(function (a, b) {
+    names.sort(function (a, b) {
       var aValue = a.sortValue || (a.sortValue = getValue(a));
       var bValue = b.sortValue || (b.sortValue = getValue(b));
       return aValue > bValue ? 1 : -1;
     });
 
-    rows.detach().appendTo(section);
+    names.detach().appendTo(namesHost);
   }
 
   var publicInterface = {

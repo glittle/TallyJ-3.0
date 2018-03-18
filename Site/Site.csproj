@@ -662,6 +662,9 @@
     <Content Include="Views\Ballots\Reconcile.cshtml.css">
       <DependentUpon>Reconcile.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\SortBallots.cshtml.css">
+      <DependentUpon>SortBallots.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js">
       <DependentUpon>SortBallots.cshtml</DependentUpon>
     </Content>
@@ -742,9 +745,6 @@
     </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.TallyJ3 - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.TallyJ3-staging - Web Deploy.config">

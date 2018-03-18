@@ -114,7 +114,7 @@ div.or {
   font-weight: normal;
 }
 section.CenterPanel {
-  min-height: 220px;
+  min-height: 170px;
 }
 section.CenterPanel.chosen {
   display: none;
