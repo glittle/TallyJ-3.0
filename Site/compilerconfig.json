@@ -122,5 +122,9 @@
   {
     "outputFile": "Views/Ballots/BallotSingle.cshtml.css",
     "inputFile": "Views/Ballots/BallotSingle.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/SortBallots.cshtml.css",
+    "inputFile": "Views/Ballots/SortBallots.cshtml.less"
   }
 ]

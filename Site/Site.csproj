@@ -662,6 +662,9 @@
     <Content Include="Views\Ballots\Reconcile.cshtml.css">
       <DependentUpon>Reconcile.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\SortBallots.cshtml.css">
+      <DependentUpon>SortBallots.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.js">
       <DependentUpon>SortBallots.cshtml</DependentUpon>
     </Content>

@@ -49,7 +49,7 @@
 
     $('#lists').on('change', '.sortSelector', sortSection);
 
-    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "del-selected", they show here.' });
+    site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "de-selected", they show here.' });
 
     //processBallots(publicInterface.ballots);
     //showDeselected(publicInterface.oldEnvelopes);
@@ -91,8 +91,8 @@
     }
     var ballotList = local.envelopeTemplate.filledWithEach(extend(list));
     $('#lists').append(
-      '<div class="removedBallots VMG VMG-X"><div class=VmgHead><h3>De-selected{0}: {1}'.filledWith(local.hasLocations ? ' for all Locations' : '', list.length)
-      + '<span class="ui-icon ui-icon-info" id="qTipUn"></span></h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector));
+      '<div class="removedBallots VMG VMG-X"><div class=VmgHead><h3>De-selected: {0}'.filledWith(list.length)
+      + ' <span class="ui-icon ui-icon-info" id="qTipUn"></span>{^2}</h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector, local.hasLocations ? ' <span class=allLoc>(All Locations)</span>' : ''));
 
     $('.VMG-X select option[value="Time"]').remove();
 
