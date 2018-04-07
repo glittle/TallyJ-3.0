@@ -140,7 +140,7 @@ namespace TallyJ.CoreModels
                 x.vi.BallotStatusCode == "Review"
                   ? BallotStatusEnum.Review.DisplayText
                   : "Verification Needed",
-              Ballot = multipleLocations ? 
+              Ballot = multipleLocations ?
                 string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name) : x.vi.C_BallotCode
             })
             .Distinct()
@@ -279,22 +279,21 @@ namespace TallyJ.CoreModels
 
     public JsonResult GetReportData(string code)
     {
-      var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
-
       var status = "ok";
-      var currentElection = CurrentElection;
       var electionStatus = CurrentElection.TallyStatus;
 
-      var readyForReports = summary != null && summary.UseOnReports.AsBoolean() && electionStatus == ElectionTallyStatusEnum.Finalized;
+      var readyForReports = true;
 
       var html = "";
       switch (code)
       {
         case "SimpleResults":
+          var summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+          readyForReports = summary != null && summary.UseOnReports.AsBoolean() && electionStatus == ElectionTallyStatusEnum.Finalized;
           if (summary == null)
           {
             status = "Results not available. Please view 'Analyze' page first.";
-            electionStatus = currentElection.TallyStatus;
+            electionStatus = CurrentElection.TallyStatus;
           }
           else
           {
