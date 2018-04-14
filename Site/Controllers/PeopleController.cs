@@ -50,7 +50,7 @@ namespace TallyJ.Controllers
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
             : votes.Count(v => v.PersonGuid == p.PersonGuid)
         }),
-        lastVid = votes.Max(v=>v.C_RowId)
+        lastVid = votes.Any() ? votes.Max(v=>v.C_RowId) : 0
       }.AsJsonResult();
     }
 
