@@ -40,10 +40,10 @@ div.MainDashboard section.features {
   margin-left: 10px;
 }
 div.MainDashboard section.features.NotStarted {
-  color: #f6941e;
+  color: #af5f00;
 }
 div.MainDashboard section.features.NotStarted a {
-  color: #f6941e;
+  color: #af5f00;
 }
 div.MainDashboard section.features.NamesReady {
   color: #013d7a;
@@ -52,10 +52,10 @@ div.MainDashboard section.features.NamesReady a {
   color: #013d7a;
 }
 div.MainDashboard section.features.Tallying {
-  color: #8dc63e;
+  color: #4b8200;
 }
 div.MainDashboard section.features.Tallying a {
-  color: #8dc63e;
+  color: #4b8200;
 }
 div.MainDashboard .featuresTitle {
   margin: -5px 0 0px -17px;

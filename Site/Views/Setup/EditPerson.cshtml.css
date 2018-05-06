@@ -23,7 +23,7 @@
   vertical-align: top;
 }
 
-.overrides {
+.overrides, .comments {
   color: #666;
   font-size: 85%;
 }
@@ -60,4 +60,8 @@
 
 .CannotReceiveVotesSample {
   text-decoration: line-through;
+}
+
+#trDelete div {
+  margin: 2em 0 0;
 }

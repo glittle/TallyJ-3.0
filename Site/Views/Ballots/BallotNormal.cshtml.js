@@ -24,7 +24,7 @@
     invalidReasonsHtml: null,
     invalidReasonsShortHtml: null,
     rowSelected: 0,
-    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
+    searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}><span class=ShowVote style="width:{VoteSize}%"></span>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
     NormalVoteLineTemplate: null
@@ -130,7 +130,7 @@
 
     $('#cbShowAll').on('click, change', cbShowAll).prop('checked', GetFromStorage('ballots_showAll', false));
     cbShowAll();
-    
+
     $('#ddlLocationStatus').on('change', changeLocationStatus);
     showLocationStatus();
 
@@ -355,8 +355,10 @@
     });
   };
 
-  function addMissing() {
+  function addMissing(voteId) {
     toggleAddMissingPanel();
+
+    $('#addMissingPanel').data('voteId', voteId);
 
     var ddl = $('#ddlIneligible');
     ddl[0].size = ddl.find('option, optgroup').length + 1;
@@ -377,7 +379,13 @@
   };
 
   function cancelAddMissing() {
-    if ($('#addMissingPanel').is(':visible')) {
+    var panel = $('#addMissingPanel');
+
+    if (panel.is(':visible')) {
+      var voteId = panel.data('voteId');
+      var select = $('#V' + voteId + ' select');
+      select[0].selectedIndex = 0;
+
       toggleAddMissingPanel();
     }
   };
@@ -475,7 +483,7 @@
       }
       hideBallotTab();
       showAddToThisBtn(true);
-      local.btnDeleteBallot.prop('disabled', true);
+      //local.btnDeleteBallot.show();
     }
 
     if (info.Location) {
@@ -505,11 +513,11 @@
 
     var disable = votes.length > 0;
     local.btnDeleteBallot
-      .prop('disabled', disable)
-      .toggleClass('btn-warning', !disable); // only show orange if usable
+      .toggle(!disable);
+      //.toggleClass('btn-warning', !disable); // only show orange if usable
 
     setTimeout(function () {
-    checkScrollLength();
+      checkScrollLength();
     }, 0);
   };
 
@@ -678,7 +686,7 @@
 
   function invalidReasonKey(ev) {
     var select = ev.target;
-    console.log('a', select.size);
+    // console.log('a', select.size);
     if (select.size === 1) {
       invalidReasonChanged(ev);
       return;
@@ -708,15 +716,18 @@
     if (reason === '-1') {
       // remove this one
 
-      if (!removedParent) {
-        removedParent = parent;
-        parent.remove();
-      } else {
-        removedParent = null;
-        return;
-      }
+      //parent.remove();
+
+      //if (!removedParent) {
+      //  removedParent = parent;
+      //  parent.remove();
+      //} else {
+      //  removedParent = null;
+      //  //return;
+      //}
 
       var voteId = parent.data('vote-id') || 0;
+      //console.log(voteId);
       for (var i = 0; i < local.votes.length; i++) {
         var vote = local.votes[i];
         if (vote.vid === voteId) {
@@ -734,7 +745,7 @@
       }
 
       // add the new one
-      addMissing();
+      addMissing(voteId);
       return;
     }
 
@@ -931,16 +942,15 @@
     });
   };
 
-  function displaySearchResults(info, beingRefreshed, fromQuickSearch) {
-    local.People = info.People || [];
+  function displaySearchResults(info, beingRefreshed, showNoneFound) {
 
-    //console.log(local.People);
+    local.People = info.People || [];
 
     local.nameList.html(local.searchResultTemplate.filledWithEach(local.People));
     $('#more').html(''); //info.MoreFound
     if (!local.People.length && local.lastSearch) {
       var search = local.inputField.val();
-      if (search && !fromQuickSearch) {
+      if (search && showNoneFound) {
         local.nameList.append('<li>...no matches found...</li>');
       }
     } else {
@@ -950,7 +960,7 @@
       if (beingRefreshed) {
 
       } else {
-        local.rowSelected = 0; //info.BestRowNum;
+        local.rowSelected = info.BestRowNum;
       }
       local.nameList.find('li[data-ineligible]').each(function (i, item) {
         var li = $(item);
@@ -994,7 +1004,8 @@
 
   function setSelected(children, rowNum) {
     children.removeClass('selected');
-    var newSelected = children.eq(local.rowSelected = rowNum);
+    local.rowSelected = rowNum;
+    var newSelected = children.eq(rowNum);
     newSelected.addClass('selected');
     scrollIntoView(newSelected[0], local.nameList);
   };
@@ -1141,6 +1152,7 @@
     if (missing) {
       var emptyVote = { pos: '-', Fake: 'Fake' };
       for (var i = 0; i < missing; i++) {
+        emptyVote.pos = votes.length + i + 1;
         local.votesList.append(local.NormalVoteLineTemplate.filledWith(emptyVote));
       }
     }
@@ -1231,6 +1243,8 @@
     }
     if (local.lastSearch === text) return;
 
+    local.lastSearch = text;
+
     local.peopleHelper.Search(text, function (info) {
       displaySearchResults(info, false, true);
     }, getUsedIds());
@@ -1248,7 +1262,7 @@
     displaySearchResults({
       People: [],
       MoreFound: ''
-    }, false);
+    }, true, false);
   };
 
   function ballotClick(ev) {

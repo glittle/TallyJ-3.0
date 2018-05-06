@@ -1,11 +1,14 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
-.PullInstructionsHandle{
+@invalidColor: #e00000;
+
+.PullInstructionsHandle {
   position: absolute;
   top: 2px;
   right: 10px;
   margin: 0;
 }
+
 .PullInstructions {
   margin: 9px 0 -5px 0;
 }
@@ -74,6 +77,19 @@ tr.overrides {
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
+    position: relative;
+
+    span {
+      position: absolute;
+      top: 0;
+
+      &.ShowVote {
+        bottom: 0;
+        left: 0;
+        //background-image: linear-gradient(to right, #b2d8ff 0%, #b2d8ff 50%, rgba(0, 0, 0, 0) 100%);
+        background-image: linear-gradient(to right,rgba(112, 184, 255, 0.4) 0%, rgba(112, 184, 255, 0.3) 75%, rgba(0, 0, 0, 0) 100%)
+      }
+    }
 
     &:hover {
       background-color: rgba(204, 255, 190, 0.5);
@@ -83,12 +99,9 @@ tr.overrides {
     &.selected {
       background-color: #c1f1b4;
     }
-
-
-    &.HasVotes {
-      background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
-    }
-
+    //&.HasVotes {
+    //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
+    //}
     i {
       // sound match
       border-bottom: 1px #666 dashed;
@@ -252,7 +265,7 @@ input.Vote {
   .ballotCode {
     padding-left: 3px;
     font-size: 16pt;
-    color: #75a531;
+    color: @tallyJGreen;
   }
 
   div {
@@ -275,23 +288,23 @@ button.smallButton {
 }
 
 .InvalidP div.InvalidPerson {
-  color: #e80c4d;
+  color: @invalidColor;
   padding: 0 0 6px 33px;
 }
 
 select.Invalid {
   vertical-align: top;
-  color: #e80c4d;
+  color: @invalidColor;
 }
 
 
 .InvalidBallot, .Ineligible, span.Invalid {
-  color: #e80c4d;
+  color: @invalidColor;
   font-weight: bold;
 }
 
 .Ok {
-  color: #0ce84d;
+  color: @tallyJGreen;
 }
 
 .Confirmed {
@@ -329,7 +342,7 @@ div.heading {
 
   .ChangedMessage {
     display: block;
-    color: #e80c4d;
+    color: @invalidColor;
     margin-left: 32px;
     padding-bottom: 5px;
   }
@@ -375,17 +388,21 @@ div.heading {
 }
 
 .InUse {
-  color: @tallyJOrange;
+  color: #966868;
+
+  &::before {
+    content: "➜ ";
+  }
 }
 
 
 .duplicateVote {
   .Name {
-    color: #e80c4d;
+    color: @invalidColor;
   }
 
   .Duplicate {
-    color: #e80c4d;
+    color: @invalidColor;
     margin-right: 2px;
     font-weight: bold;
     display: inline-block;
@@ -406,8 +423,8 @@ div.heading {
   }
 }
 
-#votesPanel.showAllVotes{
-  #votesList{
+#votesPanel.showAllVotes {
+  #votesList {
     max-height: none;
   }
 }
@@ -424,7 +441,7 @@ div.heading {
     width: 100%;
     margin: 2px 0;
     min-height: 1.4em;
-    background-color: #eeffd6;
+    background-color: #f1ffde;
 
     span.Name {
       display: none;

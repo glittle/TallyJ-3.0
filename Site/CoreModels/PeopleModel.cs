@@ -198,8 +198,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult DetailsFor(int personId)
     {
-      var person =
-        PeopleInElection.SingleOrDefault(p => p.C_RowId == personId);
+      var person = PeopleInElection.SingleOrDefault(p => p.C_RowId == personId);
 
       if (person == null)
       {
@@ -211,10 +210,13 @@ namespace TallyJ.CoreModels
 
       //var whoCanVote = CurrentElection.CanVote;
       //var whoCanReceiveVotes = CurrentElection.CanReceive;
+      var voteCacher = new VoteCacher(Db);
+      var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
 
       return new
       {
-        Person = PersonForEdit(person)
+        Person = PersonForEdit(person),
+        CanDelete = person.VotingMethod == null && !votedFor
       }.AsJsonResult();
     }
 
@@ -487,9 +489,10 @@ namespace TallyJ.CoreModels
         });
     }
 
-    private string FormatRegistrationLog(Person p) {
-      return p.RegistrationLog.Count > 1 
-        ? p.RegistrationLog.JoinedAsString("\n").SurroundContentWith("<span class=Log title=\"", "\"></span>") 
+    private string FormatRegistrationLog(Person p)
+    {
+      return p.RegistrationLog.Count > 1
+        ? p.RegistrationLog.JoinedAsString("\n").SurroundContentWith("<span class=Log title=\"", "\"></span>")
         : "";
     }
 

@@ -1,4 +1,5 @@
 @import "bootstrap/css/bootstrap.less";
+@red: #e00000;
 
 body {
   display: flex;
@@ -878,7 +879,7 @@ a.twitter {
 }
 /* End: Statuses */
 .CompCode {
-  color: #bbb;
+  color: #737373;
   position: absolute;
   top: -1px;
   left: 10px;
@@ -1115,7 +1116,7 @@ span.other {
 .PullInstructionsHandle {
   display: inline-block;
   margin: 10px 0;
-  color: #77BBFF;
+  color: #0066cc;
   cursor: pointer;
   font-size: 90%;
   clear: both;
@@ -1196,20 +1197,20 @@ span.other {
   }
 
   &.NotSet {
-    background-color: #ff0000;
+    background-color: @red;
   }
 }
 
 #ddlTopLocation.NotSet {
-  color: #ff0000;
+  color: @red;
 }
 
 #ddlTopTeller1.NotSet {
-  color: #ff0000;
+  color: @red;
 }
 
 #ddlTopTeller2.NotSet {
-  color: #ff0000;
+  color: @red;
 }
 
 

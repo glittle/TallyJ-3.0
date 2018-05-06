@@ -59,13 +59,13 @@ body {
   background-color: #c1f1b4;
 }
 .nameList li.HasVotes {
-  background-image: linear-gradient(to right, #8dc63e 0%, rgba(0, 0, 0, 0) 3%);
+  background-image: linear-gradient(to right, #4b8200 0%, rgba(0, 0, 0, 0) 3%);
 }
 .nameList li i {
   border-bottom: 1px #666 dashed;
 }
 .nameList li.Match1 {
-  color: #567a24;
+  color: #101c00;
   font-style: italic;
 }
 .nameList li.Match1 i {
@@ -73,7 +73,7 @@ body {
   font-style: normal;
 }
 .nameList li.Match1.HasVotes {
-  background-image: linear-gradient(to right, #8dc63e 0%, rgba(0, 0, 0, 0) 3%), linear-gradient(45deg, #f6941e 0%, rgba(0, 0, 0, 0) 5%);
+  background-image: linear-gradient(to right, #4b8200 0%, rgba(0, 0, 0, 0) 3%), linear-gradient(45deg, #af5f00 0%, rgba(0, 0, 0, 0) 5%);
 }
 .nameList li.HasVotes + li.NoVotes {
   padding-top: 2px;
@@ -81,7 +81,7 @@ body {
 }
 .nameList li.Match2Only + li.Match1 {
   padding-top: 2px;
-  border-top: 3px double #8dc63e;
+  border-top: 3px double #4b8200;
 }
 .nameList .CannotReceiveVotes {
   text-decoration: line-through;
@@ -285,7 +285,7 @@ div.heading {
   margin-top: 3px;
 }
 .InUse {
-  color: #f6941e;
+  color: #af5f00;
 }
 .duplicateVote .Name {
   color: #e80c4d;
@@ -308,7 +308,7 @@ div.heading {
   width: 100%;
   margin: 2px 0;
   min-height: 1.4em;
-  background-color: #eeffd6;
+  background-color: #f1ffde;
 }
 #votesList .VoteHost span.Name {
   display: none;

@@ -338,8 +338,8 @@ namespace TallyJ.CoreModels
           ballotStatusInfo.SpoiledCount,
           BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
-          SingleBallotCount = ballotCounts, 
-          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
+          SingleBallotCount = ballotCounts,
+          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId,
           Name = verifying ? person1.C_FullNameFL : null,
         }.AsJsonResult();
@@ -404,7 +404,7 @@ namespace TallyJ.CoreModels
           BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
           SingleBallotCount = ballotCounts,
-          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName),
+          VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId
 
         }.AsJsonResult();
@@ -414,20 +414,34 @@ namespace TallyJ.CoreModels
       return new { Updated = false, Error = "Invalid person. Please try again." }.AsJsonResult();
     }
 
-    private object GetVoteUpdates(int lastVoteId, VoteCacher voteCacher, bool isSingleName) {
-      if (lastVoteId == 0) {
+    private object GetVoteUpdates(int lastVoteId, VoteCacher voteCacher, bool isSingleName, PersonCacher personCacher)
+    {
+      if (lastVoteId == 0)
+      {
         // single name elections
         return null;
       }
-      var peopleInRecentVotes = voteCacher.AllForThisElection.Where(v => v.C_RowId > lastVoteId && v.PersonGuid != null).Select(v=>v.PersonGuid).Distinct();
-      var counts = voteCacher.AllForThisElection.Where(v => peopleInRecentVotes.Contains(v.PersonGuid))
+
+      // ignores vote and ballot status - count how many times the name has been written on ballots
+
+      var peopleInRecentVotes = voteCacher
+        .AllForThisElection
+        .Where(v => v.C_RowId > lastVoteId && v.PersonGuid != null)
+        .Select(v => v.PersonGuid)
+        .Distinct();
+
+      var counts = voteCacher
+        .AllForThisElection
+        .Where(v => peopleInRecentVotes.Contains(v.PersonGuid))
         .GroupBy(v => v.PersonGuid)
+        .Join(personCacher.AllForThisElection, votes => votes.Key, p => p.PersonGuid, (votes, p) => new { votes, p })
         .Select(g => new
         {
-          PersonGuid = g.Key,
-          Count = g.Sum(v => isSingleName ? v.SingleNameElectionCount : 1)
+          Id = g.p.C_RowId,
+          Count = g.votes.Sum(v => isSingleName ? v.SingleNameElectionCount : 1)
         })
         .ToList();
+
       return counts;
     }
 
@@ -452,7 +466,8 @@ namespace TallyJ.CoreModels
         })
         .ToList();
 
-      if (!counts.Any(v => v.PersonGuid == personGuid)) {
+      if (!counts.Any(v => v.PersonGuid == personGuid))
+      {
         counts.Add(new { PersonGuid = personGuid, Count = 0 });
       }
 

@@ -2,7 +2,8 @@
   var local = {
     url: url,
     nameSplitter: /[\s\-']/,
-    localNames: []
+    localNames: [],
+    maxVotes: 0
   };
 
   var maxToShow = 60;
@@ -77,7 +78,8 @@
         // new person, adjust to fit
         editedPerson.Name = editedPerson.FullName;
         editedPerson.Id = editedPerson.PersonId;
-        editedPerson.NumVotes = 0;
+        editedPerson.NumVotes = editedPerson.NumVotes || 0;
+        editedPerson.Ineligible = editedPerson.IneligibleReasonGuid;
 
         extendPersonCore(editedPerson);
 
@@ -97,6 +99,7 @@
   }
 
   function extendPeople(arr) {
+    local.maxVotes = 0;
     arr.forEach(extendPerson);
     return arr;
   }
@@ -108,6 +111,8 @@
     p.CanReceiveVotes = p.V[0] === '1';
     p.CanVote = p.V[1] === '1';
     p.Ineligible = p.IRG;
+
+    if (p.NumVotes > local.maxVotes) local.maxVotes = p.NumVotes;
 
     extendPersonCore(p);
   }
@@ -158,7 +163,7 @@
 
     var info = markUp(result, searchParts, usedPersonIds);
 
-    cbAfterSearch(info, true);
+    cbAfterSearch(info, true, true);
   }
 
   function addMatchedNames(person, matchedPeople, searchParts, searchSounds) {
@@ -240,11 +245,13 @@
 
       $.each(info.People, function (i, personInfo) {
 
-        //if (personInfo.Id === 25068) debugger;
-
+        
         if (personInfo.NumVotes > highestNumVotes) {
           highestNumVotes = personInfo.NumVotes;
         }
+
+        // determine % with max at 80%
+        personInfo.VoteSize = Math.round(personInfo.NumVotes / (0.01 + local.maxVotes) * 80);
 
         var liClasses = [];
         var spanClasses = [];
@@ -289,16 +296,15 @@
 
       var foundBest = false;
       info.BestRowNum = 0;
+      
+      //2018-Feb look in type 2; only in 1 if none were in 2
 
-      //2018-Feb only look in type 2; only in 1 if none were in 2
+      // rseults are sorted, so 0 is best... if it is not already in use
 
       for (var matchType = 2; matchType >= 1; matchType--) {
         var foundInType = false;
         for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
           $.each(results, function (i, item) {
-            if (item.MatchType === matchType) {
-              found = true;
-            }
             if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
               info.BestRowNum = i;
               foundBest = true;
@@ -306,11 +312,9 @@
             }
           });
         }
-        if (matchType === 1 && foundInType) {
-          break;
-        }
       }
       info.People = results;
+      info.maxVotes = local.maxVotes;
     }
     return info;
   }
@@ -321,25 +325,15 @@
       return;
     }
 
-    var toFind = updates.map(function (update) { return update.PersonGuid; }).join(',');
-    var numToFind = updates.length;
-
-    local.localNames.forEach(function (person) {
-      var guid = person.PersonGuid;
-      if (toFind.indexOf(guid) !== -1) {
-        // this person was updated
-        if (numToFind === 1) {
-          person.NumVotes = updates[0].Count;
-        } else {
-          var update = updates.find(function (update) {
-            return update.PersonGuid = guid;
-          });
-          if (update) {
-            person.NumVotes = update.Count;
-          }
-        }
+    updates.forEach(function (update) {
+      var person = local.localNames.find(function (p) {
+        return p.Id === update.Id
+      })
+      if (person) {
+        person.NumVotes = update.Count;
+        if (update.Count > local.maxVotes) local.maxVotes = update.Count;
       }
-    });
+    })
   }
 
   function refreshListing(searchTerm, onNamesReady, usedPersonIds, info) {

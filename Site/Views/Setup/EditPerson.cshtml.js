@@ -50,19 +50,21 @@
   function startEdit() {
     var $first = local.hostPanel.find('[data-name="FirstName"]');
     var $last = local.hostPanel.find('[data-name="LastName"]');
-    var update = function() {
+    var update = function () {
       site.broadcast(site.broadcastCode.personNameChanging, $.trim($first.val() + ' ' + $last.val()));
     };
     $first.on('keyup', update).focus();
     $last.on('keyup', update);
   };
 
-  function applyValues(panel, person, clearAll) {
+  function applyValues(panel, person, clearAll, canDelete) {
     if (panel) {
       local.hostPanel = panel;
     } else {
       panel = local.hostPanel;
     }
+
+    // console.log(person, canDelete);
 
     function setValue(input, value) {
       switch (input.attr('type')) {
@@ -88,7 +90,7 @@
       // apply only the properties given
       for (var prop in person) {
         if (person.hasOwnProperty(prop)) {
-          panel.find(':input[data-name]').each(function() {
+          panel.find(':input[data-name]').each(function () {
             var input = $(this);
             if (input.data('name') === prop) {
               setValue(input, person[prop]);
@@ -100,6 +102,7 @@
 
     $('#trCanVote').toggleClass('IsNo', !person.CanVote);
     $('#trCanReceiveVotes').toggleClass('IsNo', !person.CanReceiveVotes);
+    //$('#trDelete').toggle(canDelete);
 
     panel.fadeIn();
     // panel.find('[data-name="FirstName"]').focus();
@@ -153,9 +156,25 @@
     });
   };
 
+  //function deletePerson() {
+  //  var form = {
+  //    id: local.hostPanel.find(':input[data-name=C_RowId]').val()
+  //  };
+
+  //  ShowStatusDisplay("Deleting...");
+  //  CallAjaxHandler(publicInterface.controllerUrl + '/DeletePerson', form, function (info) {
+  //    if (info.Message) {
+  //      ShowStatusFailed(info.Message);
+  //      return;
+  //    }
+
+  //    ShowStatusSuccess(info.Status);
+  //  });
+  //}
 
   function preparePage() {
     $('#btnSave').click(saveChanges);
+    //$('#btnDelete').click(deletePerson);
     $('#ddlIneligible').html(prepareReasons()).change(changedIneligible);
 
     site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {

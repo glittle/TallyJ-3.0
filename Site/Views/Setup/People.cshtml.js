@@ -119,18 +119,18 @@
   };
 
   var showPersonDetail = function (info) {
-    applyValues(info.Person);
+    applyValues(info);
     ResetStatusDisplay();
   };
 
-  var applyValues = function (person) {
+  var applyValues = function (info) {
     var panel = $('#editPanel');
-    if (person == null) {
+    if (info.Person == null) {
       panel.hide();
       return;
     };
 
-    editPersonPage.applyValues(panel, person, true);
+    editPersonPage.applyValues(panel, info.Person, true, info.CanDelete);
 
   };
 

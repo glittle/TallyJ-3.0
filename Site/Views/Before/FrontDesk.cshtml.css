@@ -130,7 +130,7 @@ p {
   cursor: pointer;
 }
 .Counts div.Total {
-  color: #8dc63e;
+  color: #4b8200;
 }
 .Counts div:hover {
   border-color: #666;
@@ -141,7 +141,7 @@ p {
   background-color: #d2d2d2;
 }
 .Counts div.filtering.Total {
-  color: #8dc63e;
+  color: #4b8200;
 }
 .Counts i {
   font-weight: bold;
