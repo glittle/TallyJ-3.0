@@ -4,14 +4,14 @@
     <div class="copyright" title="Running on @Environment.MachineName - @UserSession.CurrentElectionGuid">
       &copy; @DateTime.Now.Year Glen Little
     </div>
-    @if (UserSession.IsKnownTeller)
-    {
-      <div class="helpLink">
-        <a title="View document"
-           href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
-           target="gdoc">Status & Feedback Document</a>
-      </div>
-    }
+    <div class="helpLink">
+      @RenderPage("Version.cshtml")
+    </div>
+    <div class="helpLink">
+      <a title="View document"
+         href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
+         target="gdoc">Status & Feedback Document</a>
+    </div>
     <div class="float-right">
       <ul id="social">
         @*<li>
