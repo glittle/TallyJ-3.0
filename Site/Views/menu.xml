@@ -5,7 +5,7 @@
       <page title="Configure this Election" featureWhen="NotStarted" controller="Setup" action="Index" requireElection="true" role="known" desc="Select type of election and other details"></page>
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <!--<page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>-->
-      <page title="Edit People's Names" featureWhen="NotStarted" controller="Setup" action="People" requireElection="true" role="guest" desc="Edit people's names. Add more people."></page>
+      <page title="Edit People's Names" featureWhen="NotStarted" controller="Setup" action="People" requireElection="true" role="known" desc="Edit people's names. Add more people."></page>
     </group>
     <group title="Voting" state="NamesReady" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
@@ -22,7 +22,7 @@
       <page title="Display Tellers' Report" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
     </group>
     <group title="general" state="" longtitle="Other Pages" showTitleInPage="false">
-      <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="true" requireElection="false" role="*" desc="Welcome page"></page>
+      <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="false" requireElection="false" role="*" desc="Welcome page"></page>
       <page title="Elections List" featureWhen="OnDash, General" controller="Dashboard" action="ChooseElection" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
       <page title="Dashboard" featureWhen="OnDash, General" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
       <page title="Reference Materials" featureWhen="OnDash, General" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>

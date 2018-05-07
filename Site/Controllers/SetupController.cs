@@ -124,6 +124,7 @@ namespace TallyJ.Controllers
     //  return importV1Model.GetUploadList();
     //}
 
+    [ForAuthenticatedTeller]
     public JsonResult SavePerson(Person person)
     {
       return new PeopleModel().SavePerson(person);
