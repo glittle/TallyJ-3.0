@@ -171,7 +171,7 @@ namespace TallyJ.CoreModels
 
       ballot.StatusCode = needsReview ? BallotStatusEnum.Review : BallotStatusEnum.Ok;
 
-      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true);
+      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true, true);
 
       Db.SaveChanges();
 

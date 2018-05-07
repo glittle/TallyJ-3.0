@@ -54,7 +54,7 @@ namespace TallyJ.CoreModels
     /// <param name="currentVotes">The list of Votes in this Ballot</param>
     /// <param name="refreshVoteStatus"></param>
     /// <returns>Returns the updated status code</returns>
-    public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes, bool refreshVoteStatus)
+    public BallotStatusWithSpoilCount UpdateBallotStatus(Ballot ballot, List<VoteInfo> currentVotes, bool refreshVoteStatus, bool forceSave = false)
     {
       //double check:
       currentVotes.ForEach(vi => AssertAtRuntime.That(vi.BallotGuid == ballot.BallotGuid));
@@ -86,7 +86,7 @@ namespace TallyJ.CoreModels
       //}
 
       
-      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount))
+      if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount) || forceSave)
       {
         BallotSaver(DbAction.Attach, ballot);
         ballot.StatusCode = newStatus;

@@ -16,6 +16,7 @@
   ContextItems.AddJavascriptForPage("ballotPage.BallotStatus={0};".FilledWith(BallotStatusEnum.Listing.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>

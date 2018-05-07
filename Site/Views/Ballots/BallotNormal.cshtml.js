@@ -187,6 +187,7 @@
     hub.client.updatePeople = function (info) {
       console.log('signalR: updatePeople');
       local.peopleHelper.UpdatePeople(info);
+      local.lastSearch = '';
       searchTextChanged();
       startToRefreshBallotList();
     };
@@ -514,7 +515,7 @@
     var disable = votes.length > 0;
     local.btnDeleteBallot
       .toggle(!disable);
-      //.toggleClass('btn-warning', !disable); // only show orange if usable
+    //.toggleClass('btn-warning', !disable); // only show orange if usable
 
     setTimeout(function () {
       checkScrollLength();
@@ -582,7 +583,7 @@
       info.BallotStatusText = info.StatusCodeText;
     }
 
-    $('#cbReview').attr('checked', info.BallotStatus === 'Review');
+    $('#cbReview').prop('checked', info.BallotStatus === 'Review');
 
     var status = info.BallotStatus;
 
@@ -1163,7 +1164,9 @@
     var html = [
       '<option value="0">Select a reason...</option>',
       '<optgroup label="Name not in the List">',
-      '<option value="-1">Add new name (including spoiled)</option>',
+      ballotPage.isGuest ?
+        '<option value="0">(Ask head teller to add required name)</option>' :
+        '<option value="-1">Add new name (including spoiled)</option>',
       '</optgroup>'
     ];
     var group = '';

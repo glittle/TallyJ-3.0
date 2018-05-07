@@ -104,6 +104,7 @@ span, div {
   clear: both;
   padding-bottom: 10px;
   background-color: #efeeef;
+  color: #000;
 }
 
 .PageTitle {
@@ -1043,7 +1044,7 @@ body.AuthKnown .ElectionState span.state.Active_False {
 
 body.AuthGuest .ElectionState #electionState {
   span.state {
-    border-color: lighten(@tallyJGreen, 30%);
+    border-color: @tallyJGreen;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -1270,7 +1271,7 @@ body.AuthKnown .CurrentElectionName {
   position: absolute;
   top: 2px;
   right: 10px;
-  color: #A4D4E6;
+  color: #267fa0;
   cursor: pointer;
   white-space: nowrap;
 

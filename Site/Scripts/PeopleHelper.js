@@ -259,8 +259,9 @@
         if (forBallotEntry) {
           liClasses.push(personInfo.NumVotes ? 'HasVotes' : 'NoVotes');
         }
-        if (personInfo.Parts1 && !personInfo.Parts2) liClasses.push('Match1');
-        if (personInfo.Parts2 && !personInfo.Parts1) liClasses.push('Match2Only');
+        console.log(personInfo);
+        if (personInfo.Parts1 == 1 && personInfo.Parts2 == 0) liClasses.push('Match1');
+        if (personInfo.Parts2 == 1 && personInfo.Parts1 == 0) liClasses.push('Match2Only');
 
         spanClasses.push('Match' + personInfo.MatchType);
 
