@@ -56,92 +56,92 @@ tr.overrides {
 }
 
 .nameList {
-  position: relative;
-  height: 300px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  border: solid 1px #999;
-  line-height: 1.5;
-  overflow: auto;
-
-  u {
-    text-decoration: none;
-  }
-
-  li {
-    border-bottom: 1px solid #f0f0f0;
-    padding: 0 2px 0 5px;
-    color: #000;
-    cursor: pointer;
-    -moz-user-select: none;
-    -webkit-user-select: none;
     position: relative;
-
-    span {
-      position: absolute;
-      top: 0;
-
-      &.ShowVote {
-        bottom: 0;
-        left: 0;
-        background-image: linear-gradient(to right, rgba(112, 184, 255, 0.25) 0%, rgba(112, 184, 255, 0.15) 75%, rgba(0, 0, 0, 0) 100%)
-      }
-    }
-
-    &:hover {
-      background-color: rgba(204, 255, 190, 0.5);
-      //border-color: #ddd;
-    }
-
-    &.selected {
-      background-color: #c1f1b4;
-    }
-    //&.HasVotes {
-    //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
-    //}
-    i {
-      // sound match
-      border-bottom: 1px #666 dashed;
-    }
-
-    &.Match1 {
-      color: darken(@tallyJGreen, 20%);
-      font-style: italic;
-
-      i {
-        // sound match
-        border-bottom: 1px #666 dashed;
-        font-style: normal;
-      }
-
-      &.HasVotes {
-        background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%), linear-gradient(45deg, @tallyJOrange 0%, rgba(0,0,0,0) 5%);
-      }
-    }
-  }
-
-  li.HasVotes + li.NoVotes {
-    padding-top: 2px;
-    border-top: 3px double #ccc;
-  }
-
-  li.Match2Only + li.Match1 {
-    padding-top: 2px;
-    border-top: 3px double @tallyJGreen;
-  }
-
-  .CannotReceiveVotes {
-    text-decoration: line-through;
-  }
-
-  .First {
-    padding-top: 2px;
-    border-top: 3px double #ccc;
+    height: 300px;
     width: 100%;
-    display: block;
-  }
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: solid 1px #999;
+    line-height: 1.5;
+    overflow: auto;
+
+    u {
+        text-decoration: none;
+    }
+
+    li {
+        border-bottom: 1px solid #f0f0f0;
+        padding: 0 2px 0 5px;
+        color: #000;
+        cursor: pointer;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        position: relative;
+
+        span {
+            position: absolute;
+            top: 0;
+
+            &.ShowVote {
+                bottom: 0;
+                left: 0;
+                background-image: linear-gradient(to right, rgba(112, 184, 255, 0.25) 0%, rgba(112, 184, 255, 0.15) 99%, rgba(0, 0, 0, 0) 100%)
+            }
+        }
+
+        &:hover {
+            background-color: rgba(204, 255, 190, 0.5);
+            //border-color: #ddd;
+        }
+
+        &.selected {
+            background-color: #c1f1b4;
+        }
+        //&.HasVotes {
+        //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
+        //}
+        i {
+            // sound match
+            border-bottom: 1px #666 dashed;
+        }
+
+        &.Match1 {
+            color: darken(@tallyJGreen, 20%);
+            font-style: italic;
+
+            i {
+                // sound match
+                border-bottom: 1px #666 dashed;
+                font-style: normal;
+            }
+
+            &.HasVotes {
+                background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%), linear-gradient(45deg, @tallyJOrange 0%, rgba(0,0,0,0) 5%);
+            }
+        }
+    }
+
+    li.HasVotes + li.NoVotes {
+        padding-top: 2px;
+        border-top: 3px double #ccc;
+    }
+
+    li.Match2Only + li.Match1 {
+        padding-top: 2px;
+        border-top: 3px double @tallyJGreen;
+    }
+
+    .CannotReceiveVotes {
+        text-decoration: line-through;
+    }
+
+    .First {
+        padding-top: 2px;
+        border-top: 3px double #ccc;
+        width: 100%;
+        display: block;
+    }
 }
 
 .ballotList {
