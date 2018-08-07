@@ -1,4 +1,5 @@
-﻿var BallotSinglePageFunc = function() {
+﻿
+var BallotSinglePageFunc = function() {
     var publicInterface = {};
     var temp1 = '{StatusCodeText}{BallotStatusText} <span class="SpoiledCount HideZero{SpoiledCount}"> ({SpoiledCount} spoiled)<span>';
     var local = {
@@ -271,7 +272,8 @@
         }
         var select = statusDdl[0];
         if (select.selectedIndex === -1) {
-            $('.LocationStatus').text('- Unknown')
+            $('.LocationStatus').text('- Unknown');
+            return;
         }
         var text = select.options[select.selectedIndex].text;
         $('.LocationStatus').text('- ' + text)
