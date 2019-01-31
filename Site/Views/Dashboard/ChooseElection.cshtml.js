@@ -223,11 +223,11 @@
 
   var getElectionCounts = function () {
     CallAjaxHandler(publicInterface.countsUrl, null, function (info) {
-      for (var election of info) {
-        var line = $('#el-' + election.guid);
-        line.find('.numVoters').text('- {0} voter{1}'.filledWith(election.numPeople, Plural(election.numPeople)));
-        line.find('.numBallots').text('- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots)));
-      }
+        info.forEach(function (election) {
+            var line = $('#el-' + election.guid);
+            line.find('.numVoters').text('- {0} voter{1}'.filledWith(election.numPeople, Plural(election.numPeople)));
+            line.find('.numBallots').text('- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots)));
+        });
     });
 }
 
