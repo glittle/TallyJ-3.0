@@ -78,6 +78,8 @@ tr.overrides {
         -moz-user-select: none;
         -webkit-user-select: none;
         position: relative;
+        white-space: nowrap;
+        overflow: hidden;
 
         span {
             position: absolute;
@@ -381,6 +383,7 @@ div.heading {
   text-align: right;
   margin-right: 12px;
   font-size: 80%;
+  flex-shrink: 0;
   color: #999;
   vertical-align: top;
   margin-top: 3px;
@@ -470,7 +473,7 @@ div.heading {
 
     .Top {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
     }
 
     .NameInfo {
