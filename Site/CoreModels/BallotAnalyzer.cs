@@ -116,7 +116,7 @@ namespace TallyJ.CoreModels
         return false;
       }
 
-      var needsVerification = voteInfos.Any(v => v.PersonCombinedInfo.HasContent() && !v.PersonCombinedInfo.StartsWith(v.PersonCombinedInfoInVote));
+      var needsVerification = voteInfos.Any(v => v.PersonCombinedInfo.HasContent() && !v.PersonCombinedInfo.StartsWith(v.PersonCombinedInfoInVote ?? "NULL"));
       if (needsVerification)
       {
         return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);

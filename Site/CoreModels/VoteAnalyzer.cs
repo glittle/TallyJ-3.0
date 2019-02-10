@@ -12,7 +12,7 @@ namespace TallyJ.CoreModels
     {
       return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
         ? VoteHelper.VoteStatusCode.Spoiled
-        : voteInfo.PersonCombinedInfo.HasContent() && !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote)
+        : voteInfo.PersonCombinedInfo.HasContent() && !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote ?? "NULL")
           ? VoteHelper.VoteStatusCode.Changed
           : VoteHelper.VoteStatusCode.Ok;
     }
@@ -20,7 +20,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>
     public static bool VoteNeedReview(VoteInfo voteInfo)
     {
-      return voteInfo.PersonCombinedInfo.HasContent() && !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote);
+      return voteInfo.PersonCombinedInfo.HasContent() && !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote ?? "NULL");
     }
 
 //    /// <Summary>Is this Vote not valid?</Summary>
