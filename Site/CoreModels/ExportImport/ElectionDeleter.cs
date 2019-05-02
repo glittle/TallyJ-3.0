@@ -81,7 +81,7 @@ namespace TallyJ.CoreModels.ExportImport
           Db.Message.Where(x => x.ElectionGuid == _electionGuid).Delete();
           Db.Election.Where(x => x.ElectionGuid == _electionGuid).Delete();
 
-          new LogHelper().Add("Deleted election '{0}' ({1})".FilledWith(electionName, _electionGuid));
+          new LogHelper(_electionGuid).Add("Deleted election '{0}'".FilledWith(electionName));
 
           transaction.Complete();
 
