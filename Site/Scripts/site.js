@@ -108,7 +108,7 @@ function updatePasscodeDisplay(okay, passcode) {
 function HighlightActiveLink() {
     var url = location.href;
     $('#quickLinkItems a').each(function () {
-        var matched = url == this.href;
+        var matched = url === this.href;
         var a = $(this);
         if (matched) {
             a.addClass('Active');
@@ -506,63 +506,71 @@ function CheckTimeOffset() {
     });
 }
 
-function PrepareTopLocationAndTellers() {
-    $('#ddlTopLocation').change(function () {
-        ShowStatusDisplay('Saving...');
-        var ddl = $(this);
-        var form = {
-            id: ddl.val()
-        };
-        ddl.find('option[value="-1"]').remove();
+function topLocationChanged(ev) {
+    ShowStatusDisplay('Saving...');
+    var ddl = $(ev.currentTarget);
+    var form = {
+        id: ddl.val()
+    };
+    ddl.find('option[value="-1"]').remove();
 
-        if (form.id == '-2') {
-            // some pages add -2 for [All Locations] -- but we don't store it
-            site.broadcast(site.broadcastCode.locationChanged);
-            setTopInfo();
-            return;
-        }
+    if (form.id == '-2') {
+        // some pages add -2 for [All Locations] -- but we don't store it
+        site.broadcast(site.broadcastCode.locationChanged);
+        setTopInfo();
+        return;
+    }
 
-        CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
-            ShowStatusSuccess('Saved');
-            site.broadcast(site.broadcastCode.locationChanged);
-            setTopInfo();
-        });
+    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
+        ShowStatusSuccess('Saved');
+        site.broadcast(site.broadcastCode.locationChanged);
+        setTopInfo();
     });
+}
 
-    $('.TopTeller').change(function (ev) {
-        var ddl = $(this);
-        var choice = +ddl.val();
-        var form = {
-            num: this.id.substr(-1),
-            teller: choice
-        };
-        if (choice == -1) {
-            form.newName = prompt('Please type name to add:');
+function tellerChanged(ev) {
+    var ddl = $(ev.currentTarget);
+    var choice = +ddl.val();
+    var form = {
+        num: ev.currentTarget.id.substr(-1),
+        teller: choice
+    };
+    if (choice === -1) {
+        var text = 'Please enter a short name for this teller:';
+        do {
+            form.newName = prompt(text);
             if (!form.newName) {
                 ddl.val(ddl.data('current'));
                 ResetStatusDisplay();
                 return;
             }
+            text = 'Please enter a short name (up to 25 letters) for this teller:';
+        } while (form.newName.length > 25);
+    }
+    ShowStatusDisplay('Saving...');
+
+    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller', form, function (info) {
+        ShowStatusSuccess('Saved');
+
+        ddl.data('current', ddl.val());
+
+        if (info.TellerList) {
+            ddl.html(info.TellerList);
+
+            var otherDll = $('.TopTeller').not(ddl);
+            var otherValue = otherDll.val();
+            otherDll.html(info.TellerList);
+            otherDll.val(otherValue);
         }
-        ShowStatusDisplay('Saving...');
 
-        CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller', form, function (info) {
-            ShowStatusSuccess('Saved');
+        setTopInfo();
+    });
+}
 
-            ddl.data('current', ddl.val());
+function PrepareTopLocationAndTellers() {
+    $('#ddlTopLocation').change(topLocationChanged);
 
-            if (info.TellerList) {
-                ddl.html(info.TellerList);
-
-                var otherDll = $('.TopTeller').not(ddl);
-                var otherValue = otherDll.val();
-                otherDll.html(info.TellerList);
-                otherDll.val(otherValue);
-            }
-
-            setTopInfo();
-        });
-    }).each(function () {
+    $('.TopTeller').change(tellerChanged).each(function () {
         var ddl = $(this);
         ddl.data('current', ddl.val());
     });
