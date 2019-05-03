@@ -66,14 +66,16 @@
             }
         });
 
+        local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
+
         local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl, true);
         local.peopleHelper.Prepare(function (lastVid) {
             local.lastVid = lastVid;
+            local.inputField.prop('disabled', false);
+            local.inputField.focus();
         });
 
-        local.inputField = $('#txtSearch').on('keyup paste', searchTextChanged);
-        local.inputField.focus();
-
+        local.inputField.prop('disabled', true);
         local.nameList = $('#nameList');
         local.searchPanel = $('#nameSearch');
         local.ballotsPanel = $('#ballots');
