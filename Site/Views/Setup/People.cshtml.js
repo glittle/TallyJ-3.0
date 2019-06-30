@@ -25,7 +25,7 @@
             if (local.totalOnFile < 25) {
                 specialSearch('All');
             } else {
-                local.nameList.html('<li class=Match2>(Ready for searching)</li>');
+                local.nameList.html('<li class=Match5>(Ready for searching)</li>');
             }
             local.inputField.prop('disabled', false);
             local.inputField.focus();
