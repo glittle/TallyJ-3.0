@@ -563,7 +563,7 @@ var BadiDateToday = function (settings) {
                     timeout: 3000,
                     maximumAge: 3 * 60 * 60 * 1000 // 3 hours
                 });
-                return true;
+                return;
             }
 
             // not available in the browser, or user denied request. Fallback to guessing location
@@ -591,7 +591,7 @@ var BadiDateToday = function (settings) {
         saveLocation(0, 0, '', true);
 
         continueAfterLocationKnown();
-        return false;
+        return;
     }
 
     function saveLocation(lat, long, name, saveToStorage) {
