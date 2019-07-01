@@ -1,130 +1,134 @@
 ﻿[
-    {
-        "outputFile": "Content/Site.css",
-        "inputFile": "Content/Site.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
+  {
+    "outputFile": "Content/Site.css",
+    "inputFile": "Content/Site.less",
+    "minify": {
+      "enabled": false
     },
-    {
-        "outputFile": "Views/After/Analyze.cshtml.css",
-        "inputFile": "Views/After/Analyze.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/After/ShowTies.cshtml.css",
-        "inputFile": "Views/After/ShowTies.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Before/FrontDesk.cshtml.css",
-        "inputFile": "Views/Before/FrontDesk.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Before/RollCall.cshtml.css",
-        "inputFile": "Views/Before/RollCall.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Dashboard/Index.cshtml.css",
-        "inputFile": "Views/Dashboard/Index.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Dashboard/ChooseElection.cshtml.css",
-        "inputFile": "Views/Dashboard/ChooseElection.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Public/Home.cshtml.css",
-        "inputFile": "Views/Public/Home.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Ballots/BallotNormal.cshtml.css",
-        "inputFile": "Views/Ballots/BallotNormal.cshtml.less"
-    },
-    {
-        "outputFile": "Views/Setup/ImportCsv.cshtml.css",
-        "inputFile": "Views/Setup/ImportCsv.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/Setup/Setup.cshtml.css",
-        "inputFile": "Views/Setup/Setup.cshtml.less",
-        "minify": {
-            "enabled": false
-        },
-        "options": {
-            "sourceMap": true
-        }
-    },
-    {
-        "outputFile": "Views/After/Reports.cshtml.css",
-        "inputFile": "Views/After/Reports.cshtml.less"
-    },
-    {
-        "outputFile": "Views/Ballots/Reconcile.cshtml.css",
-        "inputFile": "Views/Ballots/Reconcile.cshtml.less"
-    },
-    {
-        "outputFile": "Views/After/Monitor.cshtml.css",
-        "inputFile": "Views/After/Monitor.cshtml.less"
-    },
-    {
-        "outputFile": "Views/Setup/People.cshtml.css",
-        "inputFile": "Views/Setup/People.cshtml.less"
-    },
-    {
-        "outputFile": "Views/Ballots/BallotSingle.cshtml.css",
-        "inputFile": "Views/Ballots/BallotSingle.cshtml.less"
-    },
-    {
-        "outputFile": "Views/Ballots/SortBallots.cshtml.css",
-        "inputFile": "Views/Ballots/SortBallots.cshtml.less"
+    "options": {
+      "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Views/After/Analyze.cshtml.css",
+    "inputFile": "Views/After/Analyze.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/After/ShowTies.cshtml.css",
+    "inputFile": "Views/After/ShowTies.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Before/FrontDesk.cshtml.css",
+    "inputFile": "Views/Before/FrontDesk.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Before/RollCall.cshtml.css",
+    "inputFile": "Views/Before/RollCall.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Dashboard/Index.cshtml.css",
+    "inputFile": "Views/Dashboard/Index.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Dashboard/ChooseElection.cshtml.css",
+    "inputFile": "Views/Dashboard/ChooseElection.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Public/Home.cshtml.css",
+    "inputFile": "Views/Public/Home.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Ballots/BallotNormal.cshtml.css",
+    "inputFile": "Views/Ballots/BallotNormal.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/ImportCsv.cshtml.css",
+    "inputFile": "Views/Setup/ImportCsv.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/Setup/Setup.cshtml.css",
+    "inputFile": "Views/Setup/Setup.cshtml.less",
+    "minify": {
+      "enabled": false
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Views/After/Reports.cshtml.css",
+    "inputFile": "Views/After/Reports.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/Reconcile.cshtml.css",
+    "inputFile": "Views/Ballots/Reconcile.cshtml.less"
+  },
+  {
+    "outputFile": "Views/After/Monitor.cshtml.css",
+    "inputFile": "Views/After/Monitor.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/People.cshtml.css",
+    "inputFile": "Views/Setup/People.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/BallotSingle.cshtml.css",
+    "inputFile": "Views/Ballots/BallotSingle.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Ballots/SortBallots.cshtml.css",
+    "inputFile": "Views/Ballots/SortBallots.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/EditPerson.cshtml.css",
+    "inputFile": "Views/Setup/EditPerson.cshtml.less"
+  }
 ]

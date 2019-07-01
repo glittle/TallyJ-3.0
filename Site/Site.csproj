@@ -686,6 +686,9 @@
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\EditPerson.cshtml.css">
+      <DependentUpon>EditPerson.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
     </Content>
@@ -736,6 +739,9 @@
     </Content>
     <Content Include="Views\Ballots\BallotSingle.cshtml.less">
       <DependentUpon>BallotSingle.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\EditPerson.cshtml.less">
+      <DependentUpon>EditPerson.cshtml</DependentUpon>
     </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
@@ -812,9 +818,6 @@
     </Content>
     <Content Include="Views\Public\Home.cshtml.js">
       <DependentUpon>Home.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\Setup\EditPerson.cshtml.css">
-      <DependentUpon>EditPerson.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\EditPerson.cshtml.js">
       <DependentUpon>EditPerson.cshtml</DependentUpon>

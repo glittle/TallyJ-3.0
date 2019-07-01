@@ -1,175 +1,175 @@
 ﻿@using TallyJ.Code.Session
 @{
-  ViewBag.OnWelcome = true;
-  ViewBag.Title = "Bahá’í Election Tool";
-  ViewBag.Caption = "Welcome";
-  ViewBag.Message = "The election system for Bahá’í tellers";
-  ViewBag.Metas = new[]{
+    ViewBag.OnWelcome = true;
+    ViewBag.Title = "Bahá’í Election Tool";
+    ViewBag.Caption = "Welcome";
+    ViewBag.Message = "The election system for Bahá’í tellers";
+    ViewBag.Metas = new[]{
 ""
 }.JoinedAsString("");
 
-  ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
 }
 @section Metas {
-  <link rel='canonical' href='https://www.tallyj.com/' />
-  <meta name='description' content="TallyJ facilitates the recording of ballots and votes at a Bahá'í election." />
-  <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,tallyj,tally,tally ballots,tally votes,tally election,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bye election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
+    <link rel='canonical' href='https://www.tallyj.com/' />
+    <meta name='description' content="TallyJ facilitates the recording of ballots and votes at a Bahá'í election." />
+    <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,tallyj,tally,tally ballots,tally votes,tally election,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bye election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
 }
 <section class="features middle">
-  <section class="featureBig CenterPanel">
-    <div class="top">
-    </div>
-    <h2 id="introTitle">Choose an Option to Start</h2>
-    <div class="centerbuttons">
-      <div class="centerL" title="Assist with an election.">
-        <button class="btn btn-primary" id="btnChooseJoin" accesskey="J"><u>J</u>oin an Election</button>
-        <p>Join an election as a teller</p>
-      </div>
-      <div class="centerR"
-           title="Create and manage elections. If you do not have an account yet, you can register here.">
-        <button class="btn btn-success" id="btnChooseLogin" accesskey="L"><u>L</u>og In</button>
-        <p>Log in to create and administer your elections</p>
+    <section class="featureBig CenterPanel">
+        <div class="top">
+        </div>
+        <h2 id="introTitle">Choose an Option to Start</h2>
+        <div class="centerbuttons">
+            <div class="centerL" title="Assist with an election.">
+                <button class="btn btn-primary" id="btnChooseJoin" accesskey="J"><u>J</u>oin an Election</button>
+                <p>Join an election as a teller</p>
+            </div>
+            <div class="centerR"
+                 title="Create and manage elections. If you do not have an account yet, you can register here.">
+                <button class="btn btn-success" id="btnChooseLogin" accesskey="L"><u>L</u>og In</button>
+                <p>Log in to create and administer your elections</p>
 
-      </div>
-    </div>
-  </section>
-  <section class="featureBig JoinPanel">
-    <div class="closer">
-      <img src="~/Images/close.png" class="closer">
-    </div>
-    <div class="top">
-    </div>
-    <h2>Join an Election as a Teller</h2>
-    <ol>
-      <li>
-        <p>
-          Select your election:
-          <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
-        </p>
-        <div class="table">
-          <select id="ddlElections" size="4"></select>
+            </div>
         </div>
-      </li>
-      <li>
-        <p>
-          Type in the access code you were given:
-        </p>
-        <div>
-          <input id="txtPasscode" type="text" maxlength="50" />
+    </section>
+    <section class="featureBig JoinPanel">
+        <div class="closer">
+            <img src="~/Images/close.png" class="closer">
         </div>
-      </li>
-      <li>
-        <p>
-          Join the election:
-        </p>
-        <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
-        @*<button type="button" id="btnJoin">
-          Join Now</button>*@ <span id="joinStatus" class="idle"></span>
-      </li>
-    </ol>
-  </section>
-  <section class="featureBig LoginPanel">
-    <div class="closer">
-      <img src="~/Images/close.png" alt="Close" class="closer">
+        <div class="top">
+        </div>
+        <h2>Join an Election as a Teller</h2>
+        <ol>
+            <li>
+                <p>
+                    Select your election:
+                    <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
+                </p>
+                <div class="table">
+                    <select id="ddlElections" size="4"></select>
+                </div>
+            </li>
+            <li>
+                <p>
+                    Type in the access code you were given:
+                </p>
+                <div>
+                    <input id="txtPasscode" type="text" maxlength="50" />
+                </div>
+            </li>
+            <li>
+                <p>
+                    Join the election:
+                </p>
+                <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
+                @*<button type="button" id="btnJoin">
+                    Join Now</button>*@ <span id="joinStatus" class="idle"></span>
+            </li>
+        </ol>
+    </section>
+    <section class="featureBig LoginPanel">
+        <div class="closer">
+            <img src="~/Images/close.png" alt="Close" class="closer">
+        </div>
+        <div class="top">
+        </div>
+        <h2>Log In</h2>
+        @if (UserSession.IsKnownTeller)
+        {
+            <p class="AlreadyIn">
+                You are still logged in!
+            </p>
+            <p class="AlreadyIn">
+                Go to the
+                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+            </p>
+            <p class="AlreadyIn">
+                or
+                <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+            </p>
+        }
+        else
+        {
+            Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
+        }
+    </section>
+    <div class="clear-fix">
     </div>
-    <div class="top">
-    </div>
-    <h2>Log In</h2>
-    @if (UserSession.IsKnownTeller)
-    {
-      <p class="AlreadyIn">
-        You are still logged in!
-      </p>
-      <p class="AlreadyIn">
-        Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
-      </p>
-      <p class="AlreadyIn">
-        or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
-      </p>
-    }
-    else
-    {
-      Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
-    }
-  </section>
-  <div class="clear-fix">
-  </div>
 </section>
 <div class="notes">
-  <p>
-    TallyJ is ready for use! Please send feedback to
-    <a title="Send email to Glen"
-       href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
-    <a title="View document"
-       href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
-       target="gdoc">Status and Feedback</a> document for current updates!
-  </p><p>
-    Please note that TallyJ works best with current browsers, such as Chrome and Firefox.
-  </p>
+    <p>
+        TallyJ is ready for use! Please send feedback to
+        <a title="Send email to Glen"
+           href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
+        <a title="View document"
+           href="https://docs.google.com/document/d/1GiapKWev6zJBN8q7upssJcId4dblNxrk-ErOmHgLczA/pub"
+           target="gdoc">Status and Feedback</a> document for current updates!
+    </p><p>
+        Please note that TallyJ works best with current browsers, such as Chrome and Firefox.
+    </p>
 </div>
 
 <section class="features bottom">
-  <a href="@Url.Action("Learning")">
-    <section class="feature">
-      <h2>Reference Materials</h2>
-      <p>
-        Read more about Bahá’í elections and the job of tellers.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Contact")">
-    <section class="feature">
-      <h2>Contact</h2>
-      <p>
-        How to get in contact.
-      </p>
-    </section>
-  </a><a href="@Url.Action("About")">
-    <section class="feature">
-      <h2>About TallyJ</h2>
-      <p>
-        Want to know more about the TallyJ tool?
-      </p>
-    </section>
-  </a><a href="@Url.Action("Install")">
-    <section class="feature">
-      <h2>Install for Local Use?</h2>
-      <p>
-        No access to the Internet when and where you will need to
-        use TallyJ?
-      </p>
-    </section>
-  </a>
+    <a href="@Url.Action("Learning")">
+        <section class="feature">
+            <h2>Reference Materials</h2>
+            <p>
+                Read more about Bahá’í elections and the job of tellers.
+            </p>
+        </section>
+    </a><a href="@Url.Action("Contact")">
+        <section class="feature">
+            <h2>Contact</h2>
+            <p>
+                How to get in contact.
+            </p>
+        </section>
+    </a><a href="@Url.Action("About")">
+        <section class="feature">
+            <h2>About TallyJ</h2>
+            <p>
+                Want to know more about the TallyJ tool?
+            </p>
+        </section>
+    </a><a href="@Url.Action("Install")">
+        <section class="feature">
+            <h2>Install for Local Use?</h2>
+            <p>
+                No access to the Internet when and where you will need to
+                use TallyJ?
+            </p>
+        </section>
+    </a>
 </section>
 <div class="Summary">
-  TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
+    TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
 </div>
 @if (false && Request.Url.Host != "localhost")
 {
-  <!-- Only on the home page, not on interior pages... -->
-  <!-- Begin Inspectlet Embed Code -->
-  <script type="text/javascript" id="inspectletjs">
-    window.__insp = window.__insp || [];
-    __insp.push(['wid', 140853088]);
-    (function () {
-      function __ldinsp() {
-        var insp = document.createElement('script');
-        insp.type = 'text/javascript';
-        insp.async = true;
-        insp.id = "inspsync";
-        insp.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cdn.inspectlet.com/inspectlet.js';
-        var x = document.getElementsByTagName('script')[0];
-        x.parentNode.insertBefore(insp, x);
-      }
+    <!-- Only on the home page, not on interior pages... -->
+    <!-- Begin Inspectlet Embed Code -->
+    <script type="text/javascript" id="inspectletjs">
+        window.__insp = window.__insp || [];
+        __insp.push(['wid', 140853088]);
+        (function () {
+            function __ldinsp() {
+                var insp = document.createElement('script');
+                insp.type = 'text/javascript';
+                insp.async = true;
+                insp.id = "inspsync";
+                insp.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cdn.inspectlet.com/inspectlet.js';
+                var x = document.getElementsByTagName('script')[0];
+                x.parentNode.insertBefore(insp, x);
+            }
 
-      if (window.attachEvent) {
-        window.attachEvent('onload', __ldinsp);
-      } else {
-        window.addEventListener('load', __ldinsp, false);
-      }
-    })();
-  </script>
-  <!-- End Inspectlet Embed Code -->
+            if (window.attachEvent) {
+                window.attachEvent('onload', __ldinsp);
+            } else {
+                window.addEventListener('load', __ldinsp, false);
+            }
+        })();
+    </script>
+    <!-- End Inspectlet Embed Code -->
 }

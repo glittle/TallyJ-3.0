@@ -34,10 +34,10 @@ var site = {
         personNameChanging: 'personNameChanging',
         pulse: 'pulse'
     },
-    broadcast: function (broadcastCode, data) {
+    broadcast: function(broadcastCode, data) {
         $(document).triggerHandler(broadcastCode, data);
     },
-    onbroadcast: function (broadcastCode, fn, eventData) {
+    onbroadcast: function(broadcastCode, fn, eventData) {
         $(document).on(broadcastCode, null, eventData, fn);
     },
     timeOffset: 0,
@@ -48,7 +48,7 @@ var storageKey = {
 };
 var MyResources = {};
 
-$(function () {
+$(function() {
     Onload();
 });
 
@@ -87,9 +87,10 @@ function showElectionInfo() {
     $('.passcodeOkay').toggle(site.passcode != '');
     $('.passcodeLocked').toggle(site.passcode == '');
 
-    $('.passcode').on('click', function () {
-        location.href = site.rootUrl + 'After/monitor';
-    })
+    $('.passcode').on('click',
+        function() {
+            location.href = site.rootUrl + 'After/monitor';
+        })
 }
 
 function updatePasscodeDisplay(okay, passcode) {
@@ -107,13 +108,12 @@ function updatePasscodeDisplay(okay, passcode) {
 
 function HighlightActiveLink() {
     var url = location.href;
-    $('#quickLinkItems a').each(function () {
+    $('#quickLinkItems a').each(function() {
         var matched = url === this.href;
         var a = $(this);
         if (matched) {
             a.addClass('Active');
-        }
-        else {
+        } else {
             a.removeClass('Active');
         }
     });
@@ -134,16 +134,16 @@ function clearElectionRelatedStorageItems() {
 };
 
 
-var connectToElectionHub = function () {
+var connectToElectionHub = function() {
     var hub = $.connection.mainHubCore;
 
-    hub.client.statusChanged = function (info) {
+    hub.client.statusChanged = function(info) {
         console.log('signalR: electionStatusChanged');
         site.broadcast(site.broadcastCode.electionStatusChanged, info);
     };
 
     var closing = false;
-    hub.client.electionClosed = function () {
+    hub.client.electionClosed = function() {
         console.log('signalR: electionClosed');
         var msg = 'This election has been closed. Thank you for your participation!';
         //ShowStatusFailed(msg);
@@ -154,13 +154,14 @@ var connectToElectionHub = function () {
         alert(msg);
     };
 
-    startSignalR(function () {
+    startSignalR(function() {
         console.log('Joining main hub');
-        CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub', { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
+        CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub',
+            { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
     });
 };
 
-var startSignalR = function (callBack) {
+var startSignalR = function(callBack) {
     if ($.connection.hub.id) {
         console.log('WARNING: already connected');
         callBack();
@@ -171,52 +172,55 @@ var startSignalR = function (callBack) {
 
     clearTimeout(site.signalrDelay);
 
-    site.signalrDelay = setTimeout(function () {
-        $.connection.hub.error(function (error) {
-            var msg = error.toString();
-            //console.log('error', error);
-            if (msg.indexOf('The client has been inactive since') !== -1) {
-                ShowStatusFailed("We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
-            } else if (msg.indexOf('WebSocket closed')) {
-                ShowStatusDisplay("Disconnected from the server.", null, null, true);
-            } else {
-                ShowStatusFailed(msg);
-            }
-        });
-
-        $.connection.hub
-            .start()
-            .done(function () {
-                // console.log('signalR client connected', $.connection.hub.id);
-                site.signalrConnectionId = $.connection.hub.id;
-                for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
-                    site.signalrDelayedCallbacks[i]();
+    site.signalrDelay = setTimeout(function() {
+            $.connection.hub.error(function(error) {
+                var msg = error.toString();
+                //console.log('error', error);
+                if (msg.indexOf('The client has been inactive since') !== -1) {
+                    ShowStatusFailed(
+                        "We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
+                } else if (msg.indexOf('WebSocket closed')) {
+                    ShowStatusDisplay("Disconnected from the server.", null, null, true);
+                } else {
+                    ShowStatusFailed(msg);
                 }
             });
 
-        site.signalrReconnecting = false;
+            $.connection.hub
+                .start()
+                .done(function() {
+                    // console.log('signalR client connected', $.connection.hub.id);
+                    site.signalrConnectionId = $.connection.hub.id;
+                    for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
+                        site.signalrDelayedCallbacks[i]();
+                    }
+                });
 
-        $.connection.hub.connectionSlow(function () {
-            console.log('slow');
-            ShowStatusDisplay('The connection to the server is slow... please wait...', null, null, true);
-        });
-        $.connection.hub.reconnecting(function () {
-            console.log('reconnecting');
-            ShowStatusDisplay('Attempting to reconnect to the server...', null, null, true);
-            site.signalrReconnecting = true;
-        });
-        $.connection.hub.reconnected(function () {
-            console.log('connected');
-            ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
             site.signalrReconnecting = false;
-        });
-        $.connection.hub.disconnected(function () {
-            console.log('disconnected');
-            if (site.signalrReconnecting) {
-                ShowStatusFailed("We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
-            }
-        });
-    }, 0); // delay before calling server
+
+            $.connection.hub.connectionSlow(function() {
+                console.log('slow');
+                ShowStatusDisplay('The connection to the server is slow... please wait...', null, null, true);
+            });
+            $.connection.hub.reconnecting(function() {
+                console.log('reconnecting');
+                ShowStatusDisplay('Attempting to reconnect to the server...', null, null, true);
+                site.signalrReconnecting = true;
+            });
+            $.connection.hub.reconnected(function() {
+                console.log('connected');
+                ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
+                site.signalrReconnecting = false;
+            });
+            $.connection.hub.disconnected(function() {
+                console.log('disconnected');
+                if (site.signalrReconnecting) {
+                    ShowStatusFailed(
+                        "We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
+                }
+            });
+        },
+        0); // delay before calling server
 };
 
 function logoffSignalR() {
@@ -226,40 +230,89 @@ function logoffSignalR() {
 
 function PrepareQTips(doNow) {
     if (!doNow) {
-        setTimeout(function () {
-            PrepareQTips(true);
-        }, 500);
+        setTimeout(function() {
+                PrepareQTips(true);
+            },
+            500);
         return;
     }
 
     // global tips
-    site.qTips.push({ selector: '#qTipQuickLinks', title: 'Relevant Pages', text: 'Shows the pages relevant to the current state of the election. All pages are still available by hovering over other State buttons.' });
-    site.qTips.push({ selector: '#qTipElectionStatus', title: 'Election State', text: 'An election proceeds through various states. The head teller should actively change the state by clicking these buttons as appropriate.' });
-    site.qTips.push({ selector: '#qTipTeller', title: 'Tellers', text: 'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.' });
-    site.qTips.push({ selector: '#qTipTopLocation', title: 'Location', text: 'Please ensure that this is your location!' });
+    site.qTips.push({
+        selector: '#qTipQuickLinks',
+        title: 'Relevant Pages',
+        text:
+            'Shows the pages relevant to the current state of the election. All pages are still available by hovering over other State buttons.'
+    });
+    site.qTips.push({
+        selector: '#qTipElectionStatus',
+        title: 'Election State',
+        text:
+            'An election proceeds through various states. The head teller should actively change the state by clicking these buttons as appropriate.'
+    });
+    site.qTips.push({
+        selector: '#qTipTeller',
+        title: 'Tellers',
+        text:
+            'Please ensure that your name shows here when using this computer. If your name is not in the list, add it! This can help later when reviewing ballots.'
+    });
+    site.qTips.push({
+        selector: '#qTipTopLocation',
+        title: 'Location',
+        text: 'Please ensure that this is your location!'
+    });
     site.qTips.push({
         selector: '#qTipPasscode',
         title: 'Election Open for Tellers',
-        text: 'Tellers can join this election using the access code&nbsp; <b class=passcodeText></b> &nbsp;on the Home Page.',
+        text:
+            'Tellers can join this election using the access code&nbsp; <b class=passcodeText></b> &nbsp;on the Home Page.',
         events: {
-            render: function () {
+            render: function() {
                 // only runs on first render
                 $('.passcodeText').text(site.passcode);
             }
         }
     });
-    site.qTips.push({ selector: '#qTipPasscodeLocked', title: 'Election Closed', text: 'This election is not visible on the home page.' });
+    site.qTips.push({
+        selector: '#qTipPasscodeLocked',
+        title: 'Election Closed',
+        text: 'This election is not visible on the home page.'
+    });
 
     if ($('body').hasClass('AuthKnown')) {
-        site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set the election to this state using the buttons on the Analyze page. When "Finalized", no further inputs or changes are permitted.' });
+        site.qTips.push({
+            selector: '#qTipFinalized',
+            title: 'Finalized State',
+            text:
+                'Set the election to this state using the buttons on the Analyze page. When "Finalized", no further inputs or changes are permitted.'
+        });
     } else {
-        site.qTips.push({ selector: '#qTipFinalized', title: 'Finalized State', text: 'Set by the head teller. When "Finalized", no further inputs or changes are permitted.' });
+        site.qTips.push({
+            selector: '#qTipFinalized',
+            title: 'Finalized State',
+            text: 'Set by the head teller. When "Finalized", no further inputs or changes are permitted.'
+        });
     }
     // add some tips for pages without dedicated js
     if ($('#qTipReg1').length) {
-        site.qTips.push({ selector: '#qTipReg1', title: 'Login ID', text: 'This is your personal login ID, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.' });
-        site.qTips.push({ selector: '#qTipReg2', title: 'Email Address', text: 'Please use a valid address where you can be notified when there is important news regarding TallyJ. It will not be given to anyone else or used for other purposes.' });
-        site.qTips.push({ selector: '#qTipReg3', title: 'Password', text: 'Needs to be at least 6 characters long. It will be encrypted when stored, so cannot be viewed by anyone.' });
+        site.qTips.push({
+            selector: '#qTipReg1',
+            title: 'Login ID',
+            text:
+                'This is your personal login ID, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.'
+        });
+        site.qTips.push({
+            selector: '#qTipReg2',
+            title: 'Email Address',
+            text:
+                'Please use a valid address where you can be notified when there is important news regarding TallyJ. It will not be given to anyone else or used for other purposes.'
+        });
+        site.qTips.push({
+            selector: '#qTipReg3',
+            title: 'Password',
+            text:
+                'Needs to be at least 6 characters long. It will be encrypted when stored, so cannot be viewed by anyone.'
+        });
     }
 
     ActivateTips();
@@ -285,22 +338,23 @@ function ActivateTips(forceRecreate) {
 
     $('.qTip').qtip(baseOption);
 
-    $.each(site.qTips, function () {
-        if (!(forceRecreate || false) && $(this).data('done')) return;
+    $.each(site.qTips,
+        function() {
+            if (!(forceRecreate || false) && $(this).data('done')) return;
 
-        var opt = $.extend(true, {}, baseOption, this);
-        if (this.text) {
-            opt.content.text = this.text;
-            if (this.title) {
-                opt.content.title.text = this.title;
-                //$.extend(true, opt, { content: { text: this.text, title: { text: this.title } } });
-            } else {
-                //$.extend(true, opt, { content: { text: this.text } });
+            var opt = $.extend(true, {}, baseOption, this);
+            if (this.text) {
+                opt.content.text = this.text;
+                if (this.title) {
+                    opt.content.title.text = this.title;
+                    //$.extend(true, opt, { content: { text: this.text, title: { text: this.title } } });
+                } else {
+                    //$.extend(true, opt, { content: { text: this.text } });
+                }
             }
-        }
-        $(this).data('done', true);
-        $(this.selector).qtip(opt);
-    });
+            $(this).data('done', true);
+            $(this.selector).qtip(opt);
+        });
 
 }
 
@@ -308,81 +362,99 @@ function AttachHandlers() {
     site.onbroadcast(site.broadcastCode.electionStatusChanged, updateElectionStatus);
 
     var dropDownTimeout = null;
-    var closeDropDown = function () {
+    var closeDropDown = function() {
         $('#quickLinkItems span.HighlightMenu').removeClass('HighlightMenu');
         $('#quickLinkItems span.DropDown').removeClass('DropDown');
         $('.QuickDash').fadeOut('fast');
     };
-    $('body.AuthKnown #electionState span.Finalized').on('click', function () {
-        $('#qTipElectionStatus').trigger('click');
-    });
+    $('body.AuthKnown #electionState span.Finalized').on('click',
+        function() {
+            $('#qTipElectionStatus').trigger('click');
+        });
 
-    $('body.AuthKnown #electionState span.state').not('.General, .Finalized').on('click', function () {
-        var item = $(this);
-        var form = {
-            state: item.data('state')
-        };
+    $('body.AuthKnown #electionState span.state').not('.General, .Finalized').on('click',
+        function() {
+            var item = $(this);
+            var form = {
+                state: item.data('state')
+            };
 
-        if (form.state === site.electionState) {
-            return;
-        }
-
-        ShowStatusDisplay('Saving...');
-        CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
-            if (info.Message) {
-                ShowStatusFailed(info.Message);
+            if (form.state === site.electionState) {
                 return;
             }
-            ResetStatusDisplay();
-            site.broadcast(site.broadcastCode.electionStatusChanged, info);
+
+            ShowStatusDisplay('Saving...');
+            CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus',
+                form,
+                function(info) {
+                    if (info.Message) {
+                        ShowStatusFailed(info.Message);
+                        return;
+                    }
+                    ResetStatusDisplay();
+                    site.broadcast(site.broadcastCode.electionStatusChanged, info);
+                });
         });
-    });
 
-    $('#electionState').on('mouseover', '#AllPages', function () {
-        clearTimeout(dropDownTimeout);
-        closeDropDown();
-        showAllPages(this);
-    })
-        .on('mouseout', '#AllPages', function () {
-            clearTimeout(dropDownTimeout);
-            dropDownTimeout = setTimeout(closeDropDown, 200);
-        });
-
-
-    $('#electionState').on('mouseover', 'span.state', function (ev) {
-        clearTimeout(dropDownTimeout);
-        var item = $(ev.target);
-        var state = item.data('state');
-        var menu = $('#menu' + state);
-        closeDropDown();
-        if (menu.is(':visible')) {
-            menu.addClass('HighlightMenu');
-            dropDownTimeout = setTimeout(closeDropDown, 700);
-            return;
-        }
-        menu
-            .addClass('DropDown')
-            .css({
-                left: getFullOffsetLeft(item) + 'px',
-                top: (item.offset().top + item.height() - 2) + 'px'
+    $('#electionState').on('mouseover',
+            '#AllPages',
+            function() {
+                clearTimeout(dropDownTimeout);
+                closeDropDown();
+                showAllPages(this);
+            })
+        .on('mouseout',
+            '#AllPages',
+            function() {
+                clearTimeout(dropDownTimeout);
+                dropDownTimeout = setTimeout(closeDropDown, 200);
             });
-    })
-        .on('mouseout', 'span.state', function (ev) {
+
+
+    $('#electionState').on('mouseover',
+            'span.state',
+            function(ev) {
+                clearTimeout(dropDownTimeout);
+                var item = $(ev.target);
+                var state = item.data('state');
+                var menu = $('#menu' + state);
+                closeDropDown();
+                if (menu.is(':visible')) {
+                    menu.addClass('HighlightMenu');
+                    dropDownTimeout = setTimeout(closeDropDown, 700);
+                    return;
+                }
+                menu
+                    .addClass('DropDown')
+                    .css({
+                        left: getFullOffsetLeft(item) + 'px',
+                        top: (item.offset().top + item.height() - 2) + 'px'
+                    });
+            })
+        .on('mouseout',
+            'span.state',
+            function(ev) {
+                clearTimeout(dropDownTimeout);
+                dropDownTimeout = setTimeout(closeDropDown, 200);
+            });
+
+    $('body').on('mouseover',
+        '.DropDown,.QuickDash',
+        function() {
+            clearTimeout(dropDownTimeout);
+        }).on('mouseout',
+        '.DropDown,.QuickDash',
+        function() {
             clearTimeout(dropDownTimeout);
             dropDownTimeout = setTimeout(closeDropDown, 200);
         });
 
-    $('body').on('mouseover', '.DropDown,.QuickDash', function () {
-        clearTimeout(dropDownTimeout);
-    }).on('mouseout', '.DropDown,.QuickDash', function () {
-        clearTimeout(dropDownTimeout);
-        dropDownTimeout = setTimeout(closeDropDown, 200);
-    });
 
-
-    $('body').on('click', 'a[href="/Account/Logoff"]', function () {
-        logoffSignalR();
-    });
+    $('body').on('click',
+        'a[href="/Account/Logoff"]',
+        function() {
+            logoffSignalR();
+        });
 }
 
 function getFullOffsetLeft(item) {
@@ -409,12 +481,13 @@ function showAllPages(btnRaw) {
     }).show();
 
     $('.ElectionState .General').addClass('GeneralActive');
-    setTimeout(function () {
-        $(document).on('click', quickDashCloser);
-    }, 0);
+    setTimeout(function() {
+            $(document).on('click', quickDashCloser);
+        },
+        0);
 }
 
-var quickDashCloser = function (ev) {
+var quickDashCloser = function(ev) {
     console.log($(ev.srcElement).closest('.QuickDash'));
     if ($(ev.srcElement).closest('.QuickDash').length == 0) {
         $('.QuickDash').fadeOut('fast');
@@ -500,10 +573,12 @@ function CheckTimeOffset() {
     var form = {
         now: now.getTime() - now.getTimezoneOffset() * 60 * 1000
     };
-    CallAjaxHandler(GetRootUrl() + 'Public/GetTimeOffset', form, function (info) {
-        site.timeOffset = info.timeOffset;
-        site.timeOffsetKnown = true;
-    });
+    CallAjaxHandler(GetRootUrl() + 'Public/GetTimeOffset',
+        form,
+        function(info) {
+            site.timeOffset = info.timeOffset;
+            site.timeOffsetKnown = true;
+        });
 }
 
 function topLocationChanged(ev) {
@@ -521,11 +596,13 @@ function topLocationChanged(ev) {
         return;
     }
 
-    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation', form, function () {
-        ShowStatusSuccess('Saved');
-        site.broadcast(site.broadcastCode.locationChanged);
-        setTopInfo();
-    });
+    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation',
+        form,
+        function() {
+            ShowStatusSuccess('Saved');
+            site.broadcast(site.broadcastCode.locationChanged);
+            setTopInfo();
+        });
 }
 
 function tellerChanged(ev) {
@@ -549,35 +626,38 @@ function tellerChanged(ev) {
     }
     ShowStatusDisplay('Saving...');
 
-    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller', form, function (info) {
-        ShowStatusSuccess('Saved');
+    CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller',
+        form,
+        function(info) {
+            ShowStatusSuccess('Saved');
 
-        ddl.data('current', ddl.val());
+            ddl.data('current', ddl.val());
 
-        if (info.TellerList) {
-            ddl.html(info.TellerList);
+            if (info.TellerList) {
+                ddl.html(info.TellerList);
 
-            var otherDll = $('.TopTeller').not(ddl);
-            var otherValue = otherDll.val();
-            otherDll.html(info.TellerList);
-            otherDll.val(otherValue);
-        }
+                var otherDll = $('.TopTeller').not(ddl);
+                var otherValue = otherDll.val();
+                otherDll.html(info.TellerList);
+                otherDll.val(otherValue);
+            }
 
-        setTopInfo();
-    });
+            setTopInfo();
+        });
 }
 
 function PrepareTopLocationAndTellers() {
     $('#ddlTopLocation').change(topLocationChanged);
 
-    $('.TopTeller').change(tellerChanged).each(function () {
+    $('.TopTeller').change(tellerChanged).each(function() {
         var ddl = $(this);
         ddl.data('current', ddl.val());
     });
 
     setTopInfo();
 }
-var setTopInfo = function () {
+
+var setTopInfo = function() {
     var ddlLocation = $('#ddlTopLocation');
     var location = +ddlLocation.val();
     var locationNeeded = ddlLocation.is(':visible') && location === -1;
@@ -599,7 +679,7 @@ function PrepareMainMenu() {
 function AttachHelp() {
     var pihList = $('.PullInstructionsHandle');
 
-    pihList.each(function (i, el) {
+    pihList.each(function(i, el) {
         var pih = $(el);
         pih[0].accessKey = "I";
         var title = pih.text() || 'Instructions & Tips';
@@ -607,19 +687,17 @@ function AttachHelp() {
         pih.html('<span class=IfOpen>Hide</span> <span>{0}</span>'.filledWith(title));
     });
 
-    var showHelp = function (handle, show, fast) {
+    var showHelp = function(handle, show, fast) {
         var next = handle.next();
         if (fast) {
             next.toggle(show);
-        }
-        else {
+        } else {
             if (show) {
                 next.slideDown({
                     easing: 'linear',
                     duration: 'fast'
                 })
-            }
-            else {
+            } else {
                 next.slideUp({
                     easing: 'linear',
                     duration: 'fast'
@@ -636,13 +714,15 @@ function AttachHelp() {
         }
     };
 
-    $(document).on('click', '.PullInstructionsHandle', function (ev) {
-        var handle = $(ev.currentTarget);
-        //console.log(handle, handle.data());
-        showHelp(handle, !handle.next().is(':visible'), false);
-    });
+    $(document).on('click',
+        '.PullInstructionsHandle',
+        function(ev) {
+            var handle = $(ev.currentTarget);
+            //console.log(handle, handle.data());
+            showHelp(handle, !handle.next().is(':visible'), false);
+        });
 
-    $('.PullInstructionsHandle').each(function (i, el) {
+    $('.PullInstructionsHandle').each(function(i, el) {
         var handle = $(el);
         var instance = i + 1; // don't want 0
         el.id = 'pi' + instance;
@@ -716,7 +796,8 @@ function HasErrors(data) {
         return true;
     }
     if (/Error\:/.test(data)) {
-        ShowStatusFailed('An error occurred on the server. The Technical Support Team has been provided with the error details.');
+        ShowStatusFailed(
+            'An error occurred on the server. The Technical Support Team has been provided with the error details.');
         return true;
     }
     return false;
@@ -733,8 +814,7 @@ function ActivateHeartbeat(makeActive, delaySeconds) {
         }
         clearTimeout(site.heartbeatTimeout);
         site.heartbeatTimeout = setTimeout(SendHeartbeat, 1000 * site.heartbeatSeconds);
-    }
-    else {
+    } else {
         clearTimeout(site.heartbeatTimeout);
     }
 }
@@ -766,8 +846,7 @@ function ProcessPulseResult(info) {
     site.computerActive = info.Active;
     if (info.Active) {
         $('.Heartbeat').removeClass('Frozen').text('').effect('highlight', 'slow');
-    }
-    else {
+    } else {
         $('.Heartbeat').addClass('Frozen').text('Not Connected');
     }
 
@@ -789,13 +868,18 @@ function ProcessPulseResult(info) {
 // }
 
 
-function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObjectForCallbackFunction, callbackOnFailed, waitForResponse) {
+function CallAjaxHandler(handlerUrl,
+    form,
+    callbackWithInfo,
+    optionalExtraObjectForCallbackFunction,
+    callbackOnFailed,
+    waitForResponse) {
     /// <summary>Do a POST to the named handler. If form is not needed, pass null. Query and Form are objects with named properties.</summary>
     var options = {
         type: 'POST',
         url: handlerUrl,
         traditional: true,
-        success: function (data) {
+        success: function(data) {
             if (HasErrors(data)) return;
 
             ResetStatusDisplay();
@@ -804,7 +888,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
                 callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
             }
         },
-        error: function (xmlHttpRequest, textStatus) {
+        error: function(xmlHttpRequest, textStatus) {
             if (typeof callbackOnFailed != 'undefined') {
                 callbackOnFailed(xmlHttpRequest);
             } else {
@@ -824,7 +908,7 @@ function CallAjaxHandler(handlerUrl, form, callbackWithInfo, optionalExtraObject
 }
 
 
-String.prototype.parseJsonDate = function () {
+String.prototype.parseJsonDate = function() {
     if (this == '') return null;
     var num = /\((.+)\)/.exec(this)[1];
     return new Date(+num);
@@ -835,7 +919,7 @@ String.prototype.parseJsonDate = function () {
     ///Date(-1566496800000)/
 };
 
-String.prototype.parseJsonDateForInput = function () {
+String.prototype.parseJsonDateForInput = function() {
     if (this == '') return '';
     var d = this.parseJsonDate();
     // counteract UTC time...
@@ -885,9 +969,9 @@ function PrepareStatusDisplay() {
     //if ($('body').hasClass('Public Index')) {
     var target = $('body').hasClass('Public Index') ? 'body' : '#body';
 
-    $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">'
-        + '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>'
-        + '</div></div></div>');
+    $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">' +
+        '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>' +
+        '</div></div></div>');
     //} else {
     //    $('#body').prepend('<div class="StatusOuter2 content-wrapper"><span id="statusDisplay2" class="StatusActive" style="display: none;"></span></div>');
     //}
@@ -907,9 +991,10 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
     }
 
     if (delayBeforeShowing > 0) {
-        statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function () {
-            ShowStatusDisplay(msg, 0, timeBeforeStatusReset, showErrorIcon);
-        }, delayBeforeShowing);
+        statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function() {
+                ShowStatusDisplay(msg, 0, timeBeforeStatusReset, showErrorIcon);
+            },
+            delayBeforeShowing);
         return;
     }
     var target = $('#statusDisplay2, #statusDisplay');
@@ -917,8 +1002,7 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
         // ??? on a page without a Status display
     }
     var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
-    var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' :
-        showNoIcon ? '' : loaderPath;
+    var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' : showNoIcon ? '' : loaderPath;
     target.html(imageHtml + msg).show();
     if (showErrorIcon) {
         target.addClass('error');
@@ -1060,14 +1144,15 @@ function comma(number, iDecimals, type, zeroText) { // works on positive numbers
         output = whole;
     var sDecimalChar = (bFrench ? ',' : '.');
     if (decimal != '' && iDecimals != 0) {
-        output += sDecimalChar + (Math.round(decimal * Math.pow(10, iDecimals)) / Math.pow(10, iDecimals)).toString().substr(2);
+        output += sDecimalChar +
+            (Math.round(decimal * Math.pow(10, iDecimals)) / Math.pow(10, iDecimals)).toString().substr(2);
     }
 
     //make sure that the specified number of decimals is returned
     if (iDecimals != 0) {
         var nPosition = output.indexOf(sDecimalChar);
         var nLength = output.length;
-        if (nPosition == -1)    //no decimal point
+        if (nPosition == -1) //no decimal point
         {
             nPosition = output.length - 1;
             output += sDecimalChar;
@@ -1139,16 +1224,17 @@ function ieInnerHTML(obj, convertToLowerCase) {
         for (var i = 0; i < z.length; i++) {
             var y, zSaved = z[i], attrRE = /\=[a-zA-Z\.\:\[\]_\(\)\{\}\&\$\%#\@\!0-9]+[?\s+|?>]/g;
             z[i] = z[i]
-                .replace(/(<?\w+)|(<\/?\w+)\s/, function (a) { return a.toLowerCase(); });
+                .replace(/(<?\w+)|(<\/?\w+)\s/, function(a) { return a.toLowerCase(); });
             y = z[i].match(attrRE); //deze match
 
             if (y) {
                 var j = 0, len = y.length;
                 while (j < len) {
-                    var replaceRE = /(\=)([a-zA-Z\.\:\[\]_\(\{\}\)\&\$\%#\@\!0-9]+)?([\s+|?>])/g, replacer = function () {
-                        var args = Array.prototype.slice.call(arguments);
-                        return '="' + (convertToLowerCase ? args[2].toLowerCase() : args[2]) + '"' + args[3];
-                    };
+                    var replaceRE = /(\=)([a-zA-Z\.\:\[\]_\(\{\}\)\&\$\%#\@\!0-9]+)?([\s+|?>])/g,
+                        replacer = function() {
+                            var args = Array.prototype.slice.call(arguments);
+                            return '="' + (convertToLowerCase ? args[2].toLowerCase() : args[2]) + '"' + args[3];
+                        };
                     z[i] = z[i].replace(y[j], y[j].replace(replaceRE, replacer));
                     j++;
                 }
@@ -1224,45 +1310,45 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
     var result = '';
 
     switch (format) {
-        case 'MMM D, YYYY':
-            result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
-            break;
+    case 'MMM D, YYYY':
+        result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
+        break;
 
-        case 'D MMM YYYY':
-            var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
-            if (site.languageCode == 'FR' && forDisplayOnly && +dayValue == 1) {
-                returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
-            }
-            result = returnVal;
-            break;
+    case 'D MMM YYYY':
+        var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+        if (site.languageCode == 'FR' && forDisplayOnly && +dayValue == 1) {
+            returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
+        }
+        result = returnVal;
+        break;
 
-        case 'DDD, D MMM YYYY':
-            result = days[date.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
-            break;
+    case 'DDD, D MMM YYYY':
+        result = days[date.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+        break;
 
-        case 'YYYY-MM-DD':
-            var monthNum = monthValue + 1;
-            result = yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
-            break;
+    case 'YYYY-MM-DD':
+        var monthNum = monthValue + 1;
+        result = yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
+        break;
 
-        case 'MMM YYYY':
-            result = months[monthValue].substring(0, 3) + ' ' + yearValue;
-            break;
+    case 'MMM YYYY':
+        result = months[monthValue].substring(0, 3) + ' ' + yearValue;
+        break;
 
-        case 'MMMM YYYY':
-            result = months[monthValue] + ' ' + yearValue;
-            break;
+    case 'MMMM YYYY':
+        result = months[monthValue] + ' ' + yearValue;
+        break;
 
-        case 'MM/DD/YYYY':
-            var monthval = monthValue + 1;
-            var monthStr = ('0' + monthval).slice(-2);
-            var dayStr = ('0' + dayValue).slice(-2);
-            result = monthStr + '/' + dayStr + '/' + yearValue;
-            break;
+    case 'MM/DD/YYYY':
+        var monthval = monthValue + 1;
+        var monthStr = ('0' + monthval).slice(-2);
+        var dayStr = ('0' + dayValue).slice(-2);
+        result = monthStr + '/' + dayStr + '/' + yearValue;
+        break;
 
-        default:
-            result = '';
-            break;
+    default:
+        result = '';
+        break;
     }
 
     if (includeHrMin) {
@@ -1272,10 +1358,10 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
     return result;
 }
 
-Number.prototype.as2digitString = function () {
+Number.prototype.as2digitString = function() {
     return ('00' + this).substr(-2);
 };
-String.prototype.filledWith = function () {
+String.prototype.filledWith = function() {
     /// <summary>Similar to C# String.Format...  in two modes:
     /// 1) Replaces {0},{1},{2}... in the string with values from the list of arguments. 
     /// 2) If the first and only parameter is an object, replaces {xyz}... (only names allowed) in the string with the properties of that object. 
@@ -1284,37 +1370,49 @@ String.prototype.filledWith = function () {
     if (arguments.length == 0 && arguments[0].length) {
         // use values in array, substituting {0}, {1}, etc.
         values = {};
-        $.each(arguments[0], function (i, value) {
-            values[i] = value;
-        });
+        $.each(arguments[0],
+            function(i, value) {
+                values[i] = value;
+            });
     }
 
     var testForFunc = /^#/; // simple test for "#"
     var testForNoEscape = /^\^/; // simple test for "^"
     var extractTokens = /{([^{]+?)}/g; // greedy
 
-    var replaceTokens = function (input) {
-        return input.replace(extractTokens, function () {
-            var token = arguments[1];
-            var value = undefined;
-            try {
-                if (values === null) {
-                    value = '';
-                } else if (testForFunc.test(token)) {
-                    value = eval(token.substring(1));
-                } else if (testForNoEscape.test(token)) {
-                    value = values[token.substring(1)];
-                } else {
-                    var toEscape = values[token];
-                    value = typeof toEscape == 'undefined' || toEscape === null ? '' : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/{/g, '&#123;');
+    var replaceTokens = function(input) {
+        return input.replace(extractTokens,
+            function() {
+                var token = arguments[1];
+                var value = undefined;
+                try {
+                    if (values === null) {
+                        value = '';
+                    } else if (testForFunc.test(token)) {
+                        value = eval(token.substring(1));
+                    } else if (testForNoEscape.test(token)) {
+                        value = values[token.substring(1)];
+                    } else {
+                        var toEscape = values[token];
+                        value = typeof toEscape == 'undefined' || toEscape === null
+                            ? ''
+                            : ('' + toEscape).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;').replace(/{/g, '&#123;');
+                    }
+                } catch (err) {
+                    console.log('filledWithError:\n' +
+                        err +
+                        '\ntoken:' +
+                        token +
+                        '\nvalue:' +
+                        value +
+                        '\ntemplate:' +
+                        input);
+                    console.log(values);
+                    throw 'Error in filledWith';
                 }
-            } catch (err) {
-                console.log('filledWithError:\n' + err + '\ntoken:' + token + '\nvalue:' + value + '\ntemplate:' + input);
-                console.log(values);
-                throw 'Error in filledWith';
-            }
-            return (typeof value == 'undefined' || value == null ? '' : ('' + value));
-        });
+                return (typeof value == 'undefined' || value == null ? '' : ('' + value));
+            });
     };
 
     var result = replaceTokens(this);
@@ -1328,7 +1426,7 @@ String.prototype.filledWith = function () {
     return result.replace(/&#123;/g, '{');
 };
 
-String.prototype.filledWithEach = function (arr, sep) {
+String.prototype.filledWithEach = function(arr, sep) {
     /// <summary>Silimar to 'filledWith', but repeats the fill for each item in the array. Returns a single string with the results.
     /// </summary>
     if (arr === undefined || arr === null) return '';
@@ -1412,9 +1510,10 @@ function endTimer(msg) {
 
 function OptionsFromResourceList(resourceList, defaultValue) {
     var items = [];
-    $.each(resourceList, function (key, text) {
-        items.push({ Key: key, Text: text, Selected: defaultValue == key ? ' selected' : '' });
-    });
+    $.each(resourceList,
+        function(key, text) {
+            items.push({ Key: key, Text: text, Selected: defaultValue == key ? ' selected' : '' });
+        });
 
     return '<option value="{Key}"{Selected}>{Text}</option>'
         .filledWithEach(items);
@@ -1425,7 +1524,7 @@ var ObjectConstant = '$@$';
 
 function GetFromStorage(key, defaultValue) {
 
-    var checkForObject = function (obj) {
+    var checkForObject = function(obj) {
 
         if (obj.substring(0, ObjectConstant.length) == ObjectConstant) {
             obj = JSON.parse(obj.substring(ObjectConstant.length));
@@ -1451,11 +1550,10 @@ function SetInStorage(key, value) {
     return value;
 }
 
-var adjustElection = function (election) {
+var adjustElection = function(election) {
     return election;
     election.DateOfElection = FormatDate(
-        !isNaN(election) ? election :
-            election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
+        !isNaN(election) ? election : election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
     return election;
 };
 
@@ -1474,45 +1572,47 @@ function ExpandName(s) {
 
 // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
 if (!Array.prototype.findIndex) {
-    Object.defineProperty(Array.prototype, 'findIndex', {
-        value: function (predicate) {
-            // 1. Let O be ? ToObject(this value).
-            if (this == null) {
-                throw new TypeError('"this" is null or not defined');
-            }
-
-            var o = Object(this);
-
-            // 2. Let len be ? ToLength(? Get(O, "length")).
-            var len = o.length >>> 0;
-
-            // 3. If IsCallable(predicate) is false, throw a TypeError exception.
-            if (typeof predicate !== 'function') {
-                throw new TypeError('predicate must be a function');
-            }
-
-            // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
-            var thisArg = arguments[1];
-
-            // 5. Let k be 0.
-            var k = 0;
-
-            // 6. Repeat, while k < len
-            while (k < len) {
-                // a. Let Pk be ! ToString(k).
-                // b. Let kValue be ? Get(O, Pk).
-                // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
-                // d. If testResult is true, return k.
-                var kValue = o[k];
-                if (predicate.call(thisArg, kValue, k, o)) {
-                    return k;
+    Object.defineProperty(Array.prototype,
+        'findIndex',
+        {
+            value: function(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
                 }
-                // e. Increase k by 1.
-                k++;
-            }
 
-            // 7. Return -1.
-            return -1;
-        }
-    });
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, "length")).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                    // d. If testResult is true, return k.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return k;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return -1.
+                return -1;
+            }
+        });
 }

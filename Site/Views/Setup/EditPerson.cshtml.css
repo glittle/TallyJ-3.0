@@ -1,67 +1,55 @@
 ﻿.text20 {
   width: 70px;
 }
-
 .text50 {
   width: 150px;
 }
-
 .text100 {
   width: 150px;
 }
-
 .text150 {
   width: 180px;
 }
-
 #btnSave {
   margin-top: 20px;
 }
-
 .personEdit .topLine td {
   background-color: #ddd;
   vertical-align: top;
 }
-
-.overrides, .comments {
+.overrides,
+.comments {
   color: #666;
   font-size: 85%;
 }
-
-  .overrides.IsNo select {
-    color: red;
-  }
-
-  .overrides td {
-    text-align: right;
-    padding-right: 95px;
-  }
-
-  .overrides select {
-    width: auto;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-    .overrides select::-ms-expand {
-      display: none;
-    }
-
-  .overrides .sample {
-    display: inline-block;
-    width: 87px;
-    text-align: left;
-  }
-
-    .overrides .sample span {
-      font-style: normal;
-    }
-
+.overrides.IsNo select {
+  color: red;
+}
+.overrides td {
+  text-align: right;
+  padding-right: 95px;
+}
+.overrides select {
+  width: auto;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.overrides select::-ms-expand {
+  display: none;
+}
+.overrides .sample {
+  display: inline-block;
+  width: 87px;
+  text-align: left;
+}
+.overrides .sample span {
+  font-style: normal;
+}
 .CannotReceiveVotesSample {
   text-decoration: line-through;
 }
-
 #trDelete div {
   margin: 2em 0 0;
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkVkaXRQZXJzb24uY3NodG1sLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxXQUFBOztBQUdKO0VBQ0ksWUFBQTs7QUFHSjtFQUNJLFlBQUE7O0FBR0o7RUFDSSxZQUFBOztBQUdKO0VBQ0ksZ0JBQUE7O0FBR0osV0FBWSxTQUFTO0VBQ2pCLHNCQUFBO0VBQ0EsbUJBQUE7O0FBR0o7QUFBWTtFQUNSLFdBQUE7RUFDQSxjQUFBOztBQUdKLFVBQVUsS0FBTTtFQUNaLFVBQUE7O0FBR0osVUFBVztFQUNQLGlCQUFBO0VBQ0EsbUJBQUE7O0FBR0osVUFBVztFQUNQLFdBQUE7RUFDQSxxQkFBQTtFQUNBLHdCQUFBO0VBQ0EsZ0JBQUE7O0FBR0osVUFBVyxPQUFNO0VBQ2IsYUFBQTs7QUFHSixVQUFXO0VBQ1AscUJBQUE7RUFDQSxXQUFBO0VBQ0EsZ0JBQUE7O0FBR0osVUFBVyxRQUFRO0VBQ2Ysa0JBQUE7O0FBR0o7RUFDSSw2QkFBQTs7QUFHSixTQUFVO0VBQ04sZUFBQSJ9 */
