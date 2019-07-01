@@ -6,101 +6,102 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var people = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .Where(p => p.IneligibleReasonGuid == null)
-    .OrderBy(p => p.FullName)
-    .Select(p => new
-    {
-      PersonName = p.FullName,
-      p.VotingMethod,
-      p.BahaiId,
-      p.VotingLocationGuid,
-      p.RegistrationTime
-    });
+    var people = new PersonCacher().AllForThisElection
+      .Where(p => p.CanVote.HasValue && p.CanVote.Value)
+      .Where(p => p.IneligibleReasonGuid == null)
+      .OrderBy(p => p.FullName)
+      .Select(p => new
+      {
+          PersonName = p.FullName,
+          p.VotingMethod,
+          p.BahaiId,
+          p.VotingLocationGuid,
+          p.RegistrationTime
+      });
 
-  var locationModel = new LocationModel();
+    var locationModel = new LocationModel();
 
-  var hasLocations = locationModel.HasLocations;
-  var locations = locationModel.AllLocations.ToDictionary(l => l.LocationGuid, l => l.Name);
+    var hasLocations = locationModel.HasLocations;
+    var locations = locationModel.AllLocations.ToDictionary(l => l.LocationGuid, l => l.Name);
 }
 <style>
-  b {
-    display: inline-block;
-  }
-
-  tr {
-    -moz-page-break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  tr:nth-child(even) {
-      background-color: #eee;
-  }
-
-  thead {
-    display: table-header-group;
-    font-weight: bold;
-  }
-
-  td {
-    padding-left: 2px;
-    padding-right: 6px;
-  }
-
-
-  .person {
-    position: relative;
-  }
-
-    .person.first {
-      margin-top: .5em;
+    b {
+        display: inline-block;
     }
 
-  .first::first-letter {
-    font-weight: bold;
-  }
+    tr {
+        -moz-page-break-inside: avoid;
+        page-break-inside: avoid;
+    }
 
-  .method {
-  }
+        tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+    thead {
+        display: table-header-group;
+        font-weight: bold;
+    }
+
+    td {
+        padding-left: 2px;
+        padding-right: 6px;
+    }
+
+
+    .person {
+        position: relative;
+    }
+
+        .person.first {
+            margin-top: .5em;
+        }
+
+    .first::first-letter {
+        font-weight: bold;
+    }
+
+    .method {
+    }
 </style>
 <div class="body">
-  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
-  <h1 id="title"></h1>
-  <p class="Comment">
-    Shows all potential voters and how they voted.
-  </p>
-  <table class="Voters">
-    <thead>
-      <tr>
-        <td>Person</td>
-        <td>Id</td>
-        <td>How</td>
-        @if (hasLocations)
-        {
-          <td>Where</td>
-        }
-        <td>When</td>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach (var person in people)
-      {
-        <tr>
-          <td class="name">@Raw(person.PersonName)</td>
-          <td class="id">@person.BahaiId</td>
-          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
-          @if (hasLocations)
-          {
-            string locName;
-            if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName)) {
-              locName = null;
+    <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+    <h1 id="title"></h1>
+    <p class="Comment">
+        Shows all potential voters and how they voted.
+    </p>
+    <table class="Voters">
+        <thead>
+            <tr>
+                <td>Person</td>
+                <td>Id</td>
+                <td>How</td>
+                @if (hasLocations)
+                {
+                    <td>Where</td>
+                }
+                <td>When</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people)
+            {
+                <tr>
+                    <td class="name">@Raw(person.PersonName)</td>
+                    <td class="id">@person.BahaiId</td>
+                    <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
+                    @if (hasLocations)
+                    {
+                        string locName;
+                        if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
+                        {
+                            locName = null;
+                        }
+                        <td class="where">@locName</td>
+                    }
+                    <td class="when">@person.RegistrationTime</td>
+                </tr>
             }
-            <td class="where">@locName</td>
-          }
-          <td class="when">@person.RegistrationTime</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+        </tbody>
+    </table>
 </div>
