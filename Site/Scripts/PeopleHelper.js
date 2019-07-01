@@ -1,4 +1,5 @@
 ﻿var PeopleHelper = function (url, forBallotEntry) {
+    var debugSearch = false;
     var local = {
         url: url,
         nameSplitter: /[\s\-']/,
@@ -112,6 +113,7 @@
         p.CanReceiveVotes = p.V[0] === '1';
         p.CanVote = p.V[1] === '1';
         p.Ineligible = p.IRG;
+        p.classesList = [];
 
         if (p.NumVotes > local.maxVotes) local.maxVotes = p.NumVotes;
 
@@ -120,8 +122,9 @@
 
     function extendPersonCore(p) {
         // for searches, make lowercase
-        p.name = removeAccents.process(p.Name.toLowerCase()).replace(/[\(\)\[\]]/ig, '');  // and remove brackets
-        p.parts = p.name.split(local.nameSplitter);
+        p.name = removeAccents.process(p.Name.toLowerCase()); 
+        p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
+        p.parts = p.namePlain.split(local.nameSplitter); 
 
         p.soundParts = p.parts.map(soundex.process);
     }
@@ -152,8 +155,8 @@
             searchSounds.push(soundex.process(searchParts[i]));
         }
 
-        //console.log(searchParts, searchSounds);
-
+        if(debugSearch) console.log('sound:', searchSounds);
+        
         local.localNames.forEach(function (n) {
             if (result.People.length < maxToShow) {
                 addMatchedNames(n, result.People, searchParts, searchSounds);
@@ -175,7 +178,7 @@
         person.matchedParts = nameParts.map(function () { return 0; }); // fill array of correct length with 0
         var toMatch = searchParts.length;
         var found = 0;
-
+        
         for (var i = 0; i < searchParts.length; i++) {
 
             var searchPart = searchParts[i];
@@ -183,20 +186,21 @@
 
             for (var j = 0; j < nameParts.length; j++) {
 
-                if (nameParts[j].startsWith(searchPart) && !person.matchedParts[j]) {
+                if (nameParts[j].startsWith(searchPart)) { // } && !person.matchedParts[j]) {
                     person.matchedParts[j] = 5; // high level match
                     found++;
-                    break;
+//                    break;
                 }
-                else if (nameSounds[j] === searchSound && !person.matchedParts[j]) {
+                else if (nameSounds[j] === searchSound) { // && !person.matchedParts[j]) {
                     person.matchedParts[j] = 4; // low level
                     found++;
-                    break;
+//                    break;
                 }
-                else if (nameParts[j].indexOf(searchPart) !== -1 && !person.matchedParts[j]) {
+                else if (nameParts[j].indexOf(searchPart) !== -1) { // && !person.matchedParts[j]) {
                     person.matchedParts[j] = 3; // lowest level
                     found++;
-                    break;
+//                    debugger
+//                    break;
                 }
             }
         }
@@ -206,7 +210,8 @@
         // 3 = text in word
 
         // get max match type
-        person.MatchType = toMatch !== found ? 0 : person.matchedParts.reduce(function (acc, p) { return p > acc ? p : acc; }, 0);
+//        person.MatchType = toMatch !== found ? 0 : person.matchedParts.reduce(function (acc, p) { return p > acc ? p : acc; }, 0);
+        person.MatchType = person.matchedParts.reduce(function (acc, p) { return p > acc ? p : acc; }, 0);
 
         person.Parts5 = person.matchedParts.reduce(function (acc, p) { return p === 5 ? 1 + acc : acc; }, 0);
         person.Parts4 = person.matchedParts.reduce(function (acc, p) { return p === 4 ? 1 + acc : acc; }, 0);
@@ -315,6 +320,7 @@
                     personInfo.HtmlName = '<span class="{0}">{^1}</span>'.filledWith(spanClasses.join(' '), personInfo.DisplayName);
                 }
                 if (liClasses.length) {
+                    personInfo.classesList = liClasses;
                     personInfo.Classes = ' class="{0}"'.filledWith(liClasses.join(' '));
                 }
                 results.push(personInfo);
@@ -369,7 +375,7 @@
 
     function showMatchedLetters(searchParts, personInfo) {
         var name = personInfo.Name;
-
+//        console.log(personInfo)
         searchParts.forEach(function (searchPart) {
             if ($.trim(searchPart) === '') return;
 //            var searchReg = new RegExp('[\\s\\-\\\'\\[\\(]({0})|(^{0})'.filledWith(searchPart), 'ig');
@@ -400,12 +406,17 @@
             name = nameSplit.join('');
         }
 
+        if (debugSearch) console.log(personInfo);
 
         personInfo.DisplayName = name
             .replace(/##1/g, '<b>')
             .replace(/##2/g, '</b>')
             .replace(/##3/g, '<i>')
             .replace(/##4/g, '</i>');
+
+        if (debugSearch) {
+            personInfo.DisplayName += `<u>${personInfo.soundParts.join('-')},${personInfo.MatchType},${personInfo.matchedParts.join('')},${personInfo.classesList.join('/')}</u>`;
+        }
 
     }
 
@@ -537,6 +548,13 @@ var Metaphone = function () {
         return token;
     }
 
+    function glenAdjust(token) {
+        // other reasonable adjustments
+        token = token.replace(/^ou/, 'u'); // Sousan
+        token = token.replace(/aa/g, 'a'); // Jaan
+        return token;
+    }
+
     function dropY(token) {
         return token.replace(/y([^aeiou]|$)/g, '$1');
     }
@@ -574,6 +592,7 @@ var Metaphone = function () {
         token = dropY(token);
         token = transformZ(token);
         token = dropVowels(token);
+        token = glenAdjust(token);
 
         if (token.length >= maxLength)
             token = token.substring(0, maxLength);
