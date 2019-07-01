@@ -174,11 +174,11 @@ var startSignalR = function (callBack) {
     site.signalrDelay = setTimeout(function () {
         $.connection.hub.error(function (error) {
             var msg = error.toString();
-            console.log('error', error);
+            //console.log('error', error);
             if (msg.indexOf('The client has been inactive since') !== -1) {
                 ShowStatusFailed("We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
             } else if (msg.indexOf('WebSocket closed')) {
-                ShowStatusDisplay("Disconnected from the server.");
+                ShowStatusDisplay("Disconnected from the server.", null, null, true);
             } else {
                 ShowStatusFailed(msg);
             }
@@ -198,16 +198,16 @@ var startSignalR = function (callBack) {
 
         $.connection.hub.connectionSlow(function () {
             console.log('slow');
-            ShowStatusDisplay('The connection to the server is slow... please wait...');
+            ShowStatusDisplay('The connection to the server is slow... please wait...', null, null, true);
         });
         $.connection.hub.reconnecting(function () {
             console.log('reconnecting');
-            ShowStatusDisplay('Attempting to reconnect to the server...');
+            ShowStatusDisplay('Attempting to reconnect to the server...', null, null, true);
             site.signalrReconnecting = true;
         });
         $.connection.hub.reconnected(function () {
             console.log('connected');
-            ShowStatusDisplay('Reconnected!', 0, 3000, false, true);
+            ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
             site.signalrReconnecting = false;
         });
         $.connection.hub.disconnected(function () {
@@ -922,8 +922,10 @@ function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showE
     target.html(imageHtml + msg).show();
     if (showErrorIcon) {
         target.addClass('error');
+        $('body').addClass('errorStatus');
     } else {
         target.removeClass('error');
+        $('body').removeClass('errorStatus');
     }
     // idea: hold errors until click ok?    <button onclick="ClearDisplay()" type=button>Ok</button>
 }
