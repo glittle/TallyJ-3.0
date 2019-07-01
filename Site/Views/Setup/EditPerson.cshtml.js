@@ -188,6 +188,7 @@
         site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
         site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
         site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows on Front Page and in final reports if elected.' });
+        site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Required if they want to vote online.' });
         site.qTips.push({
             selector: '#qTipIneligible',
             title: 'Ineligible',

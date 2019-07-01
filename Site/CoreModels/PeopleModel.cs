@@ -239,6 +239,7 @@ namespace TallyJ.CoreModels
                 person.OtherLastNames,
                 person.OtherNames,
                 person.Area,
+                person.Email,
                 C_FullName = person.C_FullNameFL
             };
         }
@@ -299,6 +300,7 @@ namespace TallyJ.CoreModels
                 personFromInput.OtherLastNames,
                 personFromInput.OtherNames,
                 personFromInput.Area,
+                personFromInput.Email,
             }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 

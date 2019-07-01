@@ -26,6 +26,7 @@
     [_FullNameFL]          AS               ((((coalesce([FirstName]+' ','')+[LastName])+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
     [Teller1]              NVARCHAR(25) NULL,
     [Teller2]              NVARCHAR(25) NULL,
+    [Email] NVARCHAR(250) NULL, 
     CONSTRAINT [PK_Person] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Person_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );

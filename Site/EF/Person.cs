@@ -7,6 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
+
 namespace TallyJ.EF
 {
     using System;
@@ -41,5 +44,6 @@ namespace TallyJ.EF
         public string C_FullNameFL { get; set; }
         public string Teller1 { get; set; }
         public string Teller2 { get; set; }
+        public string Email { get; set; }
     }
 }

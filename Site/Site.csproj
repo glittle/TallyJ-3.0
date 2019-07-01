@@ -352,6 +352,15 @@
     <Compile Include="EF\Message.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\OnlineElection.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\OnlineVoter.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\OnlineVotingInfo.cs">
+      <DependentUpon>DbContextGen.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
     <Compile Include="EF\Partials\CacherHelper.cs" />

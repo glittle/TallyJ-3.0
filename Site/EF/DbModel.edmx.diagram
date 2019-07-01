@@ -20,6 +20,9 @@
         <EntityTypeShape EntityType="TallyJ2dModel.Location" Width="1.5" PointX="8.75" PointY="9.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Person" Width="1.5" PointX="10.75" PointY="0.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Teller" Width="1.5" PointX="10.75" PointY="7.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.OnlineElection" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="11.75" PointY="10.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVotingInfo" Width="1.5" PointX="13.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

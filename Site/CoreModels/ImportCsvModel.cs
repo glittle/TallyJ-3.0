@@ -34,6 +34,7 @@ namespace TallyJ.CoreModels
                        "OtherLastNames",
                        "OtherNames",
                        "OtherInfo",
+                       "Email",
                      };
 
         // screen this hard-coded list against the Person object to ensure we aren't using old field names
@@ -384,6 +385,9 @@ namespace TallyJ.CoreModels
               break;
             case "BahaiId":
               query = query.Where(p => p.BahaiId == value);
+              break;
+            case "Email":
+              query = query.Where(p => p.Email == value);
               break;
             case "IneligibleReasonGuid":
               //if (reason != defaultReason)

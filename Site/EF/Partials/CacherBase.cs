@@ -65,16 +65,10 @@ namespace TallyJ.EF
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
         {
-          //CacheKey internalCacheKey;
           allForThisElection = MainQuery()
             .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
               new[] { CacheKeyRaw, CurrentElectionGuid.ToString() }).ToList();
         }
-
-        //        if (typeof(T) == typeof(Election))
-        //        {
-        //          new PublicElectionLister().up.RegisterElectionCacheKey(internalCacheKey);
-        //        }
 
         return allForThisElection;
       }

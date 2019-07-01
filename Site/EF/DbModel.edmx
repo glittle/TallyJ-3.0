@@ -4,7 +4,44 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="OnlineElection">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="WhenOpen" Type="datetime2" Precision="0" />
+          <Property Name="WhenClose" Type="datetime2" Precision="0" />
+          <Property Name="CloseIsEstimate" Type="bit" Nullable="false" />
+          <Property Name="AllowResultView" Type="bit" Nullable="false" />
+          <Property Name="HistoryWhen" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="OnlineVoter">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" />
+          <Property Name="WhenRegistered" Type="datetime2" Precision="0" />
+          <Property Name="WhenLastLogin" Type="datetime2" Precision="0" />
+        </EntityType>
+        <EntityType Name="OnlineVotingInfo">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ElectionName" Type="nvarchar" MaxLength="150" />
+          <Property Name="Email" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="WhenStatus" Type="datetime2" Precision="0" />
+          <Property Name="ListPool" Type="varchar(max)" />
+          <Property Name="ListVotes" Type="varchar(max)" />
+          <Property Name="HistoryStatus" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserId" />
@@ -156,6 +193,7 @@
           <Property Name="_FullNameFL" Type="nvarchar" MaxLength="460" StoreGeneratedPattern="Computed" />
           <Property Name="Teller1" Type="nvarchar" MaxLength="25" />
           <Property Name="Teller2" Type="nvarchar" MaxLength="25" />
+          <Property Name="Email" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="Result">
           <Key>
@@ -235,6 +273,15 @@
           <Property Name="_RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
           <Property Name="PersonCombinedInfo" Type="nvarchar(max)" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Ballot_Location1' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Ballot_Location1" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_ImportFile_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_ImportFile_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_JoinElectionUser_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_JoinElectionUser_Election" />-->
         <Association Name="FK_JoinElectionUser_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="JoinElectionUser" Type="Self.JoinElectionUser" Multiplicity="*" />
@@ -247,7 +294,40 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Location_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Location_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Message_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Message_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Person_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Person_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Result_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Result_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Result_Person' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Result_Person" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_ResultSummary_Election1' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_ResultSummary_Election1" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_ResultTie_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_ResultTie_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Teller_Election' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Teller_Election" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Vote_Ballot' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Vote_Ballot" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_Vote_Person1" />-->
         <EntityContainer Name="TallyJ2dModelStoreContainer">
+          <EntitySet Name="OnlineElection" EntityType="Self.OnlineElection" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OnlineVoter" EntityType="Self.OnlineVoter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OnlineVotingInfo" EntityType="Self.OnlineVotingInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="_Log" EntityType="Self._Log" Schema="tj" store:Type="Tables" />
           <EntitySet Name="Ballot" EntityType="Self.Ballot" Schema="tj" store:Type="Tables" />
@@ -290,6 +370,9 @@
           <EntitySet Name="Location" EntityType="TallyJ2dModel.Location" />
           <EntitySet Name="Person" EntityType="TallyJ2dModel.Person" />
           <EntitySet Name="Teller" EntityType="TallyJ2dModel.Teller" />
+          <EntitySet Name="OnlineElection" EntityType="TallyJ2dModel.OnlineElection" />
+          <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
+          <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -523,6 +606,7 @@
           <Property Name="C_FullNameFL" Type="String" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Name="Teller1" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
           <Property Name="Teller2" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Teller">
           <Key>
@@ -534,6 +618,43 @@
           <Property Name="UsingComputerCode" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="IsHeadTeller" Type="Boolean" />
           <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="OnlineElection">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
+          <Property Name="WhenOpen" Type="DateTime" Precision="0" />
+          <Property Name="WhenClose" Type="DateTime" Precision="0" />
+          <Property Name="CloseIsEstimate" Type="Boolean" Nullable="false" />
+          <Property Name="AllowResultView" Type="Boolean" Nullable="false" />
+          <Property Name="HistoryWhen" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="OnlineVoter">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="WhenRegistered" Type="DateTime" Precision="0" />
+          <Property Name="WhenLastLogin" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="OnlineVotingInfo">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
+          <Property Name="ElectionName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="PersonGuid" Type="Guid" Nullable="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="WhenStatus" Type="DateTime" Precision="0" />
+          <Property Name="ListPool" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ListVotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HistoryStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -743,6 +864,7 @@
           <EntitySetMapping Name="Person">
             <EntityTypeMapping TypeName="TallyJ2dModel.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Teller2" ColumnName="Teller2" />
                 <ScalarProperty Name="Teller1" ColumnName="Teller1" />
                 <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
@@ -780,6 +902,46 @@
                 <ScalarProperty Name="IsHeadTeller" ColumnName="IsHeadTeller" />
                 <ScalarProperty Name="UsingComputerCode" ColumnName="UsingComputerCode" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OnlineElection">
+            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineElection">
+              <MappingFragment StoreEntitySet="OnlineElection">
+                <ScalarProperty Name="HistoryWhen" ColumnName="HistoryWhen" />
+                <ScalarProperty Name="AllowResultView" ColumnName="AllowResultView" />
+                <ScalarProperty Name="CloseIsEstimate" ColumnName="CloseIsEstimate" />
+                <ScalarProperty Name="WhenClose" ColumnName="WhenClose" />
+                <ScalarProperty Name="WhenOpen" ColumnName="WhenOpen" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OnlineVoter">
+            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVoter">
+              <MappingFragment StoreEntitySet="OnlineVoter">
+                <ScalarProperty Name="WhenLastLogin" ColumnName="WhenLastLogin" />
+                <ScalarProperty Name="WhenRegistered" ColumnName="WhenRegistered" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OnlineVotingInfo">
+            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVotingInfo">
+              <MappingFragment StoreEntitySet="OnlineVotingInfo">
+                <ScalarProperty Name="HistoryStatus" ColumnName="HistoryStatus" />
+                <ScalarProperty Name="ListVotes" ColumnName="ListVotes" />
+                <ScalarProperty Name="ListPool" ColumnName="ListPool" />
+                <ScalarProperty Name="WhenStatus" ColumnName="WhenStatus" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ElectionName" ColumnName="ElectionName" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
