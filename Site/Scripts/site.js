@@ -979,6 +979,7 @@ function ShowStatusFailed(msg, keepTime) {
 
 function ResetStatusDisplay() {
     clearTimeout(statusDisplay.resetTimer);
+    $('body').removeClass('errorStatus');
 
     for (; statusDisplay.delayedShowStatusArray.length;) {
         clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
