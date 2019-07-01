@@ -42,13 +42,14 @@
 
     table.result1 td, table.result1 th {
       text-align: center;
-      //border: 1px solid gray;
-      //padding: 1px 10px;
     }
 
     table.result1 tr td:nth-child(2) {
       text-align: left;
     }
+  table.resultInfo tr.pct td {
+      padding: 13px 7px;
+  }
 </style>
 @if (rows.Count > 9)
 {
@@ -123,7 +124,7 @@
         @Model.NumBallotsWithManual
       </td>
     </tr>
-    <tr class="rpt1Detail">
+    <tr class="rpt1Detail pct">
       <td>
         Percentage of participation
       </td>

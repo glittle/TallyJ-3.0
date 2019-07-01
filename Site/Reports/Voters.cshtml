@@ -34,6 +34,10 @@
     page-break-inside: avoid;
   }
 
+  tr:nth-child(even) {
+      background-color: #eee;
+  }
+
   thead {
     display: table-header-group;
     font-weight: bold;
@@ -85,7 +89,7 @@
         <tr>
           <td class="name">@Raw(person.PersonName)</td>
           <td class="id">@person.BahaiId</td>
-          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("No Vote")</td>
+          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
           @if (hasLocations)
           {
             string locName;
