@@ -349,6 +349,15 @@ namespace TallyJ.Code.Session
             }
         }
 
+        public static bool IsVoter
+        {
+            get { return SessionKey.IsVoter.FromSession(false); }
+            set
+            {
+                SessionKey.IsVoter.SetInSession(value);
+            }
+        }
+
         //    public static string WebProtocol
         //    {
         //      get { return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http"; }

@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TallyJ</RootNamespace>
     <AssemblyName>TallyJ</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <FileUpgradeFlags>
@@ -21,7 +21,7 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44311</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -270,6 +270,7 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="Controllers\VoterController.cs" />
     <Compile Include="CoreModels\BallotHelper.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionDeleter.cs" />
     <Compile Include="CoreModels\ExportImport\Exporter.cs" />
@@ -315,6 +316,7 @@
     <Compile Include="CoreModels\PeopleModel.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="CoreModels\VoterModel.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
@@ -752,6 +754,7 @@
     <Content Include="Views\Setup\EditPerson.cshtml.less">
       <DependentUpon>EditPerson.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Voter\VoterHome.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -931,6 +934,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -1028,7 +1032,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:59996/</IISUrl>
+          <IISUrl>https://localhost:44311/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>

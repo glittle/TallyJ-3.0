@@ -12,6 +12,7 @@ namespace TallyJ.Code.Session
 
         public const string IsGuestTeller = "IsGuestTeller";
         public const string IsKnownTeller = "IsKnownTeller";
+        public const string IsVoter = "IsVoter";
 
         public const string CurrentUserGuid = "CurrentUserGuid";
         public const string UserGuidRetrieved = "UserGuidRetrieved";

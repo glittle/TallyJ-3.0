@@ -7,7 +7,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
-  public class SetupModel : DataConnectedModel
+    public class SetupModel : DataConnectedModel
   {
     private Election _election;
     private ElectionModel _electionModel;

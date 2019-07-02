@@ -54,14 +54,18 @@ div.closer {
 
 .featureBig {
     position: relative;
-    width: 425px;
+    //width: 425px;
     min-height: 300px;
-    margin: 5px auto;
+    //margin: 5px auto;
     padding: 10px 15px 20px 10px;
     border: 1px solid grey;
     border-radius: 5px;
     text-align: center;
     background-color: #fcfcfc;
+}
+
+.featureBig.VoterPanel ol {
+    text-align: center;
 }
 
 //section.featureBig div.top {
@@ -187,6 +191,11 @@ section.CenterPanel.chosen:hover {
     background-color: #e7ece7;
 }
 
+.VoterPanel {
+    display: none;
+    background-color: lighten(@tallyJOrange, 60%);
+}
+
 fieldset input[type="text"], fieldset input[type="password"] {
     border: 1px solid #e2e2e2;
     color: #333;
@@ -230,6 +239,16 @@ fieldset input[type="text"], fieldset input[type="password"] {
     justify-content: center;
 }
 
+section.features {
+    width: 75%;
+    margin: 16px auto;
+    padding: 10px 10px 1px 10px;
+
+    .btn {
+        white-space: nowrap;
+    }
+}
+
 div.notes {
     width: 75%;
     margin: 16px auto;
@@ -263,6 +282,8 @@ div.notes {
 .centerbuttons {
     position: relative;
     margin: 0 auto 0 auto;
+    display: flex;
+    justify-content: space-between;
 
     h1, h2 {
         font-size: @baseFontSize * 1.6;
@@ -275,25 +296,23 @@ div.notes {
     }
 
     div {
-        position: absolute;
-        width: 40%;
+        width: 32%;
+        padding: 0 30px;
         text-align: center;
     }
 
     p {
         margin-top: 5px;
     }
-
-    .centerL {
-        left: 12px;
-    }
-
-    .centerR {
-        right: 13px;
-    }
-
-    .StartJoin {
-    }
+    //.centerL {
+    //    left: 12px;
+    //}
+    //
+    //.centerR {
+    //    right: 13px;
+    //}
+    //.StartJoin {
+    //}
 }
 
 

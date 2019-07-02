@@ -22,13 +22,17 @@
         </div>
         <h2 id="introTitle">Choose an Option to Start</h2>
         <div class="centerbuttons">
+            <div class="centerL" title="Vote in an election.">
+                <button class="btn btn-warning" id="btnChooseVoter" accesskey="V"><u>V</u>ote</button>
+                <p>Vote in an election</p>
+            </div>
             <div class="centerL" title="Assist with an election.">
-                <button class="btn btn-primary" id="btnChooseJoin" accesskey="J"><u>J</u>oin an Election</button>
+                <button class="btn btn-primary" id="btnChooseJoin" accesskey="T">Assist as a <u>T</u>eller</button>
                 <p>Join an election as a teller</p>
             </div>
             <div class="centerR"
                  title="Create and manage elections. If you do not have an account yet, you can register here.">
-                <button class="btn btn-success" id="btnChooseLogin" accesskey="L"><u>L</u>og In</button>
+                <button class="btn btn-success" id="btnChooseLogin" accesskey="M"><u>M</u>anage Elections</button>
                 <p>Log in to create and administer your elections</p>
 
             </div>
@@ -93,6 +97,35 @@
         else
         {
             Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
+        }
+    </section>
+    <section class="featureBig VoterPanel">
+        <div class="closer">
+            <img src="~/Images/close.png" alt="Close" class="closer">
+        </div>
+        <div class="top">
+        </div>
+        <h2>Vote in an Election</h2>
+        @if (UserSession.IsVoter)
+        {
+            <p class="AlreadyIn">
+                You are still logged in!
+            </p>
+            <p class="AlreadyIn">
+                Go to the
+                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Voter")'">Dashboard</button>
+            </p>
+            <p class="AlreadyIn">
+                or
+                <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+            </p>
+        }
+        else
+        {
+            <div>
+                <p>Use one of the options below to log in to TallyJ.</p>
+                <p>Once you have logged in, elections that you are registered in will be listed for you.</p>
+            </div>
         }
     </section>
     <div class="clear-fix">

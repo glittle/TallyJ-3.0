@@ -15,6 +15,7 @@
         });
         $('#btnChooseJoin').click(startJoinClick);
         $('#btnChooseLogin').click(startJoinClick);
+        $('#btnChooseVoter').click(startJoinClick);
         $('img.closer').click(cancelStart);
 
         clearElectionRelatedStorageItems();
@@ -80,13 +81,18 @@
     var startJoinClick = function () {
         var src = $(this);
         $('.CenterPanel').addClass('chosen');
+        $('.JoinPanel').hide();
+        $('.LoginPanel').hide();
+        $('.VoterPanel').hide();
 
         if (src.attr('id') == 'btnChooseJoin') {
-            $('.LoginPanel').hide();
             $('.JoinPanel').fadeIn();
         }
+        else if (src.attr('id') == 'btnChooseVoter') {
+            $('.VoterPanel').fadeIn();
+            warmupServer();
+        }
         else {
-            $('.JoinPanel').hide();
             $('.LoginPanel').fadeIn();
             warmupServer();
         }
@@ -105,6 +111,7 @@
         $('.CenterPanel').removeClass('chosen');
         $('.JoinPanel').hide();
         $('.LoginPanel').hide();
+        $('.VoterPanel').hide();
     }
 
     var btnJoinClick = function () {
