@@ -227,6 +227,21 @@ namespace TallyJ.Code.Session
             get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
             set { SessionKey.CurrentLocationGuid.SetInSession(value); }
         }
+        public static string VoterEmail
+        {
+            get { return SessionKey.VoterEmail.FromSession(""); }
+            set { SessionKey.VoterEmail.SetInSession(value); }
+        }
+        public static bool VoterEmailIsVerified
+        {
+            get { return SessionKey.VoterEmailIsVerified.FromSession(false); }
+            set { SessionKey.VoterEmailIsVerified.SetInSession(value); }
+        }
+        public static string VoterPictureUrl
+        {
+            get { return SessionKey.VoterPictureUrl.FromSession(""); }
+            set { SessionKey.VoterPictureUrl.SetInSession(value); }
+        }
 
         public static Location CurrentLocation
         {
@@ -351,11 +366,7 @@ namespace TallyJ.Code.Session
 
         public static bool IsVoter
         {
-            get { return SessionKey.IsVoter.FromSession(false); }
-            set
-            {
-                SessionKey.IsVoter.SetInSession(value);
-            }
+            get { return VoterEmail.HasContent(); }
         }
 
         //    public static string WebProtocol
