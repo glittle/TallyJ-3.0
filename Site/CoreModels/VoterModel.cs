@@ -4,5 +4,11 @@ namespace TallyJ.CoreModels
 {
     public class VoterModel : DataConnectedModel
     {
+
+    }
+
+    public class VoterElection
+    {
+
     }
 }

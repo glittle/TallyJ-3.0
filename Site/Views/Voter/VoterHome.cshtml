@@ -1,9 +1,23 @@
 ﻿@using TallyJ.Code.Session
 @model VoterModel
+@{
+    ViewData["ExtraScripts"] = new[] {
+        ClientFile("~/Scripts/vue{0}.js", ".min"),
+    };
+}
 
-<p>
-    Hello!  You are using email address: @UserSession.VoterEmail!
-</p>
+<div id="voterBody">
+    <p>
+        Hello!  You are using email address: @UserSession.VoterEmail!
+    </p>
 
-<button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
-
+    <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+    
+    <div class="electionList">
+        <div v-for="e in elections" v-bind:key="e.id">
+            {{e.name}}
+        </div>
+    </div>
+    
+    {{test}}
+</div>

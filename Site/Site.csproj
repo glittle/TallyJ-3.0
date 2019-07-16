@@ -928,6 +928,12 @@
     <Content Include="Views\Setup\Setup.cshtml.css">
       <DependentUpon>Setup.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Voter\VoterHome.cshtml.css">
+      <DependentUpon>VoterHome.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Voter\VoterHome.cshtml.js">
+      <DependentUpon>VoterHome.cshtml</DependentUpon>
+    </Content>
     <Content Include="Xslt\FormatExport1.xslt" />
     <Content Include="Views\Public\Home.cshtml.less">
       <DependentUpon>Home.cshtml</DependentUpon>
@@ -976,6 +982,9 @@
     <Content Include="Views\Voter\VoterHome.cshtml" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+    <Content Include="Views\Voter\VoterHome.cshtml.less">
+      <DependentUpon>VoterHome.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
