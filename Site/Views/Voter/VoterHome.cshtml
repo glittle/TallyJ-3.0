@@ -1,5 +1,9 @@
-﻿@model VoterModel
+﻿@using TallyJ.Code.Session
+@model VoterModel
 
 <p>
-    Hello voter!
+    Hello!  You are using email address: @UserSession.VoterEmail!
 </p>
+
+<button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+

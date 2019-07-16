@@ -42,37 +42,37 @@ namespace TallyJ.Controllers
             return new ChallengeResult(provider, Url.Action("Index", "Voter"), AppSettings["XsrfValue"]);
         }
 
-//        [AllowAnonymous]
-//        public async Task<ActionResult> XExternalLoginCallback(string returnUrl)
-//        {
-//            Session["Dummy"] = 1; // touch Session so that OWIN cookies work!
-//            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync("XsrfKey", AppSettings["XsrfValue"]);
-//            if (loginInfo == null)
-//                return RedirectToAction("Index", "Public");
-//
-//            // AUTHENTICATED!
-//            var providerKey = loginInfo.Login.ProviderKey;
-//
-//
-//            // Application specific code goes here.
-//            //            var userBus = new busUser();
-//            //            var user = userBus.ValidateUserWithExternalLogin(providerKey);
-//            //            if (user == null)
-//            //            {
-//            //                return RedirectToAction("LogOn", new
-//            //                {
-//            //                    message = "Unable to log in with " + loginInfo.Login.LoginProvider +
-//            //                              ". " + userBus.ErrorMessage
-//            //                });
-//            //            }
-//
-//            // store on AppUser
-//            AppUserState appUserState = new AppUserState();
-//            //            appUserState.FromUser(user);
-//            IdentitySignin(appUserState, providerKey, isPersistent: true);
-//
-//            return Redirect(returnUrl);
-//        }
+        //        [AllowAnonymous]
+        //        public async Task<ActionResult> XExternalLoginCallback(string returnUrl)
+        //        {
+        //            Session["Dummy"] = 1; // touch Session so that OWIN cookies work!
+        //            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync("XsrfKey", AppSettings["XsrfValue"]);
+        //            if (loginInfo == null)
+        //                return RedirectToAction("Index", "Public");
+        //
+        //            // AUTHENTICATED!
+        //            var providerKey = loginInfo.Login.ProviderKey;
+        //
+        //
+        //            // Application specific code goes here.
+        //            //            var userBus = new busUser();
+        //            //            var user = userBus.ValidateUserWithExternalLogin(providerKey);
+        //            //            if (user == null)
+        //            //            {
+        //            //                return RedirectToAction("LogOn", new
+        //            //                {
+        //            //                    message = "Unable to log in with " + loginInfo.Login.LoginProvider +
+        //            //                              ". " + userBus.ErrorMessage
+        //            //                });
+        //            //            }
+        //
+        //            // store on AppUser
+        //            AppUserState appUserState = new AppUserState();
+        //            //            appUserState.FromUser(user);
+        //            IdentitySignin(appUserState, providerKey, isPersistent: true);
+        //
+        //            return Redirect(returnUrl);
+        //        }
 
 
         //[AllowAnonymous]
@@ -124,14 +124,34 @@ namespace TallyJ.Controllers
             {
                 if (Membership.ValidateUser(model.UserName, model.Password))
                 {
-                    FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+                    //                    FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+
                     UserSession.ProcessLogin();
 
                     var email = Membership.GetUser(model.UserName).Email;
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim("UserName", model.UserName),
+                        new Claim(ClaimTypes.Email, email),
+                        new Claim("IsKnownTeller", "true"),
+                    };
+
+                    var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
+
+                    var authenticationProperties = new AuthenticationProperties()
+                    {
+                        AllowRefresh = true,
+                        IsPersistent = false,
+                        ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                    };
+
+                    System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
+
+
                     new LogHelper().Add("Logged In - {0}".FilledWith(email), true);
 
                     UserSession.IsKnownTeller = true;
-
 
                     if (Url.IsLocalUrl(returnUrl))
                     {
@@ -227,7 +247,25 @@ namespace TallyJ.Controllers
 
                 if (createStatus == MembershipCreateStatus.Success)
                 {
-                    FormsAuthentication.SetAuthCookie(model.UserName, true);
+                    var claims = new List<Claim>
+                    {
+                        new Claim("UserName", model.UserName),
+                        new Claim(ClaimTypes.Email, model.Email),
+                        new Claim("IsKnownTeller", "true"),
+                    };
+
+                    var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
+
+                    var authenticationProperties = new AuthenticationProperties()
+                    {
+                        AllowRefresh = true,
+                        IsPersistent = false,
+                        ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                    };
+
+                    System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
+
+                    //                    FormsAuthentication.SetAuthCookie(model.UserName, true);
                     UserSession.ProcessLogin();
                     UserSession.IsKnownTeller = true;
 
@@ -311,11 +349,11 @@ namespace TallyJ.Controllers
             }
         }
 
-//        private IEnumerable<string> GetErrorsFromModelState()
-//        {
-//            return ModelState.SelectMany(x => x.Value.Errors
-//                .Select(error => error.ErrorMessage));
-//        }
+        //        private IEnumerable<string> GetErrorsFromModelState()
+        //        {
+        //            return ModelState.SelectMany(x => x.Value.Errors
+        //                .Select(error => error.ErrorMessage));
+        //        }
 
         #region Status Codes
 

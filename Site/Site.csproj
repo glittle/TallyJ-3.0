@@ -445,6 +445,8 @@
     <Compile Include="Code\Helpers\UrlAdjuster.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
     <Compile Include="Code\LogHelper.cs" />
+    <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationMiddleware.cs" />
+    <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationHandler.cs" />
     <Compile Include="Code\ReflectionExtensions.cs" />
     <Compile Include="Code\ReflectionHelper.cs" />
     <Compile Include="Code\RequireElectionPolicyViolationHandler.cs" />
@@ -535,6 +537,7 @@
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="CoreModels\VoterModel.cs" />
+    <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationOptions.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>

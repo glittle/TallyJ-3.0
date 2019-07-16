@@ -9,6 +9,7 @@
 ""
 }.JoinedAsString("");
 
+
     ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
 }
@@ -125,27 +126,45 @@
         else
         {
             <div>
-                <p>Use one of the options below to log in to TallyJ.</p>
-                <p>Once you have logged in, elections that you are registered in will be listed for you.</p>
-
-
+                <p>
+                    To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
+                </p>
+                <p>
+                    Click one of the buttons to log in with that service.
+                </p>
+                <p>
+                    The email address registered with the service you use must match your email address
+                    in the election you wish to vote in.
+                </p>
 
                 @{
-                    var loginProviders = Context.GetOwinContext().Authentication.GetAuthenticationTypes();
+                    var loginTypes = new[]
+                    {
+                        // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
+                        "Google|google-plus",
+                        "Facebook|facebook",
+                        "Microsoft|microsoft"
+                    };
+
                     using (Html.BeginForm("ExternalLogin", "Account"))
                     {
                         @Html.AntiForgeryToken()
                         <div id="socialLoginList">
                             <p>
-                                @foreach (var p in loginProviders)
+                                @foreach (var p in loginTypes)
                                 {
-                                    <button type="submit" 
-                                            class="btn btn-default zSocial @p.AuthenticationType"
+                                    var s = p.Split('|');
+                                    var name = s[0];
+                                    var icon = s[1];
+                                    <button type="submit"
+                                            class="btn btn-warning authButton @name"
                                             name="provider"
-                                            value="@p.AuthenticationType"
-                                            title="Log in using your @p.Caption account">
-                                        @p.AuthenticationType
-                                    </button>
+                                            value="@name"
+                                            title="Log in using your @name account">
+                                        <i class="fa fa-@icon"></i>
+                                        @name
+                                    
+                                        </button>
                                 }
                             </p>
                         </div>

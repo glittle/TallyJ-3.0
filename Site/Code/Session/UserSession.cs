@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 using System.Web.Security;
 using TallyJ.Code.Data;
@@ -227,21 +229,26 @@ namespace TallyJ.Code.Session
             get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
             set { SessionKey.CurrentLocationGuid.SetInSession(value); }
         }
+
+        public static ClaimsPrincipal CurrentPrincipal {
+            get
+            {
+                return (ClaimsPrincipal)Thread.CurrentPrincipal;
+            }
+        }
+
         public static string VoterEmail
         {
-            get { return SessionKey.VoterEmail.FromSession(""); }
-            set { SessionKey.VoterEmail.SetInSession(value); }
+            get { return CurrentPrincipal.FindFirst(ClaimTypes.Email)?.Value; }
         }
         public static bool VoterEmailIsVerified
         {
-            get { return SessionKey.VoterEmailIsVerified.FromSession(false); }
-            set { SessionKey.VoterEmailIsVerified.SetInSession(value); }
+            get { return CurrentPrincipal.FindFirst("IsVoter")?.Value == "True"; }
         }
-        public static string VoterPictureUrl
-        {
-            get { return SessionKey.VoterPictureUrl.FromSession(""); }
-            set { SessionKey.VoterPictureUrl.SetInSession(value); }
-        }
+//        public static string VoterPictureUrl
+//        {
+//            get { return CurrentPrincipal.FindFirst("PictureUrl")?.Value; }
+//        }
 
         public static Location CurrentLocation
         {

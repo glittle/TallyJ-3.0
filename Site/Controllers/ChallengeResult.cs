@@ -35,6 +35,11 @@ namespace TallyJ.Controllers
                 properties.Dictionary["XsrfKey"] = XsrfValue;
             }
 
+            if (LoginProvider == "Facebook")
+            {
+                properties.Dictionary["auth_type"] = "rerequest";
+            }
+
             var owin = context.HttpContext.GetOwinContext();
             owin.Authentication.Challenge(properties, LoginProvider);
         }
