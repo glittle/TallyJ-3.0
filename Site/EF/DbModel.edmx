@@ -11,6 +11,7 @@
           </Key>
           <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ElectionName" Type="nvarchar" MaxLength="150" />
           <Property Name="WhenOpen" Type="datetime2" Precision="0" />
           <Property Name="WhenClose" Type="datetime2" Precision="0" />
           <Property Name="CloseIsEstimate" Type="bit" Nullable="false" />
@@ -33,9 +34,9 @@
           </Key>
           <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ElectionName" Type="nvarchar" MaxLength="150" />
-          <Property Name="Email" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="PersonGuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="WhenBallotCreated" Type="datetime2" Precision="0" />
           <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="WhenStatus" Type="datetime2" Precision="0" />
           <Property Name="ListPool" Type="varchar(max)" />
@@ -625,6 +626,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </Key>
           <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
+          <Property Name="ElectionName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="WhenOpen" Type="DateTime" Precision="0" />
           <Property Name="WhenClose" Type="DateTime" Precision="0" />
           <Property Name="CloseIsEstimate" Type="Boolean" Nullable="false" />
@@ -647,9 +649,9 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </Key>
           <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="ElectionName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="PersonGuid" Type="Guid" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="WhenBallotCreated" Type="DateTime" Precision="0" />
           <Property Name="Status" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="WhenStatus" Type="DateTime" Precision="0" />
           <Property Name="ListPool" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -915,6 +917,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="CloseIsEstimate" ColumnName="CloseIsEstimate" />
                 <ScalarProperty Name="WhenClose" ColumnName="WhenClose" />
                 <ScalarProperty Name="WhenOpen" ColumnName="WhenOpen" />
+                <ScalarProperty Name="ElectionName" ColumnName="ElectionName" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
@@ -939,9 +942,9 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="ListPool" ColumnName="ListPool" />
                 <ScalarProperty Name="WhenStatus" ColumnName="WhenStatus" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="WhenBallotCreated" ColumnName="WhenBallotCreated" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="ElectionName" ColumnName="ElectionName" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>

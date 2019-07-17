@@ -16,9 +16,9 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
-        public string ElectionName { get; set; }
-        public string Email { get; set; }
         public System.Guid PersonGuid { get; set; }
+        public string Email { get; set; }
+        public Nullable<System.DateTime> WhenBallotCreated { get; set; }
         public string Status { get; set; }
         public Nullable<System.DateTime> WhenStatus { get; set; }
         public string ListPool { get; set; }

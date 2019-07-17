@@ -2,6 +2,7 @@
 (
     [_RowId]            INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]      UNIQUEIDENTIFIER NOT NULL,
+    [ElectionName]      NVARCHAR (150)   NULL, -- source may be deleted
     [WhenOpen]          DATETIME2 (0)    NULL,
     [WhenClose]         DATETIME2 (0)    NULL,
     [CloseIsEstimate]   Bit NOT NULL default 1,

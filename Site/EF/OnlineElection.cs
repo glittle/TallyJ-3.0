@@ -16,6 +16,7 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.Guid ElectionGuid { get; set; }
+        public string ElectionName { get; set; }
         public Nullable<System.DateTime> WhenOpen { get; set; }
         public Nullable<System.DateTime> WhenClose { get; set; }
         public bool CloseIsEstimate { get; set; }

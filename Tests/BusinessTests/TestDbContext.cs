@@ -23,9 +23,14 @@ namespace Tests.BusinessTests
       this.Location = new TestDbSet<Location>();
       this.Person = new TestDbSet<Person>();
       this.Teller = new TestDbSet<Teller>();
+      this.OnlineElection = new TestDbSet<OnlineElection>();
+      this.OnlineVoter = new TestDbSet<OnlineVoter>();
+      this.OnlineVotingInfo = new TestDbSet<OnlineVotingInfo>();
     }
 
     public int SaveChangesCount { get; private set; }
+    public DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
+
     public int SaveChanges()
     {
       this.SaveChangesCount++;
@@ -61,6 +66,7 @@ namespace Tests.BusinessTests
     public DbSet<Location> Location { get; set; }
     public DbSet<Person> Person { get; set; }
     public DbSet<Teller> Teller { get; set; }
-
+    public DbSet<OnlineElection> OnlineElection { get; set; }
+    public DbSet<OnlineVoter> OnlineVoter { get; set; }
   }
 }

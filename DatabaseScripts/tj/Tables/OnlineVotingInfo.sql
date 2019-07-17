@@ -2,9 +2,9 @@
 (
     [_RowId]            INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]      UNIQUEIDENTIFIER NOT NULL, -- source may be deleted
-    [ElectionName]      NVARCHAR (150)   NULL, -- source may be deleted
-    [Email]             NVARCHAR (250)   NOT NULL,
     [PersonGuid]        UNIQUEIDENTIFIER NOT NULL, -- source may be deleted
+    [Email]             NVARCHAR (250)   NOT NULL,
+    [WhenBallotCreated] DATETIME2 (0)    NULL, -- round to nearest minute?
     [Status]            VARCHAR (10)     NOT NULL,
     [WhenStatus]        DATETIME2 (0)    NULL,
     [ListPool]          varchar(max)     NULL,

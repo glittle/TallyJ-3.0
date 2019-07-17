@@ -23,7 +23,10 @@ namespace TallyJ.EF
     DbSet<Location> Location { get; set; }
     DbSet<Person> Person { get; set; }
     DbSet<Teller> Teller { get; set; }
-
+    
+    DbSet<OnlineElection> OnlineElection { get; set; }
+    DbSet<OnlineVoter> OnlineVoter { get; set; }
+    DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
 
     int SaveChanges();
     long CurrentRowVersion();

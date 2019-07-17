@@ -1,1 +1,10 @@
-﻿
+﻿#voterBody .electionList {
+  border-collapse: separate;
+  border-spacing: 1px 2px;
+}
+#voterBody .electionList .ename {
+  padding: 3px 5px;
+  margin: 1px 5px;
+  background-color: lightgoldenrodyellow;
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlZvdGVySG9tZS5jc2h0bWwubGVzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxVQUNFO0VBQ0UseUJBQUE7RUFDQSx1QkFBQTs7QUFISixVQUNFLGNBSUU7RUFDRSxnQkFBQTtFQUNBLGVBQUE7RUFDQSxzQ0FBQSJ9 */
