@@ -116,7 +116,7 @@
             </p>
             <p class="AlreadyIn">
                 Go to the
-                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Voter")'">Dashboard</button>
+                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Voter")'">Voter Page</button>
             </p>
             <p class="AlreadyIn">
                 or
@@ -143,7 +143,7 @@
                         // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
                         "Google|google-plus",
                         "Facebook|facebook",
-                        "Microsoft|microsoft"
+//                        "Microsoft|microsoft"
                     };
 
                     using (Html.BeginForm("ExternalLogin", "Account"))

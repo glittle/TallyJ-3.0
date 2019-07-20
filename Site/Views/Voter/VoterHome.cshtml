@@ -1,24 +1,66 @@
 ﻿@using TallyJ.Code.Session
 @model VoterModel
 @{
-  ViewData["ExtraScripts"] = new[] {
-        ClientFile("~/Scripts/vue{0}.js", ".min"),
-    };
+  Layout = "~/Views/Shared/_LayoutVoter.cshtml";
+
+  ViewData["ExtraScripts"] = new[]
+  {
+    ClientFile("~/Scripts/vue{0}.js", ".min"),
+    ClientFile("~/Scripts/BadiDateToday.v1.js")
+  };
+
+  ContextItems.AddJavascriptForPage("methods", "vueVoterHome.methods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
+
+  var x = this.Context.GetOwinContext().Authentication;
 }
 
-<div id="voterBody">
+<div id="voterPage1" v-if="activePage === 1">
   <p>
-    Hello!  You are using email address: @UserSession.VoterEmail!
+    Hello! You are using email address <strong>@UserSession.VoterEmail</strong> as verified by @UserSession.VoterAuthSource.
   </p>
 
-  <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+  <div v-if="loading">Looking for your email address in elections...</div>
 
-  <div v-if="loading">Loading...</div>
-  <table class="electionList">
-    <tr v-for="e in elections" v-bind:key="e.id">
-      <td class="pname" v-text="e.person.name"></td>
-      <td class="ename" v-text="e.name"></td>
-      <td class="online" v-text="e.online ? e.online.WhenOpen : '-'"></td>
+  <p v-if="elections.length">Here are the elections where your email address is registered:</p>
+  <p v-if="!elections.length && !loading">Your email address is not registered in any known elections.</p>
+  
+  <table class="electionList" v-if="!loading && elections.length">
+    <thead>
+    <tr>
+      <th class="ename">Election</th>
+      <th class="online">Election Status</th>
+      <th class="pname">Your Name in the Election</th>
+      <th class="vmethod">How you voted</th>
+      <th class="vtime">When your ballot was received</th>
     </tr>
+    </thead>
+    <tbody>
+    <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
+      <td class="ename" v-text="e.name"></td>
+      <td class="online center" v-html="e.Status_Display"></td>
+      <td class="pname" v-text="e.person.name"></td>
+      <td class="vmethod center">
+        <div v-if="e.openNow">
+          <div>
+            <button v-on:click="manageBallot(e)">Prepare my Vote</button>
+          </div>
+        </div>
+        <span v-if="!e.openNow">{{e.person.VotingMethod_Display}}</span>
+      </td>
+      <td class="vtime center" v-text="e.person.RegistrationTime_Display"></td>
+    </tr>
+    </tbody>
   </table>
+</div>
+
+<div id="voterPage2" v-if="activePage === 2">
+  <h2>{{election.name}}</h2>
+  <h3 class="electionStatus" v-html="election.Status_Display"></h3>
+  <button v-on:click="closeBallot">Return</button>
+  <div>
+    Fill Pool
+  </div>
+  <div>
+    Lock in?
+  </div>
 </div>

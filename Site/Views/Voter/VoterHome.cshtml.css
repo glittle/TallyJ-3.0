@@ -1,10 +1,43 @@
-﻿#voterBody .electionList {
+﻿#voterPage1 .electionList {
   border-collapse: separate;
   border-spacing: 1px 2px;
 }
-#voterBody .electionList .ename {
+#voterPage1 .electionList td,
+#voterPage1 .electionList th {
   padding: 3px 5px;
-  margin: 1px 5px;
+}
+#voterPage1 .electionList .ename {
+  background-color: lightyellow;
+}
+#voterPage1 .electionList .pname {
+  background-color: lightyellow;
+}
+#voterPage1 .electionList .online {
   background-color: lightgoldenrodyellow;
 }
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlZvdGVySG9tZS5jc2h0bWwubGVzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxVQUNFO0VBQ0UseUJBQUE7RUFDQSx1QkFBQTs7QUFISixVQUNFLGNBSUU7RUFDRSxnQkFBQTtFQUNBLGVBQUE7RUFDQSxzQ0FBQSJ9 */
+#voterPage1 .electionList .vmethod {
+  background-color: lightgoldenrodyellow;
+}
+#voterPage1 .electionList .vtime {
+  background-color: lightyellow;
+}
+#voterPage1 .electionList .center {
+  text-align: center;
+}
+#voterPage1 .electionList .future .online {
+  background-color: palegreen;
+}
+#voterPage1 .electionList .now .online {
+  background-color: greenyellow;
+}
+#voterPage1 .electionList .past .online {
+  background-color: lightcoral;
+}
+#voterPage2 .electionStatus {
+  background-color: greenyellow;
+  padding: 0px 10px;
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlZvdGVySG9tZS5jc2h0bWwubGVzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxXQUNFO0VBQ0UseUJBQUE7RUFDQSx1QkFBQTs7QUFISixXQUNFLGNBSUU7QUFMSixXQUNFLGNBSU07RUFDRixnQkFBQTs7QUFOTixXQUNFLGNBUUU7RUFDRSw2QkFBQTs7QUFWTixXQUNFLGNBWUU7RUFDRSw2QkFBQTs7QUFkTixXQUNFLGNBZ0JFO0VBQ0Usc0NBQUE7O0FBbEJOLFdBQ0UsY0FvQkU7RUFDRSxzQ0FBQTs7QUF0Qk4sV0FDRSxjQXdCRTtFQUNFLDZCQUFBOztBQTFCTixXQUNFLGNBNEJFO0VBQ0Usa0JBQUE7O0FBOUJOLFdBQ0UsY0FnQ0UsUUFDRTtFQUNFLDJCQUFBOztBQW5DUixXQUNFLGNBc0NFLEtBQ0U7RUFDRSw2QkFBQTs7QUF6Q1IsV0FDRSxjQTRDRSxNQUNFO0VBQ0UsNEJBQUE7O0FBTVIsV0FDRTtFQUNFLDZCQUFBO0VBQ0EsaUJBQUE7RUFDQSxrQkFBQTtFQUNBLE1BQUE7RUFDQSxXQUFBIn0= */

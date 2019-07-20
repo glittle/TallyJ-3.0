@@ -440,6 +440,7 @@
     <Compile Include="Code\Enumerations\EnumerationExt.cs" />
     <Compile Include="Code\Enumerations\IEnumeration.cs" />
     <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
+    <Compile Include="Code\ForVoterAttribute.cs" />
     <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
     <Compile Include="Code\Helpers\MvcViewRenderer.cs" />
     <Compile Include="Code\Helpers\UrlAdjuster.cs" />
@@ -854,6 +855,8 @@
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\vue.js" />
     <Content Include="Scripts\vue.min.js" />
     <Content Include="Views\Account\LogOn.cshtml.js">
@@ -985,6 +988,7 @@
     <Content Include="Views\Voter\VoterHome.cshtml.less">
       <DependentUpon>VoterHome.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Shared\_LayoutVoter.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

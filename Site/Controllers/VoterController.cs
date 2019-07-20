@@ -9,6 +9,7 @@ using TallyJ.CoreModels;
 
 namespace TallyJ.Controllers
 {
+  [ForVoter]
   public class VoterController : BaseController
   {
     public ActionResult Index()
@@ -48,6 +49,10 @@ namespace TallyJ.Controllers
           (ep, oeList) => new { ep.ElectionGuid, ep.PersonGuid, onlineElection = oeList.FirstOrDefault() })
         .GroupJoin(Db.Election, g => g.ElectionGuid, e => e.ElectionGuid, (g, eList) => new { g.ElectionGuid, g.PersonGuid, g.onlineElection, fullElection = eList.FirstOrDefault() })
         .GroupJoin(Db.Person, j => j.PersonGuid, p => p.PersonGuid, (j, pList) => new { j.ElectionGuid, j.PersonGuid, j.onlineElection, j.fullElection, p = pList.FirstOrDefault() })
+        .OrderByDescending(j => j.onlineElection.HistoryWhen)
+        .ThenByDescending(j => j.onlineElection.WhenOpen)
+        .ThenByDescending(j => j.fullElection.DateOfElection)
+        .ThenBy(j => j.p.C_RowId)
         .Select(j => new
         {
           id = j.fullElection != null ? j.fullElection.ElectionGuid : j.onlineElection.ElectionGuid,
@@ -61,7 +66,9 @@ namespace TallyJ.Controllers
           } : null,
           person = new
           {
-            name = j.p.C_FullNameFL
+            name = j.p.C_FullNameFL,
+            j.p.VotingMethod,
+            j.p.RegistrationTime
           }
         });
 

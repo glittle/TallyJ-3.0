@@ -108,9 +108,9 @@ span, div {
 }
 
 body.errorStatus {
-    #body {
-        background-color: #ffcfcf;
-    }
+  #body {
+    background-color: #ffcfcf;
+  }
 }
 
 .PageTitle {
@@ -849,7 +849,7 @@ a.twitter {
 }
 
 #statusDisplay.error, #statusDisplay2.error {
-    background-color: #ffcfcf; // yellow;
+  background-color: #ffcfcf; // yellow;
 }
 
 #statusDisplay2 .ajaxIcon, #statusDisplay .ajaxIcon {
@@ -1373,6 +1373,32 @@ section.features.bottom {
     color: @textColor;
   }
 }
+
+[v-cloak] {
+  display: none
+}
+
+body.VoterPages {
+
+  .MainTop {
+    float: none;
+    position: relative;
+
+    .site-title {
+      width: auto;
+      background-repeat: no-repeat;
+      padding-left: 70px;
+      margin: 0px 15px 0px 6px;
+    }
+  }
+
+  .logoffVoter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+}
+
 
 #MasterMenu {
   display: none;

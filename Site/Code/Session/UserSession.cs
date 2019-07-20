@@ -38,7 +38,11 @@ namespace TallyJ.Code.Session
         /// </summary>
         public static string LoginId
         {
-            get { return HttpContext.Current.User.Identity.Name ?? ""; }
+          get
+          {
+            return CurrentPrincipal.FindFirst("UserName")?.Value;
+//            return HttpContext.Current.User.Identity.Name ?? "";
+          }
         }
 
         /// <Summary>May be null if not logged in.</Summary>
@@ -239,7 +243,11 @@ namespace TallyJ.Code.Session
 
         public static string VoterEmail
         {
-            get { return CurrentPrincipal.FindFirst(ClaimTypes.Email)?.Value; }
+            get { return CurrentPrincipal.FindFirst("Email")?.Value; }
+        }
+        public static string VoterAuthSource
+        {
+            get { return CurrentPrincipal.FindFirst("Source")?.Value; }
         }
         public static bool VoterEmailIsVerified
         {
@@ -363,7 +371,10 @@ namespace TallyJ.Code.Session
         /// <Summary>If logged in with an account</Summary>
         public static bool IsKnownTeller
         {
-            get { return SessionKey.IsKnownTeller.FromSession(false); }
+          get
+          {
+            return UserSession.UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
+          }
             set
             {
                 SessionKey.IsKnownTeller.SetInSession(value);
