@@ -131,9 +131,9 @@
                 @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
             </select>
         </div>*@
-    <div class="AutoButtons">
+    <p class="AutoButtons">
         <input type="checkbox" id="chkAutoRefresh" checked />
-        <label for="chkAutoRefresh">Auto-refresh monitor listing every </label>
+        <label for="chkAutoRefresh">Auto-refresh this list every </label>
         <select id="ddlRefresh" class="input-medium">
             <option value="15">15 seconds</option>
             <option value="30">30 seconds</option>
@@ -147,20 +147,24 @@
             Refreshed at <span id="lastRefresh"></span>
             <span class="countdown"></span>
         </span>
-    </div>
+    </p>
     @if (UserSession.IsKnownTeller)
     {
-        <div>
+        <p>
             <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
             <label for="chkList">
-                Open this election to allow other tellers to participate. <span class="publicInfo" title="Access code is: @UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")"><span class="ui-icon ui-icon-info" id="qTipCode"></span>Access Code</span>
-                @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent())
-                {
-                    <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
-                }
+              Open this election to allow other tellers to participate.
+              Teller access code is: <span class="publicInfo">@UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")</span>
+              @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent())
+              {
+                <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
+              }
             </label>
-        </div>
+        </p>
     }
+    <p>
+      To Do: Open/Close Online Voting
+    </p>
     <div class="Clear">
     </div>
 </div>
