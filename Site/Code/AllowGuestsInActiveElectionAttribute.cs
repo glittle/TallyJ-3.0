@@ -15,7 +15,7 @@ namespace TallyJ.Code
   {
     protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
     {
-      var authorized = base.AuthorizeCore(httpContext);
+      var authorized = base.AuthorizeCore(httpContext) && (UserSession.IsGuestTeller || UserSession.IsKnownTeller);
       if (!authorized)
       {
         // The user is not authenticated

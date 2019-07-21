@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CsQuery.ExtensionMethods;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
-  [ForVoter]
+  [AllowVoter]
   public class VoterController : BaseController
   {
     public ActionResult Index()
@@ -17,8 +19,85 @@ namespace TallyJ.Controllers
       return View("VoterHome", new VoterModel());
     }
 
+    public JsonResult JoinElection(Guid electionGuid)
+    {
+      var email = UserSession.VoterEmail;
+      if (email.HasNoContent())
+      {
+        return new
+        {
+          Error = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      // confirm that this person is in the election
+      var electionInfo = Db.Person.Where(p => p.Email == email && p.ElectionGuid == electionGuid)
+        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { e, p })
+        .Join(Db.OnlineElection, j => j.e.ElectionGuid, oe => oe.ElectionGuid, (j, oe) => new { j.e, j.p, oe })
+        .SingleOrDefault();
+
+      if (electionInfo == null)
+      {
+        return new
+        {
+          Error = "Invalid election"
+        }.AsJsonResult();
+      }
+
+      var now = DateTime.Now;
+
+      // get voting info
+      var votingInfo = Db.OnlineVotingInfo
+        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.PersonGuid);
+
+      if (electionInfo.oe.WhenOpen <= now && electionInfo.oe.WhenClose > now)
+      {
+        // put election in session
+        UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
+
+        if (votingInfo == null)
+        {
+          votingInfo = new OnlineVotingInfo
+          {
+            ElectionGuid = electionInfo.e.ElectionGuid,
+            PersonGuid = electionInfo.p.PersonGuid,
+            Email = email,
+            Status = "New",
+            WhenStatus = now,
+            HistoryStatus = "New|{0}".FilledWith(now.ToJSON())
+          };
+          Db.OnlineVotingInfo.Add(votingInfo);
+          Db.SaveChanges();
+        }
+
+        // okay
+        return new
+        {
+          open = true,
+          votingInfo
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        closed = true,
+        votingInfo
+      }.AsJsonResult();
+    }
+
+    public JsonResult LeaveElection()
+    {
+      // forget election
+      UserSession.CurrentContext.Session.Remove(SessionKey.CurrentElectionGuid);
+
+      // leave hub
 
 
+      return new
+      {
+        success = true
+      }.AsJsonResult();
+    }
     public JsonResult GetVoterElections()
     {
       var email = UserSession.VoterEmail;

@@ -8,7 +8,6 @@ using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
-  [AllowGuestsInActiveElection]
   public class PeopleController : BaseController
   {
 
@@ -16,12 +15,13 @@ namespace TallyJ.Controllers
     /// Need index just for making reference easier
     /// </summary>
     /// <returns></returns>
+    [AllowGuestsInActiveElection]
     public ActionResult Index()
     {
       return null;
     }
 
-
+    [AllowGuestsInActiveElection]
     public JsonResult GetAll()
     {
       var currentElection = UserSession.CurrentElection;
@@ -50,7 +50,33 @@ namespace TallyJ.Controllers
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
             : votes.Count(v => v.PersonGuid == p.PersonGuid)
         }),
-        lastVid = votes.Any() ? votes.Max(v=>v.C_RowId) : 0
+        lastVid = votes.Any() ? votes.Max(v => v.C_RowId) : 0
+      }.AsJsonResult();
+    }
+
+    [AllowVoter]
+    public JsonResult GetForVoter()
+    {
+      var currentElection = UserSession.CurrentElection;
+      if (currentElection == null)
+      {
+        return new
+        {
+          Error = "Election not selected"
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        people = new PersonCacher(Db)
+          .AllForThisElection
+          .Select(p => new
+          {
+            Id = p.C_RowId,
+            Name = p.FullNameFL,
+            p.Area,
+            IRG = p.IneligibleReasonGuid,
+          }),
       }.AsJsonResult();
     }
 
@@ -69,6 +95,7 @@ namespace TallyJ.Controllers
     //  return model.Search2(search, includeMatches, forBallot);
     //}
 
+    [AllowGuestsInActiveElection]
     public JsonResult GetDetail(int id)
     {
       var model = new PeopleModel();

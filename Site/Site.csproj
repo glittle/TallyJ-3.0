@@ -440,7 +440,7 @@
     <Compile Include="Code\Enumerations\EnumerationExt.cs" />
     <Compile Include="Code\Enumerations\IEnumeration.cs" />
     <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
-    <Compile Include="Code\ForVoterAttribute.cs" />
+    <Compile Include="Code\AllowVoterAttribute.cs" />
     <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
     <Compile Include="Code\Helpers\MvcViewRenderer.cs" />
     <Compile Include="Code\Helpers\UrlAdjuster.cs" />

@@ -1,4 +1,4 @@
-﻿var PeopleHelper = function (url, forBallotEntry) {
+﻿var PeopleHelper = function (url, forBallotEntry, forVoter) {
     var debugSearch = false;
     var local = {
         url: url,
@@ -18,7 +18,7 @@
 
     function startLoadingAllNames(cb) {
         ShowStatusDisplay('Loading names list');
-        CallAjaxHandler(local.url + '/GetAll',
+      CallAjaxHandler(local.url + '/' + (forVoter ? 'GetForVoter' : 'GetAll'),
             {},
             function (info) {
                 if (info.Error) {
@@ -110,10 +110,15 @@
         // decode compressed info from the server
         //if (p.Id === 25068) debugger;
 
-        p.CanReceiveVotes = p.V[0] === '1';
-        p.CanVote = p.V[1] === '1';
         p.Ineligible = p.IRG;
         p.classesList = [];
+
+        if (forVoter) {
+          p.CanReceiveVotes = !p.Ineligible;
+        } else {
+          p.CanReceiveVotes = p.V[0] === '1';
+          p.CanVote = p.V[1] === '1';
+        }
 
         if (p.NumVotes > local.maxVotes) local.maxVotes = p.NumVotes;
 

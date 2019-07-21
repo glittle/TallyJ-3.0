@@ -1,4 +1,10 @@
-﻿#voterPage1 {
+﻿@band1: lightyellow;
+@band2: lightgoldenrodyellow;
+@future: palegreen;
+@now: greenyellow;
+@past: lightcoral;
+
+#voterPage1 {
   .electionList {
     border-collapse: separate;
     border-spacing: 1px 2px;
@@ -8,55 +14,67 @@
     }
 
     .ename {
-      background-color: lightyellow;
+      background-color: @band1;
     }
 
     .pname {
-      background-color: lightyellow;
+      background-color: @band1;
     }
 
     .online {
-      background-color: lightgoldenrodyellow;
+      background-color: @band2;
     }
 
     .vmethod {
-      background-color: lightgoldenrodyellow;
+      background-color: @band2;
     }
 
     .vtime {
-      background-color: lightyellow;
+      background-color: @band1;
     }
 
     .center {
       text-align: center;
     }
+  }
 
-    .future {
-      .online {
-        background-color: palegreen;
-      }
+  .future {
+    .online {
+      background-color: @future;
     }
+  }
 
-    .now {
-      .online {
-        background-color: greenyellow;
-      }
+  .now {
+    .online {
+      background-color: @now;
     }
+  }
 
-    .past {
-      .online {
-        background-color: lightcoral;
-      }
+  .past {
+    .online {
+      background-color: @past;
     }
   }
 }
 
+
 #voterPage2 {
   .electionStatus {
-    background-color: greenyellow;
     padding: 0px 10px;
     position: absolute;
     top: 0;
     right: 10px;
+
+    &.future {
+      background-color: @future;
+    }
+
+    &.now {
+      background-color: @now;
+    }
+
+    &.past {
+      background-color: @past;
+    }
   }
 }
