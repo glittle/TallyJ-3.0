@@ -1,6 +1,19 @@
-﻿var vueVoterHome = {
-  vue: null,
-  voteMethods: []
+﻿var VoterHome = function () {
+  return {
+    vue: null,
+    voteMethods: [],
+    People: [],
+    peopleHelper: null,
+    keyTimer: null,
+    keyTime: 300,
+    lastSearch: '',
+    nameList: null,
+    rowSelected: 0,
+    template2: '<li id=P{Id}{^Classes}{^IneligibleData}>{^HtmlName}</li>',
+    prepare: function () {
+      this.peopleHelper = new PeopleHelper(this.peopleUrl, false, true);
+    }
+  }
 };
 var vueOptions = {
   el: '#body',
@@ -8,12 +21,16 @@ var vueOptions = {
     return {
       elections: [],
       election: {},
+      searchText: '',
       loading: true,
       activePage: 1,
       keepStatusCurrent: false
     };
   },
   watch: {
+    searchText: function(a, b) {
+      this.updateSearch();
+    }
   },
   mounted: function () {
     this.getElectionList();
@@ -35,7 +52,7 @@ var vueOptions = {
             }
 
             // for dev, go to first election
-            setTimeout(function() {
+            setTimeout(function () {
               vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
             }, 750);
           } else {
@@ -48,7 +65,7 @@ var vueOptions = {
       return list;
     },
     updateStatuses: function () {
-      console.log('update status');
+      //      console.log('update status');
       this.elections.forEach(this.updateStatus);
     },
     updateStatus: function (info) {
@@ -96,7 +113,7 @@ var vueOptions = {
         person.RegistrationTime_M = moment(person.RegistrationTime);
         person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
       }
-      person.VotingMethod_Display = vueVoterHome.methods[person.VotingMethod] || person.VotingMethod || '-';
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
       this.updateStatus(info);
     },
     manageBallot: function (eInfo) {
@@ -105,14 +122,45 @@ var vueOptions = {
       }
       this.election = eInfo;
       this.activePage = 2;
+
+      CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
+        {
+          electionGuid: eInfo.id
+        },
+        function (info) {
+          if (info.open) {
+            voterHome.peopleHelper.Prepare(function (info) {
+
+              debugger;
+              //        if (totalOnFile < 25) {
+              //          specialSearch('All');
+              //        } else {
+              //          nameList.html('<li class=Match5>(Ready for searching)</li>');
+              //        }
+              //        inputField.prop('disabled', false);
+              //        inputField.focus();
+            });
+          }
+          else if (info.closed) {
+            // show closed... show info if available
+          } else {
+            ShowStatusFailed(info.Error);
+          }
+        });
     },
-    closeBallot: function() {
+    closeBallot: function () {
       this.activePage = 1;
       this.election = {};
+    },
+    updateSearch: function() {
+      console.log(this.searchText);
     }
   }
 };
 
+var voterHome = new VoterHome();
+
 $(function () {
-  vueVoterHome.vue = new Vue(vueOptions);
+  voterHome.prepare();
+  voterHome.vue = new Vue(vueOptions);
 });

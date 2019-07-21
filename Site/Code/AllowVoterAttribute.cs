@@ -3,7 +3,7 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.Code
 {
-  public class ForVoterAttribute : AuthorizeAttribute
+  public class AllowVoterAttribute : AuthorizeAttribute
   {
     protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
     {
