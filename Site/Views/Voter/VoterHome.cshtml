@@ -21,7 +21,7 @@
 
 <div id="voterPage1" v-if="activePage === 1">
   <p>
-    Hello! You are using email address <strong>@UserSession.VoterEmail</strong> as verified by @UserSession.VoterAuthSource.
+    Hello! Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
   </p>
 
   <div v-if="loading">Looking for your email address in elections...</div>
@@ -35,7 +35,7 @@
         <th class="ename">Election</th>
         <th class="online">Election Status</th>
         <th class="pname">Your Name in the Election</th>
-        <th class="vmethod">How you voted</th>
+        <th class="vmethod">Your voting method</th>
         <th class="vtime">When your ballot was received</th>
       </tr>
     </thead>
@@ -62,13 +62,32 @@
   <h2>{{election.name}}</h2>
   <h3 class="electionStatus" :class="election.classes" v-html="election.Status_Display"></h3>
   <button v-on:click="closeBallot">Return</button>
-  <div>
-    Fill Pool
-    <input type="text" v-model="searchText"/>
+  <div class="poolBuilder">
+    <div>
+      <h2>Fill Pool</h2>
+      <div>
+        Search:
+        <input type="text" v-model="searchText"/>
+      </div>
 
-    <ul id="nameList">
-      <li v-for="p in nameList" v-bind:key="p.id" :id="'P' + p.Id" v-html="p.HtmlName" v-bind:class="[p.Classes, p.CanReceiveVotes ? '' : 'Ineligible']"></li>
-    </ul>
+      <ul id="nameList">
+        <li v-for="p in nameList" 
+            v-bind:key="p.Id" 
+            :id="'P' + p.Id" 
+            v-html="p.HtmlName" 
+            v-on:click="nameClick(p)"
+            v-bind:class="[p.Classes, p.CanReceiveVotes ? 'Ok' : 'NoVotes', p.inPool ? 'inPool' : 'notInPool']"></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Pool</h2>
+      <div id="pool">
+        <div v-for="p in pool" v-bind:key="p.Id">
+          <span class="removeFromPool" v-on:click="removeFromPool(p)">x</span>
+          <span v-html="p.Name"></span>
+        </div>
+      </div>
+    </div>
   </div>
   <div>
     Lock in?

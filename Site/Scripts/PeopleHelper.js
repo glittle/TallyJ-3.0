@@ -1,4 +1,4 @@
-﻿var PeopleHelper = function (url, forBallotEntry, forVoter) {
+﻿var PeopleHelper = function (url, forBallotEntry, forVoter, customExtendPerson) {
     var debugSearch = false;
     var local = {
         url: url,
@@ -131,7 +131,11 @@
         p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
         p.parts = p.namePlain.split(local.nameSplitter); 
 
-        p.soundParts = p.parts.map(soundex.process);
+      p.soundParts = p.parts.map(soundex.process);
+
+      if (customExtendPerson) {
+        customExtendPerson(p);
+      }
     }
 
     function special(code, cbAfter) {

@@ -59,6 +59,31 @@
 
 
 #voterPage2 {
+  #nameList {
+    cursor: default;
+    margin-right: 20px;
+
+    li {
+      &.inPool {
+        background-color: rgba(0,255,0,0.2);
+      }
+
+      &.notInPool {
+        &.Ok {
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba(0,0,0,0.1);
+          }
+        }
+
+        &.NoVotes {
+          background-color: rgba(128,0,0,0.1);
+        }
+      }
+    }
+  }
+
   .electionStatus {
     padding: 0px 10px;
     position: absolute;
@@ -76,5 +101,28 @@
     &.past {
       background-color: @past;
     }
+  }
+
+  .poolBuilder {
+    display: flex;
+    justify-content: space-between;
+
+    > div {
+      flex: 50%;
+    }
+  }
+
+  #pool{
+    > div{
+      margin: 1px 0;
+      padding: 2px 0;
+    }
+
+  }
+
+  .removeFromPool {
+    margin-right: 5px;
+    color: red;
+    cursor: pointer;
   }
 }

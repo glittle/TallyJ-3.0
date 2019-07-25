@@ -8,7 +8,10 @@
     keyTime: 300,
     rowSelected: 0,
     prepare: function () {
-      this.peopleHelper = new PeopleHelper(this.peopleUrl, false, true);
+      this.peopleHelper = new PeopleHelper(this.peopleUrl, false, true, this.customExtendPerson);
+    },
+    customExtendPerson: function (p) {
+      p.inPool = false;
     }
   };
 };
@@ -21,6 +24,7 @@ var vueOptions = {
       lastSearch: '',
       searchText: '',
       nameList: [],
+      pool: [],
       loading: true,
       activePage: 1,
       keepStatusCurrent: false
@@ -119,6 +123,7 @@ var vueOptions = {
       if (!eInfo) {
         return;
       }
+      var vue = this;
       this.election = eInfo;
       this.activePage = 2;
 
@@ -129,7 +134,7 @@ var vueOptions = {
         function (info) {
           if (info.open) {
             voterHome.peopleHelper.Prepare(function (info) {
-
+              vue.loadPool();
               console.log('ready to search');
               //        if (totalOnFile < 25) {
               //          specialSearch('All');
@@ -168,37 +173,37 @@ var vueOptions = {
       return;
 
       //      $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
-
-      if (!local.People.length && local.lastSearch) {
-        local.nameList.append('<li>...no matches found...</li>');
-      }
-      else {
-        //if (info.MoreFound && local.lastSearch) {
-        //  local.nameList.append('<li>...more matched...</li>');
-        //}
-        if (local.showPersonId) {
-          local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
-          local.showPersonId = 0;
-        } else if (local.selectByVoteCount) {
-          $.each(local.People, function (i, item) {
-            if (item.NumVotes && !local.maintainCurrentRow) {
-              local.rowSelected = i;
-            }
-          });
-        }
-      }
-      local.maintainCurrentRow = false;
-      local.actionTag.removeClass('searching');
-      local.inputField.removeClass('searching');
-      local.actionTag.removeClass('delaying');
-      local.inputField.removeClass('delaying');
-
-      // if none selected, selects first name
-      var selectedName = local.nameList.children().eq(local.rowSelected);
-      selectedName.addClass('selected');
-      if (local.rowSelected) {
-        scrollIntoView(selectedName, local.nameList);
-      }
+//
+//      if (!local.People.length && local.lastSearch) {
+//        local.nameList.append('<li>...no matches found...</li>');
+//      }
+//      else {
+//        //if (info.MoreFound && local.lastSearch) {
+//        //  local.nameList.append('<li>...more matched...</li>');
+//        //}
+//        if (local.showPersonId) {
+//          local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
+//          local.showPersonId = 0;
+//        } else if (local.selectByVoteCount) {
+//          $.each(local.People, function (i, item) {
+//            if (item.NumVotes && !local.maintainCurrentRow) {
+//              local.rowSelected = i;
+//            }
+//          });
+//        }
+//      }
+//      local.maintainCurrentRow = false;
+//      local.actionTag.removeClass('searching');
+//      local.inputField.removeClass('searching');
+//      local.actionTag.removeClass('delaying');
+//      local.inputField.removeClass('delaying');
+//
+//      // if none selected, selects first name
+//      var selectedName = local.nameList.children().eq(local.rowSelected);
+//      selectedName.addClass('selected');
+//      if (local.rowSelected) {
+//        scrollIntoView(selectedName, local.nameList);
+//      }
     },
     resetSearch: function () {
       this.searchText = '';
@@ -210,12 +215,50 @@ var vueOptions = {
       //        MoreFound: moreFound(local.totalOnFile)
       //      });
     },
+    nameClick: function (p) {
+      // to do - check for duplicates 
+      if (p.inPool) return;
+      if (!p.CanReceiveVotes) return;
+
+      p.inPool = true;
+      //console.log(p);
+      this.pool.unshift(p);
+      this.savePool();
+    },
+    removeFromPool: function (p) {
+      var where = this.pool.findIndex(function (i) { return i.Id === p.Id; });
+      if (where !== -1) {
+        this.pool.splice(where, 1);
+        p.inPool = false;
+        this.savePool();
+      }
+    },
     closeBallot: function () {
       this.activePage = 1;
       this.election = {};
     },
     updateSearch: function () {
       console.log(this.searchText);
+    },
+    savePool: function() {
+      // temp
+      localStorage.pool = this.pool.map(function(p) { return p.Id }).join(',');
+    },
+    loadPool: function () {
+      var vue = this;
+      this.nameList.forEach(function(p) {
+        p.inPool = false;
+      });
+      vue.pool = [];
+      var list = (localStorage.pool || '').split(',').map(function(s) { return +s; });
+      list.forEach(function(id) {
+        var p = voterHome.peopleHelper.local.localNames.find(function(p) { return p.Id === id; });
+        if (p) {
+          p.inPool = true;
+          vue.pool.push(p);
+          console.log(p);
+        }
+      });
     }
   }
 };
