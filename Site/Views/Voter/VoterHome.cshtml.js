@@ -12,6 +12,7 @@
     },
     customExtendPerson: function (p) {
       p.inPool = false;
+      p.moving = false;
     }
   };
 };
@@ -25,10 +26,17 @@ var vueOptions = {
       searchText: '',
       nameList: [],
       pool: [],
+      numToElect: 0,
+      movingInPool: false,
       loading: true,
       activePage: 1,
       keepStatusCurrent: false
     };
+  },
+  computed: {
+    lastInTop: function () {
+      return this.numToElect - 1;
+    }
   },
   watch: {
     searchText: function (a, b) {
@@ -133,9 +141,11 @@ var vueOptions = {
         },
         function (info) {
           if (info.open) {
+
+            vue.numToElect = info.NumberToElect;
+
             voterHome.peopleHelper.Prepare(function (info) {
               vue.loadPool();
-              console.log('ready to search');
               //        if (totalOnFile < 25) {
               //          specialSearch('All');
               //        } else {
@@ -173,37 +183,37 @@ var vueOptions = {
       return;
 
       //      $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
-//
-//      if (!local.People.length && local.lastSearch) {
-//        local.nameList.append('<li>...no matches found...</li>');
-//      }
-//      else {
-//        //if (info.MoreFound && local.lastSearch) {
-//        //  local.nameList.append('<li>...more matched...</li>');
-//        //}
-//        if (local.showPersonId) {
-//          local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
-//          local.showPersonId = 0;
-//        } else if (local.selectByVoteCount) {
-//          $.each(local.People, function (i, item) {
-//            if (item.NumVotes && !local.maintainCurrentRow) {
-//              local.rowSelected = i;
-//            }
-//          });
-//        }
-//      }
-//      local.maintainCurrentRow = false;
-//      local.actionTag.removeClass('searching');
-//      local.inputField.removeClass('searching');
-//      local.actionTag.removeClass('delaying');
-//      local.inputField.removeClass('delaying');
-//
-//      // if none selected, selects first name
-//      var selectedName = local.nameList.children().eq(local.rowSelected);
-//      selectedName.addClass('selected');
-//      if (local.rowSelected) {
-//        scrollIntoView(selectedName, local.nameList);
-//      }
+      //
+      //      if (!local.People.length && local.lastSearch) {
+      //        local.nameList.append('<li>...no matches found...</li>');
+      //      }
+      //      else {
+      //        //if (info.MoreFound && local.lastSearch) {
+      //        //  local.nameList.append('<li>...more matched...</li>');
+      //        //}
+      //        if (local.showPersonId) {
+      //          local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
+      //          local.showPersonId = 0;
+      //        } else if (local.selectByVoteCount) {
+      //          $.each(local.People, function (i, item) {
+      //            if (item.NumVotes && !local.maintainCurrentRow) {
+      //              local.rowSelected = i;
+      //            }
+      //          });
+      //        }
+      //      }
+      //      local.maintainCurrentRow = false;
+      //      local.actionTag.removeClass('searching');
+      //      local.inputField.removeClass('searching');
+      //      local.actionTag.removeClass('delaying');
+      //      local.inputField.removeClass('delaying');
+      //
+      //      // if none selected, selects first name
+      //      var selectedName = local.nameList.children().eq(local.rowSelected);
+      //      selectedName.addClass('selected');
+      //      if (local.rowSelected) {
+      //        scrollIntoView(selectedName, local.nameList);
+      //      }
     },
     resetSearch: function () {
       this.searchText = '';
@@ -240,26 +250,60 @@ var vueOptions = {
     updateSearch: function () {
       console.log(this.searchText);
     },
-    savePool: function() {
-      // temp
-      localStorage.pool = this.pool.map(function(p) { return p.Id }).join(',');
+    keydown: function (p, i, ev) {
+      console.log(p, i, ev);
+      var vue = this;
+      var beingMoved;
+      switch (ev.code) {
+        case 'Enter':
+          vue.movingInPool = !vue.movingInPool;
+          p.moving = vue.movingInPool;
+          return;
+        case 'ArrowDown':
+          ev.preventDefault();
+          if (vue.movingInPool) {
+            if (i < vue.pool.length - 1) {
+              beingMoved = vue.pool.splice(i, 1)[0];
+              vue.pool.splice(i + 1, 0, beingMoved);
+              vue.$refs['p' + beingMoved.Id][0].focus();
+            }
+          }
+          break;
+        case 'ArrowUp':
+          ev.preventDefault();
+          if (vue.movingInPool) {
+            if (i > 0) {
+              beingMoved = vue.pool.splice(i, 1)[0];
+              vue.pool.splice(i - 1, 0, beingMoved);
+              vue.$refs['p' + beingMoved.Id][0].focus();
+            }
+          }break;
+      }
+
+    },
+    savePool: function () {
+      var list = this.pool.map(function (p) { return p.Id }).join(',');
+      if (localStorage.pool !== list) {
+        // temp
+        localStorage.pool = list;
+      }
     },
     loadPool: function () {
       var vue = this;
-      this.nameList.forEach(function(p) {
+      this.nameList.forEach(function (p) {
         p.inPool = false;
       });
       vue.pool = [];
-      var list = (localStorage.pool || '').split(',').map(function(s) { return +s; });
-      list.forEach(function(id) {
-        var p = voterHome.peopleHelper.local.localNames.find(function(p) { return p.Id === id; });
+      var list = (localStorage.pool || '').split(',').map(function (s) { return +s; });
+      list.forEach(function (id) {
+        var p = voterHome.peopleHelper.local.localNames.find(function (p) { return p.Id === id; });
         if (p) {
           p.inPool = true;
           vue.pool.push(p);
           console.log(p);
         }
       });
-    }
+    },
   }
 };
 

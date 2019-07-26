@@ -74,6 +74,7 @@ namespace TallyJ.Controllers
         return new
         {
           open = true,
+          UserSession.CurrentElection.NumberToElect,
           votingInfo
         }.AsJsonResult();
       }

@@ -110,14 +110,61 @@
     > div {
       flex: 50%;
     }
+
+    .searchBox {
+      width: 200px;
+    }
   }
 
-  #pool{
-    > div{
-      margin: 1px 0;
-      padding: 2px 0;
-    }
+  .movingInPool {
+    #pool {
+      div:active {
+        color: green;
+      }
 
+      div:focus {
+        color: red;
+      }
+    }
+  }
+
+  #pool {
+    > div {
+      font-size: 110%;
+      margin: 4px 0;
+      padding: 3px 0;
+      display: flex;
+      cursor: ns-resize;
+      border: 1px solid transparent;
+
+      &.sortable-ghost {
+        background-color: lightgoldenrodyellow;
+        visibility: hidden;
+      }
+
+      &.moving {
+        border-color: black;
+      }
+
+      &.inTop {
+        background-color: greenyellow;
+      }
+
+      &.lastInTop {
+        border-bottom: double 3px darkgray;
+      }
+
+      &.inOther {
+      }
+
+      span {
+        width: 30px;
+      }
+
+      div {
+        flex-grow: 2;
+      }
+    }
   }
 
   .removeFromPool {

@@ -8,7 +8,9 @@
   {
     ClientFile("~/Scripts/vue{0}.js", ".min"),
     ClientFile("~/Scripts/BadiDateToday.v1.js"),
-    ClientFile("~/Scripts/PeopleHelper.js")
+    ClientFile("~/Scripts/PeopleHelper.js"),
+    "//cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js",
+    "//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"
   };
 
   ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
@@ -67,26 +69,34 @@
       <h2>Fill Pool</h2>
       <div>
         Search:
-        <input type="text" v-model="searchText"/>
+        <input type="text" v-model="searchText" class="searchBox" />
+        <button v-on:click="searchText = ''">Clear</button>
       </div>
 
       <ul id="nameList">
-        <li v-for="p in nameList" 
-            v-bind:key="p.Id" 
-            :id="'P' + p.Id" 
-            v-html="p.HtmlName" 
+        <li v-for="p in nameList"
+            v-bind:key="p.Id"
+            :id="'P' + p.Id"
+            v-html="p.HtmlName"
             v-on:click="nameClick(p)"
             v-bind:class="[p.Classes, p.CanReceiveVotes ? 'Ok' : 'NoVotes', p.inPool ? 'inPool' : 'notInPool']"></li>
       </ul>
     </div>
-    <div>
+    <div v-bind:class="[movingInPool ? 'moving' : '']">
       <h2>Pool</h2>
-      <div id="pool">
-        <div v-for="p in pool" v-bind:key="p.Id">
-          <span class="removeFromPool" v-on:click="removeFromPool(p)">x</span>
-          <span v-html="p.Name"></span>
-        </div>
-      </div>
+      <p>Top {{numToElect}} will be put on your ballot.</p>
+      <p>Sort this list using your mouse. To use a keyboard, press Tab to focus and Enter to select then Up and Down to move.</p>
+        <draggable id="pool" v-model="pool" v-on:end="savePool">
+          <div v-for="(p, i) in pool" 
+               :key="p.id" 
+               tabindex="0"
+               v-on:keydown="keydown(p, i, $event)"
+               v-bind:ref="'p' + p.Id"
+               v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop lastInTop' : 'inOther', p.moving ? 'moving' : '' ]">
+            <div v-html="p.Name"></div>
+            <span class="removeFromPool" v-on:click="removeFromPool(p)">x</span>
+          </div>
+        </draggable>
     </div>
   </div>
   <div>
