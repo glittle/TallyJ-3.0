@@ -29,7 +29,7 @@ namespace TallyJ
 
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-      AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+      AntiForgeryConfig.UniqueClaimTypeIdentifier = "Email"; // ClaimTypes.NameIdentifier;
 
       app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
@@ -38,45 +38,17 @@ namespace TallyJ
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie
       });
 
-      //            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
-      //            var cookieOptions = new CookieAuthenticationOptions
-      //            {
-      //                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-      //                LoginPath = new PathString("/Account/Connect")
-      //            };
-      //            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ApplicationCookie);
+      if (AppSettings["facebook-AppId"].HasNoContent())
+      {
+        throw new ApplicationException("Missing app settings");
+      }
 
-      //            app.Use<WordPressAuthenticationProvider>(null);
       app.UseGoogleAuthentication(CreateGoogleOptions());
-      //            app.UseFacebookAuthentication(CreateFacebookOptions());
-      app.Use((object) typeof(CustomFacebookAuthenticationMiddleware), (object) app, CreateFacebookOptions());
-
+      app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
 
       //            app.UseSpotifyAuthentication()
       //            app.UseCookieAuthentication(CreateCookiesOptions());
     }
-
-    //        private CookieAuthenticationOptions CreateCookiesOptions()
-    //        {
-    //            var options = new CookieAuthenticationOptions
-    //            {
-    //                LoginPath = new PathString("/Dashboard"),
-    //                Provider = new CookieAuthenticationProvider
-    //                {
-    //                    OnResponseSignIn = signInContext =>
-    //                    {
-    //                        var x = 0;
-    //                    },
-    //                    OnValidateIdentity = identityContext =>
-    //                    {
-    //                        var x = 0;
-    //                        return Task.FromResult(0);
-    //                    },
-    //                }
-    //            };
-    //
-    //            return options;
-    //        }
 
     private CustomFacebookAuthenticationOptions CreateFacebookOptions()
     {
@@ -90,21 +62,6 @@ namespace TallyJ
 
       options.Provider = new FacebookAuthenticationProvider
       {
-        //                OnReturnEndpoint = context =>
-        //                {
-        //                    var x = 1;
-        //                    return Task.FromResult(0);
-        //                },
-        //                OnApplyRedirect = context =>
-        //                {
-        ////                    var x = 1;
-        ////                    context.Properties.Dictionary["auth_type"] = "rerequest";
-        ////
-        ////                    context.Options.Fields.Clear();
-        ////                    context.Options.Scope.Clear();
-        ////                    context.Options.Scope.Add("email");
-        //
-        //                },
         OnAuthenticated = authContext =>
         {
           var email = (string) authContext.User["email"];
@@ -116,7 +73,7 @@ namespace TallyJ
             {
               new Claim("Source", "Facebook"),
               new Claim("Email", email),
-              new Claim("IsVoter", gotEmail ? "True" : null),
+              new Claim("IsVoter", "True"), // Facebook doesn't show if verified
             }, DefaultAuthenticationTypes.ExternalCookie);
 
             authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()
@@ -157,7 +114,7 @@ namespace TallyJ
           {
             new Claim("Source", "Google"),
             new Claim("Email", email),
-            new Claim("IsVoter", emailIsVerified),
+            new Claim("IsVoter",  emailIsVerified),
           }, DefaultAuthenticationTypes.ExternalCookie);
 
           authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()

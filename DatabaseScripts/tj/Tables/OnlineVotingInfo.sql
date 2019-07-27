@@ -8,7 +8,7 @@
     [Status]            VARCHAR (10)     NOT NULL,
     [WhenStatus]        DATETIME2 (0)    NULL,
     [ListPool]          varchar(max)     NULL,
-    [ListVotes]         varchar(max)     NULL,
+    [PoolLocked]         BIT     NULL,
     [HistoryStatus]     VARCHAR(MAX) NULL, 
     CONSTRAINT [PK_OnlineVotingInfo] PRIMARY KEY (_RowId),
 

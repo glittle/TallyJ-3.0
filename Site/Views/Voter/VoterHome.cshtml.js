@@ -26,9 +26,14 @@ var vueOptions = {
       searchText: '',
       nameList: [],
       pool: [],
+      savedPool: '',
+      savedLock: false,
       numToElect: 0,
-      movingInPool: false,
+      movingInPool: null,
+      lockInVotes: null,
+      searchResultRow: 0,
       loading: true,
+      saveDelay: null,
       activePage: 1,
       keepStatusCurrent: false
     };
@@ -41,6 +46,22 @@ var vueOptions = {
   watch: {
     searchText: function (a, b) {
       this.runSearch();
+    },
+    lockInVotes: function (a) {
+      var vue = this;
+      if (a !== vue.savedLock) {
+        CallAjaxHandler(GetRootUrl() + 'Voter/LockPool',
+          {
+            locked: a
+          }, function (info) {
+            if (info.success) {
+              vue.savedLock = a;
+              ShowStatusSuccess('Saved');
+            } else {
+              ShowStatusFailed(info.Error);
+            }
+          });
+      }
     }
   },
   mounted: function () {
@@ -65,7 +86,8 @@ var vueOptions = {
             // for dev, go to first election
             setTimeout(function () {
               vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
-            }, 750);
+            },
+              750);
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -83,7 +105,7 @@ var vueOptions = {
       info.openNow = false;
 
       if (info.online) {
-        this.keepStatusCurrent = true;  // found one that is online
+        this.keepStatusCurrent = true; // found one that is online
 
         var o = info.online;
         o.WhenClose_M = moment(o.WhenClose); // if no date, will be invalid
@@ -93,13 +115,11 @@ var vueOptions = {
           // future
           info.Status_Display = 'Will open ' + o.WhenOpen_M.fromNow();
           info.classes = ['future'];
-        }
-        else if (o.WhenClose_M.isBefore()) {
+        } else if (o.WhenClose_M.isBefore()) {
           // past
           info.Status_Display = 'Closed ' + o.WhenClose_M.fromNow();
           info.classes = ['past'];
-        }
-        else if (o.WhenOpen_M.isBefore() && o.WhenClose_M.isAfter()) {
+        } else if (o.WhenOpen_M.isBefore() && o.WhenClose_M.isAfter()) {
           // now
           info.classes = ['now'];
           info.openNow = true;
@@ -141,21 +161,16 @@ var vueOptions = {
         },
         function (info) {
           if (info.open) {
+            var locked = !!info.votingInfo.PoolLocked;
+            vue.savedLock = locked;
+            vue.lockInVotes = locked;
 
             vue.numToElect = info.NumberToElect;
 
-            voterHome.peopleHelper.Prepare(function (info) {
-              vue.loadPool();
-              //        if (totalOnFile < 25) {
-              //          specialSearch('All');
-              //        } else {
-              //          nameList.html('<li class=Match5>(Ready for searching)</li>');
-              //        }
-              //        inputField.prop('disabled', false);
-              //        inputField.focus();
+            voterHome.peopleHelper.Prepare(function (info2) {
+              vue.loadPool(info.votingInfo.ListPool);
             });
-          }
-          else if (info.closed) {
+          } else if (info.closed) {
             // show closed... show info if available
           } else {
             ShowStatusFailed(info.Error);
@@ -176,56 +191,59 @@ var vueOptions = {
       this.lastSearch = text;
       voterHome.peopleHelper.Search(text, this.displaySearchResults);
     },
+    navigating: function (ev) {
+      switch (ev.which) {
+        case 38: // up
+          this.moveSelected(-1);
+          ev.preventDefault();
+          return true;
+
+        case 40: // down
+          this.moveSelected(1);
+          ev.preventDefault();
+          return true;
+
+        case 13: // enter
+          this.addToPool(this.nameList[this.searchResultRow]);
+          ev.preventDefault();
+          return false;
+
+        default:
+      }
+      return false;
+    },
+    moveSelected: function (delta) {
+      //      var children = local.nameList.children();
+      //      var numChildren = children.length;
+      //      if (children.eq(numChildren - 1).text() == '...') { numChildren--; }
+      this.searchResultRow += delta;
+
+      if (this.searchResultRow < 0) {
+        this.searchResultRow = 0;
+      } else if (this.searchResultRow >= this.pool.length) {
+        this.searchResultRow = this.pool.length - 1;
+      }
+      //      var rowNum = this.searchResultRow;
+      //      rowNum = rowNum + delta;
+      //      if (rowNum < 0) { rowNum = numChildren - 1; }
+      //      if (rowNum >= numChildren) { rowNum = 0; }
+      //      setSelected(children, rowNum);
+    },
+    specialSearch: function (code) {
+      this.resetSearch();
+      voterHome.peopleHelper.Special(code, this.displaySearchResults);
+    },
     displaySearchResults: function (info) {
       voterHome.People = info.People;
       this.nameList = voterHome.People;
 
-      return;
-
-      //      $('#more').html(info.MoreFound || moreFound(local.totalOnFile));
-      //
-      //      if (!local.People.length && local.lastSearch) {
-      //        local.nameList.append('<li>...no matches found...</li>');
-      //      }
-      //      else {
-      //        //if (info.MoreFound && local.lastSearch) {
-      //        //  local.nameList.append('<li>...more matched...</li>');
-      //        //}
-      //        if (local.showPersonId) {
-      //          local.rowSelected = local.nameList.find('#P' + local.showPersonId).index();
-      //          local.showPersonId = 0;
-      //        } else if (local.selectByVoteCount) {
-      //          $.each(local.People, function (i, item) {
-      //            if (item.NumVotes && !local.maintainCurrentRow) {
-      //              local.rowSelected = i;
-      //            }
-      //          });
-      //        }
-      //      }
-      //      local.maintainCurrentRow = false;
-      //      local.actionTag.removeClass('searching');
-      //      local.inputField.removeClass('searching');
-      //      local.actionTag.removeClass('delaying');
-      //      local.inputField.removeClass('delaying');
-      //
-      //      // if none selected, selects first name
-      //      var selectedName = local.nameList.children().eq(local.rowSelected);
-      //      selectedName.addClass('selected');
-      //      if (local.rowSelected) {
-      //        scrollIntoView(selectedName, local.nameList);
-      //      }
+      this.searchResultRow = 0;
     },
     resetSearch: function () {
       this.searchText = '';
       this.lastSearch = '';
-      //      local.actionTag.removeClass('delaying');
-      //      local.inputField.removeClass('delaying');
-      //      displaySearchResults({
-      //        People: [],
-      //        MoreFound: moreFound(local.totalOnFile)
-      //      });
     },
-    nameClick: function (p) {
+    addToPool: function (p) {
       // to do - check for duplicates 
       if (p.inPool) return;
       if (!p.CanReceiveVotes) return;
@@ -247,60 +265,114 @@ var vueOptions = {
       this.activePage = 1;
       this.election = {};
     },
-    updateSearch: function () {
-      console.log(this.searchText);
-    },
     keydown: function (p, i, ev) {
-      console.log(p, i, ev);
+      //           console.log(p, i, ev);
       var vue = this;
       var beingMoved;
+      this.hideMouseCursor();
+
       switch (ev.code) {
         case 'Enter':
           vue.movingInPool = !vue.movingInPool;
+          this.pool.forEach(function (x) { x.moving = false; });
           p.moving = vue.movingInPool;
           return;
+        case 'Delete':
+          vue.pool.splice(i, 1);
+          // focus on new one
+          beingMoved = vue.pool[i];
+          break;
         case 'ArrowDown':
           ev.preventDefault();
-          if (vue.movingInPool) {
-            if (i < vue.pool.length - 1) {
+          if (i < vue.pool.length - 1) {
+            if (vue.movingInPool) {
               beingMoved = vue.pool.splice(i, 1)[0];
               vue.pool.splice(i + 1, 0, beingMoved);
-              vue.$refs['p' + beingMoved.Id][0].focus();
+            } else {
+              // move cursor
+              var next = ev.target.nextElementSibling;
+              if (next) {
+                setTimeout(function () {
+                  next.focus();
+                },
+                  0);
+              }
             }
           }
           break;
         case 'ArrowUp':
           ev.preventDefault();
-          if (vue.movingInPool) {
-            if (i > 0) {
+          if (i > 0) {
+            if (vue.movingInPool) {
               beingMoved = vue.pool.splice(i, 1)[0];
               vue.pool.splice(i - 1, 0, beingMoved);
-              vue.$refs['p' + beingMoved.Id][0].focus();
+            } else {
+              // move cursor
+              var prev = ev.target.previousElementSibling;
+              if (prev) {
+                setTimeout(function () {
+                  prev.focus();
+                },
+                  0);
+              }
             }
-          }break;
+          }
+          break;
       }
 
-    },
-    savePool: function () {
-      var list = this.pool.map(function (p) { return p.Id }).join(',');
-      if (localStorage.pool !== list) {
-        // temp
-        localStorage.pool = list;
+      if (beingMoved) {
+        setTimeout(function () {
+          vue.$refs['p' + beingMoved.Id][0].focus();
+          vue.savePool();
+        }, 0);
       }
     },
-    loadPool: function () {
+
+    hideMouseCursor: function () {
+      document.body.classList.add('noCursor');
+      document.body.requestPointerLock();
+      document.addEventListener('mousemove', this.showMouseCursor);
+    },
+    showMouseCursor: function () {
+      document.body.classList.remove('noCursor');
+      document.exitPointerLock();
+      document.removeEventListener('mousemove', this.showMouseCursor);
+    },
+    savePool: function (ev) {
+      // delay unless done by mouse 
+      var delay = ev && ev.type ? 0 : 750;
+      var vue = this;
+      clearTimeout(vue.saveDelay);
+      vue.saveDelay = setTimeout(function () {
+        var list = vue.pool.map(function (p) { return p.Id; }).join(',');
+        if (vue.savedPool !== list) {
+          CallAjaxHandler(GetRootUrl() + 'Voter/SavePool',
+            {
+              pool: list
+            }, function (info) {
+              if (info.success) {
+                ShowStatusSuccess('Saved');
+                vue.savedPool = list;
+              } else {
+                ShowStatusFailed(info.Error);
+              }
+            });
+        }
+      }, delay);
+    },
+    loadPool: function (savedList) {
       var vue = this;
       this.nameList.forEach(function (p) {
         p.inPool = false;
       });
       vue.pool = [];
-      var list = (localStorage.pool || '').split(',').map(function (s) { return +s; });
+      var list = (savedList || '').split(',').map(function (s) { return +s; });
       list.forEach(function (id) {
         var p = voterHome.peopleHelper.local.localNames.find(function (p) { return p.Id === id; });
         if (p) {
           p.inPool = true;
           vue.pool.push(p);
-          console.log(p);
+          //          console.log(p);
         }
       });
     },

@@ -40,7 +40,7 @@
           <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="WhenStatus" Type="datetime2" Precision="0" />
           <Property Name="ListPool" Type="varchar(max)" />
-          <Property Name="ListVotes" Type="varchar(max)" />
+          <Property Name="PoolLocked" Type="bit" />
           <Property Name="HistoryStatus" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Users">
@@ -655,7 +655,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Status" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="WhenStatus" Type="DateTime" Precision="0" />
           <Property Name="ListPool" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ListVotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PoolLocked" Type="Boolean" />
           <Property Name="HistoryStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
@@ -938,7 +938,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVotingInfo">
               <MappingFragment StoreEntitySet="OnlineVotingInfo">
                 <ScalarProperty Name="HistoryStatus" ColumnName="HistoryStatus" />
-                <ScalarProperty Name="ListVotes" ColumnName="ListVotes" />
+                <ScalarProperty Name="PoolLocked" ColumnName="PoolLocked" />
                 <ScalarProperty Name="ListPool" ColumnName="ListPool" />
                 <ScalarProperty Name="WhenStatus" ColumnName="WhenStatus" />
                 <ScalarProperty Name="Status" ColumnName="Status" />

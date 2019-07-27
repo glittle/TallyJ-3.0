@@ -3,11 +3,17 @@ using TallyJ.Code.Session;
 
 namespace TallyJ.Code
 {
-  public class AllowVoterAttribute : AuthorizeAttribute
+  public class AllowVoterAttribute : ActionFilterAttribute
   {
-    protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
+    public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
-      return UserSession.IsVoter;
+      var okay = UserSession.IsVoter;
+      if (!okay)
+      {
+        filterContext.Result = new RedirectResult("~/");
+        filterContext.HttpContext.Response.StatusCode = 302;
+        //        filterContext.Result = new HttpUnauthorizedResult();
+      }
     }
   }
 }

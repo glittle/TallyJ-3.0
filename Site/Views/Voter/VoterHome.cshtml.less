@@ -1,8 +1,27 @@
 ﻿@band1: lightyellow;
 @band2: lightgoldenrodyellow;
 @future: palegreen;
-@now: greenyellow;
+@now: #7dff7a;
 @past: lightcoral;
+@top: #7dff7a;
+
+body.VoterIndex {
+  &.noCursor {
+    #voterPage2 {
+      #pool {
+        > div {
+          &:hover {
+            border-color: transparent;
+          }
+
+          &.moving {
+            border-color: rgba(0, 0, 0, .8);
+          }
+        }
+      }
+    }
+  }
+}
 
 #voterPage1 {
   .electionList {
@@ -59,13 +78,24 @@
 
 
 #voterPage2 {
+  .emptyPoolMsg {
+    font-weight: bold;
+    margin: 3em 0;
+  }
+
   #nameList {
     cursor: default;
     margin-right: 20px;
 
     li {
+      border: 1px solid transparent;
+
       &.inPool {
         background-color: rgba(0,255,0,0.2);
+      }
+
+      &.selectResult {
+        border-color: black;
       }
 
       &.notInPool {
@@ -112,7 +142,24 @@
     }
 
     .searchBox {
-      width: 200px;
+      width: 100px;
+    }
+  }
+
+  .lockIn {
+    margin: 1em 0;
+
+    > div {
+      display: flex;
+      align-items: center;
+    }
+
+    #lockN:checked + label {
+      color: red;
+    }
+
+    #lockY:checked + label {
+      background-color: @top;
     }
   }
 
@@ -128,48 +175,81 @@
     }
   }
 
+  .locked {
+    #pool {
+      > div {
+        cursor: default;
+        user-select: none;
+
+        &:hover {
+          border-color: transparent;
+          user-select: none;
+        }
+
+        &.inOther {
+          color: #bbb;
+        }
+
+        .removeFromPool {
+          visibility: hidden;
+        }
+      }
+    }
+  }
+
   #pool {
     > div {
-      font-size: 110%;
-      margin: 4px 0;
-      padding: 3px 0;
       display: flex;
+      align-items: center;
+      margin: 3px 0;
+      padding: 3px 0;
+      font-size: 110%;
+      border: 2px solid transparent;
       cursor: ns-resize;
-      border: 1px solid transparent;
+
+      &:hover {
+        border-color: grey;
+      }
 
       &.sortable-ghost {
         background-color: lightgoldenrodyellow;
         visibility: hidden;
+        transition: background-color 2s linear;
       }
 
       &.moving {
-        border-color: black;
+        border-color: rgba(0, 0, 0, .8);
+        box-shadow: inset 0 0 4px 0px rgba(0, 0, 0, .5);
       }
 
       &.inTop {
-        background-color: greenyellow;
+        background-color: @top;
+        transition: background-color 2s linear;
       }
 
-      &.lastInTop {
-        border-bottom: double 3px darkgray;
+      &.firstInOther {
+        border-top: double 3px darkgray;
       }
 
       &.inOther {
       }
 
-      span {
-        width: 30px;
+      .num {
+        width: 20px;
+        text-align: center;
+        font-size: 50%;
+        color: lightslategray;
+      }
+
+      .removeFromPool {
+        padding: 0 5px 0 10px;
+        color: #b33f1e;
+        cursor: pointer;
       }
 
       div {
         flex-grow: 2;
       }
     }
-  }
-
-  .removeFromPool {
-    margin-right: 5px;
-    color: red;
-    cursor: pointer;
   }
 }

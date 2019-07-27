@@ -7,4 +7,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HistoryWhen" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="15974564-f099-4802-9ea9-d4750c271b1a" ChangeDateTime="07/27/2019 19:49:15">
+    <Property Name="ElementName" Value="[dbo].[OnlineVotingInfo].[ListVotes]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[OnlineVotingInfo]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PoolLocked" />
+  </Operation>
 </Operations>

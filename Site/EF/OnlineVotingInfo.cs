@@ -22,7 +22,7 @@ namespace TallyJ.EF
         public string Status { get; set; }
         public Nullable<System.DateTime> WhenStatus { get; set; }
         public string ListPool { get; set; }
-        public string ListVotes { get; set; }
+        public Nullable<bool> PoolLocked { get; set; }
         public string HistoryStatus { get; set; }
     }
 }

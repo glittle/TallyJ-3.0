@@ -99,6 +99,85 @@ namespace TallyJ.Controllers
         success = true
       }.AsJsonResult();
     }
+
+    public JsonResult SavePool(string pool)
+    {
+      var electionGuid = UserSession.CurrentElectionGuid;
+      var email = UserSession.VoterEmail;
+
+      var votingInfo = Db.OnlineVotingInfo
+        .Where(ovi => ovi.ElectionGuid == electionGuid && ovi.Email == email)
+        .Join(Db.OnlineElection, ovi => ovi.ElectionGuid, oe => oe.ElectionGuid, (ovi, oe) => new { ovi, oe })
+        .SingleOrDefault();
+
+      if (votingInfo == null)
+      {
+        return new
+        {
+          Error = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      var now = DateTime.Now;
+      if (votingInfo.oe.WhenOpen <= now && votingInfo.oe.WhenClose > now)
+      {
+        votingInfo.ovi.ListPool = pool;
+        Db.SaveChanges();
+
+        // okay
+        return new
+        {
+          success = true,
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        Error = "Closed"
+      }.AsJsonResult();
+    }
+
+    public JsonResult LockPool(bool locked)
+    {
+      var electionGuid = UserSession.CurrentElectionGuid;
+      var email = UserSession.VoterEmail;
+
+      var votingInfo = Db.OnlineVotingInfo
+        .Where(ovi => ovi.ElectionGuid == electionGuid && ovi.Email == email)
+        .Join(Db.OnlineElection, ovi => ovi.ElectionGuid, oe => oe.ElectionGuid, (ovi, oe) => new { ovi, oe })
+        .SingleOrDefault();
+
+      if (votingInfo == null)
+      {
+        return new
+        {
+          Error = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      var now = DateTime.Now;
+      if (votingInfo.oe.WhenOpen <= now && votingInfo.oe.WhenClose > now)
+      {
+        votingInfo.ovi.PoolLocked = locked;
+
+        votingInfo.ovi.Status = locked ? "Locked" : "Unlocked";
+        votingInfo.ovi.HistoryStatus += ";{0}|{0}".FilledWith(votingInfo.ovi.Status, now.ToJSON());
+
+        Db.SaveChanges();
+
+        // okay
+        return new
+        {
+          success = true,
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        Error = "Closed"
+      }.AsJsonResult();
+    }
+
     public JsonResult GetVoterElections()
     {
       var email = UserSession.VoterEmail;

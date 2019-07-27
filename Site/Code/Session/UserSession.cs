@@ -386,10 +386,7 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static bool IsVoter
-    {
-      get { return VoterEmail.HasContent(); }
-    }
+    public static bool IsVoter => VoterEmailIsVerified;
 
     //    public static string WebProtocol
     //    {

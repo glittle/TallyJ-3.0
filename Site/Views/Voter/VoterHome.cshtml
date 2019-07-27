@@ -49,7 +49,7 @@
         <td class="vmethod center">
           <div v-if="e.openNow">
             <div>
-              <button v-on:click="manageBallot(e)">Prepare my Vote</button>
+              <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
             </div>
           </div>
           <span v-if="!e.openNow">{{e.person.VotingMethod_Display}}</span>
@@ -66,40 +66,46 @@
   <button v-on:click="closeBallot">Return</button>
   <div class="poolBuilder">
     <div>
-      <h2>Fill Pool</h2>
+      <h2>Add to Pool</h2>
       <div>
         Search:
-        <input type="text" v-model="searchText" class="searchBox" />
+        <input type="text" v-model="searchText" v-on:keydown="navigating" class="searchBox" />
         <button v-on:click="searchText = ''">Clear</button>
       </div>
 
       <ul id="nameList">
-        <li v-for="p in nameList"
+        <li v-for="(p,i) in nameList"
             v-bind:key="p.Id"
             :id="'P' + p.Id"
             v-html="p.HtmlName"
-            v-on:click="nameClick(p)"
-            v-bind:class="[p.Classes, p.CanReceiveVotes ? 'Ok' : 'NoVotes', p.inPool ? 'inPool' : 'notInPool']"></li>
+            v-on:click="addToPool(p)"
+            v-bind:class="[p.Classes, searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'NoVotes', p.inPool ? 'inPool' : 'notInPool']"></li>
       </ul>
     </div>
-    <div v-bind:class="[movingInPool ? 'moving' : '']">
-      <h2>Pool</h2>
-      <p>Top {{numToElect}} will be put on your ballot.</p>
-      <p>Sort this list using your mouse. To use a keyboard, press Tab to focus and Enter to select then Up and Down to move.</p>
-        <draggable id="pool" v-model="pool" v-on:end="savePool">
-          <div v-for="(p, i) in pool" 
-               :key="p.id" 
-               tabindex="0"
-               v-on:keydown="keydown(p, i, $event)"
-               v-bind:ref="'p' + p.Id"
-               v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop lastInTop' : 'inOther', p.moving ? 'moving' : '' ]">
-            <div v-html="p.Name"></div>
-            <span class="removeFromPool" v-on:click="removeFromPool(p)">x</span>
-          </div>
-        </draggable>
+    <div v-bind:class="[movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
+      <h2>Pool & Ballot</h2>
+      <p>Please select:</p>
+      <div class="lockIn">
+        <div><input type="radio" v-model="lockInVotes" :value="false" id="lockN" /> <label for="lockN">I am still selecting and sorting my pool of names.</label></div>
+        <div><input type="radio" v-model="lockInVotes" :value="true" id="lockY" /> <label for="lockY">I have made my choice. Use these names for my ballot.</label></div>
+      </div> 
+      <p>The top {{numToElect}} names below will be put on your ballot at election time. Their order does not matter.</p>
+      <p v-if="!lockInVotes">Sort this list to move the desired people in to the ballot. To use a keyboard, press Tab to focus, Enter to select, Up and Down to move.</p>
+      <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
+        <div v-for="(p, i) in pool"
+             :key="p.id"
+             tabindex="0"
+             v-on:keydown="keydown(p, i, $event)"
+             v-bind:ref="'p' + p.Id"
+             v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop' : 'inOther', i === lastInTop + 1 ? 'firstInOther' : '', p.moving ? 'moving' : '' ]">
+          <span class="num">{{i + 1}}</span>
+          <div v-html="p.Name"></div>
+          <span class="removeFromPool" v-on:click="removeFromPool(p)" title="Remove from the pool">x</span>
+        </div>
+      </draggable>
+      <p class="emptyPoolMsg" v-if="!pool.length">
+        Your pool is empty. Search for people to add!
+      </p>
     </div>
-  </div>
-  <div>
-    Lock in?
   </div>
 </div>
