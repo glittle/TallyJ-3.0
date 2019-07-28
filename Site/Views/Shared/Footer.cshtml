@@ -5,7 +5,7 @@
       &copy; @DateTime.Now.Year Glen Little
     </div>
     <div class="helpLink">
-      @RenderPage("Version.cshtml")
+      <span title="Last updated: @TallyJ.Properties.Settings.Default.VersionDate">Version: @TallyJ.Properties.Settings.Default.VersionNum</span>
     </div>
     <div class="helpLink">
       <a title="View document"

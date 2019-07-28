@@ -631,6 +631,11 @@
     <Compile Include="EF\Partials\Teller.cs" />
     <Compile Include="EF\Partials\VoteCacher.cs" />
     <Compile Include="OwinStartup.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Content Include="Content\bootstrap\css\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -846,6 +851,10 @@
     <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <Content Include="Reports\BallotsTied.cshtml" />
     <Content Include="Reports\BallotsSame.cshtml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1157,7 +1166,6 @@
     <None Include="Views\menu.xsd">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Views\Shared\Version.cshtml" />
     <Content Include="Views\Setup\EditPerson.cshtml" />
     <Content Include="Xsd\TallyJv2-Export.xsd">
       <SubType>Designer</SubType>

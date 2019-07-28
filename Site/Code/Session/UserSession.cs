@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -438,14 +439,19 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static bool AllowOnlineElections {
+      get { return ConfigurationManager.AppSettings["AllowOnlineElections"].AsBoolean(); }
+    }
+
     public static string SiteVersion
     {
       get
       {
-        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
-        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
-        var version = regex.Success ? regex.Groups["version"].Value : "?";
-        return version;
+        return Properties.Settings.Default.VersionNum;
+//        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
+//        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
+//        var version = regex.Success ? regex.Groups["version"].Value : "?";
+//        return version;
       }
     }
 

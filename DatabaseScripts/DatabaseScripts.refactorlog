@@ -14,4 +14,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PoolLocked" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="885e757e-b98a-4804-8f04-6e687189deeb" ChangeDateTime="07/28/2019 15:27:11">
+    <Property Name="ElementName" Value="[tj].[_Log].[HostVersion]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[tj].[_Log]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HostAndVersion" />
+  </Operation>
 </Operations>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using Microsoft.Owin.Security.Google;
 using Owin;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
+using TallyJ.Code.Session;
+using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
 
 [assembly: OwinStartup(typeof(TallyJ.OwinStartup))]
@@ -82,6 +85,8 @@ namespace TallyJ
               IsPersistent = false,
               ExpiresUtc = DateTime.UtcNow.AddDays(7)
             }, identity);
+
+            RecordLogin("Facebook", email);
           }
           else
           {
@@ -124,10 +129,34 @@ namespace TallyJ
             ExpiresUtc = DateTime.UtcNow.AddDays(7)
           }, identity);
 
+          RecordLogin("Google", email);
+
           return Task.FromResult(0);
         }
       };
       return options;
+    }
+
+    private void RecordLogin(string source, string email)
+    {
+      new LogHelper().Add($"Voter login from {source}: {email}", true);
+
+      var db = UserSession.DbContext;
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
+      var now = DateTime.Now;
+
+      if (onlineVoter == null)
+      {
+        onlineVoter = new OnlineVoter
+        {
+          Email=email,
+          WhenRegistered = now
+        };
+        db.OnlineVoter.Add(onlineVoter);
+      }
+
+      onlineVoter.WhenLastLogin = now;
+      db.SaveChanges();
     }
   }
 }

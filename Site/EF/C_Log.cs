@@ -16,9 +16,10 @@ namespace TallyJ.EF
     {
         public int C_RowId { get; set; }
         public System.DateTime AsOf { get; set; }
-        public System.Guid ElectionGuid { get; set; }
+        public Nullable<System.Guid> ElectionGuid { get; set; }
         public Nullable<System.Guid> LocationGuid { get; set; }
         public string ComputerCode { get; set; }
         public string Details { get; set; }
+        public string HostAndVersion { get; set; }
     }
 }
