@@ -1,7 +1,14 @@
 ﻿@using TallyJ.Code.Session
-<link href="@Url.Content("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" type="text/css" />
+<link href="@ClientFile("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" type="text/css" />
 <link href="@ClientFile("~/Scripts/jquery.qtip.min.css")" rel="stylesheet" type="text/css" />
 <link href="@ClientFile("~/Scripts/superfish.css")" rel="stylesheet" type="text/css" />
+@if (ViewData["ExtraCss"] != null)
+{
+  foreach (var s in (string[])ViewData["ExtraCss"])
+  {
+    <link href="@s" type="text/css" rel="stylesheet" />
+  }
+}
 <link href="@ClientFile("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 @AddResourceFilesForViews("css")
 

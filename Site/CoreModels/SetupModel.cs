@@ -7,10 +7,11 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
-    public class SetupModel : DataConnectedModel
+  public class SetupModel : DataConnectedModel
   {
     private Election _election;
     private ElectionModel _electionModel;
+    private OnlineElection _onlineElection;
 
     public int NumberOfPeople
     {
@@ -25,11 +26,11 @@ namespace TallyJ.CoreModels
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
-            {
-              l.Name,
-              l.ContactInfo,
-              l.C_RowId
-            })
+          {
+            l.Name,
+            l.ContactInfo,
+            l.C_RowId
+          })
           .SerializedAsJsonString();
       }
     }
@@ -37,6 +38,10 @@ namespace TallyJ.CoreModels
     public Election CurrentElection
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
+    }
+    public OnlineElection CurrentOnlineElection
+    {
+      get { return _onlineElection ?? (_onlineElection = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid)); }
     }
 
     public ElectionModel CurrentElectionModel
@@ -52,11 +57,11 @@ namespace TallyJ.CoreModels
         var rules = CurrentElectionModel.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
 
         return new
-          {
-            type = currentElection.ElectionType,
-            mode = currentElection.ElectionMode,
-            rules = rules.SerializedAsJsonString()
-          };
+        {
+          type = currentElection.ElectionType,
+          mode = currentElection.ElectionMode,
+          rules = rules.SerializedAsJsonString()
+        };
       }
     }
 
@@ -68,10 +73,10 @@ namespace TallyJ.CoreModels
           .OrderBy(l => l.Name)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
-            {
-              l.Name,
-              l.C_RowId
-            })
+          {
+            l.Name,
+            l.C_RowId
+          })
           .SerializedAsJsonString();
       }
     }

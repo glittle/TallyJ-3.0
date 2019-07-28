@@ -7,11 +7,17 @@
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
 ClientFile("~/Scripts/vue{0}.js", ".min"),
-ClientFile("~/Scripts/BadiDateToday.v1.js")
+ClientFile("~/Scripts/BadiDateToday.v1.js"),
+ClientFile("~/Scripts/luxon.min.js"),
+ClientFile("~/Scripts/vue-datetime.js"),
 };
+  ViewData["ExtraCss"] = new[] {
+ClientFile("~/Scripts/vue-datetime.css"),
+  };
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.OnlineElection={0};".FilledWith(Model.CurrentOnlineElection.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.Tellers={0};".FilledWith(Model.TellersJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
@@ -22,6 +28,12 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
 </button>
 
 <div id="setupBody" v-cloak>
+  <div>
+    Jump to
+    <a href="#step2">Step 2</a>
+    <a href="#step3">Step 3</a>
+    <a href="#step4">Step 4</a>
+  </div>
   <h2>
     Step 1 <span>Define the Election</span>
   </h2>
@@ -57,9 +69,9 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       <td>
         <select id="ddlMode" data-name="ElectionMode">
           @ElectionModeEnum.ForHtmlSelect("", new Dictionary<string, string>
-                                                                                                                                                                                                          {
-                                                                                                                                                                                                            {"B"," id=modeB"}
-                                                                                                                                                                                                          })
+          {
+            {"B", " id=modeB"}
+          })
           @*                <option value="N">Normal Election</option>
             <option value="T">Tie-Break</option>
             <option value="B" id="modeB">By-election</option>
@@ -139,10 +151,10 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
   </table>
 
   <div class="newStep">
-    <a name="step2"></a>
+    <a id="step2"></a>
   </div>
   <h2>
-    Step 2 <span>List the election</span>
+    Step 2 <span>List the election for tellers</span>
   </h2>
   <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
   <div class="PullInstructions">
@@ -194,14 +206,14 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
       </td>
       <td>
         Should this election be shown on the Home Page now?<br>
-        This is only effective if an Access Code is set. It can be changed here later or on the Monitor Progress page.
+        This is only effective if an Access Code is set. It can be changed here later or on the <a href="~/After/Monitor">Monitor Progress</a> page.
       </td>
     </tr>
   </table>
 
 
   <div class="newStep">
-    <a name="step3"></a>
+    <a id="step3"></a>
   </div>
   <h2>
     Step 3 <span>Configure Features</span>
@@ -343,6 +355,84 @@ ClientFile("~/Scripts/BadiDateToday.v1.js")
     </tr>
 
   </table>
+
+
+  <div class="newStep">
+    <a id="step4"></a>
+  </div>
+  <h2>
+    Step 4 <span>Online Voting</span>
+  </h2>
+  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div class="PullInstructions">
+    <ol>
+      <li>This election can be made available so that voters can cast their ballots online.</li>
+      <li>To vote online, the voter's email address (as found in Google or Facebook) must match their email address in their record in this election.</li>
+    </ol>
+  </div>
+
+  <table class="Demographics">
+    <tr>
+      <th>
+        Enable Online Voting?<span class="ui-icon ui-icon-info" id="qTipOnline"></span>
+      </th>
+      <td>
+        <yes-no v-model="useOnline"></yes-no>
+      </td>
+      <td>
+        Allow voters to cast their ballots online.
+      </td>
+    </tr>
+
+    <tr>
+      <th>
+        Voting Start time<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+      </th>
+      <td>
+        <datetime v-model="onlineOpen" type="datetime" :minute-step="10"></datetime>
+      </td>
+      <td>
+        When should voters be able to access this election and start working on their ballot?
+        <a class="setTime" v-on:click="onlineOpen = new Date()">Set to Now</a>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Voting Stop time<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+      </th>
+      <td>
+        <datetime v-model="onlineClose" type="datetime"></datetime>
+      </td>
+      <td>
+        When should the election be closed?
+        <a class="setTime" v-on:click="onlineClose = new Date()">Set to Now</a>
+        The Head Teller can adjust the stop time during the election. Suggestion: stop online voting once all paper ballots are collected and counted.
+      </td>
+    </tr>
+    <tr>
+      <th>
+        Voting Stop time estimated?
+      </th>
+      <td>
+        <yes-no v-model="onlineElection.CloseIsEstimate"></yes-no>
+      </td>
+      <td>
+        Is the stopping time above an estimated time? 
+      </td>
+    </tr>
+    <tr>
+      <th>
+        View Results?
+      </th>
+      <td>
+        <yes-no v-model="onlineElection.AllowResultView"></yes-no>
+      </td>
+      <td>
+        Allow voters to view the final election results?
+      </td>
+    </tr>
+  </table>
+
 
   <div class="newStep"></div>
   <h2>Other Information</h2>
