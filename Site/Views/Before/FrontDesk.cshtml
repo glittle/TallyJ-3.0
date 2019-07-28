@@ -57,7 +57,11 @@
   <input accesskey="S" id="search">
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
-<div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "")">
+<div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(UserSession.UsingOnlineElection ? "UseOnline" : "")">
+  <div class="Online" data-status="Online" title="Click to filter the list">
+    Online
+    <i>0</i>
+  </div>
   <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
     Called In
     <i>0</i>
@@ -90,8 +94,9 @@
   </span>
 </div>
 <div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
-       UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
-       "EnvMode-" + UserSession.CurrentElection.EnvNumModeRaw }.JoinedAsString(" ") )">
+                          UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
+                          UserSession.UsingOnlineElection ? "UseOnline" : "",
+                          "EnvMode-" + UserSession.CurrentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
     Type the first letter of a button to click it. Press Esc or Enter when done.
   </div>
@@ -100,16 +105,17 @@
 
 <script type="text/x-template" id="frontDeskLineTemplate">
   <div id="P{PersonId}" class="Voter VM-{VotingMethod} {extraClass}" data-name="{NameLower}">
+    <div class="Btn Online {Online}">Online</div>
     <div class="Btn CalledIn {CalledIn}">Called In</div>
     <div class="Btn MailedIn {MailedIn}">Mailed In</div>
     <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
     <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
-        {
-          case TallyJ.EF.BallotProcessEnum.RegV:
-    <div class="Btn Registered {Registered}">Registered</div>
-            break;
-        }
+    {
+      case TallyJ.EF.BallotProcessEnum.RegV:
+        <div class="Btn Registered {Registered}">Registered</div>
+        break;
+    }
     <div class="Btn InPerson {InPerson}">@inPersonName</div>
     <b>{FullName}</b>
     <p>{BahaiId}</p>

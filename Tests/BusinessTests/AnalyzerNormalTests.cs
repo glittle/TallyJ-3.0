@@ -103,6 +103,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
@@ -145,6 +146,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
@@ -187,6 +189,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
@@ -235,6 +238,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);

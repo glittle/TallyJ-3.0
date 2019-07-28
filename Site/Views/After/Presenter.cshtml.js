@@ -100,8 +100,11 @@
       var value = info[name];
       span.text(value);
 
-      if (name == 'EnvelopesCalledIn') {
-        $('#calledIn').toggle(value != 0);
+      if (name === 'EnvelopesCalledIn') {
+        $('#calledIn').toggle(value !== 0);
+      }
+      if (name === 'EnvelopesOnline') {
+        $('#online').toggle(value !== 0);
       }
     });
 

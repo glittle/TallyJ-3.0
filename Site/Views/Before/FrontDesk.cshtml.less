@@ -195,12 +195,18 @@ p {
   }
 }
 
-div.CalledIn, span.CalledIn {
+div.CalledIn, span.CalledIn, div.Online, span.Online {
   display: none;
 }
 
 .UseCallIn {
   .CalledIn {
+    display: inline-block;
+  }
+}
+
+.UseOnline {
+  .Online {
     display: inline-block;
   }
 }

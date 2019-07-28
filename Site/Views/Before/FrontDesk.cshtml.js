@@ -130,6 +130,7 @@
       total += num;
       $('.Counts .{0} i'.filledWith(name)).text(num);
     }
+    sumUp('Online');
     sumUp('CalledIn');
     sumUp('MailedIn');
     sumUp('DroppedOff');
@@ -368,6 +369,9 @@
         case 'P': // in person
           btnCode = 'P';
           break;
+        case 'O': // online
+          btnCode = 'O';
+          break;
         case 'C': // called in (if used)
           btnCode = 'C';
           break;
@@ -462,10 +466,11 @@
     var btnType =
       btn.hasClass('InPerson') ? 'P'
         : btn.hasClass('DroppedOff') ? 'D'
-          : btn.hasClass('CalledIn') ? 'C'
-            : btn.hasClass('MailedIn') ? 'M'
-              : btn.hasClass('Registered') ? 'R'
-                : '?';
+          : btn.hasClass('Online') ? 'O'
+            : btn.hasClass('CalledIn') ? 'C'
+              : btn.hasClass('MailedIn') ? 'M'
+                : btn.hasClass('Registered') ? 'R'
+                  : '?';
     var pid = row.attr('id').substr(1);
 
     saveBtnClick(pid, btnType, btn, forceDeselect);
@@ -503,6 +508,7 @@
   var fillList = function () {
     var html = [];
     $.each(publicInterface.initial, function () {
+      console.log(this)
       html.push(local.lineTemplate.filledWith(this));
     });
     $('#Main').prepend(html.join(''));

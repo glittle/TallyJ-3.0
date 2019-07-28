@@ -26,28 +26,34 @@
         usingBallotProcess: false,
         useOnline: false,
         onlineElection: publicInterface.OnlineElection || {},
+        isMounted: false,
+        dummy: 1
       },
       computed: {
         onlineOpen: {
           get: function () {
-            if (this.onlineElection && this.onlineElection.WhenOpen) {
+            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenOpen && !isNaN(this.onlineElection.WhenOpen)) {
               return this.onlineElection.WhenOpen.toISOString();
             }
             return '';
           },
           set: function (a) {
             this.onlineElection.WhenOpen = new Date(a);
+            if (this.isMounted) $('.btnSave').addClass('btn-primary');
+            this.dummy++;
           }
         },
         onlineClose: {
           get: function () {
-            if (this.onlineElection && this.onlineElection.WhenClose) {
+            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenClose && !isNaN(this.onlineElection.WhenClose)) {
               return this.onlineElection.WhenClose.toISOString();
             }
             return '';
           },
           set: function (a) {
             this.onlineElection.WhenClose = new Date(a);
+            if (this.isMounted) $('.btnSave').addClass('btn-primary');
+            this.dummy++;
           }
         }
       },
@@ -65,20 +71,36 @@
             }
           }
         },
+        useOnline: function(a) {
+          if (a) {
+            if (this.onlineElection.CloseIsEstimate == null) {
+              this.onlineElection = {
+                WhenOpen: '',
+                WhenClose: '',
+                CloseIsEstimate: true,
+                AllowResultView: false
+              };
+            }
+          }
+        }
         //locations: function (a, b) {
         //  console.log('watch', a, b);
         //  // $('.btnSave').addClass('btn-primary');
         //}
       },
       created: function () {
-        this.onlineElection.WhenOpen = this.onlineElection.WhenOpen.parseJsonDate();
-        this.onlineElection.WhenClose = this.onlineElection.WhenClose.parseJsonDate();
+        this.useOnline = !!this.onlineElection.WhenOpen;
+        if (this.useOnline) {
+          this.onlineElection.WhenOpen = this.onlineElection.WhenOpen.parseJsonDate();
+          this.onlineElection.WhenClose = this.onlineElection.WhenClose.parseJsonDate();
+        }
       },
       mounted: function () {
         var bp = this.election.BallotProcessRaw;
         this.usingBallotProcess =
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
+        this.isMounted = true;
       },
       methods: {
         removeLocation: function (domIcon) {
@@ -93,6 +115,13 @@
             }
           });
           list.add('BP-' + process);
+        },
+        saveNeeded: function () {
+          $('.btnSave').addClass('btn-primary');
+        },
+        showFrom: function (when) {
+          if (!when || isNaN(when)) return '';
+          return moment(when).fromNow();
         }
       }
     });
@@ -236,7 +265,7 @@
       : '';
     $('#badiDateIntro').html(msg.filledWith(di));
 
-    console.log(di);
+    //    console.log(di);
 
     // found 1st Ridvan for an LSA election?
     $('.badiDateName').removeClass('isGlory13');
@@ -479,6 +508,13 @@
       }
       form[input.data('name')] = value;
     });
+
+    var oe = settings.vue.onlineElection;
+    form.WhenOpen = oe.WhenOpen.toISOString();
+    form.WhenClose = oe.WhenClose.toISOString();
+    form.CloseIsEstimate = oe.CloseIsEstimate;
+    form.AllowResultView = oe.AllowResultView;
+    form.useOnline = settings.vue.useOnline;
 
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {

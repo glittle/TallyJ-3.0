@@ -26,23 +26,38 @@ namespace TallyJ.CoreModels
         var locations = new LocationCacher(Db).AllForThisElection;
         var votes = new VoteCacher(Db).AllForThisElection;
 
+        var currentElectionGuid = UserSession.CurrentElectionGuid;
+        var onlineBallots = Db.OnlineVotingInfo
+          .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new {ovi, p.VotingMethod, p.C_FullNameFL})
+          .Where(j => j.ovi.ElectionGuid == currentElectionGuid)
+          .ToList()
+          .Select(j => new
+          {
+            j.ovi.Status,
+            VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod),
+            votesReady = j.ovi.PoolLocked.GetValueOrDefault() 
+                         && j.ovi.ListPool?.Split(',').Length >= UserSession.CurrentElection.NumberToElect,
+            j.ovi.HistoryStatus,
+            j.C_FullNameFL
+          });
+
         return
           new
-            {
-              Locations = locations
+          {
+            Locations = locations
                 //.JoinMatchingOrNull(new ComputerCacher(Db).AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(l => l.SortOrder)
                 .ThenBy(l => l.Name)
                 .ThenBy(l => l.C_RowId)
                 .Select(l => new
-                                {
-                                  BallotsAtLocation = new BallotHelper().BallotCount(l.LocationGuid, isSingleName, ballots, votes),
-                                  l.BallotsCollected,
-                                  l.ContactInfo,
-                                  l.Name,
-                                  TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
-                                  LocationId = l.C_RowId,
-                                  BallotCodes = ballots.Where(b => b.LocationGuid == l.LocationGuid).GroupBy(b => b.ComputerCode)
+                {
+                  BallotsAtLocation = new BallotHelper().BallotCount(l.LocationGuid, isSingleName, ballots, votes),
+                  l.BallotsCollected,
+                  l.ContactInfo,
+                  l.Name,
+                  TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
+                  LocationId = l.C_RowId,
+                  BallotCodes = ballots.Where(b => b.LocationGuid == l.LocationGuid).GroupBy(b => b.ComputerCode)
                                     .OrderBy(g => g.Key)
                                     .Select(g => new
                                     {
@@ -57,23 +72,31 @@ namespace TallyJ.CoreModels
                                          })
 
                                     })
-                                })
+                })
                                 ,
-              Ballots = ballots
+            Ballots = ballots
                 .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.StatusCode == BallotStatusEnum.Verify)
                 .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, l })
                 .OrderBy(g => g.b.C_RowId)
                 .Select(g =>
                 new
-                  {
-                    Id = g.b.C_RowId,
-                    Code = g.b.C_BallotCode,
-                    Status = BallotStatusEnum.TextFor(g.b.StatusCode),
-                    LocationName = g.l.Name,
-                    LocationId = g.l.C_RowId,
-                    Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
-                  })
-            };
+                {
+                  Id = g.b.C_RowId,
+                  Code = g.b.C_BallotCode,
+                  Status = BallotStatusEnum.TextFor(g.b.StatusCode),
+                  LocationName = g.l.Name,
+                  LocationId = g.l.C_RowId,
+                  Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
+                }),
+            OnlineElection = Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
+                .Select(oe => new
+                {
+                  oe.CloseIsEstimate,
+                  oe.WhenOpen,
+                  oe.WhenClose,
+                }).FirstOrDefault(),
+            OnlineBallots = onlineBallots
+          };
       }
     }
   }

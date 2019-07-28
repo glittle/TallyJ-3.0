@@ -13,9 +13,7 @@ namespace TallyJ.Code.Session
         public const string IsGuestTeller = "IsGuestTeller";
         public const string IsKnownTeller = "IsKnownTeller";
 
-        public const string VoterEmail = "VoterEmail";
-        public const string VoterEmailIsVerified = "VoterEmailIsVerified";
-        public const string VoterPictureUrl = "VoterPictureUrl";
+        public const string UsingOnlineElection = "UsingOnlineElection";
 
         public const string CurrentUserGuid = "CurrentUserGuid";
         public const string UserGuidRetrieved = "UserGuidRetrieved";

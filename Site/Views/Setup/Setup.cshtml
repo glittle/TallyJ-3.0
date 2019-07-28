@@ -374,7 +374,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
   <table class="Demographics">
     <tr>
       <th>
-        Enable Online Voting?<span class="ui-icon ui-icon-info" id="qTipOnline"></span>
+        Enable Online Voting?
       </th>
       <td>
         <yes-no v-model="useOnline"></yes-no>
@@ -384,32 +384,34 @@ ClientFile("~/Scripts/vue-datetime.css"),
       </td>
     </tr>
 
-    <tr>
+    <tr v-if="useOnline">
       <th>
-        Voting Start time<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+        Voting Start time
       </th>
       <td>
-        <datetime v-model="onlineOpen" type="datetime" :minute-step="10"></datetime>
+        <datetime v-model="onlineOpen" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+        {{showFrom(onlineElection.WhenOpen)}}
       </td>
       <td>
-        When should voters be able to access this election and start working on their ballot?
-        <a class="setTime" v-on:click="onlineOpen = new Date()">Set to Now</a>
+        When should voters be able to access this election and start working on their online ballot?
+        <a class="setTime" v-on:click="onlineOpen = new Date().getTime()">Set to Now</a>
       </td>
     </tr>
-    <tr>
+    <tr v-if="useOnline">
       <th>
-        Voting Stop time<span class="ui-icon ui-icon-info" id="qTipAccess"></span>
+        Voting Stop time
       </th>
       <td>
-        <datetime v-model="onlineClose" type="datetime"></datetime>
+        <datetime v-model="onlineClose" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+        {{showFrom(onlineElection.WhenClose)}}
       </td>
       <td>
         When should the election be closed?
-        <a class="setTime" v-on:click="onlineClose = new Date()">Set to Now</a>
+        <a class="setTime" v-on:click="onlineClose = new Date().getTime()">Set to Now</a>
         The Head Teller can adjust the stop time during the election. Suggestion: stop online voting once all paper ballots are collected and counted.
       </td>
     </tr>
-    <tr>
+    <tr v-if="useOnline">
       <th>
         Voting Stop time estimated?
       </th>
@@ -420,7 +422,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         Is the stopping time above an estimated time? 
       </td>
     </tr>
-    <tr>
+    <tr v-if="useOnline">
       <th>
         View Results?
       </th>
@@ -428,7 +430,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <yes-no v-model="onlineElection.AllowResultView"></yes-no>
       </td>
       <td>
-        Allow voters to view the final election results?
+        Allow voters to view the final election results when they are available?
       </td>
     </tr>
   </table>

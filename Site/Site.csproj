@@ -504,6 +504,7 @@
     <Compile Include="CoreModels\Helper\ResultType.cs" />
     <Compile Include="CoreModels\Hubs\AnalyzeHub.cs" />
     <Compile Include="CoreModels\Hubs\ImportHub.cs" />
+    <Compile Include="CoreModels\Hubs\VoterHub.cs" />
     <Compile Include="CoreModels\Hubs\RollCallHub.cs" />
     <Compile Include="CoreModels\Hubs\PublicHub.cs" />
     <Compile Include="CoreModels\Hubs\MainHub.cs" />
@@ -537,7 +538,6 @@
     <Compile Include="CoreModels\PeopleModel.cs" />
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
-    <Compile Include="CoreModels\VoterModel.cs" />
     <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationOptions.cs" />
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>

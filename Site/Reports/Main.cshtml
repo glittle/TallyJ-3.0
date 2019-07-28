@@ -109,6 +109,14 @@
                 @Model.CalledInBallots
             </td>
         </tr>
+        <tr class="rpt1Detail @(Model.OnlineBallots == 0 ? "Hidden" : "")">
+            <td>
+                Number of online ballots
+            </td>
+            <td>
+                @Model.OnlineBallots
+            </td>
+        </tr>
         <tr class="rpt1Total">
             <td>
                 Total number of ballots received

@@ -101,6 +101,7 @@ namespace TallyJ.CoreModels
           EnvelopesInPerson = resultSummaryFinal.InPersonBallots,
           EnvelopesDroppedOff = resultSummaryFinal.DroppedOffBallots,
           EnvelopesCalledIn = resultSummaryFinal.CalledInBallots,
+          EnvelopesOnline = resultSummaryFinal.OnlineBallots,
           resultSummaryFinal.NumVoters,
           Participation = resultSummaryFinal.PercentParticipation,
           Status = tallyStatus,
@@ -228,6 +229,7 @@ namespace TallyJ.CoreModels
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,
           ShowCalledIn = _election.UseCallInButton,
+          ShowOnline = UserSession.UsingOnlineElection,
           ResultsManual =
             (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
@@ -398,6 +400,7 @@ namespace TallyJ.CoreModels
         resultSummary.BallotsNeedingReview,
         resultSummary.BallotsReceived,
         resultSummary.CalledInBallots,
+        //        resultSummary.OnlineBallots,
         resultSummary.DroppedOffBallots,
         resultSummary.InPersonBallots,
         resultSummary.MailedInBallots,

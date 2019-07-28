@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.EF;
@@ -16,7 +17,7 @@ namespace TallyJ.Controllers
   {
     public ActionResult Index()
     {
-      return View("VoterHome", new VoterModel());
+      return View("VoterHome");
     }
 
     public JsonResult JoinElection(Guid electionGuid)
@@ -75,6 +76,7 @@ namespace TallyJ.Controllers
         {
           open = true,
           UserSession.CurrentElection.NumberToElect,
+          registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
           votingInfo
         }.AsJsonResult();
       }
@@ -158,10 +160,73 @@ namespace TallyJ.Controllers
       var now = DateTime.Now;
       if (votingInfo.oe.WhenOpen <= now && votingInfo.oe.WhenClose > now)
       {
+        if (locked)
+        {
+          // ensure we have enough votes
+          var votes = votingInfo.ovi.ListPool?.Split(',').Length ?? 0;
+          if (votes < UserSession.CurrentElection.NumberToElect)
+          {
+            return new
+            {
+              Error = "Too few votes"
+            }.AsJsonResult();
+          }
+        }
+
         votingInfo.ovi.PoolLocked = locked;
 
-        votingInfo.ovi.Status = locked ? "Locked" : "Unlocked";
-        votingInfo.ovi.HistoryStatus += ";{0}|{0}".FilledWith(votingInfo.ovi.Status, now.ToJSON());
+        votingInfo.ovi.Status = locked ? "Ready" : "Pending";
+        votingInfo.ovi.HistoryStatus += ";{0}|{1}".FilledWith(votingInfo.ovi.Status, now.ToJSON());
+
+        var personCacher = new PersonCacher(Db);
+        var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == votingInfo.ovi.PersonGuid);
+        if (person == null || !person.CanVote.GetValueOrDefault())
+        {
+          return new
+          {
+            Error = "Invalid request (2)"
+          }.AsJsonResult();
+        }
+        Db.Person.Attach(person);
+        var peopleModel = new PeopleModel();
+        var votingMethodRemoved = false;
+
+        if (locked)
+        {
+          person.VotingMethod = VotingMethodEnum.Online;
+          person.RegistrationTime = DateTime.Now;
+          person.VotingLocationGuid = null; // online isn't treated as a location
+          person.EnvNum = null;
+
+          var log = person.RegistrationLog;
+          log.Add(new[]
+          {
+            peopleModel.ShowRegistrationTime(person),
+            VotingMethodEnum.TextFor(person.VotingMethod),
+          }.JoinedAsString("; ", true));
+          person.RegistrationLog = log;
+        }
+        else
+        {
+          // not online or anywhere
+          person.VotingMethod = null;
+          person.RegistrationTime = DateTime.Now;
+          person.VotingLocationGuid = null; // online isn't treated as a location
+          person.EnvNum = null;
+          votingMethodRemoved = true;
+
+          var log = person.RegistrationLog;
+          log.Add(new[]
+          {
+            peopleModel.ShowRegistrationTime(person),
+            "Cancel Online",
+          }.JoinedAsString("; ", true));
+          person.RegistrationLog = log;
+        }
+
+        personCacher.UpdateItemAndSaveCache(person);
+
+        peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
 
         Db.SaveChanges();
 
@@ -169,6 +234,7 @@ namespace TallyJ.Controllers
         return new
         {
           success = true,
+          registration = VotingMethodEnum.TextFor(person.VotingMethod)
         }.AsJsonResult();
       }
 

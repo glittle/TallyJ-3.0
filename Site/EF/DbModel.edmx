@@ -235,6 +235,7 @@
           <Property Name="BallotsReceived" Type="int" />
           <Property Name="BallotsNeedingReview" Type="int" />
           <Property Name="CalledInBallots" Type="int" />
+          <Property Name="OnlineBallots" Type="int" />
           <Property Name="SpoiledManualBallots" Type="int" />
         </EntityType>
         <EntityType Name="ResultTie">
@@ -360,7 +361,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="JoinElectionUser" EntityType="TallyJ2dModel.JoinElectionUser" />
           <EntitySet Name="Message" EntityType="TallyJ2dModel.Message" />
           <EntitySet Name="Result" EntityType="TallyJ2dModel.Result" />
-          <EntitySet Name="ResultSummary" EntityType="TallyJ2dModel.ResultSummary" />
           <EntitySet Name="ResultTie" EntityType="TallyJ2dModel.ResultTie" />
           <EntitySet Name="Vote" EntityType="TallyJ2dModel.Vote" />
           <AssociationSet Name="FK_JoinElectionUser_Users" Association="TallyJ2dModel.FK_JoinElectionUser_Users">
@@ -374,6 +374,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="OnlineElection" EntityType="TallyJ2dModel.OnlineElection" />
           <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
           <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
+          <EntitySet Name="ResultSummary" EntityType="TallyJ2dModel.ResultSummary" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -486,27 +487,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="IsTieResolved" Type="Boolean" />
           <Property Name="RankInExtra" Type="Int32" />
           <Property Name="ForceShowInOther" Type="Boolean" />
-        </EntityType>
-        <EntityType Name="ResultSummary">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="ResultType" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="UseOnReports" Type="Boolean" />
-          <Property Name="NumVoters" Type="Int32" />
-          <Property Name="NumEligibleToVote" Type="Int32" />
-          <Property Name="MailedInBallots" Type="Int32" />
-          <Property Name="DroppedOffBallots" Type="Int32" />
-          <Property Name="InPersonBallots" Type="Int32" />
-          <Property Name="SpoiledBallots" Type="Int32" />
-          <Property Name="SpoiledVotes" Type="Int32" />
-          <Property Name="TotalVotes" Type="Int32" />
-          <Property Name="BallotsReceived" Type="Int32" />
-          <Property Name="BallotsNeedingReview" Type="Int32" />
-          <Property Name="CalledInBallots" Type="Int32" />
-          <Property Name="SpoiledManualBallots" Type="Int32" />
         </EntityType>
         <EntityType Name="ResultTie">
           <Key>
@@ -658,6 +638,28 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="PoolLocked" Type="Boolean" />
           <Property Name="HistoryStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="ResultSummary">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
+          <Property Name="ResultType" Type="String" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="UseOnReports" Type="Boolean" />
+          <Property Name="NumVoters" Type="Int32" />
+          <Property Name="NumEligibleToVote" Type="Int32" />
+          <Property Name="MailedInBallots" Type="Int32" />
+          <Property Name="DroppedOffBallots" Type="Int32" />
+          <Property Name="InPersonBallots" Type="Int32" />
+          <Property Name="SpoiledBallots" Type="Int32" />
+          <Property Name="SpoiledVotes" Type="Int32" />
+          <Property Name="TotalVotes" Type="Int32" />
+          <Property Name="BallotsReceived" Type="Int32" />
+          <Property Name="BallotsNeedingReview" Type="Int32" />
+          <Property Name="CalledInBallots" Type="Int32" />
+          <Property Name="OnlineBallots" Type="Int32" />
+          <Property Name="SpoiledManualBallots" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -776,28 +778,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="Rank" ColumnName="Rank" />
                 <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
                 <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ResultSummary">
-            <EntityTypeMapping TypeName="TallyJ2dModel.ResultSummary">
-              <MappingFragment StoreEntitySet="ResultSummary">
-                <ScalarProperty Name="SpoiledManualBallots" ColumnName="SpoiledManualBallots" />
-                <ScalarProperty Name="CalledInBallots" ColumnName="CalledInBallots" />
-                <ScalarProperty Name="BallotsNeedingReview" ColumnName="BallotsNeedingReview" />
-                <ScalarProperty Name="BallotsReceived" ColumnName="BallotsReceived" />
-                <ScalarProperty Name="TotalVotes" ColumnName="TotalVotes" />
-                <ScalarProperty Name="SpoiledVotes" ColumnName="SpoiledVotes" />
-                <ScalarProperty Name="SpoiledBallots" ColumnName="SpoiledBallots" />
-                <ScalarProperty Name="InPersonBallots" ColumnName="InPersonBallots" />
-                <ScalarProperty Name="DroppedOffBallots" ColumnName="DroppedOffBallots" />
-                <ScalarProperty Name="MailedInBallots" ColumnName="MailedInBallots" />
-                <ScalarProperty Name="NumEligibleToVote" ColumnName="NumEligibleToVote" />
-                <ScalarProperty Name="NumVoters" ColumnName="NumVoters" />
-                <ScalarProperty Name="UseOnReports" ColumnName="UseOnReports" />
-                <ScalarProperty Name="ResultType" ColumnName="ResultType" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
@@ -945,6 +925,29 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="WhenBallotCreated" ColumnName="WhenBallotCreated" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResultSummary">
+            <EntityTypeMapping TypeName="TallyJ2dModel.ResultSummary">
+              <MappingFragment StoreEntitySet="ResultSummary">
+                <ScalarProperty Name="SpoiledManualBallots" ColumnName="SpoiledManualBallots" />
+                <ScalarProperty Name="OnlineBallots" ColumnName="OnlineBallots" />
+                <ScalarProperty Name="CalledInBallots" ColumnName="CalledInBallots" />
+                <ScalarProperty Name="BallotsNeedingReview" ColumnName="BallotsNeedingReview" />
+                <ScalarProperty Name="BallotsReceived" ColumnName="BallotsReceived" />
+                <ScalarProperty Name="TotalVotes" ColumnName="TotalVotes" />
+                <ScalarProperty Name="SpoiledVotes" ColumnName="SpoiledVotes" />
+                <ScalarProperty Name="SpoiledBallots" ColumnName="SpoiledBallots" />
+                <ScalarProperty Name="InPersonBallots" ColumnName="InPersonBallots" />
+                <ScalarProperty Name="DroppedOffBallots" ColumnName="DroppedOffBallots" />
+                <ScalarProperty Name="MailedInBallots" ColumnName="MailedInBallots" />
+                <ScalarProperty Name="NumEligibleToVote" ColumnName="NumEligibleToVote" />
+                <ScalarProperty Name="NumVoters" ColumnName="NumVoters" />
+                <ScalarProperty Name="UseOnReports" ColumnName="UseOnReports" />
+                <ScalarProperty Name="ResultType" ColumnName="ResultType" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>

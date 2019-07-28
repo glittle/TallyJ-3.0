@@ -28,6 +28,7 @@ var vueOptions = {
       pool: [],
       savedPool: '',
       savedLock: false,
+      registration: '',
       numToElect: 0,
       movingInPool: null,
       lockInVotes: null,
@@ -41,7 +42,7 @@ var vueOptions = {
   computed: {
     lastInTop: function () {
       return this.numToElect - 1;
-    }
+    },
   },
   watch: {
     searchText: function (a, b) {
@@ -56,6 +57,7 @@ var vueOptions = {
           }, function (info) {
             if (info.success) {
               vue.savedLock = a;
+              vue.registration = info.registration;
               ShowStatusSuccess('Saved');
             } else {
               ShowStatusFailed(info.Error);
@@ -161,15 +163,18 @@ var vueOptions = {
         },
         function (info) {
           if (info.open) {
-            var locked = !!info.votingInfo.PoolLocked;
-            vue.savedLock = locked;
-            vue.lockInVotes = locked;
-
             vue.numToElect = info.NumberToElect;
+            vue.registration = info.registration;
 
-            voterHome.peopleHelper.Prepare(function (info2) {
-              vue.loadPool(info.votingInfo.ListPool);
+            voterHome.peopleHelper.Prepare(function () {
+              var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; })
+              vue.loadPool(list);
+
+              var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;
+              vue.savedLock = locked;
+              vue.lockInVotes = locked;
             });
+
           } else if (info.closed) {
             // show closed... show info if available
           } else {
@@ -360,13 +365,12 @@ var vueOptions = {
         }
       }, delay);
     },
-    loadPool: function (savedList) {
+    loadPool: function (list) {
       var vue = this;
       this.nameList.forEach(function (p) {
         p.inPool = false;
       });
       vue.pool = [];
-      var list = (savedList || '').split(',').map(function (s) { return +s; });
       list.forEach(function (id) {
         var p = voterHome.peopleHelper.local.localNames.find(function (p) { return p.Id === id; });
         if (p) {

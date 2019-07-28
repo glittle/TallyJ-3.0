@@ -47,6 +47,9 @@
             <xs:attribute name="CalledInBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesCalledIn" type="xs:nonNegativeInteger" use="optional" />
 
+            <xs:attribute name="OnlineBallots" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesOnline" type="xs:nonNegativeInteger" use="optional" />
+
             <xs:attribute name="BallotsNeedingReview" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="SpoiledBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="SpoiledManualBallots" type="xs:nonNegativeInteger" use="optional" />

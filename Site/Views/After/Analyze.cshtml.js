@@ -7,7 +7,8 @@
     chart: null,
     hasCloseVote: false,
     hasTie: false,
-    calledInTotal: 0
+    calledInTotal: 0,
+    onlineTotal: 0
   };
 
   function preparePage() {
@@ -246,6 +247,7 @@
 
   function summarizeCounts() {
     $('#calledIn').toggle(settings.calledInTotal > 0 || !!settings.info.ShowCalledIn);
+    $('#online').toggle(settings.onlineTotal > 0 || !!settings.info.ShowOnline);
     $('#totalCounts tr').each(function () {
       var row = $(this);
       var calcSpan = row.find('span.Calc');
@@ -266,6 +268,9 @@
   function fillValues(name, results) {
     if (results.CalledInBallots) {
       settings.calledInTotal += results.CalledInBallots;
+    }
+    if (results.OnlineBallots) {
+      settings.onlineTotal += results.OnlineBallots;
     }
     $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
       var span = $(this);

@@ -29,6 +29,7 @@ namespace TallyJ.EF
         public Nullable<int> BallotsReceived { get; set; }
         public Nullable<int> BallotsNeedingReview { get; set; }
         public Nullable<int> CalledInBallots { get; set; }
+        public Nullable<int> OnlineBallots { get; set; }
         public Nullable<int> SpoiledManualBallots { get; set; }
     }
 }

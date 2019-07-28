@@ -18,6 +18,7 @@
       DroppedOff = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
       MailedIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
       CalledIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+      Online = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Online.ToString()),
     })
     .OrderBy(r => r.Location)
     .ToList();
@@ -30,9 +31,11 @@
     MailedIn = locations.Sum(a => a.MailedIn),
     DroppedOff = locations.Sum(a => a.DroppedOff),
     CalledIn = locations.Sum(a => a.CalledIn),
+    Online = locations.Sum(a => a.Online),
   };
 
   var showCalledIn = total.CalledIn.AsInt() > 0;
+  var showOnline = total.Online.AsInt() > 0;
 }
 <style>
   .pct {
@@ -88,10 +91,14 @@
         {
           <th>Called In</th>
         }
+        @if (showOnline)
+        {
+          <th>Online</th>
+        }
       </tr>
       <tr class="pct">
         <td>(% of all voters)</td>
-        <td colspan="@(3 + (showCalledIn ? 1 : 0))">(% at location)</td>
+        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at location)</td>
       </tr>
     </thead>
     <tbody>
@@ -109,6 +116,10 @@
             {
               <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
             }
+            @if (showOnline)
+            {
+              <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
+            }
           </tr>
         }
       }
@@ -121,6 +132,10 @@
         @if (showCalledIn)
         {
           <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showOnline)
+        {
+          <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>
         }
       </tr>
 

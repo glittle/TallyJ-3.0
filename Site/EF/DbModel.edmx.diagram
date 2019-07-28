@@ -12,7 +12,6 @@
         <EntityTypeShape EntityType="TallyJ2dModel.JoinElectionUser" Width="1.5" PointX="3" PointY="1" />
         <EntityTypeShape EntityType="TallyJ2dModel.Message" Width="1.5" PointX="5.75" PointY="0.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Result" Width="1.5" PointX="6.75" PointY="3.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="8.75" PointY="0.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.ResultTie" Width="1.5" PointX="8.75" PointY="5.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="4.75" PointY="9.75" />
         <AssociationConnector Association="TallyJ2dModel.FK_JoinElectionUser_Users" />
@@ -23,6 +22,7 @@
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineElection" Width="1.5" PointX="0.75" PointY="11.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="11.75" PointY="10.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineVotingInfo" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="3.375" PointY="13.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

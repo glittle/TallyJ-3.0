@@ -854,6 +854,7 @@ namespace TallyJ.CoreModels
             ResultSummaryCalc.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
             ResultSummaryCalc.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
             ResultSummaryCalc.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
+            ResultSummaryCalc.OnlineBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Online);
             // ignore Registered
         }
 
@@ -886,6 +887,9 @@ namespace TallyJ.CoreModels
             ResultSummaryFinal.CalledInBallots = manualOverride.CalledInBallots.HasValue
               ? manualOverride.CalledInBallots.Value
               : ResultSummaryCalc.CalledInBallots.GetValueOrDefault();
+
+            ResultSummaryFinal.CalledInBallots =
+              ResultSummaryCalc.OnlineBallots.GetValueOrDefault();
 
 
             // no overrides
