@@ -28,11 +28,12 @@ ClientFile("~/Scripts/vue-datetime.css"),
 </button>
 
 <div id="setupBody" v-cloak>
-  <div>
-    Jump to
+  <div class="jumpLinks">
+    Jump to:
     <a href="#step2">Step 2</a>
     <a href="#step3">Step 3</a>
     <a href="#step4">Step 4</a>
+    <hr />
   </div>
   <h2>
     Step 1 <span>Define the Election</span>
@@ -363,78 +364,95 @@ ClientFile("~/Scripts/vue-datetime.css"),
   <h2>
     Step 4 <span>Online Voting</span>
   </h2>
-  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
-  <div class="PullInstructions">
-    <ol>
-      <li>This election can be made available so that voters can cast their ballots online.</li>
-      <li>To vote online, the voter's email address (as found in Google or Facebook) must match their email address in their record in this election.</li>
-    </ol>
-  </div>
 
-  <table class="Demographics">
-    <tr>
-      <th>
-        Enable Online Voting?
-      </th>
-      <td>
-        <yes-no v-model="useOnline"></yes-no>
-      </td>
-      <td>
-        Allow voters to cast their ballots online.
-      </td>
-    </tr>
+  @if (UserSession.AllowOnlineElections)
+  {
+    <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+    <div class="PullInstructions">
+      <ol>
+        <li>This election can be made available so that voters can cast their ballots online.</li>
+        <li>To vote online, the voter's email address (as found in Google or Facebook) must match their email address in their record in this election.</li>
+      </ol>
+    </div>
 
-    <tr v-if="useOnline">
-      <th>
-        Voting Start time
-      </th>
-      <td>
-        <datetime v-model="onlineOpen" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-        {{showFrom(onlineElection.WhenOpen)}}
-      </td>
-      <td>
-        When should voters be able to access this election and start working on their online ballot?
-        <a class="setTime" v-on:click="onlineOpen = new Date().getTime()">Set to Now</a>
-      </td>
-    </tr>
-    <tr v-if="useOnline">
-      <th>
-        Voting Stop time
-      </th>
-      <td>
-        <datetime v-model="onlineClose" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-        {{showFrom(onlineElection.WhenClose)}}
-      </td>
-      <td>
-        When should the election be closed?
-        <a class="setTime" v-on:click="onlineClose = new Date().getTime()">Set to Now</a>
-        The Head Teller can adjust the stop time during the election. Suggestion: stop online voting once all paper ballots are collected and counted.
-      </td>
-    </tr>
-    <tr v-if="useOnline">
-      <th>
-        Voting Stop time estimated?
-      </th>
-      <td>
-        <yes-no v-model="onlineElection.CloseIsEstimate"></yes-no>
-      </td>
-      <td>
-        Is the stopping time above an estimated time? 
-      </td>
-    </tr>
-    <tr v-if="useOnline">
-      <th>
-        View Results?
-      </th>
-      <td>
-        <yes-no v-model="onlineElection.AllowResultView"></yes-no>
-      </td>
-      <td>
-        Allow voters to view the final election results when they are available?
-      </td>
-    </tr>
-  </table>
+    <table class="Demographics">
+      <tr>
+        <th>
+          Enable Online Voting?
+        </th>
+        <td>
+          <yes-no v-model="useOnline"></yes-no>
+        </td>
+        <td>
+          Allow voters to cast their ballots online.
+        </td>
+      </tr>
 
+      <tr v-if="useOnline">
+        <th>
+          Voting Start time
+        </th>
+        <td>
+          <datetime v-model="onlineOpen" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          {{showFrom(onlineElection.WhenOpen)}}
+        </td>
+        <td>
+          When should voters be able to access this election and start working on their online ballot?
+          <a class="setTime" v-on:click="onlineOpen = new Date().getTime()">Set to Now</a>
+        </td>
+      </tr>
+      <tr v-if="useOnline">
+        <th>
+          Voting Stop time
+        </th>
+        <td>
+          <datetime v-model="onlineClose" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          {{showFrom(onlineElection.WhenClose)}}
+        </td>
+        <td>
+          When should the election be closed?
+          <a class="setTime" v-on:click="onlineClose = new Date().getTime()">Set to Now</a>
+          The Head Teller can adjust the stop time during the election. Suggestion: stop online voting once all paper ballots are collected and counted.
+        </td>
+      </tr>
+      <tr v-if="useOnline">
+        <th>
+          Voting Stop time estimated?
+        </th>
+        <td>
+          <yes-no v-model="onlineElection.CloseIsEstimate"></yes-no>
+        </td>
+        <td>
+          Is the stopping time above an estimated time?
+        </td>
+      </tr>
+      <tr v-if="useOnline">
+        <th>
+          View Results?
+        </th>
+        <td>
+          <yes-no v-model="onlineElection.AllowResultView"></yes-no>
+        </td>
+        <td>
+          Allow voters to view the final election results when they are available?
+        </td>
+      </tr>
+    </table>
+  }
+  else
+  {
+    <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+    <div class="PullInstructions">
+      <ol>
+        <li>
+          Online elections are not enabled on this web server.  To allow voters to cast their own ballots
+          online, see <a href="https://tallyj.com">TallyJ</a>. Contact Glen Little for more details
+          and setup assistance.
+        </li>
+      </ol>
+    </div>
+
+  }
 
   <div class="newStep"></div>
   <h2>Other Information</h2>

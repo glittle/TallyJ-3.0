@@ -149,7 +149,7 @@ namespace TallyJ.Controllers
                     System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
 
 
-                    new LogHelper().Add("Logged In - {0}".FilledWith(email), true);
+                    new LogHelper().Add("Logged In - {0} ({1})".FilledWith(model.UserName, email), true);
 
                     UserSession.IsKnownTeller = true;
 

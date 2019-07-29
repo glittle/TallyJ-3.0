@@ -888,7 +888,7 @@ namespace TallyJ.CoreModels
               ? manualOverride.CalledInBallots.Value
               : ResultSummaryCalc.CalledInBallots.GetValueOrDefault();
 
-            ResultSummaryFinal.CalledInBallots =
+            ResultSummaryFinal.OnlineBallots =
               ResultSummaryCalc.OnlineBallots.GetValueOrDefault();
 
 

@@ -41,7 +41,7 @@
       </th>
     </tr>
   </thead>
-  <tbody id="mainBody" class="Hidden">
+  <tbody id="mainBody" class="Hidden tbody">
     <tr>
       <th>
         {^Name}
@@ -95,7 +95,7 @@
       </th>
     </tr>
   </thead>
-  <tbody id="ballotsBody" class="Hidden">
+  <tbody id="ballotsBody" class="Hidden tbody">
     <tr>
       <th>
         {Code} {^Btn}
@@ -120,7 +120,7 @@
         </select>
     </div>*@
   <p class="AutoButtons">
-    <input type="checkbox" id="chkAutoRefresh" checked />
+    <input type="checkbox" id="chkAutoRefresh" />
     <label for="chkAutoRefresh">Auto-refresh this list every </label>
     <select id="ddlRefresh" class="input-medium">
       <option value="15">15 seconds</option>
@@ -133,7 +133,9 @@
     </button>
     <span id="lastRefreshArea">
       Refreshed at <span id="lastRefresh"></span>
-      <span class="countdown"></span>
+      <span class="countdownOuter">
+        <span class="countdown"></span>
+      </span>
     </span>
   </p>
   @if (UserSession.IsKnownTeller)
@@ -150,36 +152,40 @@
       </label>
     </p>
   }
-  <div>
-    <h2>Online Voters</h2>
-    <table class="OnlineBallots">
-      <thead>
-        <tr>
-          <th>
-            Voter
-          </th>
-          <th>
-            Registration
-          </th>
-          <th>
-            Status
-          </th>
-        </tr>
-      </thead>
-      <tbody id="onlineBallotsBody" class="Hidden">
-        <tr>
-          <td>
-            {C_FullNameFL}
-          </td>
-          <td>
-            {VotingMethod_Display}
-          </td>
-          <td title="{History_Tip}">
-            {History_Display}
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
-  </div>
+  @if (UserSession.AllowOnlineElections)
+  {
+    <div>
+      <h2>Online Voters</h2>
+      <table class="OnlineBallots">
+        <thead>
+          <tr>
+            <th>
+              Voter
+            </th>
+            <th>
+              Registration
+            </th>
+            <th>
+              Status
+            </th>
+          </tr>
+        </thead>
+        <tbody id="onlineBallotsBody" class="Hidden tbody">
+          <tr>
+            <td>
+              {C_FullNameFL}
+            </td>
+            <td>
+              {VotingMethod_Display}
+            </td>
+            <td title="{History_Tip}">
+              {History_Display}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  }
 </div>

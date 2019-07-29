@@ -246,8 +246,8 @@
   };
 
   function summarizeCounts() {
-    $('#calledIn').toggle(settings.calledInTotal > 0 || !!settings.info.ShowCalledIn);
-    $('#online').toggle(settings.onlineTotal > 0 || !!settings.info.ShowOnline);
+    $('#totalCounts').toggleClass('hideCalledIn',settings.calledInTotal > 0 || !!settings.info.ShowCalledIn);
+    $('#totalCounts').toggleClass('hideOnline', settings.onlineTotal > 0 || !!settings.info.ShowOnline);
     $('#totalCounts tr').each(function () {
       var row = $(this);
       var calcSpan = row.find('span.Calc');

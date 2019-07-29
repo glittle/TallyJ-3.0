@@ -26,20 +26,29 @@ namespace TallyJ.CoreModels
         var locations = new LocationCacher(Db).AllForThisElection;
         var votes = new VoteCacher(Db).AllForThisElection;
 
+
         var currentElectionGuid = UserSession.CurrentElectionGuid;
-        var onlineBallots = Db.OnlineVotingInfo
-          .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new {ovi, p.VotingMethod, p.C_FullNameFL})
+        var onlineBallots = UserSession.UsingOnlineElection ? Db.OnlineVotingInfo
+          .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p.VotingMethod, p.C_FullNameFL })
           .Where(j => j.ovi.ElectionGuid == currentElectionGuid)
           .ToList()
           .Select(j => new
           {
             j.ovi.Status,
             VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod),
-            votesReady = j.ovi.PoolLocked.GetValueOrDefault() 
+            votesReady = j.ovi.PoolLocked.GetValueOrDefault()
                          && j.ovi.ListPool?.Split(',').Length >= UserSession.CurrentElection.NumberToElect,
             j.ovi.HistoryStatus,
             j.C_FullNameFL
-          });
+          }) : null;
+
+        var onlineElections = UserSession.UsingOnlineElection ? Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
+          .Select(oe => new
+          {
+            oe.CloseIsEstimate,
+            oe.WhenOpen,
+            oe.WhenClose,
+          }).FirstOrDefault() : null;
 
         return
           new
@@ -88,13 +97,7 @@ namespace TallyJ.CoreModels
                   LocationId = g.l.C_RowId,
                   Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                 }),
-            OnlineElection = Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
-                .Select(oe => new
-                {
-                  oe.CloseIsEstimate,
-                  oe.WhenOpen,
-                  oe.WhenClose,
-                }).FirstOrDefault(),
+            OnlineElection = onlineElections,
             OnlineBallots = onlineBallots
           };
       }

@@ -88,7 +88,7 @@ namespace TallyJ.Code.Session
     }
     public static bool UsingOnlineElection
     {
-      get { return SessionKey.UsingOnlineElection.FromSession(false); }
+      get { return AllowOnlineElections && SessionKey.UsingOnlineElection.FromSession(false); }
       set { CurrentContext.Session[SessionKey.UsingOnlineElection] = value; }
     }
 

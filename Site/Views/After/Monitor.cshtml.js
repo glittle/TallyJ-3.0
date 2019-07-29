@@ -17,29 +17,19 @@
     settings.rowTemplateBallot = '<tr class="{ClassName}">' + ballotTableBody.children().eq(0).html() + '</tr>';
     settings.rowTemplateOnline = '<tr class="{ClassName}">' + $('#onlineBallotsBody').children().eq(0).html() + '</tr>';
 
-    showInfo(publicInterface.LocationInfos, true);
+    var useAutoRefresh = GetFromStorage(storageKey.MonitorRefreshOn, true);
+    $('#chkAutoRefresh').prop('checked', useAutoRefresh).click(setAutoRefresh);
 
     var desiredTime = GetFromStorage(storageKey.MonitorRefresh, 60);
-
-    //        $('#ddlElectionStatus').on('change', function () {
-    //            //ShowStatusDisplay('Updating...');
-    //            var ddl = $(this);
-    //            CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', {
-    //                status: ddl.val()
-    //            }, function () {
-    //                //ShowStatusDisplay('Updated', 0, 1000, false, true);
-    //                ResetStatusDisplay();
-    //                $('.ElectionState').text(ddl.find(':selected').text());
-    //            });
-    //        });
-
     $('#ddlRefresh').val(desiredTime).change(function () {
       $('#chkAutoRefresh').prop('checked', true);
       setAutoRefresh(true);
       SetInStorage(storageKey.MonitorRefresh, $(this).val());
+      SetInStorage(storageKey.MonitorRefreshOn, true);
     });
 
-    $('#chkAutoRefresh').click(setAutoRefresh);
+    showInfo(publicInterface.LocationInfos, true);
+
     $('#chkList').click(updateListing);
     $('#btnRefesh').click(function () {
       ShowStatusDisplay("Refreshing...");
@@ -82,12 +72,14 @@
     }
 
     var onlineBallotHost = $('table.OnlineBallots');
-    if (info.OnlineBallots.length === 0) {
-      onlineBallotHost.hide();
-    } else {
-      onlineBallotHost.show();
-      var onlineBallotTable = $('#onlineBallotsBody');
-      onlineBallotTable.html(expandOnlineBallots(info.OnlineBallots));
+    if (onlineBallotHost.length) {
+      if (info.OnlineBallots.length === 0) {
+        onlineBallotHost.hide();
+      } else {
+        onlineBallotHost.show();
+        var onlineBallotTable = $('#onlineBallotsBody');
+        onlineBallotTable.html(expandOnlineBallots(info.OnlineBallots));
+      }
     }
 
     var now = new Date();
@@ -145,11 +137,12 @@
   };
 
   var setAutoRefresh = function (ev) {
-    var wantAutorefresh = $('#chkAutoRefresh').prop('checked');
+    var wantAutoRefresh = $('#chkAutoRefresh').prop('checked');
     clearTimeout(settings.refreshTimeout);
     clearInterval(settings.refreshCounter);
+    SetInStorage(storageKey.MonitorRefreshOn, wantAutoRefresh);
 
-    if (wantAutorefresh) {
+    if (wantAutoRefresh) {
       var seconds = $('#ddlRefresh').val();
 
       settings.refreshTimeout = setTimeout(function () {

@@ -41,6 +41,13 @@ namespace TallyJ
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie
       });
 
+      if (!UserSession.AllowOnlineElections)
+      {
+        return;
+      }
+
+      // ensure that we have authentication account details
+
       if (AppSettings["facebook-AppId"].HasNoContent())
       {
         throw new ApplicationException("Missing app settings");
