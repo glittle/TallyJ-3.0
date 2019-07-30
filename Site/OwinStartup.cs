@@ -38,7 +38,9 @@ namespace TallyJ
 
       app.UseCookieAuthentication(new CookieAuthenticationOptions
       {
-        AuthenticationType = DefaultAuthenticationTypes.ExternalCookie
+        CookieSecure = CookieSecureOption.Always,
+        AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
+        ExpireTimeSpan = new TimeSpan(1, 0, 0),
       });
 
       if (!UserSession.AllowOnlineElections)
