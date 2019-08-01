@@ -27,7 +27,7 @@
 
   <div v-if="loading">Looking for your email address in elections...</div>
 
-  <p v-if="elections.length">Here are the elections where your email address is registered:</p>
+  <p v-if="elections.length">Here are the elections where your email address is registered and you can vote:</p>
   <p v-if="!elections.length && !loading">Your email address is not registered in any known elections.</p>
 
   <table class="electionList" v-if="!loading && elections.length">
@@ -46,12 +46,10 @@
         <td class="online center" v-html="e.Status_Display"></td>
         <td class="pname" v-text="e.person.name"></td>
         <td class="vmethod center">
+          <div>{{e.person.VotingMethod_Display}}</div>
           <div v-if="e.openNow">
-            <div>
-              <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
-            </div>
+            <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
           </div>
-          <span v-if="!e.openNow">{{e.person.VotingMethod_Display}}</span>
         </td>
         <td class="vtime center" v-text="e.person.RegistrationTime_Display"></td>
       </tr>
@@ -83,16 +81,23 @@
     </div>
     <div v-bind:class="[movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
       <h2>Pool & Ballot</h2>
+
       <p v-if="registration">
-        You are registered as voting: <strong>{{registration}}</strong>.
-        <strong v-if="registration !== 'Online'">This online ballot will NOT be used.</strong>
+        You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
+      <p  v-if="registration && registration !== 'Online'">
+        <strong>This online ballot will NOT be used.</strong>
+      </p>
+
+      <p v-if="!registration">You have not yet prepared your ballot or checked in with the tellers.</p>
+
       <p>Please select:</p>
       <div class="lockIn">
         <div><input type="radio" v-model="lockInVotes" :value="false" id="lockN" /> <label for="lockN">I am still selecting and sorting my pool of names.</label></div>
         <div><input type="radio" v-model="lockInVotes" v-bind:disabled="pool.length < numToElect" :value="true" id="lockY" /> <label :class="pool.length < numToElect ? 'disabled' : ''" for="lockY">I have made my choice. Use the top {{numToElect}} names below for my ballot.</label></div>
       </div>
-      <p v-if="!registration">You are not yet registered as having prepared your ballot.</p>
+      <p v-if="registration === 'Online' && lockInVotes"><strong>Your ballot will be created by TallyJ when the Head Teller closes online voting.</strong></p>
+
       <p v-if="!lockInVotes">Sort this list to move the desired people in to the ballot. To use a keyboard, press Tab to focus, Enter to select, Up and Down to move.</p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"

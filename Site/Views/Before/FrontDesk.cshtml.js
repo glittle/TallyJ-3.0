@@ -83,7 +83,7 @@
     $('.Voter').removeClass('filterHidden');
     $('.Counts div').removeClass('filtering');
     local.lastStatusFilter = '';
-  }
+  };
 
   var filterByStatus = function (btn) {
     if (btn.hasClass('filtering')) {
@@ -185,7 +185,7 @@
 
     if (inSelectionMode()) {
       $('.Voter.Selection div.Btn:visible').each(function (i, el) {
-        if (letter == el.innerText.substr(0, 1)) {
+        if (letter === el.innerText.substr(0, 1)) {
           voteBtnClicked(el);
         }
       });
@@ -341,7 +341,7 @@
     $('#search').val('').focus();
   };
   var handleKeyWhileFocused = function (ev) {
-    if (!local.focusedOnMatches || local.matches.length == 0) return;
+    if (!local.focusedOnMatches || local.matches.length === 0) return;
 
     ev.preventDefault();
 
@@ -354,9 +354,9 @@
     var currentId = local.matches[0].id;
     var current = $('#' + currentId);
     var moveNext;
-    if (key == 40) {
+    if (key === 40) {
       moveNext = current.next().attr('id');
-    } else if (key == 38) {
+    } else if (key === 38) {
       moveNext = current.prev().attr('id');
     }
     if (moveNext) {
@@ -443,19 +443,6 @@
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
       }
-      //  resizable: false,
-      //  modal: true,
-      //  buttons: {
-      //    "Yes": function () {
-      //      voteBtnClicked(target, true);
-      //      $(this).dialog("close");
-      //    },
-      //    Cancel: function () {
-      //      $(this).dialog("close");
-      //    }
-      //  }
-      //});
-      //return;
     }
 
     btn.addClass('clicked');
@@ -508,11 +495,18 @@
   var fillList = function () {
     var html = [];
     $.each(publicInterface.initial, function () {
-      console.log(this)
+      //      console.log(this)
       html.push(local.lineTemplate.filledWith(this));
     });
     $('#Main').prepend(html.join(''));
   }
+
+  //  function extendPerson(p) {
+  //    if (p.HasOnline) {
+  //      p.extraClass = 'HasOnline';
+  //    }
+  //    return p;
+  //  }
 
   var updatePeople = function (info, pid) {
     ResetStatusDisplay();
@@ -521,20 +515,26 @@
       if (info.PersonLines) {
         var someHidden = false;
         $.each(info.PersonLines, function (i, person) {
-          //console.log(person);
           var selector = '#P' + person.PersonId;
           var row = $(selector);
           var hidden = local.currentSearch && !row.hasClass('KeyMatch');
+          var extraClasses = [];
 
           if (row.hasClass('KeyMatch')) {
-            person.extraClass = 'KeyMatch';
+            extraClasses.push('KeyMatch');
           }
           else if (hidden) {
             // if a search is active, start hidden
-            person.extraClass = 'hidden';
+            extraClasses.push('hidden');
             someHidden = true;
           }
+          //
+          //          if (person.HasOnline) {
+          ////          console.log(person);
+          //            extraClasses.push('HasOnline');
+          //          }
 
+          person.extraClass = extraClasses.join(' ');
           person.DisplayLog = '';
 
           if (person.CanVote) {
@@ -557,6 +557,7 @@
             row.slideUp(500, 0, function () {
               row.remove();
             });
+
           }
         });
         if (someHidden) {

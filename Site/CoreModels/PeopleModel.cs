@@ -64,7 +64,7 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-            .Where(p => p.CanVote.HasValue && p.CanVote.Value)
+            .Where(p => p.CanVote.HasValue)
             .ToList();
       }
     }
@@ -460,6 +460,7 @@ namespace TallyJ.CoreModels
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var showLocations = Locations.Count() > 1;
+      var useOnline = UserSession.UsingOnlineElection;
 
       return people
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
@@ -485,7 +486,8 @@ namespace TallyJ.CoreModels
             DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
             MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
             CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
-            Online = p.VotingMethod == VotingMethodEnum.Online,
+            Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
+            HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
             Registered = p.VotingMethod == VotingMethodEnum.Registered,
             EnvNum = ShowEnvNum(p),
             p.CanVote,
@@ -623,6 +625,8 @@ namespace TallyJ.CoreModels
 
       UpdateFrontDeskListing(person, votingMethodRemoved);
 
+      new VoterPersonalHub().Update(person);
+
       //      if (lastRowVersion == 0)
       //      {
       //        lastRowVersion = person.C_RowVersionInt.AsLong() - 1;
@@ -718,7 +722,7 @@ namespace TallyJ.CoreModels
         LastRowVersion = person.C_RowVersionInt
       };
       new FrontDeskHub().UpdatePeople(updateInfo);
-
+      new VoterPersonalHub().Update(person);
 
       var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed
       long newStamp;

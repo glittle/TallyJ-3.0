@@ -354,9 +354,10 @@ namespace TallyJ.CoreModels
         {
           Db.SaveChanges();
 
-          new VoterHub()
-            .UpdateElection(new
+          new AllVotersHub()
+            .UpdateVoters(new
             {
+              changed = true,
               onlineInDb.WhenClose,
               onlineInDb.WhenOpen,
               onlineInDb.CloseIsEstimate,
@@ -373,19 +374,22 @@ namespace TallyJ.CoreModels
         }
         UserSession.UsingOnlineElection = false;
       }
+
+      new AllVotersHub().UpdateVoters(new { changed = true });
+
     }
 
-//    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
-//    {
-//      var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid)
-//          .FirstOrDefault();
-//      if (electionGuid == Guid.Empty)
-//      {
-//        return false;
-//      }
-//
-//      return JoinIntoElection(electionGuid, oldComputerGuid);
-//    }
+    //    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
+    //    {
+    //      var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid)
+    //          .FirstOrDefault();
+    //      if (electionGuid == Guid.Empty)
+    //      {
+    //        return false;
+    //      }
+    //
+    //      return JoinIntoElection(electionGuid, oldComputerGuid);
+    //    }
 
     public bool JoinIntoElection(Guid wantedElectionGuid, Guid oldComputerGuid)
     {

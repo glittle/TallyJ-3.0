@@ -9,6 +9,33 @@
     rowSelected: 0,
     prepare: function () {
       this.peopleHelper = new PeopleHelper(this.peopleUrl, false, true, this.customExtendPerson);
+      this.connectToVoterHubs();
+    },
+    connectToVoterHubs: function () {
+      $.connection().logging = true;
+      var host = this;
+
+      var allVotersHub = $.connection.allVotersHubCore;
+      var voterPersonalHub = $.connection.voterPersonalHubCore;
+
+      allVotersHub.client.updateVoters = function (info) {
+        console.log('signalR: allVotersHub updateVoters');
+        host.vue.getElectionList();
+      };
+
+      voterPersonalHub.client.updateVoter = function (info) {
+        console.log('signalR: voterPersonalHub updateVoter');
+        //        host.vue.getElectionList();
+        host.vue.updateRegistration(info);
+      };
+
+      startSignalR(function () {
+        console.log('Joining voter hub');
+        CallAjaxHandler(GetRootUrl() + '/Voter/JoinVoterHubs',
+          {
+            connId: site.signalrConnectionId
+          });
+      });
     },
     customExtendPerson: function (p) {
       p.inPool = false;
@@ -28,7 +55,7 @@ var vueOptions = {
       pool: [],
       savedPool: '',
       savedLock: false,
-      registration: '',
+      registration: '', // full text
       numToElect: 0,
       movingInPool: null,
       lockInVotes: null,
@@ -66,6 +93,8 @@ var vueOptions = {
       }
     }
   },
+  created: function () {
+  },
   mounted: function () {
     this.getElectionList();
   },
@@ -81,15 +110,13 @@ var vueOptions = {
             vue.elections = vue.extendElectionInfos(info.list);
 
             if (vue.keepStatusCurrent) {
-              // TODO if dates are changed on server, send SignalR message with new times and update status
               setInterval(vue.updateStatuses, 60 * 1000);
             }
 
             // for dev, go to first election
-            setTimeout(function () {
-              vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
-            },
-              750);
+            //            setTimeout(function () {
+            //              vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
+            //            }, 750);
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -99,8 +126,26 @@ var vueOptions = {
       list.forEach(this.extendElectionInfo);
       return list;
     },
+    extendElectionInfo: function (info) {
+      var person = info.person;
+      if (person.RegistrationTime) {
+        person.RegistrationTime_M = moment(person.RegistrationTime);
+        person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
+      }
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
+      this.updateStatus(info);
+    },
+    updateRegistration: function (info) {
+      var vue = this;
+      var election = vue.elections.find(function (e) { return e.id === info.ElectionGuid; });
+      if (election.person) {
+        election.person.RegistrationTime = info.RegistrationTime;
+        election.person.VotingMethod = info.VotingMethod;
+        vue.extendElectionInfo(election);
+        vue.registration = election.person.VotingMethod_Display;
+      }
+    },
     updateStatuses: function () {
-      //      console.log('update status');
       this.elections.forEach(this.updateStatus);
     },
     updateStatus: function (info) {
@@ -137,18 +182,10 @@ var vueOptions = {
           info.Status_Display = s.join('');
         }
       } else {
-        info.Status_Display = 'Not online';
+        info.Status_Display = 'No online voting';
       }
     },
-    extendElectionInfo: function (info) {
-      var person = info.person;
-      if (person.RegistrationTime) {
-        person.RegistrationTime_M = moment(person.RegistrationTime);
-        person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
-      }
-      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
-      this.updateStatus(info);
-    },
+   
     manageBallot: function (eInfo) {
       if (!eInfo) {
         return;
@@ -167,7 +204,7 @@ var vueOptions = {
             vue.registration = info.registration;
 
             voterHome.peopleHelper.Prepare(function () {
-              var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; })
+              var list = (info.votingInfo.ListPool || '').split(',').map(function(s) { return +s; });
               vue.loadPool(list);
 
               var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;

@@ -8,6 +8,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -18,6 +19,12 @@ namespace TallyJ.Controllers
     public ActionResult Index()
     {
       return View("VoterHome");
+    }
+
+    public void JoinVoterHubs(string connId)
+    {
+      new AllVotersHub().Join(connId);
+      new VoterPersonalHub().Join(connId);
     }
 
     public JsonResult JoinElection(Guid electionGuid)
@@ -191,42 +198,52 @@ namespace TallyJ.Controllers
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
 
-        if (locked)
+        if (person.VotingMethod.HasContent() && person.VotingMethod != VotingMethodEnum.Online)
         {
-          person.VotingMethod = VotingMethodEnum.Online;
-          person.RegistrationTime = DateTime.Now;
-          person.VotingLocationGuid = null; // online isn't treated as a location
-          person.EnvNum = null;
+          // teller has set. Voter can't change it...
 
-          var log = person.RegistrationLog;
-          log.Add(new[]
-          {
-            peopleModel.ShowRegistrationTime(person),
-            VotingMethodEnum.TextFor(person.VotingMethod),
-          }.JoinedAsString("; ", true));
-          person.RegistrationLog = log;
         }
         else
         {
-          // not online or anywhere
-          person.VotingMethod = null;
-          person.RegistrationTime = DateTime.Now;
-          person.VotingLocationGuid = null; // online isn't treated as a location
-          person.EnvNum = null;
-          votingMethodRemoved = true;
-
-          var log = person.RegistrationLog;
-          log.Add(new[]
+          if (locked)
           {
-            peopleModel.ShowRegistrationTime(person),
-            "Cancel Online",
-          }.JoinedAsString("; ", true));
-          person.RegistrationLog = log;
+            person.VotingMethod = VotingMethodEnum.Online;
+            person.RegistrationTime = DateTime.Now;
+            person.VotingLocationGuid = null; // online isn't treated as a location
+            person.EnvNum = null;
+            person.HasOnlineBallot = true;
+
+            var log = person.RegistrationLog;
+            log.Add(new[]
+            {
+              peopleModel.ShowRegistrationTime(person),
+              VotingMethodEnum.TextFor(person.VotingMethod),
+            }.JoinedAsString("; ", true));
+            person.RegistrationLog = log;
+          }
+          else
+          {
+            // not online or anywhere
+            person.VotingMethod = null;
+            person.RegistrationTime = DateTime.Now;
+            person.VotingLocationGuid = null; // online isn't treated as a location
+            person.EnvNum = null;
+            person.HasOnlineBallot = false;
+            votingMethodRemoved = true;
+
+            var log = person.RegistrationLog;
+            log.Add(new[]
+            {
+              peopleModel.ShowRegistrationTime(person),
+              "Cancel Online",
+            }.JoinedAsString("; ", true));
+            person.RegistrationLog = log;
+          }
+
+          personCacher.UpdateItemAndSaveCache(person);
+
+          peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
         }
-
-        personCacher.UpdateItemAndSaveCache(person);
-
-        peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
 
         Db.SaveChanges();
 
@@ -256,7 +273,7 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
-        .Where(p => p.Email == email)
+        .Where(p => p.Email == email && p.CanVote == true && p.IneligibleReasonGuid == null)
         .GroupBy(p => p.ElectionGuid, pList => pList)
         .Select(g => new
         {
@@ -264,15 +281,18 @@ namespace TallyJ.Controllers
           // only one entry per election
           g.OrderBy(p => p.C_RowId).FirstOrDefault().PersonGuid
         })
-        .Concat(Db.OnlineVotingInfo.Select(ovi => new
-        {
-          ovi.ElectionGuid,
-          ovi.PersonGuid
-        }))
+//        .Concat(Db.OnlineVotingInfo.Select(ovi => new
+//        {
+//          // get any elections that may have been deleted
+//          ovi.ElectionGuid,
+//          ovi.PersonGuid
+//        }))
         .Distinct()
-        .GroupJoin(Db.OnlineElection, ep => ep.ElectionGuid, oe => oe.ElectionGuid,
-          (ep, oeList) => new { ep.ElectionGuid, ep.PersonGuid, onlineElection = oeList.FirstOrDefault() })
-        .GroupJoin(Db.Election, g => g.ElectionGuid, e => e.ElectionGuid, (g, eList) => new { g.ElectionGuid, g.PersonGuid, g.onlineElection, fullElection = eList.FirstOrDefault() })
+        // with this collapsed list, get the full details
+        .GroupJoin(Db.OnlineElection, 
+          ep => ep.ElectionGuid, oe => oe.ElectionGuid, (ep, oeList) => new { ep.ElectionGuid, ep.PersonGuid, onlineElection = oeList.FirstOrDefault() })
+        .GroupJoin(Db.Election, 
+          g => g.ElectionGuid, e => e.ElectionGuid, (g, eList) => new { g.ElectionGuid, g.PersonGuid, g.onlineElection, fullElection = eList.FirstOrDefault() })
         .GroupJoin(Db.Person, j => j.PersonGuid, p => p.PersonGuid, (j, pList) => new { j.ElectionGuid, j.PersonGuid, j.onlineElection, j.fullElection, p = pList.FirstOrDefault() })
         .OrderByDescending(j => j.onlineElection.HistoryWhen)
         .ThenByDescending(j => j.onlineElection.WhenOpen)

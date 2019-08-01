@@ -42,5 +42,6 @@ namespace TallyJ.EF
         public string Teller1 { get; set; }
         public string Teller2 { get; set; }
         public string Email { get; set; }
+        public Nullable<bool> HasOnlineBallot { get; set; }
     }
 }

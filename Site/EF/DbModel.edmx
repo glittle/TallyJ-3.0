@@ -195,6 +195,7 @@
           <Property Name="Teller1" Type="nvarchar" MaxLength="25" />
           <Property Name="Teller2" Type="nvarchar" MaxLength="25" />
           <Property Name="Email" Type="nvarchar" MaxLength="250" />
+          <Property Name="HasOnlineBallot" Type="bit" />
         </EntityType>
         <EntityType Name="Result">
           <Key>
@@ -577,6 +578,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Teller1" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
           <Property Name="Teller2" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="HasOnlineBallot" Type="Boolean" />
         </EntityType>
         <EntityType Name="Teller">
           <Key>
@@ -834,6 +836,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Person">
             <EntityTypeMapping TypeName="TallyJ2dModel.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="HasOnlineBallot" ColumnName="HasOnlineBallot" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Teller2" ColumnName="Teller2" />
                 <ScalarProperty Name="Teller1" ColumnName="Teller1" />
