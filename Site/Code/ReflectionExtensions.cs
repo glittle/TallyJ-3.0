@@ -173,6 +173,34 @@ namespace TallyJ.Code
       return changed > 0;
     }
 
+
+    /// <summary>
+    ///     Copies all matching properties (by name) to the target object
+    /// </summary>
+    /// <param name="incoming"> The entity to read. </param>
+    /// <param name="target"> The entity to update. </param>
+    /// <param name="propertyNames"> List of property names to copy </param>
+    /// <returns> Returns true if any of the properties were changed. </returns>
+    public static bool CopyPropertyValuesTo<T>(this IDictionary<string, object> incoming, T target, IEnumerable<string> propertyNames = null)
+    {
+      var changed = 0;
+      foreach (var propertyWithNewValue in incoming
+        .Where(valuePair => (propertyNames == null || propertyNames.Contains(valuePair.Key)) && target.GetPropertyType(valuePair.Key) != null)
+        .Where(newKeyValue =>
+        {
+          var currentValue = target.GetPropertyValue(newKeyValue.Key);
+          if (newKeyValue.Value == null && currentValue == null) return false;
+
+          return newKeyValue.Value == null || !newKeyValue.Value.Equals(currentValue);
+        }))
+      {
+        target.SetMatchedPropertyValue(propertyWithNewValue.Key, propertyWithNewValue.Value);
+        changed++;
+      }
+      return changed > 0;
+    }
+
+
     /// <summary>
     ///     Copies all matching attributes (by name) to the target object
     /// </summary>

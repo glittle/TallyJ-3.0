@@ -229,7 +229,7 @@ namespace TallyJ.CoreModels
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,
           ShowCalledIn = _election.UseCallInButton,
-          ShowOnline = _election.UsingOnline,
+          ShowOnline = _election.OnlineCurrentlyOpen,
           ResultsManual =
             (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),

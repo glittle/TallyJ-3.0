@@ -29,7 +29,7 @@ namespace TallyJ.CoreModels
 
 
         var currentElectionGuid = UserSession.CurrentElectionGuid;
-        var onlineBallots = currentElection.UsingOnline ? Db.OnlineVotingInfo
+        var onlineBallots = currentElection.OnlineCurrentlyOpen ? Db.OnlineVotingInfo
           .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p.VotingMethod, p.C_FullNameFL })
           .Where(j => j.ovi.ElectionGuid == currentElectionGuid)
           .ToList()

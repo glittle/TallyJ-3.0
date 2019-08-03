@@ -33,7 +33,12 @@
 );
 
 
+go
 
+create unique nonclustered index [IX_PersonEmail]
+  on tj.Person(ElectionGuid asc, Email asc)
+  include (PersonGuid) 
+  where (Email is not null);
 
 
 

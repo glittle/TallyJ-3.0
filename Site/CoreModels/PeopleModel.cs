@@ -284,6 +284,8 @@ namespace TallyJ.CoreModels
         Db.Person.Attach(personInDatastore);
       }
 
+      var beforeChanges = personInDatastore.GetAllProperties();
+
       if (personFromInput.IneligibleReasonGuid == Guid.Empty)
       {
         personFromInput.IneligibleReasonGuid = null;
@@ -326,7 +328,29 @@ namespace TallyJ.CoreModels
       {
         SetCombinedInfos(personInDatastore);
 
-        Db.SaveChanges();
+        try
+        {
+          Db.SaveChanges();
+        }
+        catch (Exception e)
+        {
+          // revert person object back to what it was
+          beforeChanges.CopyPropertyValuesTo(personInDatastore);
+
+          if (e.GetAllMsgs(";").Contains("IX_PersonEmail"))
+          {
+            return new
+            {
+              Message = "That email is in use for another person.",
+              Person = PersonForEdit(personInDatastore),
+            }.AsJsonResult();
+          }
+
+          return new
+          {
+            Message = e.LastException()
+          }.AsJsonResult();
+        }
 
         new PersonCacher(Db).ReplaceEntireCache(PeopleInElection);
 
@@ -460,7 +484,7 @@ namespace TallyJ.CoreModels
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var showLocations = Locations.Count() > 1;
-      var useOnline = UserSession.CurrentElection.UsingOnline;
+      var useOnline = UserSession.CurrentElection.OnlineCurrentlyOpen;
 
       return people
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")

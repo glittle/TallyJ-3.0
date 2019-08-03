@@ -48,6 +48,10 @@ body.VoterIndex {
 
     .vmethod {
       background-color: @band2;
+
+      button {
+        margin: 5px 0 0 0;
+      }
     }
 
     .vtime {
@@ -116,12 +120,6 @@ body.VoterIndex {
     }
   }
 
-  .OtherRegistration {
-    color: @tallyJError;
-    font-weight: bold;
-  }
-
-
   .electionStatus {
     padding: 0px 10px;
     position: absolute;
@@ -156,7 +154,6 @@ body.VoterIndex {
 
   .lockIn {
     margin: 1em 0;
-    display: flex;
 
     > div {
       display: flex;
@@ -165,11 +162,9 @@ body.VoterIndex {
 
     .disabled {
       color: #aaa;
-      cursor: not-allowed;
     }
 
-
-    .makeChoice {
+    #lockN:checked + label {
       color: @tallyJError;
     }
 

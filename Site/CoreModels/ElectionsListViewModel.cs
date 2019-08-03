@@ -26,7 +26,9 @@ namespace TallyJ.CoreModels
             e.ElectionType,
             e.ElectionMode,
             e.ShowAsTest,
-            e.IsSingleNameElection
+            e.IsSingleNameElection,
+            e.OnlineCurrentlyOpen,
+            e.OnlineWhenClose
           }).ToList();
 
         return list.Select(info =>
@@ -45,6 +47,8 @@ namespace TallyJ.CoreModels
                           Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
                           IsTest = info.ShowAsTest.AsBoolean(),
                           info.IsSingleNameElection,
+                          info.OnlineCurrentlyOpen,
+                          info.OnlineWhenClose
                         };
                       });
       }

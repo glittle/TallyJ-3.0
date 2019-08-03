@@ -183,6 +183,9 @@
       this.TestClass = this.IsTest ? ' TestElection' : '';
       this.RowClass = this.IsSingleNameElection ? ' SingleName' : '';
       this.RowClass += this.IsFuture ? ' IsFuture' : '';
+      if (this.OnlineCurrentlyOpen) {
+        this.OnlineOpen = 'Online Voting Open. Closing ' + moment(this.OnlineWhenClose).fromNow() + '.';
+      }
     });
 
     $('#ElectionList').html(electionTemplate.filledWithEach(info));
