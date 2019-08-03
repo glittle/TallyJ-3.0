@@ -39,5 +39,9 @@ namespace TallyJ.EF
         public Nullable<bool> UseCallInButton { get; set; }
         public Nullable<bool> HidePreBallotPages { get; set; }
         public Nullable<bool> MaskVotingMethod { get; set; }
+        public Nullable<System.DateTime> OnlineWhenOpen { get; set; }
+        public Nullable<System.DateTime> OnlineWhenClose { get; set; }
+        public bool OnlineCloseIsEstimate { get; set; }
+        public bool OnlineAllowResultView { get; set; }
     }
 }

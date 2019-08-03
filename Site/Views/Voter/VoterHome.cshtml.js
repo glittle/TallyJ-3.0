@@ -70,6 +70,9 @@ var vueOptions = {
     lastInTop: function () {
       return this.numToElect - 1;
     },
+    canLockIn: function() {
+      return !(this.pool.length < this.numToElect || this.registration && this.registration !== 'Online');
+    }
   },
   watch: {
     searchText: function (a, b) {
@@ -84,7 +87,7 @@ var vueOptions = {
           }, function (info) {
             if (info.success) {
               vue.savedLock = a;
-              vue.registration = info.registration;
+              vue.updateRegistration(info);
               ShowStatusSuccess('Saved');
             } else {
               ShowStatusFailed(info.Error);
@@ -132,14 +135,14 @@ var vueOptions = {
         person.RegistrationTime_M = moment(person.RegistrationTime);
         person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
       }
-      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
       this.updateStatus(info);
     },
     updateRegistration: function (info) {
       var vue = this;
       var election = vue.elections.find(function (e) { return e.id === info.ElectionGuid; });
       if (election.person) {
-        election.person.RegistrationTime = info.RegistrationTime;
+        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
         election.person.VotingMethod = info.VotingMethod;
         vue.extendElectionInfo(election);
         vue.registration = election.person.VotingMethod_Display;
@@ -151,32 +154,31 @@ var vueOptions = {
     updateStatus: function (info) {
       info.openNow = false;
 
-      if (info.online) {
+      if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
 
-        var o = info.online;
-        o.WhenClose_M = moment(o.WhenClose); // if no date, will be invalid
-        o.WhenOpen_M = moment(o.WhenOpen);
+        info.OnlineWhenOpen_M = moment( info.OnlineWhenOpen);
+        info.OnlineWhenClose_M = moment(info.OnlineWhenClose); // if no date, will be invalid
 
-        if (o.WhenOpen_M.isAfter()) {
+        if (info.OnlineWhenOpen_M.isAfter()) {
           // future
-          info.Status_Display = 'Will open ' + o.WhenOpen_M.fromNow();
+          info.Status_Display = 'Will open ' + info.OnlineWhenOpen_M.fromNow();
           info.classes = ['future'];
-        } else if (o.WhenClose_M.isBefore()) {
+        } else if (info.OnlineWhenClose_M.isBefore()) {
           // past
-          info.Status_Display = 'Closed ' + o.WhenClose_M.fromNow();
+          info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
           info.classes = ['past'];
-        } else if (o.WhenOpen_M.isBefore() && o.WhenClose_M.isAfter()) {
+        } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {
           // now
           info.classes = ['now'];
           info.openNow = true;
           var s = [];
           s.push('Open Now!<br>');
-          s.push(o.CloseIsEstimate ? ' Expected to' : ' Will');
+          s.push(info.OnlineCloseIsEstimate ? ' Expected to' : ' Will');
           s.push(' close ');
-          s.push(o.WhenClose_M.fromNow());
-          if (o.WhenClose_M.diff(moment(), 'm') < 120) {
-            s.push(` (at ${o.WhenClose_M.format('h:mm a')})`);
+          s.push(info.OnlineWhenClose_M.fromNow());
+          if (info.OnlineWhenClose_M.diff(moment(), 'm') < 120) {
+            s.push(` (at ${info.OnlineWhenClose_M.format('h:mm a')})`);
           }
           s.push('.');
           info.Status_Display = s.join('');
@@ -185,7 +187,7 @@ var vueOptions = {
         info.Status_Display = 'No online voting';
       }
     },
-   
+
     manageBallot: function (eInfo) {
       if (!eInfo) {
         return;
@@ -204,7 +206,7 @@ var vueOptions = {
             vue.registration = info.registration;
 
             voterHome.peopleHelper.Prepare(function () {
-              var list = (info.votingInfo.ListPool || '').split(',').map(function(s) { return +s; });
+              var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; });
               vue.loadPool(list);
 
               var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;

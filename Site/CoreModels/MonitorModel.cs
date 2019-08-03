@@ -22,13 +22,14 @@ namespace TallyJ.CoreModels
         var now = DateTime.Now;
 
         var ballots = new BallotCacher(Db).AllForThisElection;
-        var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
+        var currentElection = UserSession.CurrentElection;
+        var isSingleName = currentElection.IsSingleNameElection;
         var locations = new LocationCacher(Db).AllForThisElection;
         var votes = new VoteCacher(Db).AllForThisElection;
 
 
         var currentElectionGuid = UserSession.CurrentElectionGuid;
-        var onlineBallots = UserSession.UsingOnlineElection ? Db.OnlineVotingInfo
+        var onlineBallots = currentElection.UsingOnline ? Db.OnlineVotingInfo
           .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p.VotingMethod, p.C_FullNameFL })
           .Where(j => j.ovi.ElectionGuid == currentElectionGuid)
           .ToList()
@@ -37,18 +38,18 @@ namespace TallyJ.CoreModels
             j.ovi.Status,
             VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod),
             votesReady = j.ovi.PoolLocked.GetValueOrDefault()
-                         && j.ovi.ListPool?.Split(',').Length >= UserSession.CurrentElection.NumberToElect,
+                         && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect,
             j.ovi.HistoryStatus,
             j.C_FullNameFL
           }) : null;
 
-        var onlineElections = UserSession.UsingOnlineElection ? Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
-          .Select(oe => new
-          {
-            oe.CloseIsEstimate,
-            oe.WhenOpen,
-            oe.WhenClose,
-          }).FirstOrDefault() : null;
+//        var onlineElections = UserSession.UsingOnlineElection ? Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
+//          .Select(oe => new
+//          {
+//            oe.CloseIsEstimate,
+//            oe.WhenOpen,
+//            oe.WhenClose,
+//          }).FirstOrDefault() : null;
 
         return
           new
@@ -97,7 +98,13 @@ namespace TallyJ.CoreModels
                   LocationId = g.l.C_RowId,
                   Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                 }),
-            OnlineElection = onlineElections,
+            OnlineInfo = new
+            {
+              currentElection.OnlineWhenOpen,
+              currentElection.OnlineWhenClose,
+              currentElection.OnlineCloseIsEstimate,
+              currentElection.OnlineAllowResultView,
+            },
             OnlineBallots = onlineBallots
           };
       }

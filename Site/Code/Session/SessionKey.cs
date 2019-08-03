@@ -13,8 +13,6 @@ namespace TallyJ.Code.Session
         public const string IsGuestTeller = "IsGuestTeller";
         public const string IsKnownTeller = "IsKnownTeller";
 
-        public const string UsingOnlineElection = "UsingOnlineElection";
-
         public const string CurrentUserGuid = "CurrentUserGuid";
         public const string UserGuidRetrieved = "UserGuidRetrieved";
         public const string TimeOffsetKnown = "ServerTimeKnown";

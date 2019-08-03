@@ -5,19 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="OnlineElection">
-          <Key>
-            <PropertyRef Name="_RowId" />
-          </Key>
-          <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ElectionName" Type="nvarchar" MaxLength="150" />
-          <Property Name="WhenOpen" Type="datetime2" Precision="0" />
-          <Property Name="WhenClose" Type="datetime2" Precision="0" />
-          <Property Name="CloseIsEstimate" Type="bit" Nullable="false" />
-          <Property Name="AllowResultView" Type="bit" Nullable="false" />
-          <Property Name="HistoryWhen" Type="varchar(max)" />
-        </EntityType>
         <EntityType Name="OnlineVoter">
           <Key>
             <PropertyRef Name="_RowId" />
@@ -108,6 +95,10 @@
           <Property Name="UseCallInButton" Type="bit" />
           <Property Name="HidePreBallotPages" Type="bit" />
           <Property Name="MaskVotingMethod" Type="bit" />
+          <Property Name="OnlineWhenOpen" Type="datetime2" Precision="0" />
+          <Property Name="OnlineWhenClose" Type="datetime2" Precision="0" />
+          <Property Name="OnlineCloseIsEstimate" Type="bit" Nullable="false" />
+          <Property Name="OnlineAllowResultView" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -328,7 +319,6 @@ warning 6035: The relationship 'FK_Vote_Ballot' has columns that are not part of
 warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
         <Association Name="FK_Vote_Person1" />-->
         <EntityContainer Name="TallyJ2dModelStoreContainer">
-          <EntitySet Name="OnlineElection" EntityType="Self.OnlineElection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OnlineVoter" EntityType="Self.OnlineVoter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OnlineVotingInfo" EntityType="Self.OnlineVotingInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
@@ -371,7 +361,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="Location" EntityType="TallyJ2dModel.Location" />
           <EntitySet Name="Person" EntityType="TallyJ2dModel.Person" />
           <EntitySet Name="Teller" EntityType="TallyJ2dModel.Teller" />
-          <EntitySet Name="OnlineElection" EntityType="TallyJ2dModel.OnlineElection" />
           <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
           <EntitySet Name="ResultSummary" EntityType="TallyJ2dModel.ResultSummary" />
           <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
@@ -417,6 +406,10 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="UseCallInButton" Type="Boolean" />
           <Property Name="HidePreBallotPages" Type="Boolean" />
           <Property Name="MaskVotingMethod" Type="Boolean" />
+          <Property Name="OnlineWhenOpen" Type="DateTime" Precision="0" />
+          <Property Name="OnlineWhenClose" Type="DateTime" Precision="0" />
+          <Property Name="OnlineCloseIsEstimate" Type="Boolean" Nullable="false" />
+          <Property Name="OnlineAllowResultView" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -591,19 +584,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="IsHeadTeller" Type="Boolean" />
           <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
         </EntityType>
-        <EntityType Name="OnlineElection">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="ElectionName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="WhenOpen" Type="DateTime" Precision="0" />
-          <Property Name="WhenClose" Type="DateTime" Precision="0" />
-          <Property Name="CloseIsEstimate" Type="Boolean" Nullable="false" />
-          <Property Name="AllowResultView" Type="Boolean" Nullable="false" />
-          <Property Name="HistoryWhen" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -682,6 +662,10 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Election">
             <EntityTypeMapping TypeName="TallyJ2dModel.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="OnlineAllowResultView" ColumnName="OnlineAllowResultView" />
+                <ScalarProperty Name="OnlineCloseIsEstimate" ColumnName="OnlineCloseIsEstimate" />
+                <ScalarProperty Name="OnlineWhenClose" ColumnName="OnlineWhenClose" />
+                <ScalarProperty Name="OnlineWhenOpen" ColumnName="OnlineWhenOpen" />
                 <ScalarProperty Name="MaskVotingMethod" ColumnName="MaskVotingMethod" />
                 <ScalarProperty Name="HidePreBallotPages" ColumnName="HidePreBallotPages" />
                 <ScalarProperty Name="UseCallInButton" ColumnName="UseCallInButton" />
@@ -875,20 +859,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="IsHeadTeller" ColumnName="IsHeadTeller" />
                 <ScalarProperty Name="UsingComputerCode" ColumnName="UsingComputerCode" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="OnlineElection">
-            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineElection">
-              <MappingFragment StoreEntitySet="OnlineElection">
-                <ScalarProperty Name="HistoryWhen" ColumnName="HistoryWhen" />
-                <ScalarProperty Name="AllowResultView" ColumnName="AllowResultView" />
-                <ScalarProperty Name="CloseIsEstimate" ColumnName="CloseIsEstimate" />
-                <ScalarProperty Name="WhenClose" ColumnName="WhenClose" />
-                <ScalarProperty Name="WhenOpen" ColumnName="WhenOpen" />
-                <ScalarProperty Name="ElectionName" ColumnName="ElectionName" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>

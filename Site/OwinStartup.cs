@@ -92,7 +92,7 @@ namespace TallyJ
             {
               AllowRefresh = true,
               IsPersistent = false,
-              ExpiresUtc = DateTime.UtcNow.AddDays(7)
+              ExpiresUtc = DateTime.UtcNow.AddHours(1)
             }, identity);
 
             RecordLogin("Facebook", email);
@@ -135,7 +135,7 @@ namespace TallyJ
           {
             AllowRefresh = true,
             IsPersistent = false,
-            ExpiresUtc = DateTime.UtcNow.AddDays(7)
+            ExpiresUtc = DateTime.UtcNow.AddHours(1)
           }, identity);
 
           RecordLogin("Google", email);

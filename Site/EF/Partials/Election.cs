@@ -136,10 +136,13 @@ namespace TallyJ.EF
         //}
 
 
-        public bool IsSingleNameElection
-        {
-            get { return NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0; }
-        }
+        public bool IsSingleNameElection => 
+          NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0;
+
+        public bool UsingOnline =>
+          OnlineWhenOpen.HasValue
+          && OnlineWhenClose.HasValue
+          && OnlineWhenOpen.Value < OnlineWhenClose.Value;
 
         public bool CanBeAvailableForGuestTellers
         {

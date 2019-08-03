@@ -24,7 +24,6 @@ namespace TallyJ.EF
     DbSet<Person> Person { get; set; }
     DbSet<Teller> Teller { get; set; }
     
-    DbSet<OnlineElection> OnlineElection { get; set; }
     DbSet<OnlineVoter> OnlineVoter { get; set; }
     DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
 

@@ -577,9 +577,6 @@
     <Compile Include="EF\Message.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\OnlineElection.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
-    </Compile>
     <Compile Include="EF\OnlineVoter.cs">
       <DependentUpon>DbContextGen.tt</DependentUpon>
     </Compile>

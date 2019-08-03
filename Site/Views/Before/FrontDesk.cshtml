@@ -5,8 +5,9 @@
   ViewBag.Title = "Front Desk";
   ViewBag.Message = "Record who is voting...";
 
-  var ballotProcess = UserSession.CurrentElection.BallotProcessRaw;
-  var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
+  var currentElection = UserSession.CurrentElection;
+  var ballotProcess = currentElection.BallotProcessRaw;
+  var ballotProcessEnum = currentElection.BallotProcess;
 
   var inPersonName = "In Person";
 
@@ -57,7 +58,7 @@
   <input accesskey="S" id="search">
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
-<div class="Counts @(UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(UserSession.UsingOnlineElection ? "UseOnline" : "")">
+<div class="Counts @(currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(currentElection.UsingOnline ? "UseOnline" : "")">
   <div class="Online" data-status="Online" title="Click to filter the list">
     Online
     <i>0</i>
@@ -94,9 +95,9 @@
   </span>
 </div>
 <div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
-                          UserSession.CurrentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
-                          UserSession.UsingOnlineElection ? "UseOnline" : "",
-                          "EnvMode-" + UserSession.CurrentElection.EnvNumModeRaw }.JoinedAsString(" "))">
+                          currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
+                          currentElection.UsingOnline ? "UseOnline" : "",
+                          "EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
     Type the first letter of a button to click it. Press Esc or Enter when done.
   </div>

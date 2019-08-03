@@ -11,7 +11,6 @@ namespace TallyJ.CoreModels
   {
     private Election _election;
     private ElectionModel _electionModel;
-    private OnlineElection _onlineElection;
 
     public int NumberOfPeople
     {
@@ -39,10 +38,10 @@ namespace TallyJ.CoreModels
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
     }
-    public OnlineElection CurrentOnlineElection
-    {
-      get { return _onlineElection ?? (_onlineElection = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid)); }
-    }
+//    public OnlineElection CurrentOnlineElection
+//    {
+//      get { return _onlineElection ?? (_onlineElection = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid)); }
+//    }
 
     public ElectionModel CurrentElectionModel
     {

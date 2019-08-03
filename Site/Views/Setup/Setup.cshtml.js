@@ -24,38 +24,42 @@
         numLocations: publicInterface.Locations.length,
         MultipleLocations: publicInterface.Locations.length > 1,
         usingBallotProcess: false,
-        useOnline: false,
-        onlineElection: publicInterface.OnlineElection || {},
         isMounted: false,
+        useOnline: false,
         dummy: 1
       },
       computed: {
-        onlineOpen: {
-          get: function () {
-            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenOpen && !isNaN(this.onlineElection.WhenOpen)) {
-              return this.onlineElection.WhenOpen.toISOString();
-            }
-            return '';
-          },
-          set: function (a) {
-            this.onlineElection.WhenOpen = new Date(a);
-            if (this.isMounted) $('.btnSave').addClass('btn-primary');
-            this.dummy++;
-          }
-        },
-        onlineClose: {
-          get: function () {
-            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenClose && !isNaN(this.onlineElection.WhenClose)) {
-              return this.onlineElection.WhenClose.toISOString();
-            }
-            return '';
-          },
-          set: function (a) {
-            this.onlineElection.WhenClose = new Date(a);
-            if (this.isMounted) $('.btnSave').addClass('btn-primary');
-            this.dummy++;
-          }
+        onlineDatesOkay: function() {
+          return this.election.OnlineWhenOpen &&
+            this.election.OnlineWhenClose &&
+            this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
         }
+        //        onlineOpen: {
+        //          get: function () {
+        //            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenOpen && !isNaN(this.onlineElection.WhenOpen)) {
+        //              return this.onlineElection.WhenOpen.toISOString();
+        //            }
+        //            return '';
+        //          },
+        //          set: function (a) {
+        //            this.onlineElection.WhenOpen = new Date(a);
+        //            if (this.isMounted) $('.btnSave').addClass('btn-primary');
+        //            this.dummy++;
+        //          }
+        //        },
+        //        onlineClose: {
+        //          get: function () {
+        //            if (this.dummy > 0 && this.onlineElection && this.onlineElection.WhenClose && !isNaN(this.onlineElection.WhenClose)) {
+        //              return this.onlineElection.WhenClose.toISOString();
+        //            }
+        //            return '';
+        //          },
+        //          set: function (a) {
+        //            this.onlineElection.WhenClose = new Date(a);
+        //            if (this.isMounted) $('.btnSave').addClass('btn-primary');
+        //            this.dummy++;
+        //          }
+        //        }
       },
       watch: {
         'election.BallotProcessRaw': function (a) {
@@ -71,16 +75,19 @@
             }
           }
         },
-        useOnline: function(a) {
+        useOnline: function (a) {
           if (a) {
-            if (this.onlineElection.CloseIsEstimate == null) {
-              this.onlineElection = {
-                WhenOpen: '',
-                WhenClose: '',
-                CloseIsEstimate: true,
-                AllowResultView: false
-              };
-            }
+            if (this.election.OnlineCloseIsEstimate == null) {
+              this.election.OnlineWhenOpen = '';
+              this.election.OnlineWhenClose = '';
+              this.election.OnlineCloseIsEstimate = true;
+              this.election.OnlineAllowResultView = false;
+            };
+          } else {
+            this.election.OnlineWhenOpen = null;
+            this.election.OnlineWhenClose = null;
+            this.election.OnlineCloseIsEstimate = null;
+            this.election.OnlineAllowResultView = null;
           }
         }
         //locations: function (a, b) {
@@ -89,10 +96,12 @@
         //}
       },
       created: function () {
-        this.useOnline = !!this.onlineElection.WhenOpen;
-        if (this.useOnline) {
-          this.onlineElection.WhenOpen = this.onlineElection.WhenOpen.parseJsonDate();
-          this.onlineElection.WhenClose = this.onlineElection.WhenClose.parseJsonDate();
+        //        this.useOnline = !!this.election.OnlineWhenOpen;
+        this.useOnline = false;
+        if (this.election.OnlineWhenOpen || this.election.OnlineWhenClose) {
+          this.useOnline = true;
+          this.election.OnlineWhenOpen = this.election.OnlineWhenOpen.parseJsonDate().toISOString();
+          this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
         }
       },
       mounted: function () {
@@ -120,8 +129,8 @@
           $('.btnSave').addClass('btn-primary');
         },
         showFrom: function (when) {
-          if (!when || isNaN(when)) return '';
-          return moment(when).fromNow();
+          if (!when) return '';
+          return '(' + moment(when).fromNow() + ')';
         }
       }
     });
@@ -493,6 +502,10 @@
       ListForPublic: election.ListForPublic,
       ElectionPasscode: election.ElectionPasscode,
       T24: election.T24,
+      OnlineWhenOpen: election.OnlineWhenOpen,
+      OnlineWhenClose: election.OnlineWhenClose,
+      OnlineCloseIsEstimate: election.OnlineCloseIsEstimate,
+      OnlineAllowResultView: election.OnlineAllowResultView,
     };
 
     $(':input[data-name]').each(function () {
@@ -508,13 +521,6 @@
       }
       form[input.data('name')] = value;
     });
-
-    var oe = settings.vue.onlineElection;
-    form.WhenOpen = oe.WhenOpen.toISOString();
-    form.WhenClose = oe.WhenClose.toISOString();
-    form.CloseIsEstimate = oe.CloseIsEstimate;
-    form.AllowResultView = oe.AllowResultView;
-    form.useOnline = settings.vue.useOnline;
 
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
@@ -610,7 +616,6 @@
     controllerUrl: '',
     hasBallots: false,
     Election: null,
-    OnlineElection: null,
     Locations: null,
     settings: settings,
     initialRules: function (type, mode, info) {

@@ -27,9 +27,9 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SaveElection(Election election, OnlineElection onlineElection, bool useOnline)
+    public JsonResult SaveElection(Election election)
     {
-      return new ElectionModel().SaveElection(election, onlineElection, useOnline);
+      return new ElectionModel().SaveElection(election);
     }
 
     public JsonResult DetermineRules(string type, string mode)

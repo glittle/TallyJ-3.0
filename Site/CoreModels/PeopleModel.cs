@@ -460,7 +460,7 @@ namespace TallyJ.CoreModels
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var showLocations = Locations.Count() > 1;
-      var useOnline = UserSession.UsingOnlineElection;
+      var useOnline = UserSession.CurrentElection.UsingOnline;
 
       return people
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")

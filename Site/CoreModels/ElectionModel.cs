@@ -246,7 +246,7 @@ namespace TallyJ.CoreModels
     //    }
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     /// <Summary>Saves changes to this election</Summary>
-    public JsonResult SaveElection(Election electionFromBrowser, OnlineElection onlineElectionFromBrowser, bool useOnline)
+    public JsonResult SaveElection(Election electionFromBrowser)
     {
       //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
       var electionCacher = new ElectionCacher(Db);
@@ -281,6 +281,10 @@ namespace TallyJ.CoreModels
         election.BallotProcessRaw,
         election.EnvNumModeRaw,
         election.T24,
+        election.OnlineWhenOpen,
+        election.OnlineWhenClose,
+        election.OnlineAllowResultView,
+        election.OnlineCloseIsEstimate
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
@@ -314,7 +318,15 @@ namespace TallyJ.CoreModels
         new ResultsModel().GenerateResults();
       }
 
-      SaveOnlineElection(onlineElectionFromBrowser, useOnline);
+
+      new AllVotersHub()
+        .UpdateVoters(new
+        {
+          changed = true,
+          election.OnlineWhenClose,
+          election.OnlineWhenOpen,
+          election.OnlineCloseIsEstimate,
+        });
 
       var displayName = UserSession.CurrentElectionDisplayNameAndInfo;
 
@@ -326,58 +338,58 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    private void SaveOnlineElection(OnlineElection onlineElectionFromBrowser, bool useOnline)
-    {
-      // save online election - ignore Guid from browser
-      var onlineInDb = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid);
-      if (useOnline)
-      {
-        if (onlineInDb == null)
-        {
-          onlineInDb = new OnlineElection
-          {
-            ElectionGuid = UserSession.CurrentElectionGuid,
-            ElectionName = UserSession.CurrentElectionName,
-          };
-          Db.OnlineElection.Add(onlineInDb);
-        }
-
-        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
-        {
-          onlineInDb.AllowResultView,
-          onlineInDb.CloseIsEstimate,
-          onlineInDb.WhenOpen,
-          onlineInDb.WhenClose,
-        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray());
-
-        if (changed)
-        {
-          Db.SaveChanges();
-
-          new AllVotersHub()
-            .UpdateVoters(new
-            {
-              changed = true,
-              onlineInDb.WhenClose,
-              onlineInDb.WhenOpen,
-              onlineInDb.CloseIsEstimate,
-            });
-        }
-        UserSession.UsingOnlineElection = true;
-      }
-      else
-      {
-        if (onlineInDb != null)
-        {
-          Db.OnlineElection.Remove(onlineInDb);
-          Db.SaveChanges();
-        }
-        UserSession.UsingOnlineElection = false;
-      }
-
-      new AllVotersHub().UpdateVoters(new { changed = true });
-
-    }
+//    private void SaveOnlineElection(OnlineElection onlineElectionFromBrowser, bool useOnline)
+//    {
+//      // save online election - ignore Guid from browser
+//      var onlineInDb = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid);
+//      if (useOnline)
+//      {
+//        if (onlineInDb == null)
+//        {
+//          onlineInDb = new OnlineElection
+//          {
+//            ElectionGuid = UserSession.CurrentElectionGuid,
+//            ElectionName = UserSession.CurrentElectionName,
+//          };
+//          Db.OnlineElection.Add(onlineInDb);
+//        }
+//
+//        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
+//        {
+//          onlineInDb.AllowResultView,
+//          onlineInDb.CloseIsEstimate,
+//          onlineInDb.WhenOpen,
+//          onlineInDb.WhenClose,
+//        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray());
+//
+//        if (changed)
+//        {
+//          Db.SaveChanges();
+//
+//          new AllVotersHub()
+//            .UpdateVoters(new
+//            {
+//              changed = true,
+//              onlineInDb.WhenClose,
+//              onlineInDb.WhenOpen,
+//              onlineInDb.CloseIsEstimate,
+//            });
+//        }
+//        UserSession.UsingOnlineElection = true;
+//      }
+//      else
+//      {
+//        if (onlineInDb != null)
+//        {
+//          Db.OnlineElection.Remove(onlineInDb);
+//          Db.SaveChanges();
+//        }
+//        UserSession.UsingOnlineElection = false;
+//      }
+//
+//      new AllVotersHub().UpdateVoters(new { changed = true });
+//
+//    }
 
     //    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
     //    {

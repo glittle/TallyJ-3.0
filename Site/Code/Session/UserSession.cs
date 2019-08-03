@@ -86,11 +86,6 @@ namespace TallyJ.Code.Session
       get { return SessionKey.UserGuidRetrieved.FromSession(false); }
       set { CurrentContext.Session[SessionKey.UserGuidRetrieved] = value; }
     }
-    public static bool UsingOnlineElection
-    {
-      get { return AllowOnlineElections && SessionKey.UsingOnlineElection.FromSession(false); }
-      set { CurrentContext.Session[SessionKey.UsingOnlineElection] = value; }
-    }
 
     public static Guid UserGuid
     {
@@ -167,16 +162,12 @@ namespace TallyJ.Code.Session
           if (election == null)
           {
             CurrentElectionGuid = Guid.Empty;
-            UsingOnlineElection = false;
           }
           else
           {
             // save for next use in this same rendering
             //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
             ItemKey.CurrentElection.SetInPageItems(election);
-
-            // not using caching for online election info
-            UsingOnlineElection = DbContext.OnlineElection.Any(oe => oe.ElectionGuid == election.ElectionGuid);
           }
         }
 

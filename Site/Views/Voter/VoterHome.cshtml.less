@@ -1,4 +1,6 @@
-﻿@band1: lightyellow;
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+@band1: lightyellow;
 @band2: lightgoldenrodyellow;
 @future: palegreen;
 @now: #7dff7a;
@@ -114,6 +116,12 @@ body.VoterIndex {
     }
   }
 
+  .OtherRegistration {
+    color: @tallyJError;
+    font-weight: bold;
+  }
+
+
   .electionStatus {
     padding: 0px 10px;
     position: absolute;
@@ -148,18 +156,21 @@ body.VoterIndex {
 
   .lockIn {
     margin: 1em 0;
+    display: flex;
 
     > div {
       display: flex;
       align-items: center;
     }
 
-    .disabled{
+    .disabled {
       color: #aaa;
+      cursor: not-allowed;
     }
 
-    #lockN:checked + label {
-      color: red;
+
+    .makeChoice {
+      color: @tallyJError;
     }
 
     #lockY:checked + label {

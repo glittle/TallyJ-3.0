@@ -17,7 +17,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("setupIndexPage.OnlineElection={0};".FilledWith(Model.CurrentOnlineElection.SerializedAsJsonString()));
+  //  ContextItems.AddJavascriptForPage("setupIndexPage.OnlineElection={0};".FilledWith(Model.CurrentOnlineElection.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.Tellers={0};".FilledWith(Model.TellersJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
@@ -392,27 +392,27 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <th>
           Voting Start time
         </th>
-        <td>
-          <datetime v-model="onlineOpen" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhen">({{showFrom(onlineElection.WhenOpen)}})</div>
+        <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+          <datetime v-model="election.OnlineWhenOpen" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          <div class="voteWhen">{{showFrom(election.OnlineWhenOpen)}}</div>
         </td>
         <td>
           When should voters be able to access this election and start working on their online ballot?
-          <a class="setTime" v-on:click="onlineOpen = new Date().getTime()">Set to now.</a>
+          <a class="setTime" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
         </td>
       </tr>
       <tr v-if="useOnline">
         <th>
           Voting Stop time
         </th>
-        <td>
-          <datetime v-model="onlineClose" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhen">({{showFrom(onlineElection.WhenClose)}})</div>
+        <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+          <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          <div class="voteWhen">{{showFrom(election.OnlineWhenClose)}}</div>
         </td>
         <td>
           When should the election be closed?
-          <a class="setTime" v-on:click="onlineClose = new Date().getTime()">Set to now.</a>
-          <p>The Head Teller can adjust the stop time during the election. Suggestion: Manually stop online voting once all paper ballots are collected and counted.</p>
+          <a class="setTime" v-on:click="election.OnlineWhenClose = new Date().toISOString()">Set to now.</a>
+          <p>The Head Teller can adjust the stop time during the election. Suggestion: Manually close online voting once all paper ballots are collected and counted.</p>
         </td>
       </tr>
       <tr v-if="useOnline">
@@ -420,7 +420,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
           Voting Stop time estimated?
         </th>
         <td>
-          <yes-no v-model="onlineElection.CloseIsEstimate"></yes-no>
+          <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
         </td>
         <td>
           Is the stopping time above an estimated time?
@@ -431,7 +431,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
           View Results?
         </th>
         <td>
-          <yes-no v-model="onlineElection.AllowResultView"></yes-no>
+          <yes-no v-model="election.OnlineAllowResultView"></yes-no>
         </td>
         <td>
           Allow voters to view the final election report when it is available?
