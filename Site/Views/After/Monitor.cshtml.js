@@ -6,9 +6,14 @@
     rowTemplateOnline: '',
     refreshTimeout: null,
     refreshCounter: null,
+    vue: null
   };
 
   var preparePage = function () {
+    if (typeof Vue !== 'undefined') {
+      startVue();
+    }
+
     var tableBody = $('#mainBody');
     settings.rowTemplateMain = '<tr class="{ClassName}">' + tableBody.children().eq(0).html() + '</tr>{^DetailRow}';
     settings.rowTemplateExtra = '<tr class="Extra {ClassName}">' + tableBody.children().eq(1).html() + '</tr>';
@@ -28,7 +33,7 @@
       SetInStorage(storageKey.MonitorRefreshOn, true);
     });
 
-    showInfo(publicInterface.LocationInfos, true);
+    showInfo(publicInterface.initial, true);
 
     $('#chkList').click(updateListing);
     $('#btnRefesh').click(function () {
@@ -301,10 +306,49 @@
     return html.join('');
   };
 
+  function startVue() {
+    settings.vue = new Vue({
+      el: '#onlineDiv',
+      components: {
+        'yes-no': publicInterface.YesNo
+      },
+      data: {
+        election: null
+      },
+      computed: {
+        onlineDatesOkay: function () {
+          return this.election.OnlineWhenOpen &&
+            this.election.OnlineWhenClose &&
+            this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
+        }
+      },
+      watch: {
+      },
+      created: function () {
+        this.election = monitorPage.initial.OnlineInfo;
+        this.election.OnlineWhenOpen = this.election.OnlineWhenOpen.parseJsonDate().toISOString();
+        this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
+      },
+      mounted: function () {
+      },
+      methods: {
+        saveNeeded: function () {
+          $('.btnSave').addClass('btn-primary');
+        },
+        showFrom: function (when) {
+          if (!when) return '';
+          return moment(when).fromNow();
+        }
+      }
+    });
+
+  }
+
   var publicInterface = {
     controllerUrl: '',
     isGuest: false,
-    LocationInfos: null,
+    initial: null,
+    YesNo: null,
     PreparePage: preparePage
   };
 
@@ -314,5 +358,38 @@
 var monitorPage = MonitorPage();
 
 $(function () {
+  if (typeof Vue !== 'undefined') {
+
+    monitorPage.YesNo = Vue.component('yes-no',
+      {
+        template: '#yes-no',
+        props: {
+          value: Boolean,
+          disabled: Boolean,
+          yes: {
+            type: String,
+            default: 'Yes'
+          },
+          no: {
+            type: String,
+            default: 'No'
+          }
+        },
+        data: function () {
+          return {
+            yesNo: this.value ? 'Y' : 'N'
+          }
+        },
+        watch: {
+          value: function (a) {
+            this.yesNo = a ? 'Y' : 'N';
+          },
+          yesNo: function (a) {
+            this.$emit('input', a === 'Y');
+          }
+        }
+      });
+  };
+
   monitorPage.PreparePage();
 });

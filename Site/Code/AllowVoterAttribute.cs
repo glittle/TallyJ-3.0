@@ -7,7 +7,7 @@ namespace TallyJ.Code
   {
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
-      var okay = UserSession.IsVoter && UserSession.AllowOnlineElections;
+      var okay = UserSession.IsVoter && UserSession.EnableOnlineElections;
       if (!okay)
       {
         filterContext.Result = new RedirectResult("~/");

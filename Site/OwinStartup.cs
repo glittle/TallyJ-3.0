@@ -43,7 +43,7 @@ namespace TallyJ
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
       });
 
-      if (!UserSession.AllowOnlineElections)
+      if (!UserSession.EnableOnlineElections)
       {
         return;
       }

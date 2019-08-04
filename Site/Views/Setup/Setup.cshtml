@@ -365,7 +365,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     Step 4 <span>Online Voting</span>
   </h2>
 
-  @if (UserSession.AllowOnlineElections)
+  @if (UserSession.EnableOnlineElections)
   {
     <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
     <div class="PullInstructions">
@@ -445,8 +445,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     <div class="PullInstructions">
       <ol>
         <li>
-          Online elections are not enabled on this web server.  To allow voters to cast their own ballots
-          online, see <a href="https://tallyj.com">TallyJ</a>. Contact Glen Little for more details
+          Online elections are not enabled on this web server.  To allow voters to cast their own ballots, use the <a href="https://tallyj.com">online version of TallyJ</a>. For a local private installation, contact Glen Little for more details
           and setup assistance.
         </li>
       </ol>
@@ -471,7 +470,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
 
   <div class="More">
     <p class="techInfo" title="Technical information">
-      Internal code: <span data-name="ElectionGuid"></span>
+      Election Id: <span data-name="ElectionGuid"></span>
     </p>
   </div>
 </div>

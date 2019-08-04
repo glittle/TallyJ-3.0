@@ -43,19 +43,10 @@ namespace TallyJ.CoreModels
             j.C_FullNameFL
           }) : null;
 
-//        var onlineElections = UserSession.UsingOnlineElection ? Db.OnlineElection.Where(oe => oe.ElectionGuid == currentElectionGuid)
-//          .Select(oe => new
-//          {
-//            oe.CloseIsEstimate,
-//            oe.WhenOpen,
-//            oe.WhenClose,
-//          }).FirstOrDefault() : null;
-
         return
           new
           {
             Locations = locations
-                //.JoinMatchingOrNull(new ComputerCacher(Db).AllForThisElection, l => l.LocationGuid, c => c.LocationGuid, (l, c) => new { l, c })
                 .OrderBy(l => l.SortOrder)
                 .ThenBy(l => l.Name)
                 .ThenBy(l => l.C_RowId)
@@ -98,13 +89,13 @@ namespace TallyJ.CoreModels
                   LocationId = g.l.C_RowId,
                   Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                 }),
-            OnlineInfo = new
+            OnlineInfo = UserSession.EnableOnlineElections ? new
             {
               currentElection.OnlineWhenOpen,
               currentElection.OnlineWhenClose,
               currentElection.OnlineCloseIsEstimate,
               currentElection.OnlineAllowResultView,
-            },
+            } : null,
             OnlineBallots = onlineBallots
           };
       }

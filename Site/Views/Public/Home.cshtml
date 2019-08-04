@@ -25,7 +25,7 @@
     </div>
     <h2 id="introTitle">Choose an Option to Start</h2>
     <div class="centerbuttons">
-      @if (UserSession.AllowOnlineElections)
+      @if (UserSession.EnableOnlineElections)
       {
         <div class="centerL" title="Vote in an election.">
           <button class="btn btn-warning" id="btnChooseVoter" accesskey="V"><u>V</u>ote</button>
@@ -105,7 +105,7 @@
       Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
     }
   </section>
-  @if (UserSession.AllowOnlineElections)
+  @if (UserSession.EnableOnlineElections)
   {
     <section class="featureBig VoterPanel">
       <div class="closer">

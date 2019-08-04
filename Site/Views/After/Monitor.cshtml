@@ -5,8 +5,22 @@
   ViewBag.Title = "Election Monitor";
   ViewBag.Message = "What's Happening?";
 
+  if (UserSession.EnableOnlineElections)
+  {
+    ViewData["ExtraScripts"] = new[]
+    {
+      ClientFile("~/Scripts/vue{0}.js", ".min"),
+      ClientFile("~/Scripts/luxon.min.js"),
+      ClientFile("~/Scripts/vue-datetime.js"),
+    };
+    ViewData["ExtraCss"] = new[]
+    {
+      ClientFile("~/Scripts/vue-datetime.css"),
+    };
+  }
+
   ContextItems.AddJavascriptForPage("pageUrl", "monitorPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("locations", "monitorPage.LocationInfos={0};".FilledWith(Model.LocationInfoJson));
+  ContextItems.AddJavascriptForPage("locations", "monitorPage.initial={0};".FilledWith(Model.LocationInfoJson));
   ContextItems.AddJavascriptForPage("guest", "monitorPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("monitorPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 }
@@ -153,12 +167,83 @@
     </p>
   }
 
-  @if (UserSession.AllowOnlineElections)
+  @if (UserSession.EnableOnlineElections)
   {
-    <div>TODO - show start and end times and other</div>
+    <div id="onlineDiv">
+      <h2>Online Voting</h2>
+      <table class="OnlineSettings">
+        <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <th></th>
+          <td></td>
+          <td></td>
+        </tr>
 
-    <div>
-      <h2>Online Voters</h2>
+        @*<tr>
+              <th>
+                Voting Start time
+              </th>
+              <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+                <datetime v-model="election.OnlineWhenOpen" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+                <div class="voteWhen">{{showFrom(election.OnlineWhenOpen)}}</div>
+              </td>
+              <td>
+                When should voters be able to access this election and start working on their online ballot?
+                <a class="setTime" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
+              </td>
+            </tr>*@
+        <tr>
+          <td colspan="3">
+            <p>Online voting close time: {{showFrom(election.OnlineWhenClose)}}.</p>
+            <button>Close in 5 minutes.</button>
+            <button>Close now.</button>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Voting Stop time
+          </th>
+          <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+            <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          </td>
+          <td>
+            When should the election be closed?
+            <a class="setTime" v-on:click="election.OnlineWhenClose = new Date().toISOString()">Set to now.</a>
+            <p>The Head Teller can adjust the stop time during the election. Suggestion: Manually close online voting once all paper ballots are collected and counted.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Voting Stop time estimated?
+          </th>
+          <td>
+            <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
+          </td>
+          <td>
+            Is the stopping time above an estimated time?
+          </td>
+        </tr>
+        <tr>
+          <th>
+            View Results?
+          </th>
+          <td>
+            <yes-no v-model="election.OnlineAllowResultView"></yes-no>
+          </td>
+          <td>
+            Allow voters to view the final election report when it is available?
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <h3>Online Ballots</h3>
       <table class="OnlineBallots">
         <thead>
           <tr>
@@ -187,7 +272,21 @@
           </tr>
         </tbody>
       </table>
-
     </div>
   }
 </div>
+
+
+
+<script type="text/x-template" id="yes-no">
+  <span class="YN" v-bind:class="['YN' + yesNo, disabled ? 'disabled' : '']">
+    <label>
+      <input type="radio" value="Y" v-model="yesNo" :disabled="disabled">
+      {{yes}}
+    </label>
+    <label>
+      <input type="radio" value="N" v-model="yesNo" :disabled="disabled">
+      {{no}}
+    </label>
+  </span>
+</script>
