@@ -2,10 +2,7 @@
 
 @band1: lightyellow;
 @band2: lightgoldenrodyellow;
-@future: palegreen;
-@now: #7dff7a;
-@past: lightcoral;
-@top: #7dff7a;
+@top: lighten(#7dff7a, 10%);
 
 body.VoterIndex {
   &.noCursor {
@@ -63,21 +60,27 @@ body.VoterIndex {
     }
   }
 
-  .future {
+  .onlineFuture {
     .online {
-      background-color: @future;
+      background-color: @onlineFuture;
     }
   }
 
-  .now {
+  .onlineSoon {
     .online {
-      background-color: @now;
+      background-color: @onlineSoon;
     }
   }
 
-  .past {
+  .onlineNow {
     .online {
-      background-color: @past;
+      background-color: @onlineNow;
+    }
+  }
+
+  .onlinePast {
+    .online {
+      background-color: @onlinePast;
     }
   }
 }
@@ -121,21 +124,24 @@ body.VoterIndex {
   }
 
   .electionStatus {
-    padding: 0px 10px;
-    position: absolute;
-    top: 0;
-    right: 10px;
+    text-align: center;
+    line-height: 170%;
+    padding: 0.5em 0;
 
-    &.future {
-      background-color: @future;
+    &.onlineFuture {
+      background-color: @onlineFuture;
     }
 
-    &.now {
-      background-color: @now;
+    &.onlineNow {
+      background-color: @onlineNow;
     }
 
-    &.past {
-      background-color: @past;
+    &.onlineSoon {
+      background-color: @onlineSoon;
+    }
+
+    &.onlinePast {
+      background-color: @onlinePast;
     }
   }
 
@@ -152,9 +158,15 @@ body.VoterIndex {
     }
   }
 
-  .lockIn {
+  lockInBtns {
     margin: 1em 0;
 
+    button:disabled {
+      color: red;
+    }
+  }
+
+  .lockIn {
     > div {
       display: flex;
       align-items: center;

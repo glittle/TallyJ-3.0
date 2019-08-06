@@ -803,5 +803,10 @@ namespace TallyJ.Code
              from result in g.DefaultIfEmpty()
              select res.Invoke(f, result);
     }
+
+    public static DateTime ChopToMinute(this DateTime input)
+    {
+      return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, 0);
+    }
   }
 }

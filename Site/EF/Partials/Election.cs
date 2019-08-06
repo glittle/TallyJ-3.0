@@ -139,10 +139,18 @@ namespace TallyJ.EF
         public bool IsSingleNameElection => 
           NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0;
 
-        public bool OnlineCurrentlyOpen =>
-          OnlineWhenOpen.HasValue
-          && OnlineWhenClose.HasValue
-          && OnlineWhenOpen.Value < OnlineWhenClose.Value;
+        public bool OnlineCurrentlyOpen
+        {
+          get
+          {
+            var now = DateTime.Now;
+            return OnlineWhenOpen.HasValue
+                   && OnlineWhenClose.HasValue
+                   && OnlineWhenOpen.Value < now
+                   && OnlineWhenOpen.Value < OnlineWhenClose.Value
+                   && OnlineWhenClose.Value > now;
+          }
+        }
 
         public bool CanBeAvailableForGuestTellers
         {

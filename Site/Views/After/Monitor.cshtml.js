@@ -46,10 +46,42 @@
       $('#ddlElectionStatus').prop('disabled', true);
     }
 
+    connectToFrontDeskHub();
+
     setAutoRefresh(false);
   };
 
+  var connectToFrontDeskHub = function () {
+    $.connection().logging = true;
+    var hub = $.connection.frontDeskHubCore;
+
+    //console.log('signalR prepare: updatePeople');
+    hub.client.updatePeople = function (info) {
+      console.log('signalR: updatePeople');
+      var needRefresh = false;
+      info.PersonLines.forEach(function (pl) {
+        if (publicInterface.initial.OnlineBallots.findIndex(function (ob) {
+          return ob.PersonId === pl.PersonId;
+        }) !==
+          -1) {
+          needRefresh = true;
+        }
+      });
+      // should not happen too often as Monitor is usually not open with FrontDesk. May be with Voters.
+      if (needRefresh) {
+        refresh();
+      }
+    };
+
+    startSignalR(function () {
+      console.log('Joining frontDesk hub');
+      CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
+    });
+
+  };
+
   var showInfo = function (info, firstLoad) {
+    publicInterface.initial = info;
     clearInterval(settings.autoMinutesTimeout);
 
     var table = $('#mainBody');
@@ -258,7 +290,7 @@
         }
 
         count++;
-        this.ClassName = count % 2 == 0 ? 'Even' : 'Odd';
+        //        this.ClassName = count % 2 === 0 ? 'Even' : 'Odd';
         lastName = this.Name;
         last = this;
         //      } else {
@@ -313,13 +345,40 @@
         'yes-no': publicInterface.YesNo
       },
       data: {
-        election: null
+        election: null,
+        CloseTime: null,
+        T24: false,
+        dummy: 0,
       },
       computed: {
         onlineDatesOkay: function () {
           return this.election.OnlineWhenOpen &&
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
+        },
+        CloseTime_Display: function () {
+          var x = this.dummy;
+          return this.showFrom(this.CloseTime);
+        },
+        OnlineWhenOpen_M: function () {
+          return moment(this.election.OnlineWhenOpen);
+        },
+        OnlineWhenClose_M: function () {
+          return moment(this.election.OnlineWhenClose);
+        },
+        closeStatusClass: function () {
+          if (this.OnlineWhenOpen_M.isAfter()) {
+            return 'onlineFuture';
+          } else if (this.OnlineWhenClose_M.isBefore()) {
+            // past
+            return 'onlinePast';
+          } else if (this.OnlineWhenOpen_M.isBefore() && this.OnlineWhenClose_M.isAfter()) {
+            // now
+            var minutes = this.OnlineWhenClose_M.diff(moment(), 'm');
+
+            return minutes <= 5 ? 'onlineSoon' : 'onlineNow';
+          }
+          return '';
         }
       },
       watch: {
@@ -327,7 +386,12 @@
       created: function () {
         this.election = monitorPage.initial.OnlineInfo;
         this.election.OnlineWhenOpen = this.election.OnlineWhenOpen.parseJsonDate().toISOString();
-        this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
+        this.CloseTime = this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
+        this.T24 = monitorPage.T24;
+        var vue = this;
+        setInterval(function () {
+          vue.dummy++;
+        }, 15000);
       },
       mounted: function () {
       },
@@ -338,6 +402,34 @@
         showFrom: function (when) {
           if (!when) return '';
           return moment(when).fromNow();
+        },
+        closeOnline: function (minutes) {
+          var vue = this;
+          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
+            {
+              minutes: minutes
+            },
+            function (info) {
+              if (info.success) {
+                ShowStatusSuccess('Saved');
+                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
+              }
+            });
+        },
+        saveClose: function () {
+          var vue = this;
+          CallAjaxHandler(publicInterface.controllerUrl + '/SaveOnlineClose',
+            {
+              when: vue.CloseTime,
+              est: vue.election.OnlineCloseIsEstimate
+            },
+            function (info) {
+              if (info.success) {
+                ShowStatusSuccess('Saved');
+                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
+                vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
+              }
+            });
         }
       }
     });

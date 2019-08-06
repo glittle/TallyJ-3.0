@@ -10,12 +10,12 @@ namespace TallyJ.CoreModels
 {
   public class MonitorModel : DataConnectedModel
   {
-    public string LocationInfoJson
+    public string MonitorInfoJson
     {
-      get { return LocationInfo.SerializedAsJsonString(); }
+      get { return MonitorInfo.SerializedAsJsonString(); }
     }
 
-    public object LocationInfo
+    public object MonitorInfo
     {
       get
       {
@@ -29,57 +29,69 @@ namespace TallyJ.CoreModels
 
 
         var currentElectionGuid = UserSession.CurrentElectionGuid;
-        var onlineBallots = currentElection.OnlineCurrentlyOpen ? Db.OnlineVotingInfo
-          .Join(Db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p.VotingMethod, p.C_FullNameFL })
-          .Where(j => j.ovi.ElectionGuid == currentElectionGuid)
-          .ToList()
-          .Select(j => new
-          {
-            j.ovi.Status,
-            VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod),
-            votesReady = j.ovi.PoolLocked.GetValueOrDefault()
-                         && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect,
-            j.ovi.HistoryStatus,
-            j.C_FullNameFL
-          }) : null;
+        var onlineBallots = UserSession.EnableOnlineElections
+          ? Db.Person
+            .Where(p => p.ElectionGuid == currentElectionGuid)
+            .GroupJoin(Db.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
+               ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, oviList) =>
+                new { p, ovi = oviList.FirstOrDefault() })
+            .Join(Db.OnlineVoter, j => j.p.Email, ov => ov.Email, (j, ov) => new { j.p, j.ovi, ov })
+            .Select(j => new
+            {
+              j.p.VotingMethod,
+              j.p.C_FullNameFL,
+              j.p.C_RowId,
+              j.ovi,
+            })
+            .OrderBy(j => j.C_FullNameFL)
+            .ToList()
+            .Select(j => new
+            {
+              j.ovi?.Status,
+              j.ovi?.HistoryStatus,
+              votesReady = j.ovi != null && (j.ovi.PoolLocked.GetValueOrDefault()
+                                             && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect),
+              VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
+              j.C_FullNameFL,
+              PersonId = j.C_RowId
+            })
+          : null;
 
         return
           new
           {
             Locations = locations
-                .OrderBy(l => l.SortOrder)
-                .ThenBy(l => l.Name)
-                .ThenBy(l => l.C_RowId)
-                .Select(l => new
-                {
-                  BallotsAtLocation = new BallotHelper().BallotCount(l.LocationGuid, isSingleName, ballots, votes),
-                  l.BallotsCollected,
-                  l.ContactInfo,
-                  l.Name,
-                  TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
-                  LocationId = l.C_RowId,
-                  BallotCodes = ballots.Where(b => b.LocationGuid == l.LocationGuid).GroupBy(b => b.ComputerCode)
-                                    .OrderBy(g => g.Key)
-                                    .Select(g => new
-                                    {
-                                      ComputerCode = g.Key,
-                                      BallotsAtComputer = new BallotHelper().BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
-                                      Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
-                                         .OrderBy(c => c.ComputerCode)
-                                         .Select(c => new
-                                         {
-                                           Tellers = c.GetTellerNames().DefaultTo("(not set)"),
-                                           SecondsOld = c.LastContact.HasValue ? ((now - c.LastContact.Value).TotalSeconds).ToString("0") : "",
-                                         })
-
-                                    })
-                })
-                                ,
+              .OrderBy(l => l.SortOrder)
+              .ThenBy(l => l.Name)
+              .ThenBy(l => l.C_RowId)
+              .Select(l => new
+              {
+                BallotsAtLocation = new BallotHelper().BallotCount(l.LocationGuid, isSingleName, ballots, votes),
+                l.BallotsCollected,
+                l.ContactInfo,
+                l.Name,
+                TallyStatus = LocationStatusEnum.TextFor(l.TallyStatus),
+                LocationId = l.C_RowId,
+                BallotCodes = ballots.Where(b => b.LocationGuid == l.LocationGuid).GroupBy(b => b.ComputerCode)
+                  .OrderBy(g => g.Key)
+                  .Select(g => new
+                  {
+                    ComputerCode = g.Key,
+                    BallotsAtComputer = new BallotHelper().BallotCount(l.LocationGuid, g.Key, isSingleName, ballots, votes).ToString(),
+                    Computers = new ComputerCacher().AllForThisElection.Where(c => c.ComputerCode == g.Key && c.LocationGuid == l.LocationGuid)
+                      .OrderBy(c => c.ComputerCode)
+                      .Select(c => new
+                      {
+                        Tellers = c.GetTellerNames().DefaultTo("(not set)"),
+                        SecondsOld = c.LastContact.HasValue ? ((now - c.LastContact.Value).TotalSeconds).ToString("0") : "",
+                      })
+                  })
+              }),
             Ballots = ballots
-                .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.StatusCode == BallotStatusEnum.Verify)
-                .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, l })
-                .OrderBy(g => g.b.C_RowId)
-                .Select(g =>
+              .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.StatusCode == BallotStatusEnum.Verify)
+              .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, l })
+              .OrderBy(g => g.b.C_RowId)
+              .Select(g =>
                 new
                 {
                   Id = g.b.C_RowId,
@@ -89,13 +101,15 @@ namespace TallyJ.CoreModels
                   LocationId = g.l.C_RowId,
                   Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                 }),
-            OnlineInfo = UserSession.EnableOnlineElections ? new
-            {
-              currentElection.OnlineWhenOpen,
-              currentElection.OnlineWhenClose,
-              currentElection.OnlineCloseIsEstimate,
-              currentElection.OnlineAllowResultView,
-            } : null,
+            OnlineInfo = UserSession.EnableOnlineElections
+              ? new
+              {
+                currentElection.OnlineWhenOpen,
+                currentElection.OnlineWhenClose,
+                currentElection.OnlineCloseIsEstimate,
+                currentElection.OnlineAllowResultView,
+              }
+              : null,
             OnlineBallots = onlineBallots
           };
       }

@@ -14,7 +14,7 @@
 <div class="overallWarning">Issues highlighted in red below must be resolved before election can be finalized for reporting.</div>
 <div id="InitialMsg"></div>
 <div class="LeftHalf">
-  <table id="totalCounts" class="float-left hideCalledIn hideOnline">
+  <table id="totalCounts" class="float-left hideCalledIn hideOnline onlineReady">
     <thead>
       <tr>
         <th>Counts</th>
@@ -116,7 +116,7 @@
           <span class="Final" data-name="CalledInBallots"></span>
         </td>
       </tr>
-      <tr id="online">
+      <tr class="online">
         <td>
           Online
         </td>
@@ -204,11 +204,17 @@
         </td>
       </tr>
     </tbody>
-    <tbody>
+    <tbody class="Issues">
       <tr id="trCountMismatch">
         <td colspan="4">
-          Number of Voters and Ballots must match!
+          Number of Voters (<span class="Final" data-name="SumOfEnvelopesCollected"></span>) and Ballots (<span class="Final" data-name="NumBallotsWithManual"></span>) must match!
         </td>
+      </tr>
+      <tr id="hasOnlineIssues">
+        <td colspan="4" id="onlineIssues"></td>
+      </tr>
+      <tr class="NoAnalysis">
+        <td colspan="4">Analysis is needed.</td>
       </tr>
     </tbody>
   </table>
@@ -241,9 +247,6 @@
       <tbody id="mainBody">
       </tbody>
     </table>
-  </div>
-  <div class="NoAnalysis">
-    Analysis is needed.
   </div>
 </div>
 <div class="RightHalf">
@@ -308,7 +311,9 @@
       <tfoot>
         <tr>
           <td></td>
-          <td><em>Any remaining ties do not affect election results and are not reported.</em></td>
+          <td>
+            <em>Any remaining ties do not affect election results and are not reported.</em>
+          </td>
         </tr>
       </tfoot>
     </table>

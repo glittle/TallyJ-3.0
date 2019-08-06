@@ -58,7 +58,7 @@
 </div>
 
 <div id="voterPage2" v-if="activePage === 2">
-  <h2>{{election.name}}</h2>
+  <h2>{{election.Name}}</h2>
   <h3 class="electionStatus" :class="election.classes" v-html="election.Status_Display"></h3>
   <button v-on:click="closeBallot">Return</button>
   <div class="poolBuilder">
@@ -85,19 +85,24 @@
       <p v-if="registration">
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
-      <div  v-if="registration && registration !== 'Online'">
-        <p class="OtherRegistration">This online ballot will NOT be used because you are registered as voting {{registration}}.</p>
-        <p><strong>If that is not correct, please contact the head teller of this election.</strong></p>
+      <div v-if="registration && registration !== 'Online'">
+        <p class="OtherRegistration">This online ballot WILL NOT BE USED because you are registered as voting {{registration}}.</p>
+        <p><strong>If that is not correct, please contact the head teller of this election before the election is closed.</strong></p>
       </div>
-      <p v-if="!registration">You have not yet prepared your ballot or checked in with the tellers.</p>
+      <p v-if="!registration">You have not yet locked in your choices or checked in with the tellers.</p>
 
-      <p>Please select:</p>
-      <div class="lockIn">
-        <div><input type="radio" v-model="lockInVotes" :value="false" id="lockN" /> <label for="lockN">I am still selecting and sorting my pool of names.</label></div>
-        <div><input type="radio" v-model="lockInVotes" v-bind:disabled="!canLockIn" :value="true" id="lockY" /> <label v-bind:class="{disabled: !canLockIn}" for="lockY">I have made my choice. Use the top {{numToElect}} names below for my ballot.</label></div>
-      </div>
+      @*<p>Please select:</p>
+        <div class="lockIn">
+          <div><input type="radio" v-model="lockInVotes" :value="false" id="lockN" /> <label for="lockN">I am still selecting and sorting my pool of names.</label></div>
+          <div><input type="radio" v-model="lockInVotes" v-bind:disabled="!canLockIn" :value="true" id="lockY" /> <label v-bind:class="{disabled: !canLockIn}" for="lockY">I have made my choice. Use the top {{numToElect}} names below for my ballot.</label></div>
+        </div>*@
+      <p class="lockInBtns">
+        <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my ballot</button>
+        <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my ballot</button>
+      </p>
       <p v-if="registration === 'Online' && lockInVotes"><strong>Your ballot will be created and submitted by TallyJ when the Head Teller closes online voting.</strong></p>
 
+      <p v-if="lockInVotes">You have locked in your ballot. Changes are only allowed when it is unlocked.</p>
       <p v-if="!lockInVotes">Sort this list to move the desired people in to the ballot. To use a keyboard, press Tab to focus, Enter to select, Up and Down to move.</p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"

@@ -29,7 +29,11 @@ tbody th {
   border-left: 1px solid #e0e0e0;
 }
 
-.tbody > tr.Odd {
+.tbody td.OnlineName {
+  text-align: left;
+}
+
+.tbody > tr:nth-child(2n+1) {
   background-color: #eaeaea;
 }
 
@@ -117,5 +121,35 @@ table.compList thead th {
 #onlineDiv {
   h2 {
     margin-top: 2em;
+  }
+
+  .vdatetime {
+    display: inline-block;
+  }
+
+  .vdatetime-input {
+    width: auto;
+  }
+
+  .closeStatus {
+    display: inline-block;
+    width: auto;
+    padding: 1em;
+  }
+
+  .onlineFuture {
+    background-color: @onlineFuture;
+  }
+
+  .onlineNow {
+    background-color: @onlineNow;
+  }
+
+  .onlineSoon {
+    background-color: @onlineSoon;
+  }
+
+  .onlinePast {
+    background-color: @onlinePast;
   }
 }

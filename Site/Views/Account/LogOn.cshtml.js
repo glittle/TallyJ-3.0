@@ -1,4 +1,7 @@
-﻿//$(function() {
+﻿function lookBusy() {
+  document.body.style.cursor = 'wait';
+}
+//$(function() {
 //  var x = $('form').validate({
 //    ignore: 'test',
 //    debug: true,

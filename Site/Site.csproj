@@ -433,6 +433,7 @@
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
     <Compile Include="Code\Enumerations\IneligibleReasonEnum.cs" />
+    <Compile Include="Code\Enumerations\OnlineBallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\VotingMethodEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionModeEnum.cs" />
     <Compile Include="Code\Enumerations\ElectionTallyStatusEnum.cs" />

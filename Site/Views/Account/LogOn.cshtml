@@ -2,46 +2,47 @@
 @model LogOnModel
 
 @{
-    ViewBag.Title = "Log On";
-    if (ViewContext.FormContext == null)
-    {
-        ViewContext.FormContext = new FormContext();
-    }
+  ViewBag.Title = "Log On";
+  if (ViewContext.FormContext == null)
+  {
+    ViewContext.FormContext = new FormContext();
+  }
 }
 @section featured {
-    <section class="featured empty"></section>
+  <section class="featured empty"></section>
 }
 
 <hgroup class="title">
-    <h2>Log In.</h2>
+  <h2>Log In.</h2>
 </hgroup>
 <p>
-    Log in as the head teller or an assistant head teller.
-    The same login ID can be used on multiple computers.
-    If you do not have a head teller account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
+  Log in as the head teller or an assistant head teller.
+</p><p>
+  The same login ID can be used on multiple computers.
+  If you do not have a head teller account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
 </p>
 
 
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
 @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new
 {
-    action = Url.Action("LogOn", "Account")
+  action = Url.Action("LogOn", "Account")
 }))
 { // (string)ViewBag.FormAction
-    <fieldset>
-        <legend>Log On Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.UserName, "Login ID (not email)")
-                @Html.TextBoxFor(m => m.UserName)
-                @Html.ValidationMessageFor(m => m.UserName)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-                @Html.ValidationMessageFor(m => m.Password)
-            </li>
-        </ol>
-        <input type="submit" value="Log In" class="btn btn-success" />
-    </fieldset>
+  <fieldset>
+    <legend>Log On Form</legend>
+    <ol>
+      <li>
+        @Html.LabelFor(m => m.UserName, "Login ID (not email)")
+        @Html.TextBoxFor(m => m.UserName)
+        @Html.ValidationMessageFor(m => m.UserName)
+      </li>
+      <li>
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password)
+        @Html.ValidationMessageFor(m => m.Password)
+      </li>
+    </ol>
+    <input type="submit" value="Log In" onclick="lookBusy" class="btn btn-success" />
+  </fieldset>
 }

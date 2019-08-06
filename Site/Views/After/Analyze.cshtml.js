@@ -166,7 +166,7 @@
       return;
     }
 
-    var votesTable = $('table.Main');
+    var votesTable = $('.MainHolder');
     var invalidsTable = $('table#invalids');
     var instructionsTable = $('table#instructions');
     var table;
@@ -194,7 +194,7 @@
       $('#HasCloseVote').toggle(settings.hasCloseVote);
       $('.HasTie').toggle(settings.hasTie);
 
-      if (info.Votes.length != 0) {
+      if (info.Votes.length !== 0) {
         var max = info.Votes[0].VoteCount;
 
         $('.ChartLine').each(function () {
@@ -230,8 +230,16 @@
     else {
       table = invalidsTable;
       votesTable.hide();
-      invalidsTable.show();
       instructionsTable.hide();
+
+      var onlineIssues = info.OnlineIssues;
+      if (onlineIssues && onlineIssues.length > 0) {
+        $('#totalCounts').removeClass('onlineReady');
+        onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to resolve.');
+        $('#onlineIssues').html(onlineIssues.join('<br>'));
+      } else {
+        $('#totalCounts').addClass('onlineReady');
+      }
 
       $('#invalidsBody').html(settings.invalidsRowTemplate.filledWithEach(expandInvalids(info.NeedReview)));
     }
@@ -243,11 +251,13 @@
     summarizeCounts();
 
     table.show();
+    
+    invalidsTable.toggle(info.NeedReview && info.NeedReview.length > 0);
   };
 
   function summarizeCounts() {
-    $('#totalCounts').toggleClass('hideCalledIn',settings.calledInTotal > 0 || !!settings.info.ShowCalledIn);
-    $('#totalCounts').toggleClass('hideOnline', settings.onlineTotal > 0 || !!settings.info.ShowOnline);
+    $('#totalCounts').toggleClass('hideCalledIn', !(settings.calledInTotal > 0 || !!settings.info.ShowCalledIn));
+    $('#totalCounts').toggleClass('hideOnline', !(settings.onlineTotal > 0 || !!settings.info.ShowOnline));
     $('#totalCounts tr').each(function () {
       var row = $(this);
       var calcSpan = row.find('span.Calc');

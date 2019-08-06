@@ -41,6 +41,7 @@ namespace TallyJ
         CookieSecure = CookieSecureOption.Always,
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
+        LoginPath = new PathString("/")
       });
 
       if (!UserSession.EnableOnlineElections)

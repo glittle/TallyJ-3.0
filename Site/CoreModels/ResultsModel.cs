@@ -124,8 +124,21 @@ namespace TallyJ.CoreModels
         var resultSummaryFinal = _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
 
 
-        // don't show any details if review is needed
-        if (resultSummaryFinal.BallotsNeedingReview != 0)
+        // don't show any details if review is needed or online ballots need to be processed
+        var issues = new List<string>();
+        if (_election.OnlineCurrentlyOpen)
+        {
+          issues.Add("Online voting still open. Must be closed to analyze ballots.");
+        }
+        var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue ? Db.OnlineVotingInfo
+            .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Ready) 
+          : 0;
+        if (unprocessedOnlineBallots > 0)
+        {
+          issues.Add($"Online ballots not processed: {unprocessedOnlineBallots}");
+        }
+
+        if (resultSummaryFinal.BallotsNeedingReview != 0 || issues.Any())
         {
           var locations = new LocationCacher(Db).AllForThisElection;
           var multipleLocations = locations.Count() > 1;
@@ -172,6 +185,7 @@ namespace TallyJ.CoreModels
                 .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
             ResultsManual = (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
                new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
+            OnlineIssues = issues,
 
             //ResultsFinal =
             //  resultSummaries.First(rs => rs.ResultType == ResultType.Final)
@@ -218,9 +232,6 @@ namespace TallyJ.CoreModels
           }).ToList();
 
         //var spoiledVotesSummary = Db.vVoteInfoes.where
-
-
-
         return new
         {
           Votes = vResultInfos,
@@ -229,7 +240,7 @@ namespace TallyJ.CoreModels
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,
           ShowCalledIn = _election.UseCallInButton,
-          ShowOnline = _election.OnlineCurrentlyOpen,
+          ShowOnline = _election.OnlineWhenOpen.HasValue,
           ResultsManual =
             (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
               .GetPropertiesExcept(null, new[] { "ElectionGuid" }),

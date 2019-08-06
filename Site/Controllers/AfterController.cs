@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
@@ -55,7 +56,7 @@ namespace TallyJ.Controllers
     {
       new ComputerModel().RefreshLastContact();
 
-      return new MonitorModel().LocationInfo.AsJsonResult();
+      return new MonitorModel().MonitorInfo.AsJsonResult();
     }
 
     [ForAuthenticatedTeller]
@@ -85,6 +86,18 @@ namespace TallyJ.Controllers
     public JsonResult UpdateListing(bool listOnPage)
     {
       return new ElectionModel().UpdateListOnPageJson(listOnPage);
+    }
+    
+    [ForAuthenticatedTeller]
+    public JsonResult CloseOnline(int minutes)
+    {
+      return new ElectionModel().CloseOnline(minutes);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult SaveOnlineClose(DateTime when, bool est)
+    {
+      return new ElectionModel().SaveOnlineClose(when, est);
     }
 
     //[ForAuthenticatedTeller]

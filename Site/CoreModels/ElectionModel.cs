@@ -338,58 +338,58 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-//    private void SaveOnlineElection(OnlineElection onlineElectionFromBrowser, bool useOnline)
-//    {
-//      // save online election - ignore Guid from browser
-//      var onlineInDb = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid);
-//      if (useOnline)
-//      {
-//        if (onlineInDb == null)
-//        {
-//          onlineInDb = new OnlineElection
-//          {
-//            ElectionGuid = UserSession.CurrentElectionGuid,
-//            ElectionName = UserSession.CurrentElectionName,
-//          };
-//          Db.OnlineElection.Add(onlineInDb);
-//        }
-//
-//        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
-//        {
-//          onlineInDb.AllowResultView,
-//          onlineInDb.CloseIsEstimate,
-//          onlineInDb.WhenOpen,
-//          onlineInDb.WhenClose,
-//        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray());
-//
-//        if (changed)
-//        {
-//          Db.SaveChanges();
-//
-//          new AllVotersHub()
-//            .UpdateVoters(new
-//            {
-//              changed = true,
-//              onlineInDb.WhenClose,
-//              onlineInDb.WhenOpen,
-//              onlineInDb.CloseIsEstimate,
-//            });
-//        }
-//        UserSession.UsingOnlineElection = true;
-//      }
-//      else
-//      {
-//        if (onlineInDb != null)
-//        {
-//          Db.OnlineElection.Remove(onlineInDb);
-//          Db.SaveChanges();
-//        }
-//        UserSession.UsingOnlineElection = false;
-//      }
-//
-//      new AllVotersHub().UpdateVoters(new { changed = true });
-//
-//    }
+    //    private void SaveOnlineElection(OnlineElection onlineElectionFromBrowser, bool useOnline)
+    //    {
+    //      // save online election - ignore Guid from browser
+    //      var onlineInDb = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid);
+    //      if (useOnline)
+    //      {
+    //        if (onlineInDb == null)
+    //        {
+    //          onlineInDb = new OnlineElection
+    //          {
+    //            ElectionGuid = UserSession.CurrentElectionGuid,
+    //            ElectionName = UserSession.CurrentElectionName,
+    //          };
+    //          Db.OnlineElection.Add(onlineInDb);
+    //        }
+    //
+    //        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
+    //        {
+    //          onlineInDb.AllowResultView,
+    //          onlineInDb.CloseIsEstimate,
+    //          onlineInDb.WhenOpen,
+    //          onlineInDb.WhenClose,
+    //        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray());
+    //
+    //        if (changed)
+    //        {
+    //          Db.SaveChanges();
+    //
+    //          new AllVotersHub()
+    //            .UpdateVoters(new
+    //            {
+    //              changed = true,
+    //              onlineInDb.WhenClose,
+    //              onlineInDb.WhenOpen,
+    //              onlineInDb.CloseIsEstimate,
+    //            });
+    //        }
+    //        UserSession.UsingOnlineElection = true;
+    //      }
+    //      else
+    //      {
+    //        if (onlineInDb != null)
+    //        {
+    //          Db.OnlineElection.Remove(onlineInDb);
+    //          Db.SaveChanges();
+    //        }
+    //        UserSession.UsingOnlineElection = false;
+    //      }
+    //
+    //      new AllVotersHub().UpdateVoters(new { changed = true });
+    //
+    //    }
 
     //    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
     //    {
@@ -922,6 +922,68 @@ namespace TallyJ.CoreModels
       public const string Normal = "N";
       public const string TieBreak = "T";
       public const string ByElection = "B";
+    }
+
+    public JsonResult CloseOnline(int minutes)
+    {
+      var electionCacher = new ElectionCacher(Db);
+
+      var election = UserSession.CurrentElection;
+      Db.Election.Attach(election);
+
+      election.OnlineWhenClose = minutes == 0 
+        ? DateTime.Now.ChopToMinute() 
+        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
+      election.OnlineCloseIsEstimate = false;
+
+      Db.SaveChanges();
+
+      electionCacher.UpdateItemAndSaveCache(election);
+
+      new AllVotersHub()
+        .UpdateVoters(new
+        {
+          election.OnlineWhenClose,
+          election.OnlineWhenOpen,
+          election.OnlineCloseIsEstimate,
+        });
+
+      return new
+      {
+        success = true,
+        election.OnlineWhenClose,
+        election.OnlineCloseIsEstimate,
+      }.AsJsonResult();
+    }
+
+    public JsonResult SaveOnlineClose(DateTime when, bool est)
+    {
+      var electionCacher = new ElectionCacher(Db);
+
+      var election = UserSession.CurrentElection;
+      Db.Election.Attach(election);
+
+      election.OnlineWhenClose = when;
+      election.OnlineCloseIsEstimate = est;
+
+      Db.SaveChanges();
+
+      electionCacher.UpdateItemAndSaveCache(election);
+
+      new AllVotersHub()
+        .UpdateVoters(new
+        {
+          election.OnlineWhenClose,
+          election.OnlineWhenOpen,
+          election.OnlineCloseIsEstimate,
+        });
+
+      return new
+      {
+        success = true,
+        election.OnlineWhenClose,
+        election.OnlineCloseIsEstimate,
+      }.AsJsonResult();
     }
   }
 }

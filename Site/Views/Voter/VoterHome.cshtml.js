@@ -48,7 +48,7 @@ var vueOptions = {
   data: function () {
     return {
       elections: [],
-      election: {},
+      electionGuid: null,
       lastSearch: '',
       searchText: '',
       nameList: [],
@@ -70,31 +70,20 @@ var vueOptions = {
     lastInTop: function () {
       return this.numToElect - 1;
     },
-    canLockIn: function() {
-      return !(this.pool.length < this.numToElect || this.registration && this.registration !== 'Online');
+    canLockIn: function () {
+      return this.pool.length >= this.numToElect && !this.election.person.PoolLocked && (!this.registration || this.registration !== 'Online');
+    },
+    canUnlock: function () {
+      return this.registration !== 'Processed' && this.election.OnlineWhenClose_M.isAfter() && this.election.person.PoolLocked;
+    },
+    election: function () {
+      return this.elections.find(function (e) { return e.ElectionGuid === this.electionGuid; });
     }
   },
   watch: {
     searchText: function (a, b) {
       this.runSearch();
     },
-    lockInVotes: function (a) {
-      var vue = this;
-      if (a !== vue.savedLock) {
-        CallAjaxHandler(GetRootUrl() + 'Voter/LockPool',
-          {
-            locked: a
-          }, function (info) {
-            if (info.success) {
-              vue.savedLock = a;
-              vue.updateRegistration(info);
-              ShowStatusSuccess('Saved');
-            } else {
-              ShowStatusFailed(info.Error);
-            }
-          });
-      }
-    }
   },
   created: function () {
   },
@@ -116,6 +105,7 @@ var vueOptions = {
               setInterval(vue.updateStatuses, 60 * 1000);
             }
 
+
             // for dev, go to first election
             //            setTimeout(function () {
             //              vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
@@ -129,20 +119,47 @@ var vueOptions = {
       list.forEach(this.extendElectionInfo);
       return list;
     },
+    lockIn: function (locked) {
+      var vue = this;
+      var before = vue.savedLock;
+
+      CallAjaxHandler(GetRootUrl() + 'Voter/LockPool',
+        {
+          locked: locked
+        },
+        function (info) {
+          if (info.success) {
+            vue.savedLock = locked;
+            vue.lockInVotes = locked;
+            vue.updateRegistration(info);
+            ShowStatusSuccess('Saved');
+          } else {
+            ShowStatusFailed(info.Error);
+            vue.savedLock = before;
+            vue.lockInVotes = before;
+          }
+        });
+    },
     extendElectionInfo: function (info) {
       var person = info.person;
       if (person.RegistrationTime) {
         person.RegistrationTime_M = moment(person.RegistrationTime);
         person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
+      } else {
+        person.RegistrationTime_Display = '';
       }
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
       this.updateStatus(info);
     },
     updateRegistration: function (info) {
       var vue = this;
-      var election = vue.elections.find(function (e) { return e.id === info.ElectionGuid; });
-      if (election.person) {
-        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+      var election = vue.election;
+      if (election && election.person) {
+        election.person.RegistrationTime =
+          info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+        if (info.hasOwnProperty('PoolLocked')) {
+          election.person.PoolLocked = info.PoolLocked;
+        }
         election.person.VotingMethod = info.VotingMethod;
         vue.extendElectionInfo(election);
         vue.registration = election.person.VotingMethod_Display;
@@ -157,27 +174,29 @@ var vueOptions = {
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
 
-        info.OnlineWhenOpen_M = moment( info.OnlineWhenOpen);
+        info.OnlineWhenOpen_M = moment(info.OnlineWhenOpen);
         info.OnlineWhenClose_M = moment(info.OnlineWhenClose); // if no date, will be invalid
 
         if (info.OnlineWhenOpen_M.isAfter()) {
           // future
           info.Status_Display = 'Will open ' + info.OnlineWhenOpen_M.fromNow();
-          info.classes = ['future'];
+          info.classes = ['onlineFuture'];
         } else if (info.OnlineWhenClose_M.isBefore()) {
           // past
           info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
-          info.classes = ['past'];
+          info.classes = ['onlinePast'];
         } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {
           // now
-          info.classes = ['now'];
+          var minutes = info.OnlineWhenClose_M.diff(moment(), 'm');
+
+          info.classes = [minutes <= 5 ? 'onlineSoon' : 'onlineNow'];
           info.openNow = true;
           var s = [];
           s.push('Open Now!<br>');
           s.push(info.OnlineCloseIsEstimate ? ' Expected to' : ' Will');
           s.push(' close ');
           s.push(info.OnlineWhenClose_M.fromNow());
-          if (info.OnlineWhenClose_M.diff(moment(), 'm') < 120) {
+          if (minutes < 120) {
             s.push(` (at ${info.OnlineWhenClose_M.format('h:mm a')})`);
           }
           s.push('.');
@@ -193,7 +212,7 @@ var vueOptions = {
         return;
       }
       var vue = this;
-      this.election = eInfo;
+      this.electionGuid = eInfo.id;
       this.activePage = 2;
 
       CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
@@ -307,7 +326,7 @@ var vueOptions = {
     },
     closeBallot: function () {
       this.activePage = 1;
-      this.election = {};
+      this.electionGuid = null;
     },
     keydown: function (p, i, ev) {
       //           console.log(p, i, ev);
@@ -368,7 +387,8 @@ var vueOptions = {
         setTimeout(function () {
           vue.$refs['p' + beingMoved.Id][0].focus();
           vue.savePool();
-        }, 0);
+        },
+          0);
       }
     },
 
@@ -393,7 +413,8 @@ var vueOptions = {
           CallAjaxHandler(GetRootUrl() + 'Voter/SavePool',
             {
               pool: list
-            }, function (info) {
+            },
+            function (info) {
               if (info.success) {
                 ShowStatusSuccess('Saved');
                 vue.savedPool = list;
@@ -402,7 +423,8 @@ var vueOptions = {
               }
             });
         }
-      }, delay);
+      },
+        delay);
     },
     loadPool: function (list) {
       var vue = this;

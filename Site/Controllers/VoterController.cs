@@ -69,7 +69,7 @@ namespace TallyJ.Controllers
             ElectionGuid = electionInfo.e.ElectionGuid,
             PersonGuid = electionInfo.p.PersonGuid,
             Email = email,
-            Status = "New",
+            Status = OnlineBallotStatusEnum.New,
             WhenStatus = now,
             HistoryStatus = "New|{0}".FilledWith(now.ToJSON())
           };
@@ -175,7 +175,7 @@ namespace TallyJ.Controllers
 
         onlineVotingInfo.PoolLocked = locked;
 
-        onlineVotingInfo.Status = locked ? "Ready" : "Pending";
+        onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Ready : OnlineBallotStatusEnum.Pending;
         onlineVotingInfo.HistoryStatus += ";{0}|{1}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
 
         var personCacher = new PersonCacher(Db);
@@ -191,6 +191,9 @@ namespace TallyJ.Controllers
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
 
+        person.HasOnlineBallot = locked;
+
+
         if (person.VotingMethod.HasContent() && person.VotingMethod != VotingMethodEnum.Online)
         {
           // teller has set. Voter can't change it...
@@ -203,7 +206,6 @@ namespace TallyJ.Controllers
             person.RegistrationTime = now;
             person.VotingLocationGuid = null; // online isn't treated as a location
             person.EnvNum = null;
-            person.HasOnlineBallot = true;
 
             var log = person.RegistrationLog;
             log.Add(new[]
@@ -220,24 +222,26 @@ namespace TallyJ.Controllers
             person.RegistrationTime = now;
             person.VotingLocationGuid = null; // online isn't treated as a location
             person.EnvNum = null;
-            person.HasOnlineBallot = false;
             votingMethodRemoved = true;
 
             var log = person.RegistrationLog;
+            person.RegistrationTime = now;
             log.Add(new[]
             {
               peopleModel.ShowRegistrationTime(person),
               "Cancel Online",
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
+
+            // wipe registration time
+            person.RegistrationTime = null;
           }
-
-          Db.SaveChanges();
-
-          personCacher.UpdateItemAndSaveCache(person);
-
-          peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
         }
+
+        Db.SaveChanges();
+
+        personCacher.UpdateItemAndSaveCache(person);
+        peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
 
         // okay
         return new
@@ -245,7 +249,8 @@ namespace TallyJ.Controllers
           success = true,
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
-          person.RegistrationTime
+          person.RegistrationTime,
+          onlineVotingInfo.PoolLocked
         }.AsJsonResult();
       }
 
@@ -269,6 +274,7 @@ namespace TallyJ.Controllers
       var list = Db.Person
         .Where(p => p.Email == email && p.CanVote == true && p.IneligibleReasonGuid == null)
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
+        .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
         .OrderByDescending(j => j.e.OnlineWhenOpen)
         .ThenByDescending(j => j.e.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
@@ -280,12 +286,13 @@ namespace TallyJ.Controllers
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,
           j.e.OnlineAllowResultView,
-//          j.e.TallyStatus,
+          //          j.e.TallyStatus,
           person = new
           {
             name = j.p.C_FullNameFL,
             j.p.VotingMethod,
-            j.p.RegistrationTime
+            j.p.RegistrationTime,
+            j.ovi.PoolLocked
           }
         });
 
