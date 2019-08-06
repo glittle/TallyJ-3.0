@@ -956,6 +956,15 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
+    public JsonResult ProcessOnlineBallots()
+    {
+
+      return new
+      {
+
+      }.AsJsonResult();
+    }
+
     public JsonResult SaveOnlineClose(DateTime when, bool est)
     {
       var electionCacher = new ElectionCacher(Db);

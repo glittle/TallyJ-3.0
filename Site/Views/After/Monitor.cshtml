@@ -188,6 +188,13 @@
         <yes-no v-model="election.OnlineAllowResultView"></yes-no>
       </p>
       <h3>Known Voters</h3>
+      <p>
+        <input type="button" 
+               v-on:click="processReadyBallots"
+               v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
+               value='Process all "Ready" ballots'>
+        <em v-if="!(onlineToProcess && OnlineWhenClose_M.isBefore())">Can process after Online voting is closed.</em>
+      </p>
       <table class="OnlineBallots">
         <thead>
           <tr>
@@ -198,7 +205,10 @@
               Voting Method
             </th>
             <th>
-              Online Ballot Status
+              Online Ballot<br/>Status
+            </th>
+            <th>
+              Online When
             </th>
           </tr>
         </thead>
@@ -209,6 +219,9 @@
             </td>
             <td>
               {VotingMethod_Display}
+            </td>
+            <td>
+              {Status}
             </td>
             <td title="{History_Tip}">
               {History_Display}

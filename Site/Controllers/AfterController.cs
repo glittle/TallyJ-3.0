@@ -100,6 +100,12 @@ namespace TallyJ.Controllers
       return new ElectionModel().SaveOnlineClose(when, est);
     }
 
+    [ForAuthenticatedTeller]
+    public JsonResult ProcessOnlineBallots()
+    {
+      return new ElectionModel().ProcessOnlineBallots();
+    }
+
     //[ForAuthenticatedTeller]
     public JsonResult GetReportData(string code)
     {

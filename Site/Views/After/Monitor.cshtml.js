@@ -345,7 +345,7 @@
         'yes-no': publicInterface.YesNo
       },
       data: {
-        election: null,
+        election: {},
         CloseTime: null,
         T24: false,
         dummy: 0,
@@ -360,6 +360,11 @@
           var x = this.dummy;
           return this.showFrom(this.CloseTime);
         },
+        onlineToProcess: function() {
+          return monitorPage.initial.OnlineBallots.findIndex(function(ob) {
+              return ob.Status === 'Ready';
+            }) !== -1;
+        },
         OnlineWhenOpen_M: function () {
           return moment(this.election.OnlineWhenOpen);
         },
@@ -367,6 +372,7 @@
           return moment(this.election.OnlineWhenClose);
         },
         closeStatusClass: function () {
+          var x = this.dummy;
           if (this.OnlineWhenOpen_M.isAfter()) {
             return 'onlineFuture';
           } else if (this.OnlineWhenClose_M.isBefore()) {
@@ -391,7 +397,7 @@
         var vue = this;
         setInterval(function () {
           vue.dummy++;
-        }, 15000);
+        }, 15 * 1000);
       },
       mounted: function () {
       },
@@ -430,6 +436,18 @@
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
               }
             });
+        },
+        processReadyBallots: function() {
+          var vue = this;
+          CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
+            null,
+            function (info) {
+              if (info.success) {
+                ShowStatusSuccess('Processed');
+                refresh();
+              }
+            });
+
         }
       }
     });
@@ -438,6 +456,7 @@
 
   var publicInterface = {
     controllerUrl: '',
+    refresh: refresh,
     isGuest: false,
     initial: null,
     YesNo: null,
