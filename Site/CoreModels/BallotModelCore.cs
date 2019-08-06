@@ -642,6 +642,19 @@ namespace TallyJ.CoreModels
 
     public abstract object BallotInfoForJs(Ballot b, List<Vote> allVotes);
 
+    public bool SaveOnlineVote(List<string> poolIds, out string errorMessage)
+    {
+      // double check
+      if (poolIds.Count != UserSession.CurrentElection.NumberToElect)
+      {
+        errorMessage = $"Invalid number of votes ({poolIds.Count}). Need {UserSession.CurrentElection.NumberToElect}.";
+        return false;
+      }
+
+
+
+    }
+
     public List<Vote> CurrentVotes()
     {
       var ballot = GetCurrentBallot();

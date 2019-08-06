@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using CsQuery.ExtensionMethods;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -931,8 +932,8 @@ namespace TallyJ.CoreModels
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
 
-      election.OnlineWhenClose = minutes == 0 
-        ? DateTime.Now.ChopToMinute() 
+      election.OnlineWhenClose = minutes == 0
+        ? DateTime.Now.ChopToMinute()
         : DateTime.Now.ChopToMinute().AddMinutes(minutes);
       election.OnlineCloseIsEstimate = false;
 
@@ -958,6 +959,127 @@ namespace TallyJ.CoreModels
 
     public JsonResult ProcessOnlineBallots()
     {
+      // only process when election is closed
+      // process in "random" order (not related to when they locked in)
+      // for each voter, verify their status 
+      // create ballot
+      // change status to Processed
+
+      var now = DateTime.Now;
+      var election = UserSession.CurrentElection;
+      var numToElect = election.NumberToElect.AsInt(0);
+
+      if (numToElect < 1)
+      {
+        return new
+        {
+          Message = "Election has invalid number to elect."
+        }.AsJsonResult();
+      }
+
+      if (election.TallyStatus == ElectionTallyStatusEnum.Finalized)
+      {
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
+      }
+
+      if (election.OnlineCurrentlyOpen)
+      {
+        return new
+        {
+          Message = "Cannot process online ballots while election is open."
+        }.AsJsonResult();
+      }
+
+      // ensure it has a close time in the past
+      if (!election.OnlineWhenClose.HasValue || election.OnlineWhenClose.Value > now)
+      {
+        return new
+        {
+          Message = "Cannot process online ballots when the Close time is not valid."
+        }.AsJsonResult();
+      }
+
+      var electionGuid = election.ElectionGuid;
+
+      // checking ElectionGuid for person is redundant but doesn't hurt
+      // checking Ready and PoolLocked is redundant but doesn't hurt
+      var onlineVoters = Db.OnlineVotingInfo
+        .Where(ovi => ovi.ElectionGuid == electionGuid)
+        .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Ready && ovi.PoolLocked.Value)
+        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
+        .OrderBy(j => j.ovi.PersonGuid)
+        .ToList();
+
+      if (!onlineVoters.Any())
+      {
+        return new
+        {
+          success = true,
+          Message = "No online ballots found in Ready status."
+        }.AsJsonResult();
+      }
+
+      var ballotModel = BallotModelFactory.GetForCurrentElection();
+      var problems = new List<string>();
+      var numBallotsCreated = 0;
+
+      foreach (var onlineVoter in onlineVoters)
+      {
+        var name = " - " + onlineVoter.p.FullNameFL;
+
+        try
+        {
+
+          if (!onlineVoter.p.CanVote.GetValueOrDefault())
+          {
+            problems.Add("Not allowed to vote" + name);
+            continue;
+          }
+
+          var pool = onlineVoter.ovi.ListPool;
+          if (pool.HasNoContent())
+          {
+            problems.Add("Empty pool" + name);
+            continue;
+          }
+
+          var poolIds = pool.Split(',').Take(numToElect).ToList();
+          if (poolIds.Count != numToElect)
+          {
+            problems.Add("Pool too small" + name);
+            continue;
+          }
+
+          var success = ballotModel.SaveOnlineVote(poolIds, out var message);
+          if (!success)
+          {
+            problems.Add(message + name);
+          }
+          else
+          {
+            onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
+            onlineVoter.ovi.WhenStatus = now;
+            onlineVoter.ovi.WhenBallotCreated = now;
+            onlineVoter.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineVoter.ovi.Status, now.ToJSON());
+
+            onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
+            Db.SaveChanges();
+          }
+        }
+        catch (Exception e)
+        {
+          problems.Add($"Error: {e.LastException().Message}{name}");
+        }
+      }
+
+
+
+
+
+
+
+
+
 
       return new
       {

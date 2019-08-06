@@ -24,5 +24,6 @@ namespace TallyJ.CoreModels
     JsonResult DeleteBallotJson();
     JsonResult SetNeedsReview(bool needsReview);
     object BallotInfoForJs(Ballot b, List<Vote> allVotes);
+    bool SaveOnlineVote(List<string> poolIds, out string errorMessage);
   }
 }

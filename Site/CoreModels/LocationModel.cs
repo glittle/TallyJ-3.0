@@ -156,7 +156,7 @@ namespace TallyJ.CoreModels
       return new
       {
         Id = location.C_RowId,
-        TallyStatus = location == null ? "" : LocationStatusEnum.TextFor(location.TallyStatus),
+        TallyStatus = LocationStatusEnum.TextFor(location.TallyStatus),
         TallyStatusCode = location.TallyStatus,
         location.ContactInfo,
         location.BallotsCollected,
