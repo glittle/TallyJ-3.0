@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
 using TallyJ.Code;
@@ -1027,63 +1028,64 @@ namespace TallyJ.CoreModels
       {
         var name = " - " + onlineVoter.p.FullNameFL;
 
-        try
+        if (!onlineVoter.p.CanVote.GetValueOrDefault())
         {
-
-          if (!onlineVoter.p.CanVote.GetValueOrDefault())
-          {
-            problems.Add("Not allowed to vote" + name);
-            continue;
-          }
-
-          var pool = onlineVoter.ovi.ListPool;
-          if (pool.HasNoContent())
-          {
-            problems.Add("Empty pool" + name);
-            continue;
-          }
-
-          var poolIds = pool.Split(',').Take(numToElect).ToList();
-          if (poolIds.Count != numToElect)
-          {
-            problems.Add("Pool too small" + name);
-            continue;
-          }
-
-          var success = ballotModel.SaveOnlineVote(poolIds, out var message);
-          if (!success)
-          {
-            problems.Add(message + name);
-          }
-          else
-          {
-            onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
-            onlineVoter.ovi.WhenStatus = now;
-            onlineVoter.ovi.WhenBallotCreated = now;
-            onlineVoter.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineVoter.ovi.Status, now.ToJSON());
-
-            onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
-            Db.SaveChanges();
-          }
+          problems.Add("Not allowed to vote" + name);
+          continue;
         }
-        catch (Exception e)
+
+        var pool = onlineVoter.ovi.ListPool;
+        if (pool.HasNoContent())
         {
-          problems.Add($"Error: {e.LastException().Message}{name}");
+          problems.Add("Empty pool" + name);
+          continue;
+        }
+
+        // convert 1,2,3 to list of numbers
+        var poolIds = pool.Split(',').Take(numToElect).Select(id => id.AsInt()).Where(i => i > 0).ToList();
+        if (poolIds.Count != numToElect)
+        {
+          problems.Add($"Pool too small ({poolIds.Count})" + name);
+          continue;
+        }
+
+        using (var transaction = new TransactionScope())
+        {
+          try
+          {
+            var success = ballotModel.SaveOnlineVote(poolIds, out var message);
+            if (success)
+            {
+              onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
+              onlineVoter.ovi.WhenStatus = now;
+              onlineVoter.ovi.WhenBallotCreated = now;
+              onlineVoter.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineVoter.ovi.Status, now.ToJSON());
+
+              onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
+
+              Db.SaveChanges();
+
+              transaction.Complete();
+
+              numBallotsCreated++;
+            }
+            else
+            {
+              problems.Add(message + name);
+              transaction.Dispose();
+            }
+          }
+          catch (Exception e)
+          {
+            problems.Add($"Error: {e.LastException().Message}{name}");
+          }
         }
       }
 
-
-
-
-
-
-
-
-
-
       return new
       {
-
+        success = numBallotsCreated > 0,
+        problems
       }.AsJsonResult();
     }
 
