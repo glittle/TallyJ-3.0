@@ -37,7 +37,7 @@
         <th class="online">Online Voting</th>
         <th class="pname">Your Name in the Election</th>
         <th class="vmethod">Your voting method</th>
-        <th class="vtime">When your ballot was received</th>
+        <th class="vtime">Ballot status</th>
       </tr>
     </thead>
     <tbody>
@@ -47,11 +47,11 @@
         <td class="pname" v-text="e.person.name"></td>
         <td class="vmethod center">
           <div>{{e.person.VotingMethod_Display}}</div>
-          <div v-if="e.openNow">
+          <div v-if="e.openNow && e.canVote">
             <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
           </div>
         </td>
-        <td class="vtime center" v-text="e.person.RegistrationTime_Display"></td>
+        <td class="vtime center" v-html="e.person.BallotStatus"></td>
       </tr>
     </tbody>
   </table>

@@ -157,6 +157,15 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
+      if (onlineVotingInfo.Status == OnlineBallotStatusEnum.Processed)
+      {
+        // already processed... don't do anything
+        return new
+        {
+          Error = "Ballot already processed"
+        }.AsJsonResult();
+      }
+
       var now = DateTime.Now;
       if (currentElection.OnlineWhenOpen <= now && currentElection.OnlineWhenClose > now)
       {
@@ -292,7 +301,9 @@ namespace TallyJ.Controllers
             name = j.p.C_FullNameFL,
             j.p.VotingMethod,
             j.p.RegistrationTime,
-            j.ovi.PoolLocked
+            j.ovi.PoolLocked,
+            j.ovi.Status,
+            j.ovi.WhenStatus
           }
         });
 

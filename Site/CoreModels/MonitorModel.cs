@@ -48,6 +48,7 @@ namespace TallyJ.CoreModels
             .Select(j => new
             {
               j.ovi?.Status,
+              j.ovi?.WhenStatus,
               j.ovi?.HistoryStatus,
               votesReady = j.ovi != null && (j.ovi.PoolLocked.GetValueOrDefault()
                                              && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect),

@@ -262,6 +262,7 @@
           var when = parts.length > 1 ? parts[1].replace(/[\\"]/g, '') : '';
           return '{0} at {1}'.filledWith(parts[0], moment(when).format(template));
         });
+      voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format('D MMM YYYY hh:mm a') : '';
       voter.History_Display = history.length ? history[history.length - 1] : '-';
       voter.History_Tip = history.join('\n');
 

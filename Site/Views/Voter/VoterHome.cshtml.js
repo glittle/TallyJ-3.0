@@ -142,12 +142,22 @@ var vueOptions = {
     },
     extendElectionInfo: function (info) {
       var person = info.person;
-      if (person.RegistrationTime) {
-        person.RegistrationTime_M = moment(person.RegistrationTime);
-        person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
+      if (person.WhenStatus) {
+        person.WhenStatus_M = moment(person.WhenStatus);
+        person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
+
+        person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
       } else {
-        person.RegistrationTime_Display = '';
+        if (person.RegistrationTime) {
+          person.RegistrationTime_M = moment(person.RegistrationTime);
+          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
+
+          person.BallotStatus = 'Received<br>' + person.RegistrationTime_Display;
+        } else {
+          person.BallotStatus = '';
+        }
       }
+
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
       this.updateStatus(info);
     },
@@ -170,6 +180,8 @@ var vueOptions = {
     },
     updateStatus: function (info) {
       info.openNow = false;
+
+      info.canVote = info.person.Status !== 'Processed';
 
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
