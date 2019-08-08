@@ -21,7 +21,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return ContextItems.LocationModel.AllLocations
+        return ContextItems.LocationModel.GetLocations(false)
           .OrderBy(l => l.SortOrder)
           .ThenBy(l => l.C_RowId)
           .Select(l => new
@@ -38,10 +38,6 @@ namespace TallyJ.CoreModels
     {
       get { return _election ?? (_election = UserSession.CurrentElection); }
     }
-//    public OnlineElection CurrentOnlineElection
-//    {
-//      get { return _onlineElection ?? (_onlineElection = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid)); }
-//    }
 
     public ElectionModel CurrentElectionModel
     {

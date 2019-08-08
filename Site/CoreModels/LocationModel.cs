@@ -16,24 +16,29 @@ namespace TallyJ.CoreModels
     private List<Location> _locations;
     private Dictionary<Guid, int> _idMap;
 
-    /// <Summary>List of Locations</Summary>
-    public List<Location> AllLocations
+    public const string OnlineLocationName = "Online";
+
+    /// <Summary>List of "normal" Locations</Summary>
+    public List<Location> GetLocations(bool includeOnlineLocation)
     {
-      get { return _locations ?? (_locations = new LocationCacher(Db).AllForThisElection); }
+      var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
+      return locations
+        .Where(l => includeOnlineLocation || !l.Name.StartsWith(OnlineLocationName)).ToList();
     }
 
     public Dictionary<Guid, int> LocationIdMap
     {
       get
       {
-        return _idMap ?? (_idMap = AllLocations.ToDictionary(l => l.LocationGuid, l => l.C_RowId));
+        return _idMap ?? (_idMap = GetLocations(true).ToDictionary(l => l.LocationGuid, l => l.C_RowId));
       }
     }
+
     public string LocationRowIdMap
     {
       get
       {
-        return AllLocations
+        return GetLocations(true)
           .Select(l => "{0}:{1}".FilledWith(l.C_RowId, l.Name.SerializedAsJsonString()))
           .JoinedAsString(", ")
           .SurroundContentWith("{", "}");
@@ -62,28 +67,30 @@ namespace TallyJ.CoreModels
 
     public string ShowDisabled
     {
-      get { return AllLocations.Count == 1 ? " disabled" : ""; }
+      get { return GetLocations(false).Count == 1 ? " disabled" : ""; }
     }
 
     /// <Summary>Does this election have more than one location?</Summary>
     public bool HasLocations
     {
-      get { return AllLocations.Count > 1; }
+      get { return GetLocations(false).Count > 1; }
     }
 
     public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true)
     {
+      // for RollCall, don't need to show Online as an option to filter on
+
       var currentLocation = UserSession.CurrentLocation;
       var selected = 0;
       if (currentLocation != null)
       {
         selected = currentLocation.C_RowId;
       }
-      
+
       return
         (
         (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
-        AllLocations
+        GetLocations(false)
         .OrderBy(l => l.SortOrder)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
@@ -101,9 +108,17 @@ namespace TallyJ.CoreModels
     {
       var locationCacher = new LocationCacher(Db);
 
-      var location = AllLocations.SingleOrDefault(l => l.C_RowId == locationId);
+      var location = GetLocations(false).SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
+      {
+        return new
+        {
+          Saved = false
+        }.AsJsonResult();
+      }
+
+      if (location.Name.StartsWith(OnlineLocationName))
       {
         return new
         {
@@ -146,7 +161,8 @@ namespace TallyJ.CoreModels
 
     public object LocationInfoForJson(Location location)
     {
-      if (location == null) {
+      if (location == null)
+      {
         return null;
       }
 
@@ -204,8 +220,22 @@ namespace TallyJ.CoreModels
       return new { Saved = true }.AsJsonResult();
     }
 
-    public JsonResult EditLocation(int id, string text)
+    public Location GetOnlineLocation()
     {
+      return GetLocations(true).FirstOrDefault(l => l.Name.StartsWith(OnlineLocationName));
+    }
+
+    public JsonResult EditLocation(int id, string text, bool allowModifyOnline = false)
+    {
+      if (text.StartsWith(OnlineLocationName) && !allowModifyOnline)
+      {
+        return new
+        {
+          Success = false,
+          Status = "Cannot name a location as \"Online\""
+        }.AsJsonResult();
+      }
+
       var locationCacher = new LocationCacher(Db);
 
       var location = locationCacher.AllForThisElection.SingleOrDefault(l => l.C_RowId == id);
@@ -223,6 +253,15 @@ namespace TallyJ.CoreModels
       }
       else
       {
+        if (location.Name.StartsWith(OnlineLocationName) && !allowModifyOnline)
+        {
+          return new
+          {
+            Success = false,
+            Status = "Cannot edit Online location"
+          }.AsJsonResult();
+        }
+
         Db.Location.Attach(location);
       }
 
@@ -233,12 +272,14 @@ namespace TallyJ.CoreModels
 
       if (text.HasNoContent() && location.C_RowId > 0)
       {
+        // deleting this location
+
         // don't delete last location
-        if (AllLocations.Count() > 1)
+        if (location.Name.StartsWith(OnlineLocationName) && allowModifyOnline
+           || GetLocations(false).Count > 1)
         {
           // delete existing if we can
-          var used = new BallotCacher(Db).AllForThisElection.Any(b => b.LocationGuid == location.LocationGuid);
-          if (!used)
+          if (!IsLocationInUse(location.LocationGuid))
           {
             Db.Location.Remove(location);
             Db.SaveChanges();
@@ -300,22 +341,34 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
+    public bool IsLocationInUse(Guid locationGuid)
+    {
+      return new BallotCacher(Db).AllForThisElection.Any(b => b.LocationGuid == locationGuid);
+    }
+
     public JsonResult SortLocations(List<int> idList)
     {
       //var ids = idList.Split(new[] { ',' }).AsInts().ToList();
 
       var locationCacher = new LocationCacher(Db);
 
-      var locations = locationCacher.AllForThisElection.Where(l => idList.Contains(l.C_RowId)).ToList();
+      var locations = locationCacher.AllForThisElection
+        .Where(l => idList.Contains(l.C_RowId))
+        .ToList();
 
       var sortOrder = 1;
       foreach (var id in idList)
       {
-        var newOrder = sortOrder++;
-
         var location = locations.SingleOrDefault(l => l.C_RowId == id);
+        if (location == null)
+        {
+          continue;
+        }
 
-        if (location != null && location.SortOrder != newOrder)
+        // keep "Online" at the bottom of this list.  Use Html/css to support this rule.
+        var newOrder = location.Name.StartsWith(OnlineLocationName) ? 999 : sortOrder++;
+
+        if (location.SortOrder != newOrder)
         {
           Db.Location.Attach(location);
           location.SortOrder = newOrder;

@@ -29,7 +29,7 @@ namespace TallyJ.CoreModels
 
 
         var currentElectionGuid = UserSession.CurrentElectionGuid;
-        var onlineBallots = UserSession.EnableOnlineElections
+        var onlineBallots = UserSession.HostSupportsOnlineElections
           ? Db.Person
             .Where(p => p.ElectionGuid == currentElectionGuid)
             .GroupJoin(Db.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
@@ -102,7 +102,7 @@ namespace TallyJ.CoreModels
                   LocationId = g.l.C_RowId,
                   Tellers = TellerModel.GetTellerNames(g.b.Teller1, g.b.Teller2)
                 }),
-            OnlineInfo = UserSession.EnableOnlineElections
+            OnlineInfo = UserSession.HostSupportsOnlineElections
               ? new
               {
                 currentElection.OnlineWhenOpen,

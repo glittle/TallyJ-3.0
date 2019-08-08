@@ -139,6 +139,9 @@ namespace TallyJ.EF
         public bool IsSingleNameElection => 
           NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0;
 
+
+        public bool OnlineEnabled => OnlineWhenOpen.HasValue;
+
         public bool OnlineCurrentlyOpen
         {
           get

@@ -256,6 +256,8 @@ namespace TallyJ.CoreModels
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
 
+      var beforeChanges = election.GetAllProperties();
+
       var currentType = election.ElectionType;
       var currentMode = election.ElectionMode;
       var currentCan = election.CanVote;
@@ -297,8 +299,32 @@ namespace TallyJ.CoreModels
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
+      var locationModel = new LocationModel();
+      var onlineLocation = locationModel.GetOnlineLocation();
+
       if (changed)
       {
+        // check if trying to turn off online elections
+        if (!election.OnlineEnabled)
+        {
+          if (onlineLocation != null)
+          {
+            if (locationModel.IsLocationInUse(onlineLocation.LocationGuid))
+            {
+              beforeChanges.CopyPropertyValuesTo(election);
+
+              // we have ballots from Online... can't remove Open date!
+              return new
+              {
+                success = false,
+                Status = "Online ballots received. Cannot disable online voting.",
+                Election = election,
+                displayName = UserSession.CurrentElectionDisplayNameAndInfo
+              }.AsJsonResult();
+            }
+          }
+        }
+
         Db.SaveChanges();
 
         electionCacher.UpdateItemAndSaveCache(election);
@@ -320,6 +346,24 @@ namespace TallyJ.CoreModels
         new ResultsModel().GenerateResults();
       }
 
+      // adjust for Online
+      if (election.OnlineEnabled)
+      {
+        if (onlineLocation == null)
+        {
+          // need a new location for online!
+          locationModel.EditLocation(0, LocationModel.OnlineLocationName, true);
+        }
+      }
+      else
+      {
+        // not enabled
+        if (onlineLocation != null)
+        {
+          // remove it (already checked that it is not in use)
+          locationModel.EditLocation(onlineLocation.C_RowId, "", true);
+        }
+      }
 
       new AllVotersHub()
         .UpdateVoters(new
@@ -330,13 +374,12 @@ namespace TallyJ.CoreModels
           election.OnlineCloseIsEstimate,
         });
 
-      var displayName = UserSession.CurrentElectionDisplayNameAndInfo;
-
       return new
       {
+        success = true,
         Status = "Saved",
         Election = election,
-        displayName
+        displayName = UserSession.CurrentElectionDisplayNameAndInfo
       }.AsJsonResult();
     }
 

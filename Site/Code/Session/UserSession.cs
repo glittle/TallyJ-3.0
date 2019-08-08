@@ -430,8 +430,8 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static bool EnableOnlineElections {
-      get { return ConfigurationManager.AppSettings["EnableOnlineElections"].AsBoolean(); }
+    public static bool HostSupportsOnlineElections {
+      get { return ConfigurationManager.AppSettings["HostSupportsOnlineElections"].AsBoolean(); }
     }
 
     public static string SiteVersion

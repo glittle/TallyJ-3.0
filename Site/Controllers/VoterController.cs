@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
+using RazorEngine.Compilation.ImpromptuInterface;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -291,6 +292,7 @@ namespace TallyJ.Controllers
         {
           id = j.e.ElectionGuid,
           j.e.Name,
+          j.e.TallyStatus,
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,

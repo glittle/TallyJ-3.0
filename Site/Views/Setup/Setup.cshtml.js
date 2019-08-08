@@ -524,16 +524,24 @@
 
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
-      if (info.Election) {
-        applyValues(info.Election);
-        $('.CurrentElectionName').text(info.displayName);
-        site.passcodeRaw =
-          site.passcode = info.Election.ElectionPasscode;
-        updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
+      if (info.success) {
+        if (info.Election) {
+          applyValues(info.Election);
+          $('.CurrentElectionName').text(info.displayName);
+          site.passcodeRaw =
+            site.passcode = info.Election.ElectionPasscode;
+          updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
+        }
+        $('.btnSave').removeClass('btn-primary');
+        ResetStatusDisplay();
+        ShowStatusSuccess(info.Status);
+      } else {
+        ShowStatusFailed(info.Status);
+        if (info.Election) {
+          applyValues(info.Election);
+          $('.CurrentElectionName').text(info.displayName);
+        }
       }
-      $('.btnSave').removeClass('btn-primary');
-      ResetStatusDisplay();
-      ShowStatusSuccess(info.Status);
     });
   };
 
