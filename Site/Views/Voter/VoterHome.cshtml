@@ -86,7 +86,7 @@
         <button v-on:click="searchText = ''">Clear</button>
       </div>
 
-      <ul id="nameList">
+      <ul id="nameList" v-show="nameList.length">
         <li v-for="(p,i) in nameList"
             v-bind:key="p.Id"
             :id="'P' + p.Id"

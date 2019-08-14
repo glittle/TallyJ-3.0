@@ -257,11 +257,11 @@ var vueOptions = {
       //      if (this.navigating(ev)) {
       //        return;
       //      }
-      if (this.lastSearch === text.trim()) return;
       if (text === '') {
         this.resetSearch();
         return;
       }
+      if (this.lastSearch === text.trim()) return;
 
       this.lastSearch = text;
       voterHome.peopleHelper.Search(text, this.displaySearchResults);
@@ -317,11 +317,13 @@ var vueOptions = {
     resetSearch: function () {
       this.searchText = '';
       this.lastSearch = '';
+      this.nameList = [];
     },
     addToPool: function (p) {
       // to do - check for duplicates 
       if (p.inPool) return;
       if (!p.CanReceiveVotes) return;
+      if (this.election.person.PoolLocked) return;
 
       p.inPool = true;
       //console.log(p);
