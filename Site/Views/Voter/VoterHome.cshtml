@@ -22,13 +22,22 @@
 
 <div id="voterPage1" v-if="activePage === 1">
   <p>
-    Hello! Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
+    To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
+  </p>
+  <ul>
+    <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
+    <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
+    <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
+  </ul>
+
+  <p>
+    Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
+    <span v-if="elections.length">It is registered in these elections.</span>
   </p>
 
-  <div v-if="loading">Looking for your email address in elections...</div>
+  <p v-if="loading">Looking for your email address in elections...</p>
+  <p v-if="!elections.length && !loading">Your email address is not registered in any elections in TallyJ.</p>
 
-  <p v-if="elections.length">Here are the elections where your email address is registered and you can vote:</p>
-  <p v-if="!elections.length && !loading">Your email address is not registered in any known elections.</p>
 
   <table class="electionList" v-if="!loading && elections.length">
     <thead>
@@ -60,12 +69,17 @@
 </div>
 
 <div id="voterPage2" v-if="activePage === 2">
+  <button class="returnBtn" v-on:click="closeBallot">Return</button>
   <h2>{{election.Name}}</h2>
   <h3 class="electionStatus" :class="election.classes" v-html="election.Status_Display"></h3>
-  <button v-on:click="closeBallot">Return</button>
   <div class="poolBuilder">
     <div>
+      <p class="quote">
+        "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
+        to such other factors as age distribution, diversity, and gender." <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">Message from the Universal House of Justice</a>
+      </p>
       <h2>Add to Pool</h2>
+      <p>Search for individuals that you believe to be qualified to serve. Click to add them to your pool.</p>
       <div>
         Search:
         <input type="text" v-model="searchText" v-on:keydown="navigating" class="searchBox" />
@@ -91,7 +105,7 @@
         <p class="OtherRegistration">This online ballot WILL NOT BE USED because you are registered as voting {{registration}}.</p>
         <p><strong>If that is not correct, please contact the head teller of this election before the election is closed.</strong></p>
       </div>
-      <p v-if="!registration">You have not yet locked in your choices or checked in with the tellers.</p>
+      <p v-if="!registration && pool.length">You have not yet locked in your ballot.</p>
 
       @*<p>Please select:</p>
         <div class="lockIn">
@@ -102,10 +116,13 @@
         <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my ballot</button>
         <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my ballot</button>
       </p>
-      <p v-if="registration === 'Online' && lockInVotes"><strong>Your ballot will be created and submitted by TallyJ when the Head Teller closes online voting.</strong></p>
+      <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed voting online. Your ballot will be counted when the Head Teller closes online voting.</strong></p>
 
-      <p v-if="lockInVotes">You have locked in your ballot. Changes are only allowed when it is unlocked.</p>
-      <p v-if="!lockInVotes">Sort this list to move the desired people in to the ballot. To use a keyboard, press Tab to focus, Enter to select, Up and Down to move.</p>
+      <p v-if="lockInVotes">Changes to the list are allowed only when your ballot is not locked.</p>
+      <p v-if="!lockInVotes && pool.length">
+        Sort this list to move people into the top {{numToElect}} positions for use on your ballot. To sort using a keyboard, press Tab to focus,
+        Enter to select/deselect, and Up and Down to move.
+      </p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"
              :key="p.id"

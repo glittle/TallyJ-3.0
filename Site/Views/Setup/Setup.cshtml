@@ -392,7 +392,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <th>
           Voting Start time
         </th>
-        <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+        <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
           <datetime v-model="election.OnlineWhenOpen" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
           <div class="voteWhen">{{showFrom(election.OnlineWhenOpen)}}</div>
         </td>
@@ -405,7 +405,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <th>
           Voting Stop time
         </th>
-        <td v-bind:class="{needOnlineDates: !onlineDatesOkay}">
+        <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
           <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
           <div class="voteWhen">{{showFrom(election.OnlineWhenClose)}}</div>
         </td>

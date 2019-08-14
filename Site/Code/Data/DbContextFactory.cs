@@ -24,7 +24,7 @@ namespace TallyJ.Code.Data
                 //var x = new ITallyJDbContext();
                 //x.Configuration.ValidateOnSaveEnabled = true;
 
-                var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection"].ConnectionString;
+                var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection3"].ConnectionString;
 
                 var connection = new SqlConnection(cnString);
                 var workspace = new MetadataWorkspace(
