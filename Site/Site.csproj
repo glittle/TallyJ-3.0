@@ -859,6 +859,15 @@
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
+    <None Include="Properties\PublishProfiles\Win16a UAT VM IIS.pubxml" />
+    <None Include="Properties\PublishProfiles\Win16a VM IIS.pubxml" />
+    <None Include="Scripts\jquery-3.2.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.2.1.js" />
+    <Content Include="Scripts\jquery-3.2.1.min.js" />
+    <Content Include="Scripts\jquery-3.2.1.slim.js" />
+    <Content Include="Scripts\jquery-3.2.1.slim.min.js" />
+    <Content Include="Scripts\jquery-3.2.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.2.1.min.map" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.js" />
@@ -1005,6 +1014,12 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.TallyJ3-staging - Web Deploy.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Win16a UAT VM IIS.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Win16a VM IIS.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
