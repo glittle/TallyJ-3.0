@@ -28,11 +28,31 @@ namespace TallyJ.CoreModels
       var computerCacher = new ComputerCacher();
 
       var locationGuid = UserSession.CurrentLocationGuid;
-      var hasLocations = new LocationModel().HasLocations;
+      var locationModel = new LocationModel();
+      var hasLocations = locationModel.HasLocations;
       if (locationGuid == Guid.Empty && !hasLocations)
       {
         // if only one location, learn what it is
-        UserSession.CurrentLocationGuid = locationGuid = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).First().LocationGuid;
+        var locations = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).ToList();
+        if (locations.Count == 0)
+        {
+          // missing location?  fix it
+          var location = new Location
+          {
+            ElectionGuid = UserSession.CurrentElectionGuid,
+            Name = "Main Location",
+            LocationGuid = Guid.NewGuid()
+          };
+          Db.Location.Add(location);
+          Db.SaveChanges();
+          locationGuid = location.LocationGuid;
+        }
+        else
+        {
+          locationGuid = locations.First().LocationGuid;
+        }
+
+        UserSession.CurrentLocationGuid = locationGuid;
       }
 
       lock (ComputerModelLock)

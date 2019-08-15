@@ -1,82 +1,82 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 section.feature {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 section.features {
-    a {
-        text-decoration: none;
+  a {
+    text-decoration: none;
+  }
+
+  &.middle {
+    h1, h2 {
+      font-size: @baseFontSize * 1.5;
     }
 
-    &.middle {
-        h1, h2 {
-            font-size: @baseFontSize * 1.5;
-        }
-
-        h3 {
-            font-size: @baseFontSize * 1.2;
-        }
+    h3 {
+      font-size: @baseFontSize * 1.2;
     }
+  }
 }
 
 section.features a section {
-    border: 2px solid transparent;
+  border: 2px solid transparent;
 }
 
 section.features a:hover section {
-    border: 2px solid #ddd;
+  border: 2px solid #ddd;
 }
 
 section.features a:active section {
-    border: 2px solid #8dc63e;
+  border: 2px solid #8dc63e;
 }
 
 section.LoginPanel a {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 
 div.closer {
-    position: absolute;
-    top: 3px;
-    right: 3px;
+  position: absolute;
+  top: 3px;
+  right: 3px;
 
-    img.closer {
-        opacity: 0.7;
+  img.closer {
+    opacity: 0.7;
 
-        &:hover {
-            opacity: 1;
-            cursor: pointer;
-        }
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
     }
+  }
 }
 
 #socialLoginList {
-    .authButton {
-        display: block;
-        margin: 10px auto;
+  .authButton {
+    display: block;
+    margin: 10px auto;
 
-        i{
-            margin: 0 10px 0 0;
-        }
+    i {
+      margin: 0 10px 0 0;
     }
+  }
 }
 
 .featureBig {
-    position: relative;
-    //width: 425px;
-    min-height: 300px;
-    //margin: 5px auto;
-    padding: 10px 15px 20px 10px;
-    border: 1px solid grey;
-    border-radius: 5px;
-    text-align: center;
-    background-color: #fcfcfc;
+  position: relative;
+  //width: 425px;
+  min-height: 300px;
+  //margin: 5px auto;
+  padding: 10px 15px 20px 10px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #fcfcfc;
 }
 
 .featureBig.VoterPanel ol {
-    text-align: center;
+  text-align: center;
 }
 
 //section.featureBig div.top {
@@ -91,202 +91,203 @@ div.closer {
 //}
 
 .featureBig h4 {
-    margin-top: 0;
-    font-weight: normal;
+  margin-top: 0;
+  font-weight: normal;
 }
 
 .featureBig ol {
-    text-align: left;
+  text-align: left;
+  margin: 0;
 }
 
 .featureBig.LoginPanel ol {
-    text-align: center;
+  text-align: center;
 }
 
 .featureBig li p {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 #txtCode {
-    width: 50px;
+  width: 50px;
 }
 
 #txtPasscode {
-    width: 200px;
-    color: #aaa;
+  width: 200px;
+  color: #aaa;
 }
 
 #ddlElections {
-    width: 95%;
-    padding: 0;
+  width: 95%;
+  padding: 0;
 
-    option {
-        padding: 3px 3px 3px 6px;
-    }
+  option {
+    padding: 3px 3px 3px 6px;
+  }
 }
 
 div.table div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 0 10px 0 5px;
+  display: table-cell;
+  vertical-align: top;
+  padding: 0 10px 0 5px;
 }
 
 div.table div span {
-    margin-right: 3px;
-    vertical-align: top;
+  margin-right: 3px;
+  vertical-align: top;
 }
 
 div.or {
-    font-style: italic;
-    font-weight: bold;
+  font-style: italic;
+  font-weight: bold;
 }
 
 #joinStatus {
-    padding-left: 5px;
+  padding-left: 5px;
 }
 
 #joinStatus.idle {
-    color: #999;
+  color: #999;
 }
 
 #joinStatus.error {
-    color: red;
+  color: red;
 }
 
 #joinStatus.success {
-    color: green;
+  color: green;
 }
 
 #joinStatus.active {
-    color: orange;
+  color: orange;
 }
 
 .featureBig hgroup h1,
 .featureBig hgroup h2 {
-    display: none;
+  display: none;
 }
 
 .featureBig h3 {
-    font-size: 100%;
+  font-size: 100%;
 }
 
 .featureBig fieldset label, .XfeatureBig fieldset input {
-    font-size: 100%;
-    font-weight: normal;
+  font-size: 100%;
+  font-weight: normal;
 }
 
 section.CenterPanel {
-    min-height: 170px;
+  min-height: 170px;
 }
 
 section.CenterPanel.chosen {
-    display: none;
+  display: none;
 }
 
 section.CenterPanel.chosen:hover {
-    //background-color: #fff;
-    //  opacity: 0.9;
+  //background-color: #fff;
+  //  opacity: 0.9;
 }
 
 .JoinPanel {
-    display: none;
-    background-color: #eaebee;
+  display: none;
+  background-color: #eaebee;
 
-    li {
-        margin: 20px 0;
-    }
+  li {
+    margin: 20px 0;
+  }
 }
 
 .LoginPanel {
-    display: none;
-    background-color: #e7ece7;
+  display: none;
+  background-color: #e7ece7;
 }
 
 .VoterPanel {
-    display: none;
-    background-color: lighten(@tallyJOrange, 60%);
+  display: none;
+  background-color: lighten(@tallyJOrange, 60%);
 }
 
 fieldset input[type="text"], fieldset input[type="password"] {
-    border: 1px solid #e2e2e2;
-    color: #333;
-    margin: 5px 0 6px 0;
-    padding: 5px;
-    width: 150px;
-    text-align: center;
+  border: 1px solid #e2e2e2;
+  color: #333;
+  margin: 5px 0 6px 0;
+  padding: 5px;
+  width: 150px;
+  text-align: center;
 }
 
 .Summary {
-    height: 0px;
-    width: 0px;
-    position: absolute;
-    overflow: hidden;
+  height: 0px;
+  width: 0px;
+  position: absolute;
+  overflow: hidden;
 }
 
 .AlreadyIn {
-    width: 60%;
-    text-align: center;
-    margin: 3em auto 0 auto;
+  width: 60%;
+  text-align: center;
+  margin: 3em auto 0 auto;
 }
 
 .Intro {
-    color: #F6941E;
-    font-size: large;
-    padding: 1.4em 0 1.4em 22px;
+  color: #F6941E;
+  font-size: large;
+  padding: 1.4em 0 1.4em 22px;
 }
 
 #introTitle {
-    color: #013d7a;
-    margin-bottom: 1em;
+  color: #013d7a;
+  margin-bottom: 1em;
 }
 
 .middle {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 section.features {
-    width: 75%;
-    margin: 16px auto;
-    padding: 10px 10px 1px 10px;
+  width: 75%;
+  margin: 16px auto;
+  padding: 10px 10px 1px 10px;
 
-    .btn {
-        white-space: nowrap;
-    }
+  .btn {
+    white-space: nowrap;
+  }
 }
 
 div.notes {
-    width: 75%;
-    margin: 16px auto;
-    padding: 10px 10px 1px 10px;
-    text-align: center;
-    font-size: 85%;
-    color: #666;
-    background: #f8f8f8;
+  width: 75%;
+  margin: 16px auto;
+  padding: 10px 10px 1px 10px;
+  text-align: center;
+  font-size: 85%;
+  color: #666;
+  background: #f8f8f8;
 
-    a {
-        color: @tallyJOrange;
-    }
+  a {
+    color: @tallyJOrange;
+  }
 }
 
 
 .CenterPanel div.browser.ie {
-    color: red;
-    font-weight: bold;
-    font-size: 105%;
-    margin-bottom: 20px;
+  color: red;
+  font-weight: bold;
+  font-size: 105%;
+  margin-bottom: 20px;
 }
 
 #btnRefresh {
-    vertical-align: text-bottom;
-    font-size: 10px;
-    line-height: 12px;
-    padding: 2px 5px 1px;
+  vertical-align: text-bottom;
+  font-size: 10px;
+  line-height: 12px;
+  padding: 2px 5px 1px;
 }
 
 
@@ -331,14 +332,14 @@ div.notes {
 
 
 @media screen and (max-width: 500px) {
-    section.features.middle {
-        margin: 0;
-    }
+  section.features.middle {
+    margin: 0;
+  }
 
-    section.featureBig {
-        width: 90%;
-        margin: 0 auto;
-        max-width: 390px;
-        min-width: 300px;
-    }
+  section.featureBig {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 390px;
+    min-width: 300px;
+  }
 }
