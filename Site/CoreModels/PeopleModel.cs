@@ -433,6 +433,8 @@ namespace TallyJ.CoreModels
 
       var ballotSources = PeopleInElection // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
+          .Where(p => p.VotingMethod != VotingMethodEnum.Online)
+          .Where(p => p.VotingMethod != VotingMethodEnum.Registered)
           .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
           .ToList()
           .OrderBy(p => p.VotingMethod)

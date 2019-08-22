@@ -116,7 +116,7 @@
     for (var i = 0; i < ballots.length; i++) {
       var ballot = ballots[i];
       var method = ballot.VotingMethod;
-      if (method == 'P') {
+      if (method === 'P' || method === 'O' || method === 'R') {
         continue;
       }
 

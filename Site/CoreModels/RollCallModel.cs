@@ -39,9 +39,18 @@ namespace TallyJ.CoreModels
     {
       var peopleInCurrentElection = new PersonCacher(Db).AllForThisElection;
       // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
+      var withAbsentees = new[]
+      {
+        VotingMethodEnum.InPerson,
+        VotingMethodEnum.DroppedOff,
+        VotingMethodEnum.MailedIn,
+        //VotingMethodEnum.Registered, -- not registered (should not be used with RollCall)
+        VotingMethodEnum.CalledIn,
+        VotingMethodEnum.Online,
+      }.Select(vm => vm.Value).ToList();
 
       return IncludeAbsentees
-        ? peopleInCurrentElection.Where(p => !string.IsNullOrEmpty(p.VotingMethod)).ToList()
+        ? peopleInCurrentElection.Where(p => withAbsentees.Contains(p.VotingMethod)).ToList()
         : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
     }
 
@@ -58,31 +67,31 @@ namespace TallyJ.CoreModels
       var after = new List<Person>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person {C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "BLANK" });
+        before.Add(new Person { C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "BLANK" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person {C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod="BLANK"});
+        after.Add(new Person { C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "BLANK" });
         numBlanksAfter--;
       }
       var locationModel = new LocationModel();
-      var currentElection = UserSession.CurrentElection;
+      //      var currentElection = UserSession.CurrentElection;
       var i = 0;
       return
         before.Concat(people
           .OrderBy(p => p.LastName)
           .ThenBy(p => p.FirstName)).Concat(after)
-          .Select(p => new 
+          .Select(p => new
           {
             PersonId = p.C_RowId,
             FullName = p.C_FullName, //.FullNameFL,
             Area = p.Area,
             TS = p.C_RowVersionInt,
             Loc = locationModel.IdFor(p.VotingLocationGuid),
-            Env = p.EnvNum,
+            Env = p.VotingMethod == VotingMethodEnum.Online ? null : p.EnvNum,
             VM = p.VotingMethod,
             Pos = ++i
           });

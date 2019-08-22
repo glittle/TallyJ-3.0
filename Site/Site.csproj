@@ -837,6 +837,7 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Properties\PublishProfiles\LIVE Win16a VM IIS.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
@@ -861,7 +862,6 @@
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Properties\PublishProfiles\Win16a UAT VM IIS.pubxml" />
-    <None Include="Properties\PublishProfiles\Win16a VM IIS.pubxml" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.js" />

@@ -31,7 +31,7 @@
 
       startSignalR(function () {
         console.log('Joining voter hub');
-        CallAjaxHandler(GetRootUrl() + '/Voter/JoinVoterHubs',
+        CallAjaxHandler(GetRootUrl() + 'Voter/JoinVoterHubs',
           {
             connId: site.signalrConnectionId
           });

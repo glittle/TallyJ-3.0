@@ -20,53 +20,54 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 
-<div id="voterPage1" v-if="activePage === 1">
-  <p>
-    To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
-  </p>
-  <ul>
-    <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
-    <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
-    <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
-  </ul>
+  <div id="voterPage1" v-if="activePage === 1">
+    <p>
+      Welcome! Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
+    </p>
 
-  <p>
-    Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
-    <span v-if="elections.length">It is registered in these elections.</span>
-  </p>
+    <p>
+      To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
+    </p>
+    <ul>
+      <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
+      <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
+      <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
+    </ul>
 
-  <p v-if="loading">Looking for your email address in elections...</p>
-  <p v-if="!elections.length && !loading">Your email address is not registered in any elections in TallyJ.</p>
+    <p v-if="loading">Looking for your email address in elections...</p>
+    <p v-if="!elections.length && !loading">Your email address is not registered in any elections in TallyJ.</p>
+    <p v-if="elections.length">Your email address is registered in these elections.</p>
+    <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available yet.</p>
+    
 
-
-  <table class="electionList" v-if="!loading && elections.length">
-    <thead>
-      <tr>
-        <th class="ename">Election</th>
-        <th class="ename">Tally Status</th>
-        <th class="online">Online Voting</th>
-        <th class="pname">Your Name in the Election</th>
-        <th class="vmethod">Your voting method</th>
-        <th class="vtime">Ballot status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
-        <td class="ename" v-text="e.Name"></td>
-        <td class="ename" v-text="e.TallyStatus"></td>
-        <td class="online center" v-html="e.Status_Display"></td>
-        <td class="pname" v-text="e.person.name"></td>
-        <td class="vmethod center">
-          <div>{{e.person.VotingMethod_Display}}</div>
-          <div v-if="e.openNow && e.canVote">
-            <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
-          </div>
-        </td>
-        <td class="vtime center" v-html="e.person.BallotStatus"></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+    <table class="electionList" v-if="!loading && elections.length">
+      <thead>
+        <tr>
+          <th class="ename">Election</th>
+          <th class="ename">Tally Status</th>
+          <th class="online">Online Voting</th>
+          <th class="pname">Your Name in the Election</th>
+          <th class="vmethod">Your voting method</th>
+          <th class="vtime">Ballot status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
+          <td class="ename" v-text="e.Name"></td>
+          <td class="ename" v-text="e.TallyStatus"></td>
+          <td class="online center" v-html="e.Status_Display"></td>
+          <td class="pname" v-text="e.person.name"></td>
+          <td class="vmethod center">
+            <div>{{e.person.VotingMethod_Display}}</div>
+            <div v-if="e.openNow && e.canVote">
+              <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
+            </div>
+          </td>
+          <td class="vtime center" v-html="e.person.BallotStatus"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
 <div id="voterPage2" v-if="activePage === 2">
   <button class="returnBtn" v-on:click="closeBallot">Return</button>

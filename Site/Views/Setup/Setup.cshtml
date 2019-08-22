@@ -423,7 +423,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
           <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
         </td>
         <td>
-          Is the stopping time above an estimated time?
+          This affects the wording shown to voters. Usually leave as estimated until the final hours.
         </td>
       </tr>
       <tr v-if="useOnline">
@@ -492,12 +492,12 @@ ClientFile("~/Scripts/vue-datetime.css"),
 <script type="text/x-template" id="env-mode">
   <span class="EnvMode" v-bind:class="'EnvMode' + mode">
     <label>
-      <input type="radio" value="All" v-model="mode">
-      All
+      <input type="radio" value="Absentee" v-model="mode">
+      Only
     </label>
     <label>
-      <input type="radio" value="Absentee" v-model="mode">
-      Absentees Only
+      <input type="radio" value="All" v-model="mode">
+      All
     </label>
     <label>
       <input type="radio" value="None" v-model="mode">

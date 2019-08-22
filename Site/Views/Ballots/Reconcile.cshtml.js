@@ -168,10 +168,11 @@
       P: { name: reconcilePage.inPersonName, count: 0 },
       D: { name: 'Dropped Off', count: 0 },
       M: { name: 'Mailed In', count: 0 },
+      O: { name: 'Online', count: 0 },
       R: { name: 'Registered, not Received', count: 0 },
       C: { name: 'Called In', count: 0 }
     };
-    var methodList = ['P', 'D', 'M', 'C', 'R'];
+    var methodList = ['P', 'D', 'M', 'C', 'R', 'O'];
 
     var host = $('#lists');
     host.html('');

@@ -31,18 +31,18 @@
 { // (string)ViewBag.FormAction
   <fieldset>
     <legend>Log On Form</legend>
-    <ol>
-      <li>
+    <div>
+      <div>
         @Html.LabelFor(m => m.UserName, "Login ID (not email)")
         @Html.TextBoxFor(m => m.UserName)
         @Html.ValidationMessageFor(m => m.UserName)
-      </li>
-      <li>
+      </div>
+      <div>
         @Html.LabelFor(m => m.Password)
         @Html.PasswordFor(m => m.Password)
         @Html.ValidationMessageFor(m => m.Password)
-      </li>
-    </ol>
+      </div>
+    </div>
     <input type="submit" value="Log In" onclick="lookBusy" class="btn btn-success" />
   </fieldset>
 }

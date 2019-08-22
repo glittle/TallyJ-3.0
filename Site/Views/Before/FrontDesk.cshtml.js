@@ -21,7 +21,7 @@
     startGettingPeople();
 
     $('#Main')
-      .on('click', '.Btn', function (ev) {
+      .on('click', '.Btn:not(.Hasfalse)', function (ev) {
         voteBtnClicked(ev.target);
       })
       .on('click', '.Voter', function (ev) {
@@ -184,7 +184,7 @@
     var doSearch = false;
 
     if (inSelectionMode()) {
-      $('.Voter.Selection div.Btn:visible').each(function (i, el) {
+      $('.Voter.Selection div.Btn:visible:not(.Hasfalse)').each(function (i, el) {
         if (letter === el.innerText.substr(0, 1)) {
           voteBtnClicked(el);
         }

@@ -129,7 +129,7 @@
     v.Location = rollCallPage.hasLocations ? rollCallPage.locations[v.Loc] : '';
     //}
 
-    if (v.VM != 'P' && v.Env) {
+    if (v.VM !== 'P' && v.VM) {
       var vm = rollCallPage.methods[v.VM];
       if (vm) {
         v.VotingMethod = vm;
@@ -160,7 +160,7 @@
 
       div.toggleClass('Other', !(thisLocation && thisMethod) && !blank);
       div.toggleClass('NotLocal', !thisLocation);
-      div.toggleClass('Present', thisLocation && div.hasClass('VM_P') && methodToShow != 'P');
+      div.toggleClass('Present', thisLocation && div.hasClass('VM_P') && methodToShow !== 'P');
     });
 
     var value = $('#showOthers').val();
