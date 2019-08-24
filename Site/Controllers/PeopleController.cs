@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.EF;
@@ -74,8 +75,7 @@ namespace TallyJ.Controllers
           {
             Id = p.C_RowId,
             Name = p.FullNameFL,
-            p.Area,
-            IRG = p.IneligibleReasonGuid,
+            IRG = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.GetValueOrDefault()),
           }),
       }.AsJsonResult();
     }

@@ -62,14 +62,6 @@ namespace TallyJ.Code.Enumerations
     //  return string.Format("{1} <span>{0}</span> {2}", item.DisplayText, envNumText, " ".PadRight(envNumText.Length).Replace(" ", "&nbsp;"));
     //}
 
-    public static string MethodMap()
-    {
-      return BaseItems
-          .Select(l => "{0}:{1}".FilledWith(l.Value.QuotedForJavascript(), l.Text.QuotedForJavascript()))
-          .JoinedAsString(", ")
-          .SurroundContentWith("{", "}");
-    }
-
     public static HtmlString ForHtmlSelect(string selected = "")
     {
       return
@@ -78,6 +70,14 @@ namespace TallyJ.Code.Enumerations
                                 .FilledWith(bi.Value, bi.Text, bi.Value == selected ? " selected" : ""))
               .JoinedAsString()
               .AsRawHtml();
+    }
+
+    public static string MethodMap()
+    {
+      return BaseItems
+        .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))
+        .JoinedAsString(", ")
+        .SurroundContentWith("{", "}");
     }
 
     public static bool Exists(string voteType)

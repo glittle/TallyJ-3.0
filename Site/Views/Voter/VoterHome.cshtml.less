@@ -23,6 +23,10 @@ body.VoterIndex {
 }
 
 #voterPage1 {
+  .electionListDiv {
+    overflow-x: auto;
+  }
+
   .electionList {
     border-collapse: separate;
     border-spacing: 1px 2px;
@@ -33,6 +37,22 @@ body.VoterIndex {
 
     .ename {
       background-color: @band1;
+
+      .n {
+      }
+
+      .c {
+        color: #999;
+        font-size: 80%;
+        margin-left: 10px;
+      }
+
+      .t {
+        color: #bbb;
+        font-style: italic;
+        font-size: 80%;
+        margin-left: 10px;
+      }
     }
 
     .pname {
@@ -53,7 +73,7 @@ body.VoterIndex {
 
     .vtime {
       background-color: @band1;
-      white-space: nowrap;
+      //white-space: nowrap;
     }
 
     .center {
@@ -98,9 +118,14 @@ body.VoterIndex {
   }
 
   .quote {
-    a {
+    font-style: italic;
+
+    cite {
       font-size: 80%;
-      display: block;
+      padding-left: 10px;
+    }
+
+    a {
     }
   }
 
@@ -113,6 +138,13 @@ body.VoterIndex {
 
       &.inPool {
         background-color: rgba(0,255,0,0.2);
+
+        &:after {
+          content: '(in pool)';
+          margin-left: 10px;
+          font-size: 80%;
+          font-style: italic;
+        }
       }
 
       &.selectResult {
@@ -128,8 +160,22 @@ body.VoterIndex {
           }
         }
 
-        &.NoVotes {
-          background-color: rgba(128,0,0,0.1);
+        &.Ineligible {
+          color: #e67474;
+
+          .IRG {
+            margin-left: 10px;
+            font-size: 80%;
+            font-style: italic;
+
+            &:before {
+              content: '(';
+            }
+
+            &:after {
+              content: ')';
+            }
+          }
         }
       }
     }
@@ -137,8 +183,11 @@ body.VoterIndex {
 
   .electionStatus {
     text-align: center;
+    font-weight: bold;
+    font-size: 17.5px;
     line-height: 170%;
-    padding: 0.5em 0;
+    margin: 10px 0;
+    padding: 0.5em;
 
     &.onlineFuture {
       background-color: @onlineFuture;
@@ -281,7 +330,7 @@ body.VoterIndex {
 
       .removeFromPool {
         padding: 0 5px 0 10px;
-        color: #b33f1e;
+        color: #6b6a6a;
         cursor: pointer;
       }
 
@@ -289,5 +338,25 @@ body.VoterIndex {
         flex-grow: 2;
       }
     }
+  }
+}
+
+
+@media only screen and (max-width: 600px) {
+  #voterPage2 {
+    .poolBuilder {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  .main-content {
+    padding: 30px 10px 0;
+  }
+
+  h1 {
+    font-size: 23px;
+    margin-right: 65px;
+    line-height: normal;
   }
 }

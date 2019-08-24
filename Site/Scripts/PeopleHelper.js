@@ -305,7 +305,7 @@
 
       $.each(info.People,
         function (i, personInfo) {
-          if (debugSearch) console.log('Matched', i, personInfo.DisplayName)
+          if (debugSearch) console.log('Matched', i, personInfo.DisplayName);
 
           if (personInfo.NumVotes > highestNumVotes) {
             highestNumVotes = personInfo.NumVotes;
@@ -338,7 +338,7 @@
           } else {
             personInfo.InUse = false; // clear from last usage
           }
-          if (personInfo.Ineligible) {
+          if (personInfo.Ineligible && forBallotEntry) {
             if (!personInfo.CanReceiveVotes) {
               spanClasses.push('CannotReceiveVotes');
             }
@@ -350,6 +350,9 @@
             personInfo.IneligibleData =
               ' data-ineligible="{Ineligible}" data-canVote={CanVote} data-canReceiveVotes={CanReceiveVotes}'
                 .filledWith(personInfo);
+          }
+          if (forVoter && personInfo.IRG) {
+            personInfo.DisplayName += '<span class=IRG>' + personInfo.IRG + '</span>';
           }
           if (spanClasses.length) {
             personInfo.HtmlName =

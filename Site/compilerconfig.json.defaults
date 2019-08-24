@@ -16,11 +16,11 @@
       "includePath": "",
       "indentType": "space",
       "indentWidth": 2,
-      "outputStyle": "nested",
+      "outputStyle": "nested" ,
       "Precision": 5,
       "relativeUrls": true,
       "sourceMapRoot": "",
-      "sourceMap": false
+      "sourceMap": true
     },
     "stylus": {
       "sourceMap": false

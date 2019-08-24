@@ -187,6 +187,14 @@ namespace TallyJ.Controllers
 
         onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Ready : OnlineBallotStatusEnum.Pending;
         onlineVotingInfo.HistoryStatus += ";{0}|{1}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
+        if (locked)
+        {
+          onlineVotingInfo.WhenStatus = now;
+        }
+        else
+        {
+          onlineVotingInfo.WhenStatus = null;
+        }
 
         var personCacher = new PersonCacher(Db);
         var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == onlineVotingInfo.PersonGuid);
@@ -260,6 +268,7 @@ namespace TallyJ.Controllers
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
           person.RegistrationTime,
+          onlineVotingInfo.WhenStatus,
           onlineVotingInfo.PoolLocked
         }.AsJsonResult();
       }
@@ -292,6 +301,8 @@ namespace TallyJ.Controllers
         {
           id = j.e.ElectionGuid,
           j.e.Name,
+          j.e.Convenor,
+          j.e.ElectionType,
           j.e.TallyStatus,
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,

@@ -372,6 +372,9 @@
         OnlineWhenClose_M: function () {
           return moment(this.election.OnlineWhenClose);
         },
+        isClosed: function() {
+          return this.OnlineWhenClose_M.isBefore();
+        },
         closeStatusClass: function () {
           var x = this.dummy;
           if (this.OnlineWhenOpen_M.isAfter()) {

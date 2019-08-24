@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace TallyJ.Code.Enumerations
 {
   public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
   {
     public static readonly ElectionTypeEnum Lsa = new ElectionTypeEnum("LSA", "Local Spiritual Assembly");
-    public static readonly ElectionTypeEnum Nsa = new ElectionTypeEnum("NSA", "National Spritual Assembly");
+    public static readonly ElectionTypeEnum Nsa = new ElectionTypeEnum("NSA", "National Spiritual Assembly");
     public static readonly ElectionTypeEnum Con = new ElectionTypeEnum("Con", "Unit Convention");
     public static readonly ElectionTypeEnum Reg = new ElectionTypeEnum("Reg", "Regional Council");
     public static readonly ElectionTypeEnum Oth = new ElectionTypeEnum("Oth", "Other");
@@ -34,6 +35,14 @@ namespace TallyJ.Code.Enumerations
                           .FilledWith(bi.Value, bi.Text, bi.Value == selected ? " selected" : ""))
           .JoinedAsString()
           .AsRawHtml();
+    }
+
+    public static string MethodMap()
+    {
+      return BaseItems
+        .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))
+        .JoinedAsString(", ")
+        .SurroundContentWith("{", "}");
     }
 
     public static string TextFor(string electionType)

@@ -141,6 +141,8 @@ var vueOptions = {
         });
     },
     extendElectionInfo: function (info) {
+      info.Type_Display = voterHome.electionTypes[info.ElectionType] || info.ElectionType || '';
+
       var person = info.person;
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
@@ -171,6 +173,7 @@ var vueOptions = {
           election.person.PoolLocked = info.PoolLocked;
         }
         election.person.VotingMethod = info.VotingMethod;
+        election.person.WhenStatus = info.WhenStatus;
         vue.extendElectionInfo(election);
         vue.registration = election.person.VotingMethod_Display;
       }
@@ -218,7 +221,9 @@ var vueOptions = {
         info.Status_Display = 'No online voting';
       }
     },
-
+    scrollToTop: function (y) {
+      window.scrollTo(0, y);
+    },
     manageBallot: function (eInfo) {
       if (!eInfo) {
         return;
@@ -226,6 +231,7 @@ var vueOptions = {
       var vue = this;
       this.electionGuid = eInfo.id;
       this.activePage = 2;
+      this.scrollToTop(95);
 
       CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
         {
@@ -341,6 +347,7 @@ var vueOptions = {
     closeBallot: function () {
       this.activePage = 1;
       this.electionGuid = null;
+      this.scrollToTop(0);
     },
     keydown: function (p, i, ev) {
       //           console.log(p, i, ev);

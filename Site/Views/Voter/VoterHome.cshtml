@@ -12,51 +12,55 @@
     "//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"
   };
 
-  ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
+  ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(VotingMethodEnum.MethodMap()));
+  ContextItems.AddJavascriptForPage("voterHome.electionTypes={0};".FilledWith(ElectionTypeEnum.MethodMap()));
   ContextItems.AddJavascriptForPage("voterHome.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("voterHome.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("voterHome.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
 
   var x = this.Context.GetOwinContext().Authentication;
 }
+<div ref="forScroll"></div>
+<div id="voterPage1" v-if="activePage === 1">
+  <p>
+    Welcome! Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
+  </p>
 
-  <div id="voterPage1" v-if="activePage === 1">
-    <p>
-      Welcome! Your email address from @UserSession.VoterAuthSource is <strong>@UserSession.VoterEmail</strong>.
-    </p>
+  <p>
+    To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
+  </p>
+  <ul>
+    <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
+    <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
+    <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
+  </ul>
 
-    <p>
-      To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
-    </p>
-    <ul>
-      <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
-      <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
-      <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
-    </ul>
+  <p v-if="loading">Looking for your email address in elections...</p>
+  <p v-if="!loading">
+    <span v-if="!elections.length">Your email address is not registered in any elections in TallyJ.</span>
+    <span v-if="elections.length">Your email address is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
+    <span>If an upcoming election is not listed here, the head teller may not have made it available yet.</span>
+  </p>
 
-    <p v-if="loading">Looking for your email address in elections...</p>
-    <p v-if="!elections.length && !loading">Your email address is not registered in any elections in TallyJ.</p>
-    <p v-if="elections.length">Your email address is registered in these elections.</p>
-    <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available yet.</p>
-    
-
+  <div class="electionListDiv">
     <table class="electionList" v-if="!loading && elections.length">
       <thead>
         <tr>
           <th class="ename">Election</th>
-          <th class="ename">Tally Status</th>
           <th class="online">Online Voting</th>
-          <th class="pname">Your Name in the Election</th>
+          @*<th class="pname">Your Name in the Election</th>*@
           <th class="vmethod">Your voting method</th>
           <th class="vtime">Ballot status</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
-          <td class="ename" v-text="e.Name"></td>
-          <td class="ename" v-text="e.TallyStatus"></td>
+          <td class="ename">
+            <div class="n">{{e.Name}}</div>
+            <div class="t">{{e.Type_Display}} Election</div>
+            <div class="c">{{e.Convenor}}</div>
+          </td>
           <td class="online center" v-html="e.Status_Display"></td>
-          <td class="pname" v-text="e.person.name"></td>
+          @*<td class="pname" v-text="e.person.name"></td>*@
           <td class="vmethod center">
             <div>{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
@@ -68,22 +72,24 @@
       </tbody>
     </table>
   </div>
+</div>
 
 <div id="voterPage2" v-if="activePage === 2">
   <button class="returnBtn" v-on:click="closeBallot">Return</button>
   <h2>{{election.Name}}</h2>
-  <h3 class="electionStatus" :class="election.classes" v-html="election.Status_Display"></h3>
   <div class="poolBuilder">
     <div>
+      <h2>Add to my Pool</h2>
       <p class="quote">
         "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
-        to such other factors as age distribution, diversity, and gender." <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">Message from the Universal House of Justice</a>
+        to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">(link)</a></cite>
       </p>
-      <h2>Add to Pool</h2>
       <p>Search for individuals that you believe to be qualified to serve. Click to add them to your pool.</p>
       <div>
-        Search:
-        <input type="text" v-model="searchText" v-on:keydown="navigating" class="searchBox" />
+        <label>
+          Search:
+          <input type="text" v-model="searchText" v-on:keydown="navigating" class="searchBox" />
+        </label>
         <button v-on:click="searchText = ''">Clear</button>
       </div>
 
@@ -93,20 +99,22 @@
             :id="'P' + p.Id"
             v-html="p.HtmlName"
             v-on:click="addToPool(p)"
-            v-bind:class="[p.Classes, searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'NoVotes', p.inPool ? 'inPool' : 'notInPool']"></li>
+            v-bind:class="[searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']">
+        </li>
       </ul>
     </div>
     <div v-bind:class="[movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
       <h2>Pool & Ballot</h2>
-
+      <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
       <p v-if="registration">
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p class="OtherRegistration">This online ballot WILL NOT BE USED because you are registered as voting {{registration}}.</p>
+        <p class="OtherRegistration">Your online choices WILL NOT BE USED because you are registered as voting {{registration}}.</p>
         <p><strong>If that is not correct, please contact the head teller of this election before the election is closed.</strong></p>
       </div>
-      <p v-if="!registration && pool.length">You have not yet locked in your ballot.</p>
+      <p v-if="!registration && pool.length"><strong>You have not yet locked in your choices.</strong> Be sure lock them in before the election closes!</p>
+      <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed online voting in this election.</strong> Your choices will be converted into a ballot when the Head Teller closes online voting and generates the online ballots.</p>
 
       @*<p>Please select:</p>
         <div class="lockIn">
@@ -114,12 +122,11 @@
           <div><input type="radio" v-model="lockInVotes" v-bind:disabled="!canLockIn" :value="true" id="lockY" /> <label v-bind:class="{disabled: !canLockIn}" for="lockY">I have made my choice. Use the top {{numToElect}} names below for my ballot.</label></div>
         </div>*@
       <p class="lockInBtns">
-        <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my ballot</button>
-        <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my ballot</button>
+        <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my choices</button>
+        <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my choices</button>
       </p>
-      <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed voting online. Your ballot will be counted when the Head Teller closes online voting.</strong></p>
 
-      <p v-if="lockInVotes">Changes to the list are allowed only when your ballot is not locked.</p>
+      <p v-if="lockInVotes">Changes to this list are only allowed when your choices are unlocked.</p>
       <p v-if="!lockInVotes && pool.length">
         Sort this list to move people into the top {{numToElect}} positions for use on your ballot. To sort using a keyboard, press Tab to focus,
         Enter to select/deselect, and Up and Down to move.
