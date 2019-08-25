@@ -38,8 +38,8 @@
   <p v-if="!loading">
     <span v-if="!elections.length">Your email address is not registered in any elections in TallyJ.</span>
     <span v-if="elections.length">Your email address is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
-    <span>If an upcoming election is not listed here, the head teller may not have made it available yet.</span>
   </p>
+  <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available yet or your email address is not registered in the election. Please contact the head teller for details.</p>
 
   <div class="electionListDiv">
     <table class="electionList" v-if="!loading && elections.length">

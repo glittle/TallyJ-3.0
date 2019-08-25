@@ -172,16 +172,19 @@
   {
     <div id="onlineDiv" v-cloak>
       <h2>Online Voting</h2>
-      <p class="closeStatus" v-bind:class="closeStatusClass"><strong>Close time is {{CloseTime_Display}}</strong></p>
-      <p>
+      <div class="closeStatus" v-bind:class="closeStatusClass"><strong>Close time is {{CloseTime_Display}}</strong></div>
+      <div>
         Online voting close time
         <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
+        (click to change)
+      </div>
+      <div>
         Estimated time? <yes-no v-on:input="saveClose" v-model="election.OnlineCloseIsEstimate"></yes-no>
-      </p>
-      <p v-if="!isClosed">
+      </div>
+      <div v-if="!isClosed">
         <button v-on:click="closeOnline(5)">Close in 5 minutes.</button>
         <button v-on:click="closeOnline(0)">Close now.</button>
-      </p>
+      </div>
 
       <p>
         Allow voters to view final results when they are available?

@@ -5,7 +5,8 @@
     currentLocation: -1,
     nameDivs: [],
     hasLocations: false,
-    settingPrefix: 'rollCall_'
+    settingPrefix: 'rollCall_',
+    rollCallLineTemplate: ''
   };
 
   function preparePage() {
@@ -13,6 +14,7 @@
     var ddlLocations = $('#locations');
     local.hasLocations = ddlLocations.find('option').length > 0;
 
+    local.rollCallLineTemplate = $('#rollCallLine').text();
     local.currentLocation = rollCallPage.location;
     var currentLocOption = ddlLocations.find('option[value="{0}"]'.filledWith(local.currentLocation));
     currentLocOption.html(currentLocOption.html() + ' *');
@@ -33,7 +35,7 @@
       addInfo(v);
     });
 
-    main.html(site.templates.RollCallLine.filledWithEach(rollCallPage.voters));
+    main.html(local.rollCallLineTemplate.filledWithEach(rollCallPage.voters));
     local.nameDivs = main.children('div.Voter');
     updateVisibility();
 
@@ -222,11 +224,9 @@
     if (info.changed) {
       for (var i = 0; i < info.changed.length; i++) {
         var item = info.changed[i];
-        if (rollCallPage.hasLocations) {
-          addInfo(item);
-        }
+        addInfo(item);
         var itemLine = $('#P' + item.PersonId);
-        var html = site.templates.RollCallLine.filledWith(item);
+        var html = local.rollCallLineTemplate.filledWith(item);
 
         if (itemLine.length) {
           if (itemLine.data('ts') != item.TS) {

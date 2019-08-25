@@ -130,54 +130,54 @@
       }
       else
       {
-        <div>
-          <p>
-            To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
-          </p>
-          <p>
-            Click one of the buttons to log in with that service.
-          </p>
-          <p>
-            The email address registered with the service you use must match your email address
-            in the election you wish to vote in.
-          </p>
+    <div>
+      <p>
+        To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
+      </p>
+      <p>
+        Your email address in the service must match your email address
+        registered with your name in the election you plan to vote in.
+      </p>
+      <p>
+        Click one of the buttons to log in with that service.
+      </p>
 
-          @{
-            var loginTypes = new[]
-            {
+      @{
+        var loginTypes = new[]
+        {
               // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
               "Google|google-plus",
               "Facebook|facebook",
 //                        "Microsoft|microsoft"
             };
 
-            using (Html.BeginForm("ExternalLogin", "Account"))
-            {
-              @Html.AntiForgeryToken()
-              <div id="socialLoginList">
-                <p>
-                  @foreach (var p in loginTypes)
-                  {
-                    var s = p.Split('|');
-                    var name = s[0];
-                    var icon = s[1];
-                    <button type="submit"
-                            class="btn btn-warning authButton @name"
-                            name="provider"
-                            value="@name"
-                            title="Log in using your @name account">
-                      <i class="fa fa-@icon"></i>
-                      @name
+        using (Html.BeginForm("ExternalLogin", "Account"))
+        {
+          @Html.AntiForgeryToken()
+          <div id="socialLoginList">
+            <p>
+              @foreach (var p in loginTypes)
+              {
+                var s = p.Split('|');
+                var name = s[0];
+                var icon = s[1];
+                <button type="submit"
+                        class="btn btn-warning authButton @name"
+                        name="provider"
+                        value="@name"
+                        title="Log in using your @name account">
+                  <i class="fa fa-@icon"></i>
+                  @name
 
-                    </button>
-                  }
-                </p>
-              </div>
-            }
-          }
+                </button>
+              }
+            </p>
+          </div>
+        }
+      }
 
 
-        </div>
+    </div>
       }
 
 

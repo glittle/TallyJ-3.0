@@ -9,7 +9,6 @@
   ContextItems.AddJavascriptForPage("methods", "rollCallPage.methods={0};".FilledWith(TallyJ.Code.Enumerations.VotingMethodEnum.MethodMap()));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
   ContextItems.AddJavascriptForPage("voters", "rollCallPage.voters={0};".FilledWith(Model.Voters(2, 3).SerializedAsJsonString()));
-  TemplateLoader.RequireTemplates(TemplateLoader.File.RollCallLine);
 }
 <div class="Main">
   <div class="TopLine"></div>
@@ -71,3 +70,13 @@
   </div>
   <div id="voterList" tabindex="1"></div>
 </div>
+
+<script type="text/x-template" id="rollCallLine">
+  <div id="P{PersonId}" data-ts="{TS}" class="Voter Other Loc_{Loc} VM_{VM}">
+    <div>{^FullName}</div>
+    <b>{EnvInfo}</b>
+    <u>{^VotingInfo}</u>
+    <i>{^Location}</i>
+    <em>{^Area}</em>
+  </div>
+</script>

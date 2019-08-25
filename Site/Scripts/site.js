@@ -85,8 +85,8 @@ function Onload() {
 
 function showElectionInfo() {
   // after qtips are ready
-  $('.passcodeOkay').toggle(site.passcode != '');
-  $('.passcodeLocked').toggle(site.passcode == '');
+  $('.passcodeOkay').toggleClass('show', site.passcode !== '');
+  $('.passcodeLocked').toggleClass('show', site.passcode === '');
 
   $('.passcode').on('click',
     function () {
@@ -103,8 +103,8 @@ function updatePasscodeDisplay(okay, passcode) {
   if (okay === null) {
     okay = false;
   }
-  $('.passcodeOkay').toggle(okay && !!site.passcode);
-  $('.passcodeLocked').toggle(!okay || !site.passcode);
+  $('.passcodeOkay').toggleClass('show', okay && !!site.passcode);
+  $('.passcodeLocked').toggleClass('show', !okay || !site.passcode);
 }
 
 function HighlightActiveLink() {
@@ -298,9 +298,9 @@ function PrepareQTips(doNow) {
   if ($('#qTipReg1').length) {
     site.qTips.push({
       selector: '#qTipReg1',
-      title: 'Login ID',
+      title: 'Admin Login ID',
       text:
-        'This is your personal login ID, and can be relatively short.  You will use it when logging in each time you use TallyJ.  It will not be seen in many places, mostly just by administrators of the TallyJ system.'
+        'This is your administrator login ID, and should be relatively short.  You will use it when logging in each time you use TallyJ to create or administer elections.'
     });
     site.qTips.push({
       selector: '#qTipReg2',

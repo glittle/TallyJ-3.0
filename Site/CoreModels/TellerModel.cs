@@ -46,6 +46,7 @@ namespace TallyJ.CoreModels
                 {
                     new Claim("UserName", fakeUserName),
                     new Claim("IsGuestTeller", "true"),
+                    new Claim("UniqueID", fakeUserName),
                 };
 
                 var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);

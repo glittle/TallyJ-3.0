@@ -16,10 +16,11 @@
   <h2>Log In.</h2>
 </hgroup>
 <p>
-  Log in as the head teller or an assistant head teller.
+  Log in with your admin account (as the head teller or an assistant head teller).
 </p><p>
-  The same login ID can be used on multiple computers.
-  If you do not have a head teller account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
+  The same admin account login ID can be used simultaneously on multiple computers.
+</p><p>
+  If you do not have an admin account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
 </p>
 
 
@@ -30,10 +31,10 @@
 }))
 { // (string)ViewBag.FormAction
   <fieldset>
-    <legend>Log On Form</legend>
+    <legend>Log In Form</legend>
     <div>
       <div>
-        @Html.LabelFor(m => m.UserName, "Login ID (not email)")
+        @Html.LabelFor(m => m.UserName, "Admin Login ID (not email)")
         @Html.TextBoxFor(m => m.UserName)
         @Html.ValidationMessageFor(m => m.UserName)
       </div>

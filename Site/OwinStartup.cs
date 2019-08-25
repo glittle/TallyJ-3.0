@@ -32,7 +32,7 @@ namespace TallyJ
 
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-      AntiForgeryConfig.UniqueClaimTypeIdentifier = "Email"; // ClaimTypes.NameIdentifier;
+      AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
 
       app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
@@ -86,6 +86,7 @@ namespace TallyJ
             {
               new Claim("Source", "Facebook"),
               new Claim("Email", email),
+              new Claim("UniqueID", email),
               new Claim("IsVoter", "True"), // Facebook doesn't show if verified
             }, DefaultAuthenticationTypes.ExternalCookie);
 
@@ -129,6 +130,7 @@ namespace TallyJ
           {
             new Claim("Source", "Google"),
             new Claim("Email", email),
+            new Claim("UniqueID", email),
             new Claim("IsVoter",  emailIsVerified),
           }, DefaultAuthenticationTypes.ExternalCookie);
 

@@ -133,6 +133,7 @@ namespace TallyJ.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim("UserName", model.UserName),
+                        new Claim("UniqueID", model.UserName),
                         new Claim("Email", email),
                         new Claim("IsKnownTeller", "true"),
                     };
@@ -250,6 +251,7 @@ namespace TallyJ.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim("UserName", model.UserName),
+                        new Claim("UniqueID", model.UserName),
                         new Claim("Email", model.Email),
                         new Claim("IsKnownTeller", "true"),
                     };

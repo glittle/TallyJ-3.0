@@ -16,7 +16,8 @@
   ContextItems.AddJavascriptForPage("electionState", "site.electionState='{0}';".FilledWith(UserSession.CurrentElectionStatus));
   var currentMenu = new MenuHelper(Url);
   var tellerHelper = new TellerHelper();
-}<!DOCTYPE html>
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -56,9 +57,9 @@
                alt="TallyJ - Bahá’í Election Tool"></div>
           //}
         }
-      <div class="Version">
-        <span title="Last updated: @TallyJ.Properties.Settings.Default.VersionDate">Version: @TallyJ.Properties.Settings.Default.VersionNum</span>
-      </div>
+        <div class="Version">
+          <span title="Last updated: @TallyJ.Properties.Settings.Default.VersionDate">Version: @TallyJ.Properties.Settings.Default.VersionNum</span>
+        </div>
       </div>
       @if (ScreenMode == "Normal")
       {
@@ -82,13 +83,19 @@
           <span class="CurrentElectionName" title="Election Name">
             @UserSession.CurrentElectionDisplayNameAndInfo
           </span>
-          <span class="publicInfo topArea passcode passcodeOkay" title="Click to go to the Monitor page to change this">
-            <span class="ui-icon ui-icon-info" id="qTipPasscode"></span>
-            Open
-          </span>
-          <span class="publicInfo topArea passcode passcodeLocked" title="Click to go to the Monitor page to change this">
-            <span class="ui-icon ui-icon-locked" id="qTipPasscodeLocked"></span>
-            Closed
+          <span class="publicInfo topArea">
+            <span>@(UserSession.IsKnownTeller ? "Admin" : "Assistant")</span>
+            @if (UserSession.CurrentElection != null)
+            {
+              <span class="passcode passcodeOkay" title="Click to go to the Monitor page to change this">
+                <span class="ui-icon ui-icon-info" id="qTipPasscode"></span>
+                Open
+              </span>
+              <span class="passcode passcodeLocked" title="Click to go to the Monitor page to change this">
+                <span class="ui-icon ui-icon-locked" id="qTipPasscodeLocked"></span>
+                Closed
+              </span>
+            }
           </span>
           @if (UserSession.CurrentElection != null)
           {
