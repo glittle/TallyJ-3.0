@@ -78,6 +78,9 @@ var vueOptions = {
     },
     election: function () {
       return this.elections.find(function (e) { return e.ElectionGuid === this.electionGuid; });
+    },
+    atLeastOneOpen: function() {
+      return this.elections.filter(function(e) { return e.openNow && e.canVote; }).length > 0;
     }
   },
   watch: {
