@@ -132,6 +132,8 @@ namespace TallyJ.CoreModels.ExportImport
           p.CombinedInfoAtStart,
           p.AgeGroup,
           p.Area,
+          p.Email,
+          p.HasOnlineBallot,
           CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
           CanVote = p.CanVote.OnlyIfFalse(),
           p.IneligibleReasonGuid,
@@ -306,7 +308,11 @@ namespace TallyJ.CoreModels.ExportImport
         election.OwnerLoginId,
         election.ElectionGuid,
         election.BallotProcessRaw,
-        ShowFullReport = election.ShowFullReport.OnlyIfTrue()
+        ShowFullReport = election.ShowFullReport.OnlyIfTrue(),
+        election.OnlineWhenOpen,
+        election.OnlineWhenClose,
+        election.OnlineAllowResultView,
+        election.OnlineCloseIsEstimate,
       };
     }
   }
