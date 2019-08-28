@@ -837,7 +837,6 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
-    <None Include="Properties\PublishProfiles\LIVE Win16a VM IIS.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
