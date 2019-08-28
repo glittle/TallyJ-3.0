@@ -188,6 +188,7 @@ var vueOptions = {
       info.openNow = false;
 
       info.canVote = info.person.Status !== 'Processed';
+      var lastWeek = moment().subtract(5, 'd');
 
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
@@ -199,8 +200,12 @@ var vueOptions = {
           // future
           info.Status_Display = 'Will open ' + info.OnlineWhenOpen_M.fromNow();
           info.classes = ['onlineFuture'];
+        } else if (info.OnlineWhenClose_M.isBefore(lastWeek)) {
+          // old past
+          info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
+          info.classes = ['onlineOld'];
         } else if (info.OnlineWhenClose_M.isBefore()) {
-          // past
+          // recent past
           info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
           info.classes = ['onlinePast'];
         } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {

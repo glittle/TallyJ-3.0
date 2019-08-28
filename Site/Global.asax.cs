@@ -179,7 +179,7 @@ namespace TallyJ
       var logger = LogManager.GetCurrentClassLogger();
       var mainMsg = mainException.GetAllMsgs("; ");
 
-      if (mainMsg.Contains("dbo.Sessions"))
+      if (mainMsg.Contains("dbo.Sessions") || mainMsg.Contains("The request was aborted"))
       {
         // don't track StateServer errors...
         return;

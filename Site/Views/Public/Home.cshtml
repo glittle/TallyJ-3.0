@@ -51,33 +51,66 @@
     <div class="top">
     </div>
     <h2>Join an Election as a Teller</h2>
-    <ol>
-      <li>
-        <p>
-          Select your election:
-          <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
-        </p>
-        <div class="table">
-          <select id="ddlElections" size="4"></select>
-        </div>
-      </li>
-      <li>
-        <p>
-          Type in the access code you were given:
-        </p>
-        <div>
-          <input id="txtPasscode" type="text" maxlength="50" />
-        </div>
-      </li>
-      <li>
-        <p>
-          Join the election:
-        </p>
-        <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
-        @*<button type="button" id="btnJoin">
-          Join Now</button>*@ <span id="joinStatus" class="idle"></span>
-      </li>
-    </ol>
+    @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
+    {
+      <p class="AlreadyIn">
+        You are still logged in!
+      </p>
+      <p class="AlreadyIn">
+        Go to the
+        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+      </p>
+      <p class="AlreadyIn">
+        or
+        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+      </p>
+    }
+    else if (UserSession.IsVoter)
+    {
+      <p class="AlreadyIn">
+        You are logged in as a voter.
+        <br />
+        To work as a teller, you must first log out.
+      </p>
+      <p class="AlreadyIn">
+        Go to the
+        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+      </p>
+      <p class="AlreadyIn">
+        or
+        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+      </p>
+    }
+    else
+    {
+      <ol>
+        <li>
+          <p>
+            Select your election:
+            <button type="button" class="btn btn-small" id="btnRefresh">Refresh</button>
+          </p>
+          <div class="table">
+            <select id="ddlElections" size="4"></select>
+          </div>
+        </li>
+        <li>
+          <p>
+            Type in the access code you were given:
+          </p>
+          <div>
+            <input id="txtPasscode" type="text" maxlength="50" />
+          </div>
+        </li>
+        <li>
+          <p>
+            Join the election:
+          </p>
+          <button type="button" class="btn btn-primary" id="btnJoin">Join Now</button>
+          @*<button type="button" id="btnJoin">
+            Join Now</button>*@ <span id="joinStatus" class="idle"></span>
+        </li>
+      </ol>
+    }
   </section>
   <section class="featureBig LoginPanel">
     <div class="closer">
@@ -86,10 +119,26 @@
     <div class="top">
     </div>
     <h2>Log In</h2>
-    @if (UserSession.IsKnownTeller)
+    @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
         You are still logged in!
+      </p>
+      <p class="AlreadyIn">
+        Go to the
+        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+      </p>
+      <p class="AlreadyIn">
+        or
+        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+      </p>
+    }
+    else if (UserSession.IsVoter)
+    {
+      <p class="AlreadyIn">
+        You are logged in as a voter.
+        <br />
+        To administer your elections, you must first log out.
       </p>
       <p class="AlreadyIn">
         Go to the
@@ -114,7 +163,33 @@
       <div class="top">
       </div>
       <h2>Vote in an Election</h2>
-      @if (UserSession.IsVoter)
+      @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
+      {
+        if (UserSession.IsKnownTeller)
+        {
+          <p class="AlreadyIn">
+            You are logged in as an administrator.
+          </p>
+        }
+        else
+        {
+          <p class="AlreadyIn">
+            You are logged in as a teller.
+          </p>
+        }
+        <p class="AlreadyIn">
+          To vote in an election, you must log out and then log in as a voter.
+        </p>
+        <p class="AlreadyIn">
+          Go to the
+          <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        </p>
+        <p class="AlreadyIn">
+          or
+          <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+        </p>
+      }
+      else if (UserSession.IsVoter)
       {
         <p class="AlreadyIn">
           You are still logged in!
@@ -130,54 +205,54 @@
       }
       else
       {
-    <div>
-      <p>
-        To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
-      </p>
-      <p>
-        Your email address in the service must match your email address
-        registered with your name in the election you plan to vote in.
-      </p>
-      <p>
-        Click one of the buttons to log in with that service.
-      </p>
+        <div>
+          <p>
+            To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
+          </p>
+          <p>
+            Your email address in the service must match your email address
+            registered with your name in the election you plan to vote in.
+          </p>
+          <p>
+            Click one of the buttons to log in with that service.
+          </p>
 
-      @{
-        var loginTypes = new[]
-        {
+          @{
+            var loginTypes = new[]
+            {
               // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
               "Google|google-plus",
               "Facebook|facebook",
 //                        "Microsoft|microsoft"
             };
 
-        using (Html.BeginForm("ExternalLogin", "Account"))
-        {
-          @Html.AntiForgeryToken()
-          <div id="socialLoginList">
-            <p>
-              @foreach (var p in loginTypes)
-              {
-                var s = p.Split('|');
-                var name = s[0];
-                var icon = s[1];
-                <button type="submit"
-                        class="btn btn-warning authButton @name"
-                        name="provider"
-                        value="@name"
-                        title="Log in using your @name account">
-                  <i class="fa fa-@icon"></i>
-                  @name
+            using (Html.BeginForm("ExternalLogin", "Account"))
+            {
+              @Html.AntiForgeryToken()
+              <div id="socialLoginList">
+                <p>
+                  @foreach (var p in loginTypes)
+                  {
+                    var s = p.Split('|');
+                    var name = s[0];
+                    var icon = s[1];
+                    <button type="submit"
+                            class="btn btn-warning authButton @name"
+                            name="provider"
+                            value="@name"
+                            title="Log in using your @name account">
+                      <i class="fa fa-@icon"></i>
+                      @name
 
-                </button>
-              }
-            </p>
-          </div>
-        }
-      }
+                    </button>
+                  }
+                </p>
+              </div>
+            }
+          }
 
 
-    </div>
+        </div>
       }
 
 
