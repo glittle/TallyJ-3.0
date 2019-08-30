@@ -119,13 +119,10 @@
         <p><strong>If that is not correct, please contact the head teller of this election before the election is closed.</strong></p>
       </div>
       <p v-if="!registration && pool.length"><strong>You have not yet locked in your choices.</strong> Be sure lock them in before the election closes!</p>
-      <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed online voting in this election.</strong> Your choices will be converted into a ballot when the Head Teller closes online voting and generates the online ballots.</p>
+      <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed online voting in this election.</strong> 
+        Your choices will be converted into a ballot when the Head Teller closes online voting and 
+        creates ballots for all online voters.</p>
 
-      @*<p>Please select:</p>
-        <div class="lockIn">
-          <div><input type="radio" v-model="lockInVotes" :value="false" id="lockN" /> <label for="lockN">I am still selecting and sorting my pool of names.</label></div>
-          <div><input type="radio" v-model="lockInVotes" v-bind:disabled="!canLockIn" :value="true" id="lockY" /> <label v-bind:class="{disabled: !canLockIn}" for="lockY">I have made my choice. Use the top {{numToElect}} names below for my ballot.</label></div>
-        </div>*@
       <p class="lockInBtns">
         <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my choices</button>
         <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my choices</button>
