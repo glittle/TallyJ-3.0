@@ -251,8 +251,8 @@
     summarizeCounts();
 
     table.show();
-    
-    invalidsTable.toggle(info.NeedReview && info.NeedReview.length > 0);
+
+    invalidsTable.toggle(!!(info.NeedReview && info.NeedReview.length > 0));
   };
 
   function summarizeCounts() {

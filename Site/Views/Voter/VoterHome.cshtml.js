@@ -79,8 +79,11 @@ var vueOptions = {
     election: function () {
       return this.elections.find(function (e) { return e.ElectionGuid === this.electionGuid; });
     },
-    atLeastOneOpen: function() {
-      return this.elections.filter(function(e) { return e.openNow && e.canVote; }).length > 0;
+    atLeastOneOpen: function () {
+      return this.elections.filter(function (e) { return e.openNow; }).length > 0;
+    },
+    atLeastOneOpenAndCanVote: function () {
+      return this.elections.filter(function (e) { return e.openNow && e.canVote; }).length > 0;
     }
   },
   watch: {
@@ -211,11 +214,12 @@ var vueOptions = {
         } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {
           // now
           var minutes = info.OnlineWhenClose_M.diff(moment(), 'm');
-
-          info.classes = [minutes <= 5 ? 'onlineSoon' : 'onlineNow'];
+          if (info.openNow && info.canVote) {
+            info.classes = [minutes <= 5 ? 'onlineSoon' : 'onlineNow'];
+          }
           info.openNow = true;
           var s = [];
-          s.push('Open Now!<br>');
+          s.push('Open Now<br>');
           s.push(info.OnlineCloseIsEstimate ? ' Expected to' : ' Will');
           s.push(' close ');
           s.push(info.OnlineWhenClose_M.fromNow());

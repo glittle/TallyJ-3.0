@@ -132,7 +132,7 @@
 
       <p v-if="lockInVotes">Changes to this list are only allowed when your choices are unlocked.</p>
       <p v-if="!lockInVotes && pool.length">
-        Sort this list to move people into the top {{numToElect}} positions for use on your ballot. To sort using a keyboard, press Tab to focus,
+        Sort this list to move people into the top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}} for use on your ballot. To sort using a keyboard, press Tab to focus,
         Enter to select/deselect, and Up and Down to move.
       </p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
