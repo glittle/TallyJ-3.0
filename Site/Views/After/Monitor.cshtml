@@ -171,8 +171,10 @@
   @if (UserSession.HostSupportsOnlineElections)
   {
     <div id="onlineDiv" v-cloak>
+    <div class="votingTop">
       <h2>Online Voting</h2>
       <div class="closeStatus" v-bind:class="closeStatusClass"><strong>Close time is {{CloseTime_Display}}</strong></div>
+    </div>
       <div>
         Online voting close time
         <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
@@ -192,7 +194,7 @@
       </p>
       <h3>Known Voters</h3>
       <p>
-        <input type="button" 
+        <input type="button"
                v-on:click="processReadyBallots"
                v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
                value='Process all "Ready" ballots'>
@@ -200,36 +202,36 @@
       </p>
       <table class="OnlineBallots">
         <thead>
-          <tr>
-            <th>
-              Registered for<br>Online Voting
-            </th>
-            <th>
-              Voting Method
-            </th>
-            <th>
-              Online Ballot<br/>Status
-            </th>
-            <th>
-              Status Time
-            </th>
-          </tr>
+        <tr>
+          <th>
+            Registered for<br>Online Voting
+          </th>
+          <th>
+            Voting Method
+          </th>
+          <th>
+            Online Ballot<br/>Status
+          </th>
+          <th>
+            Status Time
+          </th>
+        </tr>
         </thead>
         <tbody id="onlineBallotsBody" class="Hidden tbody">
-          <tr>
-            <td class="OnlineName">
-              {C_FullNameFL}
-            </td>
-            <td>
-              {VotingMethod_Display}
-            </td>
-            <td>
-              {Status}
-            </td>
-            <td title="{History_Tip}">
-              {WhenStatus_Display}
-            </td>
-          </tr>
+        <tr>
+          <td class="OnlineName">
+            {C_FullNameFL}
+          </td>
+          <td>
+            {VotingMethod_Display}
+          </td>
+          <td>
+            {Status}
+          </td>
+          <td title="{History_Tip}">
+            {WhenStatus_Display}
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>

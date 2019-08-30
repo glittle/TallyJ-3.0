@@ -55,11 +55,9 @@ body.VoterIndex {
         margin-left: 10px;
       }
     }
-
     //.pname {
     //  background-color: @band1;
     //}
-
     .online {
       background-color: @band2;
     }
@@ -75,6 +73,9 @@ body.VoterIndex {
     .vtime {
       background-color: @band2;
       //white-space: nowrap;
+      &.Processed {
+        background-color: @onlineFuture;
+      }
     }
 
     .center {

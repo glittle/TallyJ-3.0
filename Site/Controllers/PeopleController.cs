@@ -45,6 +45,7 @@ namespace TallyJ.Controllers
           //p.PersonGuid,
           Name = p.FullNameFL,
           p.Area,
+          p.Email,
           V = (p.CanReceiveVotes.GetValueOrDefault() ? "1" : "0") + (p.CanVote.GetValueOrDefault() ? "1" : "0"),
           IRG = p.IneligibleReasonGuid,
           NumVotes = isSingleNameElection

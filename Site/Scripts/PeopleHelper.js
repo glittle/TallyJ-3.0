@@ -126,7 +126,7 @@
   function extendPersonCore(p) {
     p.NameArea = p.Name + (p.Area ? ' (' + p.Area + ')' : '');
     // for searches, make lowercase
-    p.name = removeAccents.process(p.NameArea.toLowerCase());
+    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase());
     p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
     p.parts = p.namePlain.split(local.nameSplitter);
 

@@ -6,7 +6,7 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var people = new PersonCacher().AllForThisElection.Where(p => p.CanVote.GetValueOrDefault());
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CanVote.GetValueOrDefault()).ToList();
   var locations = new LocationCacher().AllForThisElection
     .GroupJoin(people, l => l.LocationGuid, p => p.VotingLocationGuid, (l, pList) => new { l, pList })
     .Select(g => new
@@ -79,66 +79,71 @@
   <p class="Comment">
     Showing the areas of those registered on the Front Desk.
   </p>
+  @total
   <table class="Areas">
     <thead>
-      <tr>
-        <th rowspan="2" class="name">Voting Location</th>
-        <th>Voters</th>
-        <th>In Person</th>
-        <th>Mailed In</th>
-        <th>Dropped Off</th>
-        @if (showCalledIn)
-        {
-          <th>Called In</th>
-        }
-        @if (showOnline)
-        {
-          <th>Online</th>
-        }
-      </tr>
-      <tr class="pct">
-        <td>(% of all voters)</td>
-        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at location)</td>
-      </tr>
+    <tr>
+      <th rowspan="2" class="name">Voting Location</th>
+      <th>Voters</th>
+      <th>In Person</th>
+      <th>Mailed In</th>
+      <th>Dropped Off</th>
+      @if (showCalledIn)
+      {
+        <th>Called In</th>
+      }
+      @if (showOnline)
+      {
+        <th>Online</th>
+      }
+    </tr>
+    <tr class="pct">
+      <td>(% of all voters)</td>
+      <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at location)</td>
+    </tr>
     </thead>
     <tbody>
-      @if (locations.Count() > 0)
+    @if (locations.Count() > 0)
+    {
+      foreach (var loc in locations)
       {
-        foreach (var loc in locations)
-        {
-          <tr class="area">
-            <td class="name">@loc.Location</td>
-            <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
-            <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
-            <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
-            <td class="method">@loc.DroppedOff @loc.DroppedOff.PercentInSpan(loc.Voted, -1, true)</td>
-            @if (showCalledIn)
-            {
-              <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
-            }
-            @if (showOnline)
-            {
-              <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
-            }
-          </tr>
-        }
+        <tr class="area">
+          <td class="name">@loc.Location</td>
+          <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
+          <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
+          <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
+          <td class="method">@loc.DroppedOff @loc.DroppedOff.PercentInSpan(loc.Voted, -1, true)</td>
+          @if (showCalledIn)
+          {
+            <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
+          }
+          @if (showOnline)
+          {
+            <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
+          }
+        </tr>
       }
-      <tr class="total">
-        <td class="name">Total</td>
-        <td class="total">@total.Total @(total.Total.PercentInSpan(total.Total, 0, true))</td>
-        <td class="method">@total.InPerson @total.InPerson.PercentInSpan(total.Voted, -1, true)</td>
-        <td class="method">@total.MailedIn @total.MailedIn.PercentInSpan(total.Voted, -1, true)</td>
-        <td class="method">@total.DroppedOff @total.DroppedOff.PercentInSpan(total.Voted, -1, true)</td>
-        @if (showCalledIn)
-        {
-          <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
-        }
-        @if (showOnline)
-        {
-          <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>
-        }
-      </tr>
+    }
+    <tr class="total">
+      <td class="name">Total</td>
+      <td class="total">@total.Total @(total.Total.PercentInSpan(total.Total, 0, true))</td>
+      <td class="method">@total.InPerson @total.InPerson.PercentInSpan(total.Voted, -1, true)</td>
+      <td class="method">@total.MailedIn @total.MailedIn.PercentInSpan(total.Voted, -1, true)</td>
+      <td class="method">@total.DroppedOff @total.DroppedOff.PercentInSpan(total.Voted, -1, true)</td>
+      @if (showCalledIn)
+      {
+        <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
+      }
+      @if (showOnline)
+      {
+        <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>
+      }
+    </tr>
 
     </tbody>
   </table>
+  @foreach (var x in people)
+  {
+    <div>@x.VotingLocationGuid  @x.VotingMethod</div>
+  }
 </div>

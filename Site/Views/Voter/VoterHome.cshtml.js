@@ -82,9 +82,6 @@ var vueOptions = {
     atLeastOneOpen: function () {
       return this.elections.filter(function (e) { return e.openNow; }).length > 0;
     },
-    atLeastOneOpenAndCanVote: function () {
-      return this.elections.filter(function (e) { return e.openNow && e.canVote; }).length > 0;
-    }
   },
   watch: {
     searchText: function (a, b) {
@@ -191,7 +188,7 @@ var vueOptions = {
       info.openNow = false;
 
       info.canVote = info.person.Status !== 'Processed';
-      var lastWeek = moment().subtract(5, 'd');
+      var recent = moment().subtract(36, 'h');
 
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
@@ -203,7 +200,7 @@ var vueOptions = {
           // future
           info.Status_Display = 'Will open ' + info.OnlineWhenOpen_M.fromNow();
           info.classes = ['onlineFuture'];
-        } else if (info.OnlineWhenClose_M.isBefore(lastWeek)) {
+        } else if (info.OnlineWhenClose_M.isBefore(recent)) {
           // old past
           info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
           info.classes = ['onlineOld'];
@@ -214,9 +211,9 @@ var vueOptions = {
         } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {
           // now
           var minutes = info.OnlineWhenClose_M.diff(moment(), 'm');
-          if (info.openNow && info.canVote) {
-            info.classes = [minutes <= 5 ? 'onlineSoon' : 'onlineNow'];
-          }
+          //          if (info.openNow && info.canVote) {
+          info.classes = [minutes <= 5 ? 'onlineSoon' : 'onlineNow'];
+          //          }
           info.openNow = true;
           var s = [];
           s.push('Open Now<br>');
@@ -241,9 +238,6 @@ var vueOptions = {
         return;
       }
       var vue = this;
-      this.electionGuid = eInfo.id;
-      this.activePage = 2;
-      this.scrollToTop(95);
 
       CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
         {
@@ -251,8 +245,11 @@ var vueOptions = {
         },
         function (info) {
           if (info.open) {
+            vue.electionGuid = eInfo.id;
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
+            vue.activePage = 2;
+            vue.scrollToTop(95);
 
             voterHome.peopleHelper.Prepare(function () {
               var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; });

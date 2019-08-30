@@ -27,7 +27,6 @@
       <span v-if="!elections.length">It is not registered in any elections in TallyJ.</span>
       <span v-if="elections.length">It is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
     </span>
-    <span v-if="loading">Looking for it in elections...</span>
   </p>
 
   <p>
@@ -38,6 +37,8 @@
     <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
     <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
   </ul>
+
+  <p v-if="loading">Searching for your email address in elections...</p>
 
   <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available online yet, or your email address is not registered in the election. Please contact the head teller for assistance.</p>
 
@@ -71,7 +72,7 @@
               <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
             </div>
           </td>
-          <td class="vtime center" v-html="e.person.BallotStatus"></td>
+          <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
         </tr>
       </tbody>
     </table>

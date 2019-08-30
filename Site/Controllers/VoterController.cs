@@ -58,6 +58,17 @@ namespace TallyJ.Controllers
       var votingInfo = Db.OnlineVotingInfo
         .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.PersonGuid);
 
+      var otherVotingInfo = Db.OnlineVotingInfo
+        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.Email == electionInfo.p.Email);
+
+      if (votingInfo == null && otherVotingInfo != null)
+      {
+        return new
+        {
+          Error = "This email address was used for another person."
+        }.AsJsonResult();
+      }
+
       if (electionInfo.e.OnlineWhenOpen <= now && electionInfo.e.OnlineWhenClose > now)
       {
         // put election in session
@@ -222,7 +233,7 @@ namespace TallyJ.Controllers
           {
             person.VotingMethod = VotingMethodEnum.Online;
             person.RegistrationTime = now;
-            person.VotingLocationGuid = null; // online isn't treated as a location
+            person.VotingLocationGuid = new LocationModel().GetOnlineLocation().LocationGuid;
             person.EnvNum = null;
 
             var log = person.RegistrationLog;
@@ -237,22 +248,20 @@ namespace TallyJ.Controllers
           {
             // not online or anywhere
             person.VotingMethod = null;
-            person.RegistrationTime = now;
-            person.VotingLocationGuid = null; // online isn't treated as a location
+            person.VotingLocationGuid = null;
             person.EnvNum = null;
+
             votingMethodRemoved = true;
 
             var log = person.RegistrationLog;
-            person.RegistrationTime = now;
+            person.RegistrationTime = now; // set time so that the log will have it
             log.Add(new[]
             {
               peopleModel.ShowRegistrationTime(person),
               "Cancel Online",
             }.JoinedAsString("; ", true));
+            person.RegistrationTime = null; // don't keep it visible
             person.RegistrationLog = log;
-
-            // wipe registration time
-            person.RegistrationTime = null;
           }
         }
 
