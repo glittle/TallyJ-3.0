@@ -27,7 +27,6 @@
     [OnlineWhenOpen]          DATETIME2 (0)    NULL,
     [OnlineWhenClose]         DATETIME2 (0)    NULL,
     [OnlineCloseIsEstimate]   Bit NOT NULL default 1,
-    [OnlineAllowResultView]   Bit NOT NULL default 1, 
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
 

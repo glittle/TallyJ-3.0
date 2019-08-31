@@ -287,7 +287,6 @@ namespace TallyJ.CoreModels
         election.T24,
         election.OnlineWhenOpen,
         election.OnlineWhenClose,
-        election.OnlineAllowResultView,
         election.OnlineCloseIsEstimate
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
@@ -401,7 +400,6 @@ namespace TallyJ.CoreModels
     //
     //        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
     //        {
-    //          onlineInDb.AllowResultView,
     //          onlineInDb.CloseIsEstimate,
     //          onlineInDb.WhenOpen,
     //          onlineInDb.WhenClose,

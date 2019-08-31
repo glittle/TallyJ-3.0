@@ -425,17 +425,6 @@ ClientFile("~/Scripts/vue-datetime.css"),
           This affects the wording shown to voters. Usually leave as estimated until the final hours.
         </td>
       </tr>
-      <tr v-if="useOnline">
-        <th>
-          View Results?
-        </th>
-        <td>
-          <yes-no v-model="election.OnlineAllowResultView"></yes-no>
-        </td>
-        <td>
-          Allow voters to view the final election report when it is available?
-        </td>
-      </tr>
     </table>
   }
   else

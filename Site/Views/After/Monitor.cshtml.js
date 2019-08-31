@@ -340,6 +340,10 @@
   };
 
   function startVue() {
+    if (!document.getElementById('onlineDiv')) {
+      return;
+    }
+
     settings.vue = new Vue({
       el: '#onlineDiv',
       components: {
@@ -361,10 +365,10 @@
           var x = this.dummy;
           return this.showFrom(this.CloseTime);
         },
-        onlineToProcess: function() {
-          return monitorPage.initial.OnlineBallots.filter(function(ob) {
-              return ob.Status === 'Ready';
-            }).length;
+        onlineToProcess: function () {
+          return monitorPage.initial.OnlineBallots.filter(function (ob) {
+            return ob.Status === 'Ready';
+          }).length;
         },
         OnlineWhenOpen_M: function () {
           return moment(this.election.OnlineWhenOpen);
@@ -372,7 +376,7 @@
         OnlineWhenClose_M: function () {
           return moment(this.election.OnlineWhenClose);
         },
-        isClosed: function() {
+        isClosed: function () {
           return this.OnlineWhenClose_M.isBefore();
         },
         closeStatusClass: function () {
@@ -441,7 +445,7 @@
               }
             });
         },
-        processReadyBallots: function() {
+        processReadyBallots: function () {
           var vue = this;
           CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,
@@ -455,7 +459,6 @@
         }
       }
     });
-
   }
 
   var publicInterface = {

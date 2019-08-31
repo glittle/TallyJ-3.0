@@ -311,7 +311,6 @@ namespace TallyJ.CoreModels.ExportImport
         ShowFullReport = election.ShowFullReport.OnlyIfTrue(),
         election.OnlineWhenOpen,
         election.OnlineWhenClose,
-        election.OnlineAllowResultView,
         election.OnlineCloseIsEstimate,
       };
     }

@@ -28,17 +28,17 @@
       @if (UserSession.HostSupportsOnlineElections)
       {
         <div class="centerL" title="Vote in an election.">
-          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V"><u>V</u>ote</button>
+          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote</button>
           <p>Vote in an election</p>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
-        <button class="btn btn-primary" id="btnChooseJoin" accesskey="T">Assist as a <u>T</u>eller</button>
+        <button class="btn btn-primary" id="btnChooseJoin" accesskey="T">Assist as a Teller</button>
         <p>Join an election as a teller</p>
       </div>
       <div class="centerR"
            title="Create and manage elections. If you do not have an account yet, you can register here.">
-        <button class="btn btn-success" id="btnChooseLogin" accesskey="M"><u>M</u>anage Elections</button>
+        <button class="btn btn-success" id="btnChooseLogin" accesskey="M">Manage Elections</button>
         <p>Log in to create and administer your elections</p>
 
       </div>
@@ -211,18 +211,18 @@
           </p>
           <p>
             Your email address in the service must match your email address
-            registered with your name in the election you plan to vote in.
+            listed with your name in the election you plan to vote in.
           </p>
           <p>
-            Click one of the buttons to log in with that service.
+            Click one of these buttons to get started.
           </p>
 
           @{
             var loginTypes = new[]
             {
               // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
-              "Google|google-plus",
-              "Facebook|facebook",
+              "Google",
+              "Facebook",
 //                        "Microsoft|microsoft"
             };
 
@@ -231,20 +231,35 @@
               @Html.AntiForgeryToken()
               <div id="socialLoginList">
                 <p>
-                  @foreach (var p in loginTypes)
+                  @foreach (var name in loginTypes)
                   {
-                    var s = p.Split('|');
-                    var name = s[0];
-                    var icon = s[1];
-                    <button type="submit"
-                            class="btn btn-warning authButton @name"
-                            name="provider"
-                            value="@name"
-                            title="Log in using your @name account">
-                      <i class="fa fa-@icon"></i>
-                      @name
-
-                    </button>
+                    if (name == "Google")
+                    {
+                      <button type="submit"
+                              class="authButton @name"
+                              name="provider"
+                              value="@name"
+                              title="Log in using your @name account">
+                      </button>
+                    }
+                    else if (name == "Facebook")
+                    {
+                      <button type="submit"
+                              class="authButton @name"
+                              name="provider"
+                              value="@name"
+                              title="Log in using your @name account">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
+                          <path fill="#fff" d="
+          M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
+          11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
+          11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
+          15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
+          11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
+                        </svg>
+                        <span>Log in With Facebook</span>
+                      </button>
+                    }
                   }
                 </p>
               </div>

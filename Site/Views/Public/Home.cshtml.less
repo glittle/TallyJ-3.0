@@ -61,6 +61,46 @@ div.closer {
       margin: 0 10px 0 0;
     }
   }
+
+  button {
+    &.Google {
+      width: 191px;
+      height: 46px;
+      border: none;
+      background: url(../../Images/google.png);
+
+      &:hover {
+        background-image: url(../../Images/google_focus.png);
+      }
+    }
+
+    &.Facebook {
+      background-color: #4267b2;
+      border-radius: 4px;
+      border: none;
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border: 2px solid transparent;
+
+      .logo {
+        height: 24px;
+        width: 24px;
+      }
+
+      > span {
+        font-size: 14px;
+        color: #fff;
+        margin: 0 8px 0 16px;
+        font-family: Helvetica, Arial, sans-serif;
+        letter-spacing: .25px;
+      }
+
+      &:hover {
+        border-color: #c6d1e7;
+      }
+    }
+  }
 }
 
 .featureBig {

@@ -108,7 +108,6 @@ namespace TallyJ.CoreModels
                 currentElection.OnlineWhenOpen,
                 currentElection.OnlineWhenClose,
                 currentElection.OnlineCloseIsEstimate,
-                currentElection.OnlineAllowResultView,
               }
               : null,
             OnlineBallots = onlineBallots

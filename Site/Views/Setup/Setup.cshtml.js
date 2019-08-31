@@ -81,13 +81,11 @@
               this.election.OnlineWhenOpen = '';
               this.election.OnlineWhenClose = '';
               this.election.OnlineCloseIsEstimate = true;
-              this.election.OnlineAllowResultView = false;
             };
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
             this.election.OnlineCloseIsEstimate = null;
-            this.election.OnlineAllowResultView = null;
           }
         }
         //locations: function (a, b) {
@@ -507,7 +505,6 @@
       OnlineWhenOpen: election.OnlineWhenOpen,
       OnlineWhenClose: election.OnlineWhenClose,
       OnlineCloseIsEstimate: election.OnlineCloseIsEstimate,
-      OnlineAllowResultView: election.OnlineAllowResultView,
     };
 
     $(':input[data-name]').each(function () {

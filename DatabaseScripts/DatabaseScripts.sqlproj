@@ -136,12 +136,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Schema Comparisons\Local to Project.scmp" />
-    <None Include="Schema Comparisons\Project to AppHb - Live.scmp" />
-    <None Include="Schema Comparisons\AppHb to Project.scmp" />
-    <None Include="Schema Comparisons\Project to AppHb - UAT.scmp" />
     <None Include="DatabaseScripts.publish.xml" />
     <None Include="Snapshots\TallyJ.20140121b.dacpac" />
-    <None Include="Schema Comparisons\Project to Azure.scmp" />
     <None Include="Snapshots\DatabaseScripts_20140917_00-39-27.dacpac" />
   </ItemGroup>
   <ItemGroup>
@@ -166,7 +162,6 @@
     <Build Include="tj\Tables\Ballot.sql" />
     <Build Include="Security\TallyJSite.sql" />
     <Build Include="Security\tj.sql" />
-    <Build Include="dbo\Tables\__MigrationHistory.sql" />
     <Build Include="tj\Tables\OnlineVoter.sql" />
     <Build Include="tj\Tables\OnlineVotingInfo.sql" />
   </ItemGroup>

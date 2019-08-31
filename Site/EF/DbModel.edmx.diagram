@@ -6,7 +6,6 @@
     <edmx:Diagrams>
       <Diagram DiagramId="49b1c53870eb4c749b980a852410fa65" Name="Diagram1" ZoomLevel="75">
         <EntityTypeShape EntityType="TallyJ2dModel.Users" Width="1.5" PointX="0.75" PointY="0.875" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="2.75" PointY="4.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.ImportFile" Width="1.5" PointX="4.75" PointY="4.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.JoinElectionUser" Width="1.5" PointX="3" PointY="1" />
         <EntityTypeShape EntityType="TallyJ2dModel.Message" Width="1.5" PointX="5.75" PointY="0.75" />
@@ -22,6 +21,7 @@
         <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="3.375" PointY="13.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="11.375" PointY="10.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.C_Log" Width="1.5" PointX="13.375" PointY="4.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="0.75" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

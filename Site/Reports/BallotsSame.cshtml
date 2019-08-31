@@ -11,6 +11,7 @@
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots
+    .Where(b => b.StatusCode != BallotStatusEnum.Empty)
     .OrderBy(b =>
     {
       var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
@@ -135,7 +136,8 @@
     This indicates any groups of ballots that are identical. (Because ballots are anonymous, we cannot determine who cast these ballots.)
   </p>
 
-  @if (!data.Any()) {
+  @if (!data.Any())
+  {
     <p>None found.</p>
   }
 

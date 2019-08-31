@@ -316,7 +316,6 @@ namespace TallyJ.Controllers
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,
-          j.e.OnlineAllowResultView,
           //          j.e.TallyStatus,
           person = new
           {
