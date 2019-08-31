@@ -362,9 +362,9 @@
           return this.showFrom(this.CloseTime);
         },
         onlineToProcess: function() {
-          return monitorPage.initial.OnlineBallots.findIndex(function(ob) {
+          return monitorPage.initial.OnlineBallots.filter(function(ob) {
               return ob.Status === 'Ready';
-            }) !== -1;
+            }).length;
         },
         OnlineWhenOpen_M: function () {
           return moment(this.election.OnlineWhenOpen);

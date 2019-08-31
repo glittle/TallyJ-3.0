@@ -139,51 +139,53 @@
     }
     else
     {
-      <section class="content-wrapper main-content clear-fix">
-        <div class="CompCode">@UserSession.CurrentComputerCode</div>
-        @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
-        @{
-          var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-          var showTellerSelector = currentMenu.ShowTellerSelector;
-        }
-        @if (showLocationSelector || showTellerSelector)
+  <section class="content-wrapper clear-fix">
+    <div class="main-content">
+      <span class="CompCode">@UserSession.CurrentComputerCode</span>
+    </div>
+    @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
+    @{
+      var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+      var showTellerSelector = currentMenu.ShowTellerSelector;
+    }
+    @if (showLocationSelector || showTellerSelector)
+    {
+      <div class="CurrentInfo">
+        @if (showLocationSelector)
         {
-          <div class="CurrentInfo">
-            @if (showLocationSelector)
-            {
-              <label for="ddlTopLocation">
-                Location:
-                <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
-                  @ContextItems.LocationModel.GetLocationOptions()
-                </select>
-                <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
-              </label>
-              @*<label>
-                  Computer:</label>
-                <select disabled>
-                  <option>@UserSession.CurrentComputerCode</option>
-                </select>*@
-            }
-            @if (showTellerSelector)
-            {
-              <label for="ddlTopTeller1">
-                Teller at Keyboard:
-                <select id="ddlTopTeller1" class="TopTeller input-medium">
-                  @tellerHelper.GetTellerOptions(1).AsRawHtml()
-                </select>
-                <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
-              </label>
-              <label for="ddlTopTeller2">
-                Assisting:
-                <select id="ddlTopTeller2" class="TopTeller input-medium">
-                  @tellerHelper.GetTellerOptions(2).AsRawHtml()
-                </select>
-              </label>
-            }
-          </div>
+          <label for="ddlTopLocation">
+            Location:
+            <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
+              @ContextItems.LocationModel.GetLocationOptions()
+            </select>
+            <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
+          </label>
+          @*<label>
+            Computer:</label>
+          <select disabled>
+            <option>@UserSession.CurrentComputerCode</option>
+          </select>*@
         }
-        @RenderBody()
-      </section>
+        @if (showTellerSelector)
+        {
+          <label for="ddlTopTeller1">
+            Teller at Keyboard:
+            <select id="ddlTopTeller1" class="TopTeller input-medium">
+              @tellerHelper.GetTellerOptions(1).AsRawHtml()
+            </select>
+            <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
+          </label>
+          <label for="ddlTopTeller2">
+            Assisting:
+            <select id="ddlTopTeller2" class="TopTeller input-medium">
+              @tellerHelper.GetTellerOptions(2).AsRawHtml()
+            </select>
+          </label>
+        }
+      </div>
+    }
+    @RenderBody()
+  </section>
     }
   </div>
   @RenderPage("Footer.cshtml")

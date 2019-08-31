@@ -1,10 +1,10 @@
 /* 
 
 Title:
-  Today in the Badi calendar.
+  Today in the Badíʿ calendar.
 
 Purpose:
-  To show the current date from the Badi calendar.
+  To show the current date from the Badíʿ calendar.
   Designed as single file to be incorporated into any web site.
   The date shown is calculated in the browser, using it's current date and location.
   Please note, this does not calculate or show Holy Days for the Baha'i Faith.
@@ -164,7 +164,7 @@ var BadiDateToday = function (settings) {
     };
 
     try {
-        console.log('Badíˋ Date - ' + version + ' - by Glen Little - https://sites.google.com/site/badicalendartools/');
+        console.log('Badíʿ Date - ' + version + ' - by Glen Little - https://sites.google.com/site/badicalendartools/');
     } catch (e) {
         // ignore in old browsers
     }

@@ -850,7 +850,7 @@
     <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <Content Include="Reports\BallotsTied.cshtml" />
     <Content Include="Reports\BallotsSame.cshtml" />
-    <None Include="Properties\PublishProfiles\Win16a Beta VM IIS.pubxml" />
+    <None Include="Properties\PublishProfiles\Win16a BETA 3 VM IIS.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1009,7 +1009,7 @@
     <None Include="Web.TallyJ3-staging - Web Deploy.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Web.Win16a Beta VM IIS.config">
+    <None Include="Web.Win16a BETA 3 VM IIS.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Win16a UAT VM IIS.config">

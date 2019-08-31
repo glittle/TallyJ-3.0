@@ -235,7 +235,7 @@
       var onlineIssues = info.OnlineIssues;
       if (onlineIssues && onlineIssues.length > 0) {
         $('#totalCounts').removeClass('onlineReady');
-        onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to resolve.');
+        onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to close voting and prepare ballots.');
         $('#onlineIssues').html(onlineIssues.join('<br>'));
       } else {
         $('#totalCounts').addClass('onlineReady');

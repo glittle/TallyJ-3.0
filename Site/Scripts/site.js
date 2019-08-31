@@ -397,24 +397,19 @@ function AttachHandlers() {
         });
     });
 
-  $('#electionState').on('mouseover',
-    '#AllPages',
-    function () {
+  $('#electionState')
+    .on('mouseover', '#AllPages', function () {
       clearTimeout(dropDownTimeout);
       closeDropDown();
       showAllPages(this);
     })
-    .on('mouseout',
-      '#AllPages',
-      function () {
-        clearTimeout(dropDownTimeout);
-        dropDownTimeout = setTimeout(closeDropDown, 200);
-      });
+    .on('mouseout', '#AllPages', function () {
+      clearTimeout(dropDownTimeout);
+      dropDownTimeout = setTimeout(closeDropDown, 200);
+    });
 
-
-  $('#electionState').on('mouseover',
-    'span.state',
-    function (ev) {
+  $('#electionState')
+    .on('mouseover', 'span.state', function (ev) {
       clearTimeout(dropDownTimeout);
       var item = $(ev.target);
       var state = item.data('state');
@@ -432,12 +427,10 @@ function AttachHandlers() {
           top: (item.offset().top + item.height() - 2) + 'px'
         });
     })
-    .on('mouseout',
-      'span.state',
-      function (ev) {
-        clearTimeout(dropDownTimeout);
-        dropDownTimeout = setTimeout(closeDropDown, 200);
-      });
+    .on('mouseout', 'span.state', function (ev) {
+      clearTimeout(dropDownTimeout);
+      dropDownTimeout = setTimeout(closeDropDown, 200);
+    });
 
   $('body').on('mouseover',
     '.DropDown,.QuickDash',

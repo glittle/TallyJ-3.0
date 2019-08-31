@@ -89,6 +89,11 @@ span, div {
   margin: 0 auto;
   max-width: 960px;
   position: relative;
+  padding: 0 30px 0 30px;
+}
+
+section.content-wrapper {
+  padding: 30px 30px 0 30px;
 }
 
 .headerRight {
@@ -122,8 +127,12 @@ body.errorStatus {
 }
 
 .main-content {
-  background: url("../images/accent.png") no-repeat left 31px top 0px;
-  padding: 30px 30px 0;
+  background: url(../images/accent.png) no-repeat;
+  position: absolute;
+  height: 30px;
+  width: 60px;
+  margin: -30px 0 0 0;
+  text-align: center;
 }
 
 footer {
@@ -724,9 +733,9 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus {
     font-family: 'Segoe UI Semibold' , Verdana, Helvetica, Sans-Serif;
     padding: .2em .5em .35em .5em;
 }*/
-input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
+//input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
   /*background-color: #b6ff50;*/
-}
+//}
 /* ajax login/registration dialog */
 .modal-popup {
   font-size: 0.7em;
@@ -772,10 +781,6 @@ input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
 
 .field-validation-valid {
   display: none;
-}
-
-.input-medium {
-  width: 120px;
 }
 
 input[type="text"].input-validation-error, input[type="password"].input-validation-error {
@@ -887,12 +892,12 @@ a.twitter {
 /* End: Statuses */
 .CompCode {
   color: #737373;
-  position: absolute;
-  top: 2px;
-  left: 40px;
-  text-align: center;
-  font-size: 15px;
-  width: 44px;
+ // position: absolute;
+ // top: 2px;
+ // left: 39px;
+ // text-align: center;
+ // font-size: 15px;
+ // width: 44px;
 }
 
 .CurrentElectionName {
@@ -1187,7 +1192,7 @@ span.other {
 .CurrentInfo {
   //background: #ccffbe;
   font-size: 10pt;
-  margin: -30px 0 0 40px;
+  margin: -30px 0 0 64px;
   padding: 1px 30px 2px 9px;
   border-top: none;
   border-bottom-left-radius: 6px;

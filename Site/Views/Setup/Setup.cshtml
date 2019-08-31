@@ -33,7 +33,6 @@ ClientFile("~/Scripts/vue-datetime.css"),
     <a href="#step2">Step 2</a>
     <a href="#step3">Step 3</a>
     <a href="#step4">Step 4</a>
-    <hr />
   </div>
   <h2>
     Step 1 <span>Define the Election</span>
@@ -393,7 +392,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
           Voting Start time
         </th>
         <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
-          <datetime v-model="election.OnlineWhenOpen" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+          <datetime v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
           <div class="voteWhen">{{showFrom(election.OnlineWhenOpen)}}</div>
         </td>
         <td>

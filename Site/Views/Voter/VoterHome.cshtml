@@ -116,7 +116,7 @@
       </p>
       <div v-if="registration && registration !== 'Online'">
         <p class="OtherRegistration">Your online choices WILL NOT BE USED because you are registered as voting {{registration}}.</p>
-        <p><strong>If that is not correct, please contact the head teller of this election before the election is closed.</strong></p>
+        <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="!registration && pool.length"><strong>You have not yet locked in your choices.</strong> Be sure lock them in before the election closes!</p>
       <p v-if="registration === 'Online' && lockInVotes"><strong>You have completed online voting in this election.</strong> 
@@ -124,11 +124,13 @@
         creates ballots for all online voters.</p>
 
       <p class="lockInBtns">
+        <span v-if="canLockIn">Unlocked</span>
+        <span v-if="canUnlock">Locked</span>
         <button v-on:click="lockIn(true)" v-if="canLockIn">Lock in my choices</button>
         <button v-on:click="lockIn(false)" v-if="canUnlock">Unlock my choices</button>
       </p>
 
-      <p v-if="lockInVotes">Changes to this list are only allowed when your choices are unlocked.</p>
+      @*<p v-if="lockInVotes">The top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}}.</p>*@
       <p v-if="!lockInVotes && pool.length">
         Sort this list to move people into the top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}} for use on your ballot. To sort using a keyboard, press Tab to focus,
         Enter to select/deselect, and Up and Down to move.

@@ -184,8 +184,8 @@
         Estimated time? <yes-no v-on:input="saveClose" v-model="election.OnlineCloseIsEstimate"></yes-no>
       </div>
       <div v-if="!isClosed">
-        <button v-on:click="closeOnline(5)">Close in 5 minutes.</button>
-        <button v-on:click="closeOnline(0)">Close now.</button>
+        <button v-on:click="closeOnline(5)">Close in 5 minutes</button>
+        <button v-on:click="closeOnline(0)">Close now</button>
       </div>
 
       <p>
@@ -197,8 +197,9 @@
         <input type="button"
                v-on:click="processReadyBallots"
                v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
-               value='Process all "Ready" ballots'>
-        <em v-if="!(onlineToProcess && OnlineWhenClose_M.isBefore())">Can process after Online voting is closed.</em>
+               value='Prepare all "Ready" ballots'>
+        <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess===1 ? '' : 's'}} ready to process after Online voting is closed.</span>
+        <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</span>
       </p>
       <table class="OnlineBallots">
         <thead>

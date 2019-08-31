@@ -126,6 +126,8 @@
           list.add('BP-' + process);
         },
         saveNeeded: function () {
+          if (!this.isMounted) return;
+
           $('.btnSave').addClass('btn-primary');
         },
         showFrom: function (when) {
