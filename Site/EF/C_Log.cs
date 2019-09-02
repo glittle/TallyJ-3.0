@@ -21,5 +21,6 @@ namespace TallyJ.EF
         public string ComputerCode { get; set; }
         public string Details { get; set; }
         public string HostAndVersion { get; set; }
+        public string VoterEmail { get; set; }
     }
 }

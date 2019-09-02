@@ -222,7 +222,6 @@ namespace TallyJ.Controllers
 
         person.HasOnlineBallot = locked;
 
-
         if (person.VotingMethod.HasContent() && person.VotingMethod != VotingMethodEnum.Online)
         {
           // teller has set. Voter can't change it...
@@ -243,6 +242,8 @@ namespace TallyJ.Controllers
               VotingMethodEnum.TextFor(person.VotingMethod),
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
+
+            new LogHelper().Add("Locked ballot");
           }
           else
           {
@@ -262,13 +263,17 @@ namespace TallyJ.Controllers
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible
             person.RegistrationLog = log;
+            
+            new LogHelper().Add("Unlocked ballot");
           }
+        
         }
 
         Db.SaveChanges();
 
         personCacher.UpdateItemAndSaveCache(person);
         peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
+
 
         // okay
         return new
@@ -333,5 +338,38 @@ namespace TallyJ.Controllers
         list
       }.AsJsonResult();
     }
+
+
+    public JsonResult GetLoginHistory()
+    {
+      var email = UserSession.VoterEmail;
+      if (email.HasNoContent())
+      {
+        return new
+        {
+          Error = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      var ageCutoff = DateTime.Today.Subtract(TimeSpan.FromDays(14));
+      var list = Db.C_Log
+        .Where(log => log.VoterEmail == email)
+        .Where(log => log.AsOf > ageCutoff)
+        .Where(log => !log.Details.Contains("schema")) // hide error codes
+        .OrderByDescending(log => log.AsOf)
+        .Take(19)
+        .Select(log => new
+        {
+          log.AsOf,
+          log.Details,
+        });
+
+      return new
+      {
+        list
+      }.AsJsonResult();
+    }
+
+
   }
 }

@@ -19,5 +19,6 @@ namespace TallyJ.Code.Session
         public const string TimeOffset = "ClientServerTimeOffset";
         public const string HasTies = "HasTies";
 
+        public const string VoterLastLogin = "VoterLastLogin";
     }
 }

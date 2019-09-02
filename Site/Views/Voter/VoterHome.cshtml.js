@@ -7,6 +7,7 @@
     keyTimer: null,
     keyTime: 300,
     rowSelected: 0,
+    lastLogin: null,
     prepare: function () {
       this.peopleHelper = new PeopleHelper(this.peopleUrl, false, true, this.customExtendPerson);
       this.connectToVoterHubs();
@@ -26,7 +27,14 @@
       voterPersonalHub.client.updateVoter = function (info) {
         console.log('signalR: voterPersonalHub updateVoter');
         //        host.vue.getElectionList();
-        host.vue.updateRegistration(info);
+        if (info.updateRegistration) {
+          host.vue.updateRegistration(info);
+          host.vue.getElectionList();
+        }
+        else if (info.login) {
+          ShowStatusDisplay('This email has just been logged in with in another browser.');
+          host.vue.getLoginHistory();
+        }
       };
 
       startSignalR(function () {
@@ -63,7 +71,9 @@ var vueOptions = {
       loading: true,
       saveDelay: null,
       activePage: 1,
-      keepStatusCurrent: false
+      keepStatusCurrent: false,
+      loadingLoginHistory: true,
+      loginHistory: []
     };
   },
   computed: {
@@ -83,6 +93,10 @@ var vueOptions = {
     atLeastOneOpen: function () {
       return this.elections.filter(function (e) { return e.openNow; }).length > 0;
     },
+    lastLoginAge: function () {
+      var raw = voterHome.lastLogin;
+      return raw ? moment(raw).fromNow() : '';
+    }
   },
   watch: {
     searchText: function (a, b) {
@@ -117,6 +131,8 @@ var vueOptions = {
           } else {
             ShowStatusFailed(info.Error);
           }
+
+          vue.getLoginHistory(); // wait until election list is loaded
         });
     },
     extendElectionInfos: function (list) {
@@ -171,8 +187,7 @@ var vueOptions = {
       var vue = this;
       var election = vue.election;
       if (election && election.person) {
-        election.person.RegistrationTime =
-          info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
         if (info.hasOwnProperty('PoolLocked')) {
           election.person.PoolLocked = info.PoolLocked;
         }
@@ -229,6 +244,9 @@ var vueOptions = {
         }
       } else {
         info.Status_Display = 'No online voting';
+      }
+      if (this.election && !this.election.openNow) {
+        this.closeBallot();hu
       }
     },
     scrollToTop: function (y) {
@@ -480,6 +498,29 @@ var vueOptions = {
         }
       });
     },
+    getLoginHistory: function () {
+
+      var vue = this;
+
+      CallAjaxHandler(GetRootUrl() + 'Voter/GetLoginHistory',
+        null,
+        function (info) {
+          vue.loadingLoginHistory = false;
+          if (info.list) {
+            vue.loginHistory = vue.extendLoginHistory(info.list);
+          } else {
+            ShowStatusFailed(info.Error);
+          }
+        });
+    },
+    extendLoginHistory: function (list) {
+      list.forEach(function (lh) {
+        var when_M = moment(lh.AsOf);
+        lh.age = when_M.fromNow();
+        lh.utc = when_M.utc().format('llll');
+      });
+      return list;
+    }
   }
 };
 

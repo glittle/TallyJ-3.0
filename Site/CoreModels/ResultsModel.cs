@@ -128,7 +128,7 @@ namespace TallyJ.CoreModels
         var issues = new List<string>();
         if (_election.OnlineCurrentlyOpen)
         {
-          issues.Add("Online voting still open. Must be closed to analyze ballots.");
+          issues.Add("Online voting is still open. Must close before analyzing ballots.");
         }
         var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue ? Db.OnlineVotingInfo
             .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Ready) 

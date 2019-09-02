@@ -1101,6 +1101,8 @@ namespace TallyJ.CoreModels
 
               Db.SaveChanges();
 
+              new LogHelper().Add("Ballot processed", false, onlineVoter.ovi.Email);
+
               transaction.Complete();
 
               numBallotsCreated++;

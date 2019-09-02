@@ -12,3 +12,8 @@ GO
 CREATE UNIQUE INDEX [IX_OnlineElection_Email] ON [dbo].[OnlineVoter] (Email)
 GO
 
+GO
+GRANT SELECT, update, insert, delete
+    ON OBJECT::[OnlineVoter] TO [TallyJSite]
+    AS [dbo];
+Go

@@ -42,11 +42,20 @@ namespace TallyJ.CoreModels.Hubs
       {
         CoreHub.Clients.Group("Voter" + person.Email).updateVoter(new
         {
+          updateRegistration = true,
           person.VotingMethod,
           person.RegistrationTime,
           person.ElectionGuid
         });
       }
+    }
+
+    public void Login(string email)
+    {
+      CoreHub.Clients.Group("Voter" + email).updateVoter(new
+      {
+        login = true
+      });
     }
   }
 

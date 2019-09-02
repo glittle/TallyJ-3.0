@@ -47,6 +47,7 @@
           <Property Name="AsOf" Type="datetime2" Precision="2" Nullable="false" />
           <Property Name="ElectionGuid" Type="uniqueidentifier" />
           <Property Name="LocationGuid" Type="uniqueidentifier" />
+          <Property Name="VoterEmail" Type="nvarchar" MaxLength="250" />
           <Property Name="ComputerCode" Type="varchar" MaxLength="2" />
           <Property Name="Details" Type="varchar(max)" />
           <Property Name="HostAndVersion" Type="varchar(max)" />
@@ -606,6 +607,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="ComputerCode" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="HostAndVersion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="VoterEmail" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Election">
           <Key>
@@ -879,6 +881,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="C_Log">
             <EntityTypeMapping TypeName="TallyJ2dModel.C_Log">
               <MappingFragment StoreEntitySet="_Log">
+                <ScalarProperty Name="VoterEmail" ColumnName="VoterEmail" />
                 <ScalarProperty Name="HostAndVersion" ColumnName="HostAndVersion" />
                 <ScalarProperty Name="Details" ColumnName="Details" />
                 <ScalarProperty Name="ComputerCode" ColumnName="ComputerCode" />

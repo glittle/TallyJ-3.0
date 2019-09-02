@@ -259,6 +259,12 @@ namespace TallyJ.Code.Session
     //        {
     //            get { return CurrentPrincipal.FindFirst("PictureUrl")?.Value; }
     //        }
+    
+    public static DateTime VoterLastLogin
+    {
+      get { return SessionKey.VoterLastLogin.FromSession(DateTime.MinValue); }
+      set { SessionKey.VoterLastLogin.SetInSession(value); }
+    }
 
     public static Location CurrentLocation
     {
@@ -466,7 +472,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogout()
     {
-      new LogHelper().Add("Logged Out");
+      new LogHelper().Add("Log Out");
 
       LeaveElection(false);
 

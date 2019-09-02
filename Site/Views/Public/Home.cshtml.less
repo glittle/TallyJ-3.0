@@ -64,13 +64,19 @@ div.closer {
 
   button {
     &.Google {
-      width: 191px;
-      height: 46px;
+      padding: 0;
       border: none;
-      background: url(../../Images/google.png);
+      background: none;
+      border: 2px solid transparent;
+
+      img {
+        width: 191px;
+        height: 46px;
+        border-radius: 4px;
+      }
 
       &:hover {
-        background-image: url(../../Images/google_focus.png);
+        border-color: #c6d1e7;
       }
     }
 

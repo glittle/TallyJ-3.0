@@ -16,6 +16,7 @@ using Owin.Security.Providers.PayPal;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
 
@@ -152,8 +153,6 @@ namespace TallyJ
 
     private void RecordLogin(string source, string email)
     {
-      new LogHelper().Add($"Voter login from {source}: {email}", true);
-
       var db = UserSession.DbContext;
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
       var now = DateTime.Now;
@@ -167,9 +166,17 @@ namespace TallyJ
         };
         db.OnlineVoter.Add(onlineVoter);
       }
+      else
+      {
+        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+      }
 
       onlineVoter.WhenLastLogin = now;
       db.SaveChanges();
+     
+      new LogHelper().Add($"Login from {source}", true, email);
+
+      new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
     }
   }
 }

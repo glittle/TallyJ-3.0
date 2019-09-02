@@ -3,6 +3,7 @@
     [AsOf]         DATETIME2 (2)    CONSTRAINT [DF__Log_AsOf] DEFAULT (getdate()) NOT NULL,
     [ElectionGuid] UNIQUEIDENTIFIER NULL,
     [LocationGuid] UNIQUEIDENTIFIER NULL,
+    [VoterEmail]   NVARCHAR (250)   NULL,
     [ComputerCode] VARCHAR (2)      NULL,
     [Details]      VARCHAR (MAX)    NULL,
     [HostAndVersion] VARCHAR(MAX) NULL, 
@@ -12,7 +13,8 @@
 
 GO
 CREATE NONCLUSTERED INDEX [IX__Log]
-    ON [tj].[_Log]([AsOf] ASC);
+    ON [tj].[_Log]([AsOf] ASC) 
+    INCLUDE([VoterEmail]);
 
 
 GO

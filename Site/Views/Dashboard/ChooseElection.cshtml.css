@@ -88,7 +88,7 @@ button.active {
   color: #aaa;
 }
 .TestElection .onlineCurrentlyOpen {
-  color: rgba(175, 95, 0, 0.54);
+  color: rgba(175, 95, 0, 0.75);
 }
 .Test {
   display: none;

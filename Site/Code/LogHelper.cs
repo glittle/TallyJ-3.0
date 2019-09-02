@@ -13,7 +13,7 @@ namespace TallyJ.Code
 {
   public interface ILogHelper
   {
-    void Add(string message, bool alsoSendToRemoteLog = false);
+    void Add(string message, bool alsoSendToRemoteLog = false, string voterEmail = null);
   }
 
   public class LogHelper : ILogHelper
@@ -30,13 +30,14 @@ namespace TallyJ.Code
     {
     }
 
-    public void Add(string message, bool alsoSendToRemoteLog = false)
+    public void Add(string message, bool alsoSendToRemoteLog = false, string voterEmail = null)
     {
       AddToLog(new C_Log
       {
         ElectionGuid = _electionGuid.AsNullableGuid(),
         ComputerCode = UserSession.CurrentComputerCode,
         LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
+        VoterEmail = UserSession.VoterEmail ?? voterEmail,
         Details = message,
         HostAndVersion = HostAndVersion()
       });

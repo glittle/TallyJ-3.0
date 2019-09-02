@@ -207,17 +207,14 @@
       {
         <div>
           <p>
-            To vote online in an election in TallyJ, you must first have an account in one of the services listed below.
+            To vote online in an election in TallyJ, you must first have an account in any one of the services listed below.
           </p>
           <p>
             Your email address in the service must match the email address
             listed with your name in the election you plan to vote in.
           </p>
           <p>
-            Click one of these buttons to get started.
-          </p>
-          <p>
-            By clicking, you agree to TallyJ's <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
+            By clicking, you agree to the <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
           </p>
 
           @{
@@ -243,6 +240,7 @@
                               name="provider"
                               value="@name"
                               title="Log in using your @name account">
+                        <img src="@Url.Content("~/Images/google.png")">
                       </button>
                     }
                     else if (name == "Facebook")
