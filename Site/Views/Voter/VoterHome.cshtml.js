@@ -77,7 +77,8 @@ var vueOptions = {
       return this.registration !== 'Processed' && this.election.OnlineWhenClose_M.isAfter() && this.election.person.PoolLocked;
     },
     election: function () {
-      return this.elections.find(function (e) { return e.ElectionGuid === this.electionGuid; });
+      var vue = this;
+      return vue.elections.find(function (e) { return e.id === vue.electionGuid; });
     },
     atLeastOneOpen: function () {
       return this.elections.filter(function (e) { return e.openNow; }).length > 0;
@@ -111,7 +112,7 @@ var vueOptions = {
 
             // for dev, go to first election
             //            setTimeout(function () {
-            //              vue.manageBallot(vue.elections.find(function (e) { return e.online; }));
+            //              vue.prepareBallot(vue.elections.find(function (e) { return e.online; }));
             //            }, 750);
           } else {
             ShowStatusFailed(info.Error);
@@ -153,14 +154,14 @@ var vueOptions = {
 
         person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
       } else {
-        if (person.RegistrationTime) {
-          person.RegistrationTime_M = moment(person.RegistrationTime);
-          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
-
-          person.BallotStatus = 'Received<br>' + person.RegistrationTime_Display;
-        } else {
-          person.BallotStatus = '';
-        }
+        //        if (person.RegistrationTime) {
+        //          person.RegistrationTime_M = moment(person.RegistrationTime);
+        //          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
+        //
+        //          person.BallotStatus = person.RegistrationTime_Display;
+        //        } else {
+        person.BallotStatus = '';
+        //        }
       }
 
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
@@ -233,7 +234,7 @@ var vueOptions = {
     scrollToTop: function (y) {
       window.scrollTo(0, y);
     },
-    manageBallot: function (eInfo) {
+    prepareBallot: function (eInfo) {
       if (!eInfo) {
         return;
       }

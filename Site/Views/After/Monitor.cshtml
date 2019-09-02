@@ -196,7 +196,7 @@
                   v-on:click="processReadyBallots"
                   v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
                   value='Prepare all "Ready" ballots'>
-           <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess===1 ? '' : 's'}} ready to process after Online voting is closed.</span>
+           <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process after Online voting is closed.</span>
            <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</span>
          </p>
          <table class="OnlineBallots">

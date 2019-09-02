@@ -69,7 +69,7 @@
           <td class="vmethod center">
             <div>{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
-              <button v-on:click="manageBallot(e)">Prepare my Ballot</button>
+              <button v-on:click="prepareBallot(e)">Prepare my Ballot</button>
             </div>
           </td>
           <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
