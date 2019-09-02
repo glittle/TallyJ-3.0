@@ -2,8 +2,6 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Mvc;
-//using Krystalware.SlickUpload;
-//using Krystalware.SlickUpload.Storage.Streams;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;

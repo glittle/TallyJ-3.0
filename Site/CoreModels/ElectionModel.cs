@@ -242,15 +242,10 @@ namespace TallyJ.CoreModels
       return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
     }
 
-    //    public Election GetFreshFromDb(Guid electionGuid)
-    //    {
-    //      return Election.ThisElectionCached;// Db.Election.FirstOrDefault(e => e.ElectionGuid == electionGuid);
-    //    }
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
     {
-      //      var election = Db.Election.SingleOrDefault(e => e.C_RowId == electionFromBrowser.C_RowId);
       var electionCacher = new ElectionCacher(Db);
 
       var election = UserSession.CurrentElection;
@@ -1109,6 +1104,8 @@ namespace TallyJ.CoreModels
               transaction.Complete();
 
               numBallotsCreated++;
+
+              new VoterPersonalHub().Update(onlineVoter.p);
             }
             else
             {
@@ -1122,6 +1119,8 @@ namespace TallyJ.CoreModels
           }
         }
       }
+
+
 
       return new
       {
