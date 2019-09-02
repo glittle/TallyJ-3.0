@@ -282,7 +282,7 @@ var vueOptions = {
       this.lastSearch = text;
       voterHome.peopleHelper.Search(text, this.displaySearchResults);
     },
-    navigating: function (ev) {
+    keyDownInSearch: function (ev) {
       switch (ev.which) {
         case 38: // up
           this.moveSelected(-1);
@@ -301,24 +301,24 @@ var vueOptions = {
 
         default:
       }
-      return false;
+      return true;
     },
     moveSelected: function (delta) {
-      //      var children = local.nameList.children();
-      //      var numChildren = children.length;
-      //      if (children.eq(numChildren - 1).text() == '...') { numChildren--; }
+      if (!this.nameList.length) {
+        return;
+      }
+
+      this.hideMouseCursor();
       this.searchResultRow += delta;
 
+      // ensure we stay in the list
       if (this.searchResultRow < 0) {
         this.searchResultRow = 0;
-      } else if (this.searchResultRow >= this.pool.length) {
-        this.searchResultRow = this.pool.length - 1;
+      } else if (this.searchResultRow >= this.nameList.length) {
+        this.searchResultRow = this.nameList.length - 1;
       }
-      //      var rowNum = this.searchResultRow;
-      //      rowNum = rowNum + delta;
-      //      if (rowNum < 0) { rowNum = numChildren - 1; }
-      //      if (rowNum >= numChildren) { rowNum = 0; }
-      //      setSelected(children, rowNum);
+
+      $('#P' + this.nameList[this.searchResultRow].Id)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
     specialSearch: function (code) {
       this.resetSearch();
@@ -334,6 +334,7 @@ var vueOptions = {
       this.searchText = '';
       this.lastSearch = '';
       this.nameList = [];
+      $('.searchBox').focus();
     },
     addToPool: function (p) {
       // to do - check for duplicates 
@@ -345,6 +346,7 @@ var vueOptions = {
       //console.log(p);
       this.pool.unshift(p);
       this.savePool();
+      this.showMouseCursor();
     },
     removeFromPool: function (p) {
       var where = this.pool.findIndex(function (i) { return i.Id === p.Id; });
@@ -359,7 +361,7 @@ var vueOptions = {
       this.electionGuid = null;
       this.scrollToTop(0);
     },
-    keydown: function (p, i, ev) {
+    keydownInPool: function (p, i, ev) {
       //           console.log(p, i, ev);
       var vue = this;
       var beingMoved;
@@ -367,11 +369,17 @@ var vueOptions = {
 
       switch (ev.code) {
         case 'Enter':
+          if (vue.lockInVotes) {
+            return;
+          }
           vue.movingInPool = !vue.movingInPool;
           this.pool.forEach(function (x) { x.moving = false; });
           p.moving = vue.movingInPool;
           return;
         case 'Delete':
+          if (vue.lockInVotes) {
+            return;
+          }
           vue.pool.splice(i, 1);
           // focus on new one
           beingMoved = vue.pool[i];
