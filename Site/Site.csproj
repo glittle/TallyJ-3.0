@@ -1004,6 +1004,7 @@
       <DependentUpon>VoterHome.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Shared\_LayoutVoter.cshtml" />
+    <Content Include="Views\Public\Privacy.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

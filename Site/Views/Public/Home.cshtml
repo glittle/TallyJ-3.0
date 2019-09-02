@@ -216,6 +216,9 @@
           <p>
             Click one of these buttons to get started.
           </p>
+          <p>
+            By clicking, you agree to TallyJ's <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
+          </p>
 
           @{
             var loginTypes = new[]
@@ -308,6 +311,13 @@
       <h2>About TallyJ</h2>
       <p>
         Want to know more about the TallyJ tool?
+      </p>
+    </section>
+  </a><a href="@Url.Action("Privacy")">
+    <section class="feature">
+      <h2>Policies & Agreements</h2>
+      <p>
+        Voter's Privacy Policy and User Agreement.
       </p>
     </section>
   </a><a href="@Url.Action("Install")">

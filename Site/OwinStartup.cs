@@ -12,6 +12,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Facebook;
 using Microsoft.Owin.Security.Google;
 using Owin;
+using Owin.Security.Providers.PayPal;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
@@ -58,7 +59,7 @@ namespace TallyJ
 
       app.UseGoogleAuthentication(CreateGoogleOptions());
       app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
-
+      //      app.UsePayPalAuthentication();
       //            app.UseSpotifyAuthentication()
       //            app.UseCookieAuthentication(CreateCookiesOptions());
     }
@@ -77,7 +78,7 @@ namespace TallyJ
       {
         OnAuthenticated = authContext =>
         {
-          var email = (string) authContext.User["email"];
+          var email = (string)authContext.User["email"];
           var gotEmail = email.HasContent();
 
           if (gotEmail)
@@ -123,8 +124,8 @@ namespace TallyJ
       {
         OnAuthenticated = authContext =>
         {
-          var email = (string) authContext.User["email"];
-          var emailIsVerified = (string) authContext.User["verified_email"];
+          var email = (string)authContext.User["email"];
+          var emailIsVerified = (string)authContext.User["verified_email"];
 
           var identity = new ClaimsIdentity(new List<Claim>
           {
@@ -161,7 +162,7 @@ namespace TallyJ
       {
         onlineVoter = new OnlineVoter
         {
-          Email=email,
+          Email = email,
           WhenRegistered = now
         };
         db.OnlineVoter.Add(onlineVoter);
