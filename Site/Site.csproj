@@ -428,7 +428,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\AllowGuestsInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
-    <Compile Include="Code\ContextItems.cs" />
+    <Compile Include="Code\SettingsHelper.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
     <Compile Include="Code\Enumerations\BaseEnumeration.cs" />
@@ -443,6 +443,7 @@
     <Compile Include="Code\Enumerations\LocationStatusEnum.cs" />
     <Compile Include="Code\AllowVoterAttribute.cs" />
     <Compile Include="Code\Helpers\AssertAtRuntime.cs" />
+    <Compile Include="Code\Helpers\EmailSender.cs" />
     <Compile Include="Code\Helpers\MvcViewRenderer.cs" />
     <Compile Include="Code\Helpers\UrlAdjuster.cs" />
     <Compile Include="Code\Helpers\Metaphone.cs" />
@@ -542,20 +543,20 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationOptions.cs" />
     <Compile Include="EF\Ballot.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\C_Log.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\DbContextGen.Context.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Include="EF\DbModel.Context.cs">
+      <DependentUpon>DbModel.Context.tt</DependentUpon>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGen.Context.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="EF\DbContextGen.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Include="EF\DbModel.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="EF\DbModel.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -563,26 +564,26 @@
       <DependentUpon>DbModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="EF\Election.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ImportFile.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ITallyJDbContext.cs" />
     <Compile Include="EF\JoinElectionUser.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Location.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Message.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\OnlineVoter.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\OnlineVotingInfo.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
@@ -609,25 +610,25 @@
     <Compile Include="EF\Partials\Teller.cs" />
     <Compile Include="EF\Partials\VoteCacher.cs" />
     <Compile Include="EF\Person.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Result.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultSummary.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultTie.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Teller.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Users.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Vote.cs">
-      <DependentUpon>DbContextGen.tt</DependentUpon>
+      <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="OwinStartup.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -716,6 +717,16 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="EF\DbModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbModel.Context.cs</LastGenOutput>
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="EF\DbModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DbModel.cs</LastGenOutput>
+      <DependentUpon>DbModel.edmx</DependentUpon>
+    </Content>
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\arrows-ffffff.png" />
     <Content Include="Images\beta.gif" />
@@ -805,16 +816,6 @@
       <LastGenOutput>DbModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <Content Include="EF\DbModel.edmx.diagram">
-      <DependentUpon>DbModel.edmx</DependentUpon>
-    </Content>
-    <Content Include="EF\DbContextGen.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DbContextGen.Context.cs</LastGenOutput>
-      <DependentUpon>DbModel.edmx</DependentUpon>
-    </Content>
-    <Content Include="EF\DbContextGen.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DbContextGen.cs</LastGenOutput>
       <DependentUpon>DbModel.edmx</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\css\bootstrap.css.map">

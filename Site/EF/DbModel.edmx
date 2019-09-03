@@ -13,6 +13,7 @@
           <Property Name="Email" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="WhenRegistered" Type="datetime2" Precision="0" />
           <Property Name="WhenLastLogin" Type="datetime2" Precision="0" />
+          <Property Name="EmailCodes" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
@@ -595,6 +596,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Email" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="WhenRegistered" Type="DateTime" Precision="0" />
           <Property Name="WhenLastLogin" Type="DateTime" Precision="0" />
+          <Property Name="EmailCodes" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="C_Log">
           <Key>
@@ -871,6 +873,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="OnlineVoter">
             <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVoter">
               <MappingFragment StoreEntitySet="OnlineVoter">
+                <ScalarProperty Name="EmailCodes" ColumnName="EmailCodes" />
                 <ScalarProperty Name="WhenLastLogin" ColumnName="WhenLastLogin" />
                 <ScalarProperty Name="WhenRegistered" ColumnName="WhenRegistered" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

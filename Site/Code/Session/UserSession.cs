@@ -213,57 +213,22 @@ namespace TallyJ.Code.Session
       }
     }
 
-    //public static bool HasTies
-    //{
-    //  get
-    //  {
-    //    var key = SessionKey.HasTies + CurrentElection.RowVersionInt;
-    //    var currentAnswer = (bool?) CurrentContext.Session[key];
-    //    if (currentAnswer.HasValue)
-    //    {
-    //      return currentAnswer.Value;
-    //    }
-    //    currentAnswer = new ResultsModel().HasTies();
-    //    CurrentContext.Session[key] = currentAnswer;
-    //    return currentAnswer.Value;
-    //  }
-    //}
-
     public static Guid CurrentLocationGuid
     {
-      get { return SessionKey.CurrentLocationGuid.FromSession(Guid.Empty); }
-      set { SessionKey.CurrentLocationGuid.SetInSession(value); }
+      get => SessionKey.CurrentLocationGuid.FromSession(Guid.Empty);
+      set => SessionKey.CurrentLocationGuid.SetInSession(value);
     }
 
-    public static ClaimsPrincipal CurrentPrincipal
-    {
-      get
-      {
-        return (ClaimsPrincipal)Thread.CurrentPrincipal;
-      }
-    }
+    public static ClaimsPrincipal CurrentPrincipal => (ClaimsPrincipal)Thread.CurrentPrincipal;
 
-    public static string VoterEmail
-    {
-      get { return CurrentPrincipal.FindFirst("Email")?.Value; }
-    }
-    public static string VoterAuthSource
-    {
-      get { return CurrentPrincipal.FindFirst("Source")?.Value; }
-    }
-    public static bool VoterEmailIsVerified
-    {
-      get { return CurrentPrincipal.FindFirst("IsVoter")?.Value == "True"; }
-    }
-    //        public static string VoterPictureUrl
-    //        {
-    //            get { return CurrentPrincipal.FindFirst("PictureUrl")?.Value; }
-    //        }
-    
+    public static string VoterEmail => CurrentPrincipal.FindFirst("Email")?.Value;
+    public static string VoterAuthSource => CurrentPrincipal.FindFirst("Source")?.Value;
+    public static bool VoterIsVerified => CurrentPrincipal.FindFirst("IsVoter")?.Value == "True";
+
     public static DateTime VoterLastLogin
     {
-      get { return SessionKey.VoterLastLogin.FromSession(DateTime.MinValue); }
-      set { SessionKey.VoterLastLogin.SetInSession(value); }
+      get => SessionKey.VoterLastLogin.FromSession(DateTime.MinValue);
+      set => SessionKey.VoterLastLogin.SetInSession(value);
     }
 
     public static Location CurrentLocation
@@ -393,7 +358,7 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static bool IsVoter => VoterEmailIsVerified;
+    public static bool IsVoter => VoterIsVerified;
 
     //    public static string WebProtocol
     //    {
@@ -434,10 +399,6 @@ namespace TallyJ.Code.Session
           ? ElectionTallyStatusEnum.NotStarted
           : election.TallyStatus;
       }
-    }
-
-    public static bool HostSupportsOnlineElections {
-      get { return ConfigurationManager.AppSettings["HostSupportsOnlineElections"].AsBoolean(); }
     }
 
     public static string SiteVersion

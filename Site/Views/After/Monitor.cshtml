@@ -5,7 +5,7 @@
   ViewBag.Title = "Election Monitor";
   ViewBag.Message = "What's Happening?";
 
-  if (UserSession.HostSupportsOnlineElections)
+  if (SettingsHelper.HostSupportsOnlineElections)
   {
     ViewData["ExtraScripts"] = new[]
     {
@@ -168,7 +168,7 @@
     </p>
   }
 
-  @if (UserSession.HostSupportsOnlineElections)
+  @if (SettingsHelper.HostSupportsOnlineElections)
   {
     if (UserSession.CurrentElection.OnlineEnabled)
      {

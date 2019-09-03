@@ -45,6 +45,13 @@
       <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
     </ul>
   </div>
+  
+  <div class="emails" v-if="emailCodesLoaded">
+    Would you like to get an email:
+    <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />when an election opens?</label>
+    <label><input type="checkbox" v-model="emailWhenProcessed"  v-on:change="saveEmailCodes" />when your ballot is processed?</label>
+    <button class="btn btn-mini" v-on:click="emailTest">Send a test email now</button>
+  </div>
 
   <p v-if="loading">Searching for your email address in elections...</p>
 
@@ -53,6 +60,10 @@
   <p v-if="!loading && elections.length && !atLeastOneOpen">
     None of these elections are available for you to vote in at this time.
   </p>
+  
+  <div>
+
+  </div>
 
   <div class="electionListDiv">
     <p v-if="!loading && !elections.length">No elections found.</p>

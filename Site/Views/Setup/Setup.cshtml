@@ -364,7 +364,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     Step 4 <span>Online Voting</span>
   </h2>
 
-  @if (UserSession.HostSupportsOnlineElections)
+  @if (SettingsHelper.HostSupportsOnlineElections)
   {
     <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
     <div class="PullInstructions">

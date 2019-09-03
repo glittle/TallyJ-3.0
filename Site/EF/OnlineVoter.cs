@@ -18,5 +18,6 @@ namespace TallyJ.EF
         public string Email { get; set; }
         public Nullable<System.DateTime> WhenRegistered { get; set; }
         public Nullable<System.DateTime> WhenLastLogin { get; set; }
+        public string EmailCodes { get; set; }
     }
 }

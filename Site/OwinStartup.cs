@@ -46,7 +46,7 @@ namespace TallyJ
         LoginPath = new PathString("/")
       });
 
-      if (!UserSession.HostSupportsOnlineElections)
+      if (!SettingsHelper.HostSupportsOnlineElections)
       {
         return;
       }

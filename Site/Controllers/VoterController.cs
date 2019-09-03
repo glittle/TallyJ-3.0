@@ -263,10 +263,10 @@ namespace TallyJ.Controllers
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible
             person.RegistrationLog = log;
-            
+
             new LogHelper().Add("Unlocked ballot");
           }
-        
+
         }
 
         Db.SaveChanges();
@@ -335,7 +335,7 @@ namespace TallyJ.Controllers
 
       return new
       {
-        list
+        list,
       }.AsJsonResult();
     }
 
@@ -364,12 +364,39 @@ namespace TallyJ.Controllers
           log.Details,
         });
 
+      // piggyback and get other info too
+      var emailCodes = Db.OnlineVoter.Single(ov => ov.Email == email).EmailCodes;
+
       return new
       {
-        list
+        list,
+        emailCodes
       }.AsJsonResult();
     }
 
+    public JsonResult SaveEmailCodes(string emailCodes)
+    {
+      var onlineVoter = Db.OnlineVoter.Single(ov => ov.Email == UserSession.VoterEmail);
+      onlineVoter.EmailCodes = emailCodes;
+      Db.SaveChanges();
 
+      return new
+      {
+        saved = true
+      }.AsJsonResult();
+    }
+
+    public JsonResult SendTestEmail()
+    {
+      var emailHelper = new EmailHelper();
+
+      var sent = emailHelper.SendTest(UserSession.VoterEmail, out var error);
+
+      return new
+      {
+        sent,
+        Error = error
+      }.AsJsonResult();
+    }
   }
 }

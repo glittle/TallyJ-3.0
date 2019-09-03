@@ -73,7 +73,10 @@ var vueOptions = {
       activePage: 1,
       keepStatusCurrent: false,
       loadingLoginHistory: true,
-      loginHistory: []
+      loginHistory: [],
+      emailWhenOpen: false,
+      emailWhenProcessed: false,
+      emailCodesLoaded: false
     };
   },
   computed: {
@@ -96,7 +99,7 @@ var vueOptions = {
     lastLoginAge: function () {
       var raw = voterHome.lastLogin;
       return raw ? moment(raw).fromNow() : '';
-    }
+    },
   },
   watch: {
     searchText: function (a, b) {
@@ -246,7 +249,7 @@ var vueOptions = {
         info.Status_Display = 'No online voting';
       }
       if (this.election && !this.election.openNow) {
-        this.closeBallot();hu
+        this.closeBallot(); hu
       }
     },
     scrollToTop: function (y) {
@@ -511,6 +514,13 @@ var vueOptions = {
           } else {
             ShowStatusFailed(info.Error);
           }
+
+          // other info
+          if (info.emailCodes) {
+            vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
+            vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
+          }
+          vue.emailCodesLoaded = true;
         });
     },
     extendLoginHistory: function (list) {
@@ -520,6 +530,33 @@ var vueOptions = {
         lh.utc = when_M.utc().format('llll');
       });
       return list;
+    },
+    saveEmailCodes: function() {
+      var vue = this;
+      var codes = (vue.emailWhenOpen ? 'o' : '') + (vue.emailWhenProcessed ? 'p' : '');
+      var form = {
+        emailCodes: codes || null
+      };
+      CallAjaxHandler(GetRootUrl() + 'Voter/SaveEmailCodes',
+        form,
+        function (info) {
+          if (info.saved) {
+            ShowStatusSuccess('Saved');
+          } else {
+            ShowStatusFailed(info.Error);
+          }
+        });
+    },
+    emailTest: function() {
+      CallAjaxHandler(GetRootUrl() + 'Voter/SendTestEmail',
+        null,
+        function (info) {
+          if (info.sent) {
+            ShowStatusSuccess('Email Sent');
+          } else {
+            ShowStatusFailed(info.Error);
+          }
+        });
     }
   }
 };
