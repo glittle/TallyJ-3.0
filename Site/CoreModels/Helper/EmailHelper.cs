@@ -1,8 +1,9 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using RazorEngine.Compilation.ImpromptuInterface.Optimization;
+using System.Web.Hosting;
 using TallyJ.Code;
 
 namespace TallyJ.CoreModels
@@ -16,8 +17,11 @@ namespace TallyJ.CoreModels
       message.To.Add(email);
       message.From = new MailAddress("system@tallyj.com", "TallyJ System");
 
+      var html = File.ReadAllText(System.AppDomain.CurrentDomain.BaseDirectory + "/App_Data/TestEmail.html");
+      message.Body = html;
+      message.IsBodyHtml = true;
+
       message.Subject = "Test 1";
-      message.Body = "This is a raw test!";
 
       return SendEmail(message, out error);
     }

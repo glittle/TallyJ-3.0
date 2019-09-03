@@ -636,6 +636,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Content Include="App_Data\ElectionOpen.html" />
+    <Content Include="App_Data\BallotProcessed.html" />
+    <Content Include="App_Data\TestEmail.html" />
     <Content Include="Content\bootstrap\css\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
