@@ -37,6 +37,7 @@ namespace TallyJ
   public class MvcApplication : HttpApplication
   {
     //public static ConfigurationOptions ConfigOpts { get; set; }
+    public static DateTime LastRunOfScheduled;
 
     protected void Application_Start()
     {

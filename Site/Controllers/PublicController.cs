@@ -9,6 +9,7 @@ using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
@@ -50,6 +51,19 @@ namespace TallyJ.Controllers
         public ActionResult Learning()
         {
             return View();
+        }
+
+        public JsonResult DoScheduled()
+        {
+          var now = DateTime.Now;
+          if (now - MvcApplication.LastRunOfScheduled <= TimeSpan.FromMinutes(5))
+          {
+            return null;
+          }
+
+          MvcApplication.LastRunOfScheduled = now;
+          
+          return new EmailHelper().DoScheduled();
         }
 
         [AllowAnonymous]

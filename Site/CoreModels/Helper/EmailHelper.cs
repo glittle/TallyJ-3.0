@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
@@ -208,6 +209,14 @@ namespace TallyJ.CoreModels.Helper
       AssertAtRuntime.That(File.Exists(path), "Missing email template");
 
       return File.ReadAllText(path);
+    }
+
+    public JsonResult DoScheduled()
+    {
+      return new
+      {
+        notImplemented = true
+      }.AsJsonResult();
     }
   }
 }
