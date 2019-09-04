@@ -13,5 +13,9 @@ namespace Tests.BusinessTests
       }
     }
 
+    public void CloseAll()
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

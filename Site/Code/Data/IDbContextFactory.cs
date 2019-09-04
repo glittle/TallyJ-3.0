@@ -8,5 +8,7 @@ namespace TallyJ.Code.Data
 		{
 			get;
 		}
-	}
+
+    void CloseAll();
+  }
 }

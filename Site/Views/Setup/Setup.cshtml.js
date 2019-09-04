@@ -29,8 +29,11 @@
         dummy: 1
       },
       computed: {
-        onlineDatesOkay: function() {
-          return this.election.OnlineWhenOpen &&
+        onlineDatesOkay: function () {
+          return (!this.useOnline && !this.election.OnlineWhenOpen && !this.election.OnlineWhenClose)
+            ||
+            this.useOnline &&
+            this.election.OnlineWhenOpen &&
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
         }
@@ -71,7 +74,7 @@
           } else {
             if (!this.election.BallotProcessRaw || this.election.BallotProcessRaw === 'None') {
               this.election.BallotProcessRaw = 'Roll'; // old default
-              $('.btnSave').addClass('btn-primary');
+              this.saveNeeded();
             }
           }
         },
@@ -125,6 +128,7 @@
         },
         saveNeeded: function () {
           if (!this.isMounted) return;
+          if (!this.onlineDatesOkay) return;
 
           $('.btnSave').addClass('btn-primary');
         },
@@ -150,7 +154,10 @@
       if ($(this).closest('.forLocations').length) {
         return; // don't flag location related
       }
-      $('.btnSave').addClass('btn-primary');
+      setTimeout(function() {
+          settings.vue.saveNeeded();
+        },
+        0);
     });
 
     $('#chkPreBallot').on('change', showForPreBallot);
@@ -493,6 +500,7 @@
 
   function saveChanges() {
     var election = settings.vue.election;
+
     var form = {
       C_RowId: election.C_RowId,
       ShowAsTest: election.ShowAsTest,

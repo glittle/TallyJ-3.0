@@ -447,12 +447,16 @@
         },
         processReadyBallots: function () {
           var vue = this;
+          ShowStatusDisplay('Processing...');
           CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Processed');
+                ShowStatusSuccess(info.Message);
+                console.log(info.problems);
                 refresh();
+              } else {
+                ShowStatusFailed(info.Message);
               }
             });
 

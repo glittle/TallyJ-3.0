@@ -45,11 +45,11 @@
       <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
     </ul>
   </div>
-  
+
   <div class="emails" v-if="emailCodesLoaded">
     Would you like to get an email:
     <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />when an election opens?</label>
-    <label><input type="checkbox" v-model="emailWhenProcessed"  v-on:change="saveEmailCodes" />when your ballot is processed?</label>
+    <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />when your ballot is processed?</label>
     <button class="btn btn-mini" v-on:click="emailTest">Send a test email now</button>
   </div>
 
@@ -60,7 +60,7 @@
   <p v-if="!loading && elections.length && !atLeastOneOpen">
     None of these elections are available for you to vote in at this time.
   </p>
-  
+
   <div>
 
   </div>
@@ -69,36 +69,36 @@
     <p v-if="!loading && !elections.length">No elections found.</p>
     <table class="electionList" v-if="!loading && elections.length">
       <thead>
-      <tr>
-        <th class="ename">Election</th>
-        <th class="online">Online Voting</th>
-        @*<th class="pname">Your Name in the Election</th>*@
-        <th class="vmethod">Your voting method</th>
-        <th class="vtime">Ballot status</th>
-      </tr>
+        <tr>
+          <th class="ename">Election</th>
+          <th class="online">Online Voting</th>
+          @*<th class="pname">Your Name in the Election</th>*@
+          <th class="vmethod">Your voting method</th>
+          <th class="vtime">Ballot status</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
-        <td class="ename">
-          <div class="n">{{e.Name}}</div>
-          <div class="t">{{e.Type_Display}} Election</div>
-          <div class="c">{{e.Convenor}}</div>
-        </td>
-        <td class="online center" v-html="e.Status_Display"></td>
-        @*<td class="pname" v-text="e.person.name"></td>*@
-        <td class="vmethod center">
-          <div>{{e.person.VotingMethod_Display}}</div>
-          <div v-if="e.openNow && e.canVote">
-            <button class="btn" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
-          </div>
-        </td>
-        <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
-      </tr>
+        <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
+          <td class="ename">
+            <div class="n">{{e.Name}}</div>
+            <div class="t">{{e.Type_Display}} Election</div>
+            <div class="c">{{e.Convenor}}</div>
+          </td>
+          <td class="online center" v-html="e.Status_Display"></td>
+          @*<td class="pname" v-text="e.person.name"></td>*@
+          <td class="vmethod center">
+            <div>{{e.person.VotingMethod_Display}}</div>
+            <div v-if="e.openNow && e.canVote">
+              <button class="btn" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
+            </div>
+          </td>
+          <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="loginHistoryDiv">
+  <div class="loginHistoryDiv" v-if="emailCodesLoaded">
     <hr />
     <p>
       For your review and security, here is your recent activity (with the most recent at the top). If something looks wrong,
@@ -167,23 +167,23 @@
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p class="OtherRegistration">Your online choices WILL NOT BE USED because you are registered as voting {{registration}}.</p>
+        <p class="OtherRegistration">Your online selection WILL NOT BE USED because you are registered as voting {{registration}}.</p>
         <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
         <strong>You have completed online voting in this election.</strong>
-        Your choices will be converted into a ballot when the Head Teller closes online voting and
+        Your selection will be converted into a ballot when the Head Teller closes online voting and
         creates ballots for all online voters.
       </p>
 
       <p class="lockInBtns">
         <span v-if="canLockIn">Unlocked</span>
         <span v-if="canUnlock">Locked</span>
-        <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Lock in my choices</button>
-        <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Unlock my choices</button>
+        <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Lock in my selection</button>
+        <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Unlock my selection</button>
       </p>
-      <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before locking in your choices.</p>
-      <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your choices before the election closes!</p>
+      <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before locking in your selection.</p>
+      <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your selection before the election closes!</p>
 
       @*<p v-if="lockInVotes">The top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}}.</p>*@
       <p v-if="!lockInVotes && pool.length">

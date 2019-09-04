@@ -414,6 +414,11 @@ ClientFile("~/Scripts/vue-datetime.css"),
           <p>The Head Teller can adjust the stop time during the election. Suggestion: Manually close online voting once all paper ballots are collected and counted.</p>
         </td>
       </tr>
+      <tr v-if="useOnline && !onlineDatesOkay">
+        <td colspan="3">
+          <div class="onlineWarning1">Start and Stop times are both required and Start must come before Stop.</div>
+        </td>
+      </tr>
       <tr v-if="useOnline">
         <th>
           Voting Stop time estimated?

@@ -3,45 +3,126 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Web.Hosting;
+using System.Text.RegularExpressions;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
+using TallyJ.Code.Helpers;
+using TallyJ.Code.Session;
+using TallyJ.EF;
 
-namespace TallyJ.CoreModels
+namespace TallyJ.CoreModels.Helper
 {
   public class EmailHelper
   {
     public bool SendTest(string email, out string error)
     {
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var html = GetEmailTemplate("TestEmail").FilledWithObject(new
+      {
+        when = DateTime.Today.ToShortDateString(),
+        month = DateTime.Today.ToString("MMMM"),
+        hostSite,
+        logo = hostSite + "/Images/LogoSideM.png",
+        email
+      });
+
       var message = new MailMessage();
-
       message.To.Add(email);
-      message.From = new MailAddress("system@tallyj.com", "TallyJ System");
+      message.ReplyToList.Add(new MailAddress("glen.little@gmail.com", "Glen Little"));
 
-      var html = File.ReadAllText(System.AppDomain.CurrentDomain.BaseDirectory + "/App_Data/TestEmail.html");
-      message.Body = html;
-      message.IsBodyHtml = true;
-
-      message.Subject = "Test 1";
-
-      return SendEmail(message, out error);
+      return SendEmail(message, html, out error);
     }
 
-    public bool SendWhenOpen(string email, out string error)
+    public bool SendWhenOpen(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
     {
-      error = null;
-      return false;
+      // only send if they asked for it
+      if (!ov.EmailCodes.Contains("o"))
+      {
+        error = null;
+        return true;
+      }
+
+      // proceed to send
+      var email = ov.Email;
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var whenClose = e.OnlineWhenClose.GetValueOrDefault();
+      var openLength = whenClose - e.OnlineWhenOpen.GetValueOrDefault();
+      var howLong = "";
+      if (openLength.Days > 1)
+      {
+        howLong = openLength.Days + " days";
+      }
+      else
+      {
+        howLong = openLength.Hours + " hours";
+      }
+
+      var html = GetEmailTemplate("BallotProcessed").FilledWithObject(new
+      {
+        email,
+        voterName = p.C_FullNameFL,
+        electionName = e.Name,
+        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+        hostSite,
+        logo = hostSite + "/Images/LogoSideM.png",
+        howLong,
+        whenClose
+      });
+
+      var message = new MailMessage();
+      message.To.Add(new MailAddress(email, p.C_FullNameFL));
+
+      var memberEmail = UserSession.MemberEmail;
+      if (memberEmail.HasContent())
+      {
+        message.ReplyToList.Add(new MailAddress(memberEmail, UserSession.MemberName + " (Teller)"));
+      }
+
+      return SendEmail(message, html, out error);
     }
 
-    public bool SendWhenProcessed(string email, out string error)
+    public bool SendWhenProcessed(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
     {
-      error = null;
-      return false;
+      // only send if they asked for it
+      if (!ov.EmailCodes.Contains("p"))
+      {
+        error = null;
+        return true;
+      }
+
+      // proceed to send
+      var email = ov.Email;
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var html = GetEmailTemplate("BallotProcessed").FilledWithObject(new
+      {
+        email,
+        voterName = p.C_FullNameFL,
+        electionName = e.Name,
+        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+        hostSite,
+        logo = hostSite + "/Images/LogoSideM.png",
+      });
+
+      var message = new MailMessage();
+      message.To.Add(new MailAddress(email, p.C_FullNameFL));
+
+      var memberEmail = UserSession.MemberEmail;
+      if (memberEmail.HasContent())
+      {
+        message.ReplyToList.Add(new MailAddress(memberEmail, "Teller"));
+      }
+
+      return SendEmail(message, html, out error);
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="message"></param>
+    /// <param name="htmlBody"></param>
     /// <param name="errorMessage"></param>
     /// <remarks>
     /// Settings from AppSettings in Web.config or similar:
@@ -54,8 +135,19 @@ namespace TallyJ.CoreModels
     /// "SmtpTimeoutMs", 5 * 1000
     /// </remarks>
     /// <returns></returns>
-    public bool SendEmail(MailMessage message, out string errorMessage)
+    private bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
+      message.From = new MailAddress("no-reply@tallyj.com", "TallyJ System");
+      message.Body = htmlBody;
+      message.IsBodyHtml = true;
+
+      var match = Regex.Match(htmlBody, @"<title>(?<subject>.*)</title>");
+      var subject = match.Groups["subject"];
+      message.Subject = subject.Value;
+
+
+
+
       var host = SettingsHelper.Get("SmtpHost", "localhost");
       var pickupDirectory = SettingsHelper.Get("SmtpPickupDirectory", "");
       var senderHostName = message.Sender?.Host ?? "TallyJ";
@@ -92,7 +184,7 @@ namespace TallyJ.CoreModels
         var who = ex.InnerExceptions.Select(e => e.FailedRecipient).JoinedAsString(", ");
         var why = ex.InnerExceptions.Select(e => e.GetAllMsgs("; "));
         errorMessage = $"Email Failed for {who}: {why}";
-        
+
         new LogHelper().Add(errorMessage, true);
       }
       catch (SmtpFailedRecipientException ex)
@@ -107,6 +199,15 @@ namespace TallyJ.CoreModels
       }
 
       return false;
+    }
+
+    private static string GetEmailTemplate(string emailTemplate)
+    {
+      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/App_Data/{emailTemplate}.html";
+
+      AssertAtRuntime.That(File.Exists(path), "Missing email template");
+
+      return File.ReadAllText(path);
     }
   }
 }

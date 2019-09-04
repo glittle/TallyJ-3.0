@@ -329,8 +329,7 @@ namespace TallyJ
 
     private void OnEndRequest(object sender, EventArgs eventArgs)
     {
-      var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
-      db.Dispose();
+      UnityInstance.Resolve<IDbContextFactory>().CloseAll();
     }
 
     private void OnBeginRequest(object sender, EventArgs e)

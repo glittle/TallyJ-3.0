@@ -115,7 +115,7 @@ namespace TallyJ.Code.Session
 		}
 
 		/// <summary>
-		///   Root rul path as defined in Global.asax
+		///   Root url path as defined in Global.asax
 		/// </summary>
 		public string RootUrl
 		{

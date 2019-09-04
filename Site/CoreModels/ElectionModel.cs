@@ -1044,6 +1044,7 @@ namespace TallyJ.CoreModels
         .Where(ovi => ovi.ElectionGuid == electionGuid)
         .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Ready && ovi.PoolLocked.Value)
         .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
+        .Join(Db.OnlineVoter, j => j.ovi.Email, ov => ov.Email, (j, ov) => new { j.p, j.ovi, ov })
         .OrderBy(j => j.ovi.PersonGuid)
         .ToList();
 
@@ -1059,6 +1060,7 @@ namespace TallyJ.CoreModels
       var ballotModel = BallotModelFactory.GetForCurrentElection();
       var problems = new List<string>();
       var numBallotsCreated = 0;
+      var emailHelper = new EmailHelper();
 
       foreach (var onlineVoter in onlineVoters)
       {
@@ -1085,6 +1087,8 @@ namespace TallyJ.CoreModels
           continue;
         }
 
+        var sendEmail = false;
+
         using (var transaction = new TransactionScope())
         {
           try
@@ -1108,6 +1112,8 @@ namespace TallyJ.CoreModels
               numBallotsCreated++;
 
               new VoterPersonalHub().Update(onlineVoter.p);
+
+              sendEmail = true;
             }
             else
             {
@@ -1118,6 +1124,16 @@ namespace TallyJ.CoreModels
           catch (Exception e)
           {
             problems.Add($"Error: {e.LastException().Message}{name}");
+          }
+        }
+
+        if (sendEmail)
+        {
+          // need to keep this outside the transaction
+          emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineVoter.p, onlineVoter.ovi, onlineVoter.ov, out var emailError);
+          if (emailError.HasContent())
+          {
+            problems.Add($"Error: {emailError}");
           }
         }
       }
