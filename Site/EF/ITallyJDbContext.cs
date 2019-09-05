@@ -10,6 +10,7 @@ namespace TallyJ.EF
   public interface ITallyJDbContext
   {
     DbSet<Users> Users { get; set; }
+    DbSet<Memberships> Memberships { get; set; }
     DbSet<C_Log> C_Log { get; set; }
     DbSet<Election> Election { get; set; }
     DbSet<ImportFile> ImportFile { get; set; }

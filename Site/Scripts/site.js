@@ -80,7 +80,7 @@ function Onload() {
 
   PrepareQTips();
 
-  showElectionInfo()
+  showElectionInfo();
 }
 
 function showElectionInfo() {
@@ -91,7 +91,7 @@ function showElectionInfo() {
   $('.passcode').on('click',
     function () {
       location.href = site.rootUrl + 'After/monitor';
-    })
+    });
 }
 
 function updatePasscodeDisplay(okay, passcode) {
@@ -340,7 +340,7 @@ function ActivateTips(forceRecreate) {
   $('.qTip').qtip(baseOption);
 
   $.each(site.qTips,
-    function () {
+    function() {
       if (!(forceRecreate || false) && $(this).data('done')) return;
 
       var opt = $.extend(true, {}, baseOption, this);
@@ -349,14 +349,15 @@ function ActivateTips(forceRecreate) {
         if (this.title) {
           opt.content.title.text = this.title;
           //$.extend(true, opt, { content: { text: this.text, title: { text: this.title } } });
-        } else {
+          //        } else {
           //$.extend(true, opt, { content: { text: this.text } });
+          //        }
         }
+        $(this).data('done', true);
+        $(this.selector).qtip(opt);
       }
-      $(this).data('done', true);
-      $(this.selector).qtip(opt);
-    });
-
+    }
+  );
 }
 
 function AttachHandlers() {
@@ -483,7 +484,7 @@ function showAllPages(btnRaw) {
 
 var quickDashCloser = function (ev) {
   console.log($(ev.srcElement).closest('.QuickDash'));
-  if ($(ev.srcElement).closest('.QuickDash').length == 0) {
+  if ($(ev.srcElement).closest('.QuickDash').length === 0) {
     $('.QuickDash').fadeOut('fast');
     $('.ElectionState .General').removeClass('GeneralActive');
     $(document).off('click', quickDashCloser);
@@ -583,7 +584,7 @@ function topLocationChanged(ev) {
   };
   ddl.find('option[value="-1"]').remove();
 
-  if (form.id == '-2') {
+  if (form.id === '-2') {
     // some pages add -2 for [All Locations] -- but we don't store it
     site.broadcast(site.broadcastCode.locationChanged);
     setTopInfo();
@@ -690,7 +691,7 @@ function AttachHelp() {
         next.slideDown({
           easing: 'linear',
           duration: 'fast'
-        })
+        });
       } else {
         next.slideUp({
           easing: 'linear',
@@ -702,7 +703,7 @@ function AttachHelp() {
     handle.toggleClass('Closed', !show);
     var key = 'HidePI_' + location.pathname + handle[0].id;
     if (show) {
-      SetInStorage(key, show ? null : 'hide');
+      SetInStorage(key, null);
     } else {
       SetInStorage(key, 'hide');
     }
@@ -720,7 +721,7 @@ function AttachHelp() {
     var handle = $(el);
     var instance = i + 1; // don't want 0
     el.id = 'pi' + instance;
-    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + el.id, 'show') != 'hide', true);
+    showHelp(handle, GetFromStorage('HidePI_' + location.pathname + el.id, 'show') !== 'hide', true);
   });
 
 }
@@ -749,7 +750,7 @@ function AttachHelp() {
 //  };
 //};
 
-/// Called after AJAX server calls
+// Called after AJAX server calls
 
 function HasErrors(data) {
   // PrepareNextKeepAlive(); 
@@ -907,10 +908,10 @@ String.prototype.parseJsonDate = function () {
   var num = /\((.+)\)/.exec(this)[1];
   return new Date(+num);
 
-  ///Date(1072940400000)/
-  ///Date(1654149600000)/
-  ///Date(165414960000)/
-  ///Date(-1566496800000)/
+  //Date(1072940400000)/
+  //Date(1654149600000)/
+  //Date(165414960000)/
+  //Date(-1566496800000)/
 };
 
 String.prototype.parseJsonDateForInput = function () {
@@ -939,10 +940,11 @@ function JsonParse(json) {
   }
   try {
     return eval('(' + json + ')');
-  } catch (e) {
-    console.log(e);
+  } catch (e2) {
+    console.log(e2);
     console.log(json);
   }
+  return null;
 }
 
 
@@ -961,7 +963,7 @@ var statusDisplay = {
 
 function PrepareStatusDisplay() {
   //if ($('body').hasClass('Public Index')) {
-  var target = $('body').hasClass('Public Index') ? 'body' : '#body';
+  //  var target = $('body').hasClass('Public Index') ? 'body' : '#body';
 
   $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">' +
     '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>' +
@@ -1025,7 +1027,7 @@ function ShowStatusFailed(msg, keepTime) {
   } else if (typeof msg.statusText === 'string') {
     if (msg.status === 200 || msg.status === 406) {
       text = msg.responseText;
-    } else if (msg.status === 0 && msg.statusText == 'error') {
+    } else if (msg.status === 0 && msg.statusText === 'error') {
       text = 'Please wait...';
       ShowStatusDisplay(text, 0, keepTime, false, false);
       msgShown = true;
@@ -1097,16 +1099,16 @@ function alerts(arg1, arg2, arg3, etc) {
 
 function comma(number, iDecimals, type, zeroText) { // works on positive numbers under 100 trillion
   // modified from version at irt.org - not very efficient!?
-  if (number == 0 && typeof (zeroText) != 'undefined' && zeroText != null && zeroText != '') {
+  if (number === 0 && typeof (zeroText) != 'undefined' && zeroText !== null && zeroText !== '') {
     return zeroText;
   }
   var bNegative = (number < 0); //work with the positive number and add -'ve at end if needed
   number = Math.abs(number);
   number = number - 0; // convert to number
   if (isNaN(number)) return 'Num?';
-  var bFrench = site.languageCode == 'FR'; //if idecimals is -1 then only return decimals if there are some
-  if (iDecimals == -1) {
-    if (Math.floor(number) == number)
+  var bFrench = site.languageCode === 'FR'; //if idecimals is -1 then only return decimals if there are some
+  if (iDecimals === -1) {
+    if (Math.floor(number) === number)
       iDecimals = 0;
     else
       iDecimals = 2;
@@ -1129,7 +1131,7 @@ function comma(number, iDecimals, type, zeroText) { // works on positive numbers
     var sections = Math.floor(whole.length / 3);
     output = (mod > 0 ? (whole.substring(0, mod)) : '');
     for (i = 0; i < sections; i++) {
-      if ((mod == 0) && (i == 0))
+      if ((mod === 0) && (i === 0))
         output = output + '' + whole.substring(mod + 3 * i, mod + 3 * i + 3);
       else
         output = output + (bFrench ? ' ' : ',') + whole.substring(mod + 3 * i, mod + 3 * i + 3);
@@ -1137,16 +1139,16 @@ function comma(number, iDecimals, type, zeroText) { // works on positive numbers
   } else
     output = whole;
   var sDecimalChar = (bFrench ? ',' : '.');
-  if (decimal != '' && iDecimals != 0) {
+  if (decimal !== '' && iDecimals !== 0) {
     output += sDecimalChar +
       (Math.round(decimal * Math.pow(10, iDecimals)) / Math.pow(10, iDecimals)).toString().substr(2);
   }
 
   //make sure that the specified number of decimals is returned
-  if (iDecimals != 0) {
+  if (iDecimals !== 0) {
     var nPosition = output.indexOf(sDecimalChar);
     var nLength = output.length;
-    if (nPosition == -1) //no decimal point
+    if (nPosition === -1) //no decimal point
     {
       nPosition = output.length - 1;
       output += sDecimalChar;
@@ -1187,7 +1189,7 @@ function getTemplate(selector, replacements) {
   /// <summary>Return the numeric value of a css measure (without 'px')
   /// </summary>
   /// <param name="selector">JQuery selector to get one DOM object</param>
-  /// <param name="replacements">(Optional) An object with named properities. The HTML will be searched for each "name" and replaced with its "value".</param>
+  /// <param name="replacements">(Optional) An object with named properties. The HTML will be searched for each "name" and replaced with its "value".</param>
   var target = $(selector);
   var rawHtml = target.html();
   if (!rawHtml) return '';
@@ -1216,20 +1218,20 @@ function ieInnerHTML(obj, convertToLowerCase) {
 
   if (z) {
     for (var i = 0; i < z.length; i++) {
-      var y, zSaved = z[i], attrRE = /\=[a-zA-Z\.\:\[\]_\(\)\{\}\&\$\%#\@\!0-9]+[?\s+|?>]/g;
+      var zSaved = z[i], attrReg = /\=[a-zA-Z\.\:\[\]_\(\)\{\}\&\$\%#\@\!0-9]+[?\s+|?>]/g;
       z[i] = z[i]
         .replace(/(<?\w+)|(<\/?\w+)\s/, function (a) { return a.toLowerCase(); });
-      y = z[i].match(attrRE); //deze match
+      var y = z[i].match(attrReg); //deze match
 
       if (y) {
         var j = 0, len = y.length;
         while (j < len) {
-          var replaceRE = /(\=)([a-zA-Z\.\:\[\]_\(\{\}\)\&\$\%#\@\!0-9]+)?([\s+|?>])/g,
+          var replaceReg = /(\=)([a-zA-Z\.\:\[\]_\(\{\}\)\&\$\%#\@\!0-9]+)?([\s+|?>])/g,
             replacer = function () {
               var args = Array.prototype.slice.call(arguments);
               return '="' + (convertToLowerCase ? args[2].toLowerCase() : args[2]) + '"' + args[3];
             };
-          z[i] = z[i].replace(y[j], y[j].replace(replaceRE, replacer));
+          z[i] = z[i].replace(y[j], y[j].replace(replaceReg, replacer));
           j++;
         }
       }
@@ -1249,7 +1251,7 @@ function CountOf(s, re) { // match regular expression to string. If find more th
 
 function GetValue(sNum) {
 
-  if (site.languageCode == 'FR') {
+  if (site.languageCode === 'FR') {
     sNum = sNum.replace(/\./g, '');
     sNum = sNum.replace(/,/g, '.');
   } else {
@@ -1271,10 +1273,10 @@ function GetValue(sNum) {
 function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustForServerTimeOffset) {
   // MMM = JAN
   // MMMM = JANUARY
-  if (('' + dateObj).substring(0, 5) == '/Date') {
+  if (('' + dateObj).substring(0, 5) === '/Date') {
     dateObj = dateObj.parseJsonDate();
   }
-  if (dateObj == null || isNaN(dateObj) || dateObj == 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
+  if (dateObj == null || isNaN(dateObj) || dateObj === 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
     return '';
   }
 
@@ -1310,7 +1312,7 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
 
     case 'D MMM YYYY':
       var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
-      if (site.languageCode == 'FR' && forDisplayOnly && +dayValue == 1) {
+      if (site.languageCode === 'FR' && forDisplayOnly && +dayValue === 1) {
         returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
       }
       result = returnVal;
@@ -1334,8 +1336,8 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
       break;
 
     case 'MM/DD/YYYY':
-      var monthval = monthValue + 1;
-      var monthStr = ('0' + monthval).slice(-2);
+      var monthVal = monthValue + 1;
+      var monthStr = ('0' + monthVal).slice(-2);
       var dayStr = ('0' + dayValue).slice(-2);
       result = monthStr + '/' + dayStr + '/' + yearValue;
       break;
@@ -1361,7 +1363,7 @@ String.prototype.filledWith = function () {
   /// 2) If the first and only parameter is an object, replaces {xyz}... (only names allowed) in the string with the properties of that object. 
   /// </summary>
   var values = typeof arguments[0] === 'object' && arguments.length === 1 ? arguments[0] : arguments;
-  if (arguments.length == 0 && arguments[0].length) {
+  if (arguments.length === 0 && arguments[0].length) {
     // use values in array, substituting {0}, {1}, etc.
     values = {};
     $.each(arguments[0],
@@ -1412,7 +1414,7 @@ String.prototype.filledWith = function () {
   var result = replaceTokens(this);
 
   var lastResult = '';
-  while (lastResult != result) {
+  while (lastResult !== result) {
     lastResult = result;
     result = replaceTokens(result);
   }
@@ -1421,7 +1423,7 @@ String.prototype.filledWith = function () {
 };
 
 String.prototype.filledWithEach = function (arr, sep) {
-  /// <summary>Silimar to 'filledWith', but repeats the fill for each item in the array. Returns a single string with the results.
+  /// <summary>Similar to 'filledWith', but repeats the fill for each item in the array. Returns a single string with the results.
   /// </summary>
   if (arr === undefined || arr === null) return '';
   if (sep === undefined) sep = '';
@@ -1432,7 +1434,7 @@ String.prototype.filledWithEach = function (arr, sep) {
   return result.join(sep);
 };
 
-/// Turn { a:1, b:2 } into   a=1&b=2
+// Turn { a:1, b:2 } into   a=1&b=2
 
 //function JoinProperties(obj, sep1, sep2, sepInner1, sepInner2) {
 //    var toJoin = [];
@@ -1506,20 +1508,20 @@ function OptionsFromResourceList(resourceList, defaultValue) {
   var items = [];
   $.each(resourceList,
     function (key, text) {
-      items.push({ Key: key, Text: text, Selected: defaultValue == key ? ' selected' : '' });
+      items.push({ Key: key, Text: text, Selected: defaultValue === key ? ' selected' : '' });
     });
 
   return '<option value="{Key}"{Selected}>{Text}</option>'
     .filledWithEach(items);
 }
 
-//  Storge  //////////////////////////////////////////////////
+//  Storage  //////////////////////////////////////////////////
 var ObjectConstant = '$@$';
 
 function GetFromStorage(key, defaultValue) {
   var checkForObject = function (obj) {
 
-    if (obj.substring(0, ObjectConstant.length) == ObjectConstant) {
+    if (obj.substring(0, ObjectConstant.length) === ObjectConstant) {
       obj = JSON.parse(obj.substring(ObjectConstant.length));
     }
     return obj;
@@ -1533,7 +1535,7 @@ function GetFromStorage(key, defaultValue) {
 function SetInStorage(key, value) {
   if (value === null) {
     localStorage.removeItem(key);
-    return;
+    return null;
   }
   if (typeof value === 'object' || typeof value === 'boolean') {
     var strObj = StringifyObject(value);

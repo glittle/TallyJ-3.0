@@ -575,6 +575,9 @@
     <Compile Include="EF\Location.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="EF\Memberships.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Message.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>

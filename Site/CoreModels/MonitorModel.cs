@@ -62,6 +62,7 @@ namespace TallyJ.CoreModels
           new
           {
             Locations = locations
+              .Where(l => l.Name != LocationModel.OnlineLocationName)
               .OrderBy(l => l.SortOrder)
               .ThenBy(l => l.Name)
               .ThenBy(l => l.C_RowId)

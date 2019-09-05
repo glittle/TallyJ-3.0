@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -119,6 +120,107 @@ namespace TallyJ.CoreModels.Helper
       return SendEmail(message, html, out error);
     }
 
+    public JsonResult DoScheduled()
+    {
+      var db = UserSession.DbContext;
+      var now = DateTime.Now;
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var electionList = db.Election
+        .Where(e => e.OnlineWhenOpen < now
+                    && e.OnlineAnnounced == null
+                    && e.OnlineWhenClose > now)
+        .Join(db.JoinElectionUser, e => e.ElectionGuid, jeu => jeu.ElectionGuid, (e, jeu) => new { e, jeu })
+        .Join(db.Memberships, j => j.jeu.UserId, m => m.UserId, (j, m) => new { j.e, ownerEmail = m.Email })
+        .GroupJoin(
+          db.OnlineVotingInfo
+            .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), ovi => ovi.Email, ov => ov.Email, (ovi, ov) => new { ovi, ov })
+            .Join(db.Person, j => j.ovi.PersonGuid, p => p.PersonGuid, (j, p) => new { j.ovi, j.ov, p })
+          , je => je.e.ElectionGuid, jv => jv.ovi.ElectionGuid, (je, oviList) => new { je, oviList })
+        .Select(g => new
+        {
+          g.je.e,
+          g.je.ownerEmail,
+          people = g.oviList.Select(jOvi => new
+          {
+            jOvi.ov.Email,
+            jOvi.p.C_FullNameFL,
+          })
+        })
+        .ToList();
+
+      var msgs = new List<string>();
+
+      electionList.ForEach(item =>
+      {
+        var electionName = item.e.Name;
+        var electionType = ElectionTypeEnum.TextFor(item.e.ElectionType);
+        var isEstimate = item.e.OnlineCloseIsEstimate;
+        var whenClosed = item.e.OnlineWhenClose.GetValueOrDefault();
+        var whenClosedUtc = whenClosed.ToUniversalTime();
+        var remainingTime = whenClosed - now;
+        var howLong = "";
+        if (remainingTime.Days > 1)
+        {
+          howLong = remainingTime.Days + " days";
+        }
+        else
+        {
+          howLong = remainingTime.Hours + " hours";
+        }
+
+        var numEmails = 0;
+
+        item.people.ToList().ForEach(p =>
+        {
+          var html = GetEmailTemplate("ElectionOpen").FilledWithObject(new
+          {
+            hostSite,
+            logo = hostSite + "/Images/LogoSideM.png",
+            p.Email,
+            personName = p.C_FullNameFL,
+            electionName,
+            electionType,
+            whenClosedDay = whenClosedUtc.ToString("d MMM"),
+            whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
+            howLong,
+          });
+
+          var message = new MailMessage();
+          message.To.Add(new MailAddress(p.Email, p.C_FullNameFL));
+
+          if (item.ownerEmail.HasContent())
+          {
+            message.ReplyToList.Add(new MailAddress(item.ownerEmail));
+          }
+
+          numEmails++;
+
+          var ok = SendEmail(message, html, out var emailError);
+        });
+
+        msgs.Add($"Election #{item.e.C_RowId} announced to {numEmails} {(numEmails == 1 ? "person" : "people")}");
+
+        item.e.OnlineAnnounced = now;
+        db.SaveChanges();
+      });
+
+      var numElections = electionList.Count;
+
+      if (numElections == 0)
+      {
+        return new
+        {
+          msg = "Nothing at " + now
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        msg = msgs.JoinedAsString("\r\n")
+      }.AsJsonResult();
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -209,14 +311,6 @@ namespace TallyJ.CoreModels.Helper
       AssertAtRuntime.That(File.Exists(path), "Missing email template");
 
       return File.ReadAllText(path);
-    }
-
-    public JsonResult DoScheduled()
-    {
-      return new
-      {
-        notImplemented = true
-      }.AsJsonResult();
     }
   }
 }

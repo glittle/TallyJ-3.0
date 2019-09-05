@@ -14,17 +14,10 @@ namespace TallyJ.EF
     
     public partial class Users
     {
-        public Users()
-        {
-            this.JoinElectionUser = new HashSet<JoinElectionUser>();
-        }
-    
         public System.Guid ApplicationId { get; set; }
         public System.Guid UserId { get; set; }
         public string UserName { get; set; }
         public bool IsAnonymous { get; set; }
         public System.DateTime LastActivityDate { get; set; }
-    
-        public virtual ICollection<JoinElectionUser> JoinElectionUser { get; set; }
     }
 }
