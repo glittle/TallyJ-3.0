@@ -36,54 +36,54 @@ namespace TallyJ.CoreModels.Helper
       return SendEmail(message, html, out error);
     }
 
-    public bool SendWhenOpen(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
-    {
-      // only send if they asked for it
-      if (!ov.EmailCodes.Contains("o"))
-      {
-        error = null;
-        return true;
-      }
-
-      // proceed to send
-      var email = ov.Email;
-      var hostSite = SettingsHelper.Get("HostSite", "");
-
-      var whenClose = e.OnlineWhenClose.GetValueOrDefault();
-      var openLength = whenClose - e.OnlineWhenOpen.GetValueOrDefault();
-      var howLong = "";
-      if (openLength.Days > 1)
-      {
-        howLong = openLength.Days + " days";
-      }
-      else
-      {
-        howLong = openLength.Hours + " hours";
-      }
-
-      var html = GetEmailTemplate("BallotProcessed").FilledWithObject(new
-      {
-        email,
-        voterName = p.C_FullNameFL,
-        electionName = e.Name,
-        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
-        hostSite,
-        logo = hostSite + "/Images/LogoSideM.png",
-        howLong,
-        whenClose
-      });
-
-      var message = new MailMessage();
-      message.To.Add(new MailAddress(email, p.C_FullNameFL));
-
-      var memberEmail = UserSession.MemberEmail;
-      if (memberEmail.HasContent())
-      {
-        message.ReplyToList.Add(new MailAddress(memberEmail, UserSession.MemberName + " (Teller)"));
-      }
-
-      return SendEmail(message, html, out error);
-    }
+//    public bool SendWhenOpen(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
+//    {
+//      // only send if they asked for it
+//      if (!ov.EmailCodes.Contains("o"))
+//      {
+//        error = null;
+//        return true;
+//      }
+//
+//      // proceed to send
+//      var email = ov.Email;
+//      var hostSite = SettingsHelper.Get("HostSite", "");
+//
+//      var whenClose = e.OnlineWhenClose.GetValueOrDefault();
+//      var openLength = whenClose - e.OnlineWhenOpen.GetValueOrDefault();
+//      var howLong = "";
+//      if (openLength.Days > 1)
+//      {
+//        howLong = openLength.Days + " days";
+//      }
+//      else
+//      {
+//        howLong = openLength.Hours + " hours";
+//      }
+//
+//      var html = GetEmailTemplate("BallotProcessed").FilledWithObject(new
+//      {
+//        email,
+//        voterName = p.C_FullNameFL,
+//        electionName = e.Name,
+//        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+//        hostSite,
+//        logo = hostSite + "/Images/LogoSideM.png",
+//        howLong,
+//        whenClose
+//      });
+//
+//      var message = new MailMessage();
+//      message.To.Add(new MailAddress(email, p.C_FullNameFL));
+//
+//      var memberEmail = UserSession.MemberEmail;
+//      if (memberEmail.HasContent())
+//      {
+//        message.ReplyToList.Add(new MailAddress(memberEmail, UserSession.MemberName + " (Teller)"));
+//      }
+//
+//      return SendEmail(message, html, out error);
+//    }
 
     public bool SendWhenProcessed(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
     {
@@ -120,7 +120,7 @@ namespace TallyJ.CoreModels.Helper
       return SendEmail(message, html, out error);
     }
 
-    public JsonResult DoScheduled()
+    private JsonResult SendWhenOpened()
     {
       var db = UserSession.DbContext;
       var now = DateTime.Now;
@@ -221,6 +221,11 @@ namespace TallyJ.CoreModels.Helper
       }.AsJsonResult();
     }
 
+    public JsonResult DoScheduled()
+    {
+      return SendWhenOpened();
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -229,8 +234,9 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="errorMessage"></param>
     /// <remarks>
     /// Settings from AppSettings in Web.config or similar:
+    /// "FromEmailAddress", "system@tallyj.com"
+    /// "SmtpPickupDirectory", "" -- if used, all other settings are ignored
     /// "SmtpHost", "localhost"
-    /// "SmtpPickupDirectory", ""
     /// "SmtpUsername", ""
     /// "SmtpPassword", ""
     /// "SmtpSecure", false
@@ -240,7 +246,7 @@ namespace TallyJ.CoreModels.Helper
     /// <returns></returns>
     private bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
-      message.From = new MailAddress("no-reply@tallyj.com", "TallyJ System");
+      message.From = new MailAddress(SettingsHelper.Get("FromEmailAddress", "system@tallyj.com"), "TallyJ System");
       message.Body = htmlBody;
       message.IsBodyHtml = true;
 
@@ -249,8 +255,7 @@ namespace TallyJ.CoreModels.Helper
       message.Subject = subject.Value;
 
 
-
-
+      
       var host = SettingsHelper.Get("SmtpHost", "localhost");
       var pickupDirectory = SettingsHelper.Get("SmtpPickupDirectory", "");
       var senderHostName = message.Sender?.Host ?? "TallyJ";

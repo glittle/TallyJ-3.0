@@ -56,7 +56,7 @@ namespace TallyJ.Controllers
     public JsonResult DoScheduled(int minutes = 5)
     {
       var now = DateTime.Now;
-      if (minutes < 0)
+      if (minutes < 0 || new SiteInfo().CurrentEnvironment == "Dev")
       {
         minutes = 0;
       }

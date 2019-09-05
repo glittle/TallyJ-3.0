@@ -25,6 +25,7 @@ namespace Tests.BusinessTests
       this.Teller = new TestDbSet<Teller>();
       this.OnlineVoter = new TestDbSet<OnlineVoter>();
       this.OnlineVotingInfo = new TestDbSet<OnlineVotingInfo>();
+      this.Memberships = new TestDbSet<Memberships>();
     }
 
     public int SaveChangesCount { get; private set; }
@@ -66,5 +67,6 @@ namespace Tests.BusinessTests
     public DbSet<Person> Person { get; set; }
     public DbSet<Teller> Teller { get; set; }
     public DbSet<OnlineVoter> OnlineVoter { get; set; }
+    public DbSet<Memberships> Memberships { get; set; }
   }
 }
