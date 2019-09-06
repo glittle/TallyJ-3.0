@@ -24,6 +24,13 @@
         <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="10.75" PointY="8.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Memberships" Width="1.5" PointX="12.75" PointY="0.75" />
         <AssociationConnector Association="TallyJ2dModel.MembershipUser" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetRoles" Width="1.5" PointX="13.375" PointY="8.5" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserClaims" Width="1.5" PointX="17.875" PointY="7" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserLogins" Width="1.5" PointX="17.875" PointY="9.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUsers" Width="1.5" PointX="15.625" PointY="7.375" />
+        <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="TallyJ2dModel.AspNetUserRoles" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

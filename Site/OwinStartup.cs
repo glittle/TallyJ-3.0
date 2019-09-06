@@ -12,7 +12,6 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Facebook;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using Owin.Security.Providers.PayPal;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
@@ -53,16 +52,15 @@ namespace TallyJ
 
       // ensure that we have authentication account details
 
-      if (AppSettings["facebook-AppId"].HasNoContent())
+      if (AppSettings["facebook-AppId"].HasContent())
       {
-        throw new ApplicationException("Missing app settings");
+        app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
       }
 
-      app.UseGoogleAuthentication(CreateGoogleOptions());
-      app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
-      //      app.UsePayPalAuthentication();
-      //            app.UseSpotifyAuthentication()
-      //            app.UseCookieAuthentication(CreateCookiesOptions());
+      if (AppSettings["google-ClientId"].HasContent())
+      {
+        app.UseGoogleAuthentication(CreateGoogleOptions());
+      }
     }
 
     private CustomFacebookAuthenticationOptions CreateFacebookOptions()
@@ -173,7 +171,7 @@ namespace TallyJ
 
       onlineVoter.WhenLastLogin = now;
       db.SaveChanges();
-     
+
       new LogHelper().Add($"Login from {source}", true, email);
 
       new VoterPersonalHub().Login(email); // in case same email is logged into a different computer

@@ -12,12 +12,14 @@ namespace TallyJ.EF
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using Microsoft.AspNet.Identity.EntityFramework;
     
-    public partial class TallyJ2dEntities : DbContext
+    public partial class TallyJ2dEntities : IdentityDbContext<OnlineVoter>
     {
         public TallyJ2dEntities()
             : base("name=TallyJ2dEntities")
         {
+          ((IdentityDbContext<OnlineVoter>)this).
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -42,5 +44,9 @@ namespace TallyJ.EF
         public virtual DbSet<C_Log> C_Log { get; set; }
         public virtual DbSet<Election> Election { get; set; }
         public virtual DbSet<Memberships> Memberships { get; set; }
+        public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
     }
 }

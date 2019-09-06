@@ -53,6 +53,8 @@ div.closer {
 }
 
 #socialLoginList {
+  text-align: center;
+
   .authButton {
     display: block;
     margin: 10px auto;
@@ -251,6 +253,11 @@ section.CenterPanel.chosen:hover {
 .VoterPanel {
   display: none;
   background-color: lighten(@tallyJOrange, 60%);
+
+  .voterLogins{
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 fieldset input[type="text"], fieldset input[type="password"] {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TallyJ.EF
 {
@@ -28,7 +29,7 @@ namespace TallyJ.EF
 
     public void Detach(object entity)
     {
-      ((IObjectContextAdapter) (this)).ObjectContext.Detach(entity);
+      ((IObjectContextAdapter)(this)).ObjectContext.Detach(entity);
     }
 
     public long CurrentRowVersion()

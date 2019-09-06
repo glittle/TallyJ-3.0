@@ -43,6 +43,7 @@ namespace <#=code.EscapeNamespace(codeNamespace)#>
 using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using Microsoft.AspNet.Identity.EntityFramework;
 <#
 if (container.FunctionImports.Any())
 {
@@ -53,7 +54,7 @@ using System.Linq;
 }
 #>
 
-<#=Accessibility.ForType(container)#> partial class <#=code.Escape(container)#> : DbContext
+<#=Accessibility.ForType(container)#> partial class <#=code.Escape(container)#> : IdentityDbContext<OnlineVoter>
 {
     public <#=code.Escape(container)#>()
         : base("name=<#=container.Name#>")
