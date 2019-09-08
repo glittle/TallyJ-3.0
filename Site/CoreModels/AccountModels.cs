@@ -38,7 +38,7 @@ namespace TallyJ.CoreModels
     }
   }
 
-  public class LogOnModel
+  public class LogOnModelV1
   {
     [Required]
     [Display(Name = "User name")]
@@ -51,9 +51,16 @@ namespace TallyJ.CoreModels
     [Required]
     [DataType(DataType.Password)]
     [Display(Name = "Password")]
-    public string Password
+    public string PasswordV1
     {
       get;
+      set;
+    }
+
+    [Required]
+    public string Provider
+    {
+      get; 
       set;
     }
 

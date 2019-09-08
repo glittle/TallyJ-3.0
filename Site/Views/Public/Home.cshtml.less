@@ -254,9 +254,65 @@ section.CenterPanel.chosen:hover {
   display: none;
   background-color: lighten(@tallyJOrange, 60%);
 
-  .voterLogins{
+
+  .voterLogins {
     display: flex;
     justify-content: space-between;
+    margin: 10px 0;
+
+    > div {
+      border: 1px solid grey;
+      margin: 3px;
+      padding: 5px;
+      flex-grow: 1;
+    }
+
+    .voterOr {
+      flex-grow: 0;
+      padding: 0 5px;
+      border: none;
+      //border: 1px solid grey;
+      //border-top: none;
+      //border-bottom: none;
+    }
+  }
+
+  .voterEmail {
+    margin-bottom: 1em;
+
+    input {
+      text-align: center;
+    }
+  }
+
+  .direct {
+    padding: 5px;
+
+    .pw {
+      div {
+        margin: 5px 0;
+      }
+
+      input {
+        text-align: center;
+      }
+    }
+
+    .remember {
+      text-align: center;
+    }
+
+    .submit {
+      margin: 5px 0;
+    }
+
+    .other {
+      font-size: 90%;
+
+      div {
+        margin: 5px 0;
+      }
+    }
   }
 }
 

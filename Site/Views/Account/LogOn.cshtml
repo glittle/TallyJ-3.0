@@ -1,5 +1,5 @@
 ﻿@using TallyJ.Code.Session
-@model LogOnModel
+@model LogOnModelV1
 
 @{
   ViewBag.Title = "Log On";
@@ -39,9 +39,9 @@
         @Html.ValidationMessageFor(m => m.UserName)
       </div>
       <div>
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password)
-        @Html.ValidationMessageFor(m => m.Password)
+        @Html.LabelFor(m => m.PasswordV1)
+        @Html.PasswordFor(m => m.PasswordV1)
+        @Html.ValidationMessageFor(m => m.PasswordV1)
       </div>
     </div>
     <input type="submit" value="Log In" onclick="lookBusy" class="btn btn-success" />

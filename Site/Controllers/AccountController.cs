@@ -7,11 +7,14 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
+using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Account2Models;
 using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.Controllers
@@ -19,6 +22,7 @@ namespace TallyJ.Controllers
   //[Authorize]
   public class AccountController : Controller
   {
+    private ApplicationSignInManager _signInManager;
     //
     // GET: /Account/LogOn
 
@@ -37,9 +41,52 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult ExternalLogin(string provider)
+    public ActionResult LogOn2(LogOnModelV1 logOnModelV1)
     {
-      return new ChallengeResult(provider, Url.Action("Index", "Voter"), AppSettings["XsrfValue"]);
+      var voterHomeUrl = Url.Action("Index", "Voter");
+      if (logOnModelV1.Provider == "Local")
+      {
+        return LocalPwLogin(logOnModelV1.AsLogOnModel(), voterHomeUrl);
+      }
+
+      return new ChallengeResult(logOnModelV1.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
+    }
+
+    public ActionResult LocalPwLogin(LoginViewModel model, string returnUrl)
+    {
+      if (!ModelState.IsValid)
+      {
+        return Redirect(returnUrl);
+        //return View(model);
+      }
+
+      var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true).Result;
+      switch (result)
+      {
+        case SignInStatus.Success:
+          return Redirect(returnUrl);
+        case SignInStatus.LockedOut:
+          return RedirectToAction("Lockout", "Account2");
+        case SignInStatus.RequiresVerification:
+          return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+        case SignInStatus.Failure:
+        default:
+          ModelState.AddModelError("", "Invalid login attempt.");
+          //          return View(model);
+          return Redirect(returnUrl);
+      }
+    }
+
+    public ApplicationSignInManager SignInManager2
+    {
+      get
+      {
+        return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+      }
+      private set
+      {
+        _signInManager = value;
+      }
     }
 
     //        [AllowAnonymous]
@@ -118,11 +165,11 @@ namespace TallyJ.Controllers
 
     [AllowAnonymous]
     [HttpPost]
-    public ActionResult LogOn(LogOnModel model, string returnUrl)
+    public ActionResult LogOn(LogOnModelV1 model, string returnUrl)
     {
       if (ModelState.IsValid)
       {
-        if (Membership.ValidateUser(model.UserName, model.Password))
+        if (Membership.ValidateUser(model.UserName, model.PasswordV1))
         {
           //                    FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
 

@@ -50,6 +50,7 @@ namespace TallyJ.CoreModels.Account2Models
     {
         [Required]
         [Display(Name = "Email")]
+        [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public string Email { get; set; }
 

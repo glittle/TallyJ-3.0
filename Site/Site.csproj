@@ -1054,6 +1054,7 @@
     <Content Include="Views\Manage2\ManageLogins.cshtml" />
     <Content Include="Views\Manage2\SetPassword.cshtml" />
     <Content Include="Views\Manage2\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Account2\Lockout.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

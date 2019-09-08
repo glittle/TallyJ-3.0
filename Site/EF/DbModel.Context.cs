@@ -19,7 +19,6 @@ namespace TallyJ.EF
         public TallyJ2dEntities()
             : base("name=TallyJ2dEntities")
         {
-          ((IdentityDbContext<OnlineVoter>)this).
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

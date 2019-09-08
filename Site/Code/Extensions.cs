@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using RazorEngine.Text;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Account2Models;
 using TallyJ.EF;
 
 namespace TallyJ.Code
@@ -807,6 +808,16 @@ namespace TallyJ.Code
     public static DateTime ChopToMinute(this DateTime input)
     {
       return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, 0);
+    }
+
+    public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)
+    {
+      return new LoginViewModel
+      {
+        Email = input.UserName,
+        Password = input.PasswordV1,
+        RememberMe = input.RememberMe
+      };
     }
   }
 }
