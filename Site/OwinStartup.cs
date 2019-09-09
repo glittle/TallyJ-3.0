@@ -31,6 +31,10 @@ namespace TallyJ
 
       app.MapSignalR();
 
+      // for login v2
+      app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+      app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";

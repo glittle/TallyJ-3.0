@@ -61,6 +61,8 @@ namespace TallyJ.CoreModels.Account2Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public string Provider { get; set; }
     }
 
     public class RegisterViewModel

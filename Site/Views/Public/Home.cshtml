@@ -207,7 +207,16 @@
       else
       {
         <div>
-
+          @{
+            var msg = (string)Session[SessionKey.VoterLoginError];
+            if (msg.HasContent())
+            {
+              Session.Remove(SessionKey.VoterLoginError);
+              <div class="VoterLoginError">
+                @msg.AsRawHtml()
+              </div>
+            }
+          }
 
           @{
             var loginTypes = Context.GetOwinContext().Authentication.GetAuthenticationTypes();
@@ -218,7 +227,7 @@
 
               <div class="voterEmail">
                 <label>
-                  Please enter your email address:
+                  Please enter your email address, as listed in the election you plan to vote in.
                 </label>
                 <div>
                   @Html.EditorFor(m => m.Email)
@@ -314,10 +323,6 @@
               <p>
                 By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
               </p>
-              <p>
-                The email address you provide must match the email address listed with your name in the election you plan to vote in.
-              </p>
-
             }
           }
 

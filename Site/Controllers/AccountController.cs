@@ -41,21 +41,22 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult LogOn2(LogOnModelV1 logOnModelV1)
+    public ActionResult LogOn2(LoginViewModel loginViewModel)
     {
       var voterHomeUrl = Url.Action("Index", "Voter");
-      if (logOnModelV1.Provider == "Local")
+      if (loginViewModel.Provider == "Local")
       {
-        return LocalPwLogin(logOnModelV1.AsLogOnModel(), voterHomeUrl);
+        return LocalPwLogin(loginViewModel, voterHomeUrl);
       }
 
-      return new ChallengeResult(logOnModelV1.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
+      return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }
 
     public ActionResult LocalPwLogin(LoginViewModel model, string returnUrl)
     {
       if (!ModelState.IsValid)
       {
+        StoreModelStateErrorMessagesInSession();
         return Redirect(returnUrl);
         //return View(model);
       }
@@ -66,15 +67,32 @@ namespace TallyJ.Controllers
         case SignInStatus.Success:
           return Redirect(returnUrl);
         case SignInStatus.LockedOut:
+          StoreModelStateErrorMessagesInSession();
           return RedirectToAction("Lockout", "Account2");
         case SignInStatus.RequiresVerification:
+          StoreModelStateErrorMessagesInSession();
           return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
         case SignInStatus.Failure:
         default:
           ModelState.AddModelError("", "Invalid login attempt.");
-          //          return View(model);
+          StoreModelStateErrorMessagesInSession();
           return Redirect(returnUrl);
       }
+    }
+    private ApplicationSignInManager SignInManager
+    {
+      get
+      {
+        return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+      }
+      set 
+      { 
+        _signInManager = value; 
+      }
+    }
+    private void StoreModelStateErrorMessagesInSession()
+    {
+      Session[SessionKey.VoterLoginError] = ModelState.Values.SelectMany(msv => msv.Errors.Select(msv2 => msv2.ErrorMessage)).JoinedAsString("<br>");
     }
 
     public ApplicationSignInManager SignInManager2
