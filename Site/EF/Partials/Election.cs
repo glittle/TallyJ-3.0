@@ -168,7 +168,7 @@ namespace TallyJ.EF
         /// <Summary>Erase all ballots and results</Summary>
         public static void EraseBallotsAndResults(Guid electionGuid)
         {
-            var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+            var db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
 
             db.Result.Where(r => r.ElectionGuid == electionGuid).Delete();
             db.ResultTie.Where(r => r.ElectionGuid == electionGuid).Delete();

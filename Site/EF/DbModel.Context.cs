@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using TallyJ.CoreModels.Account2Models;
+
 namespace TallyJ.EF
 {
     using System;
@@ -14,11 +16,12 @@ namespace TallyJ.EF
     using System.Data.Entity.Infrastructure;
     using Microsoft.AspNet.Identity.EntityFramework;
     
-    public partial class TallyJ2dEntities : IdentityDbContext<OnlineVoter>
+    public partial class TallyJ2dEntities : IdentityDbContext<ApplicationUser>
     {
         public TallyJ2dEntities()
             : base("name=TallyJ2dEntities")
         {
+           Database.SetInitializer<TallyJ2dEntities>(null);
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

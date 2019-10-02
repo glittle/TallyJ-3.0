@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
@@ -15,6 +16,7 @@ using Owin;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Account2Models;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
@@ -32,6 +34,7 @@ namespace TallyJ
       app.MapSignalR();
 
       // for login v2
+      app.CreatePerOwinContext(ApplicationDbContext.Create);
       app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
       app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
@@ -43,11 +46,29 @@ namespace TallyJ
 
       app.UseCookieAuthentication(new CookieAuthenticationOptions
       {
-        CookieSecure = CookieSecureOption.Always,
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
+        CookieSecure = CookieSecureOption.Always,
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
-        LoginPath = new PathString("/")
+        LoginPath = new PathString("/"),
+        Provider = new CookieAuthenticationProvider
+        {
+          // Enables the application to validate the security stamp when the user 
+          // logs in. This is a security feature which is used when you 
+          // change a password or add an external login to your account.  
+          OnValidateIdentity = SecurityStampValidator
+            .OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+              validateInterval: TimeSpan.FromMinutes(30),
+              regenerateIdentity: (manager, user) 
+                => user.GenerateUserIdentityAsync(manager))
+        }
       });
+
+      // Enables the application to remember the second login verification factor such 
+      // as phone or email. Once you check this option, your second step of 
+      // verification during the login process will be remembered on the device where 
+      // you logged in from. This is similar to the RememberMe option when you log in.
+      app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
+
 
       if (!SettingsHelper.HostSupportsOnlineElections)
       {

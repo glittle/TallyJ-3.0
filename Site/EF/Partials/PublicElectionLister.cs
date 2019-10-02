@@ -88,7 +88,7 @@ namespace TallyJ.EF
 
     protected ITallyJDbContext Db
     {
-      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext); }
       set { _db = value; }
     }
 

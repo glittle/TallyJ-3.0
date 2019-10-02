@@ -26,11 +26,14 @@ namespace TallyJ.Code.Session
   }
 
   public interface ISessionWrapper : IDictionary<string, object> {
+    bool IsAvailable { get; }
   }
 
   public class SessionWrapper : ISessionWrapper
   {
     HttpSessionState _session = HttpContext.Current.Session;
+
+    public bool IsAvailable => _session != null;
 
     public object this[string key]
     {

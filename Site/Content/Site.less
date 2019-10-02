@@ -734,7 +734,7 @@ fieldset input[type="text"]:focus, fieldset input[type="password"]:focus {
     padding: .2em .5em .35em .5em;
 }*/
 //input[type="submit"]:hover, input[type="file"]:hover, button.Primary:hover {
-  /*background-color: #b6ff50;*/
+/*background-color: #b6ff50;*/
 //}
 /* ajax login/registration dialog */
 .modal-popup {
@@ -892,12 +892,12 @@ a.twitter {
 /* End: Statuses */
 .CompCode {
   color: #737373;
- // position: absolute;
- // top: 2px;
- // left: 39px;
- // text-align: center;
- // font-size: 15px;
- // width: 44px;
+  // position: absolute;
+  // top: 2px;
+  // left: 39px;
+  // text-align: center;
+  // font-size: 15px;
+  // width: 44px;
 }
 
 .CurrentElectionName {
@@ -1382,6 +1382,41 @@ section.features.bottom {
     color: @textColor;
   }
 }
+
+body.Acc2Pages {
+
+  .MainTop {
+    float: none;
+    position: relative;
+
+    .site-title {
+      width: auto;
+      background-repeat: no-repeat;
+      padding-left: 70px;
+      margin: 0px 15px 0px 6px;
+    }
+  }
+
+  .logoffVoter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+  /* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+  .dl-horizontal dt {
+    white-space: normal;
+  }
+  /* Set width on the form input elements since they're 100% wide by default */
+  input,
+  select,
+  textarea {
+    max-width: 280px;
+  }
+}
+
+
 
 [v-cloak] {
   display: none

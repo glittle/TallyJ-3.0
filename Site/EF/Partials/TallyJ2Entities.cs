@@ -1,9 +1,8 @@
-﻿using EntityFramework.BulkInsert.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using Microsoft.AspNet.Identity.EntityFramework;
+using EntityFramework.BulkInsert.Extensions;
 
 namespace TallyJ.EF
 {

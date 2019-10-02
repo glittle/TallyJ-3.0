@@ -76,7 +76,7 @@ namespace TallyJ.Controllers
         default:
           ModelState.AddModelError("", "Invalid login attempt.");
           StoreModelStateErrorMessagesInSession();
-          return Redirect(returnUrl);
+          return Redirect(Url.Action("Index", "Public"));
       }
     }
     private ApplicationSignInManager SignInManager

@@ -23,7 +23,7 @@ namespace TallyJ.Code.Data
       _tallyJ2Entities.ForEach(d => d.Dispose());
     }
 
-    public ITallyJDbContext DbContext
+    public ITallyJDbContext GetNewDbContext
     {
       get
       {

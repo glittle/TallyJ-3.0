@@ -19,18 +19,18 @@
   <meta http-equiv='content-language' content='en'>
   <title>TallyJ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="msvalidate.01" content="BDA801FC5063E31B10FDB52B7C0ADC14">
   @RenderSection("Metas", false)
   @RenderPage("Headers.cshtml")
+  <link href="@ClientFile("~/Content/bootstrap3/bootstrap{0}.css", ".min")" rel="stylesheet" type="text/css" />
+  <script src="@ClientFile("~/Content/bootstrap3/bootstrap{0}.js", ".min")" type="text/javascript"></script>
   <meta name="description" content="Baha'i Election System'" />
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" async>
 </head>
 @{
   var classes = new List<string> {
       ControllerActionNamesJoined,
     };
 }
-<body class="VoterPages @classes.JoinedAsString(" ", true)">
+<body class="Acc2Pages @classes.JoinedAsString(" ", true)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
@@ -39,15 +39,11 @@
              alt="TallyJ - Bahá’í Election Tool">
           <h1>TallyJ - Bahá’í Election Tool</h1>
         </div>
-        @if (UserSession.IsVoter)
-        {
-          <button type="button" class="btn logoffVoter" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
-        }
       </div>
     </div>
   </header>
 
-  <div id="body" v-cloak>
+  <div id="body">
     @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
     {
       <div style="margin: 50px auto; padding: 50px; color: red">Sorry, older versions of Internet Explorer are not supported!  Please use Chrome or Firefox.</div>
@@ -61,6 +57,6 @@
     }
   </div>
   @RenderPage("Footer.cshtml")
-  @RenderSection("scripts", required: false)
+  <script src="@ClientFile("~/Scripts/jquery.validate{0}.js", ".min")" type="text/javascript"></script>
 </body>
 </html>

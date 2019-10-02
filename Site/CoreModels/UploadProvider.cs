@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     /// </summary>
     protected ITallyJDbContext Db
     {
-      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().DbContext); }
+      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext); }
     }
 
     public UploadProvider(UploadStreamProviderElement settings) : base(settings)

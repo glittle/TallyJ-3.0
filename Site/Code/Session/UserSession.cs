@@ -30,7 +30,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return UnityInstance.Resolve<IDbContextFactory>().DbContext;
+        return UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
       }
     }
 
@@ -117,7 +117,15 @@ namespace TallyJ.Code.Session
     /// <Summary>Stored as Guid in session</Summary>
     public static Guid CurrentElectionGuid
     {
-      get { return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty); }
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
       set
       {
         SessionKey.CurrentElectionGuid.SetInSession(value);
