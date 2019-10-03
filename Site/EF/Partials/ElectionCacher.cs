@@ -38,7 +38,7 @@ namespace TallyJ.EF
     public ElectionCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
-    public ElectionCacher() : base(UserSession.DbContext)
+    public ElectionCacher() : base(UserSession.GetNewDbContext)
     {
     }
 

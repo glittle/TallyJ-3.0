@@ -122,7 +122,7 @@ namespace TallyJ.CoreModels.Helper
 
     private JsonResult SendWhenOpened()
     {
-      var db = UserSession.DbContext;
+      var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
 

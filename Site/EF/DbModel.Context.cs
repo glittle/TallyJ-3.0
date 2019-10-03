@@ -16,7 +16,7 @@ namespace TallyJ.EF
     using System.Data.Entity.Infrastructure;
     using Microsoft.AspNet.Identity.EntityFramework;
     
-    public partial class TallyJ2dEntities : IdentityDbContext<ApplicationUser>
+    public partial class TallyJ2dEntities : DbContext
     {
         public TallyJ2dEntities()
             : base("name=TallyJ2dEntities")

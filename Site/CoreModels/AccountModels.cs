@@ -57,13 +57,6 @@ namespace TallyJ.CoreModels
       set;
     }
 
-    [Required]
-    public string Provider
-    {
-      get; 
-      set;
-    }
-
     [Display(Name = "Remember me?")]
     public bool RememberMe
     {

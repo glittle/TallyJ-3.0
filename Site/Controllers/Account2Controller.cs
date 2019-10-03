@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using TallyJ.Code.OwinRelated;
+using TallyJ.Code.Session;
 using TallyJ.CoreModels.Account2Models;
 using TallyJ.EF;
 
@@ -168,7 +169,7 @@ namespace TallyJ.Controllers
           // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
           // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-          return RedirectToAction("Index", "Home");
+          return RedirectToAction("Index", "Voter");
         }
         AddErrors(result);
       }
@@ -330,7 +331,7 @@ namespace TallyJ.Controllers
       var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
       if (loginInfo == null)
       {
-        return RedirectToAction("Login");
+        return RedirectToAction("Index", "Public");
       }
 
       // Sign in the user with this external login provider if the user already has a login
@@ -359,7 +360,7 @@ namespace TallyJ.Controllers
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
     {
-      if (User.Identity.IsAuthenticated)
+      if (UserSession.IsAuthenticated)
       {
         return RedirectToAction("Index", "Manage2");
       }
@@ -397,7 +398,7 @@ namespace TallyJ.Controllers
     public ActionResult LogOff()
     {
       AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-      return RedirectToAction("Index", "Home");
+      return RedirectToAction("Index", "Public");
     }
 
     //
@@ -444,7 +445,12 @@ namespace TallyJ.Controllers
     {
       foreach (var error in result.Errors)
       {
-        ModelState.AddModelError("", error);
+        var msg = error;
+        if (msg == "Passwords must have at least one non letter or digit character.")
+        {
+          msg = "Passwords must have at least one special character that is not a letter or digit.";
+        }
+        ModelState.AddModelError("", msg);
       }
     }
 
@@ -454,7 +460,7 @@ namespace TallyJ.Controllers
       {
         return Redirect(returnUrl);
       }
-      return RedirectToAction("Index", "Home");
+      return RedirectToAction("Index", "Voter");
     }
 
     internal class ChallengeResult : HttpUnauthorizedResult

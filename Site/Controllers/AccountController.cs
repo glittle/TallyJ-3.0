@@ -61,10 +61,29 @@ namespace TallyJ.Controllers
         //return View(model);
       }
 
+      var owinContext = HttpContext.GetOwinContext();
+
+      var x = owinContext.Authentication.AuthenticationResponseGrant;
+
       var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true).Result;
+
+      var y = owinContext.Authentication.AuthenticationResponseGrant;
+
       switch (result)
       {
         case SignInStatus.Success:
+
+          var claimsIdentity = owinContext.Authentication.AuthenticationResponseGrant.Identity;
+          owinContext.Authentication.SignIn(new AuthenticationProperties()
+          {
+            AllowRefresh = true,
+            IsPersistent = false,
+            ExpiresUtc = DateTime.UtcNow.AddHours(1)
+          }, claimsIdentity);
+
+          SessionKey.ActivePrincipal.SetInSession(owinContext.Authentication.AuthenticationResponseGrant.Principal);
+
+          UserSession.RecordLogin("Local", UserSession.VoterEmail); 
           return Redirect(returnUrl);
         case SignInStatus.LockedOut:
           StoreModelStateErrorMessagesInSession();

@@ -112,16 +112,16 @@
       <table class="loginHistory">
         <thead>
           <tr>
+            <th>Time (UTC)</th>
             <th>Action</th>
             <th>When</th>
-            <th>Time (UTC)</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(lh, i) in loginHistory" v-bind:key="i">
+            <td class="nowrap" v-text="lh.utc"></td>
             <td class="details" v-text="lh.Details"></td>
             <td class="nowrap" v-text="lh.age"></td>
-            <td class="nowrap" v-text="lh.utc"></td>
           </tr>
         </tbody>
       </table>

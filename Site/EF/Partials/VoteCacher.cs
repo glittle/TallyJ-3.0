@@ -24,7 +24,7 @@ namespace TallyJ.EF
     {
     }
 
-    public VoteCacher() : base(UserSession.DbContext)
+    public VoteCacher() : base(UserSession.GetNewDbContext)
     {
     }
 

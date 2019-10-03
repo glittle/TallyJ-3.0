@@ -90,7 +90,7 @@ namespace TallyJ.Controllers
     public JsonResult Warmup()
     {
       // force the server to contact the database to ensure that it is warmed up and ready for action
-      var dummy = UserSession.DbContext.Election.FirstOrDefault();
+      var dummy = UserSession.GetNewDbContext.Election.FirstOrDefault();
       return null;
     }
 

@@ -72,7 +72,7 @@
                target="gdoc">Status and Feedback</a> document for current updates!
           </div>*@
       }
-      @if (Request.IsAuthenticated)
+      @if (UserSession.IsAuthenticated)
       {
         //var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
 

@@ -33,11 +33,7 @@ namespace TallyJ
 
       app.MapSignalR();
 
-      // for login v2
-      app.CreatePerOwinContext(ApplicationDbContext.Create);
-      app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-      app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
-
+   
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
@@ -52,6 +48,14 @@ namespace TallyJ
         LoginPath = new PathString("/"),
         Provider = new CookieAuthenticationProvider
         {
+          OnResponseSignIn = context =>
+          {
+            var x = 1;
+          },
+          OnResponseSignedIn = context =>
+          {
+            var x = 1;
+          },
           // Enables the application to validate the security stamp when the user 
           // logs in. This is a security feature which is used when you 
           // change a password or add an external login to your account.  
@@ -69,6 +73,10 @@ namespace TallyJ
       // you logged in from. This is similar to the RememberMe option when you log in.
       app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
+      // for login v2
+      app.CreatePerOwinContext(ApplicationDbContext.Create);
+      app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+      app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
       if (!SettingsHelper.HostSupportsOnlineElections)
       {
@@ -122,7 +130,7 @@ namespace TallyJ
               ExpiresUtc = DateTime.UtcNow.AddHours(1)
             }, identity);
 
-            RecordLogin("Facebook", email);
+            UserSession.RecordLogin("Facebook", email);
           }
           else
           {
@@ -166,7 +174,7 @@ namespace TallyJ
             ExpiresUtc = DateTime.UtcNow.AddHours(1)
           }, identity);
 
-          RecordLogin("Google", email);
+          UserSession.RecordLogin("Google", email);
 
           return Task.FromResult(0);
         }
@@ -174,32 +182,6 @@ namespace TallyJ
       return options;
     }
 
-    private void RecordLogin(string source, string email)
-    {
-      var db = UserSession.DbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
-      var now = DateTime.Now;
-
-      if (onlineVoter == null)
-      {
-        onlineVoter = new OnlineVoter
-        {
-          Email = email,
-          WhenRegistered = now
-        };
-        db.OnlineVoter.Add(onlineVoter);
-      }
-      else
-      {
-        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
-      }
-
-      onlineVoter.WhenLastLogin = now;
-      db.SaveChanges();
-
-      new LogHelper().Add($"Login from {source}", true, email);
-
-      new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
-    }
+    
   }
 }

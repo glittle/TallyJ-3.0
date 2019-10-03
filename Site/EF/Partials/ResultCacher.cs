@@ -15,7 +15,7 @@ namespace TallyJ.EF
     public ResultCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
-    public ResultCacher() : base(UserSession.DbContext)
+    public ResultCacher() : base(UserSession.GetNewDbContext)
     {
     }
 

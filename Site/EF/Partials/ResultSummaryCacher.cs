@@ -29,7 +29,7 @@ namespace TallyJ.EF
     public ResultSummaryCacher(ITallyJDbContext dbContext) : base(dbContext)
     {
     }
-    public ResultSummaryCacher() : base(UserSession.DbContext)
+    public ResultSummaryCacher() : base(UserSession.GetNewDbContext)
     {
     }
 

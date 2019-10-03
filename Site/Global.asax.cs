@@ -58,7 +58,7 @@ namespace TallyJ
             // http://www.fluentsecurity.net/getting-started
 
             // Let Fluent Security know how to get the authentication status of the current user
-            configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
+            configuration.GetAuthenticationStatusFrom(() => UserSession.IsAuthenticated);
 
             configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
 
