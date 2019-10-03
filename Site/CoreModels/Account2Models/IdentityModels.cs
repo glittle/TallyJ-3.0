@@ -37,7 +37,7 @@ namespace TallyJ.CoreModels.Account2Models
     public ApplicationDbContext()
         : base("MainConnection3", throwIfV1Schema: false)
     {
-      //      Database.SetInitializer<ApplicationDbContext>(null);
+      Database.SetInitializer<ApplicationDbContext>(null);
     }
 
     public static ApplicationDbContext Create()

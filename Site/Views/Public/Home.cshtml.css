@@ -180,7 +180,7 @@ section.CenterPanel.chosen {
 }
 .VoterPanel {
   display: none;
-  background-color: #fff2e2;
+  background-color: #fff6ec;
 }
 .VoterPanel .VoterLoginError {
   margin: 1em 0;

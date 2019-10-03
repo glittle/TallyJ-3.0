@@ -231,6 +231,7 @@ namespace TallyJ.Code.Session
           return owinPrincipal;
         }
 
+        // the OwinContext principal sometimes does not exist!  Storing it also in Session to be able to get it again.
         var activePrincipal = SessionKey.ActivePrincipal.FromSession(new ClaimsPrincipal(new ClaimsIdentity()));
 
         return activePrincipal;
