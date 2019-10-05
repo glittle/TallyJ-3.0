@@ -43,11 +43,21 @@ namespace TallyJ.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult LogOn2(LoginViewModel loginViewModel)
     {
+      var email = loginViewModel.Email;
+
       var voterHomeUrl = Url.Action("Index", "Voter");
       if (loginViewModel.Provider == "Local")
       {
         return LocalPwLogin(loginViewModel, voterHomeUrl);
       }
+
+      if (email.HasNoContent())
+      {
+        StoreModelStateErrorMessagesInSession();
+        return Redirect(Url.Action("Index", "Public"));
+      }
+
+      SessionKey.EmailForOtherLogin.SetInSession(email);
 
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }
@@ -83,7 +93,8 @@ namespace TallyJ.Controllers
 
           SessionKey.ActivePrincipal.SetInSession(owinContext.Authentication.AuthenticationResponseGrant.Principal);
 
-          UserSession.RecordLogin("Local", UserSession.VoterEmail); 
+          UserSession.RecordLogin("Local", UserSession.VoterEmail);
+
           return Redirect(returnUrl);
         case SignInStatus.LockedOut:
           StoreModelStateErrorMessagesInSession();
@@ -95,6 +106,7 @@ namespace TallyJ.Controllers
         default:
           ModelState.AddModelError("", "Invalid login attempt.");
           StoreModelStateErrorMessagesInSession();
+
           return Redirect(Url.Action("Index", "Public"));
       }
     }
@@ -104,9 +116,9 @@ namespace TallyJ.Controllers
       {
         return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
       }
-      set 
-      { 
-        _signInManager = value; 
+      set
+      {
+        _signInManager = value;
       }
     }
     private void StoreModelStateErrorMessagesInSession()

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Account2Models;
@@ -161,15 +162,21 @@ namespace TallyJ.Controllers
         var result = await UserManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
         {
-          await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+          //          await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
           // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
           // Send an email with this link
-          // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-          // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-          // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+          string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+          await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-          return RedirectToAction("Index", "Voter");
+//          return RedirectToAction("Index", "Voter");
+          var msg = "Check your email and confirm your account, you must be confirmed "
+                            + "before you can log in.";
+
+          Session[SessionKey.VoterLoginError] = msg;
+
+          return Redirect(Url.Action("Index", "Public"));
         }
         AddErrors(result);
       }
@@ -217,10 +224,10 @@ namespace TallyJ.Controllers
 
         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
         // Send an email with this link
-        // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-        // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-        // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-        // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+        string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+        var callbackUrl = Url.Action("ResetPassword", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+        await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        return RedirectToAction("ForgotPasswordConfirmation", "Account2");
       }
 
       // If we got this far, something failed, redisplay form

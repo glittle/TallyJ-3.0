@@ -28,9 +28,10 @@
     <span v-if="!loading">
       <span v-if="elections.length">It is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
     </span>
+    <span v-if="!loading && !elections.length">It is not registered in any elections in TallyJ.</span>
   </p>
-  <p v-if="!loading && !elections.length">It is not registered in any elections in TallyJ.</p>
-  <p v-if="lastLoginAge">
+
+  <p v-if="lastLoginAge" class="lastLoginAge">
     You last logged in {{lastLoginAge}}.
     <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
   </p>
@@ -66,7 +67,7 @@
   </div>
 
   <div class="electionListDiv">
-    <p v-if="!loading && !elections.length">No elections found.</p>
+    <p v-if="!loading && !elections.length" class="noElections">No elections found.</p>
     <table class="electionList" v-if="!loading && elections.length">
       <thead>
         <tr>
@@ -99,7 +100,6 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
-    <hr />
     <p>
       For your review and security, here is your recent activity (with the most recent at the top). If something looks wrong,
       please stop using TallyJ and contact

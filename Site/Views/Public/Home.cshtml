@@ -24,23 +24,20 @@
   <section class="featureBig CenterPanel">
     <div class="top">
     </div>
-    <h2 id="introTitle">Choose an Option to Start</h2>
+    <h2 id="introTitle">What would you like to do?</h2>
     <div class="centerbuttons">
       @if (SettingsHelper.HostSupportsOnlineElections)
       {
         <div class="centerL" title="Vote in an election.">
           <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote</button>
-          <p>Vote in an election</p>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
         <button class="btn btn-primary" id="btnChooseJoin" accesskey="A">Assist as a Teller</button>
-        <p>Join an election as a teller</p>
       </div>
       <div class="centerR"
            title="Create and manage elections. If you do not have an account yet, you can register here.">
         <button class="btn btn-success" id="btnChooseLogin" accesskey="M">Manage Elections</button>
-        <p>Log in to create and administer your elections</p>
 
       </div>
     </div>
@@ -51,7 +48,8 @@
     </div>
     <div class="top">
     </div>
-    <h2>Join an Election as a Teller</h2>
+    <h2>Assist in an Election as a Teller</h2>
+    <p>Join an election as a teller to assist in registering voters and tallying ballots.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
@@ -120,6 +118,7 @@
     <div class="top">
     </div>
     <h2>Log In</h2>
+    <p>Log in to create and administer elections for your community.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
@@ -225,19 +224,13 @@
             {
               @Html.AntiForgeryToken()
 
-              <div class="voterEmail">
-                <label>
-                  Please enter your email address, as listed in the election you plan to vote in.
-                </label>
-                <div>
-                  @Html.EditorFor(m => m.Email)
-                  @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                </div>
-              </div>
               <p>
-                Using this email address, you can choose to login in with any one of the services listed
-                below or with a TallyJ-registered password.
+                You can log in with your Google or Facebook account, or create and use a local account in TallyJ.
               </p>
+              <p>
+                The email address used will be matched to voter records and TallyJ will list any elections that you can vote in.
+              </p>
+
               <div class="voterLogins">
                 <div id="socialLoginList">
                   @foreach (var loginType in loginTypes)
@@ -281,13 +274,22 @@
                       @*<div>@name</div>*@
                     }
                   }
+                  <p>
+                    TallyJ will get your email address.
+                  </p>
                 </div>
-                <div class="voterOr">
+                <span class="voterOr">
                   or
-                </div>
+                </span>
                 <div class="direct">
                   @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
+                  <div class="email">
+                    Email address
+                    <div>
+                      @Html.EditorFor(m => m.Email)
+                      @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                  </div>
                   <div class="pw">
                     TallyJ Password
                     <div>
@@ -349,25 +351,18 @@
 </div>
 
 <section class="features bottom">
-  <a href="@Url.Action("Learning")">
-    <section class="feature">
-      <h2>Reference Materials</h2>
-      <p>
-        Read more about Bahá’í elections and the job of tellers.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Contact")">
-    <section class="feature">
-      <h2>Contact</h2>
-      <p>
-        How to get in contact.
-      </p>
-    </section>
-  </a><a href="@Url.Action("About")">
+  <a href="@Url.Action("About")">
     <section class="feature">
       <h2>About TallyJ</h2>
       <p>
         Want to know more about the TallyJ tool?
+      </p>
+    </section>
+  </a><a href="@Url.Action("Learning")">
+    <section class="feature">
+      <h2>Reference Materials</h2>
+      <p>
+        Read more about Bahá’í elections and the job of tellers.
       </p>
     </section>
   </a><a href="@Url.Action("Privacy")">
@@ -375,6 +370,13 @@
       <h2>Policies & Agreements</h2>
       <p>
         Voter's Privacy Policy and User Agreement.
+      </p>
+    </section>
+  </a><a href="@Url.Action("Contact")">
+    <section class="feature">
+      <h2>Contact</h2>
+      <p>
+        How to get in contact.
       </p>
     </section>
   </a><a href="@Url.Action("Install")">

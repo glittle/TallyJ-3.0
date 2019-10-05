@@ -33,7 +33,7 @@ namespace TallyJ
 
       app.MapSignalR();
 
-   
+
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
@@ -48,21 +48,13 @@ namespace TallyJ
         LoginPath = new PathString("/"),
         Provider = new CookieAuthenticationProvider
         {
-          OnResponseSignIn = context =>
-          {
-            var x = 1;
-          },
-          OnResponseSignedIn = context =>
-          {
-            var x = 1;
-          },
           // Enables the application to validate the security stamp when the user 
           // logs in. This is a security feature which is used when you 
           // change a password or add an external login to your account.  
           OnValidateIdentity = SecurityStampValidator
             .OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
               validateInterval: TimeSpan.FromMinutes(30),
-              regenerateIdentity: (manager, user) 
+              regenerateIdentity: (manager, user)
                 => user.GenerateUserIdentityAsync(manager))
         }
       });
@@ -115,6 +107,7 @@ namespace TallyJ
 
           if (gotEmail)
           {
+
             var identity = new ClaimsIdentity(new List<Claim>
             {
               new Claim("Source", "Facebook"),
@@ -157,6 +150,16 @@ namespace TallyJ
         OnAuthenticated = authContext =>
         {
           var email = (string)authContext.User["email"];
+
+
+          if (email != SessionKey.EmailForOtherLogin.FromSession(""))
+          {
+            // this in not what the user put into the page
+//            return Redirect();//Url.Action("Index", "Public"));
+          }
+
+
+
           var emailIsVerified = (string)authContext.User["verified_email"];
 
           var identity = new ClaimsIdentity(new List<Claim>
@@ -182,6 +185,6 @@ namespace TallyJ
       return options;
     }
 
-    
+
   }
 }
