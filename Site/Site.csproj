@@ -661,6 +661,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Content Include="App_Data\GenericIdentityManagerEmail.html" />
     <Content Include="App_Data\ElectionOpen.html" />
     <Content Include="App_Data\BallotProcessed.html" />
     <Content Include="App_Data\TestEmail.html" />
@@ -1062,6 +1063,7 @@
     <Content Include="Views\Account2\Lockout.cshtml" />
     <Content Include="Views\Account2\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_LayoutAccount2.cshtml" />
+    <Content Include="Views\Manage2\_ViewStart.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

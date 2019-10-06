@@ -25,13 +25,23 @@ body.VoterIndex {
 #voterPage1 {
   .quotes {
     padding: 10px 5px 10px 10px;
-    background: #cdd5de;
-    box-shadow: inset 0 0 2px 0px #efeeef;
+    background-color: #d9cddd;
     margin: 0 0 7px 0;
     border-radius: 3px;
 
     ul {
       margin: 0 0 0 25px;
+    }
+  }
+
+  .emails {
+
+    label {
+      margin-right: 5px;
+    }
+
+    button {
+      margin-left: 15px;
     }
   }
 
@@ -103,6 +113,11 @@ body.VoterIndex {
     margin-top: 3em;
     background-color: #ddd;
     padding: 1em;
+
+    .title {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
   }
 
   .loginHistory {
@@ -146,26 +161,24 @@ body.VoterIndex {
     }
   }
 
-  .emails {
-    margin: 0 0 10px;
-
-    label {
-      margin-right: 5px;
-    }
-
-    button {
-      margin-left: 15px;
-    }
-  }
 
   .lastLoginAge {
     font-style: italic;
     font-size: 80%;
+    margin: 5px 0;
   }
 
   .noElections {
     background-color: #fee;
     padding: 1em;
+  }
+
+  .noneAvailable {
+    background-color: @band2;
+    text-align: center;
+    padding: 1em;
+    margin-bottom: 0;
+    font-style: italic;
   }
 }
 

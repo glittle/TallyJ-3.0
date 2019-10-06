@@ -20,8 +20,8 @@
   <title>TallyJ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   @RenderSection("Metas", false)
-  @RenderPage("Headers.cshtml")
   <link href="@ClientFile("~/Content/bootstrap3/bootstrap{0}.css", ".min")" rel="stylesheet" type="text/css" />
+  @RenderPage("Headers.cshtml")
   <script src="@ClientFile("~/Content/bootstrap3/bootstrap{0}.js", ".min")" type="text/javascript"></script>
   <meta name="description" content="Baha'i Election System'" />
 </head>
@@ -30,7 +30,7 @@
       ControllerActionNamesJoined,
     };
 }
-<body class="Acc2Pages @classes.JoinedAsString(" ", true)">
+<body class="Acc2Pages VoterPages @classes.JoinedAsString(" ", true)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">

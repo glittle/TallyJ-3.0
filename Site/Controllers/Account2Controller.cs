@@ -171,7 +171,7 @@ namespace TallyJ.Controllers
           await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
 //          return RedirectToAction("Index", "Voter");
-          var msg = "Check your email and confirm your account, you must be confirmed "
+          var msg = "An email has been sent to your account with a link you need to use to confirm your account. You must be confirmed "
                             + "before you can log in.";
 
           Session[SessionKey.VoterLoginError] = msg;
@@ -226,7 +226,7 @@ namespace TallyJ.Controllers
         // Send an email with this link
         string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
         var callbackUrl = Url.Action("ResetPassword", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-        await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password for TallyJ by clicking <a href=\"" + callbackUrl + "\">here</a>.");
         return RedirectToAction("ForgotPasswordConfirmation", "Account2");
       }
 
@@ -286,14 +286,14 @@ namespace TallyJ.Controllers
 
     //
     // POST: /Account/ExternalLogin
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public ActionResult ExternalLogin(string provider, string returnUrl)
-    {
-      // Request a redirect to the external login provider
-      return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account2", new { ReturnUrl = returnUrl }));
-    }
+//    [HttpPost]
+//    [AllowAnonymous]
+//    [ValidateAntiForgeryToken]
+//    public ActionResult ExternalLogin(string provider, string returnUrl)
+//    {
+//      // Request a redirect to the external login provider
+//      return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account2", new { ReturnUrl = returnUrl }));
+//    }
 
     //
     // GET: /Account/SendCode

@@ -23,6 +23,8 @@ namespace TallyJ.Controllers
   public class AccountController : Controller
   {
     private ApplicationSignInManager _signInManager;
+
+    private ApplicationUserManager _userManager;
     //
     // GET: /Account/LogOn
 
@@ -41,14 +43,14 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult LogOn2(LoginViewModel loginViewModel)
+    public async Task<ActionResult> LogOn2(LoginViewModel loginViewModel)
     {
       var email = loginViewModel.Email;
 
       var voterHomeUrl = Url.Action("Index", "Voter");
       if (loginViewModel.Provider == "Local")
       {
-        return LocalPwLogin(loginViewModel, voterHomeUrl);
+        return await LocalPwLogin(loginViewModel, voterHomeUrl);
       }
 
       if (email.HasNoContent())
@@ -62,7 +64,7 @@ namespace TallyJ.Controllers
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }
 
-    public ActionResult LocalPwLogin(LoginViewModel model, string returnUrl)
+    public async Task<ActionResult> LocalPwLogin(LoginViewModel model, string returnUrl)
     {
       if (!ModelState.IsValid)
       {
@@ -73,15 +75,28 @@ namespace TallyJ.Controllers
 
       var owinContext = HttpContext.GetOwinContext();
 
-      var x = owinContext.Authentication.AuthenticationResponseGrant;
-
       var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true).Result;
-
-      var y = owinContext.Authentication.AuthenticationResponseGrant;
 
       switch (result)
       {
         case SignInStatus.Success:
+          var user = await UserManager.FindByNameAsync(model.Email);
+
+          var userid = UserManager.FindByEmail(user.UserName).Id;
+          if (!UserManager.IsEmailConfirmed(userid))
+          {
+            // Send email
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code}, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(user.Id, "Confirm your account",
+              $"Please confirm your account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+
+            // Show message
+            ModelState.AddModelError("", "An email has been sent to your account with a link you need to use to confirm your account.");
+            StoreModelStateErrorMessagesInSession();
+
+            return Redirect(Url.Action("Index", "Public"));
+          }
 
           var claimsIdentity = owinContext.Authentication.AuthenticationResponseGrant.Identity;
           owinContext.Authentication.SignIn(new AuthenticationProperties()
@@ -99,9 +114,11 @@ namespace TallyJ.Controllers
         case SignInStatus.LockedOut:
           StoreModelStateErrorMessagesInSession();
           return RedirectToAction("Lockout", "Account2");
+
         case SignInStatus.RequiresVerification:
           StoreModelStateErrorMessagesInSession();
           return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+
         case SignInStatus.Failure:
         default:
           ModelState.AddModelError("", "Invalid login attempt.");
@@ -110,6 +127,19 @@ namespace TallyJ.Controllers
           return Redirect(Url.Action("Index", "Public"));
       }
     }
+
+    public ApplicationUserManager UserManager
+    {
+      get
+      {
+        return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+      }
+      private set
+      {
+        _userManager = value;
+      }
+    }
+
     private ApplicationSignInManager SignInManager
     {
       get

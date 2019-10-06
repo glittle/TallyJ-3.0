@@ -185,12 +185,13 @@
          <div>
            Estimated time? <yes-no v-on:input="saveClose" v-model="election.OnlineCloseIsEstimate"></yes-no>
          </div>
-         <div v-if="!isClosed">
-           <button v-on:click="closeOnline(5)">Close in 5 minutes</button>
-           <button v-on:click="closeOnline(0)">Close now</button>
+         <div>
+           <button v-if="!isClosed" v-on:click="closeOnline(5)">Close in 5 minutes</button>
+           <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
+           <button v-if="!isClosed" v-on:click="closeOnline(0)">Close now</button>
          </div>
 
-         <h3>Known Voters</h3>
+         <h3>Voters Registered for Online Voting</h3>
          <p>
            <input type="button"
                   v-on:click="processReadyBallots"
@@ -203,7 +204,7 @@
            <thead>
            <tr>
              <th>
-               Registered for<br>Online Voting
+               Voter
              </th>
              <th>
                Voting Method
@@ -219,7 +220,7 @@
            <tbody id="onlineBallotsBody" class="Hidden tbody">
            <tr>
              <td class="OnlineName">
-               {C_FullNameFL}
+               {C_FullName}
              </td>
              <td>
                {VotingMethod_Display}

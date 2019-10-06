@@ -47,6 +47,7 @@ namespace TallyJ.Controllers
     {
       return new ResultsModel().GetTies(tieBreakGroup).AsJsonResult();
     }
+
     public ActionResult Monitor()
     {
       return View(new MonitorModel());

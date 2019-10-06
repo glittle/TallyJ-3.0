@@ -29,7 +29,7 @@
       @if (SettingsHelper.HostSupportsOnlineElections)
       {
         <div class="centerL" title="Vote in an election.">
-          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote</button>
+          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote in an Election</button>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
@@ -48,7 +48,7 @@
     </div>
     <div class="top">
     </div>
-    <h2>Assist in an Election as a Teller</h2>
+    <h2>Assist as a Teller</h2>
     <p>Join an election as a teller to assist in registering voters and tallying ballots.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
@@ -117,7 +117,7 @@
     </div>
     <div class="top">
     </div>
-    <h2>Log In</h2>
+    <h2>Manage Elections</h2>
     <p>Log in to create and administer elections for your community.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
@@ -274,8 +274,8 @@
                       @*<div>@name</div>*@
                     }
                   }
-                  <p>
-                    TallyJ will get your email address.
+                  <p class="externalNote">
+                    TallyJ will use the email address that is provided by Google or Facebook.
                   </p>
                 </div>
                 <span class="voterOr">
@@ -296,10 +296,6 @@
                       @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                       @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                     </div>
-                  </div>
-                  <div class="remember">
-                    @Html.CheckBoxFor(m => m.RememberMe)
-                    @Html.LabelFor(m => m.RememberMe)
                   </div>
                   <div class="submit">
                     <button type="submit"
@@ -323,7 +319,7 @@
               </div>
 
               <p>
-                By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
+                By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
               </p>
             }
           }

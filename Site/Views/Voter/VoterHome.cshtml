@@ -31,10 +31,7 @@
     <span v-if="!loading && !elections.length">It is not registered in any elections in TallyJ.</span>
   </p>
 
-  <p v-if="lastLoginAge" class="lastLoginAge">
-    You last logged in {{lastLoginAge}}.
-    <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
-  </p>
+
 
   <div class="quotes">
     <p>
@@ -47,24 +44,14 @@
     </ul>
   </div>
 
-  <div class="emails" v-if="emailCodesLoaded">
-    Would you like to get an email:
-    <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />when an election opens?</label>
-    <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />when your ballot is processed?</label>
-    <button class="btn btn-mini" v-on:click="emailTest">Send a test email now</button>
-  </div>
 
   <p v-if="loading">Searching for your email address in elections...</p>
 
   <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available online yet, or your email address is not registered in the election. Please contact the head teller for assistance.</p>
 
-  <p v-if="!loading && elections.length && !atLeastOneOpen">
-    None of these elections are available for you to vote in at this time.
+  <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
+    None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
   </p>
-
-  <div>
-
-  </div>
 
   <div class="electionListDiv">
     <p v-if="!loading && !elections.length" class="noElections">No elections found.</p>
@@ -100,6 +87,24 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
+    <div class="title">Settings for @UserSession.VoterEmail</div>
+    <p class="emails">
+      Would you like to get an email:
+      <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />when an election opens?</label>
+      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />when your ballot is processed?</label>
+      <button class="btn btn-mini" v-on:click="emailTest">Send a sample email now</button>
+
+      @*<p v-if="lastLoginAge" class="lastLoginAge">
+        You last logged in {{lastLoginAge}}.
+        <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
+      </p>*@
+    </p>
+    <p class="account">
+      Need to update your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
+    </p>
+
+    <div class="title">Activity</div>
+
     <p>
       For your review and security, here is your recent activity (with the most recent at the top). If something looks wrong,
       please stop using TallyJ and contact

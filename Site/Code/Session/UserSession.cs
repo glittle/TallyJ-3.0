@@ -225,10 +225,17 @@ namespace TallyJ.Code.Session
           return threadPrincipal;
         }
 
-        var owinPrincipal = HttpContext.Current.GetOwinContext().Authentication.AuthenticationResponseGrant?.Principal;
-        if (owinPrincipal != null && owinPrincipal.Identity.IsAuthenticated)
+        try
         {
-          return owinPrincipal;
+          var owinPrincipal = HttpContext.Current.GetOwinContext().Authentication.AuthenticationResponseGrant?.Principal;
+          if (owinPrincipal != null && owinPrincipal.Identity.IsAuthenticated)
+          {
+            return owinPrincipal;
+          }
+        }
+        catch
+        {
+          // won't work in some cases
         }
 
         // the OwinContext principal sometimes does not exist!  Storing it also in Session to be able to get it again.

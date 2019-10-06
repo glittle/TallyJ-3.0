@@ -58,6 +58,7 @@
   }
 
   table.Ballots {
+    width: 100%;
     border-collapse: collapse;
     border-left-style: hidden;
     border-right-style: hidden;
@@ -97,6 +98,14 @@
     white-space: normal;
     margin-right: 10px;
   }
+
+    .Ballot .Vote.Line {
+      display: block;
+    }
+
+      .Ballot .Vote.Line:nth-child(even) {
+        background-color: #eee;
+      }
 
     .Ballot .Vote .Person {
       white-space: inherit;
@@ -154,19 +163,21 @@
         <td>
           @foreach (var vote in ballot.Votes)
           {
-            <span class="Vote @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
-              @if (isSingleNameElection)
+            if (isSingleNameElection)
               {
+              <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
                 <span class="Person">@vote.PersonFullNameFL</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 <span class="Count">@vote.SingleNameElectionCount</span>
+              </div>
               }
               else
               {
+              <span class="Vote @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
                 <span class="Person">@vote.PersonFullNameFL</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
-              }
             </span>
+            }
           }
         </td>
 

@@ -22,14 +22,13 @@ namespace TallyJ.Controllers
 
     public ActionResult Index()
     {
-      var identity1 = (ClaimsIdentity)User.Identity;
-      IEnumerable<Claim> claims1 = identity1.Claims;
-      var numClaims1 = claims1.Count();
-
-      var identity2 = (ClaimsPrincipal)Thread.CurrentPrincipal;
-      var claims2 = identity2.Claims;
-      var numClaims2 = claims2.Count();
-
+      //      var identity1 = (ClaimsIdentity)User.Identity;
+      //      IEnumerable<Claim> claims1 = identity1.Claims;
+      //      var numClaims1 = claims1.Count();
+      //
+      //      var identity2 = (ClaimsPrincipal)Thread.CurrentPrincipal;
+      //      var claims2 = identity2.Claims;
+      //      var numClaims2 = claims2.Count();
       return View("Home");
     }
 

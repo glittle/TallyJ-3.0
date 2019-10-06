@@ -39,11 +39,11 @@ namespace TallyJ.CoreModels
             .Select(j => new
             {
               j.p.VotingMethod,
-              j.p.C_FullNameFL,
+              j.p.C_FullName,
               j.p.C_RowId,
               j.ovi,
             })
-            .OrderBy(j => j.C_FullNameFL)
+            .OrderBy(j => j.C_FullName)
             .ToList()
             .Select(j => new
             {
@@ -53,7 +53,7 @@ namespace TallyJ.CoreModels
               votesReady = j.ovi != null && (j.ovi.PoolLocked.GetValueOrDefault()
                                              && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect),
               VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
-              j.C_FullNameFL,
+              j.C_FullName,
               PersonId = j.C_RowId
             })
           : null;
