@@ -59,9 +59,15 @@ namespace TallyJ.CoreModels.Account2Models
     [Display(Name = "Password")]
     public string Password { get; set; }
 
-    [Display(Name = "Remember me?")]
-    public bool RememberMe { get; set; }
+    //    [Display(Name = "Remember me?")]
+    //    public bool RememberMe { get; set; }
 
+    public string Provider { get; set; }
+  }  
+  
+  public class LoginExtViewModel
+  {
+    [Required]
     public string Provider { get; set; }
   }
 

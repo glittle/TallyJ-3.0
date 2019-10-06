@@ -311,7 +311,7 @@ namespace TallyJ.CoreModels.Helper
 
     public string GetEmailTemplate(string emailTemplate)
     {
-      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/App_Data/{emailTemplate}.html";
+      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/EmailTemplates/{emailTemplate}.html";
 
       AssertAtRuntime.That(File.Exists(path), "Missing email template");
 

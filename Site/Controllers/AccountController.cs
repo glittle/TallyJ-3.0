@@ -43,24 +43,22 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> LogOn2(LoginViewModel loginViewModel)
+    public async Task<ActionResult> LogOnLocal(LoginViewModel loginViewModel)
     {
-      var email = loginViewModel.Email;
-
       var voterHomeUrl = Url.Action("Index", "Voter");
-      if (loginViewModel.Provider == "Local")
+      if (loginViewModel.Provider != "Local")
       {
-        return await LocalPwLogin(loginViewModel, voterHomeUrl);
-      }
-
-      if (email.HasNoContent())
-      {
-        StoreModelStateErrorMessagesInSession();
         return Redirect(Url.Action("Index", "Public"));
       }
+      return await LocalPwLogin(loginViewModel, voterHomeUrl);
+    }
 
-      SessionKey.EmailForOtherLogin.SetInSession(email);
-
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
+    {
+      var voterHomeUrl = Url.Action("Index", "Voter");
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }
 
@@ -75,7 +73,7 @@ namespace TallyJ.Controllers
 
       var owinContext = HttpContext.GetOwinContext();
 
-      var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: true).Result;
+      var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, false, shouldLockout: true).Result;
 
       switch (result)
       {
@@ -87,9 +85,9 @@ namespace TallyJ.Controllers
           {
             // Send email
             var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code}, protocol: Request.Url.Scheme);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
             await UserManager.SendEmailAsync(user.Id, "Confirm your account",
-              $"Please confirm your account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+              $"Please confirm your account by clicking <a href=\"{callbackUrl}\">this link</a>.");
 
             // Show message
             ModelState.AddModelError("", "An email has been sent to your account with a link you need to use to confirm your account.");
@@ -117,7 +115,7 @@ namespace TallyJ.Controllers
 
         case SignInStatus.RequiresVerification:
           StoreModelStateErrorMessagesInSession();
-          return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+          return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl }); // , RememberMe = model.RememberMe
 
         case SignInStatus.Failure:
         default:

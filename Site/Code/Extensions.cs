@@ -816,7 +816,7 @@ namespace TallyJ.Code
       {
         Email = input.UserName,
         Password = input.PasswordV1,
-        RememberMe = input.RememberMe
+//        RememberMe = input.RememberMe
       };
     }
   }

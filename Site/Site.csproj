@@ -661,10 +661,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Content Include="App_Data\GenericIdentityManagerEmail.html" />
-    <Content Include="App_Data\ElectionOpen.html" />
-    <Content Include="App_Data\BallotProcessed.html" />
-    <Content Include="App_Data\TestEmail.html" />
+    <Content Include="EmailTemplates\GenericIdentityManagerEmail.html" />
+    <Content Include="EmailTemplates\ElectionOpen.html" />
+    <Content Include="EmailTemplates\BallotProcessed.html" />
+    <Content Include="EmailTemplates\TestEmail.html" />
     <Content Include="Content\bootstrap3\bootstrap.css" />
     <Content Include="Content\bootstrap3\bootstrap.js" />
     <Content Include="Content\bootstrap3\bootstrap.min.css" />
@@ -1245,7 +1245,9 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
