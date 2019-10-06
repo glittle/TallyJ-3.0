@@ -29,6 +29,10 @@
 
     connectToPublicHub();
 
+    if ($('.VoterLoginError').length) {
+      startJoinClick(null, 'btnChooseVoter');
+    }
+
     // refreshElectionList();
     $('form').on('submit', function () {
       logoffSignalR();
@@ -83,17 +87,18 @@
 
 
 
-  var startJoinClick = function () {
-    var src = $(this);
+  function startJoinClick(dummy, btnIdRequested) {
     $('.CenterPanel').addClass('chosen');
     $('.JoinPanel').hide();
     $('.LoginPanel').hide();
     $('.VoterPanel').hide();
 
-    if (src.attr('id') === 'btnChooseJoin') {
+    var btnId = btnIdRequested || $(this).attr('id');
+
+    if (btnId === 'btnChooseJoin') {
       $('.JoinPanel').fadeIn();
     }
-    else if (src.attr('id') === 'btnChooseVoter') {
+    else if (btnId === 'btnChooseVoter') {
       $('.VoterPanel').fadeIn();
       warmupServer();
     }

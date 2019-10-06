@@ -82,6 +82,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.11\lib\net45\AngleSharp.dll</HintPath>
+    </Reference>
     <Reference Include="CsQuery, Version=1.3.3.249, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
     </Reference>
@@ -93,15 +96,13 @@
     </Reference>
     <Reference Include="EntityFramework.BulkInsert, Version=6.0.2.8, Culture=neutral, PublicKeyToken=630a17433349cb76, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.Extended, Version=6.0.0.0, Culture=neutral, PublicKeyToken=05b7e29bdd433584, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.Extended.6.1.0.168\lib\net45\EntityFramework.Extended.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework.MappingAPI, Version=6.1.0.9, Culture=neutral, PublicKeyToken=7ee2e825d201459e, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.MappingAPI.6.1.0.9\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EntityFramework.MappingAPI, Version=6.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.MappingAPI.6.2.0\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
@@ -138,6 +139,9 @@
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.2\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
@@ -166,8 +170,8 @@
     <Reference Include="Microsoft.Owin.Security.Google, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.Google.4.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
@@ -186,7 +190,7 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.6.7\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -360,8 +364,8 @@
     <Reference Include="Owin.Security.Providers.Yammer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.Security.Providers.Yammer.2.26.0\lib\net45\Owin.Security.Providers.Yammer.dll</HintPath>
     </Reference>
-    <Reference Include="PreMailer.Net, Version=1.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PreMailer.Net.1.2.7\lib\net40\PreMailer.Net.dll</HintPath>
+    <Reference Include="PreMailer.Net, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PreMailer.Net.2.0.1\lib\net45\PreMailer.Net.dll</HintPath>
     </Reference>
     <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
       <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
@@ -428,6 +432,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\AllowGuestsInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
+    <Compile Include="Code\OwinRelated\AspIdentity2Classes.cs" />
     <Compile Include="Code\SettingsHelper.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
@@ -491,7 +496,12 @@
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
+    <Compile Include="Controllers\Account2Controller.cs" />
     <Compile Include="Controllers\VoterController.cs" />
+    <Compile Include="Controllers\Manage2Controller.cs" />
+    <Compile Include="CoreModels\Account2Models\AccountViewModels.cs" />
+    <Compile Include="CoreModels\Account2Models\IdentityModels.cs" />
+    <Compile Include="CoreModels\Account2Models\ManageViewModels.cs" />
     <Compile Include="CoreModels\BallotHelper.cs" />
     <Compile Include="CoreModels\ExportImport\ElectionDeleter.cs" />
     <Compile Include="CoreModels\ExportImport\Exporter.cs" />
@@ -541,6 +551,18 @@
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationOptions.cs" />
+    <Compile Include="EF\AspNetRoles.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\AspNetUserClaims.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\AspNetUserLogins.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\AspNetUsers.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="EF\Ballot.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -590,6 +612,7 @@
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
     <Compile Include="EF\Partials\CacherHelper.cs" />
+    <Compile Include="EF\Partials\OnlineVoter.cs" />
     <Compile Include="EF\Partials\PublicElectionLister.cs" />
     <Compile Include="EF\Partials\ComputerCacher.cs" />
     <Compile Include="EF\Partials\ElectionCacher.cs" />
@@ -638,9 +661,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Content Include="App_Data\ElectionOpen.html" />
-    <Content Include="App_Data\BallotProcessed.html" />
-    <Content Include="App_Data\TestEmail.html" />
+    <Content Include="EmailTemplates\GenericIdentityManagerEmail.html" />
+    <Content Include="EmailTemplates\ElectionOpen.html" />
+    <Content Include="EmailTemplates\BallotProcessed.html" />
+    <Content Include="EmailTemplates\TestEmail.html" />
+    <Content Include="Content\bootstrap3\bootstrap.css" />
+    <Content Include="Content\bootstrap3\bootstrap.js" />
+    <Content Include="Content\bootstrap3\bootstrap.min.css" />
+    <Content Include="Content\bootstrap3\bootstrap.min.js" />
     <Content Include="Content\bootstrap\css\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -873,6 +901,9 @@
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\luxon.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
@@ -1011,6 +1042,28 @@
     </Content>
     <Content Include="Views\Shared\_LayoutVoter.cshtml" />
     <Content Include="Views\Public\Privacy.cshtml" />
+    <Content Include="Views\Account2\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account2\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account2\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account2\ForgotPassword.cshtml" />
+    <Content Include="Views\Account2\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account2\Login.cshtml" />
+    <Content Include="Views\Account2\Register.cshtml" />
+    <Content Include="Views\Account2\ResetPassword.cshtml" />
+    <Content Include="Views\Account2\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account2\SendCode.cshtml" />
+    <Content Include="Views\Account2\VerifyCode.cshtml" />
+    <Content Include="Views\Account2\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Manage2\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage2\ChangePassword.cshtml" />
+    <Content Include="Views\Manage2\Index.cshtml" />
+    <Content Include="Views\Manage2\ManageLogins.cshtml" />
+    <Content Include="Views\Manage2\SetPassword.cshtml" />
+    <Content Include="Views\Manage2\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Account2\Lockout.cshtml" />
+    <Content Include="Views\Account2\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_LayoutAccount2.cshtml" />
+    <Content Include="Views\Manage2\_ViewStart.cshtml" />
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -1192,7 +1245,9 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

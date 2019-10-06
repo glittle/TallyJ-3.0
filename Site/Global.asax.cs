@@ -55,26 +55,26 @@ namespace TallyJ
       SecurityConfigurator.Configure(
           configuration =>
           {
-                  // http://www.fluentsecurity.net/getting-started
+            // http://www.fluentsecurity.net/getting-started
 
-                  // Let Fluent Security know how to get the authentication status of the current user
-                  configuration.GetAuthenticationStatusFrom(() => HttpContext.Current.User.Identity.IsAuthenticated);
+            // Let Fluent Security know how to get the authentication status of the current user
+            configuration.GetAuthenticationStatusFrom(() => UserSession.IsAuthenticated);
 
             configuration.ResolveServicesUsing(type => UnityInstance.Container.ResolveAll(type));
 
-                  // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
-                  configuration.ForAllControllers().DenyAnonymousAccess();
+            // This is where you set up the policies you want Fluent Security to enforce on your controllers and actions
+            configuration.ForAllControllers().DenyAnonymousAccess();
 
             configuration.For<PublicController>().Ignore();
             configuration.For<AccountController>().Ignore();
-
+            configuration.For<Account2Controller>().Ignore();
 
             configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
 
             configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-                  //configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
+            //configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
 
-                  configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
+            configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
 
             configuration.For<DashboardController>().DenyAnonymousAccess();
 
@@ -85,13 +85,14 @@ namespace TallyJ
             configuration.For<SetupController>().AddPolicy(new RequireElectionPolicy());
             configuration.For<SetupController>(x => x.Upload()).AddPolicy(new RequireElectionPolicy());
 
-                  //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
-                  //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
-                  configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
+            //configuration.For<AccountController>(x => x.LogOn()).DenyAuthenticatedAccess();
+            //configuration.For<AccountController>(x => x.Register()).DenyAuthenticatedAccess();
+            configuration.For<AccountController>(x => x.ChangePassword()).DenyAnonymousAccess();
           });
 
       RegisterGlobalFilters(GlobalFilters.Filters);
       RegisterGeneralRoutes(RouteTable.Routes);
+
     }
 
     private void SetupEnvironment()

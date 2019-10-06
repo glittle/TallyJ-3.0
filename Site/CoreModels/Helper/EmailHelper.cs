@@ -122,7 +122,7 @@ namespace TallyJ.CoreModels.Helper
 
     private JsonResult SendWhenOpened()
     {
-      var db = UserSession.DbContext;
+      var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
 
@@ -244,7 +244,7 @@ namespace TallyJ.CoreModels.Helper
     /// "SmtpTimeoutMs", 5 * 1000
     /// </remarks>
     /// <returns></returns>
-    private bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
+    public bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
       message.From = new MailAddress(SettingsHelper.Get("FromEmailAddress", "system@tallyj.com"), "TallyJ System");
       message.Body = htmlBody;
@@ -309,9 +309,9 @@ namespace TallyJ.CoreModels.Helper
       return false;
     }
 
-    private static string GetEmailTemplate(string emailTemplate)
+    public string GetEmailTemplate(string emailTemplate)
     {
-      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/App_Data/{emailTemplate}.html";
+      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/EmailTemplates/{emailTemplate}.html";
 
       AssertAtRuntime.That(File.Exists(path), "Missing email template");
 

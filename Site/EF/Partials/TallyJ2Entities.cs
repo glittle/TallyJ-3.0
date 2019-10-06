@@ -1,8 +1,8 @@
-﻿using EntityFramework.BulkInsert.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using EntityFramework.BulkInsert.Extensions;
 
 namespace TallyJ.EF
 {
@@ -28,7 +28,7 @@ namespace TallyJ.EF
 
     public void Detach(object entity)
     {
-      ((IObjectContextAdapter) (this)).ObjectContext.Detach(entity);
+      ((IObjectContextAdapter)(this)).ObjectContext.Detach(entity);
     }
 
     public long CurrentRowVersion()

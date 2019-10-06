@@ -3,7 +3,6 @@ using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.EF;
-using EntityFramework.BulkInsert.Extensions;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
 

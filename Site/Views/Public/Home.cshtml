@@ -1,8 +1,9 @@
 ﻿@using Microsoft.Owin.Security
 @using TallyJ.Code.Session
+@model TallyJ.CoreModels.Account2Models.LoginViewModel
 @{
   ViewBag.OnWelcome = true;
-  ViewBag.Title = "Bahá’í Election Tool";
+  ViewBag.Title = "Bahá’í Election System";
   ViewBag.Caption = "Welcome";
   ViewBag.Message = "The election system for Bahá’í tellers";
   ViewBag.Metas = new[]{
@@ -23,23 +24,20 @@
   <section class="featureBig CenterPanel">
     <div class="top">
     </div>
-    <h2 id="introTitle">Choose an Option to Start</h2>
+    <h2 id="introTitle">What would you like to do?</h2>
     <div class="centerbuttons">
       @if (SettingsHelper.HostSupportsOnlineElections)
       {
-        <div class="centerL" title="Vote in an election.">
-          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote</button>
-          <p>Vote in an election</p>
+        <div class="centerL" title="Vote online in an election.">
+          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote Online</button>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
         <button class="btn btn-primary" id="btnChooseJoin" accesskey="A">Assist as a Teller</button>
-        <p>Join an election as a teller</p>
       </div>
       <div class="centerR"
            title="Create and manage elections. If you do not have an account yet, you can register here.">
         <button class="btn btn-success" id="btnChooseLogin" accesskey="M">Manage Elections</button>
-        <p>Log in to create and administer your elections</p>
 
       </div>
     </div>
@@ -50,7 +48,8 @@
     </div>
     <div class="top">
     </div>
-    <h2>Join an Election as a Teller</h2>
+    <h2>Assist as a Teller</h2>
+    <p>Join an election as a teller to assist in registering voters and tallying ballots.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
@@ -118,7 +117,8 @@
     </div>
     <div class="top">
     </div>
-    <h2>Log In</h2>
+    <h2>Manage Elections</h2>
+    <p>Log in to create and administer elections for your community.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
@@ -151,7 +151,7 @@
     }
     else
     {
-      Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModel());
+      Html.RenderPartial("~/Views/Account/LogOn.cshtml", new LogOnModelV1());
     }
   </section>
   @if (SettingsHelper.HostSupportsOnlineElections)
@@ -162,7 +162,7 @@
       </div>
       <div class="top">
       </div>
-      <h2>Vote in an Election</h2>
+      <h2>Vote Online</h2>
       @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
       {
         if (UserSession.IsKnownTeller)
@@ -206,66 +206,125 @@
       else
       {
         <div>
-          <p>
-            To vote online in an election in TallyJ, you must first have an account in any one of the services listed below.
-          </p>
-          <p>
-            Your email address in the service must match the email address
-            listed with your name in the election you plan to vote in.
-          </p>
-          <p>
-            By clicking, you agree to the <a target="privacy" href="@Url.Action("Privacy")">Privacy Policy and User Agreement</a>.
-          </p>
-
           @{
-            var loginTypes = new[]
+            var msg = (string) Session[SessionKey.VoterLoginError];
+            if (msg.HasContent())
             {
-              // copied from Context.GetOwinContext().Authentication.GetAuthenticationTypes()
-              "Google",
-              "Facebook",
-//                        "Microsoft|microsoft"
-            };
+              Session.Remove(SessionKey.VoterLoginError);
+              <div class="VoterLoginError">
+                @msg.AsRawHtml()
+              </div>
+            }
+            var loginTypes = Context.GetOwinContext().Authentication.GetAuthenticationTypes();
+          }
 
-            using (Html.BeginForm("ExternalLogin", "Account"))
-            {
-              @Html.AntiForgeryToken()
-              <div id="socialLoginList">
-                <p>
-                  @foreach (var name in loginTypes)
+
+          <p>
+            Log in with your Google or Facebook account, or create and use a local account in TallyJ.
+          </p>
+          <p>
+            TallyJ will list all the elections where your email address is on file.
+          </p>
+
+          <div class="voterLogins">
+            <div id="socialLoginList">
+              @using (Html.BeginForm("LogOnExt", "Account"))
+              {
+                @Html.AntiForgeryToken()
+                foreach (var loginType in loginTypes)
+                {
+                  var name = loginType.AuthenticationType;
+
+                  if (name == "Google")
                   {
-                    if (name == "Google")
-                    {
-                      <button type="submit"
-                              class="authButton @name"
-                              name="provider"
-                              value="@name"
-                              title="Log in using your @name account">
-                        <img src="@Url.Content("~/Images/google.png")">
-                      </button>
-                    }
-                    else if (name == "Facebook")
-                    {
-                      <button type="submit"
-                              class="authButton @name"
-                              name="provider"
-                              value="@name"
-                              title="Log in using your @name account">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
-                          <path fill="#fff" d="
-          M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
+                    <button type="submit"
+                            class="authButton @name"
+                            accesskey="G"
+                            name="Provider"
+                            value="@name"
+                            title="Log in using your @name account">
+                      <img src="@Url.Content("~/Images/google.png")">
+                    </button>
+                  }
+                  else if (name == "Facebook")
+                  {
+                    <button type="submit"
+                            class="authButton @name"
+                            accesskey="F"
+                            name="Provider"
+                            value="@name"
+                            title="Log in using your @name account">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
+                        <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
           11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
           11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
           15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
           11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
-                        </svg>
-                        <span>Log in With Facebook</span>
-                      </button>
-                    }
+                      </svg>
+                      <span>Log in With Facebook</span>
+                    </button>
                   }
-                </p>
-              </div>
-            }
-          }
+                  else if (name == "ExternalCookie")
+                  {
+                  }
+                  else
+                  {
+                    @*<div>@name</div>*@
+                  }
+                }
+              }
+              <p class="externalNote">
+                TallyJ will use the email address that is provided by Google or Facebook.
+              </p>
+            </div>
+            <span class="voterOr">
+              or
+            </span>
+            <div class="direct">
+              @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new {name = "v2"}))
+              {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                <div class="email">
+                  Email address
+                  <div>
+                    @Html.EditorFor(m => m.Email, new {htmlAttributes = new {autocomplete = "email"}})
+                    @Html.ValidationMessageFor(m => m.Email, "", new {@class = "text-danger"})
+                  </div>
+                </div>
+                <div class="pw">
+                  TallyJ Password
+                  <div>
+                    @Html.PasswordFor(m => m.Password, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.Password, "", new {@class = "text-danger"})
+                  </div>
+                </div>
+                <div class="submit">
+                  <button type="submit"
+                          class="authButton"
+                          accesskey="L"
+                          name="Provider"
+                          value="Local">
+                    Log in
+                  </button>
+                </div>
+                <div class="other">
+
+                  <div>
+                    @Html.ActionLink("Create a TallyJ password", "Register", "Account2")
+                  </div>
+                  <div>
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <p>
+            By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
+          </p>
 
 
         </div>
@@ -290,25 +349,18 @@
 </div>
 
 <section class="features bottom">
-  <a href="@Url.Action("Learning")">
-    <section class="feature">
-      <h2>Reference Materials</h2>
-      <p>
-        Read more about Bahá’í elections and the job of tellers.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Contact")">
-    <section class="feature">
-      <h2>Contact</h2>
-      <p>
-        How to get in contact.
-      </p>
-    </section>
-  </a><a href="@Url.Action("About")">
+  <a href="@Url.Action("About")">
     <section class="feature">
       <h2>About TallyJ</h2>
       <p>
         Want to know more about the TallyJ tool?
+      </p>
+    </section>
+  </a><a href="@Url.Action("Learning")">
+    <section class="feature">
+      <h2>Reference Materials</h2>
+      <p>
+        Read more about Bahá’í elections and the job of tellers.
       </p>
     </section>
   </a><a href="@Url.Action("Privacy")">
@@ -316,6 +368,13 @@
       <h2>Policies & Agreements</h2>
       <p>
         Voter's Privacy Policy and User Agreement.
+      </p>
+    </section>
+  </a><a href="@Url.Action("Contact")">
+    <section class="feature">
+      <h2>Contact</h2>
+      <p>
+        How to get in contact.
       </p>
     </section>
   </a><a href="@Url.Action("Install")">

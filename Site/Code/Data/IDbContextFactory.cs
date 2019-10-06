@@ -4,7 +4,7 @@ namespace TallyJ.Code.Data
 {
 	public interface IDbContextFactory
 	{
-		ITallyJDbContext DbContext
+		ITallyJDbContext GetNewDbContext
 		{
 			get;
 		}

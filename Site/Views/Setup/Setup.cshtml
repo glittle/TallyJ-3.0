@@ -389,7 +389,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
 
       <tr v-if="useOnline">
         <th>
-          Voting Start time
+          Open Voting at
         </th>
         <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
           <datetime v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
@@ -402,34 +402,33 @@ ClientFile("~/Scripts/vue-datetime.css"),
       </tr>
       <tr v-if="useOnline">
         <th>
-          Voting Stop time
+          Close Voting at
         </th>
         <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
           <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
           <div class="voteWhen">{{showFrom(election.OnlineWhenClose)}}</div>
         </td>
         <td>
-          When should the election be closed?
-          <a class="setTime" v-on:click="election.OnlineWhenClose = new Date().toISOString()">Set to now.</a>
-          <p>The Head Teller can adjust the stop time during the election. Suggestion: Manually close online voting once all paper ballots are collected and counted.</p>
+          When should the election be closed? Use your best guess when setting up the election.
+          The Head Teller should adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
         </td>
       </tr>
       <tr v-if="useOnline && !onlineDatesOkay">
         <td colspan="3">
-          <div class="onlineWarning1">Start and Stop times are both required and Start must come before Stop.</div>
+          <div class="onlineWarning1">Open and Close times are both required and Open must come before Close.</div>
         </td>
       </tr>
-      <tr v-if="useOnline">
-        <th>
-          Voting Stop time estimated?
-        </th>
-        <td>
-          <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
-        </td>
-        <td>
-          This affects the wording shown to voters. Usually leave as estimated until the final hours.
-        </td>
-      </tr>
+      @*<tr v-if="useOnline">
+          <th>
+            Close timtime estimated?
+          </th>
+          <td>
+            <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
+          </td>
+          <td>
+            This affects the wording shown to voters. Usually leave as estimated until the final hours.
+          </td>
+        </tr>*@
     </table>
   }
   else

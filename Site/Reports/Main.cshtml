@@ -6,11 +6,11 @@
 @{
     var currentElection = UserSession.CurrentElection;
 
-    var result = new ResultCacher(UserSession.DbContext).AllForThisElection
+    var result = new ResultCacher(UserSession.GetNewDbContext).AllForThisElection
       .OrderBy(r => r.Rank)
       .Take(currentElection.NumberToElect.AsInt() + currentElection.NumberExtra.AsInt())
       .ToList()
-      .Join(new PersonCacher(UserSession.DbContext).AllForThisElection,
+      .Join(new PersonCacher(UserSession.GetNewDbContext).AllForThisElection,
         r => r.PersonGuid,
         p => p.PersonGuid,
         (result1, person) => new { person, result1 })

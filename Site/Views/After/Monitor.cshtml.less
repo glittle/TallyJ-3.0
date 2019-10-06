@@ -118,18 +118,30 @@ table.compList thead th {
   color: #999;
 }
 
-.noOnlineVoting{
-  margin: 2em 0;
+.noOnlineVoting {
+}
+
+.onlineH2 {
+  margin: 4em 0 0 0;
 }
 
 #onlineDiv {
-  margin-bottom: 80px;
+  margin: .5em 0 4em 0;
 
   .votingTop {
-    margin: 4em 0 0 0;
     display: flex;
     align-items: center;
   }
+
+  .votingMisc {
+    padding-left: 10px;
+
+    button {
+      display: block;
+      margin: 5px 0;
+    }
+  }
+
 
   h2 {
     margin-right: 2em;
@@ -140,8 +152,15 @@ table.compList thead th {
   }
 
   .closeStatus {
-    width: auto;
-    padding: 1em;
+    text-align: center;
+    display: inline-block;
+    padding: .5em 1.5em 1.5em;
+    border-radius: 5px;
+
+    strong {
+      display: block;
+      margin: 1em;
+    }
   }
 
   .vdatetime {

@@ -126,7 +126,13 @@ var vueOptions = {
               setInterval(vue.updateStatuses, 60 * 1000);
             }
 
-
+            
+            // other info
+            if (info.emailCodes) {
+              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
+              vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
+            }
+            vue.emailCodesLoaded = true;
             // for dev, go to first election
             //            setTimeout(function () {
             //              vue.prepareBallot(vue.elections.find(function (e) { return e.online; }));
@@ -515,12 +521,6 @@ var vueOptions = {
             ShowStatusFailed(info.Error);
           }
 
-          // other info
-          if (info.emailCodes) {
-            vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
-            vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
-          }
-          vue.emailCodesLoaded = true;
         });
     },
     extendLoginHistory: function (list) {

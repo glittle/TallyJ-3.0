@@ -6,16 +6,17 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Facebook;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using Owin.Security.Providers.PayPal;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Account2Models;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
@@ -32,6 +33,7 @@ namespace TallyJ
 
       app.MapSignalR();
 
+
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
@@ -40,11 +42,33 @@ namespace TallyJ
 
       app.UseCookieAuthentication(new CookieAuthenticationOptions
       {
-        CookieSecure = CookieSecureOption.Always,
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
+        CookieSecure = CookieSecureOption.Always,
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
-        LoginPath = new PathString("/")
+        LoginPath = new PathString("/"),
+        Provider = new CookieAuthenticationProvider
+        {
+          // Enables the application to validate the security stamp when the user 
+          // logs in. This is a security feature which is used when you 
+          // change a password or add an external login to your account.  
+          OnValidateIdentity = SecurityStampValidator
+            .OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
+              validateInterval: TimeSpan.FromMinutes(30),
+              regenerateIdentity: (manager, user)
+                => user.GenerateUserIdentityAsync(manager))
+        }
       });
+
+      // Enables the application to remember the second login verification factor such 
+      // as phone or email. Once you check this option, your second step of 
+      // verification during the login process will be remembered on the device where 
+      // you logged in from. This is similar to the RememberMe option when you log in.
+      app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
+
+      // for login v2
+      app.CreatePerOwinContext(ApplicationDbContext.Create);
+      app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+      app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
       if (!SettingsHelper.HostSupportsOnlineElections)
       {
@@ -53,16 +77,15 @@ namespace TallyJ
 
       // ensure that we have authentication account details
 
-      if (AppSettings["facebook-AppId"].HasNoContent())
+      if (AppSettings["facebook-AppId"].HasContent())
       {
-        throw new ApplicationException("Missing app settings");
+        app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
       }
 
-      app.UseGoogleAuthentication(CreateGoogleOptions());
-      app.Use(typeof(CustomFacebookAuthenticationMiddleware), app, CreateFacebookOptions());
-      //      app.UsePayPalAuthentication();
-      //            app.UseSpotifyAuthentication()
-      //            app.UseCookieAuthentication(CreateCookiesOptions());
+      if (AppSettings["google-ClientId"].HasContent())
+      {
+        app.UseGoogleAuthentication(CreateGoogleOptions());
+      }
     }
 
     private CustomFacebookAuthenticationOptions CreateFacebookOptions()
@@ -84,6 +107,7 @@ namespace TallyJ
 
           if (gotEmail)
           {
+
             var identity = new ClaimsIdentity(new List<Claim>
             {
               new Claim("Source", "Facebook"),
@@ -99,7 +123,7 @@ namespace TallyJ
               ExpiresUtc = DateTime.UtcNow.AddHours(1)
             }, identity);
 
-            RecordLogin("Facebook", email);
+            UserSession.RecordLogin("Facebook", email);
           }
           else
           {
@@ -126,6 +150,16 @@ namespace TallyJ
         OnAuthenticated = authContext =>
         {
           var email = (string)authContext.User["email"];
+
+
+          if (email != SessionKey.EmailForOtherLogin.FromSession(""))
+          {
+            // this in not what the user put into the page
+//            return Redirect();//Url.Action("Index", "Public"));
+          }
+
+
+
           var emailIsVerified = (string)authContext.User["verified_email"];
 
           var identity = new ClaimsIdentity(new List<Claim>
@@ -143,7 +177,7 @@ namespace TallyJ
             ExpiresUtc = DateTime.UtcNow.AddHours(1)
           }, identity);
 
-          RecordLogin("Google", email);
+          UserSession.RecordLogin("Google", email);
 
           return Task.FromResult(0);
         }
@@ -151,32 +185,6 @@ namespace TallyJ
       return options;
     }
 
-    private void RecordLogin(string source, string email)
-    {
-      var db = UserSession.DbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
-      var now = DateTime.Now;
 
-      if (onlineVoter == null)
-      {
-        onlineVoter = new OnlineVoter
-        {
-          Email = email,
-          WhenRegistered = now
-        };
-        db.OnlineVoter.Add(onlineVoter);
-      }
-      else
-      {
-        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
-      }
-
-      onlineVoter.WhenLastLogin = now;
-      db.SaveChanges();
-     
-      new LogHelper().Add($"Login from {source}", true, email);
-
-      new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
-    }
   }
 }

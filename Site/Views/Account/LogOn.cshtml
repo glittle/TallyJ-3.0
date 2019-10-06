@@ -1,5 +1,5 @@
 ﻿@using TallyJ.Code.Session
-@model LogOnModel
+@model LogOnModelV1
 
 @{
   ViewBag.Title = "Log On";
@@ -12,38 +12,38 @@
   <section class="featured empty"></section>
 }
 
-<hgroup class="title">
+@*<hgroup class="title">
   <h2>Log In.</h2>
-</hgroup>
+</hgroup>*@
 <p>
-  Log in with your admin account (as the head teller or an assistant head teller).
-</p><p>
-  The same admin account login ID can be used simultaneously on multiple computers.
-</p><p>
-  If you do not have an admin account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
+  This account can be used by the head teller and assistant head tellers simultaneously on multiple computers.
 </p>
 
 
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
 @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new
 {
-  action = Url.Action("LogOn", "Account")
+  action = Url.Action("LogOn", "Account"),
+  name = "v1"
 }))
 { // (string)ViewBag.FormAction
   <fieldset>
-    <legend>Log In Form</legend>
     <div>
       <div>
-        @Html.LabelFor(m => m.UserName, "Admin Login ID (not email)")
-        @Html.TextBoxFor(m => m.UserName)
+        @Html.LabelFor(m => m.UserName, "Admin Login ID (not your email address!)")
+        @Html.TextBoxFor(m => m.UserName, "", new { autocomplete = "username" })
         @Html.ValidationMessageFor(m => m.UserName)
       </div>
       <div>
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password)
-        @Html.ValidationMessageFor(m => m.Password)
+        @Html.LabelFor(m => m.PasswordV1)
+        @Html.PasswordFor(m => m.PasswordV1, new { autocomplete = "passwordV1" })
+        @Html.ValidationMessageFor(m => m.PasswordV1)
       </div>
     </div>
     <input type="submit" value="Log In" onclick="lookBusy" class="btn btn-success" />
   </fieldset>
 }
+
+<p>
+  If you do not have an admin account yet, please @Html.ActionLink("register", "Register", "Account", null, new { @class = "normal" }).
+</p>

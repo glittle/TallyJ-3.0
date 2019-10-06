@@ -20,5 +20,8 @@ namespace TallyJ.Code.Session
         public const string HasTies = "HasTies";
 
         public const string VoterLastLogin = "VoterLastLogin";
+        public const string VoterLoginError = "VoterLoginError";
+        public const string ActivePrincipal = "ActivePrincipal";
+        public const string EmailForOtherLogin = "EmailForOtherLogin";
     }
 }

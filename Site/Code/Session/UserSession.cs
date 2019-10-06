@@ -18,21 +18,9 @@ namespace TallyJ.Code.Session
 {
   public static class UserSession
   {
-    public static ICurrentContext CurrentContext
-    {
-      get
-      {
-        return UnityInstance.Resolve<ICurrentContext>();
-      }
-    }
+    public static ICurrentContext CurrentContext => UnityInstance.Resolve<ICurrentContext>();
 
-    public static ITallyJDbContext DbContext
-    {
-      get
-      {
-        return UnityInstance.Resolve<IDbContextFactory>().DbContext;
-      }
-    }
+    public static ITallyJDbContext GetNewDbContext => UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
 
     /// <summary>
     ///   Logged in identity name.
@@ -41,7 +29,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return CurrentPrincipal.FindFirst("UserName")?.Value;
+        return ActivePrincipal.FindFirst("UserName")?.Value;
         //            return HttpContext.Current.User.Identity.Name ?? "";
       }
     }
@@ -93,7 +81,7 @@ namespace TallyJ.Code.Session
       {
         if (!UserGuidHasBeenLoaded && LoginId.HasContent())
         {
-          var user = DbContext.Users.SingleOrDefault(u => u.UserName == LoginId);
+          var user = GetNewDbContext.Users.SingleOrDefault(u => u.UserName == LoginId);
 
           UserGuidHasBeenLoaded = true;
 
@@ -117,7 +105,15 @@ namespace TallyJ.Code.Session
     /// <Summary>Stored as Guid in session</Summary>
     public static Guid CurrentElectionGuid
     {
-      get { return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty); }
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
       set
       {
         SessionKey.CurrentElectionGuid.SetInSession(value);
@@ -219,16 +215,79 @@ namespace TallyJ.Code.Session
       set => SessionKey.CurrentLocationGuid.SetInSession(value);
     }
 
-    public static ClaimsPrincipal CurrentPrincipal => (ClaimsPrincipal)Thread.CurrentPrincipal;
+    public static ClaimsPrincipal ActivePrincipal
+    {
+      get
+      {
+        var threadPrincipal = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        if (threadPrincipal.Identity.IsAuthenticated)
+        {
+          return threadPrincipal;
+        }
 
-    public static string VoterEmail => CurrentPrincipal.FindFirst("Email")?.Value;
-    public static string VoterAuthSource => CurrentPrincipal.FindFirst("Source")?.Value;
-    public static bool VoterIsVerified => CurrentPrincipal.FindFirst("IsVoter")?.Value == "True";
+        try
+        {
+          var owinPrincipal = HttpContext.Current.GetOwinContext().Authentication.AuthenticationResponseGrant?.Principal;
+          if (owinPrincipal != null && owinPrincipal.Identity.IsAuthenticated)
+          {
+            return owinPrincipal;
+          }
+        }
+        catch
+        {
+          // won't work in some cases
+        }
+
+        // the OwinContext principal sometimes does not exist!  Storing it also in Session to be able to get it again.
+        var activePrincipal = SessionKey.ActivePrincipal.FromSession(new ClaimsPrincipal(new ClaimsIdentity()));
+
+        return activePrincipal;
+      }
+    }
+
+    public static bool IsAuthenticated => ActivePrincipal.Identity.IsAuthenticated;
+
+    public static string VoterEmail => ActivePrincipal.FindFirst("Email")?.Value;
+    public static string VoterAuthSource => ActivePrincipal.FindFirst("Source")?.Value;
+    public static bool VoterIsVerified => ActivePrincipal.FindFirst("IsVoter")?.Value == "True";
 
     public static DateTime VoterLastLogin
     {
       get => SessionKey.VoterLastLogin.FromSession(DateTime.MinValue);
       set => SessionKey.VoterLastLogin.SetInSession(value);
+    }
+
+    public static void RecordLogin(string source, string email)
+    {
+      if (email.HasNoContent())
+      {
+        throw new ApplicationException("Email required");
+      }
+
+      var db = GetNewDbContext;
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
+      var now = DateTime.Now;
+
+      if (onlineVoter == null)
+      {
+        onlineVoter = new OnlineVoter
+        {
+          Email = email,
+          WhenRegistered = now
+        };
+        db.OnlineVoter.Add(onlineVoter);
+      }
+      else
+      {
+        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+      }
+
+      onlineVoter.WhenLastLogin = now;
+      db.SaveChanges();
+
+      new LogHelper().Add($"Login from {source}", true, email);
+
+      new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
     }
 
     public static Location CurrentLocation
@@ -406,10 +465,10 @@ namespace TallyJ.Code.Session
       get
       {
         return Properties.Settings.Default.VersionNum;
-//        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
-//        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
-//        var version = regex.Success ? regex.Groups["version"].Value : "?";
-//        return version;
+        //        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
+        //        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
+        //        var version = regex.Success ? regex.Groups["version"].Value : "?";
+        //        return version;
       }
     }
 

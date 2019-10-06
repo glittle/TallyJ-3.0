@@ -82,7 +82,7 @@ namespace TallyJ.Code
 
     private void AddToLog(C_Log logItem)
     {
-      var db = UnityInstance.Resolve<IDbContextFactory>().DbContext;
+      var db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
       logItem.AsOf = DateTime.Now;
       db.C_Log.Add(logItem);
       db.SaveChanges();

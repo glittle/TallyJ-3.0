@@ -22,14 +22,13 @@ namespace TallyJ.Controllers
 
     public ActionResult Index()
     {
-      var identity1 = (ClaimsIdentity)User.Identity;
-      IEnumerable<Claim> claims1 = identity1.Claims;
-      var numClaims1 = claims1.Count();
-
-      var identity2 = (ClaimsPrincipal)Thread.CurrentPrincipal;
-      var claims2 = identity2.Claims;
-      var numClaims2 = claims2.Count();
-
+      //      var identity1 = (ClaimsIdentity)User.Identity;
+      //      IEnumerable<Claim> claims1 = identity1.Claims;
+      //      var numClaims1 = claims1.Count();
+      //
+      //      var identity2 = (ClaimsPrincipal)Thread.CurrentPrincipal;
+      //      var claims2 = identity2.Claims;
+      //      var numClaims2 = claims2.Count();
       return View("Home");
     }
 
@@ -90,7 +89,7 @@ namespace TallyJ.Controllers
     public JsonResult Warmup()
     {
       // force the server to contact the database to ensure that it is warmed up and ready for action
-      var dummy = UserSession.DbContext.Election.FirstOrDefault();
+      var dummy = UserSession.GetNewDbContext.Election.FirstOrDefault();
       return null;
     }
 

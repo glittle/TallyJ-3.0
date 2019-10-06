@@ -111,5 +111,7 @@ namespace Tests.Support
     {
       throw new NotImplementedException();
     }
+
+    public bool IsAvailable => false;
   }
 }

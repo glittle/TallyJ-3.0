@@ -1,0 +1,62 @@
+﻿@using System.Xml
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@using TallyJ.Code
+@using TallyJ.EF
+@{
+  ContextItems.AddJavascriptForPage("test1", "site.testTime={0};".FilledWith(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz").SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("time", "site.timeOffset={0};".FilledWith(UserSession.TimeOffsetServerAhead.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
+  ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta charset="utf-8">
+  <meta http-equiv='content-language' content='en'>
+  <title>TallyJ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  @RenderSection("Metas", false)
+  <link href="@ClientFile("~/Content/bootstrap3/bootstrap{0}.css", ".min")" rel="stylesheet" type="text/css" />
+  @RenderPage("Headers.cshtml")
+  <script src="@ClientFile("~/Content/bootstrap3/bootstrap{0}.js", ".min")" type="text/javascript"></script>
+  <meta name="description" content="Baha'i Election System'" />
+</head>
+@{
+  var classes = new List<string> {
+      ControllerActionNamesJoined,
+    };
+}
+<body class="Acc2Pages VoterPages @classes.JoinedAsString(" ", true)">
+  <header>
+    <div class="content-wrapper">
+      <div class="MainTop">
+        <div class="site-title"
+             onclick="location.href = '@Url.Action("Index", "Public")'"
+             alt="TallyJ - Bahá’í Election System">
+          <h1>TallyJ - Bahá’í Election System</h1>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="body">
+    @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
+    {
+      <div style="margin: 50px auto; padding: 50px; color: red">Sorry, older versions of Internet Explorer are not supported!  Please use Chrome or Firefox.</div>
+    }
+    else
+    {
+      <section class="content-wrapper clear-fix">
+        <div class="main-content"></div>
+        @RenderBody()
+      </section>
+    }
+  </div>
+  @RenderPage("Footer.cshtml")
+  <script src="@ClientFile("~/Scripts/jquery.validate{0}.js", ".min")" type="text/javascript"></script>
+</body>
+</html>

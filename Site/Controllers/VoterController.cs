@@ -334,9 +334,13 @@ namespace TallyJ.Controllers
           }
         });
 
+      // piggyback and get other info too
+      var emailCodes = Db.OnlineVoter.Single(ov => ov.Email == email).EmailCodes;
+
       return new
       {
         list,
+        emailCodes
       }.AsJsonResult();
     }
 
@@ -365,13 +369,9 @@ namespace TallyJ.Controllers
           log.Details,
         });
 
-      // piggyback and get other info too
-      var emailCodes = Db.OnlineVoter.Single(ov => ov.Email == email).EmailCodes;
-
       return new
       {
         list,
-        emailCodes
       }.AsJsonResult();
     }
 

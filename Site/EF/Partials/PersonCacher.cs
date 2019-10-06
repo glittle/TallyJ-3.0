@@ -19,7 +19,7 @@ namespace TallyJ.EF
 
     public PersonCacher(ITallyJDbContext dbContext) : base(dbContext) {
     }
-    public PersonCacher() : base(UserSession.DbContext)
+    public PersonCacher() : base(UserSession.GetNewDbContext)
     {
     }
 

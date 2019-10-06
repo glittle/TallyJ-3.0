@@ -10,7 +10,8 @@
   ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
-}<!DOCTYPE html>
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -28,18 +29,20 @@
   var classes = new List<string> {
       ControllerActionNamesJoined,
     };
-} 
+}
 <body class="VoterPages @classes.JoinedAsString(" ", true)">
   <header>
     <div class="content-wrapper">
       <div class="MainTop">
-        
         <div class="site-title"
              onclick="location.href = '@Url.Action("Index", "Public")'"
-             alt="TallyJ - Bahá’í Election Tool">
-          <h1>TallyJ - Bahá’í Election Tool</h1>
+             alt="TallyJ - Bahá’í Election System">
+          <h1>TallyJ - Bahá’í Election System</h1>
         </div>
-        <button type="button" class="btn logoffVoter" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
+        @if (UserSession.IsVoter)
+        {
+          <button type="button" class="btn logoffVoter" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
+        }
       </div>
     </div>
   </header>
@@ -58,6 +61,6 @@
     }
   </div>
   @RenderPage("Footer.cshtml")
-
+  @RenderSection("scripts", required: false)
 </body>
 </html>

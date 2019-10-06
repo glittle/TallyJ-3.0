@@ -6,7 +6,7 @@ namespace Tests.BusinessTests
 {
   public class FakeDbContextFactory : IDbContextFactory
   {
-    public ITallyJDbContext DbContext
+    public ITallyJDbContext GetNewDbContext
     {
       get {
         return UnityInstance.Resolve<ITallyJDbContext>() ?? new TestDbContext();

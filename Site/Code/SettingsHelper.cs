@@ -13,20 +13,29 @@ namespace TallyJ.Code
 
     public static string Get(string name, string defaultValue)
     {
-      return ConfigurationManager.AppSettings[name] ?? defaultValue;
+      return GetRaw(name) ?? defaultValue;
     }
 
     public static bool Get(string name, bool defaultValue)
     {
-      var raw = ConfigurationManager.AppSettings[name];
-      return raw?.AsBoolean() ?? defaultValue;
+      return GetRaw(name)?.AsBoolean() ?? defaultValue;
     }
 
     public static int Get(string name, int defaultValue)
     {
-      var raw = ConfigurationManager.AppSettings[name];
-      return raw?.AsInt() ?? defaultValue;
+      return GetRaw(name)?.AsInt() ?? defaultValue;
     }
 
+    /// <summary>
+    /// Not using MachineName prefix any more.
+    /// Settings specific to a computer should be put into the file referenced in web.config at <appSettings file="my-file.config">...</appSettings>
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    private static string GetRaw(string name)
+    {
+//      return ConfigurationManager.AppSettings[$"{Environment.MachineName}:{name}"] ?? ConfigurationManager.AppSettings[name];
+      return ConfigurationManager.AppSettings[name];
+    }
   }
 }
