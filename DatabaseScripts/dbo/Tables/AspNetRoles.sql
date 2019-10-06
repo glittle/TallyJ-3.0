@@ -5,7 +5,15 @@
 );
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [RoleNameIndex]
     ON [dbo].[AspNetRoles]([Name] ASC);
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[AspNetRoles] TO [TallyJSite]
+    AS [dbo];
 

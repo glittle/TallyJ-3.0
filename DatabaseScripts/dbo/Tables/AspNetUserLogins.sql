@@ -7,7 +7,33 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_UserId]
     ON [dbo].[AspNetUserLogins]([UserId] ASC);
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[AspNetUserLogins] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[AspNetUserLogins] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[AspNetUserLogins] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[AspNetUserLogins] TO [TallyJSite]
+    AS [dbo];
 

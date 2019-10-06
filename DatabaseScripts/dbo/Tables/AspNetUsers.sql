@@ -15,7 +15,33 @@
 );
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UserNameIndex]
     ON [dbo].[AspNetUsers]([UserName] ASC);
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[AspNetUsers] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[AspNetUsers] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[AspNetUsers] TO [TallyJSite]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[AspNetUsers] TO [TallyJSite]
+    AS [dbo];
 
