@@ -171,18 +171,18 @@ section.CenterPanel.chosen {
 }
 .JoinPanel {
   display: none;
-  background-color: #d0d6ea;
+  background-color: #D0DBE6;
 }
 .JoinPanel li {
   margin: 20px 0;
 }
 .LoginPanel {
   display: none;
-  background-color: #ccdfaf;
+  background-color: #D5E9B8;
 }
 .VoterPanel {
   display: none;
-  background-color: #ffe3c4;
+  background-color: #FCE1C1;
 }
 .VoterPanel .VoterLoginError {
   margin: 1em 0;

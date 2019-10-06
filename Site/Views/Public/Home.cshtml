@@ -28,8 +28,8 @@
     <div class="centerbuttons">
       @if (SettingsHelper.HostSupportsOnlineElections)
       {
-        <div class="centerL" title="Vote in an election.">
-          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote in an Election</button>
+        <div class="centerL" title="Vote online in an election.">
+          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote Online</button>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
@@ -162,7 +162,7 @@
       </div>
       <div class="top">
       </div>
-      <h2>Vote in an Election</h2>
+      <h2>Vote Online</h2>
       @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
       {
         if (UserSession.IsKnownTeller)
@@ -207,7 +207,7 @@
       {
         <div>
           @{
-            var msg = (string)Session[SessionKey.VoterLoginError];
+            var msg = (string) Session[SessionKey.VoterLoginError];
             if (msg.HasContent())
             {
               Session.Remove(SessionKey.VoterLoginError);
@@ -220,10 +220,10 @@
 
 
           <p>
-            You can log in with your Google or Facebook account, or create and use a local account in TallyJ.
+            Log in with your Google or Facebook account, or create and use a local account in TallyJ.
           </p>
           <p>
-            The email address used will be matched to voter records and TallyJ will list any elections that you can vote in.
+            TallyJ will list all the elections where your email address is on file.
           </p>
 
           <div class="voterLogins">
@@ -281,23 +281,23 @@
               or
             </span>
             <div class="direct">
-              @using (Html.BeginForm("LogOnLocal", "Account"))
+              @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new {name = "v2"}))
               {
                 @Html.AntiForgeryToken()
 
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
                 <div class="email">
                   Email address
                   <div>
-                    @Html.EditorFor(m => m.Email)
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    @Html.EditorFor(m => m.Email, new {htmlAttributes = new {autocomplete = "email"}})
+                    @Html.ValidationMessageFor(m => m.Email, "", new {@class = "text-danger"})
                   </div>
                 </div>
                 <div class="pw">
                   TallyJ Password
                   <div>
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    @Html.PasswordFor(m => m.Password, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.Password, "", new {@class = "text-danger"})
                   </div>
                 </div>
                 <div class="submit">

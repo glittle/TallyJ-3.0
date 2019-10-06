@@ -23,19 +23,20 @@
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
 @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new
 {
-  action = Url.Action("LogOn", "Account")
+  action = Url.Action("LogOn", "Account"),
+  name = "v1"
 }))
 { // (string)ViewBag.FormAction
   <fieldset>
     <div>
       <div>
         @Html.LabelFor(m => m.UserName, "Admin Login ID (not your email address!)")
-        @Html.TextBoxFor(m => m.UserName)
+        @Html.TextBoxFor(m => m.UserName, "", new { autocomplete = "username" })
         @Html.ValidationMessageFor(m => m.UserName)
       </div>
       <div>
         @Html.LabelFor(m => m.PasswordV1)
-        @Html.PasswordFor(m => m.PasswordV1)
+        @Html.PasswordFor(m => m.PasswordV1, new { autocomplete = "passwordV1" })
         @Html.ValidationMessageFor(m => m.PasswordV1)
       </div>
     </div>

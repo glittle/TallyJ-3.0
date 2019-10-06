@@ -170,76 +170,83 @@
 
   @if (SettingsHelper.HostSupportsOnlineElections)
   {
+    <h2 class="onlineH2">Online Voting</h2>
     if (UserSession.CurrentElection.OnlineEnabled)
-     {
-       <div id="onlineDiv" v-cloak>
-         <div class="votingTop">
-           <h2>Online Voting</h2>
-           <div class="closeStatus" v-bind:class="closeStatusClass"><strong>Close time is {{CloseTime_Display}}</strong></div>
-         </div>
-         <div>
-           Online voting close time
-           <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
-           (click to change)
-         </div>
-         <div>
-           Estimated time? <yes-no v-on:input="saveClose" v-model="election.OnlineCloseIsEstimate"></yes-no>
-         </div>
-         <div>
-           <button v-if="!isClosed" v-on:click="closeOnline(5)">Close in 5 minutes</button>
-           <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
-           <button v-if="!isClosed" v-on:click="closeOnline(0)">Close now</button>
-         </div>
+    {
+      <div id="onlineDiv" v-cloak>
+        <div class="votingTop">
+          <div class="closeStatus" v-bind:class="closeStatusClass">
+            <strong v-text="CloseTime_Display"></strong>
+            <div>
+              <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
+            </div>
+            <div>
+              (click to set)
+            </div>
+          </div>
+          <div class="votingMisc">
+            <button v-if="!isClosed" v-on:click="closeOnline(30, true)">Close in 30 minutes (expected)</button>
+            <button v-if="!isClosed" v-on:click="closeOnline(5, false)">Close in 5 minutes (firm)</button>
+            <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
+            <button v-if="!isClosed" v-on:click="closeOnline(0)">Close now</button>
+            <div v-if="!isClosed">
+              Show as <yes-no v-on:input="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
+            </div>
+          </div>
+        </div>
+        <p>
+          Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
+        </p>
 
-         <h3>Voters Registered for Online Voting</h3>
-         <p>
-           <input type="button"
-                  v-on:click="processReadyBallots"
-                  v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
-                  value='Prepare all "Ready" ballots'>
-           <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process after Online voting is closed.</span>
-           <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</span>
-         </p>
-         <table class="OnlineBallots">
-           <thead>
-           <tr>
-             <th>
-               Voter
-             </th>
-             <th>
-               Voting Method
-             </th>
-             <th>
-               Online Ballot<br/>Status
-             </th>
-             <th>
-               Status Time
-             </th>
-           </tr>
-           </thead>
-           <tbody id="onlineBallotsBody" class="Hidden tbody">
-           <tr>
-             <td class="OnlineName">
-               {C_FullName}
-             </td>
-             <td>
-               {VotingMethod_Display}
-             </td>
-             <td>
-               {Status}
-             </td>
-             <td title="{History_Tip}">
-               {WhenStatus_Display}
-             </td>
-           </tr>
-           </tbody>
-         </table>
-       </div>
-     }
-     else
-     {
-       <p class="noOnlineVoting">Online Voting not enabled for this election.</p>
-     }
+        <h3>Voters Registered for Online Voting</h3>
+        <p>
+          <input type="button"
+                 v-on:click="processReadyBallots"
+                 v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
+                 value='Prepare all "Ready" ballots'>
+          <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process after Online voting is closed.</span>
+          <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</span>
+        </p>
+        <table class="OnlineBallots">
+          <thead>
+            <tr>
+              <th>
+                Voter
+              </th>
+              <th>
+                Voting Method
+              </th>
+              <th>
+                Online Ballot<br />Status
+              </th>
+              <th>
+                Status Time
+              </th>
+            </tr>
+          </thead>
+          <tbody id="onlineBallotsBody" class="Hidden tbody">
+            <tr>
+              <td class="OnlineName">
+                {C_FullName}
+              </td>
+              <td>
+                {VotingMethod_Display}
+              </td>
+              <td>
+                {Status}
+              </td>
+              <td title="{History_Tip}">
+                {WhenStatus_Display}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+    else
+    {
+      <p class="noOnlineVoting">Not enabled for this election.</p>
+    }
   }
 </div>
 

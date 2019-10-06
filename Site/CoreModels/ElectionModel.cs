@@ -962,37 +962,37 @@ namespace TallyJ.CoreModels
       public const string ByElection = "B";
     }
 
-    public JsonResult CloseOnline(int minutes)
-    {
-      var electionCacher = new ElectionCacher(Db);
-
-      var election = UserSession.CurrentElection;
-      Db.Election.Attach(election);
-
-      election.OnlineWhenClose = minutes == 0
-        ? DateTime.Now.ChopToMinute()
-        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
-      election.OnlineCloseIsEstimate = false;
-
-      Db.SaveChanges();
-
-      electionCacher.UpdateItemAndSaveCache(election);
-
-      new AllVotersHub()
-        .UpdateVoters(new
-        {
-          election.OnlineWhenClose,
-          election.OnlineWhenOpen,
-          election.OnlineCloseIsEstimate,
-        });
-
-      return new
-      {
-        success = true,
-        election.OnlineWhenClose,
-        election.OnlineCloseIsEstimate,
-      }.AsJsonResult();
-    }
+//    public JsonResult CloseOnline(int minutes, bool est)
+//    {
+//      var electionCacher = new ElectionCacher(Db);
+//
+//      var election = UserSession.CurrentElection;
+//      Db.Election.Attach(election);
+//
+//      election.OnlineWhenClose = minutes == 0
+//        ? DateTime.Now.ChopToMinute()
+//        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
+//      election.OnlineCloseIsEstimate = est;
+//
+//      Db.SaveChanges();
+//
+//      electionCacher.UpdateItemAndSaveCache(election);
+//
+//      new AllVotersHub()
+//        .UpdateVoters(new
+//        {
+//          election.OnlineWhenClose,
+//          election.OnlineWhenOpen,
+//          election.OnlineCloseIsEstimate,
+//        });
+//
+//      return new
+//      {
+//        success = true,
+//        election.OnlineWhenClose,
+//        election.OnlineCloseIsEstimate,
+//      }.AsJsonResult();
+//    }
 
     public JsonResult ProcessOnlineBallots()
     {

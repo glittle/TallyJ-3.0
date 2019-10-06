@@ -363,7 +363,13 @@
         },
         CloseTime_Display: function () {
           var x = this.dummy;
-          return this.showFrom(this.CloseTime);
+
+          var closeTime = this.CloseTime;
+          if (!closeTime) return '';
+          var when = moment(closeTime);
+          var prefix = moment().isBefore(when) 
+            ? (this.election.OnlineCloseIsEstimate ? 'Expected to close ' : 'Will close ') : 'Closed ';
+          return prefix + when.fromNow();
         },
         onlineToProcess: function () {
           return monitorPage.initial.OnlineBallots.filter(function (ob) {
@@ -413,22 +419,24 @@
         saveNeeded: function () {
           $('.btnSave').addClass('btn-primary');
         },
-        showFrom: function (when) {
-          if (!when) return '';
-          return moment(when).fromNow();
-        },
-        closeOnline: function (minutes) {
+        closeOnline: function (minutes, expected) {
           var vue = this;
-          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
-            {
-              minutes: minutes
-            },
-            function (info) {
-              if (info.success) {
-                ShowStatusSuccess('Saved');
-                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
-              }
-            });
+          if (typeof expected === 'boolean') {
+            vue.election.OnlineCloseIsEstimate = expected;
+          }
+          vue.CloseTime = moment().add(minutes, 'minutes').toISOString();
+
+//          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
+//            {
+//              minutes: minutes,
+//              est: vue.election.OnlineCloseIsEstimate
+//            },
+//            function (info) {
+//              if (info.success) {
+//                ShowStatusSuccess('Saved');
+//                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
+//              }
+//            });
         },
         saveClose: function () {
           var vue = this;

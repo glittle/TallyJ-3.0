@@ -89,11 +89,11 @@ namespace TallyJ.Controllers
       return new ElectionModel().UpdateListOnPageJson(listOnPage);
     }
     
-    [ForAuthenticatedTeller]
-    public JsonResult CloseOnline(int minutes)
-    {
-      return new ElectionModel().CloseOnline(minutes);
-    }
+//    [ForAuthenticatedTeller]
+//    public JsonResult CloseOnline(int minutes, bool est)
+//    {
+//      return new ElectionModel().CloseOnline(minutes, est);
+//    }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveOnlineClose(DateTime when, bool est)
