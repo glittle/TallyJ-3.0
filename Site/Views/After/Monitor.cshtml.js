@@ -424,8 +424,12 @@
           if (typeof expected === 'boolean') {
             vue.election.OnlineCloseIsEstimate = expected;
           }
-          vue.CloseTime = moment().add(minutes, 'minutes').toISOString();
-
+          if (minutes) {
+            vue.CloseTime = moment().add(minutes, 'minutes').toISOString();
+          } else {
+            vue.CloseTime = moment().subtract(1, 'second').toISOString();
+          }
+          vue.saveClose();
 //          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
 //            {
 //              minutes: minutes,

@@ -181,16 +181,16 @@
               <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
             </div>
             <div>
-              (click to set)
+              (click to choose any day and time)
             </div>
           </div>
           <div class="votingMisc">
             <button v-if="!isClosed" v-on:click="closeOnline(30, true)">Close in 30 minutes (expected)</button>
             <button v-if="!isClosed" v-on:click="closeOnline(5, false)">Close in 5 minutes (firm)</button>
             <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
-            <button v-if="!isClosed" v-on:click="closeOnline(0)">Close now</button>
+            <button v-if="!isClosed" v-on:click="closeOnline()">Close now</button>
             <div v-if="!isClosed">
-              Show as <yes-no v-on:input="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
+              Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
             </div>
           </div>
         </div>
