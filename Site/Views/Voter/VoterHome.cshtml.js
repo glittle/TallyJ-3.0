@@ -367,7 +367,10 @@ var vueOptions = {
       // to do - check for duplicates 
       if (p.inPool) return;
       if (!p.CanReceiveVotes) return;
-      if (this.election.person.PoolLocked) return;
+      if (this.election.person.PoolLocked) {
+        ShowStatusDisplay('Must unlock your selection to add more people to the pool.', 0, 5000, false, true);
+        return;
+      };
 
       p.inPool = true;
       //console.log(p);

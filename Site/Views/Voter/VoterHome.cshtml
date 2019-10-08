@@ -139,13 +139,14 @@
   <button class="btn returnBtn" v-on:click="closeBallot">Return</button>
   <h2>{{election.Name}}</h2>
   <div class="poolBuilder">
-    <div>
+    <div v-if="!savedLock">
       <h2>Add to my Pool</h2>
-      <p tabindex="0">
+      <p tabindex="0" class="quote">
         "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
         to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">(source document)</a></cite>
       </p>
-      <p id="searchInfo">Search for individuals that you believe to be qualified to serve. Click to add them to your pool.</p>
+      <p id="searchInfo">Search for individuals that you believe to be qualified to serve. 
+        Click to add them to your pool.</p>
       <div>
         <label>
           Search:
@@ -165,35 +166,33 @@
         </li>
       </ul>
     </div>
-    <div v-bind:class="[movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
+    <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
       <h2>Pool & Ballot</h2>
       <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
       <p v-if="registration">
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p class="OtherRegistration">Your online selection WILL NOT BE USED because you are registered as voting {{registration}}.</p>
-        <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
+        <p><span class="OtherRegistration">Your online selection below WILL NOT BE USED because you are registered as voting {{registration}}.</span> If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
         <strong>You have completed online voting in this election.</strong>
-        Your selection will be converted into a ballot when the Head Teller closes online voting and
-        creates ballots for all online voters.
+        Your selection will be converted into a ballot when the head teller closes online voting and
+        TallyJ creates ballots for all online voters.
       </p>
+      <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your selection before the election closes!</p>
 
       <p class="lockInBtns">
-        <span v-if="canLockIn">Unlocked</span>
-        <span v-if="canUnlock">Locked</span>
         <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Lock in my selection</button>
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Unlock my selection</button>
+        <span v-if="canLockIn" class="unlocked">Unlocked</span>
+        <span v-if="canUnlock">Locked</span>
       </p>
       <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before locking in your selection.</p>
-      <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your selection before the election closes!</p>
 
       @*<p v-if="lockInVotes">The top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}}.</p>*@
       <p v-if="!lockInVotes && pool.length">
-        Sort this list to move people into the top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}} for use on your ballot. To sort using a keyboard, press Tab to focus,
-        Enter to select/deselect, and Up and Down to move.
+        Sort this list to move people into the top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}} for use on your ballot.
       </p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"
@@ -207,6 +206,10 @@
           <span role="button" class="removeFromPool" v-on:click="removeFromPool(p)" aria-label="Delete" title="Delete from the pool"></span>
         </div>
       </draggable>
+      <p v-if="!lockInVotes && pool.length">
+        To sort the names using your keyboard, press <strong>Tab</strong> to focus,
+        <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
+      </p>
       <p class="emptyPoolMsg" v-if="!pool.length">
         Your pool is empty. Search for people to add!
       </p>

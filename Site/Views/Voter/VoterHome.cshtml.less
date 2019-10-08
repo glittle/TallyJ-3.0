@@ -194,7 +194,7 @@ body.VoterIndex {
     float: right;
   }
 
-  #quote {
+  .quote {
     font-style: italic;
 
     cite {
@@ -262,6 +262,7 @@ body.VoterIndex {
 
   .OtherRegistration {
     color: #ff0000;
+    font-weight: bold;
   }
 
   .electionStatus {
@@ -292,8 +293,8 @@ body.VoterIndex {
 
   .poolBuilder {
     display: flex;
-    justify-content: space-between;
-    margin-top: -20px;
+    justify-content: space-around;
+    margin-top: -10px;
 
     > div {
       flex: 50%;
@@ -316,7 +317,12 @@ body.VoterIndex {
 
     span {
       font-weight: bold;
-      margin: 0 1em 0 0;
+      margin: 0 0 0 2em;
+      color: green;
+
+      &.unlocked {
+        color: darkred;
+      }
     }
 
     button:disabled {
@@ -367,6 +373,7 @@ body.VoterIndex {
         }
 
         &.inOther {
+          display: none;
           color: #bbb;
         }
 
@@ -375,6 +382,10 @@ body.VoterIndex {
         }
       }
     }
+  }
+
+  .poolSide{
+    max-width: 60%;
   }
 
   #pool {
@@ -412,6 +423,7 @@ body.VoterIndex {
       }
 
       &.inOther {
+        color: #333;
       }
 
       .num {
