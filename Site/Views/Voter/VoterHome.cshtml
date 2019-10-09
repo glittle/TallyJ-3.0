@@ -95,9 +95,9 @@
       <button class="btn btn-mini" v-on:click="emailTest">Send a sample email now</button>
 
       @*<p v-if="lastLoginAge" class="lastLoginAge">
-        You last logged in {{lastLoginAge}}.
-        <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
-      </p>*@
+          You last logged in {{lastLoginAge}}.
+          <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
+        </p>*@
     </p>
     <p class="account">
       Need to update your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
@@ -145,8 +145,10 @@
         "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
         to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">(source document)</a></cite>
       </p>
-      <p id="searchInfo">Search for individuals that you believe to be qualified to serve. 
-        Click to add them to your pool.</p>
+      <p id="searchInfo">
+        Search for individuals that you believe to be qualified to serve.
+        Click to add them to your pool.
+      </p>
       <div>
         <label>
           Search:
@@ -173,10 +175,13 @@
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p><span class="OtherRegistration">Your online selection below WILL NOT BE USED because you are registered as voting {{registration}}.</span> If that is not correct, please contact the head teller of this election before the election is closed.</p>
+        <p><span class="OtherRegistration">Your online selection below WILL NOT BE USED because you are registered as voting {{registration}}.</span> </p>
+        <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
         <strong>You have completed online voting in this election.</strong>
+      </p>
+      <p v-if="registration === 'Online' && lockInVotes">
         Your selection will be converted into a ballot when the head teller closes online voting and
         TallyJ creates ballots for all online voters.
       </p>

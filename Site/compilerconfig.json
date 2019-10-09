@@ -134,5 +134,9 @@
   {
     "outputFile": "Views/Voter/VoterHome.cshtml.css",
     "inputFile": "Views/Voter/VoterHome.cshtml.less"
+  },
+  {
+    "outputFile": "Views/After/Presenter.cshtml.css",
+    "inputFile": "Views/After/Presenter.cshtml.less"
   }
 ]

@@ -1102,6 +1102,7 @@ namespace TallyJ.CoreModels
               onlineVoter.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineVoter.ovi.Status, now.ToJSON());
 
               onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
+              onlineVoter.ovi.PoolLocked = null;
 
               Db.SaveChanges();
 

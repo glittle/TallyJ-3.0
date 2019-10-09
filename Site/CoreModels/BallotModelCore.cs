@@ -766,6 +766,12 @@ namespace TallyJ.CoreModels
     public Ballot CreateAndRegisterBallot()
     {
       var currentLocationGuid = UserSession.CurrentLocationGuid;
+      if (!currentLocationGuid.HasContent())
+      {
+        var locationModel = new LocationModel();
+        currentLocationGuid = locationModel.GetLocations(false).First().LocationGuid;
+        UserSession.CurrentLocationGuid = currentLocationGuid;
+      }
       var computerCode = UserSession.CurrentComputerCode;
 
       var ballotCacher = new BallotCacher(Db);

@@ -135,15 +135,15 @@
     if (level > 2) level = 2;
     settings.displayLevel = level;
 
-    if (settings.displayLevel == 1) {
+    if (settings.displayLevel === 1) {
       $('#btnShow').fadeOut(500, null, function () {
         $('#mainResults').hide();
         $('#btnShowNames').show();
         $('.Holder').fadeIn(3000);
       });
-    } else if (settings.displayLevel == 2) {
+    } else if (settings.displayLevel === 2) {
       $('#btnShowNames').fadeOut(500, null, function () {
-        $('#mainResults').show('blind', 3000);
+        $('#mainResults').fadeIn(3000);
       });
     }
   };

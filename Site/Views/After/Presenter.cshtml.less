@@ -1,0 +1,219 @@
+﻿html {
+  background-color: #EFEEEF;
+}
+
+body {
+  color: #000;
+}
+
+.content-wrapper {
+  width: 100%;
+}
+
+header, footer {
+  display: none;
+}
+
+.CompCode {
+  display: none;
+}
+
+.main-content {
+  background-image: none;
+  padding: 0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24pt;
+  color: #013d7a;
+  padding: 13pt 0 0pt 0;
+  width: 100%;
+  height: 40pt;
+}
+
+#Results {
+  width: 100%;
+  text-align: center;
+  font-size: 20pt; /* smaller for most, larger for Petpetua */
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0px 0px;
+}
+
+
+
+thead th {
+  border-bottom: 1px solid #000;
+}
+
+th {
+  padding: 2px 7px;
+}
+
+#totalCounts td,
+table.Main td {
+  text-align: center;
+  vertical-align: top;
+  min-width: 40px;
+  padding: 2px 9px;
+}
+
+.HolderRight tbody tr:nth-child(even) {
+  background-color: #E9E8E9;
+}
+
+#mainResults tbody th {
+  font-weight: normal;
+  font-size: 70%;
+  color: #999;
+  padding: 2px 6px 2px 2px;
+  border-right: 1px solid #d0d0d0;
+}
+
+th.Left {
+  text-align: left;
+}
+
+tr.FirstExtra td, tr.FirstExtra th {
+  border-top: double 3px #999;
+}
+
+tr.Extra {
+  background-color: #ddd;
+}
+
+#chart {
+  display: none;
+  float: right;
+  width: 340px;
+  height: 500px;
+  margin-left: 10px;
+}
+
+.Ready {
+  text-align: center;
+  font-size: 16pt;
+  color: #aaa;
+  margin-top: 2em;
+  padding: .5em 1em;
+}
+
+table.Holder {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.HolderLeft {
+  vertical-align: top;
+  width: 35%;
+}
+
+.HolderRight {
+  vertical-align: top;
+  width: 64%;
+}
+
+#totalCounts {
+  width: 100%;
+  margin: 0 auto;
+
+  tr.ExtraSpace td {
+    padding-top: 30px;
+  }
+
+  tr td {
+    line-height: 150%;
+  }
+
+  tr.Method {
+    font-size: 90%;
+    color: #444;
+
+    td {
+      line-height: normal;
+    }
+
+    .Left {
+      padding-left: 50px;
+
+      span {
+        float: right;
+      }
+    }
+  }
+}
+
+.HolderLeft td:nth-child(2) {
+}
+
+table.Main {
+  display: none;
+  margin: 0 auto;
+}
+
+table caption {
+  font-weight: bold;
+  font-size: 120%;
+  white-space: nowrap;
+  text-align: left;
+}
+
+table.Main td.Left,
+#totalCounts td.Left {
+  text-align: left;
+  padding-right: 30px;
+}
+
+#mainBody {
+  width: 80%;
+}
+
+#zzbtnRefesh {
+  float: right;
+}
+
+#Status {
+  font-weight: bold;
+}
+
+#Wait {
+  display: none;
+  text-align: center;
+  font-size: 16pt;
+  color: #bbb;
+  padding-top: 60px;
+  margin: 0 auto;
+  width: 75%;
+}
+
+#Wait p {
+  margin: 1em 0;
+}
+
+.Nav {
+  position: fixed;
+  top: 5px;
+  right: 20px;
+  z-index: 10;
+  opacity: 0.01;
+  text-align: right;
+}
+
+.Nav.Show, .Nav:hover {
+  opacity: 1;
+}
+
+@media only screen and (max-width: 800px) {
+
+  h1 {
+    font-size: 22pt;
+    color: #013d7a;
+  }
+
+  #Results {
+    font-size: 18pt; /* smaller for most, larger for Petpetua */
+  }
+}

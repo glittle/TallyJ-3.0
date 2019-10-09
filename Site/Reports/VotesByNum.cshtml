@@ -30,21 +30,14 @@
 }
 <style>
   .Votes {
-    -webkit-column-width: 15em;
-    -moz-column-width: 15em;
-    -ms-column-width: 15em;
-    -o-column-width: 15em;
-    column-width: 15em;
-    -webkit-column-gap: 1em;
-    -moz-column-gap: 1em;
-    -ms-column-gap: 1em;
-    -o-column-gap: 1em;
-    column-gap: 1em;
-    -webkit-column-rule-width: 4px;
-    -moz-column-rule-width: 4px;
-    -ms-column-rule-width: 4px;
-    -o-column-rule-width: 4px;
-    column-rule-width: 4px;
+    @if (people.Count > 20)
+    {
+      <text>
+        column-width: 15em;
+        column-gap: 1em;
+        column-rule-width: 4px;
+      </text>
+    }
     min-height: 200px;
   }
 

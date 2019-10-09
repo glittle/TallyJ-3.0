@@ -923,6 +923,9 @@
     <Content Include="Views\After\Monitor.cshtml.css">
       <DependentUpon>Monitor.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\After\Presenter.cshtml.css">
+      <DependentUpon>Presenter.cshtml.less</DependentUpon>
+    </Content>
     <Content Include="Views\After\Reports.cshtml.css">
       <DependentUpon>Reports.cshtml.less</DependentUpon>
     </Content>
@@ -1064,6 +1067,9 @@
     <Content Include="Views\Account2\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_LayoutAccount2.cshtml" />
     <Content Include="Views\Manage2\_ViewStart.cshtml" />
+    <Content Include="Views\After\Presenter.cshtml.less">
+      <DependentUpon>Presenter.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>
@@ -1106,9 +1112,6 @@
     </Content>
     <Content Include="Views\After\Monitor.cshtml.js">
       <DependentUpon>Monitor.cshtml</DependentUpon>
-    </Content>
-    <Content Include="Views\After\Presenter.cshtml.css">
-      <DependentUpon>Presenter.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\After\Presenter.cshtml.js">
       <DependentUpon>Presenter.cshtml</DependentUpon>

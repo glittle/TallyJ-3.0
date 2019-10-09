@@ -117,25 +117,22 @@ namespace TallyJ.CoreModels
 
     public object GetCurrentResults()
     {
-      //var ready = _analyzer.IsResultAvailable;
-
       try
       {
         var resultSummaryFinal = _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
-
 
         // don't show any details if review is needed or online ballots need to be processed
         var issues = new List<string>();
         if (_election.OnlineCurrentlyOpen)
         {
-          issues.Add("Online voting is still open. Must close before analyzing ballots.");
+          issues.Add("Online voting is still open. It must be Closed before analyzing ballots.");
         }
         var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue ? Db.OnlineVotingInfo
             .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Ready) 
           : 0;
         if (unprocessedOnlineBallots > 0)
         {
-          issues.Add($"Online ballots not processed: {unprocessedOnlineBallots}");
+          issues.Add($"Online ballots ready to process: {unprocessedOnlineBallots}");
         }
 
         if (resultSummaryFinal.BallotsNeedingReview != 0 || issues.Any())
@@ -186,7 +183,7 @@ namespace TallyJ.CoreModels
             ResultsManual = (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ??
                new ResultSummary()).GetPropertiesExcept(null, new[] { "ElectionGuid" }),
             OnlineIssues = issues,
-
+            _election.OnlineCurrentlyOpen
             //ResultsFinal =
             //  resultSummaries.First(rs => rs.ResultType == ResultType.Final)
             //    .GetPropertiesExcept(null, new[] { "ElectionGuid" }),

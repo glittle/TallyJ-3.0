@@ -82,6 +82,8 @@
 
   var showInfo = function (info, firstLoad) {
     publicInterface.initial = info;
+    settings.vue.onlineBallots = info.OnlineBallots;
+
     clearInterval(settings.autoMinutesTimeout);
 
     var table = $('#mainBody');
@@ -354,6 +356,7 @@
         CloseTime: null,
         T24: false,
         dummy: 0,
+        onlineBallots: []
       },
       computed: {
         onlineDatesOkay: function () {
@@ -367,12 +370,12 @@
           var closeTime = this.CloseTime;
           if (!closeTime) return '';
           var when = moment(closeTime);
-          var prefix = moment().isBefore(when) 
+          var prefix = moment().isBefore(when)
             ? (this.election.OnlineCloseIsEstimate ? 'Expected to close ' : 'Will close ') : 'Closed ';
           return prefix + when.fromNow();
         },
         onlineToProcess: function () {
-          return monitorPage.initial.OnlineBallots.filter(function (ob) {
+          return this.onlineBallots.filter(function (ob) {
             return ob.Status === 'Ready';
           }).length;
         },
@@ -430,17 +433,17 @@
             vue.CloseTime = moment().subtract(1, 'second').toISOString();
           }
           vue.saveClose();
-//          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
-//            {
-//              minutes: minutes,
-//              est: vue.election.OnlineCloseIsEstimate
-//            },
-//            function (info) {
-//              if (info.success) {
-//                ShowStatusSuccess('Saved');
-//                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
-//              }
-//            });
+          //          CallAjaxHandler(publicInterface.controllerUrl + '/CloseOnline',
+          //            {
+          //              minutes: minutes,
+          //              est: vue.election.OnlineCloseIsEstimate
+          //            },
+          //            function (info) {
+          //              if (info.success) {
+          //                ShowStatusSuccess('Saved');
+          //                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
+          //              }
+          //            });
         },
         saveClose: function () {
           var vue = this;
@@ -465,7 +468,7 @@
             function (info) {
               if (info.success) {
                 ShowStatusSuccess(info.Message);
-                console.log(info.problems);
+                //                console.log(info.problems);
                 refresh();
               } else {
                 ShowStatusFailed(info.Message);

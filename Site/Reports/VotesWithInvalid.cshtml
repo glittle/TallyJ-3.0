@@ -74,9 +74,9 @@
     Showing invalid (spoiled) votes appearing on <strong>valid</strong> ballots
     (<span id="numShown"></span> names).
   </p>
-  @if (people.Count() == 0)
+  @if (!people.Any())
   {
-    <p class="Comment Invalid">None Found</p>
+    <p class="Comment">None Found</p>
   }
   <div class="Votes">
     @foreach (var person in people)

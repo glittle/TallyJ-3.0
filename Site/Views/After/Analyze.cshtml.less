@@ -31,6 +31,23 @@ body.BP-None {
   }
 }
 
+#btnProcessOnline {
+  margin: 0 0 0 1em;
+}
+
+#hasOnlineIssues {
+  color: red;
+  display: none;
+
+  p {
+    margin: .8em 0;
+  }
+}
+
+#onlineIssues {
+  margin: 0 0 0 1em;
+}
+
 .onlineReady {
   #hasOnlineIssues {
     display: none;
@@ -84,15 +101,17 @@ tr.SectionO.Tied.Force {
   font-weight: bold;
 }
 
-.LeftHalf {
-  width: 59%;
-  margin-right: 2%;
-  float: left;
-}
+.analysisContent {
+  display: flex;
+  justify-content: space-between;
 
-.RightHalf {
-  width: 38%;
-  float: left;
+  .LeftHalf {
+    width: 49%;
+  }
+
+  .RightHalf {
+    width: 49%;
+  }
 }
 
 table#totalCounts tbody.Issues tr td {
@@ -238,6 +257,7 @@ table#totalCounts tr {
 
 table#totalCounts th {
   text-align: left;
+  padding: 15px 0 3px;
 }
 
 table#totalCounts td {
@@ -247,9 +267,16 @@ table#totalCounts td {
   padding: 0 5px;
 }
 
+h2 {
+  font-weight: bold;
+  font-size: 110%;
+  line-height: normal;
+}
+
 #totalCounts tr td:first-child {
   padding-right: 5px;
   text-align: left;
+  white-space: nowrap;
 }
 
 #totalCounts tr.totalBallots td {
@@ -348,6 +375,7 @@ input.Manual {
   text-align: center;
   width: 60px;
   padding-top: 2px;
+  margin: 2px 0;
 }
 
 input.Manual.Additional {

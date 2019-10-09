@@ -30,6 +30,7 @@
 
     $('#body').on('click', '.btnSaveTieCounts', saveTieCounts);
     $('#body').on('click', '.btnSaveManualCounts', saveManualCounts);
+    $('#body').on('click', '#btnProcessOnline', processReadyBallots);
     $('#body').on('change', 'input[name=status]', changeStatus);
 
     $('#body').on('change keyup', 'input.Manual', function () {
@@ -142,7 +143,7 @@
 
   function runAnalysis(firstLoad) {
     if ($('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary')) {
-
+      // ?
     }
 
     ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
@@ -159,6 +160,7 @@
   function showInfo(info, firstLoad) {
     $('#btnRefresh').text('Re-run Analysis');
     $('#btnRefreshDiv').show();
+    $('#hasOnlineIssues').hide();
 
     if (info.Interrupted) {
       console.log(info.Msg);
@@ -202,8 +204,8 @@
           item.animate({
             width: (item.data('value') / max * 100) + '%'
           }, {
-              duration: 2000
-            });
+            duration: 2000
+          });
         });
 
         var groupMax = 0;
@@ -220,8 +222,8 @@
             item.animate({
               width: (value / groupMax * 100) + '%'
             }, {
-                duration: 2000
-              });
+              duration: 2000
+            });
           }
         });
 
@@ -230,13 +232,19 @@
     else {
       table = invalidsTable;
       votesTable.hide();
-      instructionsTable.hide();
+      //      instructionsTable.hide();
 
       var onlineIssues = info.OnlineIssues;
       if (onlineIssues && onlineIssues.length > 0) {
         $('#totalCounts').removeClass('onlineReady');
-        onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to close voting and process online ballots.');
-        $('#onlineIssues').html(onlineIssues.join('<br>'));
+
+        if (info.OnlineCurrentlyOpen) {
+          onlineIssues.unshift('Use the <a href=Monitor>Monitor</a> page to Close online voting.');
+        }
+        $('#btnProcessOnline').toggle(!info.OnlineCurrentlyOpen);
+        
+        $('#onlineIssues').html('<p>' + onlineIssues.join('<p>'));
+        $('#hasOnlineIssues').show();
       } else {
         $('#totalCounts').addClass('onlineReady');
       }
@@ -392,6 +400,23 @@
     }
 
   };
+
+  function processReadyBallots() {
+    ShowStatusDisplay('Processing...');
+    CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
+      null,
+      function (info) {
+        if (info.success) {
+          ShowStatusSuccess(info.Message);
+          setTimeout(function() {
+            runAnalysis(false);
+          }, 1000);
+        } else {
+          ShowStatusFailed(info.Message);
+        }
+      });
+
+  }
 
   function saveManualCounts() {
     var form = {

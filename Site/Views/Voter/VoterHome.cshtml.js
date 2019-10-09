@@ -84,7 +84,7 @@ var vueOptions = {
       return this.numToElect - 1;
     },
     canLockIn: function () {
-      return this.pool.length >= this.numToElect && !this.election.person.PoolLocked && (!this.registration || this.registration !== 'Online');
+      return this.pool.length >= this.numToElect && !this.election.person.PoolLocked;// && (!this.registration || this.registration !== 'Online');
     },
     canUnlock: function () {
       return this.registration !== 'Processed' && this.election.OnlineWhenClose_M.isAfter() && this.election.person.PoolLocked;
@@ -276,8 +276,6 @@ var vueOptions = {
             vue.electionGuid = eInfo.id;
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
-            vue.activePage = 2;
-            vue.scrollToTop(95);
 
             voterHome.peopleHelper.Prepare(function () {
               var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; });
@@ -287,6 +285,9 @@ var vueOptions = {
               vue.savedLock = locked;
               vue.lockInVotes = locked;
             });
+
+            vue.activePage = 2;
+            vue.scrollToTop(95);
 
           } else if (info.closed) {
             // show closed... show info if available

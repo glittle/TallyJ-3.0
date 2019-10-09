@@ -48,7 +48,8 @@
           })
       };
     })
-    .Where(b => b.Votes.Any(v => v.TieBreakRequired));
+    .Where(b => b.Votes.Any(v => v.TieBreakRequired))
+    .ToList();
 }
 <style>
   table.Ballots td {
@@ -147,9 +148,9 @@
   <p class="Comment">
     This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.
   </p>
-  @if (data.Count() == 0)
+  @if (!data.Any())
   {
-    <p class="Comment Invalid">None Found</p>
+    <p class="Comment">None Found</p>
   }
   <table class="Ballots">
     @foreach (var ballot in data)
