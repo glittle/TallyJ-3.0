@@ -81,7 +81,7 @@ namespace Tests.BusinessTests
         new Vote {SingleNameElectionCount = 2 }.ForTests(SamplePeople[1], ballots[2]),
       };
 
-      var model = new ElectionAnalyzerNormal(_fakes); //, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //, election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -90,13 +90,13 @@ namespace Tests.BusinessTests
       results.Count.ShouldEqual(2);
 
       var result1 = results[0];
-      result1.VoteCount.ShouldEqual(2);
+      result1.VoteCount.ShouldEqual(38);
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(false);
 
       var result2 = results[1];
-      result2.VoteCount.ShouldEqual(1);
+      result2.VoteCount.ShouldEqual(2);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(false);
@@ -130,13 +130,13 @@ namespace Tests.BusinessTests
         SpoiledManualBallots = 1 // override the real count
       }.ForTests();
 
-      var model = new ElectionAnalyzerNormal(_fakes); //, election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); //, election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
       var resultSummaryFinal = model.ResultSummaryFinal;
       resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
-      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(4);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(41);
 
       resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
       resultSummaryFinal.InPersonBallots.ShouldEqual(1);
@@ -144,7 +144,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(8);
-      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.NumVoters.ShouldEqual(40);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
 
 
@@ -153,13 +153,13 @@ namespace Tests.BusinessTests
       results.Count.ShouldEqual(2);
 
       var result1 = results[0];
-      result1.VoteCount.ShouldEqual(2);
+      result1.VoteCount.ShouldEqual(38);
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(false);
 
       var result2 = results[1];
-      result2.VoteCount.ShouldEqual(1);
+      result2.VoteCount.ShouldEqual(2);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(false);
@@ -187,7 +187,7 @@ namespace Tests.BusinessTests
         new Vote {SingleNameElectionCount = 2 }.ForTests(SamplePeople[2], ballots[2]),
       };
 
-      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
+      var model = new ElectionAnalyzerSingleName(_fakes); // election, votes, ballots, SamplePeople);
 
       model.AnalyzeEverything();
 
@@ -196,13 +196,13 @@ namespace Tests.BusinessTests
 
       resultTies.Count.ShouldEqual(1);
       resultTies[0].NumToElect.ShouldEqual(1);
-      resultTies[0].NumInTie.ShouldEqual(3);
+      resultTies[0].NumInTie.ShouldEqual(2);
       resultTies[0].TieBreakRequired.ShouldEqual(true);
 
       results.Count.ShouldEqual(3);
 
       var result1 = results[0];
-      result1.VoteCount.ShouldEqual(1);
+      result1.VoteCount.ShouldEqual(10);
       result1.Rank.ShouldEqual(1);
       result1.Section.ShouldEqual(ResultHelper.Section.Top);
       result1.IsTied.ShouldEqual(true);
@@ -210,7 +210,7 @@ namespace Tests.BusinessTests
       result1.TieBreakRequired.ShouldEqual(true);
 
       var result2 = results[1];
-      result2.VoteCount.ShouldEqual(1);
+      result2.VoteCount.ShouldEqual(10);
       result2.Rank.ShouldEqual(2);
       result2.Section.ShouldEqual(ResultHelper.Section.Other);
       result2.IsTied.ShouldEqual(true);
@@ -219,13 +219,13 @@ namespace Tests.BusinessTests
       result2.TieBreakRequired.ShouldEqual(true);
 
       var result3 = results[2];
-      result3.VoteCount.ShouldEqual(1);
+      result3.VoteCount.ShouldEqual(2);
       result3.Rank.ShouldEqual(3);
       result3.Section.ShouldEqual(ResultHelper.Section.Other);
-      result3.IsTied.ShouldEqual(true);
-      result3.TieBreakGroup.ShouldEqual(1);
-      result3.ForceShowInOther.ShouldEqual(true);
-      result3.TieBreakRequired.ShouldEqual(true);
+      result3.IsTied.ShouldEqual(false);
+      result3.TieBreakGroup.ShouldEqual(null);
+      result3.ForceShowInOther.ShouldEqual(false);
+      result3.TieBreakRequired.ShouldEqual(false);
     }
 
 

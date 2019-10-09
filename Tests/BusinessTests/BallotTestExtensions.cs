@@ -34,6 +34,8 @@ namespace Tests.BusinessTests
       Db.Election.Add(election);
       ItemKey.CurrentElection.SetInPageItems(election);
 
+      UserSession.CurrentElectionGuid = election.ElectionGuid;
+
       new Location().ForTests();
       return election;
     }
