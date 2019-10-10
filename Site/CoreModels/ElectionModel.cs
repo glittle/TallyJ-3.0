@@ -688,30 +688,21 @@ namespace TallyJ.CoreModels
 
         electionCacher.UpdateItemAndSaveCache(election);
 
-        //new ElectionStatusSharer().SetStateFor(election);
-        //        var menuHelper = new MenuHelper(controller.Url);
-        var info = new
-        {
-          //          QuickLinks = menuHelper.QuickLinks(),
-          //          Name = UserSession.CurrentElectionStatusName,
-          StateName = UserSession.CurrentElectionStatus,
-        };
-        //
-        //        // should always be true... but usage could change in future
-        //        var currentIsKnown = UserSession.IsKnownTeller;
-        //        UserSession.IsKnownTeller = false;
-        ////        menuHelper = new MenuHelper(controller.Url);
-        //        var infoForGuest = new
-        //        {
-        ////          QuickLinks = menuHelper.QuickLinks(),
-        ////          QuickSelector = menuHelper.StateSelectorItems().ToString(),
-        ////          Name = UserSession.CurrentElectionStatusName,
-        //          State = UserSession.CurrentElectionStatus,
-        //        };
-        //        UserSession.IsKnownTeller = currentIsKnown;
-
-        new MainHub().StatusChanged(info, info);
+        UpdateStatusInBrowsers();
       }
+    }
+
+    public static void UpdateStatusInBrowsers()
+    {
+      var info = new
+      {
+        StateName = UserSession.CurrentElectionStatus,
+        Online = UserSession.CurrentElection.OnlineCurrentlyOpen,
+        Passcode = UserSession.CurrentElection.ElectionPasscode,
+        Listed = UserSession.CurrentElection.ListedForPublicAsOf != null
+      };
+
+      new MainHub().StatusChanged(info, info);
     }
 
     //    public IEnumerable<Election> VisibleElections()
@@ -819,6 +810,8 @@ namespace TallyJ.CoreModels
         electionCacher.UpdateItemAndSaveCache(election);
 
         new PublicHub().TellPublicAboutVisibleElections();
+
+        UpdateStatusInBrowsers();
 
         return new { Saved = true }.AsJsonResult();
       }
@@ -962,37 +955,37 @@ namespace TallyJ.CoreModels
       public const string ByElection = "B";
     }
 
-//    public JsonResult CloseOnline(int minutes, bool est)
-//    {
-//      var electionCacher = new ElectionCacher(Db);
-//
-//      var election = UserSession.CurrentElection;
-//      Db.Election.Attach(election);
-//
-//      election.OnlineWhenClose = minutes == 0
-//        ? DateTime.Now.ChopToMinute()
-//        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
-//      election.OnlineCloseIsEstimate = est;
-//
-//      Db.SaveChanges();
-//
-//      electionCacher.UpdateItemAndSaveCache(election);
-//
-//      new AllVotersHub()
-//        .UpdateVoters(new
-//        {
-//          election.OnlineWhenClose,
-//          election.OnlineWhenOpen,
-//          election.OnlineCloseIsEstimate,
-//        });
-//
-//      return new
-//      {
-//        success = true,
-//        election.OnlineWhenClose,
-//        election.OnlineCloseIsEstimate,
-//      }.AsJsonResult();
-//    }
+    //    public JsonResult CloseOnline(int minutes, bool est)
+    //    {
+    //      var electionCacher = new ElectionCacher(Db);
+    //
+    //      var election = UserSession.CurrentElection;
+    //      Db.Election.Attach(election);
+    //
+    //      election.OnlineWhenClose = minutes == 0
+    //        ? DateTime.Now.ChopToMinute()
+    //        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
+    //      election.OnlineCloseIsEstimate = est;
+    //
+    //      Db.SaveChanges();
+    //
+    //      electionCacher.UpdateItemAndSaveCache(election);
+    //
+    //      new AllVotersHub()
+    //        .UpdateVoters(new
+    //        {
+    //          election.OnlineWhenClose,
+    //          election.OnlineWhenOpen,
+    //          election.OnlineCloseIsEstimate,
+    //        });
+    //
+    //      return new
+    //      {
+    //        success = true,
+    //        election.OnlineWhenClose,
+    //        election.OnlineCloseIsEstimate,
+    //      }.AsJsonResult();
+    //    }
 
     public JsonResult ProcessOnlineBallots()
     {
@@ -1169,6 +1162,8 @@ namespace TallyJ.CoreModels
           election.OnlineWhenOpen,
           election.OnlineCloseIsEstimate,
         });
+
+      UpdateStatusInBrowsers();
 
       return new
       {

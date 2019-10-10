@@ -7,8 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using TallyJ.CoreModels.Account2Models;
-
 namespace TallyJ.EF
 {
     using System;

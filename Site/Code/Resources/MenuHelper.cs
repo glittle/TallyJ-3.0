@@ -255,8 +255,10 @@ namespace TallyJ.Code.Resources
                 }))
               .JoinedAsString("")
               .SurroundContentWith(
-                "<span id=menu{0} class='{0} {1} items'>".FilledWith(tallyStatus,
-                  UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden"), "</span>")).ToList();
+                "<span id=menu{0} class='{0} {1} items'>{2}".FilledWith(
+                  tallyStatus,
+                  UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden",
+                  "<a class='SetThis' href='#'>SET ME</a>"), "</span>")).ToList();
 
       return list.JoinedAsString("");
     }

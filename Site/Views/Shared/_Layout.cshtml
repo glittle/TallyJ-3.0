@@ -35,6 +35,7 @@
   var classes = new List<string> {
       ControllerActionNamesJoined,
       ScreenMode + "Mode",
+      SettingsHelper.HostSupportsOnlineElections && UserSession.CurrentElection != null ? "Online" + (UserSession.CurrentElection.OnlineCurrentlyOpen ? "Open" : "Closed") : null,
       "Auth" + UserSession.AuthLevel,
       UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
     };
@@ -83,20 +84,29 @@
           <span class="CurrentElectionName" title="Election Name">
             @UserSession.CurrentElectionDisplayNameAndInfo
           </span>
-          <span class="publicInfo topArea">
-            <span>@(UserSession.IsKnownTeller ? "Admin" : "Assistant")</span>
+          <div class="topArea">
+            <div class="who">@(UserSession.IsKnownTeller ? "Admin" : "Teller")</div>
             @if (UserSession.CurrentElection != null)
             {
-              <span class="passcode passcodeOkay" title="Click to go to the Monitor page to change this">
+              <div class="passcode passcodeOkay" title="Click to go to the Monitor page to change this">
                 <span class="ui-icon ui-icon-info" id="qTipPasscode"></span>
-                Open
-              </span>
-              <span class="passcode passcodeLocked" title="Click to go to the Monitor page to change this">
+                Tellers &#10003;
+              </div>
+              <div class="passcode passcodeLocked" title="Click to go to the Monitor page to change this">
                 <span class="ui-icon ui-icon-locked" id="qTipPasscodeLocked"></span>
-                Closed
-              </span>
+                Tellers &#10008;
+              </div>
             }
-          </span>
+            @if (SettingsHelper.HostSupportsOnlineElections)
+            {
+              <div class="onlineOpen">
+                Online Voting &#10003;
+              </div>
+              <div class="onlineClosed">
+                Online Voting &#10008;
+              </div>
+            }
+          </div>
           @if (UserSession.CurrentElection != null)
           {
             <div class="ElectionState">

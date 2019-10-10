@@ -101,7 +101,7 @@
           <Property Name="WhenBallotCreated" Type="datetime2" Precision="0" />
           <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="WhenStatus" Type="datetime2" Precision="0" />
-          <Property Name="ListPool" Type="varchar(max)" />
+          <Property Name="ListPool" Type="nvarchar(max)" />
           <Property Name="PoolLocked" Type="bit" />
           <Property Name="HistoryStatus" Type="varchar(max)" />
         </EntityType>
@@ -175,6 +175,7 @@
           <Property Name="OnlineWhenOpen" Type="datetime2" Precision="0" />
           <Property Name="OnlineWhenClose" Type="datetime2" Precision="0" />
           <Property Name="OnlineCloseIsEstimate" Type="bit" Nullable="false" />
+          <Property Name="OnlineMethod" Type="varchar" MaxLength="1" />
           <Property Name="OnlineAnnounced" Type="datetime2" Precision="0" />
         </EntityType>
         <EntityType Name="ImportFile">
@@ -751,7 +752,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="WhenBallotCreated" Type="DateTime" Precision="0" />
           <Property Name="Status" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="WhenStatus" Type="DateTime" Precision="0" />
-          <Property Name="ListPool" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ListPool" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PoolLocked" Type="Boolean" />
           <Property Name="HistoryStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
@@ -833,6 +834,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="OnlineWhenClose" Type="DateTime" Precision="0" />
           <Property Name="OnlineCloseIsEstimate" Type="Boolean" Nullable="false" />
           <Property Name="OnlineAnnounced" Type="DateTime" Precision="0" />
+          <Property Name="OnlineMethod" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Memberships">
           <Key>
@@ -1205,6 +1207,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Election">
             <EntityTypeMapping TypeName="TallyJ2dModel.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="OnlineMethod" ColumnName="OnlineMethod" />
                 <ScalarProperty Name="OnlineAnnounced" ColumnName="OnlineAnnounced" />
                 <ScalarProperty Name="OnlineCloseIsEstimate" ColumnName="OnlineCloseIsEstimate" />
                 <ScalarProperty Name="OnlineWhenClose" ColumnName="OnlineWhenClose" />

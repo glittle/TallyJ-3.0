@@ -7,7 +7,7 @@
     [WhenBallotCreated] DATETIME2 (0)    NULL, -- round to nearest minute?
     [Status]            VARCHAR (10)     NOT NULL,
     [WhenStatus]        DATETIME2 (0)    NULL,
-    [ListPool]          varchar(max)     NULL,
+    [ListPool]          NVARCHAR(MAX)     NULL,
     [PoolLocked]         BIT     NULL,
     [HistoryStatus]     VARCHAR(MAX) NULL, 
     CONSTRAINT [PK_OnlineVotingInfo] PRIMARY KEY (_RowId),

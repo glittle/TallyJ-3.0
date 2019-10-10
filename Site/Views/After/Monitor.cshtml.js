@@ -414,11 +414,18 @@
         var vue = this;
         setInterval(function () {
           vue.dummy++;
+          vue.checkStatus();
         }, 15 * 1000);
       },
       mounted: function () {
       },
       methods: {
+        checkStatus: function() {
+          // just to change the top corner display
+          let isClosed = this.OnlineWhenClose_M.isBefore();
+          $('body').toggleClass('OnlineOpen', !isClosed);
+          $('body').toggleClass('OnlineClosed', isClosed);
+        },
         saveNeeded: function () {
           $('.btnSave').addClass('btn-primary');
         },
@@ -457,6 +464,7 @@
                 ShowStatusSuccess('Saved');
                 vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
+                vue.checkStatus();
               }
             });
         },

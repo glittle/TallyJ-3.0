@@ -255,6 +255,22 @@ body.BP-None {
     }
   }
 
+  .SetThis {
+    display: none;
+  }
+
+  .DropDown {
+    .SetThis {
+      display: block;
+    }
+
+    &.Finalized {
+      .SetThis {
+        display: none;
+      }
+    }
+  }
+
   &.NotStarted,
   .items.NotStarted {
     a {
@@ -1283,15 +1299,45 @@ body.AuthKnown .CurrentElectionName {
   }
 }
 
-.publicInfo.topArea {
+.topArea {
   position: absolute;
   top: 2px;
   right: 10px;
-  color: #267fa0;
+  text-align: right;
   white-space: nowrap;
 
-  &.passcodeLocked {
+  .who {
+    margin-right: 14px;
+  }
+
+  .passcodeOkay {
+    color: @tallyJGreen;
+  }
+
+  .passcodeLocked {
     color: #cd0a0a;
+  }
+
+  .onlineOpen {
+    color: @tallyJGreen;
+    display: none;
+  }
+
+  .onlineClosed {
+    color: #cd0a0a;
+    display: none;
+  }
+}
+
+body.OnlineOpen {
+  .topArea .onlineOpen {
+    display: block;
+  }
+}
+
+body.OnlineClosed {
+  .topArea .onlineClosed {
+    display: block;
   }
 }
 
@@ -1603,7 +1649,7 @@ body.VoterPages {
 }
 
 body.Acc2Pages {
-  .form-horizontal .control-label{
+  .form-horizontal .control-label {
     text-align: left;
     width: 150px;
   }

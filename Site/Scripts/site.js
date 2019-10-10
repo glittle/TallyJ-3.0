@@ -340,7 +340,7 @@ function ActivateTips(forceRecreate) {
   $('.qTip').qtip(baseOption);
 
   $.each(site.qTips,
-    function() {
+    function () {
       if (!(forceRecreate || false) && $(this).data('done')) return;
 
       var opt = $.extend(true, {}, baseOption, this);
@@ -394,7 +394,7 @@ function AttachHandlers() {
             return;
           }
           ResetStatusDisplay();
-          site.broadcast(site.broadcastCode.electionStatusChanged, info);
+          //          site.broadcast(site.broadcastCode.electionStatusChanged, info);
         });
     });
 
@@ -409,6 +409,13 @@ function AttachHandlers() {
       dropDownTimeout = setTimeout(closeDropDown, 200);
     });
 
+  $('.SetThis').on('click', function(ev) {
+    var item = $(ev.target);
+    let parent = item.parent();
+    console.log(parent)
+    parent.click();
+  });
+
   $('#electionState')
     .on('mouseover', 'span.state', function (ev) {
       clearTimeout(dropDownTimeout);
@@ -421,8 +428,7 @@ function AttachHandlers() {
         dropDownTimeout = setTimeout(closeDropDown, 700);
         return;
       }
-      menu
-        .addClass('DropDown')
+      menu.addClass('DropDown')
         .css({
           left: getFullOffsetLeft(item) + 'px',
           top: (item.offset().top + item.height() - 2) + 'px'
@@ -433,8 +439,7 @@ function AttachHandlers() {
       dropDownTimeout = setTimeout(closeDropDown, 200);
     });
 
-  $('body').on('mouseover',
-    '.DropDown,.QuickDash',
+  $('body').on('mouseover', '.DropDown,.QuickDash',
     function () {
       clearTimeout(dropDownTimeout);
     }).on('mouseout',
@@ -461,6 +466,13 @@ function getFullOffsetLeft(item) {
 
 function updateElectionStatus(ev, info) {
   site.electionState = info.StateName;
+
+  updatePasscodeDisplay(info.Listed, info.Passcode);
+
+  let isClosed = !info.Online;
+  $('body').toggleClass('OnlineOpen', !isClosed);
+  $('body').toggleClass('OnlineClosed', isClosed);
+
   showMenu(info.StateName, true);
 }
 
@@ -845,9 +857,9 @@ function ProcessPulseResult(info) {
     $('.Heartbeat').addClass('Frozen').text('Not Connected');
   }
 
-  if (info.NewStatus) {
-    site.broadcast(site.broadcastCode.electionStatusChanged, info.NewStatus);
-  }
+  //  if (info.NewStatus) {
+  //    site.broadcast(site.broadcastCode.electionStatusChanged, info.NewStatus);
+  //  }
 
   if (info.PulseSeconds) {
     site.heartbeatSeconds = info.PulseSeconds;
