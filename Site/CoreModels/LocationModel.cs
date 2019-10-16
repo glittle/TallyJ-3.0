@@ -76,16 +76,21 @@ namespace TallyJ.CoreModels
 
     public string ShowDisabled
     {
-      get { return GetLocations(false).Count == 1 ? " disabled" : ""; }
+      get { return GetLocations(true).Count == 1 ? " disabled" : ""; }
     }
 
-    /// <Summary>Does this election have more than one location?</Summary>
+    /// <Summary>Does this election have more than one real location?</Summary>
     public bool HasLocations
     {
       get { return GetLocations(false).Count > 1; }
     }
 
-    public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true)
+    public bool HasLocationsIncludingOnline
+    {
+      get { return GetLocations(true).Count > 1; }
+    }
+
+    public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true, bool includeOnline = false)
     {
       // for RollCall, don't need to show Online as an option to filter on
 
@@ -99,7 +104,7 @@ namespace TallyJ.CoreModels
       return
         (
         (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
-        GetLocations(false)
+        GetLocations(includeOnline)
         .OrderBy(l => l.SortOrder)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
@@ -110,7 +115,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this page need to show the location selector?</Summary>
     public bool ShowLocationSelector(MenuHelper currentMenu)
     {
-      return currentMenu.ShowLocationSelection && HasLocations;
+      return currentMenu.ShowLocationSelection && HasLocationsIncludingOnline;
     }
 
     public JsonResult UpdateStatus(int locationId, string status)
@@ -186,7 +191,8 @@ namespace TallyJ.CoreModels
         location.ContactInfo,
         location.BallotsCollected,
         location.Name,
-        BallotsEntered = sum
+        BallotsEntered = sum,
+        IsOnline = location.Name == OnlineLocationName
       };
     }
 

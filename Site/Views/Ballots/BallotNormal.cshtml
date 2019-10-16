@@ -15,7 +15,7 @@
   ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.BallotStatus={0};".FilledWith(BallotStatusEnum.Listing.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocationsIncludingOnline.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -45,7 +45,7 @@
 <div class="Panels">
   <div class="sidePanel">
     <div id="accordion">
-      @if (ContextItems.LocationModel.HasLocations)
+      @if (ContextItems.LocationModel.HasLocationsIncludingOnline)
       {
         <h3>Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
@@ -96,7 +96,7 @@
         <div id="ballotList" class="ballotList">
         </div>
       </div>
-      <h3><span>Add to Ballot <span class="ballotCode"></span></span></h3>
+      <h3 id="tabNameSearchTitle"><span>Add to Ballot <span class="ballotCode"></span></span></h3>
       <div id="tabNameSearch">
         <div class="action float-right">
           <span id="action"></span><span id="more"></span>
@@ -175,7 +175,19 @@
 </div>
 
 <script type="text/x-template" id="NormalVoteLine">
-  <div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+  <div class="VoteHost{Fake} withRaw{hasRawVote} rawDone{rawDone} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <div class="rawVote">
+      <span>
+        <button class="btn btn-mini btnFind">Find</button>
+      </span>
+      <div class="names">
+        <span>{rawFirst}</span>
+        <span>{rawLast}</span>
+      </div>
+      <div>
+        <span>{rawOtherInfo}</span>
+      </div>
+    </div>
     <div class="Top">
       <span class="VoteNum">{pos}</span>
       <span class="NameInfo">

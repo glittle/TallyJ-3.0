@@ -253,6 +253,7 @@ namespace TallyJ.CoreModels
           changed = vi.PersonCombinedInfo.HasContent() && !vi.PersonCombinedInfo.StartsWith(vi.PersonCombinedInfoInVote ?? "NULL"),
           invalid = vi.VoteIneligibleReasonGuid,
           ineligible = vi.PersonIneligibleReasonGuid,
+          onlineRawVote = vi.OnlineVoteRaw,
           //ineligible = VoteHelperLocal.IneligibleToReceiveVotes(vi.PersonIneligibleReasonGuid, vi.PersonCanReceiveVotes)
         });
     }

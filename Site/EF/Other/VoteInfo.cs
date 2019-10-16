@@ -16,6 +16,7 @@ namespace TallyJ.EF
       PersonCombinedInfoInVote = vote.PersonCombinedInfo;
       VoteIneligibleReasonGuid = vote.InvalidReasonGuid;
       VoteStatusCode = vote.StatusCode;
+      OnlineVoteRaw = vote.OnlineVoteRaw;
 
       //ballot
       BallotGuid = ballot.BallotGuid;
@@ -47,12 +48,14 @@ namespace TallyJ.EF
       }
     }
 
+
     public VoteInfo()
     {
       // mostly for testing
       VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
     }
 
+    public string OnlineVoteRaw { get; set; }
     public bool PersonCanReceiveVotes { get; set; }
     public int VoteId { get; set; }
     public string VoteStatusCode { get; set; }
