@@ -4,7 +4,8 @@
     url: url,
     nameSplitter: /[\s\-']/,
     localNames: [],
-    maxVotes: 0
+    maxVotes: 0,
+    showAllCode: 'azbycwdxe'
   };
 
   var maxToShow = 1000;
@@ -124,7 +125,7 @@
   }
 
   function extendPersonCore(p) {
-    p.NameArea = p.Name + (p.Area ? ' (' + p.Area + ')' : '');
+    p.NameArea = p.Name + (p.Area ? ' <u>' + p.Area + '</u>' : '');
     // for searches, make lowercase
     p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase());
     p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
@@ -155,21 +156,30 @@
     var result = {
       People: []
     };
-
-    // get search terms and soundex of each search term
     var searchParts = trimmed.toLowerCase().split(local.nameSplitter);
-    var searchSounds = [];
-    for (var i = 0; i < searchParts.length; i++) {
-      searchSounds.push(soundex.process(searchParts[i]));
-    }
 
-    if (debugSearch) console.log('sound:', searchSounds);
+    if (trimmed === local.showAllCode) {
+      local.localNames.forEach(function (n) {
+        if (result.People.length < maxToShow) {
+          result.People.push(n);
+        }
+      });
 
-    local.localNames.forEach(function (n) {
-      if (result.People.length < maxToShow) {
-        addMatchedNames(n, result.People, searchParts, searchSounds);
+    } else {
+      // get search terms and soundex of each search term
+      var searchSounds = [];
+      for (var i = 0; i < searchParts.length; i++) {
+        searchSounds.push(soundex.process(searchParts[i]));
       }
-    });
+
+      if (debugSearch) console.log('sound:', searchSounds);
+
+      local.localNames.forEach(function (n) {
+        if (result.People.length < maxToShow) {
+          addMatchedNames(n, result.People, searchParts, searchSounds);
+        }
+      });
+    }
 
     sortResults(result);
 

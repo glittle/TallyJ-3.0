@@ -140,33 +140,62 @@
   <h2>{{election.Name}}</h2>
   <div class="poolBuilder">
     <div v-if="!savedLock">
-      <h2>Add to my Pool</h2>
+      <h2>Add to your Pool</h2>
       <p tabindex="0" class="quote">
         "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
         to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="http://bahai-library.com/uhj_bahai_electoral_process">(source document)</a></cite>
       </p>
-      <p id="searchInfo">
-        Search for individuals that you believe to be qualified to serve.
-        Click to add them to your pool.
-      </p>
-      <div>
-        <label>
-          Search:
-          <input accesskey="S" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
-        </label>
-        <button class="btn" accesskey="C" v-on:click="resetSearch">Clear</button>
+      <div v-if="useList">
+        <p id="searchInfo">
+          Search for individuals that you believe to be qualified to serve.
+          Click to add them to your pool for this election.
+        </p>
+        <div>
+          <label>
+            Search:
+            <input accesskey="S" ref="searchBox" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
+          </label>
+          <button accesskey="C" v-on:click="resetSearch">Clear</button>
+        </div>
+        
+        <div v-show="!nameList.length" class="nameListPlaceholder">
+          <span v-if="searchText">No matches found.</span>
+          <span v-else>Names will appear here when you search.</span>
+        </div>
+        <ul id="nameList" v-show="nameList.length">
+          <li v-for="(p,i) in nameList"
+              v-bind:key="p.Id"
+              :id="'P' + p.Id"
+              v-html="p.HtmlName"
+              v-on:click="addToPool(p)"
+              v-bind:class="[searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']"
+              aria-atomic="true">
+          </li>
+        </ul>
+        <p v-show="nameList.length">
+          To select a name using your keyboard, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
+        </p>
+        <button class="btn addRandomToList" v-if="useRandom" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
       </div>
-
-      <ul id="nameList" v-show="nameList.length">
-        <li v-for="(p,i) in nameList"
-            v-bind:key="p.Id"
-            :id="'P' + p.Id"
-            v-html="p.HtmlName"
-            v-on:click="addToPool(p)"
-            v-bind:class="[searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']"
-            aria-atomic="true">
-        </li>
-      </ul>
+      <form v-if="useRandom && !useList || addRandomToList" class="randomInput">
+        <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to the pool for this election.</p>
+        <div>
+          <label>First Name</label>
+          <input v-model="randomFirst" type="text" ref="firstInput" placeholder="First" />
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input v-model="randomLast" type="text" placeholder="Last" />
+        </div>
+        <div>
+          <label>Identifying information (optional)</label>
+          <input v-model="randomOtherInfo" type="text" />
+        </div>
+        <div>
+          <button class="btn" v-on:click="addRandomName" :disabled="!canAddRandom">Add Person</button>
+          <span class="randomResult">{{randomResult}}</span>
+        </div>
+      </form>
     </div>
     <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
       <h2>Pool & Ballot</h2>
@@ -197,17 +226,19 @@
 
       @*<p v-if="lockInVotes">The top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}}.</p>*@
       <p v-if="!lockInVotes && pool.length">
-        Sort this list to move people into the top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}} for use on your ballot.
+        Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into the top ' + numToElect + ' positions')}} for use on your ballot.
       </p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"
-             :key="p.id"
+             :key="p.Id"
              tabindex="0"
              v-on:keydown="keydownInPool(p, i, $event)"
              v-bind:ref="'p' + p.Id"
              v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop' : 'inOther', i === lastInTop + 1 ? 'firstInOther' : '', p.moving ? 'moving' : '' ]">
           <span class="num">{{i + 1}}</span>
-          <div v-html="p.Name"></div>
+          <div v-text="p.Name"></div>
+          <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
+          <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
           <span role="button" class="removeFromPool" v-on:click="removeFromPool(p)" aria-label="Delete" title="Delete from the pool"></span>
         </div>
       </draggable>

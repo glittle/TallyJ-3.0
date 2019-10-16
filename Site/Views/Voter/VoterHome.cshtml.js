@@ -64,6 +64,7 @@ var vueOptions = {
       savedPool: '',
       savedLock: false,
       registration: '', // full text
+      selectionProcess: 'Random',
       numToElect: 0,
       movingInPool: null,
       lockInVotes: null,
@@ -76,18 +77,29 @@ var vueOptions = {
       loginHistory: [],
       emailWhenOpen: false,
       emailWhenProcessed: false,
-      emailCodesLoaded: false
+      emailCodesLoaded: false,
+      randomFirst: '',
+      randomLast: '',
+      randomOtherInfo: '',
+      randomResult: '',
+      addRandomToList: false
     };
   },
   computed: {
+    canAddRandom: function () {
+      return this.randomFirst && this.randomLast;
+    },
     lastInTop: function () {
       return this.numToElect - 1;
     },
     canLockIn: function () {
-      return this.pool.length >= this.numToElect && !this.election.person.PoolLocked;// && (!this.registration || this.registration !== 'Online');
+      return this.pool.length >= this.numToElect &&
+        !this.election.person.PoolLocked; // && (!this.registration || this.registration !== 'Online');
     },
     canUnlock: function () {
-      return this.registration !== 'Processed' && this.election.OnlineWhenClose_M.isAfter() && this.election.person.PoolLocked;
+      return this.registration !== 'Processed' &&
+        this.election.OnlineWhenClose_M.isAfter() &&
+        this.election.person.PoolLocked;
     },
     election: function () {
       var vue = this;
@@ -100,11 +112,29 @@ var vueOptions = {
       var raw = voterHome.lastLogin;
       return raw ? moment(raw).fromNow() : '';
     },
+    useList: function () {
+      return this.selectionProcess === 'L' || this.selectionProcess === 'B';
+    },
+    useRandom: function () {
+      return this.selectionProcess === 'R' || this.selectionProcess === 'B';
+    }
   },
   watch: {
     searchText: function (a, b) {
       this.runSearch();
     },
+    randomFirst: function () {
+      this.randomFirst = this.cleanText(this.randomFirst);
+      this.randomResult = '';
+    },
+    randomLast: function () {
+      this.randomLast = this.cleanText(this.randomLast);
+      this.randomResult = '';
+    },
+    randomOtherInfo: function () {
+      this.randomOtherInfo = this.cleanText(this.randomOtherInfo);
+      this.randomResult = '';
+    }
   },
   created: function () {
   },
@@ -126,17 +156,19 @@ var vueOptions = {
               setInterval(vue.updateStatuses, 60 * 1000);
             }
 
-            
+
             // other info
             if (info.emailCodes) {
               vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
+
             // for dev, go to first election
-            //            setTimeout(function () {
-            //              vue.prepareBallot(vue.elections.find(function (e) { return e.online; }));
-            //            }, 750);
+            setTimeout(function () {
+              vue.prepareBallot(vue.elections.find(function (e) { return e.openNow; }));
+            },
+              500);
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -196,7 +228,8 @@ var vueOptions = {
       var vue = this;
       var election = vue.election;
       if (election && election.person) {
-        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+        election.person.RegistrationTime =
+          info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
         if (info.hasOwnProperty('PoolLocked')) {
           election.person.PoolLocked = info.PoolLocked;
         }
@@ -255,7 +288,8 @@ var vueOptions = {
         info.Status_Display = 'No online voting';
       }
       if (this.election && !this.election.openNow) {
-        this.closeBallot(); hu
+        this.closeBallot();
+        hu
       }
     },
     scrollToTop: function (y) {
@@ -276,18 +310,25 @@ var vueOptions = {
             vue.electionGuid = eInfo.id;
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
+            vue.selectionProcess = info.OnlineSelectionProcess;
 
             voterHome.peopleHelper.Prepare(function () {
-              var list = (info.votingInfo.ListPool || '').split(',').map(function (s) { return +s; });
+              var list = JSON.parse(info.votingInfo.ListPool || '[]');
               vue.loadPool(list);
 
               var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;
               vue.savedLock = locked;
               vue.lockInVotes = locked;
+              vue.setInputFocus();
+
+              if (vue.useList && voterHome.peopleHelper.local.localNames.length < 20) {
+                voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
+              }
             });
 
             vue.activePage = 2;
             vue.scrollToTop(95);
+
 
           } else if (info.closed) {
             // show closed... show info if available
@@ -324,6 +365,11 @@ var vueOptions = {
 
         case 13: // enter
           this.addToPool(this.nameList[this.searchResultRow]);
+          ev.preventDefault();
+          return false;
+
+        case 27: // esc
+          this.resetSearch();
           ev.preventDefault();
           return false;
 
@@ -478,11 +524,17 @@ var vueOptions = {
       var vue = this;
       clearTimeout(vue.saveDelay);
       vue.saveDelay = setTimeout(function () {
-        var list = vue.pool.map(function (p) { return p.Id; }).join(',');
+        var list = vue.pool.map(function (p) {
+          if (p.Id < 0) {
+            return { Id: p.Id, First: p.First, Last: p.Last, OtherInfo: p.OtherInfo };
+          } else {
+            return { Id: p.Id };
+          }
+        });
         if (vue.savedPool !== list) {
           CallAjaxHandler(GetRootUrl() + 'Voter/SavePool',
             {
-              pool: list
+              pool: JSON.stringify(list)
             },
             function (info) {
               if (info.success) {
@@ -496,18 +548,27 @@ var vueOptions = {
       },
         delay);
     },
-    loadPool: function (list) {
+    loadPool: function (poolItems) {
       var vue = this;
       this.nameList.forEach(function (p) {
         p.inPool = false;
       });
       vue.pool = [];
-      list.forEach(function (id) {
-        var p = voterHome.peopleHelper.local.localNames.find(function (p) { return p.Id === id; });
-        if (p) {
-          p.inPool = true;
-          vue.pool.push(p);
-          //          console.log(p);
+      poolItems.forEach(function (item) {
+        if (item.Id > 0) {
+          var p = voterHome.peopleHelper.local.localNames.find(function (p) { return p.Id === item.Id; });
+          if (p) {
+            p.inPool = true;
+            vue.pool.push(p);
+            //          console.log(p);
+          }
+        } else {
+          // random
+          if (vue.useRandom) {
+            item.Name = `${item.First} ${item.Last}`;
+            item.inPool = true;
+            vue.pool.push(item);
+          }
         }
       });
     },
@@ -535,7 +596,7 @@ var vueOptions = {
       });
       return list;
     },
-    saveEmailCodes: function() {
+    saveEmailCodes: function () {
       var vue = this;
       var codes = (vue.emailWhenOpen ? 'o' : '') + (vue.emailWhenProcessed ? 'p' : '');
       var form = {
@@ -551,7 +612,7 @@ var vueOptions = {
           }
         });
     },
-    emailTest: function() {
+    emailTest: function () {
       CallAjaxHandler(GetRootUrl() + 'Voter/SendTestEmail',
         null,
         function (info) {
@@ -561,6 +622,85 @@ var vueOptions = {
             ShowStatusFailed(info.Error);
           }
         });
+    },
+    cleanText: function(s) {
+      // no need to allow < or > or &
+      return s.trim().replace(/[<>&]/g, '');
+    },
+    addRandomName: function () {
+      var nextFakeId = this.pool
+        .filter(function (p) { return p.Id <= 0; })
+        .reduce(function (acc, p) {
+          return p.Id < acc ? p.Id : acc;
+        }, 0) - 1;
+      var person = {
+        CanReceiveVotes: true,
+        inPool: false,
+        First: this.cleanText(this.randomFirst),
+        Last: this.cleanText(this.randomLast),
+        OtherInfo: this.cleanText(this.randomOtherInfo),
+        Id: nextFakeId,
+      };
+      person.Name = `${person.First} ${person.Last}`;
+      const nameLowerCase = person.Name.toLowerCase();
+
+      // ensure that it is not a duplicate
+      var existing = this.pool.find(function (p) {
+        return p.Name.toLowerCase() === nameLowerCase && (p.OtherInfo || '') === (person.OtherInfo || '');
+      });
+      if (existing) {
+        this.randomResult = 'Already in the pool.';
+        return;
+      }
+
+      // if we have a list and can find it there, use that instead
+      if (this.useList) {
+        var p = voterHome.peopleHelper.local.localNames.find(function (p) {
+          let nameMatches = p.Name.split(' <u>')[0].toLowerCase() === nameLowerCase;
+          //          if (nameMatches) debugger;
+          return nameMatches && p.OtherInfo === (person.OtherInfo || p.OtherInfo);
+        });
+        if (p) {
+          if (p.inPool) {
+            this.randomResult = 'Already in the pool.';
+            return;
+          }
+          if (!p.CanReceiveVotes) {
+            this.searchText = person.Name;
+            this.randomResult = 'Cannot be voted for.';
+            return;
+          }
+          this.addToPool(p);
+
+          this.randomFirst = '';
+          this.randomLast = '';
+          this.randomOtherInfo = '';
+          this.addRandomToList = false;
+
+          this.setInputFocus();
+
+          return;
+        }
+      }
+
+      this.addToPool(person);
+
+      this.randomFirst = '';
+      this.randomLast = '';
+      this.randomOtherInfo = '';
+      this.addRandomToList = false;
+
+      this.setInputFocus();
+    },
+    showRandomInput: function () {
+
+    },
+    setInputFocus: function () {
+      if (this.selectionProcess === 'R') {
+        this.$refs.firstInput && this.$refs.firstInput.focus();
+      } else {
+        this.$refs.searchBox && this.$refs.searchBox.focus();
+      }
     }
   }
 };

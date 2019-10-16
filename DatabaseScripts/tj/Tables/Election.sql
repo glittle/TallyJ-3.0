@@ -27,7 +27,7 @@
     [OnlineWhenOpen]          DATETIME2 (0)    NULL,
     [OnlineWhenClose]         DATETIME2 (0)    NULL,
     [OnlineCloseIsEstimate]   Bit NOT NULL default 1,
-    [OnlineMethod]        varchar(1) NULL,
+    [OnlineSelectionProcess]        varchar(1) NULL,
     [OnlineAnnounced]     DateTime2(0) null,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );

@@ -18,12 +18,21 @@ namespace TallyJ.CoreModels
 
     public const string OnlineLocationName = "Online";
 
+    public LocationModel(ITallyJDbContext db) : base(db)
+    {
+    }
+
+    public LocationModel()
+    {
+    }
+
     /// <Summary>List of "normal" Locations</Summary>
     public List<Location> GetLocations(bool includeOnlineLocation)
     {
       var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
       return locations
-        .Where(l => includeOnlineLocation || !l.Name.StartsWith(OnlineLocationName)).ToList();
+        .Where(l => includeOnlineLocation || !l.Name.StartsWith(OnlineLocationName))
+        .ToList();
     }
 
     public Dictionary<Guid, int> LocationIdMap

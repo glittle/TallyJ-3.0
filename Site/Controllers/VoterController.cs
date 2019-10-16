@@ -95,6 +95,7 @@ namespace TallyJ.Controllers
         {
           open = true,
           electionInfo.e.NumberToElect,
+          OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
           registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
           votingInfo
         }.AsJsonResult();
@@ -139,7 +140,7 @@ namespace TallyJ.Controllers
       var now = DateTime.Now;
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {
-        votingInfo.ListPool = pool;
+        votingInfo.ListPool = pool; // pool is JSON string
         Db.SaveChanges();
 
         // okay
@@ -185,6 +186,7 @@ namespace TallyJ.Controllers
         if (locked)
         {
           // ensure we have enough votes
+          //TODO use JSON
           var votes = onlineVotingInfo.ListPool?.Split(',').Length ?? 0;
           if (votes < currentElection.NumberToElect)
           {

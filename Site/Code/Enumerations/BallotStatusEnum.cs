@@ -13,6 +13,7 @@ namespace TallyJ.Code.Enumerations
     public static readonly BallotStatusEnum TooFew = new BallotStatusEnum("TooFew", "Too Few");
     public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicate names");
     public static readonly BallotStatusEnum Empty = new BallotStatusEnum("Empty", "Empty");
+    public static readonly BallotStatusEnum OnlineRaw = new BallotStatusEnum("Raw", "Online Raw");
 
     static BallotStatusEnum()
     {
@@ -22,6 +23,7 @@ namespace TallyJ.Code.Enumerations
       Add(TooMany);
       Add(TooFew);
       Add(Dup);
+      Add(OnlineRaw);
       AddAsDefault(Empty);
     }
 

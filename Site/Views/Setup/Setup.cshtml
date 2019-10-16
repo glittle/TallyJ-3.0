@@ -346,7 +346,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     </tr>
     <tr>
       <th>
-        Time diplay format
+        Time display format
       </th>
       <td>
         <yes-no v-model="election.T24" yes="19:30" no="7:30 pm"></yes-no>
@@ -387,6 +387,64 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </td>
       </tr>
 
+      <tr>
+        <th>
+          Name Selection
+        </th>
+        <td colspan="2" class="processOptions">
+          <table>
+            <tr>
+              <th>A</th>
+              <td>
+                <input type="radio" value="L" title="List" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol1" />
+              </td>
+              <td>
+                <label for="ol1">
+                  <strong>List</strong> - Voters select from a list of known people.
+                  <span class="explain">
+                    Recommended if the list of people who can be voted for is limited (e.g. by-election) or is comprehensive (sure to contain everyone).
+                    Tellers do not need to manually process each ballot.
+                  </span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <th>B</th>
+              <td>
+                <input type="radio" value="R" title="Random" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol2" />
+              </td>
+              <td>
+                <label for="ol2">
+                  <strong>Random</strong> - 
+                  Voters do not have a list to choose from but randomly type the names of the people they are voting for.
+                  <span class="explain">
+                    Recommended if you do not have a list or have a reason to not let voters use it.
+                    <strong>Tellers</strong> will enter each ballot and refer to the names provided by the voter as they would a paper ballot.
+                    For each line, tellers find and enter the matching person onto the ballot.
+                    There is a high likelihood of spoiled votes if the names provided are not valid.
+                  </span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <th>C</th>
+              <td>
+                <input type="radio" value="B" title="Both" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol3" />
+              </td>
+              <td>
+                <label for="ol3">
+                  <strong>Both</strong> - Voters are given a list of known people but have the option of adding any other name.
+                  <span class="explain">
+                    Recommended if you have a list, but are not confident that it includes everyone.
+                    If a voter adds a "random" name, tellers will need to find and enter the matching person onto the ballot.
+                  </span>
+                </label>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
       <tr v-if="useOnline">
         <th>
           Open Voting at
@@ -411,6 +469,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <td>
           When should the election be closed? Use your best guess when setting up the election.
           The Head Teller should adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
+          If using a random voting method, leave extra time for tellers to process the online ballots.
         </td>
       </tr>
       <tr v-if="useOnline && !onlineDatesOkay">

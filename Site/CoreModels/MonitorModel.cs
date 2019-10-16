@@ -51,7 +51,9 @@ namespace TallyJ.CoreModels
               j.ovi?.WhenStatus,
               j.ovi?.HistoryStatus,
               votesReady = j.ovi != null && (j.ovi.PoolLocked.GetValueOrDefault()
-                                             && j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect),
+                                             //use JSON or do not check length of pool name
+                                             //&& j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect
+                                             ),
               VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
               j.C_FullName,
               PersonId = j.C_RowId

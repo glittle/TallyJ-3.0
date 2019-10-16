@@ -20,6 +20,14 @@ namespace TallyJ.EF
         RegC, // register, collect together
     }
 
+    public enum OnlineSelectionProcessEnum
+    {
+        // define the supported processes - first letter is used in database
+        List, // voters choose from list
+        Random, // voters type random names
+        Both, // voters choose from list but can add random names
+    }
+
     public enum EnvNumModeEnum
     {
         // define the supported processes
@@ -56,7 +64,7 @@ namespace TallyJ.EF
                     throw new ApplicationException("Invalid process key: " + value);
                 }
 
-                SetExtraSettting(ExtraSettingKey.BP, value);
+                SetExtraSetting(ExtraSettingKey.BP, value);
             }
         }
 
@@ -91,7 +99,7 @@ namespace TallyJ.EF
                     throw new ApplicationException("Invalid envelope number mode: " + value);
                 }
 
-                SetExtraSettting(ExtraSettingKey.Env, value);
+                SetExtraSetting(ExtraSettingKey.Env, value);
             }
         }
 
@@ -119,7 +127,7 @@ namespace TallyJ.EF
         public bool T24
         {
             get { return GetExtraSetting(ExtraSettingKey.T24).AsBoolean(); }
-            set { SetExtraSettting(ExtraSettingKey.T24, value ? "1" : "0"); }
+            set { SetExtraSetting(ExtraSettingKey.T24, value ? "1" : "0"); }
         }
         //public string Test2
         //{
@@ -239,7 +247,7 @@ namespace TallyJ.EF
             return null;
         }
 
-        private void SetExtraSettting(ExtraSettingKey setting, string value)
+        private void SetExtraSetting(ExtraSettingKey setting, string value)
         {
             var s = value ?? "";
             if (s.Contains("=") || s.Contains(SplitChar))

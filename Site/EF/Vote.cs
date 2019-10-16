@@ -23,5 +23,6 @@ namespace TallyJ.EF
         public Nullable<int> SingleNameElectionCount { get; set; }
         public byte[] C_RowVersion { get; set; }
         public string PersonCombinedInfo { get; set; }
+        public string OnlineVoteRaw { get; set; }
     }
 }

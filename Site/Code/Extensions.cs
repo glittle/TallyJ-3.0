@@ -819,5 +819,60 @@ namespace TallyJ.Code
 //        RememberMe = input.RememberMe
       };
     }
+
+    /// <summary>
+    /// Convert string to matching enum. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="input"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static T AsEnum<T>(this string input, T defaultValue)
+    {
+      var enumType = typeof(T);
+      if (!enumType.IsEnum)
+      {
+        throw new ArgumentException(enumType + " is not an enumeration.");
+      }
+
+      // abort if no value given
+      if (string.IsNullOrEmpty(input))
+      {
+        return defaultValue;
+      }
+
+      // see if the text is valid for this enumeration (case sensitive)
+      if (Enum.IsDefined(enumType, input))
+      {
+        return (T)Enum.Parse(enumType, input);
+      }
+
+      if (int.TryParse(input, out var asInt))
+      {
+        if (Enum.IsDefined(enumType, asInt))
+        {
+          return (T)Enum.Parse(enumType, asInt.ToString());
+        }
+      }
+
+      // see if the text is valid for this enumeration (case insensitive)
+      var names = Enum.GetNames(enumType);
+      if (Array.IndexOf(names, input) != -1)
+      {
+        // case insensitive...
+        return (T)Enum.Parse(enumType, input, true);
+      }
+
+      // do partial matching...
+      var match = names.FirstOrDefault(name => name.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+      if (match != null)
+      {
+        return (T)Enum.Parse(enumType, match);
+      }
+
+      // didn't find one
+      return defaultValue;
+    }
+
   }
 }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Transactions;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
+using Newtonsoft.Json;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -282,7 +284,8 @@ namespace TallyJ.CoreModels
         election.T24,
         election.OnlineWhenOpen,
         election.OnlineWhenClose,
-        election.OnlineCloseIsEstimate
+        election.OnlineCloseIsEstimate,
+        election.OnlineSelectionProcess
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
@@ -1073,20 +1076,21 @@ namespace TallyJ.CoreModels
         }
 
         // convert 1,2,3 to list of numbers
-        var poolIds = pool.Split(',').Take(numToElect).Select(id => id.AsInt()).Where(i => i > 0).ToList();
-        if (poolIds.Count != numToElect)
+        //TODO use JSON - convert to list of votes
+        var poolList = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool).Take(numToElect).ToList();
+        if (poolList.Count != numToElect)
         {
-          problems.Add($"Pool too small ({poolIds.Count})" + name);
+          problems.Add($"Pool too small ({poolList.Count})" + name);
           continue;
         }
 
         var sendEmail = false;
 
-        using (var transaction = new TransactionScope())
+        using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
         {
           try
           {
-            var success = ballotModel.SaveOnlineVote(poolIds, out var message);
+            var success = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
             if (success)
             {
               onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
@@ -1112,7 +1116,6 @@ namespace TallyJ.CoreModels
             else
             {
               problems.Add(message + name);
-              transaction.Dispose();
             }
           }
           catch (Exception e)
@@ -1120,6 +1123,8 @@ namespace TallyJ.CoreModels
             problems.Add($"Error: {e.LastException().Message}{name}");
           }
         }
+
+        Db.SaveChanges(); // redundant?
 
         if (sendEmail)
         {

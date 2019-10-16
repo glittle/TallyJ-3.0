@@ -5,32 +5,32 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="49b1c53870eb4c749b980a852410fa65" Name="Diagram1" ZoomLevel="75">
-        <EntityTypeShape EntityType="TallyJ2dModel.Users" Width="1.5" PointX="0.75" PointY="0.875" />
-        <EntityTypeShape EntityType="TallyJ2dModel.ImportFile" Width="1.5" PointX="0.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.JoinElectionUser" Width="1.5" PointX="3" PointY="1" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Message" Width="1.5" PointX="2.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Result" Width="1.5" PointX="4.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.ResultTie" Width="1.5" PointX="5.75" PointY="0.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="6.75" PointY="4.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Users" Width="1.5" PointX="0.75" PointY="9.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.ImportFile" Width="1.5" PointX="5.75" PointY="6.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.JoinElectionUser" Width="1.5" PointX="3" PointY="7.125" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Message" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Result" Width="1.5" PointX="7.75" PointY="3.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.ResultTie" Width="1.5" PointX="7.75" PointY="8.75" />
         <AssociationConnector Association="TallyJ2dModel.FK_JoinElectionUser_Users" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Ballot" Width="1.5" PointX="7.75" PointY="0.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Location" Width="1.5" PointX="8.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Person" Width="1.5" PointX="6.75" PointY="8.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Teller" Width="1.5" PointX="8.75" PointY="8.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVotingInfo" Width="1.5" PointX="9.75" PointY="0.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="0.75" PointY="9.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="2.75" PointY="9.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.C_Log" Width="1.5" PointX="10.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="10.75" PointY="8.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Memberships" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Location" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Person" Width="1.5" PointX="9.75" PointY="4.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Teller" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVotingInfo" Width="1.5" PointX="11.75" PointY="3.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.ResultSummary" Width="1.5" PointX="11.75" PointY="7.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="5.75" PointY="12.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.C_Log" Width="1.5" PointX="7.75" PointY="12.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Memberships" Width="1.5" PointX="3" PointY="9.75" />
         <AssociationConnector Association="TallyJ2dModel.MembershipUser" />
-        <EntityTypeShape EntityType="TallyJ2dModel.AspNetRoles" Width="1.5" PointX="13.375" PointY="8.5" />
-        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserClaims" Width="1.5" PointX="17.875" PointY="7" />
-        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserLogins" Width="1.5" PointX="17.875" PointY="9.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUsers" Width="1.5" PointX="15.625" PointY="7.375" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetRoles" Width="1.5" PointX="0.75" PointY="2.5" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserClaims" Width="1.5" PointX="5.25" PointY="1" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUserLogins" Width="1.5" PointX="5.25" PointY="3.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.AspNetUsers" Width="1.5" PointX="3" PointY="1.375" />
         <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TallyJ2dModel.AspNetUserRoles" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Ballot" Width="1.5" PointX="13.75" PointY="8.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="9.75" PointY="13.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

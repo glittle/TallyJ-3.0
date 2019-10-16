@@ -263,7 +263,6 @@ section.CenterPanel.chosen:hover {
 
   .voterLogins {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     margin: 20px 0 10px;
 
@@ -416,7 +415,6 @@ div.notes {
 .centerbuttons {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
   margin: 0.5em;
@@ -463,5 +461,16 @@ div.notes {
     margin: 0 auto;
     max-width: 390px;
     min-width: 300px;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .VoterPanel {
+    .voterLogins {
+      flex-direction: column;
+    }
+  }
+  .centerbuttons {
+    flex-direction: column;
   }
 }

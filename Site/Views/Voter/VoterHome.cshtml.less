@@ -206,14 +206,28 @@ body.VoterIndex {
     }
   }
 
+  .addRandomToList {
+    margin: 10px 0px;
+  }
+
+  .nameListPlaceholder {
+    margin: 10px 0px;
+    box-shadow: 0 0 1px black;
+    padding: 5px 5px;
+    font-style: italic;
+  }
+
   #nameList {
     cursor: default;
-    margin: 5px 20px;
-    max-height: 300px;
+    margin: 10px 0px;
+    max-height: 200px;
     overflow: auto;
+    box-shadow: 0 0 1px black;
+    padding-bottom: 1em;
 
     li {
       border: 1px solid transparent;
+      padding: 0 3px;
 
       &.inPool {
         background-color: rgba(0,255,0,0.2);
@@ -257,7 +271,27 @@ body.VoterIndex {
           }
         }
       }
+
+      u {
+        text-decoration: none;
+        float: right;
+        margin: 0 4px;
+        font-style: italic;
+        font-size: 90%;
+        color: #555;
+      }
     }
+  }
+
+  .randomInput {
+    input {
+      padding: 1px 3px;
+    }
+  }
+
+  .randomResult {
+    margin-left: 10px;
+    color: @tallyJError;
   }
 
   .OtherRegistration {
@@ -308,6 +342,7 @@ body.VoterIndex {
       width: 100px;
     }
   }
+
 
   .lockInBtns {
     margin: 1em 0;
@@ -384,7 +419,7 @@ body.VoterIndex {
     }
   }
 
-  .poolSide{
+  .poolSide {
     max-width: 60%;
   }
 
@@ -424,6 +459,15 @@ body.VoterIndex {
 
       &.inOther {
         color: #333;
+      }
+
+      u {
+        text-decoration: none;
+        float: right;
+        margin: 0 4px;
+        font-style: italic;
+        font-size: 90%;
+        color: #555;
       }
 
       .num {

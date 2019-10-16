@@ -21,4 +21,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="HostAndVersion" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="fb781c00-c53d-4f1b-aec8-428cae68a722" ChangeDateTime="10/15/2019 17:40:27">
+    <Property Name="ElementName" Value="[tj].[Election].[OnlineMethod]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[tj].[Election]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="OnlineSelectionProcess" />
+  </Operation>
 </Operations>

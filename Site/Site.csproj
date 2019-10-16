@@ -523,6 +523,7 @@
     <Compile Include="CoreModels\Hubs\VoterPersonalHub.cs" />
     <Compile Include="CoreModels\IAnalyzerFakes.cs" />
     <Compile Include="CoreModels\Helper\ImportHelper.cs" />
+    <Compile Include="CoreModels\OnlineRawVote.cs" />
     <Compile Include="CoreModels\PulseInfo.cs" />
     <Compile Include="CoreModels\ResultHelper.cs" />
     <Compile Include="CoreModels\RollCallModel.cs" />

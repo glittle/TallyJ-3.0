@@ -61,33 +61,10 @@ namespace TallyJ.CoreModels
 
             if (refreshVoteStatus)
             {
-                VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher(Db).AllForThisElection,
-                    new Savers(Db).VoteSaver);
+                VoteAnalyzer.UpdateAllStatuses(currentVotes, new VoteCacher(Db).AllForThisElection, new Savers(Db).VoteSaver);
             }
 
-            string newStatus;
-            int spoiledCount;
-
-
-            //if (IsSingleNameElection)
-            //{
-            //  if (ballot.StatusCode != BallotStatusEnum.Ok)
-            //  {
-            //    BallotSaver(DbAction.Attach, ballot);
-
-            //    ballot.StatusCode = BallotStatusEnum.Ok;
-
-            //    BallotSaver(DbAction.Save, ballot);
-            //  }
-            //  return new BallotStatusWithSpoilCount
-            //    {
-            //      Status = BallotStatusEnum.Ok,
-            //      SpoiledCount = 0
-            //    };
-            //}
-
-
-            if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out newStatus, out spoiledCount) ||
+            if (DetermineStatusFromVotesList(ballot.StatusCode, currentVotes, out var newStatus, out var spoiledCount) ||
                 forceSave)
             {
                 BallotSaver(DbAction.Attach, ballot);
@@ -114,7 +91,7 @@ namespace TallyJ.CoreModels
             spoiledCount = voteInfos.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
 
             // if under review, don't change that status
-            if (currentStatusCode == BallotStatusEnum.Review)
+            if (currentStatusCode == BallotStatusEnum.Review || currentStatusCode == BallotStatusEnum.OnlineRaw)
             {
                 statusCode = currentStatusCode;
                 return false;
@@ -126,6 +103,11 @@ namespace TallyJ.CoreModels
             if (needsVerification)
             {
                 return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);
+            }
+            
+            if (voteInfos.Any(v => v.VoteStatusCode == VoteHelper.VoteStatusCode.OnlineRaw))
+            {
+              return StatusChanged(BallotStatusEnum.OnlineRaw, currentStatusCode, out statusCode);
             }
 
             if (IsSingleNameElection)

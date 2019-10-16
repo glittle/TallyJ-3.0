@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -642,33 +643,27 @@ namespace TallyJ.CoreModels
 
     public abstract object BallotInfoForJs(Ballot b, List<Vote> allVotes);
 
-    public bool SaveOnlineVote(List<int> poolIds, out string errorMessage)
+    public bool CreateBallotForOnlineVoter(List<OnlineRawVote> poolList, out string errorMessage)
     {
+      //{Id: 0, First:"", Last:"", OtherInfo:""}
+
       // double check
       var numberToElect = UserSession.CurrentElection.NumberToElect;
-      if (poolIds.Count != numberToElect)
+      if (poolList.Count != numberToElect)
       {
-        errorMessage = $"Invalid number of votes ({poolIds.Count}). Need {numberToElect}.";
-        return false;
-      }
-
-      // get the names to add to the ballot
-      var people = new PersonCacher(Db).AllForThisElection.Where(b => poolIds.Contains(b.C_RowId)).ToList();
-      if (people.Count != numberToElect)
-      {
-        errorMessage = $"Error converting pool to ids.";
+        errorMessage = $"Invalid number of votes ({poolList.Count}). Need {numberToElect}.";
         return false;
       }
 
       const string computerCode = "OL";
 
-      var priorBallots = new BallotCacher(Db).AllForThisElection.Where(b => b.ComputerCode == computerCode);
+      var priorBallots = new BallotCacher(Db).AllForThisElection.Where(b => b.ComputerCode == computerCode).ToList();
       var maxNum = priorBallots.Any() ? priorBallots.Max(b => b.BallotNumAtComputer) : 0;
 
       var ballotCacher = new BallotCacher(Db);
       var voteCacher = new VoteCacher(Db);
-      var locationCacher = new LocationCacher(Db);
-      var location = locationCacher.AllForThisElection.First(); //TODO special location for online??
+      var locationHelper = new LocationModel(Db);
+      var location = locationHelper.GetOnlineLocation();
 
       // create ballot
       var ballot = new Ballot
@@ -686,31 +681,55 @@ namespace TallyJ.CoreModels
 
       // add Votes
       var nextVoteNum = 0;
-      people.ForEach(person =>
+
+      foreach (var rawVote in poolList)
       {
-        var vote = new Vote
+        Vote vote;
+        if (rawVote.Id > 0)
         {
-          BallotGuid = ballot.BallotGuid,
-          PositionOnBallot = ++nextVoteNum,
-          StatusCode = VoteHelper.VoteStatusCode.Ok,
-          SingleNameElectionCount = 1,
-          PersonGuid = person.PersonGuid,
-          PersonCombinedInfo = person.CombinedInfo,
-          InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid
-        };
-        
+          var person = new PersonCacher(Db).AllForThisElection.FirstOrDefault(b => b.C_RowId == rawVote.Id);
+          if (person == null)
+          {
+            errorMessage = $"Error converting pool id {rawVote.Id} to person.";
+            return false;
+          }
+
+          vote = new Vote
+          {
+            BallotGuid = ballot.BallotGuid,
+            PositionOnBallot = ++nextVoteNum,
+            StatusCode = VoteHelper.VoteStatusCode.Ok,
+            SingleNameElectionCount = 1,
+            PersonGuid = person.PersonGuid,
+            PersonCombinedInfo = person.CombinedInfo,
+            InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid
+          };
+        }
+        else
+        {
+          // "random" vote
+          vote = new Vote
+          {
+            BallotGuid = ballot.BallotGuid,
+            PositionOnBallot = ++nextVoteNum,
+            StatusCode = VoteHelper.VoteStatusCode.OnlineRaw,
+            SingleNameElectionCount = 1,
+            OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
+          };
+        }
+
         Db.Vote.Add(vote);
-        
+
         Db.SaveChanges();
 
         voteCacher.UpdateItemAndSaveCache(vote);
-      });
+      }
 
       var votes = voteCacher.AllForThisElection;
       BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
-      
+
       ballotCacher.UpdateItemAndSaveCache(ballot);
-      
+
       Db.SaveChanges();
 
       errorMessage = "";

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -68,6 +69,21 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
+      var selectionProcess = currentElection.OnlineSelectionProcess.AsEnum(OnlineSelectionProcessEnum.Random);
+      switch (selectionProcess)
+      {
+        case OnlineSelectionProcessEnum.List:
+        case OnlineSelectionProcessEnum.Both:
+          // okay
+          break;
+        default:
+          // empty list
+          return new
+          {
+            people = new List<string>()
+          }.AsJsonResult();
+      }
+
       return new
       {
         people = new PersonCacher(Db)
@@ -77,6 +93,8 @@ namespace TallyJ.Controllers
             Id = p.C_RowId,
             Name = p.FullNameFL,
             IRG = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.GetValueOrDefault()),
+            p.OtherInfo,
+            p.Area
           }),
       }.AsJsonResult();
     }

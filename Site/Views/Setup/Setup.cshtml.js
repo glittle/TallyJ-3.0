@@ -513,6 +513,7 @@
       OnlineWhenOpen: election.OnlineWhenOpen,
       OnlineWhenClose: election.OnlineWhenClose,
       OnlineCloseIsEstimate: election.OnlineCloseIsEstimate,
+      OnlineSelectionProcess: election.OnlineSelectionProcess,
     };
 
     $(':input[data-name]').each(function () {
