@@ -10,10 +10,12 @@ namespace TallyJ.CoreModels
   {
     public static string DetermineStatus(VoteInfo voteInfo)
     {
-      if (voteInfo.VoteStatusCode == VoteHelper.VoteStatusCode.OnlineRaw)
+      if (voteInfo.OnlineVoteRaw.HasContent() 
+          && (voteInfo.PersonIneligibleReasonGuid == null && voteInfo.PersonGuid == null))
       {
         return VoteHelper.VoteStatusCode.OnlineRaw;
       }
+
       return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
           ? VoteHelper.VoteStatusCode.Spoiled
           : voteInfo.PersonCombinedInfo.HasContent() &&

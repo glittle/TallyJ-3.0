@@ -313,6 +313,11 @@ namespace TallyJ.CoreModels
         vote.SingleNameElectionCount = count;
         vote.PersonCombinedInfo = person1 == null ? null : person1.CombinedInfo;
 
+        if (UserSession.CurrentLocation.Name == LocationModel.OnlineLocationName)
+        {
+          vote.PersonGuid = person1.PersonGuid;
+        }
+
         DetermineInvalidReasonGuid(invalidReason, vote);
 
         vote.StatusCode =

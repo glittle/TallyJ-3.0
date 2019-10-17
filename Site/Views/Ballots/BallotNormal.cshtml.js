@@ -27,7 +27,9 @@
     searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}><span class=ShowVote style="width:{VoteSize}%"></span>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
-    NormalVoteLineTemplate: null
+    NormalVoteLineTemplate: null,
+    lastFindPart: '',
+    lastFindId: 0
   };
   var tabNum = {};
 
@@ -88,7 +90,16 @@
 
     local.votesList.on('click', '.ui-icon-trash', deleteVote);
     local.votesList.on('click', '.btnClearChangeError', resaveVote);
-    local.votesList.on('click', '.btnFind', findWithRawVote);
+    local.votesList.on('click', '.btnFind', function (ev) {
+      findWithRawVotePart(ev, 'FL');
+    });
+    local.votesList.on('click', '.btnFindF', function (ev) {
+      findWithRawVotePart(ev, 'F');
+    });
+    local.votesList.on('click', '.btnFindL', function (ev) {
+      findWithRawVotePart(ev, 'L');
+    });
+    local.votesList.on('click', '.VoteHost.withRawtrue', selectRawVote);
 
     local.votesList.on('change', 'select.Invalid', function (ev) {
       var select = ev.target;
@@ -458,7 +469,7 @@
 
     var ballotInfo = info.BallotInfo;
     if (ballotInfo) {
-      $('#votesPanel').css('visibility', 'visible');
+      $('#votesPanel').css('visibility', 'visible').toggleClass('online', publicInterface.Location.IsOnline);
 
       var ballot = ballotInfo.Ballot;
       $('.ballotCode').text(ballot.Code);
@@ -771,17 +782,54 @@
     startSavingVote(host, true);
   };
 
-  function findWithRawVote(ev) {
-    var host = $(ev.target).closest('.rawVote');
 
-    $('.rawTarget').removeClass('rawTarget');
-    host.parent().addClass('rawTarget');
+  function findWithRawVotePart(ev, part) {
+    let btn = $(ev.target);
+    let host = btn.closest('.rawVote');
+    let vote = host.parent();
 
     toggleAddToBallotTab(true);
 
-    var text = host.find('.names').map(function(i, el) { return el.innerText; }).get().join(' ').replace(/\n/g, ' ');
+    var voteId = vote.data('vote-id');
+    var lastPart = local.lastFindPart;
+    var lastId = local.lastFindId;
+    var lastNum = +(btn.data('last') || '');
+
+    if (lastPart === part && lastId === voteId) {
+      lastNum--;
+    } else {
+      local.lastFindPart = part;
+      local.lastFindId = voteId;
+      lastNum = +(btn.data('max') || '');
+      if (!lastNum || isNaN(lastNum)) {
+        lastNum = part === 'FL'
+          ? Math.max(host.find('.F').text().length,
+            host.find('.L').text().length)
+          : host.find('.' + part).text().length;
+        console.log('new', lastNum);
+        btn.data('max', lastNum);
+      }
+    }
+    btn.data('last', lastNum);
+
+    var text = (
+      part === 'FL'
+        ? trimBy(host.find('.F').text(), lastNum) + ' ' +
+        trimBy(host.find('.L').text(), lastNum)
+        : trimBy(host.find('.' + part).text(), lastNum)
+    ).trim();
+
     $('#txtSearch').val(text).select().trigger('keyup');
-  };
+
+    if (!text) {
+      btn.data('last', btn.data('max') + 1);
+    }
+
+  }
+
+  function trimBy(s, num) {
+    return s.substr(0, num);
+  }
 
   function startSavingVote(host, verifying) {
     if ($('#ddlTopLocation').val() == -1) {
@@ -1062,23 +1110,52 @@
     var personId = +rawId.substr(1);
     if (personId === 0) return;
 
-    focusOnTextInput();
+    if (publicInterface.Location.IsOnline) {
+      var voteHost = $('.rawTarget');
+      if (voteHost.length !== 1) {
+        return;
+      }
+      var vid = voteHost.data('vote-id');
+      if (!vid) {
+        return;
+      }
 
-    local.votes.push({
-      vid: 0,
-      pid: personId,
-      name: selectedPersonLi.text(),
-      count: 0,
-      ineligible: selectedPersonLi.data('ineligible')
-    });
+      var vote = local.votes.find(function(v) { return v.vid === vid; });
+      if (!vote) {
+        console.log('not found: vid ', vid);
+        return;
+      }
+      
+      vote.pid = personId;
+      vote.name = selectedPersonLi.text();
+      vote.count = 0;
+      vote.ineligible = selectedPersonLi.data('ineligible');
 
-    showVotes();
-    scrollVotesTo(9999);
+      voteHost.data('person-id', personId);
+      startSavingVote(voteHost);
+      
+      showVotes();
 
-    var newHost = local.votesList.find('.VoteHost').last();
+    } else {
 
-    startSavingVote(newHost);
-  };
+      focusOnTextInput();
+
+      local.votes.push({
+        vid: 0,
+        pid: personId,
+        name: selectedPersonLi.text(),
+        count: 0,
+        ineligible: selectedPersonLi.data('ineligible')
+      });
+
+      showVotes();
+      scrollVotesTo(9999);
+
+      var newHost = local.votesList.find('.VoteHost').last();
+
+      startSavingVote(newHost);
+    }
+  }
 
   function addSpoiled() {
     // if one is pending, don't add another
@@ -1162,7 +1239,13 @@
       num++;
     });
     return votes;
-  };
+  }
+
+  function selectRawVote(ev) {
+    var vote = $(ev.target).closest('.VoteHost');
+    $('.rawTarget').removeClass('rawTarget');
+    vote.addClass('rawTarget');
+  }
 
   function showExtraVotes() {
     var votes = local.votesList.find('.VoteHost, .VoteHostFake');
@@ -1190,6 +1273,7 @@
     }
 
   };
+
 
   function prepareReasons(onlyGroup) {
     var html = [

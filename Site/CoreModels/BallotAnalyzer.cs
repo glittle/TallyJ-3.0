@@ -91,7 +91,7 @@ namespace TallyJ.CoreModels
             spoiledCount = voteInfos.Count(v => v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok);
 
             // if under review, don't change that status
-            if (currentStatusCode == BallotStatusEnum.Review || currentStatusCode == BallotStatusEnum.OnlineRaw)
+            if (currentStatusCode == BallotStatusEnum.Review)
             {
                 statusCode = currentStatusCode;
                 return false;

@@ -221,6 +221,11 @@ input.ZZsearching {
   flex: 1 1 auto;
   //float: left;
   //width: 530px;
+  &.online {
+    .icons {
+      display: none;
+    }
+  }
 }
 
 .ui-icon-arrow-2-n-s {
@@ -505,26 +510,46 @@ div.heading {
       .rawVote {
         display: flex;
         background-color: #efeeef;
-        padding: 5px 10px 5px 31px;
+        padding: 4px 8px 4px 0px;
+        margin: 0 0 3px 32px;
 
         > div {
           flex-grow: 1;
         }
 
         > span {
-          padding: 0 10px;
+          padding: 0 10px 0 8px;
+          display: flex;
+          align-items: center;
+
+          span {
+            display: inline-block;
+          }
         }
 
         .names {
-          span {
+          > span {
             display: block;
           }
+
+          button {
+            margin: 0 2px 0 0;
+            vertical-align: text-top;
+          }
+        }
+
+        .btnFindPart {
+          line-height: 120%;
+          padding: 2px 6px;
+          font-size: 10.5px;
+          border-radius: 3px;
         }
       }
     }
 
     &.rawTarget {
       border-color: @tallyJGreen;
+      margin: 0;
     }
 
     &.rawDonefalse {
@@ -637,6 +662,7 @@ span.HideZero0 {
 #searchInput {
   position: relative;
 }
+
 
 @media only screen and (max-width: 600px) {
   .Panels {
