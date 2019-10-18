@@ -35,6 +35,7 @@
 
   function preparePage() {
     local.NormalVoteLineTemplate = $('#NormalVoteLine').text();
+    showLocation(publicInterface.Location);
 
     tabNum = publicInterface.HasLocations ? {
       location: 0,
@@ -99,7 +100,10 @@
     local.votesList.on('click', '.btnFindL', function (ev) {
       findWithRawVotePart(ev, 'L');
     });
-    local.votesList.on('click', '.VoteHost.withRawtrue', selectRawVote);
+    local.votesList.on('click', '.VoteHost.withRawtrue', function (ev) {
+      selectRawVote(ev);
+      toggleAddToBallotTab(true);
+    });
 
     local.votesList.on('change', 'select.Invalid', function (ev) {
       var select = ev.target;
@@ -349,6 +353,7 @@
     }
     var location = publicInterface.Location;
     let hideThis = !location.IsOnline;
+    console.log('hide btns', hideThis, location.IsOnline, location);
     $('#btnNewBallot').toggle(hideThis);
     $('#btnNewBallot2').toggle(hideThis);
     $('#btnAddToThis').toggle(hideThis);
@@ -486,7 +491,7 @@
       updateStatusDisplay(ballot);
 
       var toShow = (ballot.StatusCode === 'TooFew' || ballot.StatusCode === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
-      toggleAddToBallotTab(true);
+      toggleAddToBallotTab(!publicInterface.Location.IsOnline);
       local.tabList.accordion('option', 'active', toShow);
       showAddToThisBtn(toShow == tabNum.ballotListing);
 
@@ -498,7 +503,7 @@
       $('#votesPanel').css('visibility', 'hidden');
       $('#votesList').html('');
 
-      if (showLocationTab) {
+      if (showLocationTab && !publicInterface.Location.IsOnline) {
         local.tabList.accordion('option', 'active', tabNum.location);
       } else {
         local.tabList.accordion('option', 'active', tabNum.ballotListing);
@@ -669,6 +674,9 @@
           break;
       }
     });
+
+    $('#ballotHeading').text(location.IsOnline ? 'Match name from online vote for' : 'Add votes to');
+
     showBallotCount(0, location.BallotsEntered);
   };
 
@@ -877,11 +885,11 @@
           invalids[0].size = 1;
         }
 
-        if (!publicInterface.Location) {
-          location.href = location.href;
-          //TODO: use Ajax to reload the content?
-          return;
-        }
+        //        if (!local.location) {
+        //          location.href = location.href;
+        //          //TODO: use Ajax to reload the content?
+        //          return;
+        //        }
 
         local.lastVid = info.LastVid;
 
@@ -1110,7 +1118,7 @@
     var personId = +rawId.substr(1);
     if (personId === 0) return;
 
-    if (publicInterface.Location.IsOnline) {
+    if (local.location.IsOnline) {
       var voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
         return;
@@ -1120,12 +1128,12 @@
         return;
       }
 
-      var vote = local.votes.find(function(v) { return v.vid === vid; });
+      var vote = local.votes.find(function (v) { return v.vid === vid; });
       if (!vote) {
         console.log('not found: vid ', vid);
         return;
       }
-      
+
       vote.pid = personId;
       vote.name = selectedPersonLi.text();
       vote.count = 0;
@@ -1133,7 +1141,7 @@
 
       voteHost.data('person-id', personId);
       startSavingVote(voteHost);
-      
+
       showVotes();
 
     } else {
