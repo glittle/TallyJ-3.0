@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code
+﻿@using Newtonsoft.Json
+@using TallyJ.Code
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @using TallyJ.CoreModels
@@ -27,6 +28,7 @@
       {
         C_BallotCode = b.C_BallotCode,
         Location = locName,
+        IsOnline = locName == LocationModel.OnlineLocationName,
         BallotId = b.C_RowId,
         LocationId = locId,
         b.StatusCode,
@@ -37,6 +39,7 @@
           {
             v.PersonFullNameFL,
             v.SingleNameElectionCount,
+            v.OnlineVoteRaw,
             Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
             VoteInvalidReasonDesc =
               IneligibleReasonEnum.DescriptionFor(
@@ -108,6 +111,34 @@
       white-space: inherit;
     }
 
+  .Ballot.Online .Vote {
+    display: flex;
+  }
+
+    .Ballot.Online .Vote::before {
+      padding-right: 4px;
+    }
+
+  .raw {
+    border: 1px solid grey;
+    color: #444;
+    background: #ececec;
+    padding: 0 3px;
+    margin: 0 5px 0 0;
+    display: inline-flex;
+  }
+
+    .raw .f {
+      padding-right: 4px;
+    }
+
+    .raw .o {
+      padding-left: 4px;
+      font-style: italic;
+      margin-left: 15px;
+    }
+
+
   .Vote::before {
     counter-increment: voteNum;
     content: counter(voteNum);
@@ -136,7 +167,7 @@
   <table class="Ballots">
     @foreach (var ballot in data)
     {
-      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "")">
+      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "") @(ballot.IsOnline ? "Online" : "")">
         <td>
           <a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a>
           <div>@ballot.StatusCode</div>
@@ -148,6 +179,18 @@
             if (isSingleNameElection)
             {
               <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
+                @if (vote.OnlineVoteRaw.HasContent())
+                {
+                  var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
+                  <span class="raw">
+                    <span class="f">@json.First</span>
+                    <span class="l">@json.Last</span>
+                    @if (json.OtherInfo.HasContent())
+                    {
+                      <span class="o">@json.OtherInfo</span>
+                    }
+                  </span>
+                }
                 <span class="Person">@vote.PersonFullNameFL</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 <span class="Count">@vote.SingleNameElectionCount</span>
@@ -156,6 +199,18 @@
             else
             {
               <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
+                @if (vote.OnlineVoteRaw.HasContent())
+                {
+                  var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
+                  <span class="raw">
+                    <span class="f">@json.First</span>
+                    <span class="l">@json.Last</span>
+                    @if (json.OtherInfo.HasContent())
+                    {
+                      <span class="o">@json.OtherInfo</span>
+                    }
+                  </span>
+                }
                 <span class="Person">@vote.PersonFullNameFL</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
               </span>

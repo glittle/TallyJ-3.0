@@ -82,7 +82,7 @@ tr.overrides {
         height: 4px;
         left: 0;
         //background-color: rgba(112, 184, 255, 0.25);
-        background-image: linear-gradient(to right, rgba(112, 184, 255, 0.25) 0%, rgba(112, 184, 255, 0.15) 97%, rgba(0, 0, 0, 0) 100%)
+        background-image: linear-gradient(to right, rgb(214, 234, 255) 0%, rgb(214, 234, 255) 97%, rgba(0, 0, 0, 0) 100%)
       }
     }
 
@@ -110,7 +110,6 @@ tr.overrides {
         // sound match
         border-bottom: 1px #666 dashed;
       }
-
       //&.HasVotes {
       //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%), linear-gradient(45deg, @tallyJOrange 0%, rgba(0,0,0,0) 5%);
       //}
@@ -480,6 +479,13 @@ body.IsOnline {
 
   .LocationStatusH3, .locationInfo {
     display: none;
+  }
+
+  #votesList .VoteHost{
+    &.withRawfalse{
+      border-color: transparent;
+      background: none;
+    }
   }
 }
 

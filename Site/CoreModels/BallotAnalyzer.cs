@@ -170,7 +170,9 @@ namespace TallyJ.CoreModels
         /// <returns></returns>
         public static bool BallotNeedsReview(Ballot ballot)
         {
-            return ballot.StatusCode == BallotStatusEnum.Review || ballot.StatusCode == BallotStatusEnum.Verify;
+            return ballot.StatusCode == BallotStatusEnum.Review 
+                   || ballot.StatusCode == BallotStatusEnum.OnlineRaw
+                   || ballot.StatusCode == BallotStatusEnum.Verify;
         }
     }
 }

@@ -253,7 +253,7 @@
   };
   var expandOnlineBallots = function (voters) {
     var html = [];
-    var template = monitorPage.T24 ? 'MMMM D HH:mm' : 'MMMM D hh:mm a';
+    var timeTemplate = monitorPage.T24 ? 'MMM D HH:mm' : 'MMM D hh:mm a';
 
     $.each(voters, function (i, voter) {
       var history = (voter.HistoryStatus || '')
@@ -262,11 +262,11 @@
         .map(function (x) {
           var parts = x.split('|');
           var when = parts.length > 1 ? parts[1].replace(/[\\"]/g, '') : '';
-          return '{0} at {1}'.filledWith(parts[0], moment(when).format(template));
+          return '{0} at {1}'.filledWith(parts[0], moment(when).format(timeTemplate));
         });
-      voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format('D MMM YYYY hh:mm a') : '';
+      voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
       voter.History_Display = history.length ? history[history.length - 1] : '-';
-      voter.History_Tip = history.join('\n');
+      voter.History_Tip = '\n' + history.join('\n');
       if (!voter.Status) {
         if (!voter.votesReady) {
           voter.Status = '(not ready)';

@@ -685,7 +685,7 @@
       }
     });
 
-    $('#ballotHeading').text(location.IsOnline ? 'Match name from online vote for' : 'Add votes to');
+    $('#ballotHeading').text(location.IsOnline ? 'Match name for' : 'Add votes to Ballot #');
     $('body').toggleClass('IsOnline', location.IsOnline);
 
     showBallotCount(0, location.BallotsEntered);

@@ -24,12 +24,12 @@
             getReport(hash.substr(1), local.currentTitle);
         }
 
-        $('.reportPanel').on('click', '.btnDownloadCsv', downloadCsv)
+        $('.reportPanel').on('click', '.btnDownloadCsv', downloadCsv);
     };
 
-    var warningMsg = '<p>Warning: The election is not yet finalized. This report may be incomplete and/or showing wrong information.</p>';
+    var warningMsg = '<p><strong>Warning</strong>: The election is not Finalized in TallyJ. This report may be incomplete and/or showing wrong information.</p>';
 
-    var downloadCsv = function(ev) {
+    function downloadCsv(ev) {
         var btn = $(ev.target);
         var lines = [
             '="Election",' + csvQuoted(reportsPage.electionTitle),
@@ -51,10 +51,12 @@
             lines.push('');
         }
         if (table.length) {
-            lines.push(table.find('thead td, thead th').map(function(i, el) { return csvQuoted(el.innerText, cellSplitter); }).get().join(','))
-            table.find('tbody tr').each(function(i, tr) {
-                lines.push($(tr).find('td').map(function(i, el) { return csvQuoted(el.innerText, cellSplitter); }).get().join(','));
-            })
+          lines.push(table.find('thead td, thead th')
+            .map(function(i, el) { return csvQuoted(el.innerText, cellSplitter); }).get().join(','));
+          table.find('tbody tr').each(function(i, tr) {
+            lines.push($(tr).find('td').map(function(i, el) { return csvQuoted(el.innerText, cellSplitter); }).get()
+              .join(','));
+          });
         }
 
         var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\n'));
@@ -65,7 +67,7 @@
         link.click();
     }
 
-    var extractText = function(el) {
+    function extractText(el) {
         var html = el.outerHTML;
 
         if (html.indexOf('<select') !== -1) {
@@ -86,7 +88,7 @@
         return el.innerText;
     }
 
-    var csvQuoted = function(s, splitter) {
+    function csvQuoted(s, splitter) {
         if (s && splitter) {
             return s.split(splitter).map(function(s2) { return csvQuoted(s2.trim()); }).join(',');
         }
@@ -104,26 +106,26 @@
         //return s;
     }
 
-    var getReport = function(code, title) {
+    function getReport(code, title) {
         ShowStatusDisplay('Getting report...');
         local.reportLines = [];
         local.reportHolder.html('<div class=getting>Getting report...</div>');
         $('#Status').hide();
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, { code: code, title: title });
-    };
+    }
 
-    var showInfo = function(info, codeTitle) {
+    function showInfo(info, codeTitle) {
         ResetStatusDisplay();
         if (!info) {
             return;
         }
-        if (info.Status != 'ok') {
+        if (info.Status !== 'ok') {
             $('#Status').text(info.Status).show();
             local.reportHolder.hide();
             return;
         }
 
-        if (info.ElectionStatus != 'Finalized') {
+        if (info.ElectionStatus !== 'Finalized') {
             local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
         }
 

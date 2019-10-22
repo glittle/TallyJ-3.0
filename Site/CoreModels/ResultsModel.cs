@@ -121,18 +121,22 @@ namespace TallyJ.CoreModels
       {
         var resultSummaryFinal = _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
 
+        //TODO build online checks into base analysis
+
         // don't show any details if review is needed or online ballots need to be processed
         var issues = new List<string>();
         if (_election.OnlineCurrentlyOpen)
         {
           issues.Add("Online voting is still open. It must be Closed before analyzing ballots.");
         }
-        var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue ? Db.OnlineVotingInfo
-            .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Ready) 
+
+        var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue
+          ? Db.OnlineVotingInfo
+            .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Ready)
           : 0;
         if (unprocessedOnlineBallots > 0)
         {
-          issues.Add($"Online ballots ready to process: {unprocessedOnlineBallots}");
+          issues.Add($"Online ballots ready to be created: {unprocessedOnlineBallots}");
         }
 
         if (resultSummaryFinal.BallotsNeedingReview != 0 || issues.Any())
@@ -147,27 +151,20 @@ namespace TallyJ.CoreModels
             {
               x.vi.LocationId,
               x.vi.BallotId,
-              Status =
-                x.vi.BallotStatusCode == "Review"
-                  ? BallotStatusEnum.Review.DisplayText
-                  : "Verification Needed",
-              Ballot = multipleLocations ?
-                string.Format("{0} ({1})", x.vi.C_BallotCode, x.location.Name) : x.vi.C_BallotCode
+              Status = BallotStatusEnum.TextFor(x.vi.BallotStatusCode),
+              Ballot = multipleLocations ? $"{x.vi.C_BallotCode} ({x.location.Name})" : x.vi.C_BallotCode
             })
             .Distinct()
             .OrderBy(x => x.Ballot);
 
-          var needReview2 = _analyzer.Ballots.Where(b => b.StatusCode == BallotStatusEnum.Review)
+          var needReview2 = _analyzer.Ballots.Where(BallotAnalyzer.BallotNeedsReview)
             .Join(locations, b => b.LocationGuid, l => l.LocationGuid,
               (b, location) => new { b, location })
             .Select(x => new
             {
               LocationId = x.location.C_RowId,
               BallotId = x.b.C_RowId,
-              Status =
-                x.b.StatusCode == "Review"
-                  ? BallotStatusEnum.Review.DisplayText
-                  : "Verification Needed",
+              Status = BallotStatusEnum.TextFor(x.b.StatusCode),
               Ballot = multipleLocations ?
                 string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name) : x.b.C_BallotCode
             });

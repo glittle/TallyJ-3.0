@@ -42,6 +42,7 @@ namespace TallyJ.CoreModels
               j.p.C_FullName,
               j.p.C_RowId,
               j.ovi,
+              j.ov.Email
             })
             .OrderBy(j => j.C_FullName)
             .ToList()
@@ -56,7 +57,8 @@ namespace TallyJ.CoreModels
                                              ),
               VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
               j.C_FullName,
-              PersonId = j.C_RowId
+              PersonId = j.C_RowId,
+              j.Email
             })
           : null;
 
@@ -92,7 +94,7 @@ namespace TallyJ.CoreModels
                   })
               }),
             Ballots = ballots
-              .Where(bi => bi.StatusCode == BallotStatusEnum.Review || bi.StatusCode == BallotStatusEnum.Verify)
+              .Where(BallotAnalyzer.BallotNeedsReview)
               .Join(locations, b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, l })
               .OrderBy(g => g.b.C_RowId)
               .Select(g =>

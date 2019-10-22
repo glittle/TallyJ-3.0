@@ -1,0 +1,85 @@
+﻿@using System.Data.Entity.SqlServer
+@using System.Linq
+@using System.Web;
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Data
+@using TallyJ.Code.Session
+@using TallyJ.Code.UnityRelated
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var dbContext = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
+  var currentElectionGuid = UserSession.CurrentElectionGuid;
+
+  var peopleWithEmails = dbContext.Person
+    .Where(p => p.ElectionGuid == currentElectionGuid && p.Email != null)
+    .GroupJoin(dbContext.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
+      ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, oviList) => new { p, ovi = oviList.FirstOrDefault() })
+    .GroupJoin(dbContext.OnlineVoter, j => j.p.Email, ov => ov.Email, (j, ovList) => new { j.p, j.ovi, ov = ovList.FirstOrDefault() }).Select(j => new
+    {
+      j.p.C_FullName,
+      j.p.BahaiId,
+      j.p.Email,
+      HasSignedIn = j.ov != null,
+      HasViewedThisElection = j.ovi != null,
+      j.p.VotingMethod,
+    })
+    .OrderBy(j => j.C_FullName)
+    .ToList();
+}
+<style>
+  tr {
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+    tr:nth-child(even) {
+      background-color: #eee;
+    }
+
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
+
+  td {
+    padding-left: 2px;
+    padding-right: 6px;
+  }
+
+  .usage.none {
+    color: #999;
+  }
+</style>
+<div class="body">
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+  <h1 id="title"></h1>
+  <p class="Comment">
+    All people with email addresses.
+  </p>
+  <table class="Voters">
+    <thead>
+      <tr>
+        <td>Person</td>
+        <td>Email</td>
+        <td>Usage</td>
+        <td>Voting Method</td>
+        <td>Id</td>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var info in peopleWithEmails)
+      {
+      <tr>
+        <td class="name">@Raw(info.C_FullName)</td>
+        <td class="email">@info.Email</td>
+        <td class="usage @(info.HasSignedIn ? "" : "none")">@(info.HasViewedThisElection ? "Participated in this Election" : info.HasSignedIn ? "Has TallyJ Account" : "(never used)")</td>
+        <td class="method">@VotingMethodEnum.TextFor(info.VotingMethod).DefaultTo("-")</td>
+        <td class="id">@info.BahaiId</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

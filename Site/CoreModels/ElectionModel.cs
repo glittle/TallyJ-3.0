@@ -1060,7 +1060,7 @@ namespace TallyJ.CoreModels
 
       foreach (var onlineVoter in onlineVoters)
       {
-        var name = " - " + onlineVoter.p.FullNameFL;
+        var name = " - " + onlineVoter.p.FullName;
 
         if (!onlineVoter.p.CanVote.GetValueOrDefault())
         {
