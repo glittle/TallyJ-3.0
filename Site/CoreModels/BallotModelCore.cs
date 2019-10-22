@@ -12,22 +12,19 @@ namespace TallyJ.CoreModels
 {
   public abstract class BallotModelCore : DataConnectedModel, IBallotModel
   {
-    public const string ReasonGroupIneligible = "Ineligible";
+    //    public const string ReasonGroupIneligible = "Ineligible";
 
-    public BallotModelCore()
+    protected BallotModelCore()
     {
       _helper = new BallotHelper();
     }
 
     private BallotAnalyzer _analyzer;
-    private BallotHelper _helper;
+    private readonly BallotHelper _helper;
 
     //    private VoteHelper _voteHelper;
 
-    protected BallotAnalyzer BallotAnalyzerLocal
-    {
-      get { return _analyzer ?? (_analyzer = new BallotAnalyzer()); }
-    }
+    private BallotAnalyzer BallotAnalyzerLocal => _analyzer ?? (_analyzer = new BallotAnalyzer());
 
     //    protected VoteHelper VoteHelperLocal
     //    {
@@ -311,10 +308,11 @@ namespace TallyJ.CoreModels
         Db.Vote.Attach(vote);
 
         vote.SingleNameElectionCount = count;
-        vote.PersonCombinedInfo = person1 == null ? null : person1.CombinedInfo;
+        vote.PersonCombinedInfo = person1?.CombinedInfo;
 
-        if (UserSession.CurrentLocation.Name == LocationModel.OnlineLocationName)
+        if (person1 != null && UserSession.CurrentLocation.IsTheOnlineLocation)
         {
+          // changing person on an online ballot
           vote.PersonGuid = person1.PersonGuid;
         }
 
@@ -353,6 +351,12 @@ namespace TallyJ.CoreModels
       };
 
       // make a new Vote record
+      var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
+
+      if (location.IsTheOnlineLocation)
+      {
+        return new { Updated = false, Error = "Cannot add votes to an online ballot" }.AsJsonResult();
+      }
 
       var invalidReasonGuid = DetermineInvalidReasonGuid(invalidReason);
 
@@ -509,6 +513,11 @@ namespace TallyJ.CoreModels
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
+      if (location.IsTheOnlineLocation)
+      {
+        return new { Message = "Cannot delete votes from an online ballot." }.AsJsonResult();
+      }
+
       var sum = _helper.BallotCount(location.LocationGuid, isSingleName, null, allVotes);
 
       new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
@@ -592,7 +601,7 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
-    public Ballot CurrentRawBallot()
+    private Ballot CurrentRawBallot()
     {
       var ballotId = SessionKey.CurrentBallotId.FromSession(0);
       return new BallotCacher(Db).AllForThisElection.Single(b => b.C_RowId == ballotId);

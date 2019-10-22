@@ -206,7 +206,8 @@ namespace TallyJ.Code.Resources
       if (requireProcess.HasContent())
       {
         var processes = requireProcess.Split(',');
-        if (!processes.Contains(process)) {
+        if (!processes.Contains(process))
+        {
           return false;
         }
       }
@@ -233,32 +234,34 @@ namespace TallyJ.Code.Resources
 
       // for full users, give all menu sets
       var statusItems = ElectionTallyStatusEnum.Items.Select(ts => ts.Value).ToList();
-//      statusItems.Add("General");
+      //      statusItems.Add("General");
       var list =
         statusItems
           .Select(tallyStatus =>
-            nodes.SelectMany(item =>
-              item.ChildNodes.Cast<XmlNode>()
+            nodes
+              .SelectMany(item => item.ChildNodes.Cast<XmlNode>()
                 .Where(n => n.NodeType == XmlNodeType.Element)
                 .Cast<XmlElement>()
                 .Where(c =>
                 {
                   var when = c.GetAttribute("featureWhen");
                   return when == "*" || when.Contains(tallyStatus);
-                })).Select(item => linkTemplate.FilledWithObject(new
-                {
-                  Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
-                  Class = item.GetAttribute("class"),
-                  Role = item.GetAttribute("role"),
-                  Title = item.GetAttribute("title"),
-                  Tip = item.GetAttribute("desc"),
                 }))
+              .Select(item => linkTemplate.FilledWithObject(new
+              {
+                Link = _urlHelper.Action(item.GetAttribute("action"), item.GetAttribute("controller")),
+                Class = item.GetAttribute("class"),
+                Role = item.GetAttribute("role"),
+                Title = item.GetAttribute("title"),
+                Tip = item.GetAttribute("desc"),
+              }))
               .JoinedAsString("")
               .SurroundContentWith(
                 "<span id=menu{0} class='{0} {1} items'>{2}".FilledWith(
                   tallyStatus,
                   UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden",
-                  "<a class='SetThis' href='#'>SET ME</a>"), "</span>")).ToList();
+                  $"<a class='SetThis' data-state='{tallyStatus}'>Set State for All Tellers</a>"), "</span>")
+            ).ToList();
 
       return list.JoinedAsString("");
     }

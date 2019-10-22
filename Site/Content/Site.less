@@ -1,4 +1,4 @@
-@import "bootstrap/css/bootstrap.less";
+﻿@import "bootstrap/css/bootstrap.less";
 @red: #e00000;
 
 body {
@@ -114,7 +114,7 @@ section.content-wrapper {
 
 body.errorStatus {
   #body {
-    background-color: #ffcfcf;
+    background-color: #ffb7b7;
   }
 }
 
@@ -262,6 +262,18 @@ body.BP-None {
   .DropDown {
     .SetThis {
       display: block;
+      font-weight: bold;
+      cursor: pointer;
+
+      &::before {
+        //content: '→ ';
+        content: '► ';
+      }
+
+      &::after {
+        //content: ' ←';
+        content: ' ◄';
+      }
     }
 
     &.Finalized {
@@ -870,7 +882,7 @@ a.twitter {
 }
 
 #statusDisplay.error, #statusDisplay2.error {
-  background-color: #ffcfcf; // yellow;
+  background-color: #ffb7b7;
 }
 
 #statusDisplay2 .ajaxIcon, #statusDisplay .ajaxIcon {
@@ -1003,7 +1015,7 @@ a.twitter {
 
       &.Finalized {
         border-color: @finalColor;
-        border-style: dashed;
+        //border-style: dashed;
         //border-top-right-radius: 0;
         //border-bottom-right-radius: 0;
         padding-right: 20px;
@@ -1226,6 +1238,7 @@ span.other {
 
   &.NotSet {
     background-color: @red;
+    color: #fff;
   }
 }
 
@@ -1308,6 +1321,8 @@ body.AuthKnown .CurrentElectionName {
 
   .who {
     margin-right: 14px;
+    float: left;
+    margin-top: 2px;
   }
 
   .passcodeOkay {
@@ -1485,7 +1500,7 @@ body.VoterPages {
   .logoffVoter {
     position: absolute;
     top: 5px;
-    right: 5px;
+    right: 0;
   }
 }
 

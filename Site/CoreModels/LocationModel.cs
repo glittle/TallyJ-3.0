@@ -31,7 +31,7 @@ namespace TallyJ.CoreModels
     {
       var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
       return locations
-        .Where(l => includeOnlineLocation || !l.Name.StartsWith(OnlineLocationName))
+        .Where(l => includeOnlineLocation || !l.IsTheOnlineLocation)
         .ToList();
     }
 
@@ -132,7 +132,7 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      if (location.Name.StartsWith(OnlineLocationName))
+      if (location.IsTheOnlineLocation)
       {
         return new
         {
@@ -192,7 +192,7 @@ namespace TallyJ.CoreModels
         location.BallotsCollected,
         location.Name,
         BallotsEntered = sum,
-        IsOnline = location.Name == OnlineLocationName
+        IsOnline = location.IsTheOnlineLocation
       };
     }
 
@@ -237,17 +237,17 @@ namespace TallyJ.CoreModels
 
     public Location GetOnlineLocation()
     {
-      return GetLocations(true).FirstOrDefault(l => l.Name.StartsWith(OnlineLocationName));
+      return GetLocations(true).FirstOrDefault(l => l.IsTheOnlineLocation);
     }
 
     public JsonResult EditLocation(int id, string text, bool allowModifyOnline = false)
     {
-      if (text.StartsWith(OnlineLocationName) && !allowModifyOnline)
+      if (text == OnlineLocationName && !allowModifyOnline)
       {
         return new
         {
           Success = false,
-          Status = "Cannot name a location as \"Online\""
+          Status = $"Cannot name a location as \"{OnlineLocationName}\""
         }.AsJsonResult();
       }
 
@@ -268,7 +268,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        if (location.Name.StartsWith(OnlineLocationName) && !allowModifyOnline)
+        if (location.IsTheOnlineLocation && !allowModifyOnline)
         {
           return new
           {
@@ -290,7 +290,7 @@ namespace TallyJ.CoreModels
         // deleting this location
 
         // don't delete last location
-        if (location.Name.StartsWith(OnlineLocationName) && allowModifyOnline
+        if (location.IsTheOnlineLocation && allowModifyOnline
            || GetLocations(false).Count > 1)
         {
           // delete existing if we can
@@ -381,7 +381,7 @@ namespace TallyJ.CoreModels
         }
 
         // keep "Online" at the bottom of this list.  Use Html/css to support this rule.
-        var newOrder = location.Name.StartsWith(OnlineLocationName) ? 999 : sortOrder++;
+        var newOrder = location.IsTheOnlineLocation ? 999 : sortOrder++;
 
         if (location.SortOrder != newOrder)
         {

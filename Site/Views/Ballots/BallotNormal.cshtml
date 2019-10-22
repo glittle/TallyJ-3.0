@@ -31,14 +31,15 @@
     <li>
       Duplicate names will be noticed and marked.
     </li>
-    @if (ContextItems.LocationModel.HasLocations)
-    {
-      <li>
-        Be sure to update the Location Status to indicate the status of
-        your counting process, and the Contact Info in case the head teller needs to contact
-        you.
-      </li>
-    }
+    <li>
+      If Location Status is showing, be sure to update it to indicate the status of
+      your counting process, and the Contact Info in case the head teller needs to contact
+      you.
+    </li>
+    <li class="ForOnlineLI">
+      For online ballots, click the Find button to copy the full name to the search box, or
+      the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
+    </li>
   </ol>
 </div>
 <div data-comment="empty div"></div>
@@ -47,7 +48,7 @@
     <div id="accordion">
       @if (ContextItems.LocationModel.HasLocationsIncludingOnline)
       {
-        <h3>Location Status<span class="LocationStatus"></span></h3>
+        <h3 class="LocationStatusH3">Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
           <div>
             <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
@@ -83,16 +84,16 @@
         <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right" accesskey="N">
           Start <u>N</u>ew Ballot
         </button>
-        <div>
+        <div class="ballotNumEntered">
           Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
+          <select id="ballotFilter">
+            <option value="">Show All</option>
+            @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
+            {
+              <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
+            }
+          </select>
         </div>
-        <select id="ballotFilter">
-          <option value="">Show All</option>
-          @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
-          {
-            <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
-          }
-        </select>
         <div id="ballotList" class="ballotList">
         </div>
       </div>
@@ -107,7 +108,6 @@
         </div>
         <div>
           Search for a <u>p</u>erson:
-          <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
         </div>
         <div class="float-right">
           <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
@@ -125,7 +125,27 @@
           </div>
         </div>
         <ul id="nameList" class="nameList"></ul>
-        <div class="Clear5">
+        <div class="nameListKey">
+          <h5>Key</h5>
+          <ul class="nameList">
+            <li>
+              <span class="ShowVote" style="width:48%"></span>
+              Has votes in this election (blue bar)
+            </li>
+            <li>
+              <span class="InUse">Is on this ballot (checkmark)</span>
+            </li>
+            <li class="selected">Selected in the list (use &uarr; &darr; to select)</li>
+            <li>
+              <span class="CannotReceiveVotes">Any votes for this person will be spoiled</span>
+            </li>
+            <li class="Match5">
+              <span>Match by <b>fi</b>rst <b>l</b>etters</span>
+            </li>
+            <li class="Match4">
+              <span>Match by <i>sound</i> or middl<b>e</b> l<b>e</b>tt<b>e</b>rs</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -140,7 +160,7 @@
     </div>
     <div id="votesList">
     </div>
-    <div class="showAll"><label>Show All?<input type="checkbox" id="cbShowAll"></label></div>
+    <div class="showAll"><label>Remove scrollbar?<input type="checkbox" id="cbShowAll"></label></div>
     <button type="button" id="btnDeleteBallot" class="btn btn-mini btn-warning" title="Delete after all votes have been deleted">
       Delete this empty Ballot
     </button>

@@ -173,26 +173,29 @@
           </li>
         </ul>
         <p v-show="nameList.length">
-          To select a name using your keyboard, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
+          To select a name using your keyboard while typing, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
         </p>
-        <button class="btn addRandomToList" v-if="useRandom" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
+        <button class="btn addRandomToList" v-if="useRandom && searchText" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
       </div>
       <form v-if="useRandom && !useList || addRandomToList" class="randomInput">
-        <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to the pool for this election.</p>
+        <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>
         <div>
-          <label>First Name</label>
-          <input v-model="randomFirst" type="text" ref="firstInput" placeholder="First" />
+          <label>First name</label>
+          <input v-model="randomFirst" maxlength="40" type="text" ref="firstInput" placeholder="First" v-on:keyup.enter="addRandomName" />
         </div>
         <div>
-          <label>Last Name</label>
-          <input v-model="randomLast" type="text" placeholder="Last" />
+          <label>Last name</label>
+          <input v-model="randomLast" maxlength="40" type="text" placeholder="Last" v-on:keyup.enter="addRandomName" />
         </div>
         <div>
-          <label>Identifying information (optional)</label>
-          <input v-model="randomOtherInfo" type="text" />
+          <label>Identifying information (optional description)</label>
+          <input v-model="randomOtherInfo" class="randomOtherInfo" type="text" maxlength="200" v-on:keyup.enter="addRandomName" />
+          <div class="randomNote">
+            Use this if the name may not be enough. But remember, your vote is anonymous so do not reference yourself in this description!
+          </div>
         </div>
         <div>
-          <button class="btn" v-on:click="addRandomName" :disabled="!canAddRandom">Add Person</button>
+          <button class="btn" v-on:click="addRandomName" type="button" :disabled="!canAddRandom">Add Person</button>
           <span class="randomResult">{{randomResult}}</span>
         </div>
       </form>
@@ -217,10 +220,10 @@
       <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your selection before the election closes!</p>
 
       <p class="lockInBtns">
+        <span v-if="canUnlock">Locked</span>
         <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Lock in my selection</button>
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Unlock my selection</button>
         <span v-if="canLockIn" class="unlocked">Unlocked</span>
-        <span v-if="canUnlock">Locked</span>
       </p>
       <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before locking in your selection.</p>
 
@@ -234,12 +237,12 @@
              tabindex="0"
              v-on:keydown="keydownInPool(p, i, $event)"
              v-bind:ref="'p' + p.Id"
-             v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop' : 'inOther', i === lastInTop + 1 ? 'firstInOther' : '', p.moving ? 'moving' : '' ]">
+             v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop' : 'inOther', i === lastInTop + 1 ? 'firstInOther' : '', p.moving ? 'moving' : '', p.Id < 0 ? 'random' : 'inList' ]">
           <span class="num">{{i + 1}}</span>
-          <div v-text="p.Name"></div>
+          <div v-html="p.Name"></div>
           <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
           <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-          <span role="button" class="removeFromPool" v-on:click="removeFromPool(p)" aria-label="Delete" title="Delete from the pool"></span>
+          <span role="button" class="removeFromPool" v-on:click="removeFromPool(p)" aria-label="Delete" v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
         </div>
       </draggable>
       <p v-if="!lockInVotes && pool.length">

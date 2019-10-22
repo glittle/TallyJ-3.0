@@ -164,11 +164,11 @@ var vueOptions = {
             }
             vue.emailCodesLoaded = true;
 
-            // for dev, go to first election
-            setTimeout(function () {
-              vue.prepareBallot(vue.elections.find(function (e) { return e.openNow; }));
-            },
-              500);
+            // for dev, go to first available election
+            //            setTimeout(function () {
+            //              vue.prepareBallot(vue.elections.find(function (e) { return e.openNow; }));
+            //            }, 500);
+
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -421,7 +421,8 @@ var vueOptions = {
 
       p.inPool = true;
       //console.log(p);
-      this.pool.unshift(p);
+      var position = this.numToElect - 1;
+      this.pool.splice(position, 0, p);
       this.savePool();
       this.showMouseCursor();
     },
@@ -623,9 +624,9 @@ var vueOptions = {
           }
         });
     },
-    cleanText: function(s) {
+    cleanText: function (s) {
       // no need to allow < or > or &
-      return s.trim().replace(/[<>&]/g, '');
+      return s.replace(/[<>&]/g, '');
     },
     addRandomName: function () {
       var nextFakeId = this.pool
@@ -636,12 +637,18 @@ var vueOptions = {
       var person = {
         CanReceiveVotes: true,
         inPool: false,
-        First: this.cleanText(this.randomFirst),
-        Last: this.cleanText(this.randomLast),
-        OtherInfo: this.cleanText(this.randomOtherInfo),
+        First: this.cleanText(this.randomFirst).trim(),
+        Last: this.cleanText(this.randomLast).trim(),
+        OtherInfo: this.cleanText(this.randomOtherInfo).trim(),
         Id: nextFakeId,
       };
       person.Name = `${person.First} ${person.Last}`;
+      if (person.Name.trim().indexOf(' ') === -1) {
+        // only have one name
+        this.randomResult = 'Require both First and Last name.';
+        return;
+
+      }
       const nameLowerCase = person.Name.toLowerCase();
 
       // ensure that it is not a duplicate

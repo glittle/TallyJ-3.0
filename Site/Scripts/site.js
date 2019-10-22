@@ -249,7 +249,7 @@ function PrepareQTips(doNow) {
     selector: '#qTipElectionStatus',
     title: 'Election State',
     text:
-      'An election proceeds through various states. The head teller should actively change the state by clicking these buttons as appropriate.'
+      'An election proceeds through various states. The head teller should actively change the state as appropriate.'
   });
   site.qTips.push({
     selector: '#qTipTeller',
@@ -374,11 +374,12 @@ function AttachHandlers() {
       $('#qTipElectionStatus').trigger('click');
     });
 
-  $('body.AuthKnown #electionState span.state').not('.General, .Finalized').on('click',
+  //  $('body.AuthKnown #electionState span.state').not('.General, .Finalized').on('click',
+  $('body.AuthKnown').on('click', '.SetThis',
     function () {
-      var item = $(this);
+      var setThis = $(this);
       var form = {
-        state: item.data('state')
+        state: setThis.data('state')
       };
 
       if (form.state === site.electionState) {
@@ -409,12 +410,12 @@ function AttachHandlers() {
       dropDownTimeout = setTimeout(closeDropDown, 200);
     });
 
-  $('.SetThis').on('click', function(ev) {
-    var item = $(ev.target);
-    let parent = item.parent();
-    console.log(parent)
-    parent.click();
-  });
+  //  $('.SetThis').on('click', function (ev) {
+  //    var item = $(ev.target);
+  //    let parent = item.parent();
+  //    console.log(parent)
+  //    parent.click();
+  //  });
 
   $('#electionState')
     .on('mouseover', 'span.state', function (ev) {

@@ -267,7 +267,11 @@
       voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format('D MMM YYYY hh:mm a') : '';
       voter.History_Display = history.length ? history[history.length - 1] : '-';
       voter.History_Tip = history.join('\n');
-
+      if (!voter.Status) {
+        if (!voter.votesReady) {
+          voter.Status = '(not ready)';
+        }
+      }
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
@@ -479,7 +483,8 @@
                 //                console.log(info.problems);
                 refresh();
               } else {
-                ShowStatusFailed(info.Message);
+                var msg = info.problems.join('<br>');
+                ShowStatusFailed(msg);
               }
             });
 

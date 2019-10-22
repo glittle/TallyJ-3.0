@@ -11,7 +11,7 @@
     .GroupJoin(people, l => l.LocationGuid, p => p.VotingLocationGuid, (l, pList) => new { l, pList })
     .Select(g => new
     {
-      Location = g.l.Name,
+      LocationName = g.l.Name,
       Total = g.pList.Count(),
       Voted = g.pList.Count(x => !string.IsNullOrEmpty(x.VotingMethod)),
       InPerson = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.InPerson.ToString()),
@@ -20,7 +20,7 @@
       CalledIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
       Online = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Online.ToString()),
     })
-    .OrderBy(r => r.Location)
+    .OrderBy(r => r.LocationName)
     .ToList();
 
   var total = new
@@ -106,10 +106,10 @@
       {
         foreach (var loc in locations)
         {
-          if (loc.Location == LocationModel.OnlineLocationName)
+          if (loc.LocationName == LocationModel.OnlineLocationName)
           {
             <tr class="area">
-              <td class="name">@loc.Location</td>
+              <td class="name">@loc.LocationName</td>
               <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
               <td class="method">-</td>
               <td class="method">-</td>
@@ -124,7 +124,7 @@
           else
           {
             <tr class="area">
-              <td class="name">@loc.Location</td>
+              <td class="name">@loc.LocationName</td>
               <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
               <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
               <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
