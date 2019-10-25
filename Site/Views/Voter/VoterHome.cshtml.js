@@ -22,6 +22,7 @@
       allVotersHub.client.updateVoters = function (info) {
         console.log('signalR: allVotersHub updateVoters');
         host.vue.getElectionList();
+        host.vue.selectionProcess = info.OnlineSelectionProcess;
       };
 
       voterPersonalHub.client.updateVoter = function (info) {
@@ -64,7 +65,7 @@ var vueOptions = {
       savedPool: '',
       savedLock: false,
       registration: '', // full text
-      selectionProcess: 'Random',
+      selectionProcess: 'R',
       numToElect: 0,
       movingInPool: null,
       lockInVotes: null,
@@ -203,6 +204,7 @@ var vueOptions = {
     },
     extendElectionInfo: function (info) {
       info.Type_Display = voterHome.electionTypes[info.ElectionType] || info.ElectionType || '';
+      info.Date_Display = moment(info.DateOfElection).format('D MMM YYYY');
 
       var person = info.person;
       if (person.WhenStatus) {
@@ -541,6 +543,7 @@ var vueOptions = {
               if (info.success) {
                 ShowStatusSuccess('Saved');
                 vue.savedPool = list;
+                vue.election.person.Status = info.newStatus;
               } else {
                 ShowStatusFailed(info.Error);
               }

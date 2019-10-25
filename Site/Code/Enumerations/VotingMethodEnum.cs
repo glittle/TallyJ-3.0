@@ -72,7 +72,7 @@ namespace TallyJ.Code.Enumerations
               .AsRawHtml();
     }
 
-    public static string MethodMap()
+    public static string AsJsonObject()
     {
       return BaseItems
         .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))

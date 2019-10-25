@@ -369,6 +369,7 @@ namespace TallyJ.CoreModels
           election.OnlineWhenClose,
           election.OnlineWhenOpen,
           election.OnlineCloseIsEstimate,
+          election.OnlineSelectionProcess
         });
 
       return new
@@ -1038,7 +1039,7 @@ namespace TallyJ.CoreModels
       // checking Ready and PoolLocked is redundant but doesn't hurt
       var onlineVoters = Db.OnlineVotingInfo
         .Where(ovi => ovi.ElectionGuid == electionGuid)
-        .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Ready && ovi.PoolLocked.Value)
+        .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
         .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
         .Join(Db.OnlineVoter, j => j.ovi.Email, ov => ov.Email, (j, ov) => new { j.p, j.ovi, ov })
         .OrderBy(j => j.ovi.PersonGuid)

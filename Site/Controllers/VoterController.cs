@@ -141,12 +141,20 @@ namespace TallyJ.Controllers
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {
         votingInfo.ListPool = pool; // pool is JSON string
+
+        var newStatus = pool == "[]" ? OnlineBallotStatusEnum.New : OnlineBallotStatusEnum.Draft;
+        if (newStatus != votingInfo.Status)
+        {
+          votingInfo.Status = newStatus;
+        }
+
         Db.SaveChanges();
 
         // okay
         return new
         {
           success = true,
+          newStatus = newStatus.DisplayText
         }.AsJsonResult();
       }
 
@@ -199,7 +207,7 @@ namespace TallyJ.Controllers
 
         onlineVotingInfo.PoolLocked = locked;
 
-        onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Ready : OnlineBallotStatusEnum.Pending;
+        onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Submitted : OnlineBallotStatusEnum.Draft;
         onlineVotingInfo.HistoryStatus += ";{0}|{1}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
         if (locked)
         {
@@ -320,7 +328,7 @@ namespace TallyJ.Controllers
           j.e.Name,
           j.e.Convenor,
           j.e.ElectionType,
-          j.e.TallyStatus,
+          j.e.DateOfElection,
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,

@@ -380,7 +380,7 @@
         },
         onlineToProcess: function () {
           return this.onlineBallots.filter(function (ob) {
-            return ob.Status === 'Ready';
+            return ob.Status === 'Submitted';
           }).length;
         },
         OnlineWhenOpen_M: function () {

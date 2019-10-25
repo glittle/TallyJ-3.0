@@ -12,8 +12,9 @@
     "//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"
   };
 
-  ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(VotingMethodEnum.MethodMap()));
-  ContextItems.AddJavascriptForPage("voterHome.electionTypes={0};".FilledWith(ElectionTypeEnum.MethodMap()));
+  ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
+  ContextItems.AddJavascriptForPage("voterHome.ballotStatus={0};".FilledWith(OnlineBallotStatusEnum.AsJsonObject()));
+  ContextItems.AddJavascriptForPage("voterHome.electionTypes={0};".FilledWith(ElectionTypeEnum.AsJsonObject()));
   ContextItems.AddJavascriptForPage("voterHome.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("voterHome.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("voterHome.lastLogin={0};".FilledWith(UserSession.VoterLastLogin == DateTime.MinValue ? "null" : UserSession.VoterLastLogin.SerializedAsJsonString()));
@@ -47,7 +48,7 @@
 
   <p v-if="loading">Searching for your email address in elections...</p>
 
-  <p v-if="!loading">If an upcoming election is not listed here, the head teller may not have made it available online yet, or your email address is not registered in the election. Please contact the head teller for assistance.</p>
+  <p v-if="!loading">If an upcoming election is not listed here, it may not be available in TallyJ, or your email address is not registered in it. Please contact the head teller for assistance.</p>
 
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
     None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
@@ -70,7 +71,7 @@
           <td class="ename">
             <div class="n">{{e.Name}}</div>
             <div class="t">{{e.Type_Display}} Election</div>
-            <div class="c">{{e.Convenor}}</div>
+            <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
           </td>
           <td class="online center" v-html="e.Status_Display"></td>
           @*<td class="pname" v-text="e.person.name"></td>*@
@@ -217,17 +218,16 @@
         Your selection will be converted into a ballot when the head teller closes online voting and
         TallyJ creates ballots for all online voters.
       </p>
-      <p v-if="!registration && pool.length" aria-live="polite">Be sure lock in your selection before the election closes!</p>
+      <p v-if="!registration && pool.length" aria-live="polite">Be sure to submit your ballot before the election closes!</p>
 
       <p class="lockInBtns">
-        <span v-if="canUnlock">Locked</span>
-        <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Lock in my selection</button>
-        <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Unlock my selection</button>
-        <span v-if="canLockIn" class="unlocked">Unlocked</span>
+        <span v-if="canUnlock">Submitted</span>
+        <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
+        <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
+        <span v-if="canLockIn" class="unlocked">Draft</span>
       </p>
-      <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before locking in your selection.</p>
+      <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before submitting your ballot.</p>
 
-      @*<p v-if="lockInVotes">The top {{numToElect === 1 ? 'position' : (numToElect + ' positions')}}.</p>*@
       <p v-if="!lockInVotes && pool.length">
         Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into the top ' + numToElect + ' positions')}} for use on your ballot.
       </p>

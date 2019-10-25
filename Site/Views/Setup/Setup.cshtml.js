@@ -30,8 +30,7 @@
       },
       computed: {
         onlineDatesOkay: function () {
-          return (!this.useOnline && !this.election.OnlineWhenOpen && !this.election.OnlineWhenClose)
-            ||
+          return (!this.useOnline && !this.election.OnlineWhenOpen && !this.election.OnlineWhenClose) ||
             this.useOnline &&
             this.election.OnlineWhenOpen &&
             this.election.OnlineWhenClose &&
@@ -84,11 +83,13 @@
               this.election.OnlineWhenOpen = '';
               this.election.OnlineWhenClose = '';
               this.election.OnlineCloseIsEstimate = true;
+              this.election.OnlineSelectionProcess = 'L';
             };
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
             this.election.OnlineCloseIsEstimate = null;
+            this.election.OnlineSelectionProcess = null;
           }
         }
         //locations: function (a, b) {

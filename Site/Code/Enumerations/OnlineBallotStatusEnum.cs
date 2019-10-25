@@ -7,15 +7,14 @@ namespace TallyJ.Code.Enumerations
   public class OnlineBallotStatusEnum : BaseEnumeration<OnlineBallotStatusEnum, string>
   {
     public static readonly OnlineBallotStatusEnum New = new OnlineBallotStatusEnum("New", "New");
-    public static readonly OnlineBallotStatusEnum Pending = new OnlineBallotStatusEnum("Pending", "Created but not locked in");
-    public static readonly OnlineBallotStatusEnum Ready = new OnlineBallotStatusEnum("Ready", "Ready to be Processed");
-    public static readonly OnlineBallotStatusEnum Processed = new OnlineBallotStatusEnum("Processed", "Converted to regular ballot");
+    public static readonly OnlineBallotStatusEnum Draft = new OnlineBallotStatusEnum("Draft", "Draft");
+    public static readonly OnlineBallotStatusEnum Submitted = new OnlineBallotStatusEnum("Submitted", "Submitted");
+    public static readonly OnlineBallotStatusEnum Processed = new OnlineBallotStatusEnum("Processed", "Processed by tellers");
 
     static OnlineBallotStatusEnum()
     {
-      Add(New);
-      Add(Pending);
-      Add(Ready);
+      Add(Draft);
+      Add(Submitted);
       Add(Processed);
       AddAsDefault(New);
     }
@@ -35,6 +34,7 @@ namespace TallyJ.Code.Enumerations
     {
       get { return BaseItems.Select(i => new { v = i.Value, d = i.DisplayText }); }
     }
+    
 
     public static HtmlString ForHtmlSelect(string selected = "")
     {
@@ -52,6 +52,12 @@ namespace TallyJ.Code.Enumerations
       return BaseItems.SingleOrDefault(i => i.Value == code) ?? New;
     }
 
-
+    public static string AsJsonObject()
+    {
+      return BaseItems
+        .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))
+        .JoinedAsString(", ")
+        .SurroundContentWith("{", "}");
+    }
   }
 }

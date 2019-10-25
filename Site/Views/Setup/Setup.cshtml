@@ -370,7 +370,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     <div class="PullInstructions">
       <ol>
         <li>This election can be made available so that voters can cast their ballots online.</li>
-        <li>To vote online, the voter's email address (as found in Google or Facebook) must match their email address in their record in this election.</li>
+        <li>To vote online, the email address a voter uses to log in to TallyJ must match the email address in their record in this election.</li>
       </ol>
     </div>
 
@@ -387,7 +387,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </td>
       </tr>
 
-      <tr>
+      <tr v-if="useOnline">
         <th>
           Name Selection
         </th>
@@ -400,7 +400,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
               </td>
               <td>
                 <label for="ol1">
-                  <strong>List</strong> - Voters select from a list of known people.
+                  <strong>List</strong> - Voters select from the people listed in this election.
                   <span class="explain">
                     Recommended if the list of people who can be voted for is limited (e.g. by-election) or is comprehensive (sure to contain everyone).
                     Tellers do not need to manually process each ballot.

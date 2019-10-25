@@ -192,20 +192,20 @@
             <div v-if="!isClosed">
               Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
             </div>
+            <div v-if="!isClosed">
+              Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
+            </div>
           </div>
         </div>
-        <p>
-          Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
-        </p>
 
         <h3>Voters Registered for Online Voting</h3>
         <p>
           <input type="button"
                  v-on:click="processReadyBallots"
                  v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
-                 value='Prepare all "Ready" ballots'>
-          <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process after Online voting is closed.</span>
-          <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</span>
+                 value='Accept all "Submitted" ballots'>
+          <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online voting is closed.</span>
+          <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</span>
         </p>
         <table class="OnlineBallots">
           <thead>
