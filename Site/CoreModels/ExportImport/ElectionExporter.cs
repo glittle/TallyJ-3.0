@@ -70,10 +70,7 @@ namespace TallyJ.CoreModels.ExportImport
         //log = ExportLogs(logs)
       };
 
-      var exportName = string.Format("{0} {1}.TallyJ",
-        _election.DateOfElection.GetValueOrDefault(DateTime.Today)
-          .ToString("yyyy-MM-dd"),
-        _election.Name);
+      var exportName = $"{_election.DateOfElection.GetValueOrDefault(DateTime.Today):yyyy-MM-dd} {_election.Name}.TallyJ";
 
       return new Exporter(blob, "TallyJ2", exportName);
     }

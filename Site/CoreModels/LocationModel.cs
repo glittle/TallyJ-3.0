@@ -170,7 +170,14 @@ namespace TallyJ.CoreModels
       //}
       //var location = Db.Location.Single(l => l.LocationGuid == ballotInfo.LocationGuid);
 
-      return LocationInfoForJson(UserSession.CurrentLocation);
+      var currentLocation = UserSession.CurrentLocation;
+
+      if (currentLocation == null)
+      {
+        currentLocation = new LocationModel().GetLocations(true).First();
+      }
+
+      return LocationInfoForJson(currentLocation);
     }
 
     public object LocationInfoForJson(Location location)

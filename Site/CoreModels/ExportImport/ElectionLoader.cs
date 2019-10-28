@@ -205,7 +205,9 @@ namespace TallyJ.CoreModels.ExportImport
       var matchingNums = Db.Election
         .Where(e => e.Name == newName || e.Name.StartsWith(newName))
         .ToList()
-        .Select(e => e.Name.Replace(newName, "").Split(' ').Last().AsInt());
+        .Select(e => e.Name.Replace(newName, "").Split(' ').Last().AsInt())
+        .ToList();
+
       if (matchingNums.Any())
       {
         if (matchingNums.All(n => n != 0))
@@ -215,7 +217,7 @@ namespace TallyJ.CoreModels.ExportImport
         else
         {
           var last = matchingNums.Max(n => n);
-          _election.Name = string.Format("{0} - {1}", newName, last + 1);
+          _election.Name = $"{newName} - {last + 1}";
         }
       }
 

@@ -2,6 +2,10 @@
 
 @invalidColor: #e00000;
 
+body{
+  overflow-y: scroll; //avoid jitter
+}
+
 .PullInstructionsHandle {
   position: absolute;
   top: 2px;
@@ -103,7 +107,8 @@ tr.overrides {
     }
 
     &.Match4 {
-      color: darken(@tallyJGreen, 20%);
+      //color: darken(@tallyJGreen, 20%);
+      color: @tallyJGreenText;
       font-style: italic;
 
       i {
@@ -115,12 +120,10 @@ tr.overrides {
       //}
     }
   }
-
-  li.HasVotes + li.NoVotes {
-    padding-top: 2px;
-    border-top: 3px double #ccc;
-  }
-
+  //li.HasVotes + li.NoVotes {
+  //  padding-top: 2px;
+  //  border-top: 3px double #ccc;
+  //}
   li.Match5Only + li.Match4 {
     padding-top: 2px;
     border-top: 3px double @tallyJGreen;
@@ -164,6 +167,8 @@ tr.overrides {
 }
 
 .nameListKey {
+  display: none;
+
   h5 {
     margin: 15px 0 3px;
     font-style: italic;
@@ -171,6 +176,7 @@ tr.overrides {
 
   ul {
     border: solid 1px #999;
+    background-color: #f7f7f7;
   }
 }
 
@@ -298,7 +304,7 @@ input.Vote {
   .ballotCode {
     padding-left: 3px;
     font-size: 16pt;
-    color: @tallyJGreen;
+    color: @tallyJGreenText;
   }
 
   div {
@@ -337,7 +343,7 @@ select.Invalid {
 }
 
 .Ok {
-  color: @tallyJGreen;
+  color: @tallyJGreenText;
 }
 
 .Confirmed {
@@ -481,8 +487,8 @@ body.IsOnline {
     display: none;
   }
 
-  #votesList .VoteHost{
-    &.withRawfalse{
+  #votesList .VoteHost {
+    &.withRawfalse {
       border-color: transparent;
       background: none;
     }
@@ -556,12 +562,19 @@ body.IsOnline {
     &.withRawtrue {
       margin: 8px 0;
       border-color: #f1ffde;
+      cursor: pointer;
+
+      option[value="cd27534d-d7e8-e011-a095-002269c41d11"] {
+        display: none;
+      }
 
       .rawVote {
         display: flex;
         border: 1px solid #efeeef;
+        border-top: none;
+        border-right: none;
         padding: 4px 8px 4px 0px;
-        margin: 0 0 3px 32px;
+        margin: -2px -2px 3px 32px;
         opacity: 0.7;
 
         button {
@@ -615,8 +628,11 @@ body.IsOnline {
     }
 
     &.rawDonefalse {
+      background-color: #f1b787;
+      border-color: #f1b787;
+
       .rawVote {
-        background-color: #efc0b2;
+        background-color: #f1b787;
         opacity: 1;
       }
     }
@@ -694,7 +710,7 @@ span.HideZero0 {
 
 .ui-accordion-content {
   border-top: none;
-  padding: 10px 6px 2px 6px;
+  padding: 10px 6px 10px 6px;
 }
 
 .ballotDiv1 {

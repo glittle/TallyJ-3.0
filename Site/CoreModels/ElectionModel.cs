@@ -994,7 +994,7 @@ namespace TallyJ.CoreModels
     public JsonResult ProcessOnlineBallots()
     {
       // only process when election is closed
-      // process in "random" order (not related to when they locked in)
+      // process in "random" order (not related to when they submitted)
       // for each voter, verify their status 
       // create ballot
       // change status to Processed
@@ -1037,20 +1037,20 @@ namespace TallyJ.CoreModels
 
       // checking ElectionGuid for person is redundant but doesn't hurt
       // checking Ready and PoolLocked is redundant but doesn't hurt
-      var onlineVoters = Db.OnlineVotingInfo
+      var onlineVoterInfo = Db.OnlineVotingInfo
         .Where(ovi => ovi.ElectionGuid == electionGuid)
         .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
-        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
+        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid && p.VotingMethod == VotingMethodEnum.Online), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
         .Join(Db.OnlineVoter, j => j.ovi.Email, ov => ov.Email, (j, ov) => new { j.p, j.ovi, ov })
-        .OrderBy(j => j.ovi.PersonGuid)
+        // .OrderBy(j => j.ovi.PersonGuid) -- no defined order... will resort later
         .ToList();
 
-      if (!onlineVoters.Any())
+      if (!onlineVoterInfo.Any())
       {
         return new
         {
           success = true,
-          Message = "No online ballots found in Ready status."
+          Message = "No online ballots are Submitted and marked as voting Online."
         }.AsJsonResult();
       }
 
@@ -1059,7 +1059,7 @@ namespace TallyJ.CoreModels
       var numBallotsCreated = 0;
       var emailHelper = new EmailHelper();
 
-      foreach (var onlineVoter in onlineVoters)
+      foreach (var onlineVoter in onlineVoterInfo)
       {
         var name = " - " + onlineVoter.p.FullName;
 
@@ -1076,8 +1076,6 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        // convert 1,2,3 to list of numbers
-        //TODO use JSON - convert to list of votes
         var poolList = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool).Take(numToElect).ToList();
         if (poolList.Count != numToElect)
         {
@@ -1085,14 +1083,14 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        var sendEmail = false;
+        var ballotCreated = false;
 
         using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
         {
           try
           {
-            var success = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
-            if (success)
+            ballotCreated = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
+            if (ballotCreated)
             {
               onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
               onlineVoter.ovi.WhenStatus = now;
@@ -1101,6 +1099,8 @@ namespace TallyJ.CoreModels
 
               onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
               onlineVoter.ovi.PoolLocked = null;
+
+
 
               Db.SaveChanges();
 
@@ -1111,8 +1111,6 @@ namespace TallyJ.CoreModels
               numBallotsCreated++;
 
               new VoterPersonalHub().Update(onlineVoter.p);
-
-              sendEmail = true;
             }
             else
             {
@@ -1127,9 +1125,9 @@ namespace TallyJ.CoreModels
 
         Db.SaveChanges(); // redundant?
 
-        if (sendEmail)
+        if (ballotCreated)
         {
-          // need to keep this outside the transaction
+          // keep this outside the transaction
           emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineVoter.p, onlineVoter.ovi, onlineVoter.ov, out var emailError);
           if (emailError.HasContent())
           {
@@ -1138,6 +1136,22 @@ namespace TallyJ.CoreModels
         }
       }
 
+      // all ballots done
+      var onlineBallots = Db.Ballot
+        .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
+        .Where(b => b.ComputerCode == ComputerModel.ComputerCodeForOnline)
+        .ToList();
+
+      var rnd = new Random();
+      var sorted = onlineBallots.OrderBy(b => rnd.Next(0, 99999)).ToList();
+      
+      var ballotNum = 1;
+      sorted.ForEach(b =>
+      {
+        b.BallotNumAtComputer = ballotNum++;
+      });
+      Db.SaveChanges();
+      new BallotCacher().DropThisCache();
 
 
       return new

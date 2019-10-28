@@ -238,8 +238,9 @@
       person.Parts3 = adjustSearch(person.matchedParts.findIndex(function (p) { return p === 3; }));
 
       person.Sort1 = person.Parts5 * 10000 +
-        (person.Parts5 === 0 ? person.Parts4 * 100 : 0) +
-        (person.Parts5 === 0 && person.Parts4 === 0 ? person.Parts3 : 0);
+        (person.Parts5 === 0 ? person.Parts4 * 100 : 0);
+
+      //        (person.Parts5 === 0 && person.Parts4 === 0 ? person.Parts3 : 0);
 
       //      person.Parts3 = person.matchedParts.reduce(function (acc, p) { return p === 3 ? 1 + acc : acc; }, 0);
       //      person.PartFL = person.
@@ -272,8 +273,8 @@
         //          }
         //        }
 
-        if (a.NumVotes < b.NumVotes) return 1;
-        if (a.NumVotes > b.NumVotes) return -1;
+        //        if (a.NumVotes < b.NumVotes) return 1;
+        //        if (a.NumVotes > b.NumVotes) return -1;
 
         return a.name.localeCompare(b.name);
       });
@@ -332,7 +333,9 @@
           }
 
           if ((personInfo.Parts4 || personInfo.Parts3) && !personInfo.Parts5) liClasses.push('Match4');
-          if (personInfo.Parts5 && !personInfo.Parts4 && !personInfo.Parts3) liClasses.push('Match5Only');
+          if (personInfo.Parts5 && !personInfo.Parts4) liClasses.push('Match5Only');
+
+          //          console.log(personInfo.Parts5, personInfo.Parts4, personInfo.Parts3, personInfo, liClasses);
 
           spanClasses.push('Match' + personInfo.MatchType);
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code.Session;
 
@@ -29,6 +30,11 @@ namespace TallyJ.EF
     public Ballot GetByComputerCode()
     {
       return AllForThisElection.FirstOrDefault(t => t.ComputerCode == UserSession.CurrentComputerCode);
+    }
+
+    public IEnumerable<Ballot> BallotsFromOnline()
+    {
+      return AllForThisElection.Where(t => t.ComputerCode == "OL");
     }
 
     protected override object LockCacheBaseObject

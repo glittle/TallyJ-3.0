@@ -24,6 +24,8 @@
 );
 
 
+
+
 GO
 GRANT UPDATE
     ON OBJECT::[dbo].[Memberships] TO [TallyJSite]
@@ -46,4 +48,10 @@ GO
 GRANT DELETE
     ON OBJECT::[dbo].[Memberships] TO [TallyJSite]
     AS [dbo];
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Memberships]
+    ON [dbo].[Memberships]([UserId] ASC)
+    INCLUDE([ApplicationId], [Password], [PasswordFormat], [PasswordSalt], [Email], [PasswordQuestion], [PasswordAnswer], [IsApproved], [IsLockedOut], [CreateDate], [LastLoginDate], [LastPasswordChangedDate], [LastLockoutDate], [FailedPasswordAttemptCount], [FailedPasswordAttemptWindowStart], [FailedPasswordAnswerAttemptCount], [FailedPasswordAnswerAttemptWindowsStart], [Comment]);
 

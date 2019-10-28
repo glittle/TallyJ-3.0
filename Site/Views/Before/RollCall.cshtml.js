@@ -328,11 +328,15 @@
 
     var top = showAtTop.offset().top;
     var fudge = -10;//-83;
-    var time = 100;
+    var time = 500;
 
     $('html,body').animate({
       scrollTop: top + fudge
-    }, time);
+    },
+      {
+        duration: time,
+        queue: false
+      });
 
     //voter.switchClass('NotCurrent', 'Current', time, 'linear');
     voter.removeClass('NotCurrent').addClass('Current');

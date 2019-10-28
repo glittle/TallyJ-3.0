@@ -93,8 +93,49 @@
     </tr>
   </tbody>
 </table>
-<table class="Ballots">
-  <thead>
+<div class="midSection">
+  <div>
+    <div class="chkLine">
+      <input type="checkbox" id="chkAutoRefresh" />
+      <div class="byCheckBox">
+        <label for="chkAutoRefresh">Auto-refresh this page every </label>
+        <select id="ddlRefresh" class="input-medium">
+          <option value="15">15 seconds</option>
+          <option value="30">30 seconds</option>
+          <option value="60">minute</option>
+          <option value="120">2 minutes</option>
+        </select>
+        <span id="lastRefreshArea">
+          Refreshed at <span id="lastRefresh"></span>
+          <span class="countdownOuter">
+            <span class="countdown"></span>
+          </span>
+        </span>
+      </div>
+    </div>
+    @if (UserSession.IsKnownTeller)
+    {
+      <div class="chkLine">
+        <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
+        <div class="byCheckBox">
+          <label for="chkList">
+            Open this election to allow other tellers to participate.
+            <span class="line">Teller access code is: <span class="publicInfo">@UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")</span></span>
+            @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent())
+            {
+              <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
+            }
+          </label>
+        </div>
+      </div>
+    }
+    <button type="button" class="btn" id="btnRefresh" accesskey="R">
+      <u>R</u>efresh Now
+    </button>
+  </div>
+  <table class="Ballots">
+    <caption>Ballots needing attention</caption>
+    <thead>
     <tr>
       <th>
         Ballot
@@ -109,8 +150,8 @@
         Location
       </th>
     </tr>
-  </thead>
-  <tbody id="ballotsBody" class="Hidden tbody">
+    </thead>
+    <tbody id="ballotsBody" class="Hidden tbody">
     <tr>
       <th>
         {Code} {^Btn}
@@ -125,132 +166,96 @@
         {LocationName}
       </td>
     </tr>
-  </tbody>
-</table>
-<div style="padding-top: 15px;">
-  @*<div class="float-left">
-        Election Status:<br/>
-        <select id="ddlElectionStatus" size="@ElectionTallyStatusEnum.Count">
-            @ElectionTallyStatusEnum.ForHtmlSelect(UserSession.CurrentElection.TallyStatus)
-        </select>
-    </div>*@
-  <p class="AutoButtons">
-    <input type="checkbox" id="chkAutoRefresh" />
-    <label for="chkAutoRefresh">Auto-refresh this list every </label>
-    <select id="ddlRefresh" class="input-medium">
-      <option value="15">15 seconds</option>
-      <option value="30">30 seconds</option>
-      <option value="60">minute</option>
-      <option value="120">2 minutes</option>
-    </select>
-    <button type="button" class="btn btn-mini" id="btnRefesh" accesskey="R">
-      <u>R</u>efresh Now
-    </button>
-    <span id="lastRefreshArea">
-      Refreshed at <span id="lastRefresh"></span>
-      <span class="countdownOuter">
-        <span class="countdown"></span>
-      </span>
-    </span>
-  </p>
-  @if (UserSession.IsKnownTeller)
-  {
-    <p>
-      <input type="checkbox" id="chkList" @(UserSession.CurrentElection.ListForPublic.AsBoolean() ? " checked" : "") />
-      <label for="chkList">
-        Open this election to allow other tellers to participate.
-        Teller access code is: <span class="publicInfo">@UserSession.CurrentElection.ElectionPasscode.DefaultTo("?")</span>
-        @if (UserSession.CurrentElection.ElectionPasscode.HasNoContent())
-        {
-          <span class="warning">(Code must first be set on the <a href="../Setup#step2">Configure page</a>.)</span>
-        }
-      </label>
-    </p>
-  }
+    </tbody>
+  </table>
 
-  @if (SettingsHelper.HostSupportsOnlineElections)
+</div>
+
+@if (SettingsHelper.HostSupportsOnlineElections)
+{
+  <h2 class="onlineH2">Online Voting</h2>
+  if (UserSession.CurrentElection.OnlineEnabled)
   {
-    <h2 class="onlineH2">Online Voting</h2>
-    if (UserSession.CurrentElection.OnlineEnabled)
-    {
-      <div id="onlineDiv" v-cloak>
-        <div class="votingTop">
-          <div class="closeStatus" v-bind:class="closeStatusClass">
-            <strong v-text="CloseTime_Display"></strong>
-            <div>
-              <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
-            </div>
-            <div>
-              (click to choose any day and time)
-            </div>
+    <div id="onlineDiv" v-cloak>
+      <div class="votingTop">
+        <div class="closeStatus" v-bind:class="closeStatusClass">
+          <strong v-text="CloseTime_Display"></strong>
+          <div>
+            <datetime v-model="CloseTime" v-on:input="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
           </div>
-          <div class="votingMisc">
-            <button v-if="!isClosed" v-on:click="closeOnline(30, true)">Close in 30 minutes (expected)</button>
-            <button v-if="!isClosed" v-on:click="closeOnline(5, false)">Close in 5 minutes (firm)</button>
-            <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
-            <button v-if="!isClosed" v-on:click="closeOnline()">Close now</button>
-            <div v-if="!isClosed">
-              Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
-            </div>
-            <div v-if="!isClosed">
-              Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
-            </div>
+          <div>
+            (click to choose any day and time)
           </div>
         </div>
-
-        <h3>Voters Registered for Online Voting</h3>
-        <p>
-          <input type="button"
-                 v-on:click="processReadyBallots"
-                 v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
-                 value='Accept all "Submitted" ballots'>
-          <span v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online voting is closed.</span>
-          <span v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</span>
-        </p>
-        <table class="OnlineBallots">
-          <thead>
-            <tr>
-              <th>
-                Voter
-              </th>
-              <th>
-                Voting Method
-              </th>
-              <th>
-                Online Ballot<br />Status
-              </th>
-              <th>
-                When
-              </th>
-            </tr>
-          </thead>
-          <tbody id="onlineBallotsBody" class="Hidden tbody">
-            <tr>
-              <td class="OnlineName">
-                {C_FullName}
-                <div>{Email}</div>
-              </td>
-              <td>
-                {VotingMethod_Display}
-              </td>
-              <td>
-                {Status}
-              </td>
-              <td>
-                {WhenStatus_Display}
-                <span class="ui-icon ui-icon-info" title="Full History:{History_Tip}"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="votingMisc">
+          <button v-if="!isClosed" v-on:click="closeOnline(30, true)">Close in 30 minutes (expected)</button>
+          <button v-if="!isClosed" v-on:click="closeOnline(5, false)">Close in 5 minutes (firm)</button>
+          <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
+          <button v-if="!isClosed" v-on:click="closeOnline()">Close now</button>
+          <div v-if="!isClosed">
+            Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
+          </div>
+          <p v-if="!isClosed">
+            Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
+            If using a random voting method, leave extra time for tellers to process the online ballots.
+          </p>
+        </div>
       </div>
-    }
-    else
-    {
-      <p class="noOnlineVoting">Not enabled for this election.</p>
-    }
+
+      <h3>Voters Registered for Online Voting</h3>
+      <p>
+        <input type="button"
+               class="btn"
+               v-on:click="processReadyBallots"
+               v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
+               value='Accept ballots that are "Online" and "Submitted"'>
+      </p>
+      <p v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online voting is closed.</p>
+      <p v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</p>
+
+      <table class="OnlineBallots">
+        <thead>
+          <tr>
+            <th>
+              Voter
+            </th>
+            <th>
+              Registered<br />Voting Method
+            </th>
+            <th>
+              Online Ballot<br />Status
+            </th>
+            <th>
+              When
+            </th>
+          </tr>
+        </thead>
+        <tbody id="onlineBallotsBody" class="Hidden tbody">
+          <tr>
+            <td class="OnlineName">
+              {C_FullName}
+              <div>{Email}</div>
+            </td>
+            <td>
+              {VotingMethod_Display}
+            </td>
+            <td>
+              {Status}
+            </td>
+            <td>
+              {WhenStatus_Display}
+              <span class="ui-icon ui-icon-info" title="Full History:{History_Tip}"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   }
-</div>
+  else
+  {
+    <p class="noOnlineVoting">Not enabled for this election.</p>
+  }
+}
 
 
 

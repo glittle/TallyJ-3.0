@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [tj].[Location] (
     [_RowId]           INT              IDENTITY (1, 1) NOT NULL,
     [ElectionGuid]     UNIQUEIDENTIFIER NOT NULL,
-    [LocationGuid]     UNIQUEIDENTIFIER  NOT NULL,
+    [LocationGuid]     UNIQUEIDENTIFIER NOT NULL,
     [Name]             NVARCHAR (50)    NOT NULL,
     [ContactInfo]      NVARCHAR (250)   NULL,
     [Long]             VARCHAR (50)     NULL,
@@ -12,6 +12,8 @@
     CONSTRAINT [PK_VotingLocation] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Location_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 GO
@@ -41,4 +43,10 @@ GO
 GRANT DELETE
     ON OBJECT::[tj].[Location] TO [TallyJSite]
     AS [dbo];
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Location_Election]
+    ON [tj].[Location]([ElectionGuid] ASC)
+    INCLUDE([LocationGuid]);
 

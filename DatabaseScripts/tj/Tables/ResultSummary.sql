@@ -23,6 +23,8 @@
 
 
 
+
+
 GO
 GRANT UPDATE
     ON OBJECT::[tj].[ResultSummary] TO [TallyJSite]
@@ -47,4 +49,10 @@ GRANT DELETE
     AS [dbo];
 
 
+
+
+GO
+CREATE NONCLUSTERED INDEX [Ix_ResultSummary_Election]
+    ON [tj].[ResultSummary]([ElectionGuid] ASC)
+    INCLUDE([_RowId], [ResultType], [UseOnReports], [NumVoters], [NumEligibleToVote], [MailedInBallots], [DroppedOffBallots], [InPersonBallots], [SpoiledBallots], [SpoiledVotes], [TotalVotes], [BallotsReceived], [BallotsNeedingReview], [CalledInBallots], [OnlineBallots], [SpoiledManualBallots]);
 

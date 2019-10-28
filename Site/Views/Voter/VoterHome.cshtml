@@ -169,7 +169,7 @@
               :id="'P' + p.Id"
               v-html="p.HtmlName"
               v-on:click="addToPool(p)"
-              v-bind:class="[searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']"
+              v-bind:class="[p.classesList.join(' '), searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']"
               aria-atomic="true">
           </li>
         </ul>
@@ -208,15 +208,15 @@
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p><span class="OtherRegistration">Your online selection below WILL NOT BE USED because you are registered as voting {{registration}}.</span> </p>
+        <p><span class="OtherRegistration">Your online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
         <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
         <strong>You have completed online voting in this election.</strong>
       </p>
       <p v-if="registration === 'Online' && lockInVotes">
-        Your selection will be converted into a ballot when the head teller closes online voting and
-        TallyJ creates ballots for all online voters.
+        Your ballot will be processed when the head teller closes online voting and
+        accepts all online ballots.
       </p>
       <p v-if="!registration && pool.length" aria-live="polite">Be sure to submit your ballot before the election closes!</p>
 

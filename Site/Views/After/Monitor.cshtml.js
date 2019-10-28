@@ -36,7 +36,7 @@
     showInfo(publicInterface.initial, true);
 
     $('#chkList').click(updateListing);
-    $('#btnRefesh').click(function () {
+    $('#btnRefresh').click(function () {
       ShowStatusDisplay("Refreshing...");
       refresh();
     });
@@ -51,7 +51,7 @@
     setAutoRefresh(false);
   };
 
-  var connectToFrontDeskHub = function () {
+  function connectToFrontDeskHub() {
     $.connection().logging = true;
     var hub = $.connection.frontDeskHubCore;
 
@@ -80,7 +80,7 @@
 
   };
 
-  var showInfo = function (info, firstLoad) {
+  function showInfo(info, firstLoad) {
     publicInterface.initial = info;
     settings.vue.onlineBallots = info.OnlineBallots;
 
@@ -102,7 +102,7 @@
     table.html(expandLocations(info.Locations));
 
     var ballotHost = $('table.Ballots');
-    if (info.Ballots.length == 0) {
+    if (info.Ballots.length === 0) {
       ballotHost.hide();
     } else {
       ballotHost.show();
@@ -130,7 +130,7 @@
     setAutoRefresh();
     $('#mainBody, #ballotsBody, #onlineBallotsBody').removeClass('Hidden');
   };
-  var startAutoMinutes = function () {
+  function startAutoMinutes () {
     var startTime = new Date();
     $('.minutesOld').each(function () {
       var span = $(this);
@@ -143,7 +143,7 @@
       12 * 1000);
   };
 
-  var updateAutoMinutes = function () {
+  function updateAutoMinutes() {
     $('.minutesOld').each(function () {
       var span = $(this);
       var start = span.data('start');
@@ -170,12 +170,12 @@
     });
   };
 
-  var padRight = function (num) {
+  function padRight(num) {
     var s = num.toString();
     return ('0' + s).substr(-2);
   };
 
-  var setAutoRefresh = function (ev) {
+  function setAutoRefresh(ev) {
     var wantAutoRefresh = $('#chkAutoRefresh').prop('checked');
     clearTimeout(settings.refreshTimeout);
     clearInterval(settings.refreshCounter);
@@ -221,7 +221,7 @@
     $('#lastRefreshArea .countdown').width(pct + '%');
   }
 
-  var updateListing = function () {
+  function updateListing() {
     var chk = $('#chkList');
     var form = {
       listOnPage: chk.prop('checked')
@@ -235,11 +235,11 @@
       });
   };
 
-  var refresh = function () {
+  function refresh() {
     CallAjaxHandler(publicInterface.controllerUrl + '/RefreshMonitor', null, showInfo);
   };
 
-  var expandBallots = function (ballots) {
+  function expandBallots(ballots) {
     var html = [];
     $.each(ballots,
       function () {
@@ -250,8 +250,9 @@
         html.push(settings.rowTemplateBallot.filledWith(this));
       });
     return html.join('');
-  };
-  var expandOnlineBallots = function (voters) {
+  }
+
+  function expandOnlineBallots(voters) {
     var html = [];
     var timeTemplate = monitorPage.T24 ? 'MMM D HH:mm' : 'MMM D hh:mm a';
 
@@ -275,10 +276,11 @@
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
-  };
-  var expandLocations = function (locations) {
-    var lastName = '';
-    var count = 0;
+  }
+
+  function expandLocations(locations) {
+    //    var lastName = '';
+    //    var count = 0;
     var rows = -1;
     var last = null;
     var html = [];
@@ -296,9 +298,9 @@
           rows = 0;
         }
 
-        count++;
+        //        count++;
         //        this.ClassName = count % 2 === 0 ? 'Even' : 'Odd';
-        lastName = this.Name;
+        //        lastName = this.Name;
         last = this;
         //      } else {
         //        this.Extra = true;
@@ -343,7 +345,7 @@
     html.push(settings.rowTemplateMain.filledWithEach(locations));
 
     return html.join('');
-  };
+  }
 
   function startVue() {
     if (!document.getElementById('onlineDiv')) {
@@ -380,7 +382,7 @@
         },
         onlineToProcess: function () {
           return this.onlineBallots.filter(function (ob) {
-            return ob.Status === 'Submitted';
+            return ob.Status === 'Submitted' && ob.VotingMethod === 'O';
           }).length;
         },
         OnlineWhenOpen_M: function () {
@@ -424,7 +426,7 @@
       mounted: function () {
       },
       methods: {
-        checkStatus: function() {
+        checkStatus: function () {
           // just to change the top corner display
           let isClosed = this.OnlineWhenClose_M.isBefore();
           $('body').toggleClass('OnlineOpen', !isClosed);
@@ -458,6 +460,7 @@
         },
         saveClose: function () {
           var vue = this;
+          ShowStatusDisplay('Adjusting close time...');
           CallAjaxHandler(publicInterface.controllerUrl + '/SaveOnlineClose',
             {
               when: vue.CloseTime,
@@ -473,7 +476,7 @@
             });
         },
         processReadyBallots: function () {
-          var vue = this;
+//          var vue = this;
           ShowStatusDisplay('Processing...');
           CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,

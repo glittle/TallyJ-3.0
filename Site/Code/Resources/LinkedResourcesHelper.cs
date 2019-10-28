@@ -17,7 +17,7 @@ namespace TallyJ.Code.Resources
 			var name = parts[0];
 			var media = parts.Length == 1 ? string.Empty : parts[1];
 
-			var cssPath = string.Format("{0}/{1}", rootPath, name);
+			var cssPath = $"{rootPath}/{name}";
 
 			var url = cssPath.AsClientFileWithVersion();
 
@@ -26,9 +26,9 @@ namespace TallyJ.Code.Resources
 				return null;
 			}
 
-			var mediaAttribute = media.HasContent() ? string.Format(" media=\"{0}\"", media) : string.Empty;
+			var mediaAttribute = media.HasContent() ? $" media=\"{media}\"" : string.Empty;
 
-			return string.Format("<link href=\"{0}\"{1} rel=stylesheet type=\"text/css\">", url, mediaAttribute);
+			return $"<link href=\"{url}\"{mediaAttribute} rel=stylesheet type=\"text/css\">";
 		}
 
 		/// <summary>Create a link tag for this css file</summary>
@@ -56,7 +56,7 @@ namespace TallyJ.Code.Resources
 		/// <example>Example with media tag:   print.css|print</example>
 		public string CreateJavascriptSourceTag(string name, string rootPath)
 		{
-			var path = string.Format("{0}/{1}", rootPath, name);
+			var path = $"{rootPath}/{name}";
 
 			var url = path.AsClientFileWithVersion();
 
@@ -65,7 +65,7 @@ namespace TallyJ.Code.Resources
 				return null;
 			}
 
-			return string.Format("<script src=\"{0}\" type=\"text/javascript\"></script>", url);
+			return $"<script src=\"{url}\" type=\"text/javascript\"></script>";
 		}
 
 		#endregion

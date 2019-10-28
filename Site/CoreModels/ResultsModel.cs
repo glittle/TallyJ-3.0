@@ -152,7 +152,7 @@ namespace TallyJ.CoreModels
               x.vi.LocationId,
               x.vi.BallotId,
               Status = BallotStatusEnum.TextFor(x.vi.BallotStatusCode),
-              Ballot = multipleLocations ? $"{x.vi.C_BallotCode} ({x.location.Name})" : x.vi.C_BallotCode
+              Ballot = multipleLocations ? $"{x.vi.C_BallotCode} ({x.location.Name})" : x.vi.C_BallotCode,
             })
             .Distinct()
             .OrderBy(x => x.Ballot);
@@ -160,13 +160,14 @@ namespace TallyJ.CoreModels
           var needReview2 = _analyzer.Ballots.Where(BallotAnalyzer.BallotNeedsReview)
             .Join(locations, b => b.LocationGuid, l => l.LocationGuid,
               (b, location) => new { b, location })
+            .OrderBy(x => x.b.ComputerCode)
+            .ThenBy(x => x.b.BallotNumAtComputer)
             .Select(x => new
             {
               LocationId = x.location.C_RowId,
               BallotId = x.b.C_RowId,
               Status = BallotStatusEnum.TextFor(x.b.StatusCode),
-              Ballot = multipleLocations ?
-                string.Format("{0} ({1})", x.b.C_BallotCode, x.location.Name) : x.b.C_BallotCode
+              Ballot = multipleLocations ? $"{x.b.C_BallotCode} ({x.location.Name})" : x.b.C_BallotCode
             });
 
           return new

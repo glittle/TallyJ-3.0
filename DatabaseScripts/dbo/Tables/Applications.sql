@@ -8,6 +8,8 @@
 
 
 
+
+
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[Applications] TO [TallyJSite]
@@ -18,4 +20,10 @@ GO
 GRANT INSERT
     ON OBJECT::[dbo].[Applications] TO [TallyJSite]
     AS [dbo];
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Applications]
+    ON [dbo].[Applications]([ApplicationName] ASC)
+    INCLUDE([ApplicationId]);
 

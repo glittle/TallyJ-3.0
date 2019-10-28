@@ -35,6 +35,7 @@ var site = {
     pulse: 'pulse'
   },
   broadcast: function (broadcastCode, data) {
+    console.log('broadcast', broadcastCode);
     $(document).triggerHandler(broadcastCode, data);
   },
   onbroadcast: function (broadcastCode, fn, eventData) {

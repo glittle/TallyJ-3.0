@@ -29,7 +29,7 @@ namespace TallyJ.CoreModels.ExportImport
       var response = context.HttpContext.Response;
       response.ClearContent();
       response.ContentType = "text/xml";
-      response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xml", _exportName));
+      response.AddHeader("Content-Disposition", $"attachment; filename={_exportName}.xml");
 
       var settings = new XmlWriterSettings
         {

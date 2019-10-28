@@ -71,16 +71,20 @@ body.OthersHidden {
 .Voter {
   position: relative;
   z-index: 2;
-  padding: 0 3px 11px 3px;
+  padding: 5px 3px 11px 3px;
   font-size: 55pt; /* 50 for most, 60 for Petpetua */
   clear: both;
   border-radius: 2px;
   box-shadow: 0 3px 9px #555;
-  margin: 0 7px 9px 6px;
+  border: 4px solid transparent;
+  margin: 0 37px 9px 36px;
+  background-color: #f5f5f5;
+  color: #444;
 
   &.VM_BLANK {
     box-shadow: none;
     height: 95px;
+    background: none;
   }
 
   div {
@@ -90,13 +94,16 @@ body.OthersHidden {
 
   &.Current {
     background-color: white !important;
+    border-color: black;
     color: black;
+    margin: 0 7px 9px 6px;
   }
 
   &.Present {
     background: url(../../Images/walk.png) no-repeat;
     background-position: 10px 30px;
     background-size: 24px;
+    background-color: #f5f5f5;
   }
 
   b {
@@ -123,11 +130,15 @@ body.OthersHidden {
     display: none;
     font-style: normal;
     font-size: 19pt;
-    color: @tallyJGreen;
+    color: @tallyJGreenText;
     position: absolute;
     bottom: 6px;
     right: 7px;
   }
+}
+
+.Voter.Current + .Voter {
+  color: black;
 }
 
 body.ShowLocations_i {

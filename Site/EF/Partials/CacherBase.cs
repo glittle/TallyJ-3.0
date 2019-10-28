@@ -170,22 +170,13 @@ namespace TallyJ.EF
     //  ReplaceEntireCache(list);
     //  return newItem;
     //}
+
     /// <summary>
-    ///   Add this item to the cached list. The cache is updated with the current version of the data.
+    ///   Expire this cache so will be refreshed on next use
     /// </summary>
-    /// <param name="newItem"></param>
     /// <returns></returns>
-    /// <summary>
-    ///   Drop the cache of
-    ///   <typeparam name="T"></typeparam>
-    ///   for this election
-    /// </summary>
     public ICacherBase<T> DropThisCache()
     {
-      //if (UnityInstance.Resolve<IDbContextFactory>().DbContext.IsFaked)
-      //{
-      //  return this;
-      //};
       CacheManager.Current.Expire(CacheKeyRaw);
       return this;
     }

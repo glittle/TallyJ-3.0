@@ -41,7 +41,7 @@ h2 span {
   width: 105px;
   padding: 7px 0;
   text-align: center;
-  background: #4b8200;
+  background: #8dc63e;
   border-bottom: 1px solid #ddd;
   color: #fff;
 }
@@ -232,7 +232,7 @@ tr.Uploaded .CopyMap {
   cursor: pointer;
 }
 .reasonSamples dd strong:hover {
-  border-color: #4b8200;
+  border-color: #8dc63e;
 }
 p.aboutEligibility {
   margin: 1em 0 0 0;
@@ -253,7 +253,7 @@ dl {
   margin-bottom: -1px;
 }
 #listOfStatusReasons dd:hover {
-  border-color: #4b8200;
+  border-color: #8dc63e;
 }
 #importResults {
   display: none;

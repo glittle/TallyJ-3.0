@@ -192,7 +192,8 @@ namespace TallyJ.CoreModels
 
         if (changesMade)
         {
-          personSaver(DbAction.Save, person);
+          //          personSaver(DbAction.Save, person);
+          Db.SaveChanges();
         }
       }
 
@@ -486,7 +487,7 @@ namespace TallyJ.CoreModels
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
       var showLocations = Locations.Count() > 1;
-      var useOnline = UserSession.CurrentElection.OnlineCurrentlyOpen;
+      var useOnline = UserSession.CurrentElection.OnlineEnabled;
 
       return people
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
@@ -559,17 +560,23 @@ namespace TallyJ.CoreModels
           : "";
     }
 
-    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion, bool forceDeselect)
+    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion, bool forceDeselect, int locationId)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
+
       var locationModel = new LocationModel();
       if (locationModel.HasLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
+      }
+
+      if (UserSession.CurrentLocation.C_RowId != locationId)
+      {
+        new ComputerModel().MoveCurrentComputerIntoLocation(locationId);
       }
 
       if (UserSession.GetCurrentTeller(1).HasNoContent())

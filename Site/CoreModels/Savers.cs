@@ -52,12 +52,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new PersonCacher(Db).UpdateItemAndSaveCache(person);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new PersonCacher(Db).UpdateItemAndSaveCache(person);
+//          }
+//          break;
 
         default:
           throw new ArgumentOutOfRangeException("action");
@@ -78,12 +78,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new VoteCacher(Db).UpdateItemAndSaveCache(vote);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new VoteCacher(Db).UpdateItemAndSaveCache(vote);
+//          }
+//          break;
 
         default:
           throw new ArgumentOutOfRangeException("action");
@@ -104,12 +104,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
+//          }
+//          break;
 
         default:
           throw new ArgumentOutOfRangeException("action");
@@ -143,12 +143,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new ResultCacher(Db).UpdateItemAndSaveCache(result);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new ResultCacher(Db).UpdateItemAndSaveCache(result);
+//          }
+//          break;
 
         case DbAction.AttachAndRemove:
           //if (!_isInTest)
@@ -209,12 +209,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new ResultSummaryCacher(Db).UpdateItemAndSaveCache(resultSummary);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new ResultSummaryCacher(Db).UpdateItemAndSaveCache(resultSummary);
+//          }
+//          break;
 
         case DbAction.AttachAndRemove:
           //if (!_isInTest)
@@ -265,12 +265,12 @@ namespace TallyJ.CoreModels
           }
           break;
 
-        case DbAction.Save:
-          //if (!_isInTest)
-          {
-            //new ResultTieCacher(Db).UpdateItemAndSaveCache(resultTie);
-          }
-          break;
+//        case DbAction.Save:
+//          //if (!_isInTest)
+//          {
+//            //new ResultTieCacher(Db).UpdateItemAndSaveCache(resultTie);
+//          }
+//          break;
 
         case DbAction.AttachAndRemove:
           //if (!_isInTest && resultTie.C_RowId > 0)

@@ -164,6 +164,11 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
+    /// <summary>
+    /// Mark online ballot as "submitted" or locked.
+    /// </summary>
+    /// <param name="locked"></param>
+    /// <returns></returns>
     public JsonResult LockPool(bool locked)
     {
       var currentElection = UserSession.CurrentElection;

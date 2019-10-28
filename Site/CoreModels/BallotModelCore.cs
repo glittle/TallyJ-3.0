@@ -12,8 +12,6 @@ namespace TallyJ.CoreModels
 {
   public abstract class BallotModelCore : DataConnectedModel, IBallotModel
   {
-    //    public const string ReasonGroupIneligible = "Ineligible";
-
     protected BallotModelCore()
     {
       _helper = new BallotHelper();
@@ -172,7 +170,6 @@ namespace TallyJ.CoreModels
       var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot), true, true);
 
       Db.SaveChanges();
-
       new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
 
       return new
@@ -303,17 +300,29 @@ namespace TallyJ.CoreModels
           return new { Updated = false, Error = "Invalid vote/ballot id" }.AsJsonResult();
         }
 
-        var person1 = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
-
         Db.Vote.Attach(vote);
 
         vote.SingleNameElectionCount = count;
+
+        var person1 = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
         vote.PersonCombinedInfo = person1?.CombinedInfo;
 
-        if (person1 != null && UserSession.CurrentLocation.IsTheOnlineLocation)
+        if (UserSession.CurrentLocation.IsTheOnlineLocation)
         {
           // changing person on an online ballot
-          vote.PersonGuid = person1.PersonGuid;
+
+          if (person1 == null)
+          {
+            vote.PersonGuid = null;
+          }
+          else
+          {
+            vote.PersonGuid = person1.PersonGuid;
+            invalidReason = person1.IneligibleReasonGuid;
+          }
+
+          vote.StatusCode = invalidReason == null ? VoteHelper.VoteStatusCode.Ok : VoteHelper.VoteStatusCode.Spoiled;
+
         }
 
         DetermineInvalidReasonGuid(invalidReason, vote);
@@ -329,7 +338,11 @@ namespace TallyJ.CoreModels
         var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
         var sum = _helper.BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
+        ballot.Teller1 = UserSession.GetCurrentTeller(1);
+        ballot.Teller2 = UserSession.GetCurrentTeller(2);
+
         new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
+        Db.SaveChanges();
 
         var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
           .Where(v => v.BallotGuid == ballot.BallotGuid)
@@ -346,9 +359,10 @@ namespace TallyJ.CoreModels
           SingleBallotCount = ballotCounts,
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId,
-          Name = verifying ? person1.C_FullNameFL : null,
+          vote.InvalidReasonGuid,
+          Name = person1?.C_FullNameFL,
         }.AsJsonResult();
-      };
+      }
 
       // make a new Vote record
       var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
@@ -399,6 +413,7 @@ namespace TallyJ.CoreModels
         var sum = _helper.BallotCount(ballot.LocationGuid, isSingleName, null, votes);
 
         new BallotCacher(Db).UpdateItemAndSaveCache(rawBallot);
+        Db.SaveChanges();
 
         var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
           .Where(v => v.BallotGuid == ballot.BallotGuid)
@@ -500,16 +515,7 @@ namespace TallyJ.CoreModels
         return new { Message = "Not found" }.AsJsonResult();
       }
 
-      Db.Vote.Attach(vote);
-      Db.Vote.Remove(vote);
-      Db.SaveChanges();
-
-      var allVotes = voteCacher.RemoveItemAndSaveCache(vote).AllForThisElection;
-
-      UpdateVotePositions(vote.BallotGuid, allVotes);
-
       var ballot = CurrentRawBallot();
-      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, allVotes), false);
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
@@ -518,9 +524,20 @@ namespace TallyJ.CoreModels
         return new { Message = "Cannot delete votes from an online ballot." }.AsJsonResult();
       }
 
+      Db.Vote.Attach(vote);
+      Db.Vote.Remove(vote);
+      Db.SaveChanges();
+
+      var allVotes = voteCacher.RemoveItemAndSaveCache(vote).AllForThisElection;
+
+      var ballotStatusInfo = BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, allVotes), false);
+
+      UpdateVotePositions(vote.BallotGuid, allVotes);
+
       var sum = _helper.BallotCount(location.LocationGuid, isSingleName, null, allVotes);
 
       new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
+      Db.SaveChanges();
 
       return new
       {
@@ -641,6 +658,7 @@ namespace TallyJ.CoreModels
           voteInfos = VoteInfosFor(ballot, votes);
 
           BallotAnalyzerLocal.UpdateBallotStatus(ballot, voteInfos, true);
+
           ballotCacher.UpdateItemAndSaveCache(ballot);
           Db.SaveChanges();
         }
@@ -670,11 +688,6 @@ namespace TallyJ.CoreModels
         return false;
       }
 
-      const string computerCode = "OL";
-
-      var priorBallots = new BallotCacher(Db).AllForThisElection.Where(b => b.ComputerCode == computerCode).ToList();
-      var maxNum = priorBallots.Any() ? priorBallots.Max(b => b.BallotNumAtComputer) : 0;
-
       var ballotCacher = new BallotCacher(Db);
       var voteCacher = new VoteCacher(Db);
       var locationHelper = new LocationModel(Db);
@@ -685,8 +698,8 @@ namespace TallyJ.CoreModels
       {
         BallotGuid = Guid.NewGuid(),
         LocationGuid = location.LocationGuid,
-        ComputerCode = computerCode,
-        BallotNumAtComputer = maxNum + 1,
+        ComputerCode = ComputerModel.ComputerCodeForOnline,
+        BallotNumAtComputer = 0, // maxNum + 1, // will reset later
         StatusCode = BallotStatusEnum.Empty,
       };
       Db.Ballot.Add(ballot);
@@ -714,7 +727,6 @@ namespace TallyJ.CoreModels
             BallotGuid = ballot.BallotGuid,
             PositionOnBallot = ++nextVoteNum,
             StatusCode = VoteHelper.VoteStatusCode.Ok,
-            SingleNameElectionCount = 1,
             PersonGuid = person.PersonGuid,
             PersonCombinedInfo = person.CombinedInfo,
             InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid
@@ -728,7 +740,6 @@ namespace TallyJ.CoreModels
             BallotGuid = ballot.BallotGuid,
             PositionOnBallot = ++nextVoteNum,
             StatusCode = VoteHelper.VoteStatusCode.OnlineRaw,
-            SingleNameElectionCount = 1,
             OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
           };
         }
@@ -744,7 +755,6 @@ namespace TallyJ.CoreModels
       BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
 
       ballotCacher.UpdateItemAndSaveCache(ballot);
-
       Db.SaveChanges();
 
       errorMessage = "";

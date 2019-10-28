@@ -58,7 +58,7 @@
   <input accesskey="S" id="search">
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
-<div class="Counts @(currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(currentElection.OnlineCurrentlyOpen ? "UseOnline" : "")">
+<div class="Counts @(currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(currentElection.OnlineEnabled ? "UseOnline" : "")">
   <div class="Online" data-status="Online" title="Click to filter the list">
     Online
     <i>0</i>
@@ -96,7 +96,7 @@
 </div>
 <div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
                           currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
-                          currentElection.OnlineCurrentlyOpen ? "UseOnline" : "",
+                          currentElection.OnlineEnabled ? "UseOnline" : "",
                           "EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
     Type the first letter of a button to click it. Press Esc or Enter when done.

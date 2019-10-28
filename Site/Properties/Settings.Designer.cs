@@ -12,7 +12,7 @@ namespace TallyJ.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace TallyJ.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3.0.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3.0 beta 14")]
         public string VersionNum {
             get {
                 return ((string)(this["VersionNum"]));
@@ -34,7 +34,7 @@ namespace TallyJ.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16 Words 176 / 28 July 2019")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8 Knowledge 176 / 23 October 2019")]
         public string VersionDate {
             get {
                 return ((string)(this["VersionDate"]));

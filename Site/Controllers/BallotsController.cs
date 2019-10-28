@@ -116,17 +116,18 @@ namespace TallyJ.Controllers
     
     public JsonResult GetLocationInfo()
     {
-      var locationModel = new LocationModel();
       if (UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }
 
+      var locationModel = ContextItems.LocationModel;
+
       if (UserSession.CurrentElection.IsSingleNameElection)
       {
         return new
         {
-          Location = ContextItems.LocationModel.CurrentBallotLocationInfo(),
+          Location = locationModel.CurrentBallotLocationInfo(),
           BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
           Ballots = CurrentBallotModel.CurrentBallotsInfoList()
         }.AsJsonResult();
@@ -134,7 +135,7 @@ namespace TallyJ.Controllers
       
       return new
       {
-        Location = ContextItems.LocationModel.CurrentBallotLocationInfo(),
+        Location = locationModel.CurrentBallotLocationInfo(),
         BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
         Ballots = CurrentBallotModel.CurrentBallotsInfoList()
       }.AsJsonResult();

@@ -11,7 +11,9 @@ namespace TallyJ.CoreModels
     public static string DetermineStatus(VoteInfo voteInfo)
     {
       if (voteInfo.OnlineVoteRaw.HasContent() 
-          && (voteInfo.PersonIneligibleReasonGuid == null && voteInfo.PersonGuid == null))
+          && voteInfo.PersonIneligibleReasonGuid == null 
+          && voteInfo.PersonGuid == null
+          && voteInfo.VoteIneligibleReasonGuid == null)
       {
         return VoteHelper.VoteStatusCode.OnlineRaw;
       }
@@ -54,7 +56,7 @@ namespace TallyJ.CoreModels
 
         vote.StatusCode = newStatus;
 
-        voteSaver(DbAction.Save, vote);
+        //        voteSaver(DbAction.Save, vote);
       });
     }
   }

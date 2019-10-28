@@ -209,5 +209,6 @@ namespace TallyJ.CoreModels
     //    new ComputerCacher(Db).RemoveItemAndSaveCache(computer);
     //  }
     //}
+    public const string ComputerCodeForOnline = "OL";
   }
 }

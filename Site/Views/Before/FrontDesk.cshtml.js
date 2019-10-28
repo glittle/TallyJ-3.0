@@ -467,6 +467,7 @@
     var form = {
       id: pid,
       type: btnType,
+      loc: $('#ddlTopLocation').val(),
       last: publicInterface.lastRowVersion || 0,
       forceDeselect: forceDeselect || false
     };

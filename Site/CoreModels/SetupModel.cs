@@ -76,10 +76,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public bool HasBallots
-    {
-      get { return new BallotCacher(Db).AllForThisElection.Any(); }
-    }
+    public bool HasBallots => new BallotCacher(Db).AllForThisElection.Any() || Db.OnlineVotingInfo.Any(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid);
 
     //    public string InvalidReasonsJsonString()
     //    {

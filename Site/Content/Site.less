@@ -39,6 +39,11 @@ body.PublicIndex .topHelpLink {
   display: none;
 }
 
+// fix bootstrap - otherwise shows line across middle
+.btn:hover {
+  background-position: 0 -99px;
+}
+
 .highlight {
   background-color: #a6dbed;
   padding-left: 5px;
@@ -194,7 +199,7 @@ footer {
 }
 
 a.site-title:link, a.site-title:visited, a.site-title:target {
-  color: @tallyJGreen;
+  color: @tallyJGreenText;
   text-decoration: none;
 }
 
@@ -216,7 +221,7 @@ body.BP-None {
 #qmenuTitle {
 
   &.NotStarted {
-    color: @tallyJOrange;
+    color: @tallyJOrangeText;
   }
 
   &.NamesReady {
@@ -224,7 +229,7 @@ body.BP-None {
   }
 
   &.Tallying {
-    color: @tallyJGreen;
+    color: @tallyJGreenText;
   }
 }
 
@@ -236,10 +241,10 @@ body.BP-None {
   display: flex;
 
   a.Active {
-    font-weight: bold;
+    //font-weight: bold;
 
     &.NotStarted {
-      background-color: @tallyJOrange;
+      background-color: @tallyJOrangeText;
     }
 
     &.NamesReady {
@@ -282,8 +287,8 @@ body.BP-None {
   &.NotStarted,
   .items.NotStarted {
     a {
-      color: @tallyJOrange;
-      border-color: @tallyJOrange;
+      color: @tallyJOrangeText;
+      border-color: @tallyJOrangeText;
 
       &.Active {
         background-color: @tallyJOrange;
@@ -308,7 +313,7 @@ body.BP-None {
   &.Tallying,
   .items.Tallying {
     a {
-      color: @tallyJGreen;
+      color: @tallyJGreenText;
       border-color: @tallyJGreen;
 
       &.Active {
@@ -932,7 +937,6 @@ a.twitter {
 }
 
 .ElectionState span.state.Active_True {
-  font-weight: bold;
   color: #fff;
 
   &.NotStarted {
@@ -964,7 +968,7 @@ a.twitter {
   span {
 
     &.NotStarted {
-      color: @tallyJOrange;
+      color: @tallyJOrangeText;
     }
 
     &.NamesReady {
@@ -972,7 +976,7 @@ a.twitter {
     }
 
     &.Tallying {
-      color: @tallyJGreen;
+      color: @tallyJGreenText;
     }
 
     &.Finalized {
@@ -986,19 +990,19 @@ a.twitter {
 
   #electionState {
     display: inline;
+    padding-right: 80px;
     //margin: 4px 0 1px 0;
     //padding: 0;
-
     span.state {
       display: inline-block;
       margin: 0 3px;
       text-decoration: none;
-      border: 1px solid @tallyJGreen;
+      border: 1px solid @tallyJGreenText;
       padding: 1px 8px;
       border-radius: 12px;
 
       &.NotStarted {
-        border-color: @tallyJOrange;
+        border-color: @tallyJOrangeText;
       }
 
       &.NamesReady {
@@ -1034,7 +1038,8 @@ a.twitter {
   }
 }
 
-@backgroundGreen: lighten(@tallyJGreen, 30%);
+// @backgroundGreen: lighten(@tallyJGreen, 30%);
+@backgroundGreen: @tallyJGreen;
 
 body.AuthKnown .ElectionState span.state.Active_False {
   &:hover {
@@ -1123,7 +1128,7 @@ span.other {
 }
 
 .Heartbeat {
-  color: @tallyJGreen;
+  color: @tallyJGreenText;
   display: inline-block;
 }
 
@@ -1322,7 +1327,7 @@ body.AuthKnown .CurrentElectionName {
   }
 
   .passcodeOkay {
-    color: @tallyJGreen;
+    color: @tallyJGreenText;
   }
 
   .passcodeLocked {
@@ -1330,7 +1335,7 @@ body.AuthKnown .CurrentElectionName {
   }
 
   .onlineOpen {
-    color: @tallyJGreen;
+    color: @tallyJGreenText;
     display: none;
   }
 
@@ -1571,7 +1576,7 @@ body.VoterPages {
       }
 
       &:hover {
-        color: @tallyJGreen;
+        color: @tallyJGreenText;
       }
 
       &.Featured {

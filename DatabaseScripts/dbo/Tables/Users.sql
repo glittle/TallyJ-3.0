@@ -11,6 +11,8 @@
 
 
 
+
+
 GO
 GRANT UPDATE
     ON OBJECT::[dbo].[Users] TO [TallyJSite]
@@ -38,4 +40,10 @@ GRANT DELETE
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IDX_UserName]
     ON [dbo].[Users]([UserName] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Users_UserName]
+    ON [dbo].[Users]([UserName] ASC)
+    INCLUDE([ApplicationId], [UserId], [IsAnonymous], [LastActivityDate]);
 

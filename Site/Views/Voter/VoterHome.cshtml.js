@@ -22,7 +22,10 @@
       allVotersHub.client.updateVoters = function (info) {
         console.log('signalR: allVotersHub updateVoters');
         host.vue.getElectionList();
-        host.vue.selectionProcess = info.OnlineSelectionProcess;
+        let process = info.OnlineSelectionProcess;
+        if(process) {
+          host.vue.selectionProcess = process;
+        }
       };
 
       voterPersonalHub.client.updateVoter = function (info) {
@@ -291,7 +294,6 @@ var vueOptions = {
       }
       if (this.election && !this.election.openNow) {
         this.closeBallot();
-        hu
       }
     },
     scrollToTop: function (y) {

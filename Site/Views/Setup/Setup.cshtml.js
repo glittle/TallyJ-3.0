@@ -83,7 +83,7 @@
               this.election.OnlineWhenOpen = '';
               this.election.OnlineWhenClose = '';
               this.election.OnlineCloseIsEstimate = true;
-              this.election.OnlineSelectionProcess = 'L';
+              this.election.OnlineSelectionProcess = 'B';
             };
           } else {
             this.election.OnlineWhenOpen = null;

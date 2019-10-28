@@ -219,11 +219,16 @@ body.VoterIndex {
 
   #nameList {
     cursor: default;
-    margin: 10px 0px;
+    margin: 10px 10px 10px 0;
     max-height: 200px;
     overflow: auto;
     box-shadow: 0 0 1px black;
     padding-bottom: 1em;
+
+    li.Match5Only + li.Match4 {
+      padding-top: 2px;
+      border-top: 3px double #c1c1c1;
+    }
 
     li {
       border: 1px solid transparent;

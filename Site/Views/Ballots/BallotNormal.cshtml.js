@@ -28,7 +28,8 @@
     ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
     NormalVoteLineTemplate: null,
     lastFindPart: '',
-    lastFindId: 0
+    lastFindId: 0,
+    settingNameForOnlineVote: null
   };
   var tabNum = {};
 
@@ -39,7 +40,8 @@
       location: 0,
       ballotListing: 1,
       ballotEdit: 2,
-    } : {
+    } :
+      {
         ballotListing: 0,
         ballotEdit: 1,
       };
@@ -99,11 +101,14 @@
       findWithRawVotePart(ev, 'L');
     });
     local.votesList.on('click', '.VoteHost.withRawtrue', function (ev) {
+      if (ev.target.tagName === 'SELECT') {
+        return;
+      }
       if (selectRawVote(ev)) {
         toggleAddToBallotTab(true);
       }
     });
-    local.votesList.on('click', '.VoteHost.withRawfalse', function (ev) {
+    local.votesList.on('click', '.VoteHost.withRawfalse', function () {
       toggleAddToBallotTab(false);
       $('.rawTarget').removeClass('rawTarget');
     });
@@ -116,6 +121,7 @@
       invalidReasonChanged(null, select);
     });
     local.votesList.on('click', 'select.Invalid option', function (ev) {
+      ev.stopImmediatePropagation();
       var select = $(ev.target).closest('select');
       invalidReasonChanged(null, select);
     });
@@ -137,7 +143,7 @@
     });
 
     $('#btnRefreshBallotCount').on('click', changeLocationStatus);
-    $('#btnRefreshBallotList').on('click', startToRefreshBallotList);
+    $('#btnRefreshBallotList').on('click', function () { startToRefreshBallotList(); });
     $('#btnRefreshBallot').on('click', function () { loadBallot('B' + local.ballotId, true); });
 
     $('#btnNewBallot').on('click', newBallot);
@@ -203,7 +209,7 @@
 
   };
 
-  var connectToFrontDeskHub = function () {
+  function connectToFrontDeskHub() {
     $.connection().logging = true;
     var hub = $.connection.frontDeskHubCore;
 
@@ -293,8 +299,11 @@
   function toggleAddToBallotTab(show) {
     if (show) {
       local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+      $('.nameListKey').fadeIn();
     } else {
       local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
+      $('.nameListKey').hide();
+      resetSearch();
     }
   };
 
@@ -382,7 +391,7 @@
 
         $('span[data-location]').each(function () {
           var span = $(this);
-          if (span.data('location') == info.Location.Id) {
+          if (span.data('location') === info.Location.Id) {
             span.text(info.Location.TallyStatus);
           }
         });
@@ -391,21 +400,29 @@
     });
   };
 
-  function addMissing(voteId) {
+  function capitalized(s) {
+    if (!s) return '';
+    return s.substr(0, 1).toUpperCase() + s.substr(1);
+  };
+
+  function addMissing(voteId, host) {
     toggleAddMissingPanel();
 
     $('#addMissingPanel').data('voteId', voteId);
 
     var ddl = $('#ddlIneligible');
     ddl[0].size = ddl.find('option, optgroup').length + 1;
+    var first, last;
 
-    var searchParts = local.inputField.val().split(' ');
-    var capitalized = function (s) {
-      if (!s) return '';
-      return s.substr(0, 1).toUpperCase() + s.substr(1);
-    };
-    var first = searchParts.shift();
-    var last = searchParts.join(' ');
+    if (host.hasClass('withRawtrue')) {
+      first = host.find('.F').text();
+      last = host.find('.L').text();
+    } else {
+      var searchParts = local.inputField.val().split(' ');
+      first = searchParts.shift();
+      last = searchParts.join(' ');
+    }
+
     site.broadcast(site.broadcastCode.startNewPerson, {
       panelSelector: '#addMissingPanel',
       ineligible: 'ce27534d-d7e8-e011-a095-002269c41d11', // Unidentifiable_Unknown_person
@@ -421,6 +438,7 @@
       var voteId = panel.data('voteId');
       var select = $('#V' + voteId + ' select');
       select[0].selectedIndex = 0;
+      local.settingNameForOnlineVote = null;
 
       toggleAddMissingPanel();
     }
@@ -431,39 +449,52 @@
     searchTextChanged();
     toggleAddMissingPanel();
 
-    if ($('#ddlTopLocation').val() == -1) {
+    if ($('#ddlTopLocation').val() === -1) {
       ShowStatusFailed('Must select your location first!');
       return;
     }
 
+    var vote, newHost;
     var person = info.Person;
-    var votes = $.grep(local.votes, function (v) {
-      return v.vid == 0;
-    });
-    var vote;
-    if (votes.length) {
-      vote = votes[0];
+
+    let voteId = local.settingNameForOnlineVote;
+    if (voteId) {
+      vote = local.votes.find(function (v) { return v.vid === voteId; });
       vote.pid = person.C_RowId;
       vote.name = person.C_FullName;
       vote.ineligible = person.CanReceiveVotes ? null : person.IneligibleReasonGuid;
+
+      newHost = local.votesList.find('.VoteHost#V' + voteId).eq(0);
+      newHost.data('person-id', person.C_RowId);
     } else {
-      vote = {
-        vid: 0,
-        pid: person.C_RowId,
-        name: person.C_FullName,
-        count: 0,
-        ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
-      };
-      local.votes.push(vote);
+      var votesId0 = $.grep(local.votes,
+        function (v) {
+          return v.vid === 0;
+        });
+      if (votesId0.length) {
+        vote = votesId0[0];
+        vote.pid = person.C_RowId;
+        vote.name = person.C_FullName;
+        vote.ineligible = person.CanReceiveVotes ? null : person.IneligibleReasonGuid;
+      } else {
+        vote = {
+          vid: 0,
+          pid: person.C_RowId,
+          name: person.C_FullName,
+          count: 0,
+          ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
+        };
+        local.votes.push(vote);
+      }
+      newHost = local.votesList.find('.VoteHost#V0').eq(0);
     }
     if (!vote.ineligible) {
       vote.InvalidReasons = null;
       vote.invalidType = null;
       vote.invalid = null;
     }
-    showVotes();
 
-    var newHost = local.votesList.find('.VoteHost#V0').eq(0);
+    showVotes();
 
     startSavingVote(newHost);
   };
@@ -524,8 +555,7 @@
       showLocation(info.Location);
       //      publicInterface.Location = info.Location;
     }
-
-  };
+  }
 
   function showVotes(rawTargetVid) {
     var votes = extendVotes(local.votes);
@@ -614,7 +644,7 @@
   function updateStatusDisplay(info) {
 
     if (info.StatusCode) {
-      // backward compatibilty... convert values
+      // backward compatibility... convert values
       info.BallotStatus = info.StatusCode;
       info.BallotStatusText = info.StatusCodeText;
     }
@@ -669,6 +699,7 @@
 
   function showLocation(location) {
     local.location = location;
+    $('#ddlTopLocation').val(local.location.Id);
 
     $('.locationInfo [data-name], .LocationName[data-name]').each(function () {
       var target = $(this);
@@ -741,9 +772,9 @@
     }
   }
 
-  var removedParent; // seems to be triggering twice!
+  //var removedParent; // seems to be triggering twice!
   function invalidReasonChanged(ev, target) {
-    var target = target || ev.target;
+    target = target || ev.target;
     if (target.selectedIndex === -1) {
       return; //nothing selected
     }
@@ -769,25 +800,31 @@
       //}
 
       var voteId = parent.data('vote-id') || 0;
-      //console.log(voteId);
-      for (var i = 0; i < local.votes.length; i++) {
-        var vote = local.votes[i];
-        if (vote.vid === voteId) {
-          local.votes.splice(i, 1);
-          break;
+
+      if (!parent.hasClass('withRawtrue')) {
+        for (var i = 0; i < local.votes.length; i++) {
+          var vote = local.votes[i];
+          if (vote.vid === voteId) {
+            local.votes.splice(i, 1);
+            break;
+          }
         }
-      }
-      if (voteId != 0) {
-        var form = {
-          vid: voteId
-        };
-        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteVote', form, function (info) {
-          // if failed, user will have to manually remove it
-        });
+        if (voteId !== 0) {
+          var form = {
+            vid: voteId
+          };
+          CallAjaxHandler(publicInterface.controllerUrl + '/DeleteVote',
+            form,
+            function (info) {
+              // if failed, user will have to manually remove it
+            });
+        }
+      } else {
+        local.settingNameForOnlineVote = voteId;
       }
 
       // add the new one
-      addMissing(voteId);
+      addMissing(voteId, parent);
       return;
     }
 
@@ -830,7 +867,7 @@
           ? Math.max(host.find('.F').text().length,
             host.find('.L').text().length)
           : host.find('.' + part).text().length;
-        console.log('new', lastNum);
+        //        console.log('new', lastNum);
         btn.data('max', lastNum);
       }
     }
@@ -866,17 +903,26 @@
   }
 
   function startSavingVote(host, verifying) {
-    if ($('#ddlTopLocation').val() == -1) {
+    if ($('#ddlTopLocation').val() === -1) {
       ShowStatusFailed('Must select your location first!');
       return;
     }
 
+    var personId = host.data('person-id') || 0;
     var invalids = host.find('select:visible');
     var invalidId = invalids.val() || '';
     var voteId = +host.data('vote-id') || 0;
 
+    let vote = local.votes.find(function (v) { return v.vid === voteId; });
+
+    if (personId && invalidId && voteId) {
+      invalidId = '';
+      invalids.data('invalid', '');
+      vote.invalid = null;
+    }
+
     var form = {
-      pid: host.data('person-id') || 0,
+      pid: personId,
       vid: voteId,
       lastVid: local.lastVid
     };
@@ -890,7 +936,7 @@
     if (invalidId) {
       invalids.data('invalid', invalidId);
       for (var i = 0; i < local.votes.length; i++) {
-        var vote = local.votes[i];
+        let vote = local.votes[i];
         if (vote.vid === voteId) {
           vote.invalid = invalidId;
         }
@@ -900,8 +946,6 @@
     ShowStatusDisplay('Saving...');
 
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
-      var i, vote;
-
       if (info.Updated) {
         ShowStatusSuccess('Saved');
         // assume any error was removed
@@ -929,12 +973,9 @@
             host.attr('id', 'V' + info.VoteId);
             host.find('.VoteNum').text(info.pos);
 
-            for (i = 0; i < local.votes.length; i++) {
-              vote = local.votes[i];
-              if (vote.vid === 0) {
-                vote.vid = info.VoteId;
-                vote.pos = info.pos;
-              }
+            if (vote && vote.vid === 0) {
+              vote.vid = info.VoteId;
+              vote.pos = info.pos;
             }
           }
           else {
@@ -942,14 +983,22 @@
           }
         }
 
-        if (verifying && info.Name) {
-          // name will has changed
+        vote.invalid = info.InvalidReasonGuid;
+
+        if (info.Name) {
+          vote.name = info.Name;
           host.find('.Name').html(info.Name);
         }
+
+        showVotes();
 
         scrollToVote(host, info.pos);
         updateStatusDisplay(info);
         updateStatusInList(info);
+
+        if (local.location.IsOnline) {
+          toggleAddToBallotTab(false);
+        }
 
         local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
 
@@ -970,9 +1019,9 @@
         }
         else {
           // remove newly added
-          for (i = 0; i < local.votes.length; i++) {
+          for (let i = 0; i < local.votes.length; i++) {
             vote = local.votes[i];
-            if (vote.vid == 0) {
+            if (vote.vid === 0) {
               local.votes.splice(i, 1);
             }
           }
@@ -1291,7 +1340,7 @@
   };
 
   function extendVotes(votes) {
-    var num = 0;
+    //    var num = 0;
     $.each(votes, function () {
       var vote = this;
 
@@ -1325,9 +1374,9 @@
         this.rawFirst = rawVote.First;
         this.rawLast = rawVote.Last;
         this.rawOtherInfo = rawVote.OtherInfo;
-        this.rawDone = vote.pid > 0;
+        this.rawDone = vote.pid > 0 || !!vote.invalid;
       }
-      num++;
+      //      num++;
     });
     return votes;
   }
@@ -1342,12 +1391,17 @@
     var oldVote = $('.rawTarget');
     oldVote.removeClass('rawTarget');
 
-    if (!inRow && oldVote.attr('id') === vote.attr('id')) {
-      toggleAddToBallotTab(false);
-      return false; // click on same again
-    }
+    //    if (!inRow && oldVote.attr('id') === vote.attr('id')) {
+    //      toggleAddToBallotTab(false);
+    //      return false; // clicked on same again
+    //    }
 
     vote.addClass('rawTarget');
+
+    if (!inRow) {
+      vote.find('.btnFind').trigger('click');
+    }
+
     return true;
   }
 

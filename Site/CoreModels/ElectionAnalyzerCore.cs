@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels
     /// <summary>
     /// Does not Save... will be removed?
     /// </summary>
-    Save,
+//    Save,
     AttachAndRemove
   }
 
@@ -449,6 +449,9 @@ namespace TallyJ.CoreModels
 
     public void RefreshBallotStatuses()
     {
+      new BallotCacher(Db).DropThisCache();
+      new VoteCacher(Db).DropThisCache();
+      
       // first refresh person vote statuses
       new PeopleModel().EnsureFlagsAreRight(People, _hub, Savers.PersonSaver);
 
@@ -460,6 +463,8 @@ namespace TallyJ.CoreModels
       _hub.StatusUpdate("Reviewing ballots");
       var ballotAnalyzer = new BallotAnalyzer(TargetElection, Savers.BallotSaver);
       ballotAnalyzer.UpdateAllBallotStatuses(Ballots, VoteInfos);
+
+      Db.SaveChanges();
     }
 
     /// <summary>
@@ -530,8 +535,8 @@ namespace TallyJ.CoreModels
         .ForEach(r =>
         {
           Savers.ResultSaver(DbAction.AttachAndRemove, r);
-                //Results.Remove(r);
-              });
+          //Results.Remove(r);
+        });
 
       // remove any existing Tie info
       Db.ResultTie.RemoveRange(Db.ResultTie.Where(rt => rt.ElectionGuid == TargetElection.ElectionGuid));
@@ -701,11 +706,11 @@ namespace TallyJ.CoreModels
       {
         r.TieBreakRequired = !(groupOnlyInOther || groupOnlyInTop);
 
-              // expressed in the positive for developers!
-              var stillTied = results.Any(other => other != r
-                                          && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
-                                          && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
-                                          );
+        // expressed in the positive for developers!
+        var stillTied = results.Any(other => other != r
+                                    && other.TieBreakCount.AsInt() == r.TieBreakCount.AsInt()
+                                    && (other.Section != r.Section || r.Section == ResultHelper.Section.Extra)
+                                    );
 
         if (stillTied)
         {

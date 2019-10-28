@@ -30,9 +30,9 @@ ClientFile("~/Scripts/vue-datetime.css"),
 <div id="setupBody" v-cloak>
   <div class="jumpLinks">
     Jump to:
-    <a href="#step2">Step 2</a>
-    <a href="#step3">Step 3</a>
-    <a href="#step4">Step 4</a>
+    <a href="#step2">Step 2 - Listing</a>
+    <a href="#step3">Step 3 - Features</a>
+    <a href="#step4">Step 4 - Online</a>
   </div>
   <h2>
     Step 1 <span>Define the Election</span>
@@ -45,7 +45,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
       </li>
       <li>
         The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
-        is being held on the 13<sup>th</sup> day of the month of Glory.
+        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál).
       </li>
     </ol>
   </div>
@@ -161,7 +161,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     <ol>
       <li>Provide a name for this election that you will use and see in your list of elections.</li>
       <li>If you allow other tellers access, they will see the name and it will be listed on the public TallyJ home page while you are active in it.</li>
-      <li>Typically the name should include your locality and the election type. For example, New York Ridván 2020</li>
+      <li>Typically the name should include your locality and the election type. For example, New York Ridván @(DateTime.Today.Year).</li>
     </ol>
   </div>
 
@@ -170,8 +170,11 @@ ClientFile("~/Scripts/vue-datetime.css"),
       <th>
         Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
       </th>
-      <td colspan="2">
+      <td>
         <input type="text" id="txtName" data-name="Name">
+      </td>
+      <td>
+        Displayed for tellers and voters.
       </td>
     </tr>
     <tr>
@@ -194,18 +197,19 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <input type="text" v-model="election.ElectionPasscode" maxlength="50" />
       </td>
       <td>
-        Other tellers will use this to join you in the election.
+        Assistant tellers use this code to join you in the election.
+        Other head or administrative tellers can log in using your account and password.
       </td>
     </tr>
     <tr>
       <th>
-        Open Now?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
+        Allow Tellers In?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
       </th>
       <td>
         <yes-no v-model="election.ListForPublic" :disabled="!election.ElectionPasscode"></yes-no>
       </td>
       <td>
-        Should this election be shown on the Home Page now?<br>
+        If Yes, this election is shown on the Home Page for tellers to join in.<br>
         This is only effective if an Access Code is set. It can be changed here later or on the <a href="~/After/Monitor">Monitor Progress</a> page.
       </td>
     </tr>
@@ -322,7 +326,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <yes-no code="useGatheringBallots" v-model="MultipleLocations" :disabled="numLocations > 1"></yes-no>
       </td>
       <td>
-        Are tellers working together in different locations / polling stations for this election?
+        Are tellers collecting ballots in multiple locations / polling stations for this election?
       </td>
     </tr>
     <tr class="forLocations" v-show="MultipleLocations">
@@ -402,7 +406,9 @@ ClientFile("~/Scripts/vue-datetime.css"),
                 <label for="ol1">
                   <strong>List</strong> - Voters select from the people listed in this election.
                   <span class="explain">
-                    Recommended if the list of people who can be voted for is limited (e.g. by-election) or is comprehensive (sure to contain everyone).
+                    Recommended if the list of people who can be voted for
+                    is comprehensive (sure to contain everyone) or
+                    is limited (e.g. a tie-break).
                     Tellers do not need to manually process each ballot.
                   </span>
                 </label>
@@ -419,8 +425,9 @@ ClientFile("~/Scripts/vue-datetime.css"),
                   Voters do not have a list to choose from but randomly type the names of the people they are voting for.
                   <span class="explain">
                     Recommended if you do not have a list or have a reason to not let voters use it.
-                    <strong>Tellers</strong> will enter each ballot and refer to the names provided by the voter as they would a paper ballot.
-                    For each line, tellers find and enter the matching person onto the ballot.
+                    <strong>Tellers</strong> will finish each ballot by referring to the names entered
+                    by the voter, as they do for paper ballots.
+                    For each vote in a ballot, tellers find and enter the matching person.
                     There is a high likelihood of spoiled votes if the names provided are not valid.
                   </span>
                 </label>
@@ -455,7 +462,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </td>
         <td>
           When should voters be able to access this election and start working on their online ballot?
-          <a class="setTime" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
+          <a class="setTime btn btn-mini" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
         </td>
       </tr>
       <tr v-if="useOnline">
@@ -468,8 +475,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </td>
         <td>
           When should the election be closed? Use your best guess when setting up the election.
-          The Head Teller should adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
-          If using a random voting method, leave extra time for tellers to process the online ballots.
+          The Head Teller will adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
         </td>
       </tr>
       <tr v-if="useOnline && !onlineDatesOkay">
@@ -544,7 +550,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
   <span class="EnvMode" v-bind:class="'EnvMode' + mode">
     <label>
       <input type="radio" value="Absentee" v-model="mode">
-      Only
+      Mailed In and Dropped Off
     </label>
     <label>
       <input type="radio" value="All" v-model="mode">
