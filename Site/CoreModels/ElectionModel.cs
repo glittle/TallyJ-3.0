@@ -371,6 +371,13 @@ namespace TallyJ.CoreModels
           election.OnlineCloseIsEstimate,
           election.OnlineSelectionProcess
         });
+      new FrontDeskHub()
+        .UpdateOnlineElection(new
+        {
+          election.OnlineWhenClose,
+          election.OnlineWhenOpen,
+          election.OnlineCloseIsEstimate,
+        });
 
       return new
       {
@@ -1144,7 +1151,7 @@ namespace TallyJ.CoreModels
 
       var rnd = new Random();
       var sorted = onlineBallots.OrderBy(b => rnd.Next(0, 99999)).ToList();
-      
+
       var ballotNum = 1;
       sorted.ForEach(b =>
       {
@@ -1182,6 +1189,14 @@ namespace TallyJ.CoreModels
           election.OnlineWhenOpen,
           election.OnlineCloseIsEstimate,
         });
+      new FrontDeskHub()
+        .UpdateOnlineElection(new
+        {
+          election.OnlineWhenClose,
+          election.OnlineWhenOpen,
+          election.OnlineCloseIsEstimate,
+        });
+
 
       UpdateStatusInBrowsers();
 

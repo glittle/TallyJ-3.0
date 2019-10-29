@@ -8,7 +8,7 @@ using TallyJ.CoreModels.Hubs;
 
 namespace TallyJ.Controllers
 {
-  [AllowGuestsInActiveElection]
+  [AllowTellersInActiveElection]
   public class BeforeController : BaseController
   {
     public ActionResult Index()

@@ -11,7 +11,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Code
 {
-  public class AllowGuestsInActiveElectionAttribute : AuthorizeAttribute
+  public class AllowTellersInActiveElectionAttribute : AuthorizeAttribute
   {
     protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
     {

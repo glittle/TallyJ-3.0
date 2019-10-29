@@ -260,7 +260,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Code\AllowGuestsInActiveElectionAttribute.cs" />
+    <Compile Include="Code\AllowTellersInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
     <Compile Include="Code\OwinRelated\AspIdentity2Classes.cs" />
     <Compile Include="Code\SettingsHelper.cs" />

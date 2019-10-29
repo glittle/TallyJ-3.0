@@ -35,6 +35,9 @@
             this.election.OnlineWhenOpen &&
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
+        },
+        closeIsPast: function() {
+          return moment(this.election.OnlineWhenClose).isBefore();
         }
         //        onlineOpen: {
         //          get: function () {
@@ -542,6 +545,11 @@
           updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
         }
         $('.btnSave').removeClass('btn-primary');
+        
+        var isClosed = moment(form.OnlineWhenClose).isBefore();
+        $('body').toggleClass('OnlineOpen', !isClosed);
+        $('body').toggleClass('OnlineClosed', isClosed);
+
         ResetStatusDisplay();
         ShowStatusSuccess(info.Status);
       } else {

@@ -11,7 +11,7 @@ namespace TallyJ.Controllers
 {
   public class DashboardController : BaseController
   {
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public ActionResult Index()
     {
       if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null)
@@ -35,26 +35,26 @@ namespace TallyJ.Controllers
 
 
     [HttpPost]
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult LoadV2Election(HttpPostedFileBase loadFile)
     {
       return new ElectionLoader().Import(loadFile);
     }
 
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult ChooseLocation(int id)
     {
       return new { Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id) }.AsJsonResult();
     }
 
 
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult ChooseTeller(int num, int teller, string newName = "")
     {
       return new TellerModel().ChooseTeller(num, teller, newName).AsJsonResult();
     }
 
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult DeleteTeller(int id)
     {
       return new TellerModel().DeleteTeller(id).AsJsonResult();

@@ -10,7 +10,7 @@ using TallyJ.Code.Enumerations;
 
 namespace TallyJ.Controllers
 {
-  [AllowGuestsInActiveElection]
+  [AllowTellersInActiveElection]
   public class BallotsController : BaseController
   {
     public ActionResult Index()

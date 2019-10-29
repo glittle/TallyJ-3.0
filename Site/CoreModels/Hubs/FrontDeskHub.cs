@@ -40,6 +40,11 @@ namespace TallyJ.CoreModels.Hubs
       CoreHub.Clients.Group(HubNameForCurrentElection).updatePeople(message);
     }
 
+    public void UpdateOnlineElection(object message)
+    {
+      CoreHub.Clients.Group(HubNameForCurrentElection).updateOnlineElection(message);
+    }
+
 //    public int NumAttached
 //    {
 //      get

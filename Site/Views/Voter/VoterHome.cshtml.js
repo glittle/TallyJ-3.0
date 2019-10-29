@@ -23,7 +23,7 @@
         console.log('signalR: allVotersHub updateVoters');
         host.vue.getElectionList();
         let process = info.OnlineSelectionProcess;
-        if(process) {
+        if (process) {
           host.vue.selectionProcess = process;
         }
       };

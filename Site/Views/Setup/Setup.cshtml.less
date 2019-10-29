@@ -267,9 +267,26 @@ button.Primary {
   }
 }
 
-.voteWhen {
+.vdatetime-input {
   text-align: center;
-  color: @tallyJBlue;
+}
+
+.voteWhenOpen {
+  text-align: center;
+}
+
+.voteWhenClosed {
+  text-align: center;
+  background: @tallyJGreen;
+  color: white;
+  border-radius: 2px;
+  margin: 0px 5px 0;
+  padding: 1px 0;
+
+  &.closed {
+    color: @tallyJError;
+    background: none;
+  }
 }
 
 .needOnlineDates {

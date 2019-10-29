@@ -10,7 +10,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
-  [AllowGuestsInActiveElection]
+  [AllowTellersInActiveElection]
   public class ElectionsController : BaseController
   {
     public ActionResult Index()

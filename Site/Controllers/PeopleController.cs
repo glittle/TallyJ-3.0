@@ -17,13 +17,13 @@ namespace TallyJ.Controllers
     /// Need index just for making reference easier
     /// </summary>
     /// <returns></returns>
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public ActionResult Index()
     {
       return null;
     }
 
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult GetAll()
     {
       var currentElection = UserSession.CurrentElection;
@@ -114,7 +114,7 @@ namespace TallyJ.Controllers
     //  return model.Search2(search, includeMatches, forBallot);
     //}
 
-    [AllowGuestsInActiveElection]
+    [AllowTellersInActiveElection]
     public JsonResult GetDetail(int id)
     {
       var model = new PeopleModel();

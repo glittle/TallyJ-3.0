@@ -8,7 +8,7 @@ using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
-  [AllowGuestsInActiveElection]
+  [AllowTellersInActiveElection]
   public class AfterController : BaseController
   {
     //

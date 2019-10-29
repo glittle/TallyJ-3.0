@@ -47,7 +47,7 @@
     }
 
     connectToFrontDeskHub();
-
+    
     setAutoRefresh(false);
   };
 
@@ -57,7 +57,7 @@
 
     //console.log('signalR prepare: updatePeople');
     hub.client.updatePeople = function (info) {
-      console.log('signalR: updatePeople');
+      console.log('signalR: frontDesk updatePeople');
       var needRefresh = false;
       info.PersonLines.forEach(function (pl) {
         if (publicInterface.initial.OnlineBallots.findIndex(function (ob) {
@@ -73,6 +73,12 @@
       }
     };
 
+    hub.client.updateOnlineElection = function (info) {
+      console.log('signalR: frontDesk updateOnlineElection');
+      settings.vue.showOnlineTimes(info); 
+    };
+
+
     startSignalR(function () {
       console.log('Joining frontDesk hub');
       CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
@@ -85,6 +91,8 @@
     settings.vue.onlineBallots = info.OnlineBallots;
 
     clearInterval(settings.autoMinutesTimeout);
+
+    settings.vue.showOnlineTimes(info.OnlineInfo);
 
     var table = $('#mainBody');
     if (!firstLoad) {
@@ -413,9 +421,7 @@
       watch: {
       },
       created: function () {
-        this.election = monitorPage.initial.OnlineInfo;
-        this.election.OnlineWhenOpen = this.election.OnlineWhenOpen.parseJsonDate().toISOString();
-        this.CloseTime = this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
+        this.showOnlineTimes(monitorPage.initial.OnlineInfo);
         this.T24 = monitorPage.T24;
         var vue = this;
         setInterval(function () {
@@ -426,6 +432,11 @@
       mounted: function () {
       },
       methods: {
+        showOnlineTimes: function(info) {
+          this.election = info;
+          this.election.OnlineWhenOpen = moment(this.election.OnlineWhenOpen).toISOString();
+          this.CloseTime = this.election.OnlineWhenClose = moment(this.election.OnlineWhenClose).toISOString();
+        },
         checkStatus: function () {
           // just to change the top corner display
           let isClosed = this.OnlineWhenClose_M.isBefore();

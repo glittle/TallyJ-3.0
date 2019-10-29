@@ -783,7 +783,8 @@ function HasErrors(data) {
 
   if (/\<\!DOCTYPE html\>/.test(data)) {
     // seem to have a complete web page!
-    top.location.reload();
+    console.log('Error - ajax call got full page', data);
+    //    top.location.reload();
     return true;
   }
 
@@ -893,12 +894,12 @@ function CallAjaxHandler(handlerUrl,
 
       ResetStatusDisplay();
 
-      if (typeof callbackWithInfo != 'undefined') {
+      if (typeof callbackWithInfo !== 'undefined') {
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
       }
     },
     error: function (xmlHttpRequest, textStatus) {
-      if (typeof callbackOnFailed != 'undefined') {
+      if (typeof callbackOnFailed !== 'undefined') {
         callbackOnFailed(xmlHttpRequest);
       } else {
         ShowStatusFailed(xmlHttpRequest);

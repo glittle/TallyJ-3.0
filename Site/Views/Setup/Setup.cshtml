@@ -458,7 +458,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </th>
         <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
           <datetime v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhen">{{showFrom(election.OnlineWhenOpen)}}</div>
+          <div class="voteWhenOpen">{{showFrom(election.OnlineWhenOpen)}}</div>
         </td>
         <td>
           When should voters be able to access this election and start working on their online ballot?
@@ -471,7 +471,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </th>
         <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
           <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhen">{{showFrom(election.OnlineWhenClose)}}</div>
+          <div class="voteWhenClosed" v-bind:class="{closed: closeIsPast }">{{showFrom(election.OnlineWhenClose)}}</div>
         </td>
         <td>
           When should the election be closed? Use your best guess when setting up the election.

@@ -25,8 +25,16 @@ namespace TallyJ.Controllers
 
     public void JoinVoterHubs(string connId)
     {
+      //      try
+      //      {
       new AllVotersHub().Join(connId);
       new VoterPersonalHub().Join(connId);
+      //        return new { success = true }.AsJsonResult();
+      //      }
+      //      catch (Exception e)
+      //      {
+      //        return new { success = false, e.Message }.AsJsonResult();
+      //      }
     }
 
     public JsonResult JoinElection(Guid electionGuid)
@@ -324,7 +332,7 @@ namespace TallyJ.Controllers
         .Where(p => p.Email == email && p.CanVote == true && p.IneligibleReasonGuid == null)
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
         .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
-        .OrderByDescending(j => j.e.OnlineWhenOpen)
+        .OrderByDescending(j => j.e.OnlineWhenClose)
         .ThenByDescending(j => j.e.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
         .Select(j => new
