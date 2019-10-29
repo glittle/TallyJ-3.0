@@ -874,5 +874,21 @@ namespace TallyJ.Code
       return defaultValue;
     }
 
+    public static string InSentence(this IEnumerable<string> input, string andOr)
+    {
+      var words = input.ToList();
+      switch (words.Count)
+      {
+        case 1:
+          return words[0];
+        case 2:
+          return words.JoinedAsString($" {andOr} ");
+        default:
+          var words2 = words.Take(words.Count - 1);
+          return words2.JoinedAsString(", ")
+                 + $", {andOr} {words.Last()}";
+      }
+    }
+
   }
 }

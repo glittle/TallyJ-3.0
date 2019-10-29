@@ -278,6 +278,19 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
+    public void InSentence_Test()
+    {
+      new []{"a"}.InSentence("and").ShouldEqual("a");
+
+      new []{"a", "b", "c"}.InSentence("or").ShouldEqual("a, b, or c");
+      new []{"a", "b", "c"}.InSentence("and").ShouldEqual("a, b, and c");
+
+      new []{"a", "b"}.InSentence("and").ShouldEqual("a and b");
+
+      new []{"a", "b", "c", "d"}.InSentence("and").ShouldEqual("a, b, c, and d");
+    }
+
+    [TestMethod]
     public void AsPctString_Test()
     {
 

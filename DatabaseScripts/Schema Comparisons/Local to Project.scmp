@@ -9,7 +9,7 @@
   </SourceModelProvider>
   <TargetModelProvider>
     <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=.;Initial Catalog=TallyJ3b;Integrated Security=True;Pooling=False;Min Pool Size=1;MultipleActiveResultSets=True;Connect Timeout=10</ConnectionString>
+      <ConnectionString>Data Source=bjvxix4kl0.database.windows.net;Initial Catalog=TallyJ3b;Persist Security Info=False;User ID=sunwaptadba;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=True;TrustServerCertificate=False</ConnectionString>
     </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
@@ -298,11 +298,11 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetDatabaseName</Name>
-        <Value>TallyJ2d</Value>
+        <Value>TallyJ3b</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetConnectionString</Name>
-        <Value>Integrated Security=True;Pooling=False;Connect Timeout=30</Value>
+        <Value>Data Source=.;Initial Catalog=TallyJ3b;Integrated Security=True;Pooling=False;Min Pool Size=1;MultipleActiveResultSets=False;Connect Timeout=10;Application Name="Microsoft SQL Server Data Tools, Schema Compare"</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TreatVerificationErrorsAsWarnings</Name>

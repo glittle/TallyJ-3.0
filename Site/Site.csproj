@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TallyJ</RootNamespace>
     <AssemblyName>TallyJ</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <FileUpgradeFlags>
@@ -93,7 +94,7 @@
       <HintPath>..\packages\evernote-cloud-sdk-windows.1.0.8\lib\net40\en-html2enml.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.BulkInsert, Version=6.0.2.8, Culture=neutral, PublicKeyToken=630a17433349cb76, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
@@ -106,7 +107,7 @@
       <HintPath>..\packages\EntityFramework.MappingAPI.6.2.0\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Enyim.Caching">
       <HintPath>..\OtherSources\Enyim.Caching.dll</HintPath>
@@ -152,8 +153,8 @@
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -199,174 +200,6 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.ArcGISOnline, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.ArcGISOnline.2.26.0\lib\net45\Owin.Security.Providers.ArcGISOnline.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.ArcGISPortal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.ArcGISPortal.2.26.0\lib\net45\Owin.Security.Providers.ArcGISPortal.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Asana, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Asana.2.26.0\lib\net45\Owin.Security.Providers.Asana.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Backlog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Backlog.2.26.0\lib\net45\Owin.Security.Providers.Backlog.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Baidu, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Baidu.2.26.0\lib\net45\Owin.Security.Providers.Baidu.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.BattleNet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.BattleNet.2.26.0\lib\net45\Owin.Security.Providers.BattleNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Bitbucket, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Bitbucket.2.26.0\lib\net45\Owin.Security.Providers.Bitbucket.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Box, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Box.2.26.0\lib\net45\Owin.Security.Providers.Box.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Buffer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Buffer.2.26.0\lib\net45\Owin.Security.Providers.Buffer.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Cosign, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Cosign.2.26.0\lib\net45\Owin.Security.Providers.Cosign.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.DeviantArt, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.DeviantArt.2.26.0\lib\net45\Owin.Security.Providers.DeviantArt.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Discord, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Discord.2.26.0\lib\net45\Owin.Security.Providers.Discord.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.DoYouBuzz, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.DoYouBuzz.2.26.0\lib\net45\Owin.Security.Providers.DoYouBuzz.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Dropbox, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Dropbox.2.26.0\lib\net45\Owin.Security.Providers.Dropbox.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.EVEOnline, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.EVEOnline.2.26.0\lib\net45\Owin.Security.Providers.EVEOnline.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Evernote, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Evernote.2.26.0\lib\net45\Owin.Security.Providers.Evernote.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Fitbit, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Fitbit.2.26.0\lib\net45\Owin.Security.Providers.Fitbit.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Flickr, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Flickr.2.26.0\lib\net45\Owin.Security.Providers.Flickr.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Foursquare, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Foursquare.2.26.0\lib\net45\Owin.Security.Providers.Foursquare.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Geni, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Geni.2.26.0\lib\net45\Owin.Security.Providers.Geni.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.GitHub, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.GitHub.2.26.0\lib\net45\Owin.Security.Providers.GitHub.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Gitter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Gitter.2.26.0\lib\net45\Owin.Security.Providers.Gitter.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Google, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Google.2.26.0\lib\net45\Owin.Security.Providers.Google.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.GooglePlus, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.GooglePlus.2.26.0\lib\net45\Owin.Security.Providers.GooglePlus.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.HealthGraph, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.HealthGraph.2.26.0\lib\net45\Owin.Security.Providers.HealthGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Imgur, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Imgur.2.26.0\lib\net45\Owin.Security.Providers.Imgur.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Instagram, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Instagram.2.26.0\lib\net45\Owin.Security.Providers.Instagram.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.LinkedIn, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.LinkedIn.2.26.0\lib\net45\Owin.Security.Providers.LinkedIn.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.MyHeritage, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.MyHeritage.2.26.0\lib\net45\Owin.Security.Providers.MyHeritage.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Onshape, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Onshape.2.26.0\lib\net45\Owin.Security.Providers.Onshape.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.OpenID, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.OpenID.2.26.0\lib\net45\Owin.Security.Providers.OpenID.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.OpenIDBase, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.OpenIDBase.2.1.1\lib\net45\Owin.Security.Providers.OpenIDBase.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Orcid, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Orcid.2.26.0\lib\net45\Owin.Security.Providers.Orcid.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.PayPal, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.PayPal.2.26.0\lib\net45\Owin.Security.Providers.PayPal.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Podbean, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Podbean.2.26.0\lib\net45\Owin.Security.Providers.Podbean.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Reddit, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Reddit.2.26.0\lib\net45\Owin.Security.Providers.Reddit.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Salesforce, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Salesforce.2.26.0\lib\net45\Owin.Security.Providers.Salesforce.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Shopify, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Shopify.2.26.0\lib\net45\Owin.Security.Providers.Shopify.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Slack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.SlackProvider.2.26.0\lib\net45\Owin.Security.Providers.Slack.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.SoundCloud, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.SoundCloud.2.26.0\lib\net45\Owin.Security.Providers.SoundCloud.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Spotify, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Spotify.2.26.0\lib\net45\Owin.Security.Providers.Spotify.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.StackExchange, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.StackExchange.2.26.0\lib\net45\Owin.Security.Providers.StackExchange.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Steam, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Steam.2.26.0\lib\net45\Owin.Security.Providers.Steam.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.TripIt, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.TripIt.2.26.0\lib\net45\Owin.Security.Providers.TripIt.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Twitch, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Twitch.2.26.0\lib\net45\Owin.Security.Providers.Twitch.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Typeform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Typeform.2.26.0\lib\net45\Owin.Security.Providers.Typeform.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Untappd, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Untappd.2.26.0\lib\net45\Owin.Security.Providers.Untappd.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Vimeo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Vimeo.2.26.0\lib\net45\Owin.Security.Providers.Vimeo.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.VisualStudio, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.VisualStudio.2.26.0\lib\net45\Owin.Security.Providers.VisualStudio.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.VKontakte, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.VKontakte.2.26.0\lib\net45\Owin.Security.Providers.VKontakte.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Wargaming, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Wargaming.2.26.0\lib\net45\Owin.Security.Providers.Wargaming.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.WordPress, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.WordPress.2.26.0\lib\net45\Owin.Security.Providers.WordPress.dll</HintPath>
-    </Reference>
-    <Reference Include="OWin.Security.Providers.WSO2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.WSO2.2.26.0\lib\net45\OWin.Security.Providers.WSO2.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Xing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Xing.2.26.0\lib\net45\Owin.Security.Providers.Xing.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Yahoo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Yahoo.2.26.0\lib\net45\Owin.Security.Providers.Yahoo.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin.Security.Providers.Yammer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=1328b8c16b108c43, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.Security.Providers.Yammer.2.26.0\lib\net45\Owin.Security.Providers.Yammer.dll</HintPath>
     </Reference>
     <Reference Include="PreMailer.Net, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\PreMailer.Net.2.0.1\lib\net45\PreMailer.Net.dll</HintPath>
@@ -1370,6 +1203,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
   </Target>
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
 </Project>
