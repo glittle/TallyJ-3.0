@@ -119,7 +119,23 @@ namespace TallyJ.Code.Session
 		/// </summary>
 		public string RootUrl
 		{
-			get { return _rootUrl ?? (_rootUrl = HostingEnvironment.ApplicationVirtualPath + "/"); }
+			get
+      {
+        var s = _rootUrl;
+        if (s != null)
+        {
+          return s;
+        }
+
+        _rootUrl = HostingEnvironment.ApplicationVirtualPath ?? "";
+
+        if (!_rootUrl.EndsWith("/"))
+        {
+          _rootUrl += "/";
+        }
+
+        return _rootUrl;
+      }
 		}
 	}
 }
