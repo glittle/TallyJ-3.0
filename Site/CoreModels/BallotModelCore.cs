@@ -76,36 +76,7 @@ namespace TallyJ.CoreModels
       return true;
     }
 
-    public JsonResult StartNewBallotJson()
-    {
-      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
-      {
-        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
-      }
-      var locationModel = new LocationModel();
-      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
-      {
-        return new { Message = "Must select your location first!" }.AsJsonResult();
-      }
-      if (UserSession.GetCurrentTeller(1).HasNoContent())
-      {
-        return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
-      }
-
-      var ballotInfo = CreateAndRegisterBallot();
-
-      var allVotes = new VoteCacher(Db).AllForThisElection;
-      return new
-      {
-        BallotInfo = new
-        {
-          Ballot = BallotInfoForJs(ballotInfo, allVotes),
-          Votes = CurrentVotesForJs(ballotInfo, allVotes),
-          NumNeeded = UserSession.CurrentElection.NumberToElect
-        },
-        Ballots = CurrentBallotsInfoList()
-      }.AsJsonResult();
-    }
+    public abstract JsonResult StartNewBallotJson();
 
     /// <Summary>Delete a ballot, but only if already empty</Summary>
     public JsonResult DeleteBallotJson()
@@ -218,8 +189,8 @@ namespace TallyJ.CoreModels
 
     public object CurrentBallotInfo()
     {
-      var ballotInfo = GetCurrentBallot();
-      if (ballotInfo == null)
+      var ballot = GetCurrentBallot();
+      if (ballot == null)
       {
         return null;
       }
@@ -227,8 +198,8 @@ namespace TallyJ.CoreModels
       var allVotes = new VoteCacher(Db).AllForThisElection;
       return new
       {
-        Ballot = BallotInfoForJs(ballotInfo, allVotes),
-        Votes = CurrentVotesForJs(ballotInfo, allVotes),
+        Ballot = BallotInfoForJs(ballot, allVotes),
+        Votes = CurrentVotesForJs(ballot, allVotes),
         NumNeeded = UserSession.CurrentElection.NumberToElect
       };
     }
@@ -593,29 +564,7 @@ namespace TallyJ.CoreModels
     //        .SerializedAsJsonString();
     //    }
 
-    public object CurrentBallotsInfoList(bool refresh = false)
-    {
-      if (refresh)
-      {
-        new ElectionAnalyzerNormal().RefreshBallotStatuses(); // identical for single name elections
-        Db.SaveChanges();
-      }
 
-      var filter = UserSession.CurrentBallotFilter;
-      var ballots = new BallotCacher(Db).AllForThisElection
-        .Where(b => b.LocationGuid == UserSession.CurrentLocationGuid)
-        .ToList()
-        .Where(b => filter.HasNoContent() || filter == b.ComputerCode)
-        .OrderBy(b => b.ComputerCode)
-        .ThenBy(b => b.BallotNumAtComputer)
-        .ToList();
-
-      var totalCount = filter.HasNoContent()
-        ? ballots.Count
-        : new BallotCacher(Db).AllForThisElection.Count(b => b.LocationGuid == UserSession.CurrentLocationGuid);
-
-      return BallotsInfoList(ballots, totalCount);
-    }
 
     /// <Summary>Get the current Ballot. Only use when there is a ballot.</Summary>
     private Ballot CurrentRawBallot()
@@ -641,9 +590,13 @@ namespace TallyJ.CoreModels
         ballot = ballotCacher.GetByComputerCode();
       }
 
-      if (ballot == null && isSingleNameElection)
+      if (ballot == null)
       {
-        ballot = CreateAndRegisterBallot();
+        if (isSingleNameElection)
+        {
+          // will create empty ballot for this computer... do we need it?
+          //        ballot = CreateAndRegisterBallot();
+        }
       }
       else
       {
@@ -729,6 +682,7 @@ namespace TallyJ.CoreModels
             StatusCode = VoteHelper.VoteStatusCode.Ok,
             PersonGuid = person.PersonGuid,
             PersonCombinedInfo = person.CombinedInfo,
+            SingleNameElectionCount = 1, // okay if set for normal election too
             InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid
           };
         }
@@ -740,6 +694,7 @@ namespace TallyJ.CoreModels
             BallotGuid = ballot.BallotGuid,
             PositionOnBallot = ++nextVoteNum,
             StatusCode = VoteHelper.VoteStatusCode.OnlineRaw,
+            SingleNameElectionCount = 1,
             OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
           };
         }
@@ -807,7 +762,7 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
     }
 
-    public Ballot CreateAndRegisterBallot()
+    protected Ballot CreateAndRegisterBallot()
     {
       var currentLocationGuid = UserSession.CurrentLocationGuid;
       if (!currentLocationGuid.HasContent())
@@ -869,13 +824,7 @@ namespace TallyJ.CoreModels
     //      //todo...
     //    }
 
-    private object BallotsInfoList(List<Ballot> ballots, int totalCount)
-    {
-      return new
-      {
-        Ballots = ballots.ToList().Select(ballot => BallotInfoForJs(ballot, new VoteCacher(Db).AllForThisElection)),
-        Total = totalCount
-      };
-    }
+    public abstract object CurrentBallotsInfoList(bool refresh = false);
+
   }
 }

@@ -67,10 +67,10 @@ namespace TallyJ.Controllers
     {
       var peopleModel = new PeopleModel();
       return new
-               {
-                 Ballots = peopleModel.BallotSources(id),
-                 Deselected = peopleModel.Deselected()
-               }.AsJsonResult();
+      {
+        Ballots = peopleModel.BallotSources(id),
+        Deselected = peopleModel.Deselected()
+      }.AsJsonResult();
     }
 
     public JsonResult SaveVote(int pid, int vid, string invalid = "", int count = 0, int lastVid = 0, bool verifying = false)
@@ -108,12 +108,12 @@ namespace TallyJ.Controllers
     //           }.AsJsonResult();
     //  //return CurrentBallotModel.UpdateBallotStatus(status);
     //}
-    
+
     public JsonResult UpdateLocationInfo(string info)
     {
       return ContextItems.LocationModel.UpdateLocationInfo(info);
     }
-    
+
     public JsonResult GetLocationInfo()
     {
       if (UserSession.CurrentLocation == null)
@@ -123,16 +123,16 @@ namespace TallyJ.Controllers
 
       var locationModel = ContextItems.LocationModel;
 
-      if (UserSession.CurrentElection.IsSingleNameElection)
-      {
-        return new
-        {
-          Location = locationModel.CurrentBallotLocationInfo(),
-          BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
-          Ballots = CurrentBallotModel.CurrentBallotsInfoList()
-        }.AsJsonResult();
-      }
-      
+      //      if (UserSession.CurrentElection.IsSingleNameElection)
+      //      {
+      //        return new
+      //        {
+      //          Location = locationModel.CurrentBallotLocationInfo(),
+      //          BallotInfo = CurrentBallotModel.CurrentBallotInfo(),
+      //          Ballots = CurrentBallotModel.CurrentBallotsInfoList()
+      //        }.AsJsonResult();
+      //      }
+
       return new
       {
         Location = locationModel.CurrentBallotLocationInfo(),

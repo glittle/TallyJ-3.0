@@ -29,7 +29,7 @@ namespace TallyJ.EF
 
     public Ballot GetByComputerCode()
     {
-      return AllForThisElection.FirstOrDefault(t => t.ComputerCode == UserSession.CurrentComputerCode);
+      return AllForThisElection.FirstOrDefault(b => b.LocationGuid == UserSession.CurrentLocationGuid && b.ComputerCode == UserSession.CurrentComputerCode);
     }
 
     public IEnumerable<Ballot> BallotsFromOnline()

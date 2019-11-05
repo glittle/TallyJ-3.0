@@ -5,7 +5,11 @@
     nameSplitter: /[\s\-']/,
     localNames: [],
     maxVotes: 0,
-    showAllCode: 'azbycwdxe'
+    showAllCode: String.fromCharCode(9990), // random unicode letter
+    bStart: String.fromCharCode(9991),
+    bEnd: String.fromCharCode(9992),
+    iStart: String.fromCharCode(9993),
+    iEnd: String.fromCharCode(9994)
   };
 
   var maxToShow = 1000;
@@ -410,15 +414,15 @@
       return;
     }
 
-    updates.forEach(function (update) {
-      var person = local.localNames.find(function (p) {
+    updates.forEach(function(update) {
+      var person = local.localNames.find(function(p) {
         return p.Id === update.Id;
       });
       if (person) {
         person.NumVotes = update.Count;
         if (update.Count > local.maxVotes) local.maxVotes = update.Count;
       }
-    })
+    });
   }
 
   function refreshListing(searchTerm, onNamesReady, usedPersonIds, info) {
@@ -428,14 +432,13 @@
 
   function showMatchedLetters(searchParts, personInfo) {
     var name = personInfo.NameArea;
-    //        console.log(personInfo)
     searchParts.forEach(function (searchPart) {
       if ($.trim(searchPart) === '') return;
       //            var searchReg = new RegExp('[\\s\\-\\\'\\[\\(]({0})|(^{0})'.filledWith(searchPart), 'ig');
       var searchReg = new RegExp('({0})|(^{0})'.filledWith(searchPart), 'ig');
       name = name.replace(searchReg,
         function (a, b, c) {
-          return '##1' + arguments[0] + '##2';
+          return local.bStart + arguments[0] + local.bEnd;
         });
     });
 
@@ -454,19 +457,19 @@
         var space1 = part[0] === ' ' ? ' ' : '';
         var space2 = part.slice(-1) === ' ' ? ' ' : '';
 
-        nameSplit[i] = space1 + '##3' + part.trim() + '##4' + space2;
+        nameSplit[i] = space1 + local.iStart + part.trim() + local.iEnd + space2;
       });
 
       name = nameSplit.join('');
     }
 
-    if (debugSearch) console.log(personInfo);
+    if (debugSearch) console.log(personInfo, name);
 
     personInfo.DisplayName = name
-      .replace(/##1/g, '<b>')
-      .replace(/##2/g, '</b>')
-      .replace(/##3/g, '<i>')
-      .replace(/##4/g, '</i>');
+      .replace(new RegExp(local.bStart, 'g'), '<b>')
+      .replace(new RegExp(local.bEnd, 'g'), '</b>')
+      .replace(new RegExp(local.iStart, 'g'), '<i>')
+      .replace(new RegExp(local.iEnd, 'g'), '</i>');
 
     if (debugSearch) {
       personInfo.DisplayName += `<u>${personInfo.soundParts.join('-')},${personInfo.MatchType},${

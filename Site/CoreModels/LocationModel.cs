@@ -105,7 +105,9 @@ namespace TallyJ.CoreModels
         (
         (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
         GetLocations(includeOnline)
-        .OrderBy(l => l.SortOrder)
+        .OrderBy(l => l.IsTheOnlineLocation)
+        .ThenBy(l => l.SortOrder)
+        .ThenBy(l => l.Name)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
         .Select(l => "<option value={C_RowId}{Selected}>{Name}</option>".FilledWith(l))
         .JoinedAsString())

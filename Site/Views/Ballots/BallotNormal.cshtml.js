@@ -935,11 +935,8 @@
 
     if (invalidId) {
       invalids.data('invalid', invalidId);
-      for (var i = 0; i < local.votes.length; i++) {
-        let vote = local.votes[i];
-        if (vote.vid === voteId) {
-          vote.invalid = invalidId;
-        }
+      if (vote && vote.vid === voteId) {
+        vote.invalid = invalidId;
       }
     }
 

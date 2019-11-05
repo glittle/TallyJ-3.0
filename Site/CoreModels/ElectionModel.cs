@@ -1083,10 +1083,12 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        var poolList = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool).Take(numToElect).ToList();
+        var completePool = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool);
+
+        var poolList = completePool.Take(numToElect).ToList();
         if (poolList.Count != numToElect)
         {
-          problems.Add($"Pool too small ({poolList.Count})" + name);
+          problems.Add($"Pool too small ({completePool.Count})" + name);
           continue;
         }
 

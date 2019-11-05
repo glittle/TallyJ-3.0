@@ -65,11 +65,11 @@
       }
       <h3>
         <span>Ballots</span> @if (ContextItems.LocationModel.HasLocations)
-        {
-          <span class="where">
-            <span>-</span> <span class="LocationName" data-name="Name"></span>
-          </span>
-        }
+                             {
+                               <span class="where">
+                                 <span>-</span> <span class="LocationName" data-name="Name"></span>
+                               </span>
+                             }
       </h3>
       <div id="tabBallots" class="locationInfo">
         <div class="float-right">
@@ -97,6 +97,7 @@
         <div id="ballotList" class="ballotList">
         </div>
       </div>
+      
       <h3 id="tabNameSearchTitle"><span>Add to Ballot <span class="ballotCode"></span></span></h3>
       <div id="tabNameSearch">
         <div class="action float-right">
@@ -127,6 +128,7 @@
         <ul id="nameList" class="nameList"></ul>
       </div>
     </div>
+
     <div class="nameListKey">
       <h5>Tips and Samples for name search results</h5>
       <ul class="nameList">
@@ -227,7 +229,7 @@
       </span>
       <span class="icons">
         <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
-        <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
+☺        <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
       </span>
     </div>
     <div class="Invalid InvalidPerson">{InvalidDescription}</div>

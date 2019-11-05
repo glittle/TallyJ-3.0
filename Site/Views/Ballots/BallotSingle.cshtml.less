@@ -1,7 +1,14 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
+@invalidColor: #e00000;
+
+body {
+  overflow-y: scroll; //avoid jitter
+}
+
 .Panels {
   display: flex;
+  margin: 15px 0 0 0;
 }
 
 #votesPanel, .sidePanel {
@@ -19,9 +26,6 @@ tr.overrides {
   }
 }
 
-body {
-  overflow-y: scroll;
-}
 /* overrides to fix UI */
 .ui-tabs-panel {
   padding: 3px 2px 5px 5px;
@@ -42,41 +46,42 @@ body {
 
 .nameList {
   position: relative;
-  height: 300px;
   width: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: solid 1px #999;
   line-height: 1.5;
-  overflow: auto;
-
-  u {
-    text-decoration: none;
-  }
 
   li {
     border-bottom: 1px solid #f0f0f0;
     padding: 0 2px 0 5px;
     color: #000;
-    cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
 
-    &:hover {
-      background-color: rgba(204, 255, 190, 0.5);
-      //border-color: #ddd;
+    span {
+      position: absolute;
+      top: 0;
+
+      &.ShowVote {
+        top: 0;
+        height: 4px;
+        left: 0;
+        //background-color: rgba(112, 184, 255, 0.25);
+        background-image: linear-gradient(to right, rgb(214, 234, 255) 0%, rgb(214, 234, 255) 97%, rgba(0, 0, 0, 0) 100%)
+      }
     }
+
 
     &.selected {
       background-color: #c1f1b4;
     }
-
-
-    &.HasVotes {
-      background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
-    }
-
+    //&.HasVotes {
+    //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
+    //}
     i {
       // sound match
       border-bottom: 1px #666 dashed;
@@ -92,16 +97,7 @@ body {
         border-bottom: 1px #666 dashed;
         font-style: normal;
       }
-
-      &.HasVotes {
-        background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%), linear-gradient(45deg, @tallyJOrange 0%, rgba(0,0,0,0) 5%);
-      }
     }
-  }
-
-  li.HasVotes + li.NoVotes {
-    padding-top: 2px;
-    border-top: 3px double #ccc;
   }
 
   li.Match5Only + li.Match4 {
@@ -112,29 +108,77 @@ body {
   .CannotReceiveVotes {
     text-decoration: line-through;
   }
+}
 
-  .First {
-    padding-top: 2px;
-    border-top: 3px double #ccc;
-    width: 100%;
-    display: block;
+#nameList {
+  overflow: auto;
+  height: 300px;
+  border: solid 1px #999;
+
+
+  u {
+    text-decoration: none;
+  }
+
+  li {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(204, 255, 190, 0.5);
+      //border-color: #ddd;
+    }
+
+    i {
+      // sound match
+      border-bottom: 1px #666 dashed;
+    }
+
+    .First {
+      padding-top: 2px;
+      border-top: 3px double #ccc;
+      width: 100%;
+      display: block;
+    }
+  }
+}
+
+.nameListKey {
+  display: none;
+
+  h5 {
+    margin: 15px 0 3px;
+    font-style: italic;
+  }
+
+  ul {
+    border: solid 1px #999;
+    background-color: #f7f7f7;
   }
 }
 
 .ballotList {
   overflow: auto;
-  padding: 20px 15px 30px 15px;
-  max-height: 300px;
+  max-height: ~"calc(100vh - 400px)";
+  min-height: 150px;
+  border: solid 1px #999;
+  clear: both;
+  margin: 14px 0 0;
+
+  li:hover {
+    background-color: #cfc;
+  }
 
   div {
     border: 1px solid transparent;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
+    padding: 2px 3px;
   }
 
   div span {
-    color: #666;
+    //color: #0066cc;
+    color: black;
   }
 
   div:hover {
@@ -163,7 +207,7 @@ body {
 }
 
 .tip1 {
-  color: #aaa;
+  color: #6f6f6f;
   font-size: 10px;
   display: inline-block;
 }
@@ -185,10 +229,15 @@ input.ZZsearching {
 }
 
 .votesPanel {
-  margin: 6px 0 0 15px;
+  margin-left: 15px;
   flex: 1 1 auto;
   //float: left;
   //width: 530px;
+  &.online {
+    .icons {
+      display: none;
+    }
+  }
 }
 
 .ui-icon-arrow-2-n-s {
@@ -209,6 +258,10 @@ input.ZZsearching {
   text-decoration: line-through;
 }
 
+.NotBold {
+  font-weight: normal
+}
+
 span.Vote {
   width: 60px;
   display: inline-block;
@@ -227,7 +280,7 @@ input.Vote {
   margin-top: 2px;
 }
 
-.titleDiv {
+.titleDivNormal, .titleDivOnline {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 1px 0;
@@ -237,12 +290,16 @@ input.Vote {
   .ballotCode {
     padding-left: 3px;
     font-size: 16pt;
-    color: #75a531;
+    color: @tallyJGreenText;
   }
 
   div {
     margin: -3px 0 0 0;
   }
+}
+
+.titleDivOnline {
+  display: none;
 }
 
 button.smallButton {
@@ -260,23 +317,23 @@ button.smallButton {
 }
 
 .InvalidP div.InvalidPerson {
-  color: #e80c4d;
-  padding: 0 0 3px 85px;
+  color: @invalidColor;
+  padding: 0 0 6px 33px;
 }
 
 select.Invalid {
   vertical-align: top;
-  color: #e80c4d;
+  color: @invalidColor;
 }
 
 
 .InvalidBallot, .Ineligible, span.Invalid {
-  color: #e80c4d;
+  color: @invalidColor;
   font-weight: bold;
 }
 
 .Ok {
-  color: #0ce84d;
+  color: @tallyJGreenText;
 }
 
 .Confirmed {
@@ -289,7 +346,6 @@ select.Invalid {
 
 .txtContact {
   width: 260px;
-  margin-bottom: 5px;
 }
 
 div.heading {
@@ -315,8 +371,8 @@ div.heading {
 
   .ChangedMessage {
     display: block;
-    color: #e80c4d;
-    margin-left: 70px;
+    color: @invalidColor;
+    margin-left: 32px;
     padding-bottom: 5px;
   }
 }
@@ -355,27 +411,71 @@ div.heading {
   text-align: right;
   margin-right: 12px;
   font-size: 80%;
+  flex-shrink: 0;
   color: #999;
   vertical-align: top;
   margin-top: 3px;
 }
 
 .InUse {
-  color: @tallyJOrangeText;
+  color: #966868;
+
+  &::before {
+    content: "✔ ";
+  }
 }
+
 
 
 .duplicateVote {
   .Name {
-    color: #e80c4d;
+    color: @invalidColor;
   }
 
   .Duplicate {
-    color: #e80c4d;
+    color: @invalidColor;
     margin-right: 2px;
     font-weight: bold;
     display: inline-block;
     font-size: 1em;
+  }
+}
+
+
+.rawVote {
+  display: none;
+}
+
+.ForOnlineLI {
+  display: none;
+}
+
+body.IsOnline {
+  .ForOnlineLI {
+    display: list-item;
+  }
+
+  .hideIfOnline {
+    display: none;
+  }
+
+  .titleDivNormal {
+    display: none;
+  }
+
+  .titleDivOnline {
+    display: block;
+  }
+
+  .LocationStatusH3, .locationInfo {
+    display: none;
+  }
+
+  #votesList .VoteHost {
+    &.withRawfalse {
+      border-color: transparent;
+      background: none;
+    }
   }
 }
 
@@ -384,13 +484,16 @@ div.heading {
   width: 100%;
   margin-bottom: 20px;
   padding-top: 5px;
-  max-height: 60vh;
+  max-height: 50vh;
+  overflow-y: auto;
 
   .VoteHost {
     width: 100%;
     margin: 2px 0;
     min-height: 1.4em;
     background-color: #f1ffde;
+    box-sizing: border-box;
+    border: 2px solid #f1ffde;
 
     span.Name {
       display: none;
@@ -398,6 +501,12 @@ div.heading {
       padding: 0 9px 0 0;
       text-indent: -20px;
       margin-left: 20px;
+
+      u {
+        text-decoration: none;
+        padding: 0 5px 0 45px;
+        color: #333;
+      }
     }
 
     &.InvalidP span.Name {
@@ -420,17 +529,107 @@ div.heading {
 
     .Top {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
     }
 
     .NameInfo {
       flex: 2 1 auto;
       white-space: normal;
       display: inline-block;
+      padding: 0 0 0 5px;
     }
 
     .icons {
       flex: 0 0 auto;
+    }
+
+
+    &.withRawtrue {
+      margin: 8px 0;
+      border-color: #f1ffde;
+      cursor: pointer;
+
+      option[value="cd27534d-d7e8-e011-a095-002269c41d11"] {
+        display: none;
+      }
+
+      .Vote {
+        display: none;
+      }
+
+      .rawVote {
+        display: flex;
+        border: 1px solid #efeeef;
+        background-color: #e6e6e6;
+        border-top: none;
+        border-right: none;
+        padding: 4px 8px 4px 0px;
+        margin: 2px;
+        opacity: 0.7;
+
+        button {
+          opacity: 0.3;
+        }
+
+        > div {
+          flex-grow: 1;
+        }
+
+        > span {
+          padding: 0 10px 0 8px;
+          display: flex;
+          align-items: center;
+
+          span {
+            display: inline-block;
+          }
+        }
+
+        .names {
+          > span {
+            display: block;
+          }
+
+          button {
+            margin: 0 2px 0 0;
+            vertical-align: text-top;
+          }
+        }
+
+        .btnFindPart {
+          line-height: 120%;
+          padding: 2px 6px;
+          font-size: 10.5px;
+          border-radius: 3px;
+        }
+      }
+    }
+
+    &.rawTarget {
+      border-color: @tallyJGreen;
+
+      .rawVote {
+        opacity: 1;
+        background-color: transparent;
+
+        button {
+          opacity: 1;
+        }
+      }
+    }
+
+    &.rawDonefalse {
+      background-color: #f1b787;
+      border-color: #f1b787;
+
+      .rawVote {
+        background-color: #f1b787;
+        opacity: 1;
+      }
+    }
+
+    &.rawDonetrue {
+      background-color: #f1ffde;
     }
   }
 }
@@ -445,11 +644,9 @@ div.heading {
   line-height: 1.2;
 }
 
-.ballotList li:hover {
-  background-color: #cfc;
-}
 
 #btnRefreshBallotList {
+  margin: 0 0 3px 3px
 }
 
 #btnAddMissing {
@@ -502,19 +699,11 @@ span.HideZero0 {
 
 .ui-accordion-content {
   border-top: none;
-  padding: 10px 6px 2px 6px;
+  padding: 10px 6px 10px 6px;
 }
 
 .ballotDiv1 {
   margin: 2px 0 5px 0;
-}
-
-#ballotFilter {
-  float: right;
-  width: auto;
-  clear: right;
-  margin-top: 9px;
-  font-size: 80%;
 }
 
 #keyTimeShow {
@@ -537,6 +726,7 @@ span.HideZero0 {
 #searchInput {
   position: relative;
 }
+
 
 @media only screen and (max-width: 600px) {
   .Panels {

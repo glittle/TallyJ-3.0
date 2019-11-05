@@ -14,7 +14,8 @@
   ContextItems.AddJavascriptForPage("ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocationsIncludingOnline.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
@@ -28,23 +29,24 @@
       For each pile, select the person's name below then enter the number of votes they
       received.
     </li>
-    @if (ContextItems.LocationModel.HasLocations)
-    {
       <li>
-        Be sure to update the Location Status to indicate the status of
+      If Location Status is showing, be sure to update it to indicate the status of
         your counting process, and the Contact Info in case the head teller needs to contact
         you.
       </li>
-    }
+    <li class="ForOnlineLI">
+      For online ballots, click the Find button to copy the full name to the search box, or
+      the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
+    </li>
   </ol>
 </div>
 <div data-comment="empty div"></div>
 <div class="Panels">
   <div class="sidePanel">
     <div id="accordion">
-      @if (ContextItems.LocationModel.HasLocations)
+      @if (ContextItems.LocationModel.HasLocationsIncludingOnline)
       {
-        <h3>Location Status <span class="LocationStatus"></span></h3>
+        <h3 class="LocationStatusH3">Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
           <div>
             <select id="ddlLocationStatus" data-name="TallyStatusCode" size="@LocationStatusEnum.Count">
@@ -60,10 +62,11 @@
         </div>
       }
       <h3>
-        <span>Computers</span> @if (ContextItems.LocationModel.HasLocations)
+        <span class="hideIfOnline">Computers</span>
+        @if (ContextItems.LocationModel.HasLocations)
         {
           <span class="where">
-            <span>-</span> <span class="LocationName" data-name="Name"></span>
+            <span class="hideIfOnline">-</span> <span class="LocationName" data-name="Name"></span>
           </span>
         }
       </h3>
@@ -77,13 +80,20 @@
           Ballots to enter:
           <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
         </div>
-        <div>
+        <div class="float-right">
+          <button type="button" id="btnNewBallot" class="btn btn-mini NewBallotBtns">
+            Add for Computer @UserSession.CurrentComputerCode
+          </button>
+        </div>
+        <div class="ballotNumEntered">
           Ballots entered: <span id="lblNumEntered" class="lblNumEntered"></span>
         </div>
+
         <div id="ballotList" class="ballotList">
         </div>
       </div>
-      <h3><span>Add another Person</span></h3>
+
+      <h3><span id="addAnother"></span></h3>
       <div id="tabNameSearch">
         <div class="action float-right">
           <span id="action"></span><span id="more"></span>
@@ -111,15 +121,35 @@
           </div>
         </div>
         <ul id="nameList" class="nameList"></ul>
-        <div class="Clear5">
         </div>
-      </div>
+    </div>
+
+    <div class="nameListKey">
+      <h5>Tips and Samples for name search results</h5>
+      <ul class="nameList">
+        <li>
+          <span class="InUse">Is on this ballot (checkmark)</span>
+        </li>
+        <li class="selected">Selected in the list (use &uarr; &darr; to select)</li>
+        <li>
+          <span class="CannotReceiveVotes">Any votes for this person will be spoiled</span>
+        </li>
+        <li class="Match5">
+          <span>Matched by <b>fi</b>rst <b>l</b>etters</span>
+        </li>
+        <li class="Match4">
+          <span>Matched by <i>sound</i> or middl<b>e</b> l<b>e</b>tt<b>e</b>rs</span>
+        </li>
+      </ul>
     </div>
   </div>
   <div id="votesPanel" class="votesPanel">
-    <div class="titleDiv">
+    <div class="titleDivNormal">
       <span># Votes<span class="ui-icon ui-icon-info" id="qTipNumVotes"></span></span>
-      &nbsp; Name of person <span class="NotBold">(in any order)</span>
+      &nbsp; Name of person <button id="btnSortVotes" class="btn btn-mini">Sort Names</button>
+    </div>
+    <div class="titleDivOnline">
+      Name of person
     </div>
     <div id="votesList">
     </div>
@@ -136,17 +166,37 @@
 </div>
 
 <script type="text/x-template" id="SingleVoteLine">
-  <div class="VoteHost{Fake} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+  <div class="VoteHost{Fake} withRaw{hasRawVote} rawDone{rawDone} Changed{changed} Valid{invalid} Invalid{invalidType} {ExtraClass}" id="V{vid}" data-vote-id="{vid}" data-person-id="{pid}">
+    <div class="rawVote">
+      <span>
+        <button class="btn btn-mini btnFind">Find</button>
+      </span>
+      <div class="names">
+        <span>
+          <button class="btn btn-mini btnFindPart btnFindF">F</button>
+          <span class="F">{rawFirst}</span>
+        </span>
+        <span>
+          <button class="btn btn-mini btnFindPart btnFindL">L</button>
+          <span class="L">{rawLast}</span>
+        </span>
+      </div>
+      <div>
+        <span>{rawOtherInfo}</span>
+      </div>
+    </div>
     <div class="Top">
       <input class="Vote" type="number" min="0" value='{count}' tabindex="2">
-      <span class="Invalid">Spoiled: </span>
-      <span class="Name">{^Display}</span>
-      <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
-        {^InvalidReasons}
-      </select>
+      <span class="NameInfo">
+        <span class="Invalid">Spoiled: </span>
+        <span class="Name">{^Display}</span>
+        <select class="Invalid InvalidCustom" data-invalid="{invalid}" tabindex="1" size="1">
+          {^InvalidReasons}
+        </select>
+      </span>
       <span class="icons">
         <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
-        <span class="ui-icon ui-icon-trash" title="Delete this person's ballots from this teller computer"></span>
+        <span class="ui-icon ui-icon-trash" title="Delete this ballots for this person from this teller computer"></span>
       </span>
     </div>
     <div class="Invalid InvalidPerson">{InvalidDescription}</div>
