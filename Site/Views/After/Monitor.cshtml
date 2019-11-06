@@ -136,36 +136,36 @@
   <table class="Ballots">
     <caption>Ballots needing attention</caption>
     <thead>
-    <tr>
-      <th>
-        Ballot
-      </th>
-      <th>
-        Status
-      </th>
-      <th>
-        Tellers
-      </th>
-      <th>
-        Location
-      </th>
-    </tr>
+      <tr>
+        <th>
+          Ballot
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+          Tellers
+        </th>
+        <th>
+          Location
+        </th>
+      </tr>
     </thead>
     <tbody id="ballotsBody" class="Hidden tbody">
-    <tr>
-      <th>
-        {Code} {^Btn}
-      </th>
-      <td>
-        {Status}
-      </td>
-      <td>
-        {Tellers}
-      </td>
-      <td>
-        {LocationName}
-      </td>
-    </tr>
+      <tr>
+        <th>
+          {Code} {^Btn}
+        </th>
+        <td>
+          {Status}
+        </td>
+        <td>
+          {Tellers}
+        </td>
+        <td>
+          {LocationName}
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -173,9 +173,9 @@
 
 @if (SettingsHelper.HostSupportsOnlineElections)
 {
-  <h2 class="onlineH2">Online Voting</h2>
   if (UserSession.CurrentElection.OnlineEnabled)
   {
+    <h2 class="onlineH2">Online Voting</h2>
     <div id="onlineDiv" v-cloak>
       <div class="votingTop">
         <div class="closeStatus" v-bind:class="closeStatusClass">
@@ -253,7 +253,7 @@
   }
   else
   {
-    <p class="noOnlineVoting">Not enabled for this election.</p>
+    <p class="noOnlineVoting">Online voting not enabled for this election.</p>
   }
 }
 

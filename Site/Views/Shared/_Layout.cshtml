@@ -35,7 +35,7 @@
   var classes = new List<string> {
       ControllerActionNamesJoined,
       ScreenMode + "Mode",
-      SettingsHelper.HostSupportsOnlineElections && UserSession.CurrentElection != null ? "Online" + (UserSession.CurrentElection.OnlineCurrentlyOpen ? "Open" : "Closed") : null,
+      SettingsHelper.HostSupportsOnlineElections && UserSession.CurrentElection != null ? "Online" + (UserSession.CurrentElection.OnlineCurrentlyOpen ? "Open" : UserSession.CurrentElection.OnlineEnabled ? "Closed" : "NotEnabled") : null,
       "Auth" + UserSession.AuthLevel,
       UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
     };

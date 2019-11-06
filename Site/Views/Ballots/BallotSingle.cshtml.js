@@ -512,7 +512,7 @@ var BallotSinglePageFunc = function () {
       ShowStatusFailed('Must select your location first!');
       return;
     }
-    debugger;
+    
     var vote, newHost;
     var person = info.Person;
 
@@ -521,6 +521,7 @@ var BallotSinglePageFunc = function () {
       vote = local.votes.find(function (v) { return v.vid === voteId; });
       vote.pid = person.C_RowId;
       vote.name = person.C_FullName;
+      vote.count = 1;
       vote.ineligible = person.CanReceiveVotes ? null : person.IneligibleReasonGuid;
 
       newHost = local.votesList.find('.VoteHost#V' + voteId).eq(0);
@@ -554,6 +555,8 @@ var BallotSinglePageFunc = function () {
     }
 
     showVotes();
+
+    newHost = local.votesList.find('.VoteHost#V' + voteId).eq(0);
 
     startSavingVote(newHost);
   };

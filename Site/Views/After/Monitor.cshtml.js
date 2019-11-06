@@ -75,7 +75,9 @@
 
     hub.client.updateOnlineElection = function (info) {
       console.log('signalR: frontDesk updateOnlineElection');
-      settings.vue.showOnlineTimes(info); 
+      if (settings.vue) {
+        settings.vue.showOnlineTimes(info); 
+      }
     };
 
 
@@ -88,11 +90,13 @@
 
   function showInfo(info, firstLoad) {
     publicInterface.initial = info;
-    settings.vue.onlineBallots = info.OnlineBallots;
 
     clearInterval(settings.autoMinutesTimeout);
 
-    settings.vue.showOnlineTimes(info.OnlineInfo);
+    if (settings.vue) {
+      settings.vue.onlineBallots = info.OnlineBallots;
+      settings.vue.showOnlineTimes(info.OnlineInfo);
+    }
 
     var table = $('#mainBody');
     if (!firstLoad) {
