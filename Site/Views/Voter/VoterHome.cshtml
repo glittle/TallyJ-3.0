@@ -39,9 +39,10 @@
       To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
     </p>
     <ul>
-      <li><a target="q2" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
-      <li><a target="q3" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
-      <li><a target="q1" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections</a></li>
+      <li><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></li>
+      <li><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></li>
+      <li><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
+      <li><a target="q4" class="pdf" href="http://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
     </ul>
   </div>
 
@@ -90,25 +91,25 @@
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
     <div class="title">Settings for @UserSession.VoterEmail</div>
     <p class="emails">
-      Would you like to get an email:
-      <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />when an election opens?</label>
-      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />when your ballot is processed?</label>
-      <button class="btn btn-mini" v-on:click="emailTest">Send a sample email now</button>
-
-      @*<p v-if="lastLoginAge" class="lastLoginAge">
-          You last logged in {{lastLoginAge}}.
-          <span v-if="!loadingLoginHistory">See the bottom of this page for more details.</span>
-        </p>*@
+      <button class="btn btn-mini" v-on:click="emailTest">Send me a sample email now</button>
+      <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me an email when an election opens that I can vote in.</label>
+      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me an email when my ballot is processed.</label>
     </p>
-    <p class="account">
-      Need to update your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
+    <p class="account" v-if="hasLocalId">
+      Want to update your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
+    </p>
+    <p class="account" v-else>
+      You logged in via @UserSession.VoterAuthSource.
+      If others might use your login account, you may wish to add a TallyJ password.
+      If you do this, you will need to supply the TallyJ password for all future logins via @UserSession.VoterAuthSource.
+      @Html.ActionLink("Add a TallyJ password", "Register", "Account2", null, new { @class = "btn btn-mini" })
     </p>
 
     <div class="title">Activity</div>
 
     <p>
-      For your review and security, here is your recent activity (with the most recent at the top). If something looks wrong,
-      please stop using TallyJ and contact
+      For your review and security, here is your recent activity (with the most recent first).
+      If something looks wrong, please stop using TallyJ and contact
       Glen Little (<a href="mailto:glen.little@gmail.com">glen.little@gmail.com</a>) with details.
       <button class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
     </p>
@@ -158,7 +159,7 @@
           </label>
           <button accesskey="C" v-on:click="resetSearch">Clear</button>
         </div>
-        
+
         <div v-show="!nameList.length" class="nameListPlaceholder">
           <span v-if="searchText">No matches found.</span>
           <span v-else>Names will appear here when you search.</span>

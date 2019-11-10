@@ -69,6 +69,9 @@ namespace TallyJ.CoreModels.Account2Models
   {
     [Required]
     public string Provider { get; set; }
+    
+    [DataType(DataType.Password)]
+    public string ExtPassword { get; set; }
   }
 
   public class RegisterViewModel

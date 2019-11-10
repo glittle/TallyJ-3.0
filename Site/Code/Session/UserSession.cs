@@ -257,7 +257,7 @@ namespace TallyJ.Code.Session
       set => SessionKey.VoterLastLogin.SetInSession(value);
     }
 
-    public static void RecordLogin(string source, string email)
+    public static void RecordVoterLogin(string source, string email)
     {
       if (email.HasNoContent())
       {
@@ -279,13 +279,13 @@ namespace TallyJ.Code.Session
       }
       else
       {
-        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+        VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
       }
 
       onlineVoter.WhenLastLogin = now;
       db.SaveChanges();
 
-      new LogHelper().Add($"Login from {source}", true, email);
+      new LogHelper().Add($"Voter login from {source}", true, email);
 
       new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
     }

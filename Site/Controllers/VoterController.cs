@@ -359,11 +359,13 @@ namespace TallyJ.Controllers
 
       // piggyback and get other info too
       var emailCodes = Db.OnlineVoter.Single(ov => ov.Email == email).EmailCodes;
+      var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
 
       return new
       {
         list,
-        emailCodes
+        emailCodes,
+        hasLocalId
       }.AsJsonResult();
     }
 

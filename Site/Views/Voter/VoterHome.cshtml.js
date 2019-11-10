@@ -86,7 +86,8 @@ var vueOptions = {
       randomLast: '',
       randomOtherInfo: '',
       randomResult: '',
-      addRandomToList: false
+      addRandomToList: false,
+      hasLocalId: false
     };
   },
   computed: {
@@ -167,6 +168,7 @@ var vueOptions = {
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
+            vue.hasLocalId = info.hasLocalId;
 
             // for dev, go to first available election
             //            setTimeout(function () {

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Helpers;
+using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -12,12 +14,15 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Facebook;
 using Microsoft.Owin.Security.Google;
+using Microsoft.Web.Infrastructure;
 using Owin;
 using TallyJ.Code;
+using TallyJ.Code.Data;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
+using TallyJ.Code.UnityRelated;
+using TallyJ.Controllers.LoginHelpers;
 using TallyJ.CoreModels.Account2Models;
-using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
 
@@ -27,6 +32,8 @@ namespace TallyJ
 {
   public class OwinStartup
   {
+    private ITallyJDbContext _db;
+
     public void Configuration(IAppBuilder app)
     {
       // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=316888
@@ -107,6 +114,27 @@ namespace TallyJ
 
           if (gotEmail)
           {
+            _db = null; // was likely disposed of
+            var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
+            if (hasLocalId)
+            {
+              var pwProvided = SessionKey.ExtPassword.FromSession("");
+              var model = new LoginViewModel
+              {
+                Email = email,
+                Password = pwProvided
+              };
+              var modelState = new ModelStateDictionary();
+              var rootUrl = new SiteInfo().RootUrl;
+              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for email address: " + email,
+                "Facebook",
+                (s, s1) => "", // not used from here
+                () => new RedirectResult(rootUrl + "/Account/Logoff"), 
+                () => null // not used from here
+                );
+              return helpers.LocalPwLogin(model, rootUrl);
+            }
+
 
             var identity = new ClaimsIdentity(new List<Claim>
             {
@@ -123,7 +151,7 @@ namespace TallyJ
               ExpiresUtc = DateTime.UtcNow.AddHours(1)
             }, identity);
 
-            UserSession.RecordLogin("Facebook", email);
+            UserSession.RecordVoterLogin("Facebook", email);
           }
           else
           {
@@ -136,6 +164,8 @@ namespace TallyJ
 
       return options;
     }
+
+    private ITallyJDbContext Db => _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext);
 
     private GoogleOAuth2AuthenticationOptions CreateGoogleOptions()
     {
@@ -151,11 +181,24 @@ namespace TallyJ
         {
           var email = (string)authContext.User["email"];
 
-
-          if (email != SessionKey.EmailForOtherLogin.FromSession(""))
+          _db = null; // was likely disposed of
+          var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
+          if (hasLocalId)
           {
-            // this in not what the user put into the page
-//            return Redirect();//Url.Action("Index", "Public"));
+            var pwProvided = SessionKey.ExtPassword.FromSession("");
+            var model = new LoginViewModel
+            {
+              Email = email,
+              Password = pwProvided
+            };
+            var modelState = new ModelStateDictionary();
+            var rootUrl = new SiteInfo().RootUrl;
+            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for email address: " + email,
+              "Google",
+              (s, s1) => "", // not used from here
+              () => new RedirectResult(rootUrl + "/Account/Logoff"), 
+              () => new RedirectResult(rootUrl + "/Account/Logoff"));
+            return helpers.LocalPwLogin(model, rootUrl);
           }
 
 
@@ -177,7 +220,7 @@ namespace TallyJ
             ExpiresUtc = DateTime.UtcNow.AddHours(1)
           }, identity);
 
-          UserSession.RecordLogin("Google", email);
+          UserSession.RecordVoterLogin("Google", email);
 
           return Task.FromResult(0);
         }

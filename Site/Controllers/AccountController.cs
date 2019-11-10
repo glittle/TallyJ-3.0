@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using TallyJ.Code;
-using TallyJ.Code.Helpers;
-using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
+using TallyJ.Controllers.LoginHelpers;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Account2Models;
 using static System.Configuration.ConfigurationManager;
@@ -22,10 +19,7 @@ namespace TallyJ.Controllers
   //[Authorize]
   public class AccountController : Controller
   {
-    private ApplicationSignInManager _signInManager;
 
-    private ApplicationUserManager _userManager;
-    //
     // GET: /Account/LogOn
 
     [AllowAnonymous]
@@ -46,11 +40,27 @@ namespace TallyJ.Controllers
     public async Task<ActionResult> LogOnLocal(LoginViewModel loginViewModel)
     {
       var voterHomeUrl = Url.Action("Index", "Voter");
+      var homeUrl = Url.Action("Index", "Public");
       if (loginViewModel.Provider != "Local")
       {
-        return Redirect(Url.Action("Index", "Public"));
+        return Redirect(homeUrl);
       }
-      return await LocalPwLogin(loginViewModel, voterHomeUrl);
+
+      if (!ModelState.IsValid)
+      {
+        LoginHelper.StoreModelStateErrorMessagesInSession(ModelState);
+        return new RedirectResult(homeUrl);
+        //return View(model);
+      }
+
+      var helpers = new LoginHelper(ModelState, 
+        homeUrl, 
+        "",
+        "Local",
+        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new {userId = id, code}, protocol: HttpContext.Request.Url.Scheme); },
+        ()=> RedirectToAction("Lockout", "Account2"),
+        ()=> RedirectToAction("SendCode", "Account2", new { ReturnUrl = voterHomeUrl }));
+      return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
     }
 
     [AllowAnonymous]
@@ -59,186 +69,11 @@ namespace TallyJ.Controllers
     public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
     {
       var voterHomeUrl = Url.Action("Index", "Voter");
+      SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
+
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }
 
-    public async Task<ActionResult> LocalPwLogin(LoginViewModel model, string returnUrl)
-    {
-      if (!ModelState.IsValid)
-      {
-        StoreModelStateErrorMessagesInSession();
-        return Redirect(returnUrl);
-        //return View(model);
-      }
-
-      var owinContext = HttpContext.GetOwinContext();
-
-      var result = SignInManager2.PasswordSignInAsync(model.Email, model.Password, false, shouldLockout: true).Result;
-
-      switch (result)
-      {
-        case SignInStatus.Success:
-          var user = await UserManager.FindByNameAsync(model.Email);
-
-          var userid = UserManager.FindByEmail(user.UserName).Id;
-          if (!UserManager.IsEmailConfirmed(userid))
-          {
-            // Send email
-            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-            await UserManager.SendEmailAsync(user.Id, "Confirm your account",
-              $"Please confirm your account by clicking <a href=\"{callbackUrl}\">this link</a>.");
-
-            // Show message
-            ModelState.AddModelError("", "An email has been sent to your account with a link you need to use to confirm your account.");
-            StoreModelStateErrorMessagesInSession();
-
-            return Redirect(Url.Action("Index", "Public"));
-          }
-
-          var claimsIdentity = owinContext.Authentication.AuthenticationResponseGrant.Identity;
-          owinContext.Authentication.SignIn(new AuthenticationProperties()
-          {
-            AllowRefresh = true,
-            IsPersistent = false,
-            ExpiresUtc = DateTime.UtcNow.AddHours(1)
-          }, claimsIdentity);
-
-          SessionKey.ActivePrincipal.SetInSession(owinContext.Authentication.AuthenticationResponseGrant.Principal);
-
-          UserSession.RecordLogin("Local", UserSession.VoterEmail);
-
-          return Redirect(returnUrl);
-        case SignInStatus.LockedOut:
-          StoreModelStateErrorMessagesInSession();
-          return RedirectToAction("Lockout", "Account2");
-
-        case SignInStatus.RequiresVerification:
-          StoreModelStateErrorMessagesInSession();
-          return RedirectToAction("SendCode", "Account2", new { ReturnUrl = returnUrl }); // , RememberMe = model.RememberMe
-
-        case SignInStatus.Failure:
-        default:
-          ModelState.AddModelError("", "Invalid login attempt.");
-          StoreModelStateErrorMessagesInSession();
-
-          return Redirect(Url.Action("Index", "Public"));
-      }
-    }
-
-    public ApplicationUserManager UserManager
-    {
-      get
-      {
-        return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-      }
-      private set
-      {
-        _userManager = value;
-      }
-    }
-
-    private ApplicationSignInManager SignInManager
-    {
-      get
-      {
-        return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-      }
-      set
-      {
-        _signInManager = value;
-      }
-    }
-    private void StoreModelStateErrorMessagesInSession()
-    {
-      Session[SessionKey.VoterLoginError] = ModelState.Values.SelectMany(msv => msv.Errors.Select(msv2 => msv2.ErrorMessage)).JoinedAsString("<br>");
-    }
-
-    public ApplicationSignInManager SignInManager2
-    {
-      get
-      {
-        return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-      }
-      private set
-      {
-        _signInManager = value;
-      }
-    }
-
-    //        [AllowAnonymous]
-    //        public async Task<ActionResult> XExternalLoginCallback(string returnUrl)
-    //        {
-    //            Session["Dummy"] = 1; // touch Session so that OWIN cookies work!
-    //            var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync("XsrfKey", AppSettings["XsrfValue"]);
-    //            if (loginInfo == null)
-    //                return RedirectToAction("Index", "Public");
-    //
-    //            // AUTHENTICATED!
-    //            var providerKey = loginInfo.Login.ProviderKey;
-    //
-    //
-    //            // Application specific code goes here.
-    //            //            var userBus = new busUser();
-    //            //            var user = userBus.ValidateUserWithExternalLogin(providerKey);
-    //            //            if (user == null)
-    //            //            {
-    //            //                return RedirectToAction("LogOn", new
-    //            //                {
-    //            //                    message = "Unable to log in with " + loginInfo.Login.LoginProvider +
-    //            //                              ". " + userBus.ErrorMessage
-    //            //                });
-    //            //            }
-    //
-    //            // store on AppUser
-    //            AppUserState appUserState = new AppUserState();
-    //            //            appUserState.FromUser(user);
-    //            IdentitySignin(appUserState, providerKey, isPersistent: true);
-    //
-    //            return Redirect(returnUrl);
-    //        }
-
-
-    //[AllowAnonymous]
-    //[HttpPost]
-    //public JsonResult JsonLogOn(LogOnModel model, string returnUrl)
-    //{
-    //  if (ModelState.IsValid)
-    //  {
-    //    if (Membership.ValidateUser(model.UserName, model.Password))
-    //    {
-    //      FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-    //      UserSession.ProcessLogin();
-    //      UserSession.IsKnownTeller = true;
-
-    //      return Json(new
-    //      {
-    //        success = true,
-    //        redirect = returnUrl
-    //      });
-    //    }
-    //    else
-    //    {
-    //      ModelState.AddModelError("", "The user name or password provided is incorrect.");
-    //    }
-    //  }
-
-    //  // If we got this far, something failed
-    //  return Json(new
-    //  {
-    //    errors = GetErrorsFromModelState()
-    //  });
-    //}
-
-    //
-    // POST: /Account/LogOn
-
-    //[AllowAnonymous]
-    //public ActionResult AutoLogOn(string returnUrl)
-    //{
-    //    AssertAtRuntime.That(new SiteInfo().CurrentDataSource==DataSource.SingleElectionXml);
-
-    //}
 
     [AllowAnonymous]
     [HttpPost]
@@ -273,7 +108,7 @@ namespace TallyJ.Controllers
 
           var email = Membership.GetUser(model.UserName)?.Email;
 
-          new LogHelper().Add("Logged In - {0} ({1})".FilledWith(model.UserName, email), true);
+          new LogHelper().Add("Admin Logged In - {0} ({1})".FilledWith(model.UserName, email), true);
 
           UserSession.IsKnownTeller = true;
 

@@ -43,7 +43,7 @@ namespace TallyJ.Code
       });
       if (alsoSendToRemoteLog)
       {
-        SendToRemoteLog(message);
+        SendToRemoteLog(message + (voterEmail.HasContent() ? $" ({voterEmail})" : ""));
       }
     }
 

@@ -28,6 +28,8 @@ namespace TallyJ.EF
     DbSet<OnlineVoter> OnlineVoter { get; set; }
     DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
 
+    DbSet<AspNetUsers> AspNetUsers { get; set; }
+
     int SaveChanges();
     long CurrentRowVersion();
     void BulkInsert<T>(IEnumerable<T> entities);

@@ -140,7 +140,13 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     public ActionResult Register()
     {
-      return View();
+      var model = new RegisterViewModel();
+      var voterEmail = UserSession.VoterEmail;
+      if (voterEmail.HasContent())
+      {
+        model.Email = voterEmail;
+      }
+      return View(model);
     }
 
     [AllowAnonymous]

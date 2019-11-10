@@ -17,7 +17,7 @@
     <AssemblyName>TallyJ</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>4.0</OldToolsVersion>
@@ -322,7 +322,8 @@
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
     <Compile Include="Code\ForAuthenticatedTellerAttribute.cs" />
-    <Compile Include="Controllers\ChallengeResult.cs" />
+    <Compile Include="Controllers\LoginHelpers\ChallengeResult.cs" />
+    <Compile Include="Controllers\LoginHelpers\LoginHelper.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
@@ -694,6 +695,7 @@
     <Content Include="Content\bootstrap\css\variables.css.map">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
+    <Content Include="Images\pdf.png" />
     <Content Include="Images\social.png" />
     <Content Include="Images\walk.png" />
     <Content Include="Reports\VotesByName.cshtml" />
@@ -704,6 +706,7 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
@@ -1178,7 +1181,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:55484/</IISUrl>
+          <IISUrl>https://localhost/TallyJ</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://localhost/filesonly</CustomServerUrl>

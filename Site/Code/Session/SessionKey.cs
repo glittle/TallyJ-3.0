@@ -22,6 +22,6 @@ namespace TallyJ.Code.Session
         public const string VoterLastLogin = "VoterLastLogin";
         public const string VoterLoginError = "VoterLoginError";
         public const string ActivePrincipal = "ActivePrincipal";
-        public const string EmailForOtherLogin = "EmailForOtherLogin";
+        public const string ExtPassword = "ExtPassword";
     }
 }
