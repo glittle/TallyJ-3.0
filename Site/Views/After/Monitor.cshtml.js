@@ -224,7 +224,7 @@
         refresh();
       }
     } else {
-      showCountDown(1, 1);
+      showCountDown(0, 1);
     }
   };
 
