@@ -296,6 +296,24 @@ namespace TallyJ.CoreModels
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
+      var coreSettingsChanged = currentMode != election.ElectionMode
+                                || currentType != election.ElectionType
+                                || currentCan != election.CanVote
+                                || currentReceive != election.CanReceive;
+
+      if (coreSettingsChanged)
+      {
+        var setupModel = new SetupModel();
+        if (setupModel.HasBallots || setupModel.HasOnlineBallots)
+        {
+          return new
+          {
+            success=false,
+            Status = "Cannot change type of election after ballots are entered."
+          }.AsJsonResult();
+        }
+      }
+
       var locationModel = new LocationModel();
       var onlineLocation = locationModel.GetOnlineLocation();
 
@@ -330,11 +348,8 @@ namespace TallyJ.CoreModels
             .TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
       }
 
-      if (currentMode != election.ElectionMode
-          || currentType != election.ElectionType
-          || currentCan != election.CanVote
-          || currentReceive != election.CanReceive
-      )
+      
+      if (coreSettingsChanged)
       {
         // reset flags
         new PeopleModel().SetInvolvementFlagsToDefault();

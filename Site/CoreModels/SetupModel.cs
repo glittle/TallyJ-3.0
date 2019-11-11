@@ -76,31 +76,9 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public bool HasBallots => new BallotCacher(Db).AllForThisElection.Any() || Db.OnlineVotingInfo.Any(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid);
+    public bool HasBallots => new BallotCacher(Db).AllForThisElection.Any();
+    public bool HasOnlineBallots => Db.OnlineVotingInfo.Any(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid);
 
-    //    public string InvalidReasonsJsonString()
-    //    {
-    //      return IneligibleReasonEnum.Items
-    //        .Select(r => new
-    //          {
-    //            Guid = r.Value,
-    //            r.Group,
-    //            Desc = r.Description,
-    //            r.CanVote,
-    //            r.CanReceiveVotes
-    //          }).SerializedAsJsonString();
-    //    }
-    //
-    //public HtmlString IneligibleReasonsForSelect()
-    //{
-    //  var reasons = IneligibleReasonEnum.Items.ToList();
-
-    //  //var reasons = Db.Reasons.Where(r => r.ReasonGroup == BallotModelCore.ReasonGroupIneligible).OrderBy(r => r.SortOrder).ToList();
-    //  reasons.Insert(0, new IneligibleReasonEnum(Guid.Empty, "", "-"));
-
-    //  return reasons
-    //    .Select(r => "<option value='{0}'>{1}</option>".FilledWith(r.Value, r.Description))
-    //    .JoinedAsString().AsRawHtml();
-    //}
+   
   }
 }

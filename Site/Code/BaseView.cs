@@ -104,15 +104,15 @@ namespace TallyJ.Code
             _viewResourcesHelper.Register(this);
         }
 
-        public MvcHtmlString ActionLink2(string linkText, string actionName, string controllerName, bool show = true)
-        {
-            if (!show) return null;
-            return Html
-                .ActionLink(linkText, actionName, controllerName, null,
-                            controllerName == ControllerName && actionName == ActionName ? new {Class = "Active"} : null)
-                .ToString()
-                .SurroundWith("<li>", "</li>")
-                .AsRawMvcHtml();
-        }
+//        public MvcHtmlString ActionLink2(string linkText, string actionName, string controllerName, bool show = true)
+//        {
+//            if (!show) return null;
+//            return Html
+//                .ActionLink(linkText, actionName, controllerName, null,
+//                            controllerName == ControllerName && actionName == ActionName ? new {Class = "Active"} : null)
+//                .ToString()
+//                .SurroundWith("<li>", "</li>")
+//                .AsRawMvcHtml();
+//        }
     }
 }

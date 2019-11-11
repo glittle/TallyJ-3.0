@@ -35,6 +35,17 @@ body {
   }
 }
 
+.showBreadCrumb {
+  display: none;
+  margin: 0 0 5px 0;
+
+  span {
+    span {
+      font-weight: bold;
+    }
+  }
+}
+
 body.PublicIndex .topHelpLink {
   display: none;
 }
@@ -242,7 +253,6 @@ body.BP-None {
 
   a.Active {
     //font-weight: bold;
-
     &.NotStarted {
       background-color: @tallyJOrangeText;
     }
@@ -956,6 +966,23 @@ a.twitter {
   }
 }
 
+.NotStarted {
+  color: @tallyJOrangeText;
+}
+
+.NamesReady {
+  color: @tallyJBlue;
+}
+
+.Tallying {
+  color: @tallyJGreenText;
+}
+
+.Finalized {
+  color: @finalColor;
+}
+
+
 .ElectionState {
   margin-left: 0px;
 
@@ -965,24 +992,6 @@ a.twitter {
     padding: 0 4px 0 4px;
   }
 
-  span {
-
-    &.NotStarted {
-      color: @tallyJOrangeText;
-    }
-
-    &.NamesReady {
-      color: @tallyJBlue;
-    }
-
-    &.Tallying {
-      color: @tallyJGreenText;
-    }
-
-    &.Finalized {
-      color: @finalColor;
-    }
-  }
 
   #qTipFinalized {
     margin-left: -26px;

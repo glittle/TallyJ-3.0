@@ -22,6 +22,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
   ContextItems.AddJavascriptForPage("setupIndexPage.Tellers={0};".FilledWith(Model.TellersJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.hasOnlineBallots={0};".FilledWith(Model.HasOnlineBallots.SerializedAsJsonString()));
 }
 <button type="button" class="btnSave btn" accesskey="S">
   <u>S</u>ave Changes
@@ -379,7 +380,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
     </div>
 
     <table class="Demographics">
-      <tr>
+      <tr class="lockAfterBallots">
         <th>
           Enable Online Voting?
         </th>
@@ -390,7 +391,12 @@ ClientFile("~/Scripts/vue-datetime.css"),
           Allow voters to cast their ballots online.
         </td>
       </tr>
-
+      <tr class="explainLock">
+        <th></th>
+        <td colspan="2"><span class="explain">
+          Ballots have been entered so you cannot disable Online Voting or restrict the Name Selection method.
+        </span></td>
+      </tr>
       <tr v-if="useOnline">
         <th>
           Name Selection
@@ -399,7 +405,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
           <table>
             <tr>
               <th>A</th>
-              <td>
+              <td class="lockAfterBallots">
                 <input type="radio" value="L" title="List" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol1" />
               </td>
               <td>
@@ -416,7 +422,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
             </tr>
             <tr>
               <th>B</th>
-              <td>
+              <td class="lockAfterBallots">
                 <input type="radio" value="R" title="Random" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol2" />
               </td>
               <td>

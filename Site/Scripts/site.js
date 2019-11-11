@@ -110,11 +110,24 @@ function updatePasscodeDisplay(okay, passcode) {
 
 function HighlightActiveLink() {
   var url = location.href;
+  var found = false; // only do first... the Finalized menu repeats some
   $('#quickLinkItems a').each(function () {
     var matched = url === this.href;
     var a = $(this);
+    console.log(a.text(), a.is(':visible'));
     if (matched) {
       a.addClass('Active');
+
+      if (!found && !a.is(':visible')) {
+        var id = a.parent().attr('id').replace('menu', '');
+        var parent = $('#electionState .' + id);
+        $('.showBreadCrumb')
+          .html(`Viewing: <span class="${parent.attr('class')}">${parent.text()} / <span>${a.text()}</span></span>`)
+          .show();
+      }
+
+      found = true;
+
     } else {
       a.removeClass('Active');
     }
@@ -393,10 +406,10 @@ function AttachHandlers() {
         function (info) {
           if (info.Message) {
             ShowStatusFailed(info.Message);
-            return;
+          } else {
+            ResetStatusDisplay();
           }
-          ResetStatusDisplay();
-          //          site.broadcast(site.broadcastCode.electionStatusChanged, info);
+          HighlightActiveLink();
         });
     });
 

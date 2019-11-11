@@ -106,35 +106,35 @@ namespace TallyJ.Code.Resources
       return (XmlElement)root;
     }
 
-    public MvcHtmlString InsertMenu(string menuId = "main")
-    {
-      var menu = MainRootXml();
-
-      var node = menu.SelectSingleNode("*[@id='{0}']".FilledWith(menuId));
-
-      var topLevelItems = node.ChildNodes;
-
-      var hidePreBallotPages = _currentElection == null || _currentElection.HidePreBallotPages.AsBoolean();
-
-      var result = topLevelItems
-        .Cast<XmlNode>()
-        .Where(n => n.NodeType == XmlNodeType.Element)
-        .Cast<XmlElement>()
-        .Where(node1 => Allowed(node1, hidePreBallotPages))
-        .Select(topLevelNode =>
-        {
-          var children = GetChildren(topLevelNode, hidePreBallotPages);
-          if (children.HasNoContent() && topLevelNode.ChildNodes.Count != 0)
-          {
-            return "";
-          }
-          return "<li><a class=fNiv href='#'>{0}</a>{1}<li>".FilledWith(topLevelNode.GetAttribute("title"),
-            children);
-        })
-        .ToList();
-
-      return result.JoinedAsString("", true).AsRawMvcHtml();
-    }
+//    public MvcHtmlString InsertMenu(string menuId = "main")
+//    {
+//      var menu = MainRootXml();
+//
+//      var node = menu.SelectSingleNode("*[@id='{0}']".FilledWith(menuId));
+//
+//      var topLevelItems = node.ChildNodes;
+//
+//      var hidePreBallotPages = _currentElection == null || _currentElection.HidePreBallotPages.AsBoolean();
+//
+//      var result = topLevelItems
+//        .Cast<XmlNode>()
+//        .Where(n => n.NodeType == XmlNodeType.Element)
+//        .Cast<XmlElement>()
+//        .Where(node1 => Allowed(node1, hidePreBallotPages))
+//        .Select(topLevelNode =>
+//        {
+//          var children = GetChildren(topLevelNode, hidePreBallotPages);
+//          if (children.HasNoContent() && topLevelNode.ChildNodes.Count != 0)
+//          {
+//            return "";
+//          }
+//          return "<li><a class=fNiv href='#'>{0}</a>{1}<li>".FilledWith(topLevelNode.GetAttribute("title"),
+//            children);
+//        })
+//        .ToList();
+//
+//      return result.JoinedAsString("", true).AsRawMvcHtml();
+//    }
 
     private XmlElement MainRootXml()
     {
@@ -172,25 +172,25 @@ namespace TallyJ.Code.Resources
       return root;
     }
 
-    private string GetChildren(XmlNode parent, bool hidePreBallotPages)
-    {
-      return parent.ChildNodes
-        .Cast<XmlNode>()
-        .Where(n => n.NodeType == XmlNodeType.Element)
-        .Cast<XmlElement>()
-        .Where(node => Allowed(node, hidePreBallotPages))
-        .DefaultIfEmpty()
-        .CheckForCurrentMenu(_urlHelper)
-        .Select(i => i == null
-          ? ""
-          : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
-            _urlHelper.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
-            , i.GetAttribute("title")
-            , i.GetAttribute("desc")
-            , i.GetAttribute("class").SurroundContentWith(" class='", "'")))
-        .JoinedAsString()
-        .SurroundContentWith("<ul class='submenu'>", "</ul>");
-    }
+//    private string GetChildren(XmlNode parent, bool hidePreBallotPages)
+//    {
+//      return parent.ChildNodes
+//        .Cast<XmlNode>()
+//        .Where(n => n.NodeType == XmlNodeType.Element)
+//        .Cast<XmlElement>()
+//        .Where(node => Allowed(node, hidePreBallotPages))
+//        .DefaultIfEmpty()
+//        .CheckForCurrentMenu(_urlHelper)
+//        .Select(i => i == null
+//          ? ""
+//          : "<li><a href='{0}' title='{2}'{3}>{1}</a></li>".FilledWith(
+//            _urlHelper.Action(i.GetAttribute("action"), i.GetAttribute("controller"))
+//            , i.GetAttribute("title")
+//            , i.GetAttribute("desc")
+//            , i.GetAttribute("class").SurroundContentWith(" class='", "'")))
+//        .JoinedAsString()
+//        .SurroundContentWith("<ul class='submenu'>", "</ul>");
+//    }
 
     private bool Allowed(XmlElement node, bool hidePreBallotPages)
     {
@@ -282,28 +282,28 @@ namespace TallyJ.Code.Resources
     }
   }
 
-  public static class ExtForMenu
-  {
-    public static IEnumerable<XmlElement> CheckForCurrentMenu(this IEnumerable<XmlElement> inputs,
-      UrlHelper urlHelper)
-    {
-      // want to have out param, so can't use iterator
-      var list = new List<XmlElement>();
-
-
-      var routeData = urlHelper.RequestContext.RouteData;
-      foreach (var item in inputs.Where(item => item != null))
-      {
-        if (routeData.Values["controller"].ToString() == item.GetAttribute("controller")
-            && routeData.Values["action"].ToString() == item.GetAttribute("action"))
-        {
-          item.SetAttribute("class", item.GetAttribute("class").SurroundContentWith("", " ") + "active");
-        }
-
-        list.Add(item);
-      }
-
-      return list;
-    }
-  }
+//  public static class ExtForMenu
+//  {
+//    public static IEnumerable<XmlElement> CheckForCurrentMenu(this IEnumerable<XmlElement> inputs,
+//      UrlHelper urlHelper)
+//    {
+//      // want to have out param, so can't use iterator
+//      var list = new List<XmlElement>();
+//
+//
+//      var routeData = urlHelper.RequestContext.RouteData;
+//      foreach (var item in inputs.Where(item => item != null))
+//      {
+//        if (routeData.Values["controller"].ToString() == item.GetAttribute("controller")
+//            && routeData.Values["action"].ToString() == item.GetAttribute("action"))
+//        {
+//          item.SetAttribute("class", item.GetAttribute("class").SurroundContentWith("", " ") + "active");
+//        }
+//
+//        list.Add(item);
+//      }
+//
+//      return list;
+//    }
+//  }
 }

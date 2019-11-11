@@ -620,7 +620,8 @@
     setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
     setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
-    var lockedAfterBallots = publicInterface.hasBallots;
+    var lockedAfterBallots = publicInterface.hasBallots || publicInterface.hasOnlineBallots;
+    // core
     $('.electionDetail select, .electionDetail input[type=number]').each(function () {
       var input = $(this);
       if (!input.data('disabled')) {
@@ -634,12 +635,22 @@
       $('#qTipLocked2').hide();
     }
 
+    // online
+    $('.lockAfterBallots input').each(function () {
+      var input = $(this);
+      if (!input.data('disabled')) {
+        input.prop('disabled', publicInterface.hasOnlineBallots);
+      }
+    });
+    $('.explainLock').toggle(publicInterface.hasOnlineBallots);
+
     cachedRules[combined] = info;
   }
 
   var publicInterface = {
     controllerUrl: '',
     hasBallots: false,
+    hasOnlineBallots: false,
     Election: null,
     Locations: null,
     settings: settings,
