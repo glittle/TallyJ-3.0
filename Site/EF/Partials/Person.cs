@@ -46,7 +46,7 @@ namespace TallyJ.EF
           LastName,
           OtherNames.SurroundContentWith(" [", "]"),
           OtherLastNames.SurroundContentWith(" [", "]"),
-          OtherInfo.SurroundContentWith(" <u>", "</u>")
+          OtherInfo.SurroundContentWith(" (", ")")
         }.JoinedAsString("", true);
       }
     }

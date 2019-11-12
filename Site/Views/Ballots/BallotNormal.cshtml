@@ -40,6 +40,10 @@
       For online ballots, click the Find button to copy the full name to the search box, or
       the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
     </li>
+    <li class="ForOnlineLI">
+      Please note that the "Online Voter #" displayed for online ballots is a random number and will
+      be randomly re-assigned whenever any new online ballots are processed.
+    </li>
   </ol>
 </div>
 <div data-comment="empty div"></div>
@@ -65,11 +69,11 @@
       }
       <h3>
         <span>Ballots</span> @if (ContextItems.LocationModel.HasLocations)
-                             {
-                               <span class="where">
-                                 <span>-</span> <span class="LocationName" data-name="Name"></span>
-                               </span>
-                             }
+        {
+          <span class="where">
+            <span>-</span> <span class="LocationName" data-name="Name"></span>
+          </span>
+        }
       </h3>
       <div id="tabBallots" class="locationInfo">
         <div class="float-right">
@@ -88,7 +92,7 @@
           Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
           <select id="ballotFilter">
             <option value="">Show All</option>
-            @foreach (var code in new BallotCacher().AllForThisElection.Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
+            @foreach (var code in new BallotCacher().AllForThisElection.Where(b => b.ComputerCode != ComputerModel.ComputerCodeForOnline).Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
             {
               <option @(UserSession.CurrentBallotFilter == code ? " selected" : "")>@code</option>
             }
@@ -97,7 +101,7 @@
         <div id="ballotList" class="ballotList">
         </div>
       </div>
-      
+
       <h3 id="tabNameSearchTitle"><span>Add to Ballot <span class="ballotCode"></span></span></h3>
       <div id="tabNameSearch">
         <div class="action float-right">
@@ -109,6 +113,7 @@
         </div>
         <div>
           Search for a <u>p</u>erson:
+          <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
         </div>
         <div class="float-right">
           <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
@@ -229,7 +234,7 @@
       </span>
       <span class="icons">
         <span class="ui-icon ui-icon-arrow-2-n-s" title="Change the vote order"></span>
-☺        <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
+        <span class="ui-icon ui-icon-trash" title="Delete this vote from this ballot"></span>
       </span>
     </div>
     <div class="Invalid InvalidPerson">{InvalidDescription}</div>

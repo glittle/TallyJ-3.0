@@ -32,6 +32,12 @@ namespace TallyJ.CoreModels
       }
 
       var filter = UserSession.CurrentBallotFilter;
+      if (UserSession.CurrentLocationName == LocationModel.OnlineLocationName)
+      {
+        // ignore filter for online
+        filter = null;
+      }
+
       var ballots = new BallotCacher(Db).AllForThisElection
         .Where(b => b.LocationGuid == UserSession.CurrentLocationGuid)
         .ToList()

@@ -208,7 +208,7 @@
                class="btn"
                v-on:click="processReadyBallots"
                v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
-               value='Accept ballots that are "Online" and "Submitted"'>
+               value='Accept online ballots that are Submitted'>
       </p>
       <p v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online voting is closed.</p>
       <p v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</p>

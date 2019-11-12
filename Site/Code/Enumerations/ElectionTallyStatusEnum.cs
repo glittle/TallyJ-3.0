@@ -77,10 +77,10 @@ namespace TallyJ.Code.Enumerations
       return false;
     }
 
-    public static string TextFor(string status)
+    public static string TextFor(string status, string defaultText = null)
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == status);
-      return item == null ? NotStarted : item.DisplayText;
+      return item == null ? (defaultText.HasContent() ? defaultText : NotStarted) : item.DisplayText;
     }
   }
 }

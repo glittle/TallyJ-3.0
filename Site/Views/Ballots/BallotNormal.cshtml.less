@@ -80,6 +80,8 @@ tr.overrides {
     span {
       position: absolute;
       top: 0;
+      right: 3px;
+      left: 3px;
 
       &.ShowVote {
         top: 0;
@@ -97,13 +99,9 @@ tr.overrides {
     //&.HasVotes {
     //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%);
     //}
-    u { // debugging only
-      text-decoration: none;
-      margin-left: 3px;
-      font-style: normal;
-      background-color: rgba(0,0,0,0.1);
-      padding: 0 2px;
-      border-radius: 2px;
+    i {
+      // sound match
+      border-bottom: 1px #666 dashed;
     }
 
     &.Match4 {
@@ -114,16 +112,11 @@ tr.overrides {
       i {
         // sound match
         border-bottom: 1px #666 dashed;
+        font-style: normal;
       }
-      //&.HasVotes {
-      //  background-image: linear-gradient(to right, @tallyJGreen 0%, rgba(0,0,0,0) 3%), linear-gradient(45deg, @tallyJOrange 0%, rgba(0,0,0,0) 5%);
-      //}
     }
   }
-  //li.HasVotes + li.NoVotes {
-  //  padding-top: 2px;
-  //  border-top: 3px double #ccc;
-  //}
+
   li.Match5Only + li.Match4 {
     padding-top: 2px;
     border-top: 3px double @tallyJGreen;
@@ -142,6 +135,7 @@ tr.overrides {
 
   u {
     text-decoration: none;
+    float: right;
   }
 
   li {
@@ -182,9 +176,15 @@ tr.overrides {
 
 .ballotList {
   overflow: auto;
-  padding: 5px 0px 0px 0px;
-  max-height: ~"calc(100vh - 400px)";
+  max-height: ~"calc(100vh * 0.3)";
   min-height: 150px;
+  border: solid 1px #999;
+  clear: both;
+  margin: 14px 0 0;
+
+  li:hover {
+    background-color: #cfc;
+  }
 
   div {
     border: 1px solid transparent;
@@ -195,7 +195,8 @@ tr.overrides {
   }
 
   div span {
-    color: #666;
+    //color: #0066cc;
+    color: black;
   }
 
   div:hover {
@@ -275,6 +276,10 @@ input.ZZsearching {
   text-decoration: line-through;
 }
 
+.NotBold {
+  font-weight: normal
+}
+
 span.Vote {
   width: 60px;
   display: inline-block;
@@ -301,6 +306,10 @@ input.Vote {
   padding: 1px 0;
   font-weight: bold;
   font-size: 12pt;
+
+  .VoteNum {
+    margin-top: 2px;
+  }
 
   .ballotCode {
     padding-left: 3px;
@@ -425,7 +434,7 @@ div.heading {
   flex-shrink: 0;
   color: #999;
   vertical-align: top;
-  margin-top: 3px;
+  margin-top: 8px;
 }
 
 .InUse {
@@ -484,7 +493,7 @@ body.IsOnline {
     display: list-item;
   }
 
-  .LocationStatusH3, .locationInfo {
+  .LocationStatusH3, .locationInfo, #btnAddToThis {
     display: none;
   }
 
@@ -520,9 +529,10 @@ body.IsOnline {
       margin-left: 20px;
 
       u {
+        font-size: 11pt;
         text-decoration: none;
-        padding: 0 5px 0 45px;
         color: #333;
+        float: right;
       }
     }
 
@@ -530,12 +540,16 @@ body.IsOnline {
       display: inline;
       margin-left: 3px;
       text-indent: 0;
-      font-size: 1em;
+      font-size: 11pt;
       text-decoration: line-through;
     }
 
     &.Valid span.Name {
-      display: inline-block;
+      display: block;
+
+      .u {
+        float: right;
+      }
     }
 
     .ui-icon {
@@ -553,6 +567,7 @@ body.IsOnline {
       flex: 2 1 auto;
       white-space: normal;
       display: inline-block;
+      padding: 4px 0 0 5px;
     }
 
     .icons {
@@ -569,13 +584,22 @@ body.IsOnline {
         display: none;
       }
 
+      .Name {
+        margin-right: 5px;
+      }
+
+      .Vote {
+        display: none;
+      }
+
       .rawVote {
         display: flex;
         border: 1px solid #efeeef;
+        background-color: #e6e6e6;
         border-top: none;
         border-right: none;
         padding: 4px 8px 4px 0px;
-        margin: -2px -2px 3px 32px;
+        margin: 2px;
         opacity: 0.7;
 
         button {
@@ -621,6 +645,7 @@ body.IsOnline {
 
       .rawVote {
         opacity: 1;
+        background-color: transparent;
 
         button {
           opacity: 1;
@@ -659,7 +684,7 @@ body.IsOnline {
 }
 
 #btnRefreshBallotList {
-  margin: 0 0 0 3px
+  margin: -5px 0 3px 3px;
 }
 
 #btnAddMissing {

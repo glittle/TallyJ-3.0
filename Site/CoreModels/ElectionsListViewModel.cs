@@ -25,6 +25,7 @@ namespace TallyJ.CoreModels
             e.DateOfElection,
             e.ElectionType,
             e.ElectionMode,
+            TallyStatus = ElectionTallyStatusEnum.TextFor(e.TallyStatus, e.TallyStatus),
             e.ShowAsTest,
             e.IsSingleNameElection,
             e.OnlineCurrentlyOpen,
@@ -48,7 +49,8 @@ namespace TallyJ.CoreModels
                           IsTest = info.ShowAsTest.AsBoolean(),
                           info.IsSingleNameElection,
                           info.OnlineCurrentlyOpen,
-                          info.OnlineWhenClose
+                          info.OnlineWhenClose,
+                          info.TallyStatus
                         };
                       });
       }

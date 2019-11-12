@@ -25,9 +25,9 @@
     rowSelected: 0,
     searchResultTemplate: '<li id=P{Id}{^Classes}{^IneligibleData}><span class=ShowVote style="width:{VoteSize}%"></span>{^HtmlName}</li>',
     ballotListDetailTemplate: temp1,
-    ballotListTemplate: '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>',
     NormalVoteLineTemplate: null,
     lastFindPart: '',
+    addingToBallot: false,
     lastFindId: 0,
     settingNameForOnlineVote: null
   };
@@ -105,12 +105,12 @@
         return;
       }
       if (selectRawVote(ev)) {
-        toggleAddToBallotTab(true);
+        showRelevantTabs();
       }
     });
     local.votesList.on('click', '.VoteHost.withRawfalse', function () {
-      toggleAddToBallotTab(false);
       $('.rawTarget').removeClass('rawTarget');
+      showRelevantTabs();
     });
 
     local.votesList.on('change', 'select.Invalid', function (ev) {
@@ -148,7 +148,7 @@
 
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
-    $('#btnAddToThis').on('click', showBallotTab);
+    //    $('#btnAddToThis').on('click', showBallotTab);
     $('#ballotFilter').on('change', startToChangeBallotFilter);
 
     $('#btnCancelAddMissing').on('click', cancelAddMissing);
@@ -161,7 +161,6 @@
     showLocation(publicInterface.Location);
 
     $('#ddlLocationStatus').on('change', changeLocationStatus);
-    showLocationStatus();
 
     $('#txtContact').on('change', function () {
       CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationInfo', { info: $(this).val() }, function () {
@@ -201,9 +200,10 @@
       changedLocation();
     });
 
-    showBallot(publicInterface);
-
     $('#votesPanel, .sidePanel').show();
+
+    showBallot(publicInterface);
+    showLocationStatus();
 
     connectToFrontDeskHub();
 
@@ -239,13 +239,14 @@
       showLocation(info.Location);
       showLocationStatus();
 
-      showBallot(info, true);
+      showBallot(info);
+
+      showRelevantTabs();
     });
   };
 
   function orderChanged(ev, ui) {
     var ids = [];
-    var pos = 1;
     var toUpdate = [];
 
     local.votesList.children().each(function () {
@@ -255,7 +256,6 @@
         ids.push(id);
         toUpdate.push(voteHost.find('.VoteNum'));
       }
-      pos++;
     });
     var form = {
       idList: ids
@@ -279,14 +279,51 @@
 
   };
 
-  function showBallotTab(focusOnIt) {
-    resetSearch();
-    local.tabList.find('h3').eq(tabNum.ballotEdit).show();
-    if (focusOnIt) {
-      // local.tabList.find('h3').eq(tabNum.ballotEdit).next().show();
-      local.tabList.accordion('option', 'active', tabNum.ballotEdit);
+  function showRelevantTabs() {
+    // start with all closed...
+    local.tabList.find('h3').hide().next().hide();
+
+    // show location status if not online
+    if (!local.location.IsOnline) {
+      local.tabList.find('h3').eq(tabNum.location).show().next().show();
     }
-  };
+
+    // always show ballots
+    local.tabList.find('h3').eq(tabNum.ballotListing).show().next().show();
+
+    // show add if a ballot is selected (regular) or raw vote is selected (online)
+    if (local.location.IsOnline) {
+      $('#addAnother').text('Update matched person');
+      if ($('.VoteHost.rawTarget').length !== 0) {
+        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+      }
+    }
+    else {
+      $('#addAnother').text('Add another Person');
+      if ($('#ballotList .selected').length !== 0) {
+        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+      }
+    }
+    //    if (showLocationTab && !local.location.IsOnline) {
+    //      local.tabList.accordion('option', 'active', tabNum.location);
+    //    } else {
+    //      local.tabList.accordion('option', 'active', tabNum.ballotListing);
+    //    }
+
+    //    toggleAddToBallotTab(!local.location.IsOnline);
+    //    local.tabList.accordion('option', 'active', tabNum.ballotListing);
+    //    showAddToThisBtn(!local.location.IsOnline);
+
+  }
+
+  //  function showBallotTab(focusOnIt) {
+  //    resetSearch();
+  //    local.tabList.find('h3').eq(tabNum.ballotEdit).show();
+  //    if (focusOnIt) {
+  //      // local.tabList.find('h3').eq(tabNum.ballotEdit).next().show();
+  //      local.tabList.accordion('option', 'active', tabNum.ballotEdit);
+  //    }
+  //  };
 
   function showAddToThisBtn(show) {
     if (show && !local.location.IsOnline) {
@@ -317,9 +354,10 @@
         $('.NewBallotBtns').prop('disabled', false);
         return;
       }
-      showBallot(info);
-      showBallotTab(true);
 
+      showBallot(info);
+
+      showRelevantTabs();
 
       local.inputField.focus().val('').change();
       local.nameList.html('');
@@ -347,6 +385,7 @@
     CallAjaxHandler(publicInterface.controllerUrl + '/RefreshBallotsList', null, function (info) {
       showBallots(info);
       highlightBallotInList();
+      showRelevantTabs();
       ShowStatusSuccess(successMsg || 'Updated');
     });
   };
@@ -366,13 +405,20 @@
       $('.LocationStatus').text(': ' + text);
     }
     var location = local.location;
-    let hideThis = !location.IsOnline;
+    let regularLocation = !location.IsOnline;
+
+    //    console.log('hide btns', regularLocation, location.IsOnline, location);
+
+    $('#btnNewBallot, #btnNewBallot2').toggle(regularLocation);
+    $('.ballotDiv1').toggle(regularLocation);
+    $('.ballotNumEntered').toggle(regularLocation);
+    //    let hideThis = !location.IsOnline;
     //    console.log('hide btns', hideThis, location.IsOnline, location);
-    $('#btnNewBallot').toggle(hideThis);
-    $('#btnNewBallot2').toggle(hideThis);
-    $('#btnAddToThis').toggle(hideThis);
-    $('.ballotDiv1').toggle(hideThis);
-    $('.ballotNumEntered').toggle(hideThis);
+    //    $('#btnNewBallot').toggle(hideThis);
+    //    $('#btnNewBallot2').toggle(hideThis);
+    //    $('#btnAddToThis').toggle(hideThis);
+    //    $('.ballotDiv1').toggle(hideThis);
+    //    $('.ballotNumEntered').toggle(hideThis);
   }
 
   function changeLocationStatus() {
@@ -481,7 +527,6 @@
           vid: 0,
           pid: person.C_RowId,
           name: person.C_FullName,
-          count: 0,
           ineligible: person.CanReceiveVotes ? null : person.IneligibleReasonGuid
         };
         local.votes.push(vote);
@@ -495,6 +540,8 @@
     }
 
     showVotes();
+
+    newHost = local.votesList.find('.VoteHost#V' + voteId).eq(0);
 
     startSavingVote(newHost);
   };
@@ -528,10 +575,10 @@
 
       updateStatusDisplay(ballot);
 
-      var toShow = local.location.IsOnline ? tabNum.ballotListing : (ballot.StatusCode === 'TooFew' || ballot.StatusCode === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
-      toggleAddToBallotTab(toShow === tabNum.ballotEdit);
-      local.tabList.accordion('option', 'active', toShow);
-      showAddToThisBtn(toShow === tabNum.ballotListing);
+      //      var toShow = local.location.IsOnline ? tabNum.ballotListing : (ballot.StatusCode === 'TooFew' || ballot.StatusCode === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
+      //      toggleAddToBallotTab(toShow === tabNum.ballotEdit);
+      //      local.tabList.accordion('option', 'active', toShow);
+      //      showAddToThisBtn(toShow === tabNum.ballotListing);
 
       highlightBallotInList();
 
@@ -541,20 +588,22 @@
       $('#votesPanel').css('visibility', 'hidden');
       $('#votesList').html('');
 
-      if (showLocationTab && !local.location.IsOnline) {
-        local.tabList.accordion('option', 'active', tabNum.location);
-      } else {
-        local.tabList.accordion('option', 'active', tabNum.ballotListing);
-      }
-      toggleAddToBallotTab(false);
+      //      if (showLocationTab && !local.location.IsOnline) {
+      //        local.tabList.accordion('option', 'active', tabNum.location);
+      //      } else {
+      //        local.tabList.accordion('option', 'active', tabNum.ballotListing);
+      //      }
+      //      toggleAddToBallotTab(false);
       showAddToThisBtn(true);
-      //local.btnDeleteBallot.show();
+
     }
 
     if (info.Location) {
       showLocation(info.Location);
       //      publicInterface.Location = info.Location;
     }
+
+    showRelevantTabs();
   }
 
   function showVotes(rawTargetVid) {
@@ -739,11 +788,27 @@
     $('#collectedVsEnteredTitle').text(title);
   };
 
-  function showBallots(info) {
-    var list = info.Ballots;
+  function extendBallots(ballots) {
+    ballots.forEach(function (ballot) {
+      ballot.onlineStatus = ballot.hasOnlineRawToFinish
+        ? '- Teller to Complete'
+        : '';
+      if (ballot.Code.startsWith('OL')) {
+        ballot.onlineNum = ballot.Code.substring(2);
+      }
+    });
+    return ballots;
+  }
 
-    $('#ballotList')
-      .html(local.ballotListTemplate.filledWithEach(list));
+  function showBallots(info) {
+    var list = extendBallots(info.Ballots);
+    local.ballots = list;
+
+    var ballotListTemplate = local.location.IsOnline
+      ? '<div id=B{Id}>Online Voter #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+      : '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>';
+
+    $('#ballotList').html(ballotListTemplate.filledWithEach(list));
 
     showBallotCount(list.length, info.Total);
     local.ballotCountAtLastLoad = list.length;
@@ -849,8 +914,6 @@
     let host = btn.closest('.rawVote');
     let vote = host.parent();
 
-    toggleAddToBallotTab(true);
-
     var voteId = vote.data('vote-id');
     var lastPart = local.lastFindPart;
     var lastId = local.lastFindId;
@@ -894,8 +957,6 @@
     }
 
     $('#txtSearch').val(text).select().trigger('keyup');
-
-
   }
 
   function trimBy(s, num) {
@@ -964,6 +1025,10 @@
           showLocation(info.Location);
         }
 
+        var ballotNums = $('#B' + info.BallotId + ' span');
+        ballotNums.eq(0).text(info.SingleBallotNames);
+        ballotNums.eq(1).text(info.SingleBallotCount);
+
         if (form.vid === 0) {
           if (info.VoteId) {
             host.data('vote-id', info.VoteId);
@@ -984,7 +1049,7 @@
 
         if (info.Name) {
           vote.name = info.Name;
-          host.find('.Name').html(info.Name);
+          host.find('.Name').html(info.Name + '<u>' + info.Area + '</u>');
         }
 
         showVotes();
@@ -993,9 +1058,7 @@
         updateStatusDisplay(info);
         updateStatusInList(info);
 
-        if (local.location.IsOnline) {
-          toggleAddToBallotTab(false);
-        }
+        showRelevantTabs();
 
         local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
 
@@ -1085,9 +1148,14 @@
           showLocation(info.Location);
         }
 
+        var ballotNums = $('#B' + info.BallotId + ' span');
+        ballotNums.eq(0).text(info.SingleBallotNames);
+        ballotNums.eq(1).text(info.SingleBallotCount);
+
         updateStatusDisplay(info);
         updateStatusInList(info);
 
+        showBallotCount(info.LocationBallotsEntered);
         local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
       }
       else {
@@ -1147,9 +1215,6 @@
         }
       });
     }
-    //    local.actionTag.removeClass('searching');
-    //    local.actionTag.text('');
-    //    local.inputField.removeClass('searching');
 
     setSelected(local.nameList.children(), local.rowSelected);
   };
@@ -1210,6 +1275,13 @@
     var personId = +rawId.substr(1);
     if (personId === 0) return;
 
+    var personName = selectedPersonLi.text();
+    var area = selectedPersonLi.find('u').text();
+    if (area) {
+      personName.length -= area.length;
+      personName = `${personName} <u>${area}</u>`;
+    }
+
     if (local.location.IsOnline) {
       var voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
@@ -1227,7 +1299,7 @@
       }
 
       vote.pid = personId;
-      vote.name = selectedPersonLi.text();
+      vote.name = personName;
       vote.count = 0;
       vote.ineligible = selectedPersonLi.data('ineligible');
 
@@ -1243,8 +1315,7 @@
       local.votes.push({
         vid: 0,
         pid: personId,
-        name: selectedPersonLi.text(),
-        count: 0,
+        name: personName,
         ineligible: selectedPersonLi.data('ineligible')
       });
 

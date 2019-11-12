@@ -1,5 +1,4 @@
-﻿
-var BallotSinglePageFunc = function () {
+﻿var BallotSinglePageFunc = function () {
   var publicInterface = {};
   var temp1 = '{StatusCodeText}{BallotStatusText} <span class="SpoiledCount HideZero{SpoiledCount}"> ({SpoiledCount} spoiled)<span>';
   var local = {
@@ -584,7 +583,6 @@ var BallotSinglePageFunc = function () {
       //          : tabNum.ballotListing;
 
       highlightBallotInList();
-
 
     } else {
       $('.ballotCode').text('');
@@ -1391,6 +1389,7 @@ var BallotSinglePageFunc = function () {
     //    var num = 0;
     $.each(votes, function () {
       var vote = this;
+
       if (this.invalid && this.invalid !== null) {
         this.InvalidReasons = local.invalidReasonsShortHtml;
         this.invalidType = 'C';
