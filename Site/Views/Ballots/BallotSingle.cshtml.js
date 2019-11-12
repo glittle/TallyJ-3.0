@@ -239,23 +239,13 @@ var BallotSinglePageFunc = function () {
   function sortVotes() {
     var votesList = $('#votesList');
     var votes = votesList.children();
-    var sortType = select.val();
     $.each(votes, function (i, r) {
       r.sortValue = null;
     });
 
-    var getValue = function (a) {
-      var value;
-      switch (sortType) {
-        case 'Name':
-          value = $(a).find('span').eq(0).text();
-          break;
-        case 'Env':
-          value = +($(a).find('b').data('num') || 0);
-          break;
-      }
-      return value;
-    }
+    var getValue = function(a) {
+      return $(a).find('.Name').text();
+    };
 
     votes.sort(function (a, b) {
       var aValue = a.sortValue || (a.sortValue = getValue(a));
@@ -264,11 +254,11 @@ var BallotSinglePageFunc = function () {
     });
 
     votes.detach().appendTo(votesList);
+    orderChanged();
   }
 
   function orderChanged(ev, ui) {
     var ids = [];
-    var pos = 1;
     var toUpdate = [];
 
     local.votesList.children().each(function () {
@@ -278,7 +268,6 @@ var BallotSinglePageFunc = function () {
         ids.push(id);
         toUpdate.push(voteHost.find('.VoteNum'));
       }
-      pos++;
     });
     var form = {
       idList: ids
@@ -759,7 +748,7 @@ var BallotSinglePageFunc = function () {
 
     var ballotListTemplate = local.location.IsOnline
       ? '<div id=B{Id}>Online Voter ({Code} - {onlineStatus})</div>'
-      : '<div id=B{Id}>Teller Ballots {Code} &nbsp; (<span>{people}</span> {peoplePlural}, <span>{Count}</span> ballot{ballotPlural})</div>';
+      : '<div id=B{Id}>Teller Ballots {Code} &nbsp; (<span>{people}</span> {peoplePlural}, <span>{Count}</span> vote{ballotPlural})</div>';
 
     $('#ballotList').html(ballotListTemplate.filledWithEach(list));
 
@@ -1050,7 +1039,10 @@ var BallotSinglePageFunc = function () {
           showLocation(info.Location);
         }
 
-        $('#B' + info.BallotId + ' span').text(info.SingleBallotCount);
+        var ballotNums = $('#B' + info.BallotId + ' span');
+        ballotNums.eq(0).text(info.SingleBallotNames);
+        ballotNums.eq(1).text(info.SingleBallotCount);
+
         input.focus();
 
         if (form.vid === 0) {
@@ -1073,7 +1065,7 @@ var BallotSinglePageFunc = function () {
 
         if (info.Name) {
           vote.name = info.Name;
-          host.find('.Name').html(info.Name);
+          host.find('.Name').html(info.Name + '<u>' + info.Area + '</u>');
         }
 
         showVotes();
@@ -1147,6 +1139,10 @@ var BallotSinglePageFunc = function () {
         if (info.Location) {
           showLocation(info.Location);
         }
+
+        var ballotNums = $('#B' + info.BallotId + ' span');
+        ballotNums.eq(0).text(info.SingleBallotNames);
+        ballotNums.eq(1).text(info.SingleBallotCount);
 
         updateStatusDisplay(info);
         updateStatusInList(info);
@@ -1260,6 +1256,13 @@ var BallotSinglePageFunc = function () {
     var personId = +rawId.substr(1);
     if (personId === 0) return;
 
+    var personName = selectedPersonLi.text();
+    var area = selectedPersonLi.find('u').text();
+    if (area) {
+      personName.length -= area.length;
+      personName = `${personName} <u>${area}</u>`;
+    }
+
     if (local.location.IsOnline) {
       var voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
@@ -1277,7 +1280,7 @@ var BallotSinglePageFunc = function () {
       }
 
       vote.pid = personId;
-      vote.name = selectedPersonLi.text();
+      vote.name = personName;
       vote.count = 0;
       vote.ineligible = selectedPersonLi.data('ineligible');
 
@@ -1293,7 +1296,7 @@ var BallotSinglePageFunc = function () {
       local.votes.push({
         vid: 0,
         pid: personId,
-        name: selectedPersonLi.text(),
+        name: personName,
         count: 1,
         ineligible: selectedPersonLi.data('ineligible')
       });

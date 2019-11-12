@@ -35,9 +35,7 @@ namespace TallyJ.EF
       }
     }
 
-    public string FullNameAndArea {
-      get { return FullNameFL + Area.SurroundContentWith(" (", ")"); }
-    }
+    public string FullNameAndArea => FullNameFL + Area.SurroundContentWith(" <u>", "</u>");
 
     public string FullNameFL {
       get

@@ -6,6 +6,7 @@
     rowTemplateOnline: '',
     refreshTimeout: null,
     refreshCounter: null,
+    lastRefresh: null,
     vue: null
   };
 
@@ -133,7 +134,7 @@
       }
     }
 
-    var now = new Date();
+    var now = settings.lastRefresh = new Date();
     $('#lastRefresh').html(monitorPage.T24
       ? now.toLocaleTimeString()
       : now.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true }));
@@ -156,6 +157,8 @@
   };
 
   function updateAutoMinutes() {
+    $('#age').text(` (${moment(settings.lastRefresh).fromNow()})`);
+
     $('.minutesOld').each(function () {
       var span = $(this);
       var start = span.data('start');
@@ -215,6 +218,7 @@
         settings.refreshCounter = setInterval(function () {
           remaining -= speed;
           showCountDown(remaining, seconds);
+          $('#age').text(` (${moment(settings.lastRefresh).fromNow()})`);
         },
           speed * 1000);
       },

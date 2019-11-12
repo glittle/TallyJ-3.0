@@ -117,7 +117,6 @@ function HighlightActiveLink() {
   $('#quickLinkItems a').each(function () {
     var matched = url === this.href;
     var a = $(this);
-    console.log(a.text(), a.is(':visible'));
     if (matched) {
       a.addClass('Active');
 

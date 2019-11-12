@@ -65,6 +65,8 @@ tr.overrides {
     span {
       position: absolute;
       top: 0;
+      right: 3px;
+      left: 3px;
 
       &.ShowVote {
         top: 0;
@@ -118,6 +120,7 @@ tr.overrides {
 
   u {
     text-decoration: none;
+    float: right;
   }
 
   li {
@@ -280,6 +283,12 @@ input.Vote {
   margin-top: 2px;
 }
 
+.titleDivNormal {
+  span {
+    vertical-align: middle;
+  }
+}
+
 .titleDivNormal, .titleDivOnline {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
@@ -318,7 +327,7 @@ button.smallButton {
 
 .InvalidP div.InvalidPerson {
   color: @invalidColor;
-  padding: 0 0 6px 33px;
+  padding: 0 0 6px 91px;
 }
 
 select.Invalid {
@@ -498,14 +507,14 @@ body.IsOnline {
     span.Name {
       display: none;
       font-size: 14pt;
-      padding: 0 9px 0 0;
       text-indent: -20px;
       margin-left: 20px;
 
       u {
+        font-size: 11pt;
         text-decoration: none;
-        padding: 0 5px 0 45px;
         color: #333;
+        float: right;
       }
     }
 
@@ -513,12 +522,16 @@ body.IsOnline {
       display: inline;
       margin-left: 3px;
       text-indent: 0;
-      font-size: 1em;
+      font-size: 11pt;
       text-decoration: line-through;
     }
 
     &.Valid span.Name {
-      display: inline-block;
+      display: block;
+
+      .u {
+        float: right;
+      }
     }
 
     .ui-icon {
@@ -536,7 +549,7 @@ body.IsOnline {
       flex: 2 1 auto;
       white-space: normal;
       display: inline-block;
-      padding: 0 0 0 5px;
+      padding: 4px 0 0 5px;
     }
 
     .icons {
@@ -551,6 +564,10 @@ body.IsOnline {
 
       option[value="cd27534d-d7e8-e011-a095-002269c41d11"] {
         display: none;
+      }
+
+      .Name {
+        margin-right: 5px;
       }
 
       .Vote {

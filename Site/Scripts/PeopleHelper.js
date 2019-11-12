@@ -111,7 +111,6 @@
 
   function extendPerson(p) {
     // decode compressed info from the server
-    //if (p.Id === 25068) debugger;
 
     p.Ineligible = p.IRG;
     p.classesList = [];
@@ -304,7 +303,6 @@
 
   function markUp(info, searchParts, usedIds) {
     var results = [];
-
     if (info && typeof info.People !== 'undefined') {
       var currentFocus = $('#nameList > li.selected');
       var currentFocusId;
@@ -388,13 +386,14 @@
       //2018-Feb look in type ; only in 4 if none were in 5
 
       // rseults are sorted, so 0 is best... if it is not already in use
-
+      
       for (var matchType = 5; matchType >= 3; matchType--) {
         var foundInType = false;
         for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
           $.each(results,
             function (i, item) {
-              if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
+//              if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
+              if (item.MatchType === matchType && !item.InUse && !item.Ineligible) {
                 info.BestRowNum = i;
                 foundBest = true;
                 return false;

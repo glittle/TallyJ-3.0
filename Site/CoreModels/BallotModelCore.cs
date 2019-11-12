@@ -318,6 +318,8 @@ namespace TallyJ.CoreModels
         var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
           .Where(v => v.BallotGuid == ballot.BallotGuid)
           .Sum(v => v.SingleNameElectionCount) : 0;
+        var ballotCountNames = isSingleName ? new VoteCacher().AllForThisElection
+          .Count(v => v.BallotGuid == ballot.BallotGuid) : 0;
 
         return new
         {
@@ -325,13 +327,15 @@ namespace TallyJ.CoreModels
           BallotStatus = ballotStatusInfo.Status.Value,
           BallotStatusText = ballotStatusInfo.Status.DisplayText,
           ballotStatusInfo.SpoiledCount,
-          BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
+          BallotId = ballot.C_RowId,
           SingleBallotCount = ballotCounts,
+          SingleBallotNames = ballotCountNames,
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId,
           vote.InvalidReasonGuid,
           Name = person1?.C_FullNameFL,
+          person1?.Area
         }.AsJsonResult();
       }
 
@@ -389,6 +393,8 @@ namespace TallyJ.CoreModels
         var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
           .Where(v => v.BallotGuid == ballot.BallotGuid)
           .Sum(v => v.SingleNameElectionCount) : 0;
+        var ballotCountNames = isSingleName ? new VoteCacher().AllForThisElection
+          .Count(v => v.BallotGuid == ballot.BallotGuid) : 0;
 
         return new
         {
@@ -401,6 +407,7 @@ namespace TallyJ.CoreModels
           BallotId = ballot.C_RowId,
           LocationBallotsEntered = sum,
           SingleBallotCount = ballotCounts,
+          SingleBallotNames = ballotCountNames,
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId
 
@@ -510,6 +517,12 @@ namespace TallyJ.CoreModels
       new BallotCacher(Db).UpdateItemAndSaveCache(ballot);
       Db.SaveChanges();
 
+      var ballotCounts = isSingleName ? new VoteCacher().AllForThisElection
+        .Where(v => v.BallotGuid == ballot.BallotGuid)
+        .Sum(v => v.SingleNameElectionCount) : 0;
+      var ballotCountNames = isSingleName ? new VoteCacher().AllForThisElection
+        .Count(v => v.BallotGuid == ballot.BallotGuid) : 0;
+
       return new
       {
         Deleted = true,
@@ -518,6 +531,9 @@ namespace TallyJ.CoreModels
         BallotStatusText = ballotStatusInfo.Status.DisplayText,
         ballotStatusInfo.SpoiledCount,
         LocationBallotsEntered = sum,
+        BallotId = ballot.C_RowId,
+        SingleBallotCount = ballotCounts,
+        SingleBallotNames = ballotCountNames,
         VoteUpdates = GetVoteUpdatesOnDelete(vote.PersonGuid, voteCacher, isSingleName),
       }.AsJsonResult();
     }
