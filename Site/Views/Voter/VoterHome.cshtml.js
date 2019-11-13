@@ -600,7 +600,7 @@ var vueOptions = {
       list.forEach(function (lh) {
         var when_M = moment(lh.AsOf);
         lh.age = when_M.fromNow();
-        lh.utc = when_M.utc().format('llll');
+        lh.when = when_M.format('llll');
       });
       return list;
     },

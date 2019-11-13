@@ -101,7 +101,7 @@
     <p class="account" v-else>
       You logged in via @UserSession.VoterAuthSource.
       If others might use your login account, you may wish to add a TallyJ password.
-      If you do this, you will need to supply the TallyJ password for all future logins via @UserSession.VoterAuthSource.
+      If you do this, you will need to supply the TallyJ password for all future logins.
       @Html.ActionLink("Add a TallyJ password", "Register", "Account2", null, new { @class = "btn btn-mini" })
     </p>
 
@@ -119,16 +119,16 @@
       <table class="loginHistory">
         <thead>
           <tr>
-            <th>Time (UTC)</th>
             <th>Action</th>
             <th>When</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(lh, i) in loginHistory" v-bind:key="i">
-            <td class="nowrap" v-text="lh.utc"></td>
             <td class="details" v-text="lh.Details"></td>
             <td class="nowrap" v-text="lh.age"></td>
+            <td class="nowrap" v-text="lh.when"></td>
           </tr>
         </tbody>
       </table>

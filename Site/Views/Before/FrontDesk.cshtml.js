@@ -467,10 +467,11 @@
     var form = {
       id: pid,
       type: btnType,
-      loc: $('#ddlTopLocation').val(),
-      last: publicInterface.lastRowVersion || 0,
-      forceDeselect: forceDeselect || false
+      loc: $('#ddlTopLocation').val()
     };
+    if (forceDeselect) {
+      form.forceDeselect = true;
+    }
 
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function (info) {

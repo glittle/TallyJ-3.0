@@ -560,7 +560,7 @@ namespace TallyJ.CoreModels
           : "";
     }
 
-    public JsonResult RegisterVotingMethod(int personId, string voteType, long lastRowVersion, bool forceDeselect, int locationId)
+    public JsonResult RegisterVotingMethod(int personId, string voteType, bool forceDeselect, int locationId)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
       {
