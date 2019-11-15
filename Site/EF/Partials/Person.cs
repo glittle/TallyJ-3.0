@@ -72,7 +72,7 @@ namespace TallyJ.EF
       }
       set
       {
-        SetExtraSettting(ExtraSettingKey.RegLog, value.JoinedAsString(ArraySplit));
+        SetExtraSetting(ExtraSettingKey.RegLog, value.JoinedAsString(ArraySplit));
       }
     }
 
@@ -123,7 +123,7 @@ namespace TallyJ.EF
       return null;
     }
 
-    private void SetExtraSettting(ExtraSettingKey setting, string value)
+    private void SetExtraSetting(ExtraSettingKey setting, string value)
     {
       var s = value ?? "";
       if (s.Contains("=") || s.Contains(SplitChar))
