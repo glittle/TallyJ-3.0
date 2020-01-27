@@ -42,7 +42,7 @@
       <li><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></li>
       <li><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></li>
       <li><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
-      <li><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a>, by Arash Abizadeh</li>
+      <li><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</li>
     </ul>
   </div>
 
@@ -253,6 +253,11 @@
       <p class="emptyPoolMsg" v-if="!pool.length">
         Your pool is empty. Search for people to add!
       </p>
+      @*
+        not needed - if submitted, don't need paper version
+        <div class="printDiv">
+        <button class="btn" v-on:click="printBallot">Print Ballot</button>
+      </div>*@
     </div>
   </div>
 </div>
