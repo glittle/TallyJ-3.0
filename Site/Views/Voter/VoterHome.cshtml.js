@@ -640,7 +640,9 @@ var vueOptions = {
         .filter(function (p) { return p.Id <= 0; })
         .reduce(function (acc, p) {
           return p.Id < acc ? p.Id : acc;
-        }, 0) - 1;
+        },
+          0) -
+        1;
       var person = {
         CanReceiveVotes: true,
         inPool: false,
@@ -715,6 +717,16 @@ var vueOptions = {
       } else {
         this.$refs.searchBox && this.$refs.searchBox.focus();
       }
+    },
+    printBallot: function() {
+      $(document.body).addClass('printingBallot');
+      window.addEventListener("afterprint", function(ev) {
+        $(document.body).removeClass('printingBallot');
+      });
+
+      Vue.nextTick(function() {
+        //window.print();
+      });
     }
   }
 };
