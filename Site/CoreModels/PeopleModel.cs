@@ -515,6 +515,7 @@ namespace TallyJ.CoreModels
             CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
             Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
             HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
+            CanBeOnline = useOnline && p.Email.HasContent(),
             Registered = p.VotingMethod == VotingMethodEnum.Registered,
             EnvNum = ShowEnvNum(p),
             p.CanVote,

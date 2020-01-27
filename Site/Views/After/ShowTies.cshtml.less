@@ -2,11 +2,33 @@
   background-color: #EFEEEF;
 }
 
-#selTieBreaks {
-  position: absolute;
-  top: 1em;
-  left: 1em;
+
+h1 {
+  text-align: center;
+  font-size: 24pt;
+  color: #013d7a;
+  width: 100%;
+  margin: -20px 0 0 0;
 }
+
+.selTieBreaksDiv {
+  text-align: center;
+  font-size: 1.4em;
+}
+
+.tieBtns {
+  text-align: center;
+  margin: 0 0 .3em 0;
+
+  .tieBtn {
+    font-size: 1.1rem;
+
+    &.selected {
+      background-color: ActiveBorder;
+    }
+  }
+}
+
 
 .content-wrapper {
   width: 100%;
@@ -35,15 +57,6 @@ header, .CompCode, footer {
 }
 
 
-h1 {
-  text-align: center;
-  font-size: 24pt;
-  color: #013d7a;
-  padding: 13pt 0 0pt 0;
-  width: 100%;
-  height: 40pt;
-}
-
 
 .Nav {
   position: fixed;
@@ -55,27 +68,30 @@ h1 {
 
   &.Show, &:hover {
     opacity: 1;
+    box-shadow: 0 3px 9px #555;
+    background: white;
+    padding: 1em;
   }
 }
 
 #TieIntro {
   text-align: center;
   font-size: 20pt;
+  margin: 0.5em 0;
 }
 
 
 #names {
   display: flex;
-  -ms-flex-wrap: wrap;
-  -webkit-flex-wrap: wrap;
-  flex-wrap: wrap;
-  font-size: 26pt;
+  font-size: 24pt;
   justify-content: center;
 
+  > div {
+    max-width: 55%;
+  }
+
   .name {
-    white-space: nowrap;
     padding: 0.4em 0.8em;
-    text-align: center;
     background-color: #fff;
     margin: 20px 30px;
     border-radius: 2px;
@@ -83,10 +99,10 @@ h1 {
   }
 
   &.manyNames {
-    font-size: 18pt;
+    font-size: 20pt;
 
     .name {
-      margin: 10px 20px;
+      margin: 8px 20px;
     }
   }
 }

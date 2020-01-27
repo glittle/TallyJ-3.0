@@ -451,15 +451,20 @@ namespace TallyJ.CoreModels
 
     public object GetTies(int tieBreakGroup)
     {
-      return new ResultCacher(Db).AllForThisElection
+      var results = new ResultCacher(Db).AllForThisElection;
+      var persons = new PersonCacher(Db).AllForThisElection;
+
+      var ties = results
         .Where(r => r.TieBreakGroup == tieBreakGroup)
-        .Join(new PersonCacher(Db).AllForThisElection, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
+        .Join(persons, r => r.PersonGuid, p => p.PersonGuid, (r, p) => new { r, p })
         .Select(j => new
         {
           name = j.p.FullNameFL,
           isResolved = j.r.IsTieResolved.AsBoolean()
         })
         .OrderBy(x => x.name);
+
+      return ties;
     }
     public List<ResultTie> GetUnresolvedTieBreakGroups()
     {

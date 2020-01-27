@@ -1,37 +1,58 @@
 ﻿var ShowTies = function () {
-  var local = {
-  };
+  //  var local = {
+  //  };
 
   var preparePage = function () {
 
-    if (showTies.ties.length == 1) {
+    if (showTies.ties.length === 1) {
       displayNamesInfoAndNames(0, showTies.tieInfo);
+    } else {
+      $(document.body).on('keypress', function(ev) {
+        var key = +ev.key;
+        if (!isNaN(key)) {
+          $('#btn' + key).click();
+        }
+      });
     }
 
-    $('#selTieBreaks').change(function () {
-      var index = this.selectedIndex - 1;
-      var tieBreakGroup = $(this).val();
-
-      CallAjaxHandler(showTies.getTies, { tieBreakGroup: tieBreakGroup }, function (info) {
-        displayNamesInfoAndNames(index, info);
-      });
-    });
+    //    $('#selTieBreaks').change(function () {
+    //      this.size = 1;
+    //      var tieBreakGroup = $(this).val();
+    //      if (tieBreakGroup) {
+    //        var index = this.selectedIndex - 1;
+    //        showTie(tieBreakGroup, index);
+    //      } else {
+    //        $('#names').html('');
+    //      }
+    //    });
 
     $('#btnReturn').click(clickReturn);
 
 
     if (!$('#Wait').is(':visible')) {
       setTimeout(function () {
-        $('.Nav').animate({ opacity: 0 }, 1500, null, function () {
+        $('.Nav').animate({ opacity: 0 }, 2500, null, function () {
           $('.Nav').removeClass('Show').css({
             opacity: ''
           });
         });
-      }, 1000);
+      }, 1500);
     } else {
       clickReturn();
     }
   };
+
+  function showTie(tieBreakGroup, index) {
+    CallAjaxHandler(showTies.getTies,
+      { tieBreakGroup: tieBreakGroup },
+      function (info) {
+        displayNamesInfoAndNames(index, info);
+      });
+
+    $('.tieBtn').removeClass('btn-success');
+    $('.tieBtn#btn' + (index + 1)).addClass('btn-success');
+    $('.tieBtnSelect').hide();
+  }
 
   function clickReturn() {
     var isShowing = $('header').is(':visible');
@@ -48,6 +69,7 @@
     var normal = true;
     var num = tie.NumToElect;
     $.each(info, function (i, el) {
+      el.html = '<div class=name>{0}</div>'.filledWith(el.name);
       if (el.isResolved) {
         normal = false;
         return false;
@@ -63,15 +85,21 @@
       });
     }
 
-    $('#TieIntro').html('Vote for any {0} of these individuals:'.filledWith(num));
+    $('#TieIntro').html('Vote for {0} of these individuals'.filledWith(num));
+
+    var numPerColumn = Math.ceil(info.length / 2);
+    var manualColumns = '<div>{^0}</div><div>{^1}</div>'.filledWith(
+      info.slice(0, numPerColumn).map(i => i.html).join(''),
+      info.slice(numPerColumn).map(i => i.html).join(''));
 
     $('#names')
-      .html('<div class=name>{name}</div>'.filledWithEach(info))
+      .html(manualColumns)
       .toggleClass('manyNames', info.length > 10);
   }
 
   var publicInterface = {
-    preparePage: preparePage
+    preparePage: preparePage,
+    showTie: showTie
   };
 
   return publicInterface;

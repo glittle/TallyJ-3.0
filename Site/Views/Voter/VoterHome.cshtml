@@ -230,7 +230,7 @@
       <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before submitting your ballot.</p>
 
       <p v-if="!lockInVotes && pool.length">
-        Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into the top ' + numToElect + ' positions')}} for use on your ballot.
+        Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
       </p>
       <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
         <div v-for="(p, i) in pool"

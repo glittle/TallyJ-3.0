@@ -50,7 +50,7 @@
     local.tabList.accordion({
       heightStyle: "content",
       collapsible: true,
-      icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
+      // icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
       activate: function (event, ui) {
         var activePanelId = ui.newPanel.attr('id');
         switch (activePanelId) {

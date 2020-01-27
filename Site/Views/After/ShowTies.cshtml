@@ -8,7 +8,8 @@
   var tieBreakGroups = Model.GetUnresolvedTieBreakGroups();
   ContextItems.AddJavascriptForPage("info", "showTies.ties={0};".FilledWith(tieBreakGroups.SerializedAsJsonString()));
 
-  if (tieBreakGroups.Count == 1) {
+  if (tieBreakGroups.Count == 1)
+  {
     ContextItems.AddJavascriptForPage("tieinfo", "showTies.tieInfo={0};".FilledWith(Model.GetTies(tieBreakGroups[0].TieBreakGroup).SerializedAsJsonString()));
   }
 }
@@ -21,25 +22,42 @@
 
 
 
-  @if (tieBreakGroups.Count > 1)
-  {
-    <select id="selTieBreaks">
-      <option value="">Select the tie to show...</option>
-      @foreach (var tb in tieBreakGroups)
-      {
-        <option value="@tb.TieBreakGroup">Tie #@tb.TieBreakGroup (@tb.NumToElect of @tb.NumInTie)</option>
-      }
-    </select>
-  }
   @if (tieBreakGroups.Count > 0)
   {
-    <h1>Tie-Break Voting Information</h1>
+    <h1>Tie-Break@(tieBreakGroups.Count > 1 ? "s" : "")</h1>
+    if (tieBreakGroups.Count > 1)
+    {
+      <div class="selTieBreaksDiv">
+        <div class="tieBtns">
+          @{
+            var tbIndex = 0;
+            foreach (var tb in tieBreakGroups)
+            {
+              <button class="tieBtn btn" id="@("btn" + (tbIndex + 1))" onclick="showTies.showTie(@tb.TieBreakGroup, @tbIndex)" title="#@tb.TieBreakGroup: @tb.NumToElect of @tb.NumInTie">Tie @(tbIndex + 1)</button>
+              tbIndex++;
+            }
+          }
+        </div>
+        <div class="tieBtnSelect">
+          Select the tie to show.
+        </div>
+        @*<select id="selTieBreaks" size="@(tieBreakGroups.Count + 2)">
+            <option value="">Select the tie to show...</option>
+            @foreach (var tb in tieBreakGroups)
+            {
+              <option value="@tb.TieBreakGroup">Tie #@tb.TieBreakGroup (@tb.NumToElect of @tb.NumInTie)</option>
+            }
+          </select>*@
+      </div>
+    }
+
     <p id="TieIntro">
     </p>
     <div id="names">
     </div>
   }
-  else {
+  else
+  {
     <div id="Wait">
       <p>
         There are no unresolved tie-breaks to display.
