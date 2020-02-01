@@ -139,6 +139,9 @@ namespace TallyJ.CoreModels
       hub.StatusUpdate("Reviewing people", true);
       var currentElectionGuid = UserSession.CurrentElectionGuid;
 
+      var defaultCanVote = UserSession.CurrentElection.CanVote == "A";
+      var defaultCanReceiveVotes = UserSession.CurrentElection.CanReceive == "A";
+
       var numDone = 0;
       foreach (var person in people)
       {
@@ -176,6 +179,16 @@ namespace TallyJ.CoreModels
               person.CanReceiveVotes = canReceiveVotes;
               changesMade = true;
             }
+          }
+        }
+        else
+        {
+          if (defaultCanVote != person.CanVote || defaultCanReceiveVotes != person.CanReceiveVotes)
+          {
+            personSaver(DbAction.Attach, person);
+            person.CanVote = defaultCanVote;
+            person.CanReceiveVotes = defaultCanReceiveVotes;
+            changesMade = true;
           }
         }
 
