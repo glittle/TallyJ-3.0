@@ -719,8 +719,6 @@
     <Content Include="Reports\VotersByLocationArea.cshtml" />
     <Content Include="Reports\AllNonEligible.cshtml" />
     <Content Include="Reports\VotesWithInvalid.cshtml" />
-    <None Include="Properties\PublishProfiles\TallyJ3 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\TallyJ3-staging - Web Deploy.pubxml" />
     <Content Include="Reports\BallotsTied.cshtml" />
     <Content Include="Reports\BallotsSame.cshtml" />
     <None Include="Properties\PublishProfiles\Win16a BETA 3 VM IIS.pubxml" />
