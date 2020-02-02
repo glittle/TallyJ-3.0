@@ -10,6 +10,8 @@ ClientFile("~/Scripts/vue{0}.js", ".min"),
 ClientFile("~/Scripts/BadiDateToday.v1.js"),
 ClientFile("~/Scripts/luxon.min.js"),
 ClientFile("~/Scripts/vue-datetime.js"),
+ClientFile("~/Scripts/ckeditor.js"),
+ClientFile("~/Scripts/ckeditor.vue.js"),
 };
   ViewData["ExtraCss"] = new[] {
 ClientFile("~/Scripts/vue-datetime.css"),
@@ -380,126 +382,167 @@ ClientFile("~/Scripts/vue-datetime.css"),
     </div>
 
     <table class="Demographics">
-      <tr class="lockAfterBallots">
-        <th>
-          Enable Online Voting?
-        </th>
-        <td>
-          <yes-no v-model="useOnline"></yes-no>
-        </td>
-        <td>
-          Allow voters to cast their ballots online.
-        </td>
-      </tr>
-      <tr class="explainLock">
-        <th></th>
-        <td colspan="2"><span class="explain">
-          Ballots have been entered so you cannot disable Online Voting or restrict the Name Selection method.
-        </span></td>
-      </tr>
-      <tr v-if="useOnline">
-        <th>
-          Name Selection
-        </th>
-        <td colspan="2" class="processOptions">
-          <table>
-            <tr>
-              <th>A</th>
-              <td class="lockAfterBallots">
-                <input type="radio" value="L" title="List" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol1" />
-              </td>
-              <td>
-                <label for="ol1">
-                  <strong>List</strong> - Voters select from the people listed in this election.
-                  <span class="explain">
-                    Recommended if the list of people who can be voted for
-                    is comprehensive (sure to contain everyone) or
-                    is limited (e.g. a tie-break). Voters cannot add any new names and 
-                    tellers do not need to manually process each ballot.
-                  </span>
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <th>B</th>
-              <td class="lockAfterBallots">
-                <input type="radio" value="R" title="Random" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol2" />
-              </td>
-              <td>
-                <label for="ol2">
-                  <strong>Random</strong> - 
-                  Voters do not have a list to choose from but randomly type the names of the people they are voting for.
-                  <span class="explain">
-                    Recommended if you do not have a list or have a reason to not let voters use it.
-                    <strong>Tellers</strong> will finish each ballot by referring to the names entered
-                    by the voter, as they do for paper ballots.
-                    For each vote in a ballot, tellers find and enter the matching person.
-                    There is a high likelihood of spoiled votes if the names provided are not valid.
-                  </span>
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <th>C</th>
-              <td>
-                <input type="radio" value="B" title="Both" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol3" />
-              </td>
-              <td>
-                <label for="ol3">
-                  <strong>Both</strong> - Voters are given a list of known people but have the option of adding any other name.
-                  <span class="explain">
-                    Recommended if you have a list, but are not confident that it includes everyone.
-                    If a voter adds a "random" name, tellers will need to find and enter the matching person onto the ballot.
-                  </span>
-                </label>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-
-      <tr v-if="useOnline">
-        <th>
-          Open Voting at
-        </th>
-        <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
-          <datetime v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhenOpen">{{showFrom(election.OnlineWhenOpen)}}</div>
-        </td>
-        <td>
-          When should voters be able to access this election and start working on their online ballot?
-          <a class="setTime btn btn-mini" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
-        </td>
-      </tr>
-      <tr v-if="useOnline">
-        <th>
-          Close Voting at
-        </th>
-        <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
-          <datetime v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
-          <div class="voteWhenClosed" v-bind:class="{closed: closeIsPast }">{{showFrom(election.OnlineWhenClose)}}</div>
-        </td>
-        <td>
-          When should the election be closed? Use your best guess when setting up the election.
-          The Head Teller will adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
-        </td>
-      </tr>
-      <tr v-if="useOnline && !onlineDatesOkay">
-        <td colspan="3">
-          <div class="onlineWarning1">Open and Close times are both required and Open must come before Close.</div>
-        </td>
-      </tr>
-      @*<tr v-if="useOnline">
+      <tbody>
+        <tr class="lockAfterBallots">
           <th>
-            Close timtime estimated?
+            Enable Online Voting?
           </th>
           <td>
-            <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
+            <yes-no v-model="useOnline"></yes-no>
           </td>
           <td>
-            This affects the wording shown to voters. Usually leave as estimated until the final hours.
+            Allow voters to cast their ballots online.
           </td>
-        </tr>*@
+        </tr>
+        <tr class="explainLock">
+          <td colspan="3">
+            <span class="explain">
+              Ballots have been entered so you cannot disable Online Voting or restrict the Name Selection method.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+      <tbody v-if="useOnline">
+        <tr>
+          <th>
+            Name Selection
+          </th>
+          <td colspan="2" class="processOptions">
+            <table>
+              <tr>
+                <th>A</th>
+                <td class="lockAfterBallots">
+                  <input type="radio" value="L" title="List" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol1" />
+                </td>
+                <td>
+                  <label for="ol1">
+                    <strong>List</strong> - Voters select from the people listed in this election.
+                    <span class="explain">
+                      Recommended when the list of people who can be voted for
+                      is comprehensive (sure to contain everyone) or
+                      is limited (e.g. a tie-break). Voters cannot add any new names and
+                      tellers do not need to manually process each ballot.
+                    </span>
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <th>B</th>
+                <td class="lockAfterBallots">
+                  <input type="radio" value="R" title="Random" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol2" />
+                </td>
+                <td>
+                  <label for="ol2">
+                    <strong>Random</strong> -
+                    Voters do not have a list to choose from but randomly type the names of the people they are voting for.
+                    <span class="explain">
+                      Recommended when you do not have a list or have a reason to not let voters use it.
+                      <strong>Tellers</strong> will need to finish each ballot by referring to the names entered
+                      by the voter, as they do for paper ballots.
+                      For each vote in a ballot, tellers find and enter the matching person.
+                      There is a high likelihood of spoiled votes if the names provided are not valid.
+                    </span>
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <th>C</th>
+                <td>
+                  <input type="radio" value="B" title="Both" v-model="election.OnlineSelectionProcess" name="OnlineSelectionProcess" id="ol3" />
+                </td>
+                <td>
+                  <label for="ol3">
+                    <strong>Both</strong> - Voters are given a list of known people but have the option of adding any other name.
+                    <span class="explain">
+                      Recommended when you have a list, but are not confident that it includes everyone.
+                      If a voter adds a "random" name, tellers will need to find and enter the matching person onto the ballot.
+                    </span>
+                  </label>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <th>
+            Open Voting at
+          </th>
+          <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
+            <datetime input-id="whenOpen" v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+            <div class="voteWhenOpen">{{showFrom(election.OnlineWhenOpen)}}</div>
+          </td>
+          <td>
+            When should voters be able to access this election and start working on their online ballot?
+            <a class="setTime btn btn-mini" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Close Voting at
+          </th>
+          <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
+            <datetime input-id="whenClose" v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+            <div class="voteWhenClosed" v-if="election.OnlineWhenClose" v-bind:class="{closed: closeIsPast }">{{showFrom(election.OnlineWhenClose)}}</div>
+          </td>
+          <td>
+            When should the election be closed? Use your best guess when setting up the election.
+            The Head Teller will adjust the Close time during the election using the <a href="@Url.Action("Monitor", "After")">Monitor Progress</a> page.
+          </td>
+        </tr>
+        <tr v-if="useOnline && !onlineDatesOkay">
+          <td colspan="3">
+            <div class="onlineWarning1">Open and Close times are both required and Open must come before Close.</div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Sender Email Address
+          </th>
+          <td>
+            <input type="email" v-model="election.EmailFromAddress" data-name="SenderEmail">
+          </td>
+          <td>
+            When emails are sent to voters regarding this election, this will be the From address. This email address will be visible to all voters receiving emails.
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Sender Name
+          </th>
+          <td>
+            <input type="text" v-model="election.EmailFromName" data-name="SenderName">
+          </td>
+          <td>
+            This will be name with the From address. Use a person's name, or the name of an agency, that will
+            be recognized by voters so that the email is not rejected as spam!
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Additional Message
+          </th>
+          <td colspan="2">
+            <div>Emails will be formatted from TallyJ, but you can type or paste an additional message here:</div>
+            @*<textarea id="EmailText" v-model="election.EmailText"></textarea>*@
+            <ckeditor :editor="emailEditor" :config="editorConfig" v-model="election.EmailText"></ckeditor>
+            <button class="btn btn-small">Send a test email to {{election.SenderEmail || '...'}}</button>
+          </td>
+        </tr>
+
+
+        @*<tr>
+            <th>
+              Close timtime estimated?
+            </th>
+            <td>
+              <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
+            </td>
+            <td>
+              This affects the wording shown to voters. Usually leave as estimated until the final hours.
+            </td>
+          </tr>*@
+      </tbody>
     </table>
   }
   else

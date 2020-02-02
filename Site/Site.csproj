@@ -729,6 +729,8 @@
     <Content Include="Reports\VoterEmails.cshtml" />
     <None Include="Properties\PublishProfiles\Win16a UAT VM IIS.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\ckeditor.js" />
+    <Content Include="Scripts\ckeditor.vue.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />

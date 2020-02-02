@@ -16,7 +16,8 @@
     settings.vue = new Vue({
       el: '#setupBody',
       components: {
-        'yes-no': YesNo
+        'yes-no': YesNo,
+        ckeditor: CKEditor.component
       },
       data: {
         election: publicInterface.Election,
@@ -26,6 +27,20 @@
         usingBallotProcess: false,
         isMounted: false,
         useOnline: false,
+        emailEditor: ClassicEditor,
+        editorConfig: {
+          toolbar: [  'undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'indent', 'outdent', 'bulletedList', 'numberedList', 'link', 'insertTable' ],
+          heading: {
+            options: [
+              { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+              { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+              { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+            ],
+            table: {
+              contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
+            }
+          }
+        },
         dummy: 1
       },
       computed: {
@@ -36,7 +51,7 @@
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
         },
-        closeIsPast: function() {
+        closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
         }
         //        onlineOpen: {
@@ -88,6 +103,10 @@
               this.election.OnlineCloseIsEstimate = true;
               this.election.OnlineSelectionProcess = 'B';
             };
+            //            var vue = this;
+            //            Vue.nextTick(function() {
+            //              vue.setupEmailEditor();
+            //            });
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
@@ -115,12 +134,26 @@
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
         this.isMounted = true;
+//        debugger
+        console.log(this.emailEditor.builtinPlugins.map(p=>p.pluginName));
       },
       methods: {
         removeLocation: function (domIcon) {
           var input = $(domIcon).closest('div').find('input');
           locationChanged(input, true);
         },
+        //        setupEmailEditor: function() {
+        //          var vue = this;
+        //          console.log('setup', $('#EmailText').length);
+        //
+        //          // see http://jqueryte.com/documentation
+        //          $('#EmailText').jqte({
+        //            button: 'TEST',
+        //            sub: false,
+        //            sup: false,
+        //            change: function() { console.log('changed', vue.election.EmailText); },
+        //          });
+        //        },
         replaceBodyBpClass: function (process) {
           var list = window.document.body.classList;
           list.forEach(function (key) {
@@ -158,9 +191,9 @@
       if ($(this).closest('.forLocations').length) {
         return; // don't flag location related
       }
-      setTimeout(function() {
-          settings.vue.saveNeeded();
-        },
+      setTimeout(function () {
+        settings.vue.saveNeeded();
+      },
         0);
     });
 
@@ -545,7 +578,7 @@
           updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
         }
         $('.btnSave').removeClass('btn-primary');
-        
+
         var isClosed = moment(form.OnlineWhenClose).isBefore();
         $('body').toggleClass('OnlineOpen', !isClosed);
         $('body').toggleClass('OnlineClosed', isClosed);

@@ -135,7 +135,7 @@ table.More td, table.Demographics td {
   vertical-align: top;
 }
 
-input[type='text'] {
+input[type='text'], input[type='email'] {
   width: 120px;
 }
 
@@ -269,7 +269,10 @@ button.Primary {
 
 .explainLock {
   .explain {
-    // color: @tallyJError;
+    display: block;
+    font-style: italic;
+    margin: 5px 0 0 20px;
+    color: @tallyJError;
   }
 }
 
@@ -375,4 +378,8 @@ option:disabled {
   &.disabled {
     color: #bbb;
   }
+}
+
+.jqte {
+  margin: 5px 0 10px;
 }
