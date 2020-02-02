@@ -270,7 +270,7 @@
 
   function expandOnlineBallots(voters) {
     var html = [];
-    var timeTemplate = monitorPage.T24 ? 'MMM D HH:mm' : 'MMM D hh:mm a';
+    var timeTemplate = monitorPage.T24 ? 'MMM D, H:mm' : 'MMM D, h:mm a';
 
     $.each(voters, function (i, voter) {
       var history = (voter.HistoryStatus || '')
