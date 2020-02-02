@@ -138,6 +138,7 @@ namespace TallyJ.CoreModels.ExportImport
           // ballot
           // vote
           // log 
+          // onlineVotingInfo
           // resultSummary
           // result
           // resultTie
@@ -150,6 +151,8 @@ namespace TallyJ.CoreModels.ExportImport
           LoadLocations();
 
           LoadPeople();
+
+          LoadOnlineVotingInfo();
 
           LoadBallots();
 
@@ -275,6 +278,34 @@ namespace TallyJ.CoreModels.ExportImport
       //Db.Teller.Add(teller);
     }
 
+    private void LoadOnlineVotingInfo()
+    {
+      XmlNodeList nodes;
+      try
+      {
+        nodes = _xmlRoot.SelectNodes("t:onlineVoterInfo", _nsm);
+        if (nodes != null)
+        {
+          var toLoad = new List<OnlineVotingInfo>();
+          foreach (XmlElement element in nodes)
+          {
+            var ovi = new OnlineVotingInfo();
+            element.CopyAttributeValuesTo(ovi);
+            ovi.ElectionGuid = _electionGuid;
+            UpdateGuidFromMapping(ovi, v => v.PersonGuid, Guid.Empty);
+            toLoad.Add(ovi);
+          }
+
+          Db.BulkInsert(toLoad);
+          _hub.StatusUpdate("Loaded {0} online voter info{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("es")));
+        }
+      }
+      catch (Exception ex)
+      {
+        _hub.StatusUpdate("Failed to load online voter infos. (Error: {0})".FilledWith(ex.LastException().Message));
+      }
+    }
+
     private void LoadLocations()
     {
       var locationsXml = _xmlRoot.SelectNodes("t:location", _nsm);
@@ -380,6 +411,7 @@ namespace TallyJ.CoreModels.ExportImport
       var reason = Code.Enumerations.IneligibleReasonEnum.Get(person.IneligibleReasonGuid) ?? defaultReason;
       _peopleModel.SetInvolvementFlagsToDefault(person, reason);
     }
+
     private void LoadBallots()
     {
       foreach (var kvp in _locationsToProcess)

@@ -24,6 +24,9 @@
             <xs:attribute name="ListForPublic" type="xs:boolean" use="optional" />
             <xs:attribute name="ShowFullReport" type="xs:boolean" use="optional" />
             <xs:attribute name="ElectionGuid" type="xs:string" use="optional" />
+            <xs:attribute name="OnlineWhenOpen" type="xs:string" use="optional" />
+            <xs:attribute name="OnlineWhenClose" type="xs:string" use="optional" />
+            <xs:attribute name="OnlineCloseIsEstimate" type="xs:boolean" use="optional" />
           </xs:complexType>
         </xs:element>
         <xs:element name="resultSummary" minOccurs="0" maxOccurs="unbounded">
@@ -96,6 +99,17 @@
             <xs:attribute name="LastActivityDate" type="xs:string" use="optional" />
           </xs:complexType>
         </xs:element>
+        <xs:element name="onlineVoterInfo" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="PersonGuid" type="xs:string" />
+            <xs:attribute name="Email" type="xs:string" />
+            <xs:attribute name="PoolLocked" type="xs:boolean" />
+            <xs:attribute name="Status" type="xs:string" />
+            <xs:attribute name="WhenStatus" type="xs:string" use="optional" />
+            <xs:attribute name="WhenBallotCreated" type="xs:string" use="optional" />
+            <xs:attribute name="HistoryStatus" type="xs:string" use="optional" />
+          </xs:complexType>
+        </xs:element>
         <xs:element name="location" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
@@ -162,6 +176,8 @@
             <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
             <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
             <xs:attribute name="Changed" type="xs:boolean" use="optional" />
+            <xs:attribute name="Email" type="xs:string" use="optional" />
+            <xs:attribute name="HasOnlineBallot" type="xs:boolean" use="optional" />
           </xs:complexType>
         </xs:element>
         <xs:element maxOccurs="unbounded" minOccurs="0" name="reason">

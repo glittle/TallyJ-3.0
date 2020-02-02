@@ -18,9 +18,9 @@ namespace TallyJ.EF
         public System.DateTime AsOf { get; set; }
         public Nullable<System.Guid> ElectionGuid { get; set; }
         public Nullable<System.Guid> LocationGuid { get; set; }
+        public string VoterEmail { get; set; }
         public string ComputerCode { get; set; }
         public string Details { get; set; }
         public string HostAndVersion { get; set; }
-        public string VoterEmail { get; set; }
     }
 }

@@ -39,6 +39,7 @@ namespace TallyJ.CoreModels.ExportImport
       var resultSummaries = Db.ResultSummary.Where(r => r.ElectionGuid == _electionGuid);
       var resultTies = Db.ResultTie.Where(r => r.ElectionGuid == _electionGuid);
       var logs = Db.C_Log.Where(log => log.ElectionGuid == _electionGuid);
+      var onlineVoterInfo = Db.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == _electionGuid);
 
       var joinElectionUsers = Db.JoinElectionUser.Where(j => j.ElectionGuid == _electionGuid);
       var users = Db.Users.Where(u => joinElectionUsers.Select(j => j.UserId).Contains(u.UserId));
@@ -64,6 +65,7 @@ namespace TallyJ.CoreModels.ExportImport
         resultTie = ExportResultTies(resultTies),
         teller = ExportTellers(tellers),
         user = ExportUsers(users),
+        onlineVoterInfo = ExportOnlineVoterInfos(onlineVoterInfo),
         location = ExportLocationBallotVote(locations, ballots, votes, logs),
         person = ExportPeople(people),
         reason = ExportReasons(),
@@ -83,6 +85,23 @@ namespace TallyJ.CoreModels.ExportImport
         {
           u.UserName,
           LastActivityDate = u.LastActivityDate.ToString("o")
+        }).ToList();
+    }
+
+    private IList ExportOnlineVoterInfos(IQueryable<OnlineVotingInfo> onlineVotingInfos)
+    {
+      return onlineVotingInfos.OrderBy(u => u.PersonGuid)
+        .ToList()
+        .Select(ovi => new
+        {
+          ovi.PersonGuid,
+          ovi.Email,
+          ovi.PoolLocked,
+          ovi.Status,
+          WhenStatus = ovi.WhenStatus?.ToString("o"),
+          WhenBallotCreated = ovi.WhenBallotCreated?.ToString("o"),
+          // ovi.ListPool, --> do not export the pool!
+          ovi.HistoryStatus,
         }).ToList();
     }
 
@@ -151,7 +170,7 @@ namespace TallyJ.CoreModels.ExportImport
       {
         t.Name,
         IsHeadTeller = t.IsHeadTeller.OnlyIfTrue(),
-//        t.TellerGuid,
+        //        t.TellerGuid,
       }).ToList();
     }
 
@@ -177,18 +196,18 @@ namespace TallyJ.CoreModels.ExportImport
         }).ToList();
     }
 
-//    private IList ExportComputer(IQueryable<Computer> computers)
-//    {
-//      return computers
-//        .OrderBy(computer => computer.ComputerCode)
-//        .ToList()
-//        .Select(computer => new
-//        {
-//          computer.ComputerCode,
-//          computer.BrowserInfo,
-//          computer.ComputerInternalCode,
-//        }).ToList();
-//    }
+    //    private IList ExportComputer(IQueryable<Computer> computers)
+    //    {
+    //      return computers
+    //        .OrderBy(computer => computer.ComputerCode)
+    //        .ToList()
+    //        .Select(computer => new
+    //        {
+    //          computer.ComputerCode,
+    //          computer.BrowserInfo,
+    //          computer.ComputerInternalCode,
+    //        }).ToList();
+    //    }
 
     private IList ExportBallotVotes(IQueryable<Ballot> ballots, IQueryable<Vote> votes)
     {
@@ -257,7 +276,7 @@ namespace TallyJ.CoreModels.ExportImport
           rt.NumInTie,
           rt.IsResolved,
           rt.TieBreakRequired,
-          NumToElect = rt.NumToElect == 0 ? null : (int?) rt.NumToElect,
+          NumToElect = rt.NumToElect == 0 ? null : (int?)rt.NumToElect,
         }).ToList();
     }
 
