@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using NLog.LayoutRenderers.Wrappers;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -519,10 +521,15 @@ namespace TallyJ.CoreModels
 
         if (msg.Contains("IX_PersonEmail"))
         {
+          var regMatch = Regex.Match(msg, @"\((.*), (.*)\)");
+
+          var result = regMatch.Success ? $"An email address ({regMatch.Groups[2].Value}) is duplicated in the import file. Import halted."
+            :  $"An email address is duplicated in the import file. Import halted.";
+
           return new
           {
             failed = true,
-            result = new[] { "An email address is duplicated in the import file. Import halted." }
+            result = new[] { result }
           }.AsJsonResult();
         }
 
