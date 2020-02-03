@@ -495,12 +495,13 @@ ClientFile("~/Scripts/vue-datetime.css"),
             <div class="onlineWarning1">Open and Close times are both required and Open must come before Close.</div>
           </td>
         </tr>
-        @*<tr>
+
+        <tr>
           <th>
-            Sender Email Address
+            From Email Address
           </th>
           <td>
-            <input type="email" v-model="election.EmailFromAddress">
+            <input type="email" v-model="election.EmailFromAddress" v-on:change="saveNeeded">
           </td>
           <td>
             When emails are sent to voters regarding this election, this will be the From address. The address will be visible to all voters receiving emails.
@@ -508,10 +509,10 @@ ClientFile("~/Scripts/vue-datetime.css"),
         </tr>
         <tr>
           <th>
-            Sender Name
+            From Name
           </th>
           <td>
-            <input type="text" v-model="election.EmailFromName">
+            <input type="text" v-model="election.EmailFromName" v-on:change="saveNeeded">
           </td>
           <td>
             This will be name with the From address. Use a person's name, or the name of an agency, that will
@@ -523,21 +524,63 @@ ClientFile("~/Scripts/vue-datetime.css"),
             Additional Message
           </th>
           <td colspan="2">
-            <div>Emails will be sent with election details from TallyJ. You can include an additional message by typing it here.</div>
-            <ckeditor :editor="emailEditor" :config="editorConfig" v-model="election.EmailText"></ckeditor>
+            <div>
+              Emails will be sent with election details from TallyJ. You can include an additional message by typing it here.
+            </div>
+            <div class="ckHost">
+              <ckeditor :editor="emailEditor" :config="editorConfig" v-model="election.EmailText" v-on:input="saveNeeded"></ckeditor>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th></th>
+          <td colspan="2" class="emailButtons">
+            <p class="isSaveNeeded" v-if="isSaveNeeded">Save Changes before sending emails.</p>
+            <p class="emailSendStatus" v-if="emailSendStatus" v-text="emailSendStatus"></p>
+            <table>
+              <tr>
+                <th>
+                  <button class="btn btn-mini" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !election.EmailFromAddress">Send me a test copy</button>
+                </th>
+                <td>
+                  One email will be sent to {{election.EmailFromAddress || 'the address above...'}}
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <button class="btn" v-on:click="sendEmail('Intro')" :disabled="isSaveNeeded">Send Intro Email</button>
+                </th>
+                <td>
+                  The introduction email will be sent to {{numWithEmails}} email addresses on file.
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
         <tr>
           <th></th>
           <td colspan="2">
-            <button class="btn btn-small">Send a test email to {{election.SenderEmail || '...'}}</button>
-
-            <button class="btn">Send this email to all X voters</button>
-
-
+            <div>Recent Email Log</div>
+            <div class="emailHistoryHost">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>When</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="e in emailLog" :key="e.C_RowId">
+                    <td v-text="e.Details"></td>
+                    <td class="nowrap" v-text="e.age"></td>
+                    <td class="nowrap" v-text="e.when"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </td>
-        </tr>*@
-
+        </tr>
         @*<tr>
             <th>
               Close timtime estimated?

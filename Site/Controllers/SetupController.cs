@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -170,6 +171,18 @@ namespace TallyJ.Controllers
     //{
     //  return new ImportV1Model().Import(id);
     //}
+
+    [ForAuthenticatedTeller]
+    public JsonResult SendEmail(string emailCode)
+    {
+      return new EmailHelper().SendHeadTellerEmail(emailCode);
+    }
+
+ [ForAuthenticatedTeller]
+    public JsonResult GetEmailInfo()
+    {
+      return new EmailHelper().GetEmailInfo();
+    }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveMapping(int id, List<string> mapping)

@@ -536,6 +536,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="EmailTemplates\HeadTellerEmail.html" />
     <Content Include="EmailTemplates\GenericIdentityManagerEmail.html" />
     <Content Include="EmailTemplates\ElectionOpen.html" />
     <Content Include="EmailTemplates\BallotProcessed.html" />
@@ -728,6 +729,7 @@
     </None>
     <Content Include="Reports\VoterEmails.cshtml" />
     <None Include="Properties\PublishProfiles\Win16a UAT VM IIS.pubxml" />
+    <Content Include="Scripts\ckeditor.js.map" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />
     <Content Include="Scripts\ckeditor.vue.js" />

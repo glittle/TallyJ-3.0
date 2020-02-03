@@ -261,6 +261,11 @@ namespace TallyJ.CoreModels
       var currentReceive = election.CanReceive;
       var currentListed = election.ListForPublic;
 
+      if (electionFromBrowser.EmailText.HasContent())
+      {
+        electionFromBrowser.EmailText = System.Uri.UnescapeDataString(electionFromBrowser.EmailText);
+      }
+
       // List of fields to allow edit from setup page
       var editableFields = new
       {
@@ -285,7 +290,10 @@ namespace TallyJ.CoreModels
         election.OnlineWhenOpen,
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
-        election.OnlineSelectionProcess
+        election.OnlineSelectionProcess,
+        election.EmailFromAddress,
+        election.EmailFromName,  
+        election.EmailText,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())

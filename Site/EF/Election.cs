@@ -44,5 +44,8 @@ namespace TallyJ.EF
         public bool OnlineCloseIsEstimate { get; set; }
         public string OnlineSelectionProcess { get; set; }
         public Nullable<System.DateTime> OnlineAnnounced { get; set; }
+        public string EmailFromAddress { get; set; }
+        public string EmailFromName { get; set; }
+        public string EmailText { get; set; }
     }
 }

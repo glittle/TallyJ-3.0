@@ -27,9 +27,13 @@
         usingBallotProcess: false,
         isMounted: false,
         useOnline: false,
+        isSaveNeeded: false,
         emailEditor: ClassicEditor,
+        emailLog: [],
+        numWithEmails: 0,
+        emailSendStatus: '',
         editorConfig: {
-          toolbar: [  'undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'indent', 'outdent', 'bulletedList', 'numberedList', 'link', 'insertTable' ],
+          toolbar: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'indent', 'outdent', 'bulletedList', 'numberedList', 'link', 'insertTable'],
           heading: {
             options: [
               { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
@@ -37,7 +41,7 @@
               { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
             ],
             table: {
-              contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
+              contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
             }
           }
         },
@@ -103,6 +107,7 @@
               this.election.OnlineCloseIsEstimate = true;
               this.election.OnlineSelectionProcess = 'B';
             };
+            this.getEmailLog();
             //            var vue = this;
             //            Vue.nextTick(function() {
             //              vue.setupEmailEditor();
@@ -134,8 +139,6 @@
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
         this.isMounted = true;
-//        debugger
-        console.log(this.emailEditor.builtinPlugins.map(p=>p.pluginName));
       },
       methods: {
         removeLocation: function (domIcon) {
@@ -168,11 +171,48 @@
           if (!this.onlineDatesOkay) return;
 
           $('.btnSave').addClass('btn-primary');
+          this.isSaveNeeded = true;
         },
         showFrom: function (when) {
           if (!when) return '';
           return '(' + moment(when).fromNow() + ')';
-        }
+        },
+        sendEmail: function (emailCode) {
+          var vue = this;
+          ShowStatusDisplay('Sending...');
+          var form = { emailCode: emailCode };
+          CallAjaxHandler(publicInterface.controllerUrl + '/SendEmail', form, function (info) {
+            if (info.Success) {
+              vue.getEmailLog();
+              ShowStatusSuccess(info.Status);
+            }
+            else {
+              ShowStatusFailed(info.Status);
+            }
+          });
+
+        },
+        getEmailLog: function () {
+          var vue = this;
+          CallAjaxHandler(publicInterface.controllerUrl + '/GetEmailInfo', null, function (info) {
+            if (info.Success) {
+              vue.emailLog = vue.extendLog(info.Log);
+              vue.numWithEmails = info.NumWithEmails;
+            }
+            else {
+              ShowStatusFailed(info.Status);
+            }
+          });
+
+        },
+        extendLog: function (list) {
+          list.forEach(function (lh) {
+            var when_M = moment(lh.AsOf);
+            lh.age = when_M.fromNow();
+            lh.when = when_M.format('llll');
+          });
+          return list;
+        },
       }
     });
 
@@ -551,6 +591,9 @@
       OnlineWhenClose: election.OnlineWhenClose,
       OnlineCloseIsEstimate: election.OnlineCloseIsEstimate,
       OnlineSelectionProcess: election.OnlineSelectionProcess,
+      EmailFromName: election.EmailFromName,
+      EmailFromAddress: election.EmailFromAddress,
+      EmailText: encodeURIComponent(election.EmailText),
     };
 
     $(':input[data-name]').each(function () {
@@ -578,6 +621,7 @@
           updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
         }
         $('.btnSave').removeClass('btn-primary');
+        settings.vue.isSaveNeeded = false;
 
         var isClosed = moment(form.OnlineWhenClose).isBefore();
         $('body').toggleClass('OnlineOpen', !isClosed);

@@ -27,10 +27,10 @@
         <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TallyJ2dModel.AspNetUserRoles" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="13.75" PointY="0.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Ballot" Width="1.5" PointX="13.75" PointY="8.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="9.75" PointY="13.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.C_Log" Width="1.5" PointX="12.375" PointY="13.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="14.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -44,9 +44,9 @@ namespace TallyJ.EF
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
-        public virtual DbSet<Election> Election { get; set; }
         public virtual DbSet<Ballot> Ballot { get; set; }
         public virtual DbSet<Vote> Vote { get; set; }
         public virtual DbSet<C_Log> C_Log { get; set; }
+        public virtual DbSet<Election> Election { get; set; }
     }
 }

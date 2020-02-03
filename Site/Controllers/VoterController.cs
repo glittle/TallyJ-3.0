@@ -416,7 +416,7 @@ namespace TallyJ.Controllers
     {
       var emailHelper = new EmailHelper();
 
-      var sent = emailHelper.SendTest(UserSession.VoterEmail, out var error);
+      var sent = emailHelper.SendVoterEmailTest(UserSession.VoterEmail, out var error);
 
       return new
       {
