@@ -495,15 +495,15 @@ ClientFile("~/Scripts/vue-datetime.css"),
             <div class="onlineWarning1">Open and Close times are both required and Open must come before Close.</div>
           </td>
         </tr>
-        <tr>
+        @*<tr>
           <th>
             Sender Email Address
           </th>
           <td>
-            <input type="email" v-model="election.EmailFromAddress" data-name="SenderEmail">
+            <input type="email" v-model="election.EmailFromAddress">
           </td>
           <td>
-            When emails are sent to voters regarding this election, this will be the From address. This email address will be visible to all voters receiving emails.
+            When emails are sent to voters regarding this election, this will be the From address. The address will be visible to all voters receiving emails.
           </td>
         </tr>
         <tr>
@@ -511,7 +511,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
             Sender Name
           </th>
           <td>
-            <input type="text" v-model="election.EmailFromName" data-name="SenderName">
+            <input type="text" v-model="election.EmailFromName">
           </td>
           <td>
             This will be name with the From address. Use a person's name, or the name of an agency, that will
@@ -523,13 +523,20 @@ ClientFile("~/Scripts/vue-datetime.css"),
             Additional Message
           </th>
           <td colspan="2">
-            <div>Emails will be formatted from TallyJ, but you can type or paste an additional message here:</div>
-            @*<textarea id="EmailText" v-model="election.EmailText"></textarea>*@
+            <div>Emails will be sent with election details from TallyJ. You can include an additional message by typing it here.</div>
             <ckeditor :editor="emailEditor" :config="editorConfig" v-model="election.EmailText"></ckeditor>
-            <button class="btn btn-small">Send a test email to {{election.SenderEmail || '...'}}</button>
           </td>
         </tr>
+        <tr>
+          <th></th>
+          <td colspan="2">
+            <button class="btn btn-small">Send a test email to {{election.SenderEmail || '...'}}</button>
 
+            <button class="btn">Send this email to all X voters</button>
+
+
+          </td>
+        </tr>*@
 
         @*<tr>
             <th>

@@ -437,7 +437,11 @@ namespace TallyJ.CoreModels
           {
             //Db.SaveChanges();
 
-            Db.BulkInsert(peopleToLoad);
+            var error = BulkInsert_CheckErrors(peopleToLoad);
+            if (error != null)
+            {
+              return error;
+            }
             peopleToLoad.Clear();
           }
         }
@@ -452,7 +456,11 @@ namespace TallyJ.CoreModels
 
       if (peopleToLoad.Count != 0)
       {
-        Db.BulkInsert(peopleToLoad);
+        var error = BulkInsert_CheckErrors(peopleToLoad);
+        if (error != null)
+        {
+          return error;
+        }
       }
 
       file.ProcessingStatus = "Imported";
@@ -496,6 +504,35 @@ namespace TallyJ.CoreModels
         result,
         count = NumberOfPeople
       }.AsJsonResult();
+    }
+
+    private JsonResult BulkInsert_CheckErrors(List<Person> peopleToLoad)
+    {
+      try
+      {
+        Db.BulkInsert(peopleToLoad);
+        return null;
+      }
+      catch (Exception e)
+      {
+        var msg = e.GetBaseException().Message;
+
+        if (msg.Contains("IX_PersonEmail"))
+        {
+          return new
+          {
+            failed = true,
+            result = new[] { "An email address is duplicated in the import file. Import halted." }
+          }.AsJsonResult();
+        }
+
+        
+        return new
+        {
+          failed = true,
+          result = new[] { msg }
+        }.AsJsonResult();
+      }
     }
 
     public int NumberOfPeople

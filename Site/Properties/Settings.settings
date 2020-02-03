@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="VersionNum" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">3.0 beta 14</Value>
+      <Value Profile="(Default)">3.0 beta 22</Value>
     </Setting>
     <Setting Name="VersionDate" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">8 Knowledge 176 / 23 October 2019</Value>
+      <Value Profile="(Default)">15 Sovereignty 176 / 1 February 2020</Value>
     </Setting>
   </Settings>
 </SettingsFile>

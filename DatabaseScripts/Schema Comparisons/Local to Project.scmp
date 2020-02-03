@@ -9,7 +9,7 @@
   </SourceModelProvider>
   <TargetModelProvider>
     <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=bjvxix4kl0.database.windows.net;Initial Catalog=TallyJ3b;Persist Security Info=False;User ID=sunwaptadba;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=True;TrustServerCertificate=False</ConnectionString>
+      <ConnectionString>Data Source=.;Initial Catalog=TallyJ3b;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False</ConnectionString>
     </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
@@ -154,6 +154,10 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>IgnorePartitionSchemes</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>IgnoreTablePartitionOptions</Name>
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
