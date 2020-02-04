@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -173,11 +174,18 @@ namespace TallyJ.Controllers
           // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
           // Send an email with this link
           string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-          await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-//          return RedirectToAction("Index", "Voter");
-          var msg = "An email has been sent to your account with a link you need to use to confirm your account. You must be confirmed "
+          //          var hostSite = SettingsHelper.Get("HostSite", "");
+          //          var callbackUrl = $"{hostSite}/Account2/ConfirmEmail?userId={user.Id}&code={code}";
+          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code }, protocol: Request.Url.Scheme);
+          // on live server, port 444 is added and should not be.
+          callbackUrl = callbackUrl.Replace(":444", "");
+
+
+          await UserManager.SendEmailAsync(user.Id, "Confirm your account", $"<p>Hello,</p><p>Please confirm your account by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
+
+          //          return RedirectToAction("Index", "Voter");
+          var msg = "An email has been sent to your account with a link you need to use to confirm your account. You must confirm it "
                             + "before you can log in.";
 
           Session[SessionKey.VoterLoginError] = msg;
@@ -196,12 +204,23 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     public async Task<ActionResult> ConfirmEmail(string userId, string code)
     {
-      if (userId == null || code == null)
+      HandleErrorInfo model;
+
+      if (userId != null && code != null)
       {
-        return View("Error");
+        var result = await UserManager.ConfirmEmailAsync(userId, code);
+        if (result.Succeeded)
+        {
+          return View("ConfirmEmail");
+        }
+
+        model = new HandleErrorInfo(new ApplicationException(result.Errors.JoinedAsString("; ")), this.GetType().Name, "ConfirmEmail");
       }
-      var result = await UserManager.ConfirmEmailAsync(userId, code);
-      return View(result.Succeeded ? "ConfirmEmail" : "Error");
+      else
+      {
+        model = new HandleErrorInfo(new ApplicationException("Invalid request"), this.GetType().Name, "ConfirmEmail");
+      }
+      return View("Error", model);
     }
 
     //
@@ -292,14 +311,14 @@ namespace TallyJ.Controllers
 
     //
     // POST: /Account/ExternalLogin
-//    [HttpPost]
-//    [AllowAnonymous]
-//    [ValidateAntiForgeryToken]
-//    public ActionResult ExternalLogin(string provider, string returnUrl)
-//    {
-//      // Request a redirect to the external login provider
-//      return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account2", new { ReturnUrl = returnUrl }));
-//    }
+    //    [HttpPost]
+    //    [AllowAnonymous]
+    //    [ValidateAntiForgeryToken]
+    //    public ActionResult ExternalLogin(string provider, string returnUrl)
+    //    {
+    //      // Request a redirect to the external login provider
+    //      return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account2", new { ReturnUrl = returnUrl }));
+    //    }
 
     //
     // GET: /Account/SendCode
