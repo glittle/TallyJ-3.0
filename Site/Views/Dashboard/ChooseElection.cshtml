@@ -21,6 +21,7 @@
   <h2>@ViewBag.Message</h2>
 </hgroup>
 <h3>Your Elections</h3>
+
 <div id="ElectionList">
   <span>@electionsInfo.Count.Plural("Loading {0} elections".FilledWith(electionsInfo.Count), "Loading 1 election", "(none found)") ...</span>
 </div>
@@ -47,6 +48,10 @@
 else
 {
   <p>Sorry, no elections found. Please Log Out and try again.</p>
+}
+@if (UserSession.IsSysAdmin)
+{
+  <p>@Html.ActionLink("Sys Admin", "Index", "Admin")</p>
 }
 <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
 

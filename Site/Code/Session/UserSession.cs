@@ -247,6 +247,8 @@ namespace TallyJ.Code.Session
 
     public static bool IsAuthenticated => ActivePrincipal.Identity.IsAuthenticated;
 
+    public static bool IsSysAdmin => ActivePrincipal.FindFirst("IsSysAdmin")?.Value == "true";
+
     public static string VoterEmail => ActivePrincipal.FindFirst("Email")?.Value;
     public static string VoterAuthSource => ActivePrincipal.FindFirst("Source")?.Value;
     public static bool VoterIsVerified => ActivePrincipal.FindFirst("IsVoter")?.Value == "True";

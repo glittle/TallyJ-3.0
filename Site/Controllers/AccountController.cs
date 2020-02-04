@@ -53,13 +53,13 @@ namespace TallyJ.Controllers
         //return View(model);
       }
 
-      var helpers = new LoginHelper(ModelState, 
-        homeUrl, 
+      var helpers = new LoginHelper(ModelState,
+        homeUrl,
         "",
         "Local",
-        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new {userId = id, code}, protocol: HttpContext.Request.Url.Scheme); },
-        ()=> RedirectToAction("Lockout", "Account2"),
-        ()=> RedirectToAction("SendCode", "Account2", new { ReturnUrl = voterHomeUrl }));
+        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme); },
+        () => RedirectToAction("Lockout", "Account2"),
+        () => RedirectToAction("SendCode", "Account2", new { ReturnUrl = voterHomeUrl }));
       return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
     }
 
@@ -85,15 +85,22 @@ namespace TallyJ.Controllers
         {
           //                    FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
 
+          var membershipUser = Membership.GetUser(model.UserName);
+          var email = membershipUser?.Email;
+
           UserSession.ProcessLogin();
 
           var claims = new List<Claim>
                     {
                         new Claim("UserName", model.UserName),
                         new Claim("UniqueID", model.UserName),
-//                        new Claim("Email", email),
                         new Claim("IsKnownTeller", "true"),
                     };
+
+          if (membershipUser?.Comment == "SysAdmin")
+          {
+            claims.Add(new Claim("IsSysAdmin", "true"));
+          }
 
           var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
 
@@ -105,8 +112,6 @@ namespace TallyJ.Controllers
           };
 
           System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
-
-          var email = Membership.GetUser(model.UserName)?.Email;
 
           new LogHelper().Add("Admin Logged In - {0} ({1})".FilledWith(model.UserName, email), true);
 
