@@ -329,7 +329,7 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
-        .Where(p => p.Email == email && p.CanVote == true && p.IneligibleReasonGuid == null)
+        .Where(p => p.Email == email && p.CanVote == true)
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
         .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
         .OrderByDescending(j => j.e.OnlineWhenClose)
