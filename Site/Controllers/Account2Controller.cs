@@ -177,10 +177,7 @@ namespace TallyJ.Controllers
 
           //          var hostSite = SettingsHelper.Get("HostSite", "");
           //          var callbackUrl = $"{hostSite}/Account2/ConfirmEmail?userId={user.Id}&code={code}";
-          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code }, protocol: Request.Url.Scheme);
-          // on live server, port 444 is added and should not be.
-          callbackUrl = callbackUrl.Replace(":444", "");
-
+          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code }, protocol: Request.Url.Scheme).FixSiteUrl();
 
           await UserManager.SendEmailAsync(user.Id, "Confirm your account", $"<p>Hello,</p><p>Please confirm your account by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
 
@@ -190,7 +187,7 @@ namespace TallyJ.Controllers
 
           Session[SessionKey.VoterLoginError] = msg;
 
-          return Redirect(Url.Action("Index", "Public"));
+          return Redirect(Url.Action("Index", "Public").FixSiteUrl());
         }
         AddErrors(result);
       }
@@ -250,7 +247,7 @@ namespace TallyJ.Controllers
         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
         // Send an email with this link
         string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-        var callbackUrl = Url.Action("ResetPassword", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+        var callbackUrl = Url.Action("ResetPassword", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme).FixSiteUrl();
         await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password for TallyJ by clicking <a href=\"" + callbackUrl + "\">here</a>.");
         return RedirectToAction("ForgotPasswordConfirmation", "Account2");
       }

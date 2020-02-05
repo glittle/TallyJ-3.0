@@ -39,8 +39,8 @@ namespace TallyJ.Controllers
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> LogOnLocal(LoginViewModel loginViewModel)
     {
-      var voterHomeUrl = Url.Action("Index", "Voter");
-      var homeUrl = Url.Action("Index", "Public");
+      var voterHomeUrl = Url.Action("Index", "Voter").FixSiteUrl();
+      var homeUrl = Url.Action("Index", "Public").FixSiteUrl();
       if (loginViewModel.Provider != "Local")
       {
         return Redirect(homeUrl);
@@ -57,7 +57,7 @@ namespace TallyJ.Controllers
         homeUrl,
         "",
         "Local",
-        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme); },
+        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme).FixSiteUrl(); },
         () => RedirectToAction("Lockout", "Account2"),
         () => RedirectToAction("SendCode", "Account2", new { ReturnUrl = voterHomeUrl }));
       return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
@@ -68,7 +68,7 @@ namespace TallyJ.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
     {
-      var voterHomeUrl = Url.Action("Index", "Voter");
+      var voterHomeUrl = Url.Action("Index", "Voter").FixSiteUrl();
       SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
 
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);

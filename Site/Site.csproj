@@ -264,6 +264,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\AllowTellersInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
+    <Compile Include="Code\ForSysAdminAttribute.cs" />
     <Compile Include="Code\OwinRelated\AspIdentity2Classes.cs" />
     <Compile Include="Code\SettingsHelper.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />

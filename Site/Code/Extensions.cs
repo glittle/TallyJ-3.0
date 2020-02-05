@@ -68,6 +68,10 @@ namespace TallyJ.Code
       return new MvcHtmlString(input);
     }
 
+    public static string FixSiteUrl(this string input)
+    {
+      return input?.Replace(":444", "");
+    }
 
     /// <summary>
     ///   Split using a single separator
