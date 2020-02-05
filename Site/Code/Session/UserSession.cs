@@ -371,12 +371,18 @@ namespace TallyJ.Code.Session
     {
       get
       {
+        if (!IsGuestTeller && !IsKnownTeller)
+        {
+          return null;
+        }
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
         if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
         {
           return new ComputerModel().GetComputerForMe(Guid.Empty);
         }
+
         return currentComputer;
+
       }
       set { SessionKey.CurrentComputer.SetInSession(value); }
     }

@@ -321,7 +321,7 @@
     <Compile Include="Code\UnityRelated\ContextLifetimeManager.cs" />
     <Compile Include="Code\Data\IDbContextFactory.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\SysAdminController.cs" />
     <Compile Include="Controllers\BallotsController.cs" />
     <Compile Include="Controllers\BeforeController.cs" />
     <Compile Include="Controllers\AfterController.cs" />
@@ -828,6 +828,12 @@
     <Content Include="Views\Setup\Setup.cshtml.css">
       <DependentUpon>Setup.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\SysAdmin\Index.cshtml.css">
+      <DependentUpon>Index.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\SysAdmin\Index.cshtml.js">
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Voter\VoterHome.cshtml.css">
       <DependentUpon>VoterHome.cshtml.less</DependentUpon>
     </Content>
@@ -912,8 +918,11 @@
     </Content>
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
-    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\SysAdmin\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\SysAdmin\Index.cshtml.less">
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

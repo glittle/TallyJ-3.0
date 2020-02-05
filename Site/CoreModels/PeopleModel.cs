@@ -780,6 +780,7 @@ namespace TallyJ.CoreModels
         removedId = votingMethodRemoved ? person.C_RowId : 0,
         newStamp
       };
+
       if (rollCallInfo.newStamp != 0 || rollCallInfo.removedId != 0)
       {
         new RollCallHub().UpdateAllConnectedClients(rollCallInfo);
@@ -788,6 +789,17 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteAllPeople()
     {
+      var num = Db.OnlineVotingInfo.Count(p => p.ElectionGuid == CurrentElectionGuid && p.ListPool != null);
+      if (num > 0)
+      {
+        return
+          new
+          {
+            Results = "Nothing was deleted. Once online votes have been recorded, you cannot delete all the people. ",
+            count = 0
+          }.AsJsonResult();
+      }
+
       var rows = 0;
       var newRows = 0;
       try
@@ -797,6 +809,12 @@ namespace TallyJ.CoreModels
           newRows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
           rows += newRows;
         } while (newRows > 0);
+
+        int oviRows;
+        do
+        {
+          oviRows = Db.OnlineVotingInfo.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
+        } while (oviRows > 0);
       }
       catch (SqlException ex)
       {

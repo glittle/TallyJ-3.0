@@ -213,42 +213,49 @@
       <p v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online voting is closed.</p>
       <p v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</p>
 
-      <table class="OnlineBallots">
-        <thead>
-          <tr>
-            <th>
-              Voter
-            </th>
-            <th>
-              Registered<br />Voting Method
-            </th>
-            <th>
-              Online Ballot<br />Status
-            </th>
-            <th>
-              When
-            </th>
-          </tr>
-        </thead>
-        <tbody id="onlineBallotsBody" class="Hidden tbody">
-          <tr>
-            <td class="OnlineName">
-              {C_FullName}
-              <div>{Email}</div>
-            </td>
-            <td>
-              {VotingMethod_Display}
-            </td>
-            <td>
-              {Status}
-            </td>
-            <td>
-              {WhenStatus_Display}
-              <span class="ui-icon ui-icon-info" title="Full History:{History_Tip}"></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="OnlineBallotsDiv">
+        <table class="OnlineBallots">
+          <thead>
+            <tr>
+              <th>
+                Voter Name
+              </th>
+              <th>
+                Voter Email
+              </th>
+              <th>
+                Registered<br />Voting Method
+              </th>
+              <th>
+                Online Ballot<br />Status
+              </th>
+              <th>
+                When
+              </th>
+            </tr>
+          </thead>
+          <tbody id="onlineBallotsBody" class="Hidden tbody">
+            <tr>
+              <td class="OnlineName">
+                {C_FullName}
+              </td>
+              <td class="OnlineName">
+                {Email}
+              </td>
+              <td>
+                {VotingMethod_Display}
+              </td>
+              <td class="row{Status}">
+                {Status}
+              </td>
+              <td>
+                {WhenStatus_Display}
+                <span class="ui-icon ui-icon-info History History{HasHistory_Tip}" title="Full History:{History_Tip}"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   }
   else

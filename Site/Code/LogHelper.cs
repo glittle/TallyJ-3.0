@@ -35,7 +35,7 @@ namespace TallyJ.Code
       AddToLog(new C_Log
       {
         ElectionGuid = _electionGuid.AsNullableGuid(),
-        ComputerCode = UserSession.CurrentComputerCode,
+        ComputerCode = UserSession.CurrentComputerCode.DefaultTo(null),
         LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
         VoterEmail = UserSession.VoterEmail ?? voterEmail,
         Details = message,

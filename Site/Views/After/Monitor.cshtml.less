@@ -7,7 +7,27 @@
 table {
   border-collapse: separate;
   border-spacing: 0px 0px;
+
+  &.OnlineBallots {
+    width: 100%;
+    td{
+      max-width: 12vw;
+    }
+
+    .rowSubmitted{
+      background-color: #ffc195;
+    }
+    .rowProcessed{
+      background-color: #b7ff95;
+    }
+  }
 }
+
+.OnlineBallotsDiv{
+  max-height: 80vh;
+  overflow: auto;
+}
+
 
 .Main > thead th,
 .OnlineBallots > thead th,
@@ -219,4 +239,8 @@ table.compList thead th {
   .onlinePast {
     background-color: @onlinePast;
   }
+}
+
+.Historyfalse {
+  display: none;
 }

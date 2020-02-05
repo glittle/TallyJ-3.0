@@ -152,7 +152,10 @@
     {
       <section class="content-wrapper clear-fix">
         <div class="main-content">
-          <span class="CompCode">@UserSession.CurrentComputerCode</span>
+          @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
+          {
+            <span class="CompCode">@UserSession.CurrentComputerCode</span>
+          }
         </div>
         @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
         @{

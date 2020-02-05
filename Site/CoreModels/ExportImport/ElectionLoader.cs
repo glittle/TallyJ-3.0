@@ -152,11 +152,11 @@ namespace TallyJ.CoreModels.ExportImport
 
           LoadPeople();
 
-          LoadOnlineVotingInfo();
-
           LoadBallots();
 
           LoadResultInfo();
+          
+          LoadOnlineVotingInfo();
 
           _hub.StatusUpdate("Running analysis...");
 

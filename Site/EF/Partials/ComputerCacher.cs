@@ -85,6 +85,11 @@ namespace TallyJ.EF
     public void UpdateLastContactOfCurrentComputer()
     {
       var computer = UserSession.CurrentComputer;
+      if (computer == null)
+      {
+        return;
+      }
+
       computer.LastContact = DateTime.Now;
 
       CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>

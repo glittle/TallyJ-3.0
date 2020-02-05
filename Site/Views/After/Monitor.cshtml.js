@@ -284,9 +284,10 @@
       voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
       voter.History_Display = history.length ? history[history.length - 1] : '-';
       voter.History_Tip = '\n' + history.join('\n');
+      voter.HasHistory_Tip = history.length > 0;
       if (!voter.Status) {
         if (!voter.votesReady) {
-          voter.Status = '(not ready)';
+          voter.Status = '-';
         }
       }
       html.push(settings.rowTemplateOnline.filledWith(voter));
@@ -501,7 +502,7 @@
             null,
             function (info) {
               if (info.success) {
-                ShowStatusSuccess(info.Message);
+                ShowStatusSuccess(info.Message || 'Done');
                 //                console.log(info.problems);
                 refresh();
               } else {

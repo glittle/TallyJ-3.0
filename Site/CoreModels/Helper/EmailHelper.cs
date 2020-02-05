@@ -96,7 +96,7 @@ namespace TallyJ.CoreModels.Helper
     public bool SendWhenProcessed(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
     {
       // only send if they asked for it
-      if (!ov.EmailCodes.Contains("p"))
+      if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p"))
       {
         error = null;
         return true;
@@ -358,7 +358,7 @@ namespace TallyJ.CoreModels.Helper
           logo = hostSite + "/Images/LogoSideM.png",
           p.Email,
           p.PersonName,
-          election.EmailText,
+          EmailText = election.EmailText ?? "-",
           electionName = election.Name,
           electionType = ElectionTypeEnum.TextFor(election.ElectionType),
           openIsFuture,

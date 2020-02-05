@@ -1,0 +1,92 @@
+﻿body {
+  overflow-y: scroll;
+}
+
+header {
+  padding: 0;
+}
+
+.content-wrapper {
+  max-width: none;
+}
+
+.eventLog {
+  margin: 10px 0;
+
+  .spacer {
+    margin-top: 2em;
+  }
+
+  table {
+    margin: 10px auto 3px;
+    color: #000;
+    border-collapse: separate;
+    border-spacing: 1px 2px;
+    margin: 0 0 20px 0;
+    width: 100%;
+  }
+
+  tbody:nth-child(2n) {
+    background-color: rgba(0,0,0,0.05);
+  }
+
+  td.NoWrap {
+    white-space: nowrap;
+  }
+
+  td, th {
+    padding: 1px 7px;
+  }
+
+  td {
+    text-overflow: ellipsis;
+    vertical-align: top;
+    max-width: 30vw;
+  }
+
+  input {
+    width: 150px;
+    margin-left: 150px;
+  }
+
+  .autorefresh {
+    display: block;
+    float: right;
+    font-size: 13px;
+    margin: 0 7px 6px 0;
+    text-align: right;
+
+    .age {
+      display: inline-block;
+      width: 150px;
+    }
+
+    .select {
+      margin: 0 20px 0 0;
+      font-size: 13px;
+    }
+  }
+
+  .btn-mini {
+    line-height: 1.2em;
+  }
+
+  .fullDetails {
+    background: white;
+    box-shadow: 0 0 2px 0 #555;
+    padding: 3px;
+    margin: 0 0 5px 20px;
+    white-space: nowrap;
+    overflow: auto;
+  }
+
+  tr.moreFollowing {
+    td {
+      border-bottom: double 3px grey;
+    }
+  }
+
+  tr.ajax {
+    color: #888;
+  }
+}

@@ -1,0 +1,86 @@
+﻿@using TallyJ.Code.Session
+@{
+  Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+  ViewData["ExtraScripts"] = new[]
+  {
+    ClientFile("~/Scripts/vue{0}.js", ".min"),
+  };
+}
+
+<div id="LogView">
+  <div class="Header">
+    Log Viewer
+
+    <a href="Dashboard">Home</a>
+  </div>
+
+  <event-log></event-log>
+
+</div>
+
+<script>
+  var _url = {
+    mainLog: @Url.Action("GetMainLog", "SysAdmin").QuotedForJavascript().AsRawHtml(),
+  };
+</script>
+
+<script id="eventLog" type="text/x-template">
+  <div class="eventLog">
+
+    <div class="autorefresh">
+      Auto-refresh
+      <select v-model="autoUpdateSeconds">
+        <option v-for="opt in autoUpdateSettings"
+                :key="opt.s"
+                v-text="opt.t"
+                :value="opt.s"></option>
+      </select>
+      <span class="age">{{age}}</span>
+    </div>
+
+
+    <div>
+      <button v-on:click="searchText=''; getLog('mainLog', true)">Refresh</button>
+      @*<input placeholder="%sql_" v-on:keyup.enter="getLog('mainLog', true)" v-model="searchText">
+      <button v-on:click="getLog('mainLog', true)">Search</button>*@
+    </div>
+
+    <table class="mainLog">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Election</th>
+          <th>Site</th>
+          <th>Comp</th>
+          <th>Voter</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody v-for="r in logInfo.mainLog.log" :key="r.C_RowId">
+        <tr :class="rowClassNames(r)">
+          <td class="NoWrap">{{r.AsOf_Display}}</td>
+          <td>{{r.ElectionName}}</td>
+          <td>{{r.HostAndVersion}}</td>
+          <td>{{r.ComputerCode}}</td>
+          <td>{{r.VoterEmail}}</td>
+          <td>
+            <button class="btn btn-mini" 
+                    v-if="r.numLines > 1" 
+                    v-on:click="r.showFullDetails = !r.showFullDetails"
+                    v-text="r.numLines + ' Lines'"></button>
+            {{r.shortDetails}}
+          </td>
+        </tr>
+        <tr v-if="r.showFullDetails">
+          <td colspan="99">
+            <div class="fullDetails" v-html="r.fullDetails"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button v-on:click="getLog('mainLog', false)">Show More</button>
+
+
+  </div>
+</script>

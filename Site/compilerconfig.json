@@ -138,5 +138,9 @@
   {
     "outputFile": "Views/After/Presenter.cshtml.css",
     "inputFile": "Views/After/Presenter.cshtml.less"
+  },
+  {
+    "outputFile": "Views/SysAdmin/Index.cshtml.css",
+    "inputFile": "Views/SysAdmin/Index.cshtml.less"
   }
 ]
