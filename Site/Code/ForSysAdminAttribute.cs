@@ -7,7 +7,9 @@ namespace TallyJ.Code
   {
     protected override bool AuthorizeCore(System.Web.HttpContextBase httpContext)
     {
-      return UserSession.IsSysAdmin;
+      // IsSysAdmin relies only on a cookie that may last for days
+      // IsKnownTeller relies on session, which times out sooner
+      return UserSession.IsKnownTeller && UserSession.IsSysAdmin;
     }
   }
 }
