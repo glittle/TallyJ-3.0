@@ -10,18 +10,22 @@
 
 <div id="LogView">
   <div class="Header">
-    Log Viewer
+    <div class="reportSelector">
+      <button v-on:click="showReport('mainLog')" class="btn" :class="{'btn-success': report==='mainLog'}">General Log</button>
+      <button v-on:click="showReport('onlineVotingLog')" class="btn" :class="{'btn-success': report==='onlineVotingLog'}">Online Voting</button>
+    </div>
 
     <a href="Dashboard">Home</a>
   </div>
 
-  <event-log></event-log>
+  <event-log :report="report" v-if="report"></event-log>
 
 </div>
 
 <script>
   var _url = {
     mainLog: @Url.Action("GetMainLog", "SysAdmin").QuotedForJavascript().AsRawHtml(),
+    onlineVotingLog: @Url.Action("GetOnlineVotingLog", "SysAdmin").QuotedForJavascript().AsRawHtml(),
   };
 </script>
 
@@ -41,46 +45,85 @@
 
 
     <div>
-      <button v-on:click="searchText=''; getLog('mainLog', true)">Refresh</button>
+      <button v-on:click="searchText=''; getLog(report, true)">Refresh</button>
       @*<input placeholder="%sql_" v-on:keyup.enter="getLog('mainLog', true)" v-model="searchText">
       <button v-on:click="getLog('mainLog', true)">Search</button>*@
     </div>
 
-    <table class="mainLog">
-      <thead>
-        <tr>
-          <th>When</th>
-          <th>Election</th>
-          <th>Site</th>
-          <th>Comp</th>
-          <th>Voter</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody v-for="r in logInfo.mainLog.log" :key="r.C_RowId">
-        <tr :class="rowClassNames(r)">
-          <td class="NoWrap">{{r.AsOf_Display}}</td>
-          <td>{{r.ElectionName}}</td>
-          <td>{{r.HostAndVersion}}</td>
-          <td>{{r.ComputerCode}}</td>
-          <td>{{r.VoterEmail}}</td>
-          <td>
-            <button class="btn btn-mini" 
-                    v-if="r.numLines > 1" 
-                    v-on:click="r.showFullDetails = !r.showFullDetails"
-                    v-text="r.numLines + ' Lines'"></button>
-            {{r.shortDetails}}
-          </td>
-        </tr>
-        <tr v-if="r.showFullDetails">
-          <td colspan="99">
-            <div class="fullDetails" v-html="r.fullDetails"></div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <button v-on:click="getLog('mainLog', false)">Show More</button>
+    <div class="mainLog" v-if="report == 'mainLog'">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Election</th>
+            <th>Site</th>
+            <th>Comp</th>
+            <th>Voter</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody v-for="r in logInfo.mainLog.log" :key="r.C_RowId">
+          <tr :class="rowClassNames('mainLog', r)">
+            <td class="NoWrap">{{r.AsOf_Display}}</td>
+            <td>{{r.ElectionName}}</td>
+            <td>{{r.HostAndVersion}}</td>
+            <td>{{r.ComputerCode}}</td>
+            <td>{{r.VoterEmail}}</td>
+            <td>
+              <button class="btn btn-mini"
+                      v-if="r.numLines > 1"
+                      v-on:click="r.showFullDetails = !r.showFullDetails"
+                      v-text="r.numLines + ' Lines'"></button>
+              {{r.shortDetails}}
+            </td>
+          </tr>
+          <tr v-if="r.showFullDetails">
+            <td colspan="99">
+              <div class="fullDetails" v-html="r.fullDetails"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button v-on:click="getLog('mainLog', false)">Show More</button>
+    </div>
 
+
+    <div class="onlineVotingLog" v-if="report == 'onlineVotingLog'">
+      <table>
+        <thead>
+          <tr>
+            <th>Election</th>
+            <th>Convenor</th>
+            <th>Email</th>
+            <th>Ballot Size</th>
+            <th>Tally Status</th>
+            <th>Online Voters</th>
+            <th>Locked In</th>
+            <th>Processed</th>
+            <th>Open Date</th>
+            <th>First Activity</th>
+            <th>Most Recent</th>
+            <th>Close Date</th>
+          </tr>
+        </thead>
+        <tbody v-for="r in logInfo.onlineVotingLog.log" :key="r.C_RowId">
+          <tr :class="rowClassNames('onlineVotingLog', r)">
+            <td>{{r.Name}}</td>
+            <td>{{r.Convenor}}</td>
+            <td>{{r.Email}}</td>
+            <td>{{r.NumberToElect}}</td>
+            <td>{{r.TallyStatus}}</td>
+            <td>{{r.Activated}}</td>
+            <td>{{r.Submitted}}</td>
+            <td>{{r.Processed}}</td>
+            <td>{{r.OnlineWhenOpen_Display}}</td>
+            <td>{{r.First_Display}}</td>
+            <td>{{r.MostRecent_Display}}</td>
+            <td>{{r.OnlineWhenClose_Display}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </script>

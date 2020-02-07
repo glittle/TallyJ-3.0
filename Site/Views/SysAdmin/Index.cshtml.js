@@ -14,7 +14,16 @@ var LogView = function () {
     localSettings.vue = new Vue({
       name: 'LogView',
       el: hostSelector,
-
+      data: function () {
+        return {
+          report: GetFromStorage('syslog', ''),
+        };
+      },
+      methods: {
+        showReport: function (report) {
+          this.report = report;
+        }
+      }
     });
   };
 
@@ -35,6 +44,7 @@ Vue.component('eventLog',
   {
     template: '#eventLog',
     props: {
+      report: String
     },
     data: function () {
       return {
@@ -43,8 +53,11 @@ Vue.component('eventLog',
             log: [],
             loaded: false
           },
+          onlineVotingLog: {
+            log: [],
+            loaded: false
+          }
         },
-        activeTab: 'mainLog',
         searchText: '',
         autoUpdateSeconds: +GetFromStorage('admintimer', 0),
         // autoUpdateTimer: null,
@@ -73,6 +86,9 @@ Vue.component('eventLog',
       }
     },
     watch: {
+      report: function (a, b) {
+        this.getLog(a, true); // load the events on first view
+      },
       autoUpdateSeconds: function (a, b) {
         if (this.autoUpdateSeconds && this.autoUpdateSeconds < this.ageSeconds) {
           this.refreshActive();
@@ -82,7 +98,7 @@ Vue.component('eventLog',
       }
     },
     mounted: function () {
-      this.getLog('mainLog', true); // load the events on first view
+      this.getLog(this.report, true); // load the events on first view
     },
     methods: {
       startAgeTimer: function () {
@@ -123,7 +139,7 @@ Vue.component('eventLog',
           var logInfo = vue.logInfo[type];
 
           if (logInfo.loaded) {
-            if (type === vue.activeTab) {
+            if (type === vue.report) {
               vue.getLog(type, true);
             }
             else {
@@ -132,38 +148,41 @@ Vue.component('eventLog',
           }
         });
       },
-      changedTab: function () {
-        var type = this.activeTab;
-        if (!this.logInfo[type].loaded) {
-          this.getLog(type, true);
-        }
-      },
+      //      changedTab: function () {
+      //        var type = this.report;
+      //        if (!this.logInfo[type].loaded) {
+      //          this.getLog(type, true);
+      //        }
+      //      },
       getLog: function (type, reload) {
         var vue = this;
         var logInfo = vue.logInfo[type];
 
         vue.cancelTimers();
 
-        if (reload) {
-          logInfo.log = [];
-        }
+        var form = {
+          //          search: vue.searchText
+        };
 
-        var lastId = 0;
         var last;
         switch (type) {
           case 'mainLog':
+
+            if (reload) {
+              logInfo.log = [];
+            }
+
             if (logInfo.log.length) {
               last = logInfo.log[logInfo.log.length - 1];
-              lastId = last.C_RowId;
+              form.lastRowId = last.C_RowId;
               last.moreFollowing = true;
             }
             break;
+          case 'onlineVotingLog':
+            logInfo.log = [];
+            form.numToShow = 50;
+            break;
         }
-
-        var form = {
-          lastRowId: lastId,
-          search: vue.searchText
-        };
 
         ShowStatusDisplay('Getting {0} details...'.filledWith(type));
 
@@ -172,14 +191,15 @@ Vue.component('eventLog',
           function (info) {
             logInfo.loaded = true;
 
-            if (info.Success) {
+            if (info && info.Success) {
               vue['extend_' + type + 'List'](info.logLines, logInfo.log);
 
               vue.startAgeTimer();
               // vue.setUpdateTimer();
+              SetInStorage('syslog', type);
             }
             else {
-              ShowStatusFailed(info.Message);
+              ShowStatusFailed(info && info.Message || 'No Data? Are you logged in?');
             }
           });
 
@@ -187,6 +207,13 @@ Vue.component('eventLog',
       extend_mainLogList: function (logLines, currentList) {
         for (var i = 0; i < logLines.length; i++) {
           this.extendMainLogLine(logLines[i]);
+          currentList.push(logLines[i]);
+        }
+        // return logLines;
+      },
+      extend_onlineVotingLogList: function (logLines, currentList) {
+        for (var i = 0; i < logLines.length; i++) {
+          this.extendOnlineVotingLogLine(logLines[i]);
           currentList.push(logLines[i]);
         }
         // return logLines;
@@ -226,17 +253,31 @@ Vue.component('eventLog',
 
         this.extendDate(item, 'AsOf', 'YYYY MMM DD, h:mm a');
       },
+      extendOnlineVotingLogLine: function (item) {
+        this.extendDate(item, 'OnlineWhenOpen', 'YYYY MMM DD, h:mm a');
+        this.extendDate(item, 'OnlineWhenClose', 'YYYY MMM DD, h:mm a');
+        this.extendDate(item, 'First', 'YYYY MMM DD');
+        this.extendDate(item, 'MostRecent', 'YYYY MMM DD, h:mm a');
+      },
       extendDate: function (obj, name, format) {
         var raw = obj[name] || '';
         if (!raw.getTime) {
           obj[name + '_Date'] = raw.substring(1, 6) === 'Date(' ? raw.parseJsonDate() : null;
         }
+        obj[name + '_M'] = raw ? moment(raw) : {};
         obj[name + '_Display'] = raw ? moment(raw).format(format || 'MMMM D, YYYY') : '';
       },
-      rowClassNames: function (lineItem, i) {
+      rowClassNames: function (report, lineItem, i) {
         var classes = [];
         if (lineItem.moreFollowing) {
           classes.push('moreFollowing');
+        }
+
+        if (report === 'onlineVotingLog') {
+          var now = moment();
+          if (lineItem.OnlineWhenClose_M.isAfter(now) && lineItem.OnlineWhenOpen_M.isBefore(now)) {
+            classes.push('open');
+          }
         }
 
         // if (row.isMostRecent) classes.push('MostRecent');

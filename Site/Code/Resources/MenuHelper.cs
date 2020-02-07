@@ -20,6 +20,7 @@ namespace TallyJ.Code.Resources
     private Election _currentElection;
     private bool _isGuestTeller;
     private bool _isKnownTeller;
+    private bool _isSysAdmin;
 
     public MenuHelper(UrlHelper urlHelper)
     {
@@ -27,6 +28,7 @@ namespace TallyJ.Code.Resources
       _currentElection = UserSession.CurrentElection;
       _isGuestTeller = UserSession.IsGuestTeller;
       _isKnownTeller = UserSession.IsKnownTeller;
+      _isSysAdmin = UserSession.IsSysAdmin;
     }
 
     /// <Summary>Title of current menu item, if there is one. Empty string if not.</Summary>
@@ -222,6 +224,7 @@ namespace TallyJ.Code.Resources
       if (role == "guest" && (_isGuestTeller || _isKnownTeller)) return true;
       if (role == "known" && _isKnownTeller) return true;
       if (role == "anon" && !(_isGuestTeller || _isKnownTeller)) return true;
+      if (role == "sysAdmin" && _isSysAdmin) return true;
 
       return false;
     }
