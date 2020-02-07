@@ -13,9 +13,9 @@
     <div class="reportSelector">
       <button v-on:click="showReport('mainLog')" class="btn" :class="{'btn-success': report==='mainLog'}">General Log</button>
       <button v-on:click="showReport('onlineVotingLog')" class="btn" :class="{'btn-success': report==='onlineVotingLog'}">Online Voting</button>
+      <a href="Dashboard">Home</a>
     </div>
 
-    <a href="Dashboard">Home</a>
   </div>
 
   <event-log :report="report" v-if="report"></event-log>
@@ -47,7 +47,7 @@
     <div>
       <button v-on:click="searchText=''; getLog(report, true)">Refresh</button>
       @*<input placeholder="%sql_" v-on:keyup.enter="getLog('mainLog', true)" v-model="searchText">
-      <button v-on:click="getLog('mainLog', true)">Search</button>*@
+        <button v-on:click="getLog('mainLog', true)">Search</button>*@
     </div>
 
     <div class="mainLog" v-if="report == 'mainLog'">
