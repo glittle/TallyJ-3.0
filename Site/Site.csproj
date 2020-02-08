@@ -707,13 +707,13 @@
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
     <Content Include="Reports\ChangedPeople.cshtml" />
+    <Content Include="AppDataSample\AppSettings.config" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <None Include="packages.config" />
-    <None Include="Properties\PublishProfiles\Local Files 2.pubxml" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
     <Content Include="Reports\Voters.cshtml" />
@@ -724,6 +724,7 @@
     <Content Include="Reports\VotesWithInvalid.cshtml" />
     <Content Include="Reports\BallotsTied.cshtml" />
     <Content Include="Reports\BallotsSame.cshtml" />
+    <None Include="Properties\PublishProfiles\Local Files 3.pubxml" />
     <None Include="Properties\PublishProfiles\Win16a BETA 3 VM IIS.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
@@ -923,6 +924,9 @@
     <Content Include="Views\SysAdmin\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
+    <None Include="Web.Local Files 3.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
       <DependentUpon>Web.config</DependentUpon>

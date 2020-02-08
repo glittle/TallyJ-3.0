@@ -105,18 +105,25 @@ namespace TallyJ.Controllers
           NumPeople = pList.Count()
         })
         .GroupJoin(dbContext.Location
-          .GroupJoin(dbContext.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, bList) => new
+          .Join(dbContext.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, b) => new
           {
             l.ElectionGuid,
-            bCount = bList.Count()
-          }),
+            b.BallotGuid
+          })
+          .GroupJoin(dbContext.Vote, j=>j.BallotGuid, v=>v.BallotGuid, (j, vList) =>
+          new {
+            j.ElectionGuid,
+            SingleNameCount = vList.Sum(v=>v.SingleNameElectionCount),
+          }) ,
           j => j.e.ElectionGuid, lb => lb.ElectionGuid, (j, lbList) => new
           {
             j.e,
             j.NumPeople,
             j.NumOnline,
             j.Email,
-            NumBallots = lbList.Sum(l => l.bCount)
+            NumBallots = j.e.NumberToElect==1 && j.e.NumberExtra == 0 
+              ? lbList.Sum(l => l.SingleNameCount) 
+              : lbList.Count()
           })
         .GroupJoin(dbContext.C_Log, j => j.e.ElectionGuid, l => l.ElectionGuid, (j, lList) => new
         {
