@@ -68,6 +68,25 @@ namespace TallyJ.Code
       return new MvcHtmlString(input);
     }
 
+    /// <summary>
+    /// Use TryGetValue and return the value, or the default
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="input"></param>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static T2 Get<T1,T2>(this Dictionary<T1, T2> input, T1 key, T2 defaultValue)
+    {
+      if(input.TryGetValue(key, out var value))
+      {
+        return value;
+      }
+
+      return defaultValue;
+    }
+
     public static string FixSiteUrl(this string input)
     {
       return input?.Replace(":444", "");

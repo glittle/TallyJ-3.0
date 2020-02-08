@@ -292,7 +292,7 @@ namespace TallyJ.CoreModels
         election.OnlineCloseIsEstimate,
         election.OnlineSelectionProcess,
         election.EmailFromAddress,
-        election.EmailFromName,  
+        election.EmailFromName,
         election.EmailText,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
@@ -316,7 +316,7 @@ namespace TallyJ.CoreModels
         {
           return new
           {
-            success=false,
+            success = false,
             Status = "Cannot change type of election after ballots are entered."
           }.AsJsonResult();
         }
@@ -356,7 +356,7 @@ namespace TallyJ.CoreModels
             .TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
       }
 
-      
+
       if (coreSettingsChanged)
       {
         // reset flags
@@ -1160,10 +1160,14 @@ namespace TallyJ.CoreModels
         if (ballotCreated)
         {
           // keep this outside the transaction
-          emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineVoter.p, onlineVoter.ovi, onlineVoter.ov, out var emailError);
+          var sent = emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineVoter.p, onlineVoter.ovi, onlineVoter.ov, out var emailError);
           if (emailError.HasContent())
           {
             problems.Add($"Error: {emailError}");
+          }
+          if (sent)
+          {
+            new LogHelper().Add("Email sent per user's request'", false, onlineVoter.ovi.Email);
           }
         }
       }

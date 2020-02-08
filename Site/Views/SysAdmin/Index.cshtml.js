@@ -44,7 +44,7 @@ Vue.component('eventLog',
   {
     template: '#eventLog',
     props: {
-      report: String
+      report: String,
     },
     data: function () {
       return {
@@ -56,8 +56,14 @@ Vue.component('eventLog',
           onlineVotingLog: {
             log: [],
             loaded: false
-          }
+          },
+          electionList: {
+            log: [],
+            loaded: false
+          },
         },
+        numToShow: +GetFromStorage('syslognum', 25),
+        lastType: GetFromStorage('syslog', ''),
         searchText: '',
         autoUpdateSeconds: +GetFromStorage('admintimer', 0),
         // autoUpdateTimer: null,
@@ -66,6 +72,8 @@ Vue.component('eventLog',
         secondsSinceLoaded: 0,
         age: '',
         ageSeconds: 0,
+        lastSort: null,
+        currentSort: null,
         autoUpdateSettings: [
           { s: 0, t: '(no auto refresh)' },
           { s: 3, t: 'in 3 seconds' },
@@ -148,6 +156,9 @@ Vue.component('eventLog',
           }
         });
       },
+      refresh: function () {
+        this.getLog(null, true);
+      },
       //      changedTab: function () {
       //        var type = this.report;
       //        if (!this.logInfo[type].loaded) {
@@ -156,6 +167,9 @@ Vue.component('eventLog',
       //      },
       getLog: function (type, reload) {
         var vue = this;
+
+        type = type || this.lastType;
+
         var logInfo = vue.logInfo[type];
 
         vue.cancelTimers();
@@ -180,9 +194,13 @@ Vue.component('eventLog',
             break;
           case 'onlineVotingLog':
             logInfo.log = [];
-            form.numToShow = 50;
+            break;
+          case 'electionList':
+            logInfo.log = [];
             break;
         }
+
+        form.numToShow = vue.numToShow;
 
         ShowStatusDisplay('Getting {0} details...'.filledWith(type));
 
@@ -192,11 +210,14 @@ Vue.component('eventLog',
             logInfo.loaded = true;
 
             if (info && info.Success) {
+              vue.lastType = type;
+
               vue['extend_' + type + 'List'](info.logLines, logInfo.log);
 
               vue.startAgeTimer();
               // vue.setUpdateTimer();
               SetInStorage('syslog', type);
+              SetInStorage('syslognum', vue.numToShow);
             }
             else {
               ShowStatusFailed(info && info.Message || 'No Data? Are you logged in?');
@@ -217,6 +238,15 @@ Vue.component('eventLog',
           currentList.push(logLines[i]);
         }
         // return logLines;
+      },
+      extend_electionListList: function (logLines, currentList) {
+        for (var i = 0; i < logLines.length; i++) {
+          this.extendElectionListLine(logLines[i]);
+          currentList.push(logLines[i]);
+        }
+        // trick it to sort descending
+        this.lastSort = this.currentSort = 'DateOfElection_Date';
+        this.sort(this.currentSort);
       },
       extendMainLogLine: function (item) {
         var vue = this;
@@ -259,8 +289,18 @@ Vue.component('eventLog',
         this.extendDate(item, 'First', 'YYYY MMM DD');
         this.extendDate(item, 'MostRecent', 'YYYY MMM DD, h:mm a');
       },
+      extendElectionListLine: function (item) {
+        this.extendDate(item, 'RecentActivity', 'YYYY MMM DD, h:mm a');
+        this.extendDate(item, 'DateOfElection', 'YYYY MMM DD');
+      },
       extendDate: function (obj, name, format) {
         var raw = obj[name] || '';
+        if (raw === '/Date(-62135571600000)/') { // DateTime.MinValue
+          obj[name + '_Date'] = null;
+          obj[name + '_M'] = {};
+          obj[name + '_Display'] = '';
+          return;
+        }
         if (!raw.getTime) {
           obj[name + '_Date'] = raw.substring(1, 6) === 'Date(' ? raw.parseJsonDate() : null;
         }
@@ -284,7 +324,22 @@ Vue.component('eventLog',
         // if (row.isLargest) classes.push('Largest');
         return classes.join(' ');
       },
+      sort: function (field) {
+        field = field || this.currentSort;
+        if (!field) {
+          return;
+        }
 
+        var dir = field === this.lastSort ? -1 : 1;
+        var list = this.logInfo[this.report].log;
+
+        list.sort(function (a, b) {
+          return a[field] > b[field] ? dir : -1 * dir;
+        });
+
+        this.lastSort = dir === -1 ? null : field;
+        this.currentSort = field;
+      }
 
     },
   });

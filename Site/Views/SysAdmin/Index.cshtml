@@ -13,6 +13,7 @@
     <div class="reportSelector">
       <button v-on:click="showReport('mainLog')" class="btn" :class="{'btn-success': report==='mainLog'}">General Log</button>
       <button v-on:click="showReport('onlineVotingLog')" class="btn" :class="{'btn-success': report==='onlineVotingLog'}">Online Voting</button>
+      <button v-on:click="showReport('electionList')" class="btn" :class="{'btn-success': report==='electionList'}">Elections List</button>
       <a href="Dashboard">Home</a>
     </div>
 
@@ -26,6 +27,7 @@
   var _url = {
     mainLog: @Url.Action("GetMainLog", "SysAdmin").QuotedForJavascript().AsRawHtml(),
     onlineVotingLog: @Url.Action("GetOnlineVotingLog", "SysAdmin").QuotedForJavascript().AsRawHtml(),
+    electionList: @Url.Action("GetElectionList", "SysAdmin").QuotedForJavascript().AsRawHtml(),
   };
 </script>
 
@@ -47,7 +49,18 @@
     <div>
       <button v-on:click="searchText=''; getLog(report, true)">Refresh</button>
       @*<input placeholder="%sql_" v-on:keyup.enter="getLog('mainLog', true)" v-model="searchText">
-        <button v-on:click="getLog('mainLog', true)">Search</button>*@
+    <button v-on:click="getLog('mainLog', true)">Search</button>*@
+      <select v-model="numToShow" v-on:change="refresh">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+      </select>
+      
+      <span v-if="report === 'electionList'">
+        Sort: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
+      </span>
     </div>
 
     <div class="mainLog" v-if="report == 'mainLog'">
@@ -89,6 +102,7 @@
 
 
     <div class="onlineVotingLog" v-if="report == 'onlineVotingLog'">
+
       <table>
         <thead>
           <tr>
@@ -123,6 +137,49 @@
           </tr>
         </tbody>
       </table>
+      <div>
+        Count: {{logInfo.onlineVotingLog.log.length}}
+      </div>
+    </div>
+
+    <div class="electionList" v-if="report == 'electionList'">
+      <table>
+        <thead>
+          <tr>
+            <th><span v-on:click="sort('DateOfElection_Date')">Date</span></th>
+            <th><span v-on:click="sort('RecentActivity_Date')">Recent Activity</span></th>
+            <th><span v-on:click="sort('ShowAsTest')">Test?</span></th>
+            <th><span v-on:click="sort('Name')">Election</span></th>
+            <th><span v-on:click="sort('Convenor')">Convenor</span></th>
+            <th><span v-on:click="sort('Email')">Email</span></th>
+            <th><span v-on:click="sort('ElectionType')">Type</span></th>
+            <th><span v-on:click="sort('TallyStatus')">Status</span></th>
+            <th><span v-on:click="sort('NumberToElect')">Ballot Size</span></th>
+            <th><span v-on:click="sort('NumPeople')">People</span></th>
+            <th><span v-on:click="sort('NumOnline')">Online</span></th>
+            <th><span v-on:click="sort('NumBallots')">Ballots</span></th>
+          </tr>
+        </thead>
+        <tbody v-for="r in logInfo.electionList.log" :key="r.C_RowId">
+          <tr :class="rowClassNames('electionList', r)">
+            <td>{{r.DateOfElection_Display}}</td>
+            <td>{{r.RecentActivity_Display}}</td>
+            <td>{{r.ShowAsTest ? 'Test' : ''}}</td>
+            <td>{{r.Name}}</td>
+            <td>{{r.Convenor}}</td>
+            <td>{{r.Email}}</td>
+            <td>{{r.ElectionType}} / {{r.ElectionMode}}</td>
+            <td>{{r.TallyStatus}}</td>
+            <td>{{r.NumberToElect}}</td>
+            <td>{{r.NumPeople}}</td>
+            <td>{{r.NumOnline}}</td>
+            <td>{{r.NumBallots}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        Count: {{logInfo.electionList.log.length}}
+      </div>
     </div>
 
   </div>

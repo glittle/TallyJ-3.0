@@ -99,7 +99,7 @@ namespace TallyJ.CoreModels.Helper
       if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p"))
       {
         error = null;
-        return true;
+        return false;
       }
 
       // proceed to send

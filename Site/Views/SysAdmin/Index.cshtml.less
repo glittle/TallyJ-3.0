@@ -2,6 +2,10 @@
   overflow-y: scroll;
 }
 
+.site-title {
+  display: inline-block;
+}
+
 .Header {
   padding: 0;
   margin: -23px 0 15px 73px;
@@ -45,6 +49,17 @@
     padding: 1px 7px;
   }
 
+
+  .mainLog {
+    td, th {
+      text-align: left;
+    }
+
+    td:nth-child(4), th:nth-child(4) {
+      text-align: center;
+    }
+  }
+
   .onlineVotingLog {
     td, th {
       text-align: center;
@@ -52,6 +67,22 @@
 
     td:nth-child(-n+3), th:nth-child(-n+3) {
       text-align: left;
+    }
+  }
+
+  .electionList {
+
+    th {
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    td, th {
+      text-align: left;
+    }
+
+    td:nth-child(n + 9), th:nth-child(n + 9) {
+      text-align: center;
     }
   }
 
