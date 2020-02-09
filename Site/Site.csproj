@@ -731,7 +731,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Reports\VoterEmails.cshtml" />
-    <None Include="Properties\PublishProfiles\Win16a UAT VM IIS.pubxml" />
     <Content Include="Scripts\ckeditor.js.map" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />

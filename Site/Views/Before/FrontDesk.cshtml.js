@@ -438,7 +438,7 @@
   var voteBtnClicked = function (target, forceDeselect) {
     var btn = $(target);
 
-    if (!forceDeselect && (btn.hasClass('True') || btn.hasClass('true'))) {
+    if (!forceDeselect && (btn.hasClass('True') || btn.hasClass('true') || btn.hasClass('clicked'))) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
