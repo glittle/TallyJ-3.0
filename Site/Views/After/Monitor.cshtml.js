@@ -448,7 +448,7 @@
         },
         checkStatus: function () {
           // just to change the top corner display
-          let isClosed = this.OnlineWhenClose_M.isBefore();
+          var isClosed = this.OnlineWhenClose_M.isBefore();
           $('body').toggleClass('OnlineOpen', !isClosed);
           $('body').toggleClass('OnlineClosed', isClosed);
         },

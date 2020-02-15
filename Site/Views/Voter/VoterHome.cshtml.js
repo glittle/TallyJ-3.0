@@ -22,7 +22,7 @@
       allVotersHub.client.updateVoters = function (info) {
         console.log('signalR: allVotersHub updateVoters');
         host.vue.getElectionList();
-        let process = info.OnlineSelectionProcess;
+        var process = info.OnlineSelectionProcess;
         if (process) {
           host.vue.selectionProcess = process;
         }
@@ -672,7 +672,7 @@ var vueOptions = {
       // if we have a list and can find it there, use that instead
       if (this.useList) {
         var p = voterHome.peopleHelper.local.localNames.find(function (p) {
-          let nameMatches = p.Name.split(' <u>')[0].toLowerCase() === nameLowerCase;
+          var nameMatches = p.Name.split(' <u>')[0].toLowerCase() === nameLowerCase;
           //          if (nameMatches) debugger;
           return nameMatches && p.OtherInfo === (person.OtherInfo || p.OtherInfo);
         });

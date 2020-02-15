@@ -269,7 +269,7 @@ Vue.component('eventLog',
           details = details.slice(0, -4);
         }
 
-        let lines = details.split('<br');
+        var lines = details.split('<br');
 
         item.shortDetails = lines[0];
 

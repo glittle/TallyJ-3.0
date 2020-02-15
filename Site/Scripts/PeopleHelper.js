@@ -73,6 +73,8 @@
 
   function updatePeople(info) {
     // from changes when a person's info changes elsewhere
+    var updatedExisting = false;
+
     info.PersonLines.forEach(function (editedPerson) {
 
       // find this person
@@ -99,8 +101,12 @@
         old.Ineligible = editedPerson.IneligibleReasonGuid;
 
         extendPersonCore(old);
+
+        updatedExisting = true;
       }
     });
+
+    return updatedExisting;
   }
 
   function extendPeople(arr) {
@@ -480,18 +486,10 @@
   var publicInterface = {
     Prepare: prepare,
     local: local,
-    Search: function (searchText, onNamesReady, usedPersonIds) {
-      search(searchText, onNamesReady, usedPersonIds);
-    },
-    UpdatePeople: function (info) {
-      updatePeople(info);
-    },
-    Special: function (searchText, onNamesReady) {
-      special(searchText, onNamesReady);
-    },
-    RefreshListing: function (searchText, onNamesReady, usedPersonIds, info) {
-      refreshListing(searchText, onNamesReady, usedPersonIds, info);
-    }
+    Search: search,
+    UpdatePeople: updatePeople,
+    Special: special,
+    RefreshListing: refreshListing,
     //AddToLocalNames: addToLocalNames,
     //AddGroupToLocalNames: addGroupToLocalNames
   };

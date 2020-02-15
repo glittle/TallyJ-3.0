@@ -205,10 +205,12 @@
 
     hub.client.updatePeople = function (info) {
       console.log('signalR: updatePeople');
-      local.peopleHelper.UpdatePeople(info);
+      var updatedExisting = local.peopleHelper.UpdatePeople(info);
       local.lastSearch = '';
       searchTextChanged();
-      startToRefreshBallotList();
+      if (updatedExisting) {
+        startToRefreshBallotList();
+      }
     };
 
     startSignalR(function () {
@@ -408,7 +410,7 @@
       $('.LocationStatus').text(': ' + text);
     }
     var location = local.location;
-    let regularLocation = !location.IsOnline;
+    var regularLocation = !location.IsOnline;
 
 //    console.log('hide btns', regularLocation, location.IsOnline, location);
 
@@ -504,7 +506,7 @@
     var vote, newHost;
     var person = info.Person;
 
-    let voteId = local.settingNameForOnlineVote;
+    var voteId = local.settingNameForOnlineVote;
     if (voteId) {
       vote = local.votes.find(function (v) { return v.vid === voteId; });
       vote.pid = person.C_RowId;
@@ -902,9 +904,9 @@
       return;
     }
 
-    let btn = $(ev.target);
-    let host = btn.closest('.rawVote');
-    let vote = host.parent();
+    var btn = $(ev.target);
+    var host = btn.closest('.rawVote');
+    var vote = host.parent();
 
     var voteId = vote.data('vote-id');
     var lastPart = local.lastFindPart;
@@ -967,7 +969,7 @@
     var voteId = +host.data('vote-id') || 0;
     var input = host.find('input');
 
-    let vote = local.votes.find(function (v) { return v.vid === voteId; });
+    var vote = local.votes.find(function (v) { return v.vid === voteId; });
 
     if (personId && invalidId && voteId) {
       invalidId = '';
@@ -1084,7 +1086,7 @@
         }
 
       } else {
-        let msg = info.Error || info.Message;
+        var msg = info.Error || info.Message;
         ShowStatusFailed(msg);
 
         if (local.location.IsOnline) {
@@ -1092,7 +1094,7 @@
         }
         else {
           // remove newly added
-          for (let i = 0; i < local.votes.length; i++) {
+          for (var i = 0; i < local.votes.length; i++) {
             vote = local.votes[i];
             if (vote.vid === 0) {
               local.votes.splice(i, 1);

@@ -7,7 +7,7 @@
     if (showTies.ties.length === 1) {
       displayNamesInfoAndNames(0, showTies.tieInfo);
     } else {
-      $(document.body).on('keypress', function(ev) {
+      $(document.body).on('keypress', function (ev) {
         var key = +ev.key;
         if (!isNaN(key)) {
           $('#btn' + key).click();
@@ -89,8 +89,8 @@
 
     var numPerColumn = Math.ceil(info.length / 2);
     var manualColumns = '<div>{^0}</div><div>{^1}</div>'.filledWith(
-      info.slice(0, numPerColumn).map(i => i.html).join(''),
-      info.slice(numPerColumn).map(i => i.html).join(''));
+      info.slice(0, numPerColumn).map(function (i) { return i.html; }).join(''),
+      info.slice(numPerColumn).map(function (i) { return i.html; }).join(''));
 
     $('#names')
       .html(manualColumns)
