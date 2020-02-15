@@ -467,7 +467,7 @@
     var form = {
       id: pid,
       type: btnType,
-      loc: $('#ddlTopLocation').val()
+      loc: $('#ddlTopLocation').val() || 0
     };
     if (forceDeselect) {
       form.forceDeselect = true;
