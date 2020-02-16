@@ -39,3 +39,6 @@ DatabaseScripts/DatabaseScripts_20150629015936.sqlproj
 UpgradeLog.htm
 DatabaseScripts/DatabaseScripts.jfm
 AppSettings.config
+node_modules/
+!jstests/screenshots/.gitkeep
+jstests/screenshots/*
