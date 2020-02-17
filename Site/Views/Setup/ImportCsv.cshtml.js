@@ -95,9 +95,13 @@
       ShowStatusDisplay('Deleting...');
 
       CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
-        ShowStatusSuccess('Deleted');
-        $('#importResults').html(info.Results).show();
-        $('.DbCount span').text(comma(info.count));
+        if (info.Success) {
+          ShowStatusSuccess('Deleted');
+          $('#importResults').html(info.Results).show();
+          $('.DbCount span').text(comma(info.count));
+        } else {
+          ShowStatusFailed(info.Results);
+        }
       });
     });
 

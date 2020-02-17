@@ -7,7 +7,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 
 @{
-  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart || p.IneligibleReasonGuid != null)
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart)
     .Select(p => new
     {
       Change = p.CombinedInfoAtStart.HasContent() ? "Changed" : p.IneligibleReasonGuid == null ? "Added" : "New Spoiled",

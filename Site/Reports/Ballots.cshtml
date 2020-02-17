@@ -1,4 +1,5 @@
-﻿@using Newtonsoft.Json
+﻿@inherits RazorEngine.Templating.TemplateBase
+@using Newtonsoft.Json
 @using TallyJ.Code
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
@@ -179,7 +180,7 @@
             if (isSingleNameElection)
             {
               <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@vote.PersonFullNameFL.AsRawHtml()</span>
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 <span class="Count">@vote.SingleNameElectionCount</span>
                 @if (vote.OnlineVoteRaw.HasContent())
@@ -199,7 +200,7 @@
             else
             {
               <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@vote.PersonFullNameFL.AsRawHtml()</span>
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {

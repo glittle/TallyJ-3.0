@@ -789,21 +789,21 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteAllPeople()
     {
-      var num = Db.OnlineVotingInfo.Count(p => p.ElectionGuid == CurrentElectionGuid && p.ListPool != null);
-      if (num > 0)
+      var hasOnline = Db.OnlineVotingInfo.Any(p => p.ElectionGuid == CurrentElectionGuid && p.ListPool != null);
+      if (hasOnline)
       {
         return
           new
           {
+            Success = false,
             Results = "Nothing was deleted. Once online votes have been recorded, you cannot delete all the people. ",
-            count = 0
           }.AsJsonResult();
       }
 
       var rows = 0;
-      var newRows = 0;
       try
       {
+        int newRows;
         do
         {
           newRows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
@@ -816,15 +816,14 @@ namespace TallyJ.CoreModels
           oviRows = Db.OnlineVotingInfo.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
         } while (oviRows > 0);
       }
-      catch (SqlException ex)
+      catch (Exception)
       {
         return
             new
             {
+              Success = false,
               Results =
-                    "Nothing was deleted. Once votes have been recorded, you cannot delete all the people. " +
-                    ex.GetAllMsgs("; "),
-              count = 0
+                    "Nothing was deleted. Once votes have been recorded, you cannot delete all the people. ",
             }.AsJsonResult();
       }
 
@@ -832,6 +831,7 @@ namespace TallyJ.CoreModels
 
       return new
       {
+        Success = true,
         Results = $"{rows:N0} {rows.Plural("people", "person")} deleted",
         count = NumberOfPeople
       }.AsJsonResult();

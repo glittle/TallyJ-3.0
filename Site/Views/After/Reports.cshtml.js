@@ -112,11 +112,6 @@
         local.reportHolder.html('<div class=getting>Getting report...</div>');
         $('#Status').hide();
         CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, { code: code, title: title });
-        CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData2', { code: code }, showInfo2, { code: code, title: title });
-    }
-
-    function showInfo2(info) {
-      debugger;
     }
 
     function showInfo(info, codeTitle) {

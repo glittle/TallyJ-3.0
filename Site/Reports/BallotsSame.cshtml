@@ -1,4 +1,5 @@
-﻿@using TallyJ.Code
+﻿@inherits RazorEngine.Templating.TemplateBase
+@using TallyJ.Code
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @using TallyJ.CoreModels
@@ -163,13 +164,13 @@
                 <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
                   @if (isSingleNameElection)
                   {
-                    <span class="Person">@vote.PersonFullNameFL</span>
+                    <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                     <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                     <span class="Count">@vote.SingleNameElectionCount</span>
                   }
                   else
                   {
-                    <span class="Person">@vote.PersonFullNameFL</span>
+                    <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                     <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                   }
                 </span>

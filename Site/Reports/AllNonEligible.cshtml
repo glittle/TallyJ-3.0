@@ -5,60 +5,40 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var people = new PersonCacher().AllForThisElection
-    .Where(p => !p.CanVote.GetValueOrDefault())
+    .Where(p => !p.CanVote.GetValueOrDefault() || !p.CanReceiveVotes.GetValueOrDefault())
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
       PersonName = p.FullName,
+      p.CanReceiveVotes,
+      p.CanVote,
       InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
     });
+  var initial = ' ';
 }
 <style>
-  .Voters {
-    -webkit-column-width: 25em;
-    -moz-column-width: 25em;
-    -ms-column-width: 25em;
-    -o-column-width: 25em;
-    column-width: 25em;
-    -webkit-column-gap: 1em;
-    -moz-column-gap: 1em;
-    -ms-column-gap: 1em;
-    -o-column-gap: 1em;
-    column-gap: 1em;
-    -webkit-column-rule-width: 4px;
-    -moz-column-rule-width: 4px;
-    -ms-column-rule-width: 4px;
-    -o-column-rule-width: 4px;
-    column-rule-width: 4px;
-  }
-
   b {
     display: inline-block;
   }
 
-  .person {
-    display: flex;
-    justify-content: space-between;
+  .name {
+    text-align: left;
+    width: 40%;
   }
-
-    .person.first {
-      margin-top: .5em;
-    }
 
     .person.ineligible {
       text-decoration: line-through;
       color: red;
     }
 
-  .reason {
-    position: absolute;
-    right: 20px;
+  .vote {
+    padding: 0 3px;
+    text-align: center;
   }
 
   .method {
-    color: darkblue;
-    font-size: 90%;
-    text-align: right;
+    text-align: left;
+    white-space: nowrap;
   }
 </style>
 <div class="body">
@@ -66,10 +46,14 @@
   <p class="Comment">
     Showing all who cannot vote and all who cannot be voted for in this election.
   </p>
-  <div class="Voters">
-    @{
-      var initial = ' ';
-    }
+  <table class="Voters">
+    <tr class="person header">
+      <th class="name">Person</th>
+      <th class="vote">Can Vote</th>
+      <th class="vote">Can Receive Votes</th>
+      <th class="method">Reason</th>
+    </tr>
+
     @foreach (var person in people)
     {
       var name = person.PersonName;
@@ -81,17 +65,19 @@
         name = "<b>" + initial + "</b>" + name.Substring(1);
         firstClass = "first";
       }
-//      var ineligible = "";
-//      if (person.InvalidReasonDesc.HasContent())
-//      {
-//        ineligible = "ineligible";
-//        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
-//      }
+      //      var ineligible = "";
+      //      if (person.InvalidReasonDesc.HasContent())
+      //      {
+      //        ineligible = "ineligible";
+      //        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
+      //      }
 
-      <div class="person @firstClass">
-        <span class="name">@Raw(name)</span>
-        <span class="method">@person.InvalidReasonDesc</span>
-      </div>
+      <tr class="person @firstClass">
+        <td class="name">@Raw(name)</td>
+        <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Y" : "-")</td>
+        <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Y" : "-")</td>
+        <td class="method">@person.InvalidReasonDesc</td>
+      </tr>
     }
-  </div>
+  </table>
 </div>

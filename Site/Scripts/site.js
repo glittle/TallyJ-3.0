@@ -32,7 +32,7 @@ var site = {
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
     personNameChanging: 'personNameChanging',
-    pulse: 'pulse'
+    pulse: 'pulse',
   },
   broadcast: function (broadcastCode, data) {
     console.log('broadcast', broadcastCode);
@@ -194,10 +194,10 @@ var startSignalR = function (callBack) {
       var msg = error.toString();
       //console.log('error', error);
       if (msg.indexOf('The client has been inactive since') !== -1) {
-        ShowStatusFailed(
-          "We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
+        ShowStatusFailed("We've been disconnected from the server for too long." +
+          "<br>Please refresh this page (press F5) to reconnect and continue.");
       } else if (msg.indexOf('WebSocket closed')) {
-        ShowStatusDisplay("Disconnected from the server.", null, null, true);
+        ShowStatusFailed("Disconnected from the server.");
       } else {
         ShowStatusFailed(msg);
       }
@@ -232,8 +232,8 @@ var startSignalR = function (callBack) {
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
       if (site.signalrReconnecting) {
-        ShowStatusFailed(
-          "We've been disconnected from the server for too long.<br>Please refresh this page (press F5) to reconnect and continue.");
+        ShowStatusFailed("We've been disconnected from the server for too long." +
+          "<br>Please refresh this page (press F5) to reconnect and continue.");
       }
     });
   },
@@ -472,6 +472,10 @@ function AttachHandlers() {
     function () {
       logoffSignalR();
     });
+
+  $('#statusDisplay').on('click', '.closeStatus', function() {
+    ResetStatusDisplay();
+  });
 }
 
 function getFullOffsetLeft(item) {
@@ -1081,7 +1085,7 @@ function ShowStatusFailed(msg, keepTime) {
 
   if (!msgShown) {
     ResetStatusDisplay();
-    ShowStatusDisplay(text, delayBeforeShow, keepTime, true);
+    ShowStatusDisplay(text + '<span class=closeStatus>x</span>', delayBeforeShow, keepTime, true);
   }
 
   return text;

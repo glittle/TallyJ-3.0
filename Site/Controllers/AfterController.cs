@@ -113,11 +113,6 @@ namespace TallyJ.Controllers
       return new ResultsModel().GetReportData(code);
     }
 
-    public ActionResult GetReportData2(string code)
-    {
-      return View($"~/Reports/{code}.cshtml");
-    }
-
     [ForAuthenticatedTeller]
     public JsonResult SaveTieCounts(List<string> counts)
     {
