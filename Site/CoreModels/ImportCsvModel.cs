@@ -473,31 +473,31 @@ namespace TallyJ.CoreModels
 
       result.AddRange(new[]
       {
-        "Processed {0} data line{1}".FilledWith(rowsProcessed, rowsProcessed.Plural()),
-        "Added {0} {1}.".FilledWith(peopleAdded, peopleAdded.Plural("people", "person"))
+        $"Processed {rowsProcessed:N0} data line{rowsProcessed.Plural()}",
+        $"Added {peopleAdded:N0} {peopleAdded.Plural("people", "person")}."
       });
       if (peopleSkipped > 0)
       {
-        result.Add("{0} duplicate{1} ignored.".FilledWith(peopleSkipped, peopleSkipped.Plural()));
+        result.Add($"{peopleSkipped:N0} duplicate{peopleSkipped.Plural()} ignored.");
       }
       if (rowsSkipped > 0)
       {
-        result.Add("{0} line{1} skipped or blank.".FilledWith(rowsSkipped, rowsSkipped.Plural()));
+        result.Add($"{rowsSkipped:N0} line{rowsSkipped.Plural()} skipped or blank.");
       }
       if (validReasons > 0)
       {
-        result.Add("{0} {1} with recognized Eligibility Status Reasons.".FilledWith(validReasons, validReasons.Plural("people", "person")));
+        result.Add($"{validReasons:N0} {validReasons.Plural("people", "person")} with recognized Eligibility Status Reasons.");
       }
       if (unexpectedReasons.Count > 0)
       {
-        result.Add("{0} Eligibility Status Reason{1} not recognized: ".FilledWith(unexpectedReasons.Count, unexpectedReasons.Count.Plural()));
+        result.Add($"{unexpectedReasons.Count:N0} Eligibility Status Reason{unexpectedReasons.Count.Plural()} not recognized: ");
         foreach (var r in unexpectedReasons)
         {
           result.Add("&nbsp; &nbsp; \"{0}\"{1}".FilledWith(r.Key, r.Value == 1 ? "" : " x" + r.Value));
         }
       }
 
-      result.Add("Import completed in " + (DateTime.Now - start).TotalSeconds.ToString("0.0") + " s.");
+      result.Add($"Import completed in {(DateTime.Now - start).TotalSeconds:N1} s.");
 
       new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(" "), true);
 

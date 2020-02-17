@@ -304,8 +304,8 @@ namespace TallyJ
       routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
       // not working?
-      routes.MapRoute("fav", "favicon.ico", new { controller = "Public", action = "FavIcon" });
-      //routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
+      //      routes.MapRoute("fav", "favicon.ico", new { controller = "Public", action = "FavIcon" });
+      routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
     }
 
     public static void RegisterDefaultRoute(RouteCollection routes, string controllerName)

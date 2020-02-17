@@ -36,7 +36,7 @@ namespace TallyJ.CoreModels
 
     public object Pulse()
     {
-      if (!UserSession.IsLoggedIn)
+      if (!UserSession.IsLoggedInTeller)
       {
         return false;
       }

@@ -22,7 +22,7 @@ namespace TallyJ.Code.Helpers
       pathToView = pathToView.Replace("~", "");
 
       if (config == null || ConfigurationManager.AppSettings["Environment"] == "Dev")
-      {
+      { // always reload in dev mode
         config = new TemplateServiceConfiguration();
         config.TemplateManager = new ResolvePathTemplateManager(new[] { HostingEnvironment.MapPath("~") });
       }

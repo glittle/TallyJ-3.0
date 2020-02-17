@@ -286,16 +286,13 @@ body.BP-None {
       display: block;
       font-weight: bold;
       cursor: pointer;
-
-      &::before {
-        //content: '→ ';
-        content: '► ';
-      }
-
-      &::after {
-        //content: ' ←';
-        content: ' ◄';
-      }
+      //&::after {  --- after not working! Add arrows in code.
+      //  content: ' ◄';
+      //}
+      //
+      //&::before {
+      //  content: '► ';
+      //}
     }
 
     &.Finalized {
@@ -1110,6 +1107,7 @@ body.AuthGuest .ElectionState #electionState {
     border-radius: 0;
 
     &.Active_False {
+      display: none;
       cursor: default;
     }
 
@@ -1117,6 +1115,10 @@ body.AuthGuest .ElectionState #electionState {
       cursor: pointer;
       display: inline-block;
     }
+  }
+
+  #qTipFinalized {
+    display: none;
   }
 }
 

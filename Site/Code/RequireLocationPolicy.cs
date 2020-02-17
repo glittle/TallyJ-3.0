@@ -19,7 +19,7 @@ namespace TallyJ.Code
       }
 
       // determine if they are logged in or not
-      var url = VirtualPathUtility.ToAbsolute(UserSession.IsLoggedIn ? "~/Dashboard/ChooseElection" : "~/");
+      var url = VirtualPathUtility.ToAbsolute(UserSession.IsLoggedInTeller ? "~/Dashboard/ChooseElection" : "~/");
 
       var response = HttpContext.Current.Response;
       response.Clear();

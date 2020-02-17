@@ -97,9 +97,9 @@ namespace TallyJ.Code.Session
     /// <summary>
     ///   Has this person logged in?
     /// </summary>
-    public static bool IsLoggedIn
+    public static bool IsLoggedInTeller
     {
-      get { return LoginId.HasContent(); }
+      get { return LoginId.HasContent() && HttpContext.Current.User.Identity.Name.HasContent(); }
     }
 
     /// <Summary>Stored as Guid in session</Summary>

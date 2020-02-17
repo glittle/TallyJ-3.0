@@ -832,7 +832,7 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        Results = "{0} {1} deleted".FilledWith(rows, rows.Plural("people", "person")),
+        Results = $"{rows:N0} {rows.Plural("people", "person")} deleted",
         count = NumberOfPeople
       }.AsJsonResult();
     }

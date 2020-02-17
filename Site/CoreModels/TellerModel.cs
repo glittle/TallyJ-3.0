@@ -37,7 +37,7 @@ namespace TallyJ.CoreModels
                 }.AsJsonResult();
             }
 
-            if (!UserSession.IsLoggedIn)
+            if (!UserSession.IsLoggedInTeller)
             {
                 var fakeUserName = HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
                 //        FormsAuthentication.SetAuthCookie(fakeUserName, true);
@@ -59,7 +59,7 @@ namespace TallyJ.CoreModels
                 };
 
                 HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
-
+            
                 UserSession.IsGuestTeller = true;
             }
 

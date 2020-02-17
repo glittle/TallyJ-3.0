@@ -179,7 +179,7 @@
             if (isSingleNameElection)
             {
               <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@vote.PersonFullNameFL</span>
+                <span class="Person">@vote.PersonFullNameFL.AsRawHtml()</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 <span class="Count">@vote.SingleNameElectionCount</span>
                 @if (vote.OnlineVoteRaw.HasContent())
@@ -199,7 +199,7 @@
             else
             {
               <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@vote.PersonFullNameFL</span>
+                <span class="Person">@vote.PersonFullNameFL.AsRawHtml()</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {

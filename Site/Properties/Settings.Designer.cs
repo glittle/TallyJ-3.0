@@ -25,7 +25,7 @@ namespace TallyJ.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3.0 beta 22")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3.0 beta 33")]
         public string VersionNum {
             get {
                 return ((string)(this["VersionNum"]));
@@ -34,7 +34,7 @@ namespace TallyJ.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("15 Sovereignty 176 / 1 February 2020")]
+        [global::System.Configuration.DefaultSettingValueAttribute("9 Dominion 176 / 15 February 2020")]
         public string VersionDate {
             get {
                 return ((string)(this["VersionDate"]));

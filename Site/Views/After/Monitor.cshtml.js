@@ -63,8 +63,7 @@
       info.PersonLines.forEach(function (pl) {
         if (publicInterface.initial.OnlineBallots.findIndex(function (ob) {
           return ob.PersonId === pl.PersonId;
-        }) !==
-          -1) {
+        }) !== -1) {
           needRefresh = true;
         }
       });

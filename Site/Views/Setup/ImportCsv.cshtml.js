@@ -97,7 +97,7 @@
       CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
         ShowStatusSuccess('Deleted');
         $('#importResults').html(info.Results).show();
-        $('.DbCount span').text(info.count);
+        $('.DbCount span').text(comma(info.count));
       });
     });
 
@@ -125,7 +125,7 @@
       CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
         if (info.result) {
           $('#importResults').html(info.result.join('<br>')).show().toggleClass('failed', info.failed === true);
-          $('.DbCount span').text(info.count);
+          $('.DbCount span').text(comma(info.count));
         }
         ResetStatusDisplay();
       });
