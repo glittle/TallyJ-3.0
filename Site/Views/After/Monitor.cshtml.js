@@ -281,6 +281,8 @@
           return '{0} at {1}'.filledWith(parts[0], moment(when).format(timeTemplate));
         });
       voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
+      voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
+      voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : '';
       voter.History_Display = history.length ? history[history.length - 1] : '-';
       voter.History_Tip = '\n' + history.join('\n');
       voter.HasHistory_Tip = history.length > 0;
@@ -487,7 +489,7 @@
             },
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Saved');
+                ShowStatusSuccess('Saved' + (info.emailResult ? '.\n' + info.emailResult : ''));
                 vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
                 vue.checkStatus();

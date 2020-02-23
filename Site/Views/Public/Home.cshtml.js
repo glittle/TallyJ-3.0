@@ -2,10 +2,31 @@
   var local = {
     reconnectHubTimeout: null,
     hubReconnectionTime: 95000,
-    warmupDone: false
+    warmupDone: false,
+  };
+
+  var isBadBrowser = function() {
+    if (window.safari) {
+      return 'safari';
+    }
+    // catch ie11 and some old mobile chromes
+    if (typeof Symbol === "undefined") return 'no symbol';
+    try {
+      eval('var test = (x) => x');
+    } catch (e) {
+      return 'no arrow function';
+    }
+    return '';
   };
 
   var preparePage = function () {
+    var isBad = isBadBrowser();
+    if (isBad) {
+      $('.badBrowser.detail').text(isBad + ' ' + navigator.userAgent).show();
+      $('.badBrowser').show();
+      return;
+    }
+
     $('#btnJoin').on('click', btnJoinClick);
     $('#btnRefresh').on('click', refreshElectionList);
     $('#txtPasscode').on('keypress', function (ev) {

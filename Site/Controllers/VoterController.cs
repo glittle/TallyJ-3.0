@@ -243,6 +243,7 @@ namespace TallyJ.Controllers
         Db.Person.Attach(person);
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
+        var emailSent = false;
 
         person.HasOnlineBallot = locked;
 
@@ -268,6 +269,9 @@ namespace TallyJ.Controllers
             person.RegistrationLog = log;
 
             new LogHelper().Add("Locked ballot");
+
+            var emailHelper = new EmailHelper();
+            emailSent = emailHelper.SendOnVoterSubmit(person, currentElection, out var error);
           }
           else
           {
@@ -303,6 +307,7 @@ namespace TallyJ.Controllers
         return new
         {
           success = true,
+          emailSent,
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
           person.RegistrationTime,

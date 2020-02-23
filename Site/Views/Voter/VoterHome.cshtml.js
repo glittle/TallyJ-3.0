@@ -65,6 +65,7 @@ var vueOptions = {
       searchText: '',
       nameList: [],
       pool: [],
+      poolLoaded: false,
       savedPool: '',
       savedLock: false,
       registration: '', // full text
@@ -199,7 +200,7 @@ var vueOptions = {
             vue.savedLock = locked;
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
-            ShowStatusSuccess('Saved');
+            ShowStatusSuccess('Submitted' + (info.emailSent ? '. Email sent.' : ''));
           } else {
             ShowStatusFailed(info.Error);
             vue.savedLock = before;
@@ -334,7 +335,6 @@ var vueOptions = {
 
             vue.activePage = 2;
             vue.scrollToTop(95);
-
 
           } else if (info.closed) {
             // show closed... show info if available
@@ -579,6 +579,7 @@ var vueOptions = {
           }
         }
       });
+      vue.poolLoaded = true;
     },
     getLoginHistory: function () {
 

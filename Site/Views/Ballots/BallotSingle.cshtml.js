@@ -244,7 +244,7 @@
       r.sortValue = null;
     });
 
-    var getValue = function(a) {
+    var getValue = function (a) {
       return $(a).find('.Name').text();
     };
 
@@ -412,7 +412,7 @@
     var location = local.location;
     var regularLocation = !location.IsOnline;
 
-//    console.log('hide btns', regularLocation, location.IsOnline, location);
+    //    console.log('hide btns', regularLocation, location.IsOnline, location);
 
     $('#btnNewBallot').toggle(regularLocation && needBallotForThisComputer());
     $('.ballotDiv1').toggle(regularLocation);
@@ -502,7 +502,7 @@
       ShowStatusFailed('Must select your location first!');
       return;
     }
-    
+
     var vote, newHost;
     var person = info.Person;
 
@@ -1225,15 +1225,21 @@
 
   function scrollIntoView(element, container) {
     if (!element) return;
-    var containerTop = $(container).scrollTop();
-    var containerBottom = containerTop + $(container).height();
-    var elemTop = element.offsetTop;
-    var elemBottom = elemTop + $(element).height();
-    if (elemTop < containerTop) {
-      $(container).scrollTop(Math.max(0, elemTop - 10));
-    } else if (elemBottom > containerBottom) {
-      $(container).scrollTop(elemBottom - $(container).height() + 30);
-    }
+
+    element[0].scrollIntoView({
+      block: 'center'
+    });
+    return;
+
+    //    var containerTop = $(container).scrollTop();
+    //    var containerBottom = containerTop + $(container).height();
+    //    var elemTop = element.offsetTop;
+    //    var elemBottom = elemTop + $(element).height();
+    //    if (elemTop < containerTop) {
+    //      $(container).scrollTop(Math.max(0, elemTop - 10));
+    //    } else if (elemBottom > containerBottom) {
+    //      $(container).scrollTop(elemBottom - $(container).height() + 30);
+    //    }
   };
 
   function edit(selectedPersonLi) {

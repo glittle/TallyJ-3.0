@@ -593,7 +593,7 @@
       OnlineSelectionProcess: election.OnlineSelectionProcess,
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
-      EmailText: encodeURIComponent(election.EmailText),
+      EmailText: encodeURIComponent(election.EmailText || '') || null,
     };
 
     $(':input[data-name]').each(function () {

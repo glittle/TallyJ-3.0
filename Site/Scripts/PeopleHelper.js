@@ -359,7 +359,7 @@
           } else {
             personInfo.InUse = false; // clear from last usage
           }
-          if (personInfo.Ineligible && forBallotEntry) {
+          if (personInfo.Ineligible) {
             if (!personInfo.CanReceiveVotes) {
               spanClasses.push('CannotReceiveVotes');
             }
@@ -368,9 +368,11 @@
               spanClasses.push('CannotVote');
             }
 
-            personInfo.IneligibleData =
-              ' data-ineligible="{Ineligible}" data-canVote={CanVote} data-canReceiveVotes={CanReceiveVotes}'
-                .filledWith(personInfo);
+            if (forBallotEntry) {
+              personInfo.IneligibleData =
+                ' data-ineligible="{Ineligible}" data-canVote={CanVote} data-canReceiveVotes={CanReceiveVotes}'
+                  .filledWith(personInfo);
+            }
           }
           if (forVoter && personInfo.IRG) {
             personInfo.DisplayName += '<span class=IRG>' + personInfo.IRG + '</span>';
@@ -392,13 +394,13 @@
       //2018-Feb look in type ; only in 4 if none were in 5
 
       // rseults are sorted, so 0 is best... if it is not already in use
-      
+
       for (var matchType = 5; matchType >= 3; matchType--) {
         var foundInType = false;
         for (var targetMatch = highestNumVotes; !foundBest && targetMatch >= 0; targetMatch--) {
           $.each(results,
             function (i, item) {
-//              if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
+              //              if (item.MatchType === matchType && item.NumVotes === targetMatch && !item.InUse && !item.Ineligible) {
               if (item.MatchType === matchType && !item.InUse && !item.Ineligible) {
                 info.BestRowNum = i;
                 foundBest = true;
@@ -419,8 +421,8 @@
       return;
     }
 
-    updates.forEach(function(update) {
-      var person = local.localNames.find(function(p) {
+    updates.forEach(function (update) {
+      var person = local.localNames.find(function (p) {
         return p.Id === update.Id;
       });
       if (person) {

@@ -47,9 +47,10 @@
   </div>
 
 
-  <p v-if="loading">Searching for your email address in elections...</p>
+  <p v-if="loading">Searching for your email address in available elections...</p>
 
-  <p v-if="!loading">If an upcoming election is not listed here, it may not be available in TallyJ, or your email address is not registered in it. Please contact the head teller for assistance.</p>
+  <p v-if="!loading">If an upcoming election is not listed here, it may not be available for Online Voting in TallyJ, 
+    or your email address is not registered in it. Please contact the head teller for assistance.</p>
 
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
     None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
@@ -250,8 +251,11 @@
         To sort the names using your keyboard, press <strong>Tab</strong> to focus,
         <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
       </p>
-      <p class="emptyPoolMsg" v-if="!pool.length">
+      <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">
         Your pool is empty. Search for people to add!
+      </p>
+      <p class="emptyPoolMsg" v-if="!poolLoaded">
+        Loading...
       </p>
       @*
         not needed - if submitted, don't need paper version

@@ -548,6 +548,7 @@
     <Content Include="EmailTemplates\GenericIdentityManagerEmail.html" />
     <Content Include="EmailTemplates\ElectionOpen.html" />
     <Content Include="EmailTemplates\BallotProcessed.html" />
+    <Content Include="EmailTemplates\OnSubmit.html" />
     <Content Include="EmailTemplates\TestEmail.html" />
     <Content Include="Content\bootstrap3\bootstrap.css" />
     <Content Include="Content\bootstrap3\bootstrap.js" />
@@ -738,6 +739,7 @@
     </None>
     <Content Include="Reports\VoterEmails.cshtml" />
     <Content Include="Scripts\ckeditor.js.map" />
+    <Content Include="Reports\AllCanReceive.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />
     <Content Include="Scripts\ckeditor.vue.js" />

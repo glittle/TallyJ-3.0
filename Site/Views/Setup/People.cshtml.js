@@ -206,15 +206,21 @@
 
     var scrollIntoView = function (jNode, container) {
         if (!jNode.length) return;
-        var containerTop = $(container).scrollTop();
-        var containerBottom = containerTop + $(container).height();
-        var elemTop = jNode.offset().top;
-        var elemBottom = elemTop + $(jNode).height();
-        if (elemTop < containerTop) {
-            $(container).scrollTop(Math.max(0, elemTop - 10));
-        } else if (elemBottom > containerBottom) {
-            $(container).scrollTop(elemBottom - $(container).height() + 30);
-        }
+
+        jNode[0].scrollIntoView({
+          block: 'center'
+        });
+        return;
+
+//        var containerTop = $(container).scrollTop();
+//        var containerBottom = containerTop + $(container).height();
+//        var elemTop = jNode.offset().top;
+//        var elemBottom = elemTop + $(jNode).height();
+//        if (elemTop < containerTop) {
+//            $(container).scrollTop(Math.max(0, elemTop - 10));
+//        } else if (elemBottom > containerBottom) {
+//            $(container).scrollTop(elemBottom - $(container).height() + 30);
+//        }
     };
 
 

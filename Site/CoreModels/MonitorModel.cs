@@ -31,10 +31,10 @@ namespace TallyJ.CoreModels
 
         var onlineBallots = SettingsHelper.HostSupportsOnlineElections
           ? Db.Person
-            .Where(p => p.ElectionGuid == currentElectionGuid && p.Email != null)
-            .GroupJoin(Db.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
-               ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, oviList) =>
-                new { p, ovi = oviList.FirstOrDefault() })
+            .Where(p => p.ElectionGuid == currentElectionGuid)
+            .Join(Db.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
+               ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, ovi) =>
+                new { p, ovi })
             .Select(j => new
             {
               j.p.VotingMethod,
@@ -54,7 +54,7 @@ namespace TallyJ.CoreModels
                                              //use JSON or do not check length of pool name
                                              //&& j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect
                                              ),
-              VotingMethod = j.VotingMethod,
+              j.VotingMethod,
               VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
               j.C_FullName,
               PersonId = j.C_RowId,

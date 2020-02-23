@@ -178,7 +178,7 @@ var connectToElectionHub = function () {
   });
 };
 
-var startSignalR = function (callBack) {
+var startSignalR = function (callBack, showReconnectMsg) {
   if ($.connection.hub.id) {
     console.log('WARNING: already connected');
     callBack();
@@ -206,10 +206,16 @@ var startSignalR = function (callBack) {
     $.connection.hub
       .start()
       .done(function () {
+        if (showReconnectMsg) {
+          ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
+        }
         // console.log('signalR client connected', $.connection.hub.id);
         site.signalrConnectionId = $.connection.hub.id;
         for (var i = 0; i < site.signalrDelayedCallbacks.length; i++) {
-          site.signalrDelayedCallbacks[i]();
+          var fn = site.signalrDelayedCallbacks[i];
+          if (fn) {
+            fn();
+          }
         }
       });
 
@@ -234,6 +240,11 @@ var startSignalR = function (callBack) {
       if (site.signalrReconnecting) {
         ShowStatusFailed("We've been disconnected from the server for too long." +
           "<br>Please refresh this page (press F5) to reconnect and continue.");
+        setTimeout(function() {
+//          ResetStatusDisplay();
+          console.log('starting signalR again');
+          startSignalR(null, true);
+        }, 1000);
       }
     });
   },
@@ -473,7 +484,7 @@ function AttachHandlers() {
       logoffSignalR();
     });
 
-  $('#statusDisplay').on('click', '.closeStatus', function() {
+  $('#statusDisplay').on('click', '.closeStatus', function () {
     ResetStatusDisplay();
   });
 }
@@ -785,50 +796,76 @@ function AttachHelp() {
 
 // Called after AJAX server calls
 
-function HasErrors(data) {
-  // PrepareNextKeepAlive(); 
-  // --> would like to update KeepAlive after each AJAX call, but session is not extended on the server for AJAX calls!
+function HasErrors(data, jqXhr) {
+  if (data && data.length) {
 
-  //  if (data.search(/login/i) !== -1) {
-  //    var now = new Date();
-  //    alert('{0}\n\nYou are no longer logged in.\n\nYou must login again to continue.\n\nThis happened at...  {1}'.filledWith(document.title, now.toLocaleTimeString()));
-  //    top.location.href = GetRootUrl() + 'login';
-  //    return true;
-  //  }
-  if (/\<h2\>Object moved to/.test(data)) {
-    top.location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
-    return true;
+    if (data[0] === '{' && data[data.length-1] === '}') {
+      // must be JSON text
+      return false;
+    }
+
+    // PrepareNextKeepAlive(); 
+    // --> would like to update KeepAlive after each AJAX call, but session is not extended on the server for AJAX calls!
+
+    //  if (data.search(/login/i) !== -1) {
+    //    var now = new Date();
+    //    alert('{0}\n\nYou are no longer logged in.\n\nYou must login again to continue.\n\nThis happened at...  {1}'.filledWith(document.title, now.toLocaleTimeString()));
+    //    top.location.href = GetRootUrl() + 'login';
+    //    return true;
+    //  }
+    if (/\<h2\>Object moved to/.test(data)) {
+      top.location.href = new RegExp('href\=\"(.*)"\>').exec(data)[1];
+      return true;
+    }
+
+    if (/\<\!DOCTYPE html\>/.test(data)) {
+      // seem to have a complete web page!
+      console.log('Error - ajax call got full page', data);
+      //    top.location.reload();
+      return true;
+    }
+
+    if (/Internal Server Error/.test(data)) {
+      ShowStatusFailed('Server Error.');
+      return true;
+    }
+    if (/Anonymous access denied/.test(data)) {
+      top.location.reload();
+      return true;
+    }
+    if (/Server Error/.test(data)) {
+      ShowStatusFailed(data.replace('/*', '').replace('*/', ''));
+      return true;
+    }
+    if (/^Exception:/.test(data)) {
+      ShowStatusFailed('Server Error: ' + data.substr(0, 60) + '...');
+      console.log(data);
+      return true;
+    }
+    if (/Error\:/.test(data)) {
+      ShowStatusFailed(
+        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
+      return true;
+    }
   }
 
-  if (/\<\!DOCTYPE html\>/.test(data)) {
-    // seem to have a complete web page!
-    console.log('Error - ajax call got full page', data);
-    //    top.location.reload();
-    return true;
+  var jsonHeader = jqXhr.getResponseHeader('x-responded-json');
+  if (jsonHeader) {
+    debugger;
+    var result = JsonParse(jsonHeader);
+    if (result.status >= 400) {
+      if (result.headers.location) {
+        ShowStatusFailed('Reloading...');
+        top.location.href = result.headers.location;
+        return true;
+      }
+
+      ShowStatusFailed('Unknown error');
+      console.log(result);
+      return true;
+    }
   }
 
-  if (/Internal Server Error/.test(data)) {
-    ShowStatusFailed('Server Error.');
-    return true;
-  }
-  if (/Anonymous access denied/.test(data)) {
-    top.location.reload();
-    return true;
-  }
-  if (/Server Error/.test(data)) {
-    ShowStatusFailed(data.replace('/*', '').replace('*/', ''));
-    return true;
-  }
-  if (/^Exception:/.test(data)) {
-    ShowStatusFailed('Server Error: ' + data.substr(0, 60) + '...');
-    console.log(data);
-    return true;
-  }
-  if (/Error\:/.test(data)) {
-    ShowStatusFailed(
-      'An error occurred on the server. The Technical Support Team has been provided with the error details.');
-    return true;
-  }
   return false;
 }
 
@@ -908,8 +945,8 @@ function CallAjaxHandler(handlerUrl,
     type: 'POST',
     url: handlerUrl,
     traditional: true,
-    success: function (data) {
-      if (HasErrors(data)) return;
+    success: function (data, textStatus, jqXhr) {
+      if (HasErrors(data, jqXhr)) return;
 
       ResetStatusDisplay();
 
@@ -917,11 +954,11 @@ function CallAjaxHandler(handlerUrl,
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
       }
     },
-    error: function (xmlHttpRequest, textStatus) {
+    error: function (jqXhr, textStatus) {
       if (typeof callbackOnFailed !== 'undefined') {
-        callbackOnFailed(xmlHttpRequest);
+        callbackOnFailed(jqXhr);
       } else {
-        ShowStatusFailed(xmlHttpRequest);
+        ShowStatusFailed(jqXhr);
       }
     }
   };
@@ -1578,13 +1615,13 @@ function SetInStorage(key, value) {
   localStorage[key] = value;
   return value;
 }
-
-var adjustElection = function (election) {
-  return election;
-  //  election.DateOfElection = FormatDate(
-  //    !isNaN(election) ? election : election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
-  //  return election;
-};
+//
+//var adjustElection = function (election) {
+//  return election;
+//  //  election.DateOfElection = FormatDate(
+//  //    !isNaN(election) ? election : election.DateOfElection ? election.DateOfElection.parseJsonDate() : new Date());
+//  //  return election;
+//};
 
 function ExpandName(s) {
   var result = [];

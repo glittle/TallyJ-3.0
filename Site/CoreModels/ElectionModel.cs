@@ -402,6 +402,8 @@ namespace TallyJ.CoreModels
           election.OnlineCloseIsEstimate,
         });
 
+      // alert will go out when the scheduled job runs
+
       return new
       {
         success = true,
@@ -1207,6 +1209,13 @@ namespace TallyJ.CoreModels
       election.OnlineWhenClose = when;
       election.OnlineCloseIsEstimate = est;
 
+      var sendEmail = false;
+      if (election.OnlineCurrentlyOpen)
+      {
+        election.OnlineAnnounced = null;
+        sendEmail = true;
+      }
+
       Db.SaveChanges();
 
       electionCacher.UpdateItemAndSaveCache(election);
@@ -1226,12 +1235,18 @@ namespace TallyJ.CoreModels
           election.OnlineCloseIsEstimate,
         });
 
-
       UpdateStatusInBrowsers();
+
+      string emailResult = null;
+      if (sendEmail)
+      {
+        emailResult = new EmailHelper().SendWhenOpened(election);
+      }
 
       return new
       {
         success = true,
+        emailResult,
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
       }.AsJsonResult();

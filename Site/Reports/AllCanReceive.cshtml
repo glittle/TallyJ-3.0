@@ -1,0 +1,53 @@
+﻿@using TallyJ.Code.Session
+@using TallyJ.Code
+@using TallyJ.Code.Enumerations
+@using TallyJ.EF
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var people = new PersonCacher().AllForThisElection
+    .Where(p => p.CanReceiveVotes.GetValueOrDefault())
+    .OrderBy(p => p.FullName)
+    .Select(p => new
+    {
+      PersonName = p.FullName,
+    });
+  var initial = ' ';
+}
+<style>
+  .Voters {
+    columns: 3;
+    margin: 1em 0; /* for printing */
+  }
+
+  .person {
+    text-indent: -.7em;
+    padding-left: .7em;
+  }
+
+  b {
+    display: inline-block;
+    margin: .5em 0 0 .7em;
+  }
+</style>
+<div class="body">
+  <h1 id="title"></h1>
+  <p class="Comment">
+    Showing all who can be voted for in this election.
+  </p>
+  <div class="Voters">
+    @foreach (var person in people)
+    {
+      var name = person.PersonName;
+      var first = name.ToUpper()[0];
+      var firstClass = "";
+      if (first != initial)
+      {
+        initial = first;
+        name = "<b>" + initial + "</b>" + name.Substring(1);
+        firstClass = "first";
+      }
+
+      <div class="person @firstClass">@Raw(name)</div>
+    }
+  </div>
+</div>
