@@ -37,6 +37,8 @@
 
 
 
+
+
 go
 
 create unique nonclustered index [IX_PersonEmail]
@@ -50,7 +52,10 @@ create unique nonclustered index [IX_PersonEmail]
 
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Person_1]
-    ON [tj].[Person]([PersonGuid] ASC);
+    ON [tj].[Person]([PersonGuid] ASC)
+    INCLUDE([ElectionGuid]);
+
+
 
 
 GO

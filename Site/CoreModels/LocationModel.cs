@@ -80,12 +80,12 @@ namespace TallyJ.CoreModels
     }
 
     /// <Summary>Does this election have more than one real location?</Summary>
-    public bool HasLocations
+    public bool HasLocationsWithoutOnline
     {
       get { return GetLocations(false).Count > 1; }
     }
 
-    public bool HasLocationsIncludingOnline
+    public bool HasLocationsWithOnline
     {
       get { return GetLocations(true).Count > 1; }
     }
@@ -117,7 +117,7 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this page need to show the location selector?</Summary>
     public bool ShowLocationSelector(MenuHelper currentMenu)
     {
-      return currentMenu.ShowLocationSelection && HasLocationsIncludingOnline;
+      return currentMenu.ShowLocationSelection && HasLocationsWithoutOnline;
     }
 
     public JsonResult UpdateStatus(int locationId, string status)

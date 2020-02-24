@@ -230,7 +230,7 @@ namespace TallyJ.CoreModels
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
-      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
+      if (locationModel.HasLocationsWithoutOnline && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }

@@ -29,8 +29,8 @@ namespace TallyJ.CoreModels
 
       var locationGuid = UserSession.CurrentLocationGuid;
       var locationModel = new LocationModel();
-      var hasLocations = locationModel.HasLocations;
-      if (locationGuid == Guid.Empty && !hasLocations)
+      var hasLocationsWithoutOnline = locationModel.HasLocationsWithoutOnline;
+      if (locationGuid == Guid.Empty && !hasLocationsWithoutOnline)
       {
         // if only one location, learn what it is
         var locations = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).ToList();

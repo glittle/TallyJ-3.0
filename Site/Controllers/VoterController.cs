@@ -233,7 +233,7 @@ namespace TallyJ.Controllers
 
         var personCacher = new PersonCacher(Db);
         var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == onlineVotingInfo.PersonGuid);
-        if (person == null || !person.CanVote.GetValueOrDefault())
+        if (person == null || !person.CanVote.AsBoolean())
         {
           return new
           {

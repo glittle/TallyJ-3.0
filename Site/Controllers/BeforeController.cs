@@ -30,7 +30,7 @@ namespace TallyJ.Controllers
       return new PeopleModel().FrontDeskPersonLines().AsJsonResult();
     }
 
-    public JsonResult VotingMethod(int id, string type, int loc, bool forceDeselect = false)
+    public JsonResult VotingMethod(int id, string type, int loc = 0, bool forceDeselect = false)
     {
       return new PeopleModel().RegisterVotingMethod(id, type, forceDeselect, loc);
     }

@@ -11,7 +11,7 @@
 
   var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
   var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
-  var hasLocations = ContextItems.LocationModel.HasLocations;
+  var hasLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
   var firstHeader = false;
 
   var reports = new Dictionary<string, string>

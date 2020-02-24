@@ -5,6 +5,7 @@ using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
 using Tests.Support;
+using Extensions = TallyJ.Code.Extensions;
 
 namespace Tests.FrameworkTests
 {
@@ -175,12 +176,15 @@ namespace Tests.FrameworkTests
     {
       bool? item = null;
       item.AsBoolean().ShouldEqual(false);
+      item.AsBoolean(true).ShouldEqual(true);
 
       item = true;
       item.AsBoolean().ShouldEqual(true);
+      item.AsBoolean(false).ShouldEqual(true);
 
       item = false;
       item.AsBoolean().ShouldEqual(false);
+      item.AsBoolean(true).ShouldEqual(false);
     }
 
     [TestMethod]

@@ -21,7 +21,7 @@
 
   var locationModel = new LocationModel();
 
-  var hasLocations = locationModel.HasLocations;
+  var hasLocations = locationModel.HasLocationsWithoutOnline;
   var locations = locationModel.GetLocations(true).ToDictionary(l => l.LocationGuid, l => l.Name);
 }
 <style>

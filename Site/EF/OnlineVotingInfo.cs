@@ -24,5 +24,6 @@ namespace TallyJ.EF
         public string ListPool { get; set; }
         public Nullable<bool> PoolLocked { get; set; }
         public string HistoryStatus { get; set; }
+        public Nullable<bool> NotifiedAboutOpening { get; set; }
     }
 }

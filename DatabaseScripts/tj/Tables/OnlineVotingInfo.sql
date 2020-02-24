@@ -1,16 +1,19 @@
-CREATE TABLE [dbo].[OnlineVotingInfo] (
-    [_RowId]            INT              IDENTITY (1, 1) NOT NULL,
-    [ElectionGuid]      UNIQUEIDENTIFIER NOT NULL,
-    [PersonGuid]        UNIQUEIDENTIFIER NOT NULL,
-    [Email]             NVARCHAR (250)   NOT NULL,
-    [WhenBallotCreated] DATETIME2 (0)    NULL,
-    [Status]            VARCHAR (10)     NOT NULL,
-    [WhenStatus]        DATETIME2 (0)    NULL,
-    [ListPool]          NVARCHAR (MAX)   NULL,
-    [PoolLocked]        BIT              NULL,
-    [HistoryStatus]     VARCHAR (MAX)    NULL,
+﻿CREATE TABLE [dbo].[OnlineVotingInfo] (
+    [_RowId]               INT              IDENTITY (1, 1) NOT NULL,
+    [ElectionGuid]         UNIQUEIDENTIFIER NOT NULL,
+    [PersonGuid]           UNIQUEIDENTIFIER NOT NULL,
+    [Email]                NVARCHAR (250)   NOT NULL,
+    [WhenBallotCreated]    DATETIME2 (0)    NULL,
+    [Status]               VARCHAR (10)     NOT NULL,
+    [WhenStatus]           DATETIME2 (0)    NULL,
+    [ListPool]             NVARCHAR (MAX)   NULL,
+    [PoolLocked]           BIT              NULL,
+    [HistoryStatus]        VARCHAR (MAX)    NULL,
+    [NotifiedAboutOpening] BIT              NULL,
     CONSTRAINT [PK_OnlineVotingInfo] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
 
 
 

@@ -5,24 +5,26 @@
     warmupDone: false,
   };
 
-  var isBadBrowser = function() {
+  var isBadBrowser = function () {
     if (window.safari) {
+      // odd layout issues?
       return 'safari';
     }
     // catch ie11 and some old mobile chromes
     if (typeof Symbol === "undefined") return 'no symbol';
-    try {
-      eval('var test = (x) => x');
-    } catch (e) {
-      return 'no arrow function';
-    }
+    //    try {
+    //      // no support for ES2015
+    //      eval('var test = (x) => x');
+    //    } catch (e) {
+    //      return 'no arrow function';
+    //    }
     return '';
   };
 
   var preparePage = function () {
     var isBad = isBadBrowser();
     if (isBad) {
-      $('.badBrowser.detail').text(isBad + ' ' + navigator.userAgent).show();
+      $('.badBrowser .detail').text(isBad + ', ' + navigator.userAgent).show();
       $('.badBrowser').show();
       return;
     }

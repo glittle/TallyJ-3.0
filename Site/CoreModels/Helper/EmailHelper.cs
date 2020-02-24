@@ -224,7 +224,7 @@ namespace TallyJ.CoreModels.Helper
                     && e.OnlineWhenClose > now)
         .GroupJoin(
           // get list of voters who want to be notified when their election opens
-          db.OnlineVotingInfo
+          db.OnlineVotingInfo.Where(ovi => !ovi.NotifiedAboutOpening.Value)
             .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), ovi => ovi.Email, ov => ov.Email, (ovi, ov) => new { ovi, ov })
             .Join(db.Person, j => j.ovi.PersonGuid, p => p.PersonGuid, (j, p) => new { j.ovi, j.ov, p })
           , e => e.ElectionGuid, jv => jv.ovi.ElectionGuid, (election, oviList) => new { election, oviList })
@@ -235,6 +235,7 @@ namespace TallyJ.CoreModels.Helper
           {
             jOvi.ov.Email,
             jOvi.p.C_FullNameFL,
+            jOvi.ovi
           })
         })
         .ToList();
@@ -262,14 +263,14 @@ namespace TallyJ.CoreModels.Helper
         var numEmails = 0;
         var errors = new List<string>();
 
-        electionInfo.people.ToList().ForEach(p =>
+        electionInfo.people.ToList().ForEach(voter =>
         {
           var html = GetEmailTemplate("ElectionOpen").FilledWithObject(new
           {
             hostSite,
             logo = hostSite + "/Images/LogoSideM.png",
-            p.Email,
-            personName = p.C_FullNameFL,
+            voter.Email,
+            personName = voter.C_FullNameFL,
             electionName,
             electionType,
             whenClosedDay = whenClosedUtc.ToString("d MMM"),
@@ -278,7 +279,7 @@ namespace TallyJ.CoreModels.Helper
           });
 
           var message = new MailMessage();
-          message.To.Add(new MailAddress(p.Email, p.C_FullNameFL));
+          message.To.Add(new MailAddress(voter.Email, voter.C_FullNameFL));
 
           if (electionInfo.election.EmailFromAddress.HasContent())
           {
@@ -295,6 +296,9 @@ namespace TallyJ.CoreModels.Helper
           {
             errors.Add(emailError);
           }
+
+          // regardless if the email went or not, record it
+          voter.ovi.NotifiedAboutOpening = true;
         });
 
         var msg = $"Email: Election #{electionInfo.election.C_RowId} {(automated ? "automatically " : "")}announced to {numEmails} {(numEmails == 1 ? "person" : "people")}";

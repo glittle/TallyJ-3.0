@@ -5,7 +5,7 @@
 @{
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new TallyJ.EF.Location()).C_RowId));
-  ContextItems.AddJavascriptForPage("hasloc", "rollCallPage.hasLocations={0};".FilledWith(new LocationModel().HasLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("hasloc", "rollCallPage.hasLocations={0};".FilledWith(new LocationModel().HasLocationsWithoutOnline.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("locs", "rollCallPage.locations={0};".FilledWith(new LocationModel().LocationRowIdMap));
   ContextItems.AddJavascriptForPage("methods", "rollCallPage.methods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
   ContextItems.AddJavascriptForPage("ver", "site.lastVersionNum={0};".FilledWith(Model.LastVersionNum));
@@ -17,7 +17,7 @@
   <div class="Nav Show">
     <span class="comment">* are recommended</span>
     <h2>Display Options</h2>
-    @if (ContextItems.LocationModel.HasLocations)
+    @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
     {
       <p>
         Highlight those who voted at
@@ -42,7 +42,7 @@
         <option value="">also Highlighted</option>
       </select>
     </p>
-    @if (ContextItems.LocationModel.HasLocations)
+    @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
     {
       <p>
         Show voter's

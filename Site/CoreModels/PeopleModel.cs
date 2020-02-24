@@ -64,7 +64,7 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-            .Where(p => p.CanVote.HasValue)
+            .Where(p => p.CanVote.AsBoolean())
             .ToList();
       }
     }
@@ -324,14 +324,14 @@ namespace TallyJ.CoreModels
 
       // these two may not be present, depending on the election type
       const string all = ElectionModel.CanVoteOrReceive.All;
-      var canReceiveVotes = personFromInput.CanReceiveVotes.GetValueOrDefault(CurrentElection.CanReceive == all);
+      var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(CurrentElection.CanReceive == all);
       if (personInDatastore.CanReceiveVotes != canReceiveVotes)
       {
         personInDatastore.CanReceiveVotes = canReceiveVotes;
         changed = true;
       }
 
-      var canVote = personFromInput.CanVote.GetValueOrDefault(CurrentElection.CanVote == all);
+      var canVote = personFromInput.CanVote.AsBoolean(CurrentElection.CanVote == all);
       if (personInDatastore.CanVote != canVote)
       {
         personInDatastore.CanVote = canVote;
@@ -406,6 +406,8 @@ namespace TallyJ.CoreModels
 
     public IEnumerable<object> Deselected()
     {
+      var showLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
+
       var ballotSources = PeopleInElection // start with everyone
           .Where(
               p =>
@@ -417,7 +419,7 @@ namespace TallyJ.CoreModels
           {
             PersonId = p.C_RowId,
             C_FullName = p.FullName,
-            VotedAt = LocationName(p.VotingLocationGuid),
+            VotedAt = showLocations ? LocationName(p.VotingLocationGuid) : null,
             When = ShowRegistrationTime(p),
             p.RegistrationTime,
             Log = FormatRegistrationLog(p),
@@ -499,7 +501,7 @@ namespace TallyJ.CoreModels
     public IEnumerable<object> FrontDeskPersonLines(List<Person> people,
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
-      var showLocations = Locations.Count() > 1;
+      var showLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
       var useOnline = UserSession.CurrentElection.OnlineEnabled;
 
       return people
@@ -519,8 +521,8 @@ namespace TallyJ.CoreModels
                         ShowRegistrationTime(p),
                         ShowTellers(p),
                         showLocations ? LocationName(p.VotingLocationGuid) : "",
-                        FormatRegistrationLog(p),
-              }.JoinedAsString("; ", true),
+              }.JoinedAsString("; ", true) 
+                      + FormatRegistrationLog(p),
             p.VotingMethod,
             InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
             DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
@@ -541,7 +543,7 @@ namespace TallyJ.CoreModels
     private string FormatRegistrationLog(Person p)
     {
       return p.RegistrationLog.Count > 1
-          ? p.RegistrationLog.JoinedAsString("\n").SurroundContentWith("<span class=Log title=\"", "\"></span>")
+          ? p.RegistrationLog.JoinedAsString("\n").SurroundContentWith(" <span class=Log title=\"", "\"></span>")
           : "";
     }
 
@@ -583,7 +585,10 @@ namespace TallyJ.CoreModels
 
 
       var locationModel = new LocationModel();
-      if (locationModel.HasLocations && UserSession.CurrentLocation == null)
+      
+      var hasLocations = locationModel.HasLocationsWithoutOnline;
+
+      if (hasLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }
@@ -618,7 +623,7 @@ namespace TallyJ.CoreModels
       var votingMethodRemoved = false;
       Guid? oldVoteLocationGuid = null;
       Guid? newVoteLocationGuid = null;
-      if (person.VotingMethod == voteType || forceDeselect)
+      if (person.VotingMethod == voteType || forceDeselect || !person.CanVote.AsBoolean())
       {
         oldVoteLocationGuid = person.VotingLocationGuid;
 
@@ -634,7 +639,7 @@ namespace TallyJ.CoreModels
                     ShowRegistrationTime(person),
                     "De-selected",
                     ShowTellers(person),
-                    LocationName(UserSession.CurrentLocationGuid),
+                    hasLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
                 }.JoinedAsString("; ", true));
         person.RegistrationLog = log;
       }
@@ -655,8 +660,8 @@ namespace TallyJ.CoreModels
                     ShowRegistrationTime(person),
                     VotingMethodEnum.TextFor(person.VotingMethod),
                     ShowTellers(person),
-                    LocationName(person.VotingLocationGuid),
-                }.JoinedAsString("; ", true));
+                    hasLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
+        }.JoinedAsString("; ", true));
         person.RegistrationLog = log;
 
         // make number for every method except Registered
@@ -671,8 +676,6 @@ namespace TallyJ.CoreModels
       personCacher.UpdateItemAndSaveCache(person);
 
       UpdateFrontDeskListing(person, votingMethodRemoved);
-
-      new VoterPersonalHub().Update(person);
 
       //      if (lastRowVersion == 0)
       //      {

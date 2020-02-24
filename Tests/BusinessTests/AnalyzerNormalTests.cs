@@ -17,14 +17,10 @@ namespace Tests.BusinessTests
   public class AnalyzerNormalTests
   {
     private AnalyzerFakes _fakes;
-    private List<Person> _samplePeople;
     private ITallyJDbContext Db;
     private Guid _electionGuid;
 
-    private List<Person> SamplePeople
-    {
-      get { return _samplePeople; }
-    }
+    private List<Person> SamplePeople { get; set; }
 
     [TestInitialize]
     public void Init()
@@ -45,7 +41,7 @@ namespace Tests.BusinessTests
         ElectionGuid = _electionGuid
       });
 
-      _samplePeople = new List<Person>
+      SamplePeople = new List<Person>
       {
         new Person {CombinedInfo="abc", CombinedInfoAtStart="abc", VotingMethod = VotingMethodEnum.InPerson}.ForTests(),
         new Person {}.ForTests(),

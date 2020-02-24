@@ -7,6 +7,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
 namespace Tests.BusinessTests
@@ -20,17 +21,30 @@ namespace Tests.BusinessTests
 
     public static ITallyJDbContext Db { get; private set; }
 
-    public static void SaveElectionGuidForTests(Guid guid) {
+    public static void SaveElectionGuidForTests(Guid guid)
+    {
       _electionGuid = guid;
     }
 
-    public static void ForTests(this ITallyJDbContext context) {
+    public static void ForTests(this ITallyJDbContext context)
+    {
       Db = context;
     }
 
     public static Election ForTests(this Election election)
     {
       election.ElectionGuid = _electionGuid;
+
+      if (election.CanVote.HasNoContent())
+      {
+        election.CanVote = "A";
+      }
+      if (election.CanReceive.HasNoContent())
+      {
+        election.CanReceive = "A";
+      }
+
+
       Db.Election.Add(election);
       ItemKey.CurrentElection.SetInPageItems(election);
 
@@ -39,7 +53,8 @@ namespace Tests.BusinessTests
       new Location().ForTests();
       return election;
     }
-    public static void ForTests(this Location location) {
+    public static void ForTests(this Location location)
+    {
       _locationGuid = location.LocationGuid = Guid.NewGuid();
       location.ElectionGuid = _electionGuid;
       Db.Location.Add(location);
@@ -55,6 +70,13 @@ namespace Tests.BusinessTests
       person.CanReceiveVotes = true;
       person.C_RowId = _rowId++;
       person.ElectionGuid = _electionGuid;
+
+      if (person.IneligibleReasonGuid.HasValue)
+      {
+        var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+        new PeopleModel().SetInvolvementFlagsToDefault(person, reason);
+      }
+
       Db.Person.Add(person);
       return person;
     }
@@ -98,7 +120,8 @@ namespace Tests.BusinessTests
       return ballot.ForTests(BallotStatusEnum.Ok);
     }
 
-    public static ResultSummary ForTests(this ResultSummary resultSummary) {
+    public static ResultSummary ForTests(this ResultSummary resultSummary)
+    {
       resultSummary.ElectionGuid = _electionGuid;
       resultSummary.C_RowId = _rowId++;
       Db.ResultSummary.Add(resultSummary);

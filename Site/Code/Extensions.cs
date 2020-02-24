@@ -77,9 +77,9 @@ namespace TallyJ.Code
     /// <param name="key"></param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T2 Get<T1,T2>(this Dictionary<T1, T2> input, T1 key, T2 defaultValue)
+    public static T2 Get<T1, T2>(this Dictionary<T1, T2> input, T1 key, T2 defaultValue)
     {
-      if(input.TryGetValue(key, out var value))
+      if (input.TryGetValue(key, out var value))
       {
         return value;
       }
@@ -160,7 +160,7 @@ namespace TallyJ.Code
     /// <Summary>Returns true if this bool? is true</Summary>
     public static bool AsBoolean(this bool? input, bool? defaultValue = null)
     {
-      return input.HasValue ? input.Value : defaultValue.HasValue && defaultValue.Value;
+      return input ?? defaultValue.HasValue && defaultValue.Value;
     }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
@@ -622,7 +622,8 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static string SerializedAsJsonString(this object input)
     {
-      return new JavaScriptSerializer {
+      return new JavaScriptSerializer
+      {
         MaxJsonLength = int.MaxValue
       }.Serialize(input);
     }
@@ -839,7 +840,7 @@ namespace TallyJ.Code
       {
         Email = input.UserName,
         Password = input.PasswordV1,
-//        RememberMe = input.RememberMe
+        //        RememberMe = input.RememberMe
       };
     }
 

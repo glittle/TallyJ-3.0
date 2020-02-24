@@ -466,9 +466,13 @@
   var saveBtnClick = function (pid, btnType, btn, forceDeselect) {
     var form = {
       id: pid,
-      type: btnType,
-      loc: $('#ddlTopLocation').val() || 0
+      type: btnType
     };
+
+    var loc = $('#ddlTopLocation').val();
+    if (loc) {
+      form.loc = loc;
+    }
     if (forceDeselect) {
       form.forceDeselect = true;
     }

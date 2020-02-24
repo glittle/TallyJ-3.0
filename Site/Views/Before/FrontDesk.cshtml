@@ -1,4 +1,5 @@
 ﻿@model PeopleModel
+@using TallyJ.Code
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
@@ -94,8 +95,7 @@
     Other <i>0</i>
   </span>
 </div>
-<div id="Main" class="@(new[] {ContextItems.LocationModel.HasLocations ? "WithArea" : "",
-                          currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
+<div id="Main" class="@(new[] {currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
                           currentElection.OnlineEnabled ? "UseOnline" : "",
                           "EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">

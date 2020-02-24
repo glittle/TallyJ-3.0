@@ -151,6 +151,22 @@ function clearElectionRelatedStorageItems() {
 };
 
 
+function scrollIntoView(element, blockWhere) {
+  if (!element) return;
+  if (element.jquery) {
+    if (!element.length) {
+      return;
+    } else {
+      element = element[0];
+    }
+  }
+
+  console.log('scroll', element, blockWhere);
+  element.scrollIntoView({
+    block: blockWhere || 'center'
+  });
+}
+
 var connectToElectionHub = function () {
   var hub = $.connection.mainHubCore;
 
@@ -851,7 +867,6 @@ function HasErrors(data, jqXhr) {
 
   var jsonHeader = jqXhr.getResponseHeader('x-responded-json');
   if (jsonHeader) {
-    debugger;
     var result = JsonParse(jsonHeader);
     if (result.status >= 400) {
       if (result.headers.location) {
