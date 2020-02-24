@@ -33,7 +33,10 @@ namespace TallyJ.CoreModels
       if (locationGuid == Guid.Empty && !hasLocationsWithoutOnline)
       {
         // if only one location, learn what it is
-        var locations = new LocationCacher(Db).AllForThisElection.OrderBy(l => l.SortOrder).ToList();
+        var locations = new LocationCacher(Db)
+          .AllForThisElection
+          .Where(l => l.Name != LocationModel.OnlineLocationName)
+          .OrderBy(l => l.SortOrder).ToList();
         if (locations.Count == 0)
         {
           // missing location?  fix it

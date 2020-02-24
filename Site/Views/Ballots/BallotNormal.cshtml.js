@@ -174,7 +174,9 @@
         ShowStatusSuccess('Updated');
       });
     });
-    $('#txtNumCollected').on('change', function () {
+    $('#txtNumCollected').on('change', function (el) {
+      var input = $(el.target);
+      input.prop('disabled', true);
       var num = Math.max(0, +$(this).val());
       ShowStatusDisplay('Saving...');
       CallAjaxHandler(publicInterface.controllerUrl + '/UpdateLocationCollected', { numCollected: num }, function (info) {
@@ -186,6 +188,7 @@
           showLocation(info.Location);
           ShowStatusSuccess('Saved');
         }
+        input.prop('disabled', false);
       });
     });
     resetSearch();
