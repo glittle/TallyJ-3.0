@@ -24,7 +24,10 @@
 <div ref="forScroll"></div>
 <div id="voterPage1" v-if="activePage === 1">
   <p>
-    Welcome! Your email address from @UserSession.VoterAuthSource is
+    Welcome! Your email address @if (UserSession.VoterAuthSource != "Local")
+    {
+      <span>from @UserSession.VoterAuthSource</span>
+    } is
     <strong>@UserSession.VoterEmail</strong>.
     <span v-if="!loading">
       <span v-if="elections.length">It is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
@@ -49,8 +52,10 @@
 
   <p v-if="loading">Searching for your email address in available elections...</p>
 
-  <p v-if="!loading">If an upcoming election is not listed here, it may not be available for Online Voting in TallyJ, 
-    or your email address is not registered in it. Please contact the head teller for assistance.</p>
+  <p v-if="!loading">
+    If an upcoming election is not listed here, it may not be available for Online Voting in TallyJ,
+    or your email address is not registered in it. Please contact the head teller for assistance.
+  </p>
 
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
     None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
@@ -97,7 +102,7 @@
       <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me an email when my ballot is processed.</label>
     </p>
     <p class="account" v-if="hasLocalId">
-      Want to update your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
+      Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
     </p>
     <p class="account" v-else>
       You logged in via @UserSession.VoterAuthSource.
@@ -258,10 +263,10 @@
         Loading...
       </p>
       @*
-        not needed - if submitted, don't need paper version
-        <div class="printDiv">
-        <button class="btn" v-on:click="printBallot">Print Ballot</button>
-      </div>*@
+          not needed - if submitted, don't need paper version
+          <div class="printDiv">
+          <button class="btn" v-on:click="printBallot">Print Ballot</button>
+        </div>*@
     </div>
   </div>
 </div>

@@ -201,9 +201,9 @@ namespace TallyJ.Code
       return input ? null : (bool?)false;
     }
 
-    public static bool AsBoolean(this string input)
+    public static bool AsBoolean(this string input, bool defaultValue = false)
     {
-      if (input.HasNoContent()) return false;
+      if (input.HasNoContent()) return defaultValue;
 
       switch (input)
       {

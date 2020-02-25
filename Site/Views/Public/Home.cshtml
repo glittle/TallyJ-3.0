@@ -229,9 +229,9 @@
 
       @if (loginTypes.Count > 0)
       {
-        <p>
-          Log in with your @loginTypes.InSentence("or") account, or create and use a local account in TallyJ.
-        </p>
+    <p>
+      Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "Account2")</strong> in TallyJ.
+    </p>
       }
       else
       {
@@ -239,10 +239,6 @@
           Log in with your TallyJ account.
         </p>
       }
-      <p>
-        TallyJ will list all the elections where your email address is on file.
-      </p>
-
       <div class="voterLogins">
         @if (loginTypes.Count > 0)
         {
@@ -287,12 +283,12 @@
                 }
               }
               <p class="externalNote">
-                TallyJ will use the email address that is provided by @loginTypes.InSentence("or").
+                TallyJ will create a local account with the email address<br/>that is provided by @loginTypes.InSentence("or").
               </p>
               <div class="extPw">
                 <p>
-                  If you have added a TallyJ password for this email address, you must provide it here
-                  when signing in. You can also use the panel to the right.
+                  If you have previously added a TallyJ password for this email address, you must now 
+                  provide it here when signing in. You can also use the panel to the right.
                 </p>
                 <input class="form-control" 
                        name="ExtPassword" 
@@ -335,13 +331,10 @@
             </div>
             <div class="other">
 
-              <div>
-                @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
-              </div>
-
               <p>
-                @Html.ActionLink("Create a TallyJ account", "Register", "Account2")
+                @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
               </p>
+
             </div>
           }
         </div>

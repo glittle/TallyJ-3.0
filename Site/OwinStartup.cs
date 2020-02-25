@@ -50,7 +50,7 @@ namespace TallyJ
       app.UseCookieAuthentication(new CookieAuthenticationOptions
       {
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
-        CookieSecure = CookieSecureOption.Always,
+        CookieSecure = AppSettings["secure"].AsBoolean(true) ? CookieSecureOption.Always : CookieSecureOption.Never,
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
         LoginPath = new PathString("/"),
         Provider = new CookieAuthenticationProvider
@@ -126,7 +126,7 @@ namespace TallyJ
               };
               var modelState = new ModelStateDictionary();
               var rootUrl = new SiteInfo().RootUrl;
-              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for email address: " + email,
+              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for the email address: " + email,
                 "Facebook",
                 (s, s1) => "", // not used from here
                 () => new RedirectResult(rootUrl + "/Account/Logoff"), 
@@ -193,7 +193,7 @@ namespace TallyJ
             };
             var modelState = new ModelStateDictionary();
             var rootUrl = new SiteInfo().RootUrl;
-            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for email address: " + email,
+            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for the email address: " + email,
               "Google",
               (s, s1) => "", // not used from here
               () => new RedirectResult(rootUrl + "/Account/Logoff"), 

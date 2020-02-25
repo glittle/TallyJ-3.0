@@ -60,6 +60,10 @@
     $('form').on('submit', function () {
       logoffSignalR();
     });
+
+    if (window.location.search.indexOf('v=voter') !== -1) {
+      $('#btnChooseVoter').click();
+    }
   };
 
   var connectToPublicHub = function () {
