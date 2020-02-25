@@ -213,7 +213,8 @@ var startSignalR = function (callBack, showReconnectMsg) {
         ShowStatusFailed("We've been disconnected from the server for too long." +
           "<br>Please refresh this page (press F5) to reconnect and continue.");
       } else if (msg.indexOf('WebSocket closed')) {
-        ShowStatusFailed("Disconnected from the server.");
+        ShowStatusFailed("Disconnected from the server." +
+          "<br>Please refresh this page (press F5) to reconnect and continue.");
       } else {
         ShowStatusFailed(msg);
       }
