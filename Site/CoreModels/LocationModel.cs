@@ -117,7 +117,8 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this page need to show the location selector?</Summary>
     public bool ShowLocationSelector(MenuHelper currentMenu)
     {
-      return currentMenu.ShowLocationSelection && HasLocationsWithoutOnline;
+      return currentMenu.ShowLocationSelection && HasLocationsWithoutOnline 
+             || currentMenu.ShowLocationSelectionWithOnline && HasLocationsWithOnline;
     }
 
     public JsonResult UpdateStatus(int locationId, string status)

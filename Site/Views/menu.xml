@@ -16,7 +16,7 @@
     </group>
     <group title="Tallying" state="Tallying" longtitle="Processing Ballots - Tallying and Analyzing" showTitleInPage="false">
       <page title="Monitor Progress" featureWhen="Tallying" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
-      <page title="Enter Ballots" featureWhen="Tallying" showTellerSelector="true" showLocationSelector="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
+      <page title="Enter Ballots" featureWhen="Tallying" showTellerSelector="true" showLocationSelectorWithOnline="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Analyze Ballots" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
       <page title="View Detailed Reports" featureWhen="Tallying,Finalized" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
       <page title="Display Tie-Breaks" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>

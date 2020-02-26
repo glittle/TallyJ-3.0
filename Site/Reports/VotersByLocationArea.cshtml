@@ -49,14 +49,14 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
-    For each voting location, how many attended in person, and what area were they from?
+    For each voting venue, how many attended in person, and what area were they from?
   </p>
   <table class="locArea">
     @foreach (var loc in locations)
     {
       <tr class="loc">
         <th colspan="3">
-          Voting Location - @loc.LocationName
+          Venue - @loc.LocationName
         </th>
       </tr>
       foreach (var area in loc.Areas)

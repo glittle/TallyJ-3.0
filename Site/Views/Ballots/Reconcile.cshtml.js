@@ -51,10 +51,6 @@
 
     site.qTips.push({ selector: '#qTipUn', title: 'Un-used', text: 'If a person is registered on the Front Desk, then later "de-selected", they show here.' });
 
-    //processBallots(publicInterface.ballots);
-    //showDeselected(publicInterface.oldEnvelopes);
-
-
   };
 
   function connectToFrontDeskHub() {
@@ -72,18 +68,6 @@
       CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
     });
   };
-
-  //  var refreshHubConnection = function () {
-  //    var resetHubConnectionTimer = function () {
-  //      clearTimeout(local.reconnectHubTimeout);
-  //      local.reconnectHubTimeout = setTimeout(refreshHubConnection, local.hubReconnectionTime);
-  //    };
-  //    console.log('Joining frontDeskHub');
-  //    clearTimeout(local.reconnectHubTimeout);
-  //    CallAjaxHandler(publicInterface.beforeUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId }, function (info) {
-  //      resetHubConnectionTimer();
-  //    });
-  //  };
 
   var showDeselected = function (list) {
     if (!list.length) {
@@ -110,12 +94,9 @@
           $('#Totals').effect('highlight', {}, 5000);
         }
         local.currentLocation = newLocation;
-        processBallots(info.Ballots);
         publicInterface.deselected = info.Deselected;
-
-        //        if (newLocation === -1) {
-        showDeselected(publicInterface.deselected);
-        //        }
+        
+        processBallots(info.Ballots);
 
         ActivateTips(true);
         ResetStatusDisplay();
@@ -149,10 +130,12 @@
   function processBallots(ballots) {
     local.groupedBallots = {};
     local.ballotMethods = [];
+    
+    var method;
 
     for (var i = 0; i < ballots.length; i++) {
       var ballot = ballots[i];
-      var method = ballot.VotingMethod;
+      method = ballot.VotingMethod;
 
       var list = local.groupedBallots[method];
       if (!list) {
@@ -192,6 +175,10 @@
         host.append('<div data-method={0} class="VMG VMG-{0}"><div class=VmgHead><h3>{1}: {2}</h3>{^4}</div><div class=Names>{^3}</div></div>'.filledWith(
           method, methodName, groupedBallots.length, ballotList, local.sortSelector));
 
+        if (method === 'P') {
+          showDeselected(publicInterface.deselected);
+        }
+
         updateSort(method);
 
         methodInfo.count = groupedBallots.length;
@@ -207,7 +194,6 @@
     $('#Totals').html([
       'Total: {total}'.filledWith(totals),
       (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
-      //'Absent: {absent}'.filledWith(totals),
       (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
       (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
       (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),

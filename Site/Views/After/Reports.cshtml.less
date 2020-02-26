@@ -127,6 +127,14 @@ p.Comment {
   font-size: 80%;
 }
 
+.page {
+  page-break-inside: avoid;
+  margin-bottom: 20px;
+
+  .table {
+    margin-bottom: 20px;
+  }
+}
 
 table.resultInfo {
   width: auto;
@@ -155,7 +163,7 @@ table.resultInfo {
 
   tr td:nth-child(2) {
     text-align: right;
-    border-bottom: 1px solid #000;
+    //border-bottom: 1px solid #000;
     padding-left: 25px;
     padding-right: 12px;
   }
@@ -191,6 +199,10 @@ table.resultInfo {
 
   header, .chooser, footer, .CompCode, .btnDownloadCsv {
     display: none;
+  }
+
+  #report{
+    padding: 0;
   }
 
   .reportPanel {

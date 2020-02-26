@@ -92,6 +92,11 @@ namespace TallyJ.Code.Resources
       get { return CurrentNode.GetAttribute("showLocationSelector").AsBoolean(); }
     }
 
+    public bool ShowLocationSelectionWithOnline
+    {
+      get { return CurrentNode.GetAttribute("showLocationSelectorWithOnline").AsBoolean(); }
+    }
+
     public bool ShowTellerSelector
     {
       get { return CurrentNode.GetAttribute("showTellerSelector").AsBoolean(); }

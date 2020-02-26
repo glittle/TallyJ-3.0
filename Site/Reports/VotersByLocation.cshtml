@@ -77,12 +77,12 @@
 <div class="body">
   <h1 id="title"></h1>
   <p class="Comment">
-    Showing the areas of those registered on the Front Desk.
+    Showing registration by venue.
   </p>
   <table class="Areas">
     <thead>
       <tr>
-        <th rowspan="2" class="name">Voting Location</th>
+        <th rowspan="2" class="name">Venue</th>
         <th>Voters</th>
         <th>In Person</th>
         <th>Mailed In</th>
@@ -98,7 +98,7 @@
       </tr>
       <tr class="pct">
         <td>(% of all voters)</td>
-        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at location)</td>
+        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at venue)</td>
       </tr>
     </thead>
     <tbody>
