@@ -1,9 +1,29 @@
-﻿ul {
+﻿body {
+  overflow-y: scroll;
+}
+
+ul {
   padding-left: 10px;
 }
 
 .reportsPage {
   display: flex;
+}
+
+.reportHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .byTitle {
+    text-align: right;
+    font-size: 85%;
+    color: #666;
+
+    div:first-child {
+      font-weight: bold;
+    }
+  }
 }
 
 div.chooser {
@@ -32,6 +52,7 @@ div.chooser {
 
       a {
         text-decoration: none;
+        display: block;
 
         &.selected {
           color: #000;
@@ -201,7 +222,7 @@ table.resultInfo {
     display: none;
   }
 
-  #report{
+  #report {
     padding: 0;
   }
 

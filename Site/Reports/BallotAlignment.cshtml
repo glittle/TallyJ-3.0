@@ -49,8 +49,14 @@
 </style>
 <div class="body WarnIfNotFinalized">
   <button class="btn btn-mini btnDownloadCsv" data-table=".Ballots" type="button" title="Download in CSV format for Excel">Export</button>
-  <h1 id="title"></h1>
-  <p class="Comment">
+  <div class="reportHead">
+    <h1 id="title"></h1>
+    <div class="byTitle">
+      <div>@UserSession.CurrentElectionName</div>
+      <div id="titleDate"></div>
+    </div>
+  </div>
+   <p class="Comment">
     A count of the alignment of ballots to the final results.  For example, the first row shows
     how many ballots where for all @numElected of the elected, while the last line shows how
     many ballots had none of those elected.

@@ -8,52 +8,37 @@
 @{
   var ballots = new BallotCacher().AllForThisElection;
   var locations = new LocationCacher().AllForThisElection;
-  var results = new ResultCacher().AllForThisElection;
   var election = UserSession.CurrentElection;
   var votes = new VoteCacher().AllForThisElection;
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots
-    .OrderBy(b =>
+    .Join(locations.Where(l => l.Name == LocationModel.OnlineLocationName), b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, LocationId = l.C_RowId })
+    .OrderBy(bl => bl.b.BallotNumAtComputer)
+    .Select(bl =>
     {
-      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
-      return location == null ? "" : location.Name;
-    })
-    .ThenBy(b => b.ComputerCode)
-    .ThenBy(b => b.BallotNumAtComputer)
-    .Select(b =>
-    {
-      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
-      var locName = locations.Count > 1 && location != null ? location.Name : "";
-      var locId = location == null ? 0 : location.C_RowId;
       return new
       {
-        C_BallotCode = b.C_BallotCode,
-        Location = locName,
-        IsOnline = locName == LocationModel.OnlineLocationName,
-        BallotId = b.C_RowId,
-        LocationId = locId,
-        b.StatusCode,
-        Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-        Votes = new BallotHelper().VoteInfosForBallot(b, votes)
-          .GroupJoin(results, v => v.PersonGuid, r => r.PersonGuid, (v, rList) => new { v, tied = rList.Any(r => r.TieBreakRequired.GetValueOrDefault()) })
-          .OrderBy(g => isSingleNameElection ? g.v.PersonFullNameFL : g.v.PositionOnBallot.ToString("0000"))
-          .Select(g => new
+        bl.b.C_BallotCode,
+        BallotId = bl.b.C_RowId,
+        bl.LocationId,
+        bl.b.StatusCode,
+        Spoiled = bl.b.StatusCode != BallotStatusEnum.Ok,
+        Votes = new BallotHelper().VoteInfosForBallot(bl.b, votes)
+          .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
+          .Select(v => new
           {
-            g.v.PersonFullNameFL,
-            g.v.SingleNameElectionCount,
-            g.v.OnlineVoteRaw,
-            Spoiled = g.v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
-            TieBreakRequired = g.tied,
+            v.PersonFullNameFL,
+            v.SingleNameElectionCount,
+            v.OnlineVoteRaw,
+            Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
             VoteInvalidReasonDesc =
               IneligibleReasonEnum.DescriptionFor(
-                g.v.VoteIneligibleReasonGuid.AsGuid()).
+                v.VoteIneligibleReasonGuid.AsGuid()).
                 SurroundContentWith("[", "]")
           })
       };
-    })
-    .Where(b => b.Votes.Any(v => v.TieBreakRequired))
-    .ToList();
+    });
 }
 <style>
   table.Ballots td {
@@ -76,12 +61,14 @@
 
   .Count {
     font-weight: bold;
-    padding-left: 2px;
+    padding: 0 5px;
+    float: right;
   }
 
   .Ballot {
     margin-top: 3px;
     counter-reset: voteNum;
+    page-break-inside: avoid;
   }
 
   .BallotSpoiled,
@@ -156,25 +143,13 @@
     font-size: 90%;
   }
 
-  .Ballot .Vote.Tied, .TitleTied {
-    color: #ef8600;
-  }
-
   .Spoiled {
     color: red;
   }
 
-  .BallotSpoiled .Vote.Tied .Person {
-    color: #ef8600;
-  }
-
-  .Spoiled .Person {
-    text-decoration: line-through;
-  }
-
-  p.Comment.Invalid {
-    color: red;
-  }
+    .Spoiled .Person {
+      text-decoration: line-through;
+    }
 </style>
 <div class="body">
   <div class="reportHead">
@@ -185,30 +160,24 @@
     </div>
   </div>
   <p class="Comment">
-    This is showing only the ballots that contain votes for <span class="TitleTied">people involved in a tie</span>.
+    This listing contains all the ballots that were submitted online.
+    A printed copy of this list of ballots could be stored with the paper ballots for archival purposes.
+    Please note that online votes that have not yet been processed do not appear here.
   </p>
-  <p class="Comment">
-    This listing can be used to review ballots entered.  To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.
-  </p>
-  @if (!data.Any())
-  {
-    <p class="Comment">None Found</p>
-  }
   <table class="Ballots">
     @foreach (var ballot in data)
     {
-      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "") @(ballot.IsOnline ? "Online" : "")">
+      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "") Online">
         <td>
           <a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a>
           <div>@ballot.StatusCode</div>
-          <div>@ballot.Location</div>
         </td>
         <td>
           @foreach (var vote in ballot.Votes)
           {
             if (isSingleNameElection)
             {
-              <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
+              <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
                 <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 <span class="Count">@vote.SingleNameElectionCount</span>
@@ -228,7 +197,7 @@
             }
             else
             {
-              <span class="Vote @(vote.Spoiled ? "Spoiled" : "") @(vote.TieBreakRequired ? "Tied" : "")">
+              <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
                 <span class="Person">@Raw(vote.PersonFullNameFL)</span>
                 <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 @if (vote.OnlineVoteRaw.HasContent())

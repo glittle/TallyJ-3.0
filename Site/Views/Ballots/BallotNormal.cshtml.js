@@ -309,7 +309,7 @@
     // show add if a ballot is selected (regular) or raw vote is selected (online)
     if (local.location.IsOnline) {
       if ($('.VoteHost.rawTarget').length !== 0) {
-        addVoteH3.next().show();
+        addVoteH3.show().next().show();
       } else {
         addVoteH3.next().hide();
       }

@@ -397,7 +397,10 @@ ClientFile("~/Scripts/vue-datetime.css"),
         <tr class="explainLock">
           <td colspan="3">
             <span class="explain">
-              Ballots have been entered so you cannot disable Online Voting or restrict the Name Selection method.
+              Ballots have been entered so you cannot disable Online Voting.
+              <span v-if="election.OnlineSelectionProcess !== 'B'">
+                Name Selection can be changed to "Both" if desired.
+              </span>
             </span>
           </td>
         </tr>

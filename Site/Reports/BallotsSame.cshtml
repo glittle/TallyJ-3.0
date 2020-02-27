@@ -132,8 +132,13 @@
     }
 </style>
 <div class="body">
-  <h1 id="title"></h1>
-  <p class="Comment">
+  <div class="reportHead">
+    <h1 id="title"></h1>
+    <div class="byTitle">
+      <div>@UserSession.CurrentElectionName</div>
+      <div id="titleDate"></div>
+    </div>
+  </div>  <p class="Comment">
     This indicates any groups of ballots that are identical. (Because ballots are anonymous, we cannot determine who cast these ballots.)
   </p>
 

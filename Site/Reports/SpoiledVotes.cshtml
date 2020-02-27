@@ -69,7 +69,13 @@
 </style>
 <div class="body WarnIfNotFinalized">
   <button class="btn btn-mini btnDownloadCsv" data-divs=".person" data-splitter=" - " type="button" title="Download in CSV format for Excel">Export</button>
-  <h1 id="title"></h1>
+  <div class="reportHead">
+    <h1 id="title"></h1>
+    <div class="byTitle">
+      <div>@UserSession.CurrentElectionName</div>
+      <div id="titleDate"></div>
+    </div>
+  </div>
   <p class="Comment">
     Showing invalid (spoiled) votes appearing on <strong>valid</strong> ballots
     (<span id="numShown"></span> names).

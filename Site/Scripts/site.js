@@ -161,7 +161,7 @@ function scrollIntoView(element, blockWhere) {
     }
   }
 
-  console.log('scroll', element, blockWhere);
+  //  console.log('scroll', element, blockWhere);
   element.scrollIntoView({
     block: blockWhere || 'center'
   });
@@ -257,8 +257,8 @@ var startSignalR = function (callBack, showReconnectMsg) {
       if (site.signalrReconnecting) {
         ShowStatusFailed("We've been disconnected from the server for too long." +
           "<br>Please refresh this page (press F5) to reconnect and continue.");
-        setTimeout(function() {
-//          ResetStatusDisplay();
+        setTimeout(function () {
+          //          ResetStatusDisplay();
           console.log('starting signalR again');
           startSignalR(null, true);
         }, 1000);
@@ -816,7 +816,7 @@ function AttachHelp() {
 function HasErrors(data, jqXhr) {
   if (data && data.length) {
 
-    if (data[0] === '{' && data[data.length-1] === '}') {
+    if (data[0] === '{' && data[data.length - 1] === '}') {
       // must be JSON text
       return false;
     }

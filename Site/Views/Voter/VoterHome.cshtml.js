@@ -132,10 +132,12 @@ var vueOptions = {
     randomFirst: function () {
       this.randomFirst = this.cleanText(this.randomFirst);
       this.randomResult = '';
+      this.searchForRandom();
     },
     randomLast: function () {
       this.randomLast = this.cleanText(this.randomLast);
       this.randomResult = '';
+      this.searchForRandom();
     },
     randomOtherInfo: function () {
       this.randomOtherInfo = this.cleanText(this.randomOtherInfo);
@@ -635,6 +637,9 @@ var vueOptions = {
     cleanText: function (s) {
       // no need to allow < or > or &
       return s.replace(/[<>&]/g, '');
+    },
+    searchForRandom: function() {
+      this.searchText = [this.randomFirst, this.randomLast].join(' ');
     },
     addRandomName: function () {
       var nextFakeId = this.pool

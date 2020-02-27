@@ -8,6 +8,7 @@
 
   ContextItems.AddJavascriptForPage("pageUrl", "reportsPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reportsPage.electionTitle={0};".FilledWith(UserSession.CurrentElectionName.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("reportsPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 
   var ballotProcessEnum = UserSession.CurrentElection.BallotProcess;
   var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
@@ -20,6 +21,7 @@
   { "VotesByNum", "Tellers' Report, by Votes"},
   { "VotesByName", "Tellers' Report, by Name"},
   { "Ballots", "Ballots (All for Review)"},
+  { "BallotsOnline", "Ballots (Online Only)"},
   { "BallotsTied", "Ballots (For Tied)"},
   { "SpoiledVotes", "Spoiled Votes"},
   { "BallotAlignment", "Ballot Alignment"},
@@ -29,8 +31,8 @@
   { "ChangedPeople", "Updated People Records"},
   { "Voters", showVoters ? "Participation" : null},
   { "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
-  {"VotersByLocation", hasLocations ? "Voters by Venue" : null},
-  { "VotersByLocationArea", hasLocations ? "In Person by Venue" : null },
+  {"VotersByLocation", hasLocations ? "Registration by Venue" : null},
+  { "VotersByLocationArea", hasLocations ? "Attendance by Venue" : null },
   { "AllNonEligible", "Ineligible on file"},
   { "VoterEmails", UserSession.CurrentElection.OnlineEnabled ? "Email Addresses" : null},
   };

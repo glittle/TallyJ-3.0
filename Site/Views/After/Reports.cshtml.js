@@ -109,9 +109,9 @@
   }
 
   function getReport(code, title) {
-    ShowStatusDisplay('Getting report...');
+    ShowStatusDisplay('Getting report');
     local.reportLines = [];
-    local.reportHolder.html('<div class=getting>Getting report...</div>');
+    local.reportHolder.html('<div class=getting>Getting report: ' + title + '</div>');
     $('#Status').hide();
     CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, { code: code, title: title });
   }
@@ -132,12 +132,13 @@
     }
 
     local.reportHolder.removeClass().addClass('Report' + codeTitle.code).fadeIn().html(info.Html);
-    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
+    //    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
     if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
       console.log(warningMsg);
       $('#Status').html(warningMsg).show();
     }
     $('#title').text(codeTitle.title);
+    $('#titleDate').text(moment().format(reportsPage.T24 ? 'D MMM YYYY HH:mm' : 'D MMM YYYY hh:mm a'));
   };
 
   var publicInterface = {

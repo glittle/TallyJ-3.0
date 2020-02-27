@@ -740,6 +740,7 @@
     <Content Include="Reports\VoterEmails.cshtml" />
     <Content Include="Scripts\ckeditor.js.map" />
     <Content Include="Reports\AllCanReceive.cshtml" />
+    <Content Include="Reports\BallotsOnline.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />
     <Content Include="Scripts\ckeditor.vue.js" />
