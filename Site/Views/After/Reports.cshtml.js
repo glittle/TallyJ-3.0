@@ -10,13 +10,11 @@
   var preparePage = function () {
     local.reportHolder = $('#report');
 
-    $('.chooser').on('click', 'a', function () {
+    window.addEventListener("hashchange", function () {
       $('.chooser a').removeClass('selected');
       local.currentTitle = $(this).addClass('selected').text();
-      setTimeout(function () {
-        getReport(location.hash.substr(1), local.currentTitle);
-      }, 0);
-    });
+      getReport(location.hash.substr(1), local.currentTitle);
+    }, false);
 
     var hash = location.hash;
     if (hash) {
