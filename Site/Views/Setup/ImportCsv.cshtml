@@ -128,7 +128,6 @@
 </div>
 <p class="aboutEligibility">
   To set the "Eligibility Status" of anyone being imported, map a colum to the Eligibility Status field.
-  If a person has a blank entry, they will use the default settings for this type of election, usually Eligible.
   Any value in this column must <strong>exactly</strong> match one of the reasons below to be recognized. (Click a Reason to copy it.).
 </p>
 <div class="PullInstructionsHandle btn btn-mini">Eligibility Status Reasons</div>
@@ -136,7 +135,8 @@
   <div class="reasonExamples">
     <div class="reasonList">
       <h3>Valid "Eligibility Status" Reasons</h3>
-      (If blank, the person Can Vote and be Voted For.)
+      If a person has a blank entry, they will use the default settings for this type of election, usually Eligible.
+
       <div id="listOfStatusReasons"></div>
     </div>
     <div class="reasonSamples">
@@ -145,9 +145,12 @@
         <dt>For a local Assembly election</dt>
         <dd>All voters should be blank</dd>
         <dd>Others (youth, moved recently, etc) should have an appropriate status reason.</dd>
-        <dt>For a by-election</dt>
+        <dt>For a tie-break election</dt>
         <dd>Set those being voted for to blank</dd>
         <dd>All others should have a status of: <strong>Tie-break: Not tied</strong></dd>
+         <dt>For a by-election</dt>
+        <dd>Set those serving on the Institution to: <strong>By-election: On Institution already</strong></dd>
+        <dd>All other voters should be blank</dd>
         <dt>For a National Convention</dt>
         <dd>Delegates should be blank</dd>
         <dd>People that can be voted for (but are not delegates) should have a status of: <strong>Not a delegate in this election</strong></dd>

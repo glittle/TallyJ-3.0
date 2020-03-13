@@ -41,7 +41,8 @@
 
       </div>
     </div>
-    <p class="badBrowser">Sorry, this type of web browser is not supported. Please use a modern browser, such as Chrome, Firefox or Edge (2020+).
+    <p class="badBrowser">
+      Sorry, this type of web browser is not supported. Please use a modern browser, such as Chrome, Firefox or Edge (2020+).
       <span class="detail"></span>
     </p>
 
@@ -209,143 +210,140 @@
       }
       else
       {
-    <div>
-      @{
-        var msg = (string)Session[SessionKey.VoterLoginError];
-        if (msg.HasContent())
-        {
-          Session.Remove(SessionKey.VoterLoginError);
-          <div class="VoterLoginError">
-            @msg.AsRawHtml()
-          </div>
-        }
-        var loginTypes = Context.GetOwinContext()
-          .Authentication
-          .GetAuthenticationTypes()
-          .Where(a => a.Caption.HasContent())
-          .Select(a => a.Caption)
-          .ToList();
-      }
-
-      @if (loginTypes.Count > 0)
-      {
-    <p>
-      Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "Account2")</strong> in TallyJ.
-    </p>
-      }
-      else
-      {
-        <p>
-          Log in with your TallyJ account.
-        </p>
-      }
-      <div class="voterLogins">
-        @if (loginTypes.Count > 0)
-        {
-          <div id="socialLoginList">
-            @using (Html.BeginForm("LogOnExt", "Account"))
+        <div>
+          @{
+            var msg = (string)Session[SessionKey.VoterLoginError];
+            if (msg.HasContent())
             {
-              @Html.AntiForgeryToken()
-              foreach (var name in loginTypes)
-              {
-                if (name == "Google")
+              Session.Remove(SessionKey.VoterLoginError);
+              <div class="VoterLoginError">
+                @msg.AsRawHtml()
+              </div>
+            }
+            var loginTypes = Context.GetOwinContext()
+              .Authentication
+              .GetAuthenticationTypes()
+              .Where(a => a.Caption.HasContent())
+              .Select(a => a.Caption)
+              .ToList();
+          }
+
+          @if (loginTypes.Count > 0)
+          {
+            <p>
+              Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "Account2")</strong> in TallyJ.
+            </p>
+          }
+          else
+          {
+            <p>
+              Log in with your TallyJ account.
+            </p>
+          }
+          <div class="voterLogins">
+            @if (loginTypes.Count > 0)
+            {
+              <div id="socialLoginList">
+                @using (Html.BeginForm("LogOnExt", "Account"))
                 {
-                  <button type="submit"
-                          class="authButton @name"
-                          accesskey="G"
-                          name="Provider"
-                          value="@name"
-                          title="Log in using your @name account">
-                    <img src="@Url.Content("~/Images/google.png")">
-                  </button>
-                }
-                else if (name == "Facebook")
-                {
-                  <button type="submit"
-                          class="authButton @name"
-                          accesskey="F"
-                          name="Provider"
-                          value="@name"
-                          title="Log in using your @name account">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
-                      <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
+                  @Html.AntiForgeryToken()
+                  foreach (var name in loginTypes)
+                  {
+                    if (name == "Google")
+                    {
+                      <button type="submit"
+                              class="authButton @name"
+                              accesskey="G"
+                              name="Provider"
+                              value="@name"
+                              title="Log in using your @name account">
+                        <img src="@Url.Content("~/Images/google.png")">
+                      </button>
+                    }
+                    else if (name == "Facebook")
+                    {
+                      <button type="submit"
+                              class="authButton @name"
+                              accesskey="F"
+                              name="Provider"
+                              value="@name"
+                              title="Log in using your @name account">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
+                          <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
           11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
           11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
           15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
           11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
-                    </svg>
-                    <span>Log in With Facebook</span>
-                  </button>
+                        </svg>
+                        <span>Log in With Facebook</span>
+                      </button>
+                    }
+                    else
+                    {
+                      @*<div>2 @name</div>*@
+                    }
+                  }
+                  <p class="externalNote">
+                    TallyJ will create a local account with the email address<br />that is provided by @loginTypes.InSentence("or").
+                  </p>
+                  <p class="externalNote">
+                    If you have added a TallyJ password to your account,<br />you must log in using the panel to the right.
+                  </p>
+                  @*<input class="form-control"
+                    name="ExtPassword"
+                    type="password">*@
                 }
-                else
-                {
-                  @*<div>2 @name</div>*@
-                }
-              }
-              <p class="externalNote">
-                TallyJ will create a local account with the email address<br/>that is provided by @loginTypes.InSentence("or").
-              </p>
-              <div class="extPw">
-                <p>
-                  If you have previously added a TallyJ password for this email address, you must now 
-                  provide it here when signing in. You can also use the panel to the right.
-                </p>
-                <input class="form-control" 
-                       name="ExtPassword" 
-                       type="password">
               </div>
+              <span class="voterOr">
+                or
+              </span>
             }
+            <div class="direct">
+              @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new { name = "v2" }))
+              {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="email">
+                  Email address
+                  <div>
+                    @Html.EditorFor(m => m.Email, new { htmlAttributes = new { autocomplete = "email" } })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                  </div>
+                </div>
+                <div class="pw">
+                  TallyJ Password
+                  <div>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                  </div>
+                </div>
+                <div class="submit">
+                  <button type="submit"
+                          class="authButton"
+                          accesskey="L"
+                          name="Provider"
+                          value="Local">
+                    Log in
+                  </button>
+                </div>
+                <div class="other">
+
+                  <p>
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
+                  </p>
+
+                </div>
+              }
+            </div>
           </div>
-          <span class="voterOr">
-            or
-          </span>
-        }
-        <div class="direct">
-          @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new {name = "v2"}))
-          {
-            @Html.AntiForgeryToken()
 
-            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
-            <div class="email">
-              Email address
-              <div>
-                @Html.EditorFor(m => m.Email, new {htmlAttributes = new {autocomplete = "email"}})
-                @Html.ValidationMessageFor(m => m.Email, "", new {@class = "text-danger"})
-              </div>
-            </div>
-            <div class="pw">
-              TallyJ Password
-              <div>
-                @Html.PasswordFor(m => m.Password, new {@class = "form-control"})
-                @Html.ValidationMessageFor(m => m.Password, "", new {@class = "text-danger"})
-              </div>
-            </div>
-            <div class="submit">
-              <button type="submit"
-                      class="authButton"
-                      accesskey="L"
-                      name="Provider"
-                      value="Local">
-                Log in
-              </button>
-            </div>
-            <div class="other">
+          <p>
+            By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
+          </p>
 
-              <p>
-                @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
-              </p>
 
-            </div>
-          }
         </div>
-      </div>
-
-      <p>
-        By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
-      </p>
-
-
-    </div>
       }
 
 

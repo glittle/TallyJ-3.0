@@ -41,20 +41,19 @@
     <p>
       To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
     </p>
-    <ul>
-      <li><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></li>
-      <li><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></li>
-      <li><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></li>
-      <li><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</li>
-    </ul>
+    <div class="quotesList">
+      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></div>
+      <div><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></div>
+      <div><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></div>
+      <div><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</div>
+    </div>
   </div>
 
 
   <p v-if="loading">Searching for your email address in available elections...</p>
 
   <p v-if="!loading">
-    If an upcoming election is not listed here, it may not be available for Online Voting in TallyJ,
-    or your email address is not registered in it. Please contact the head teller for assistance.
+    If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller for assistance.
   </p>
 
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">

@@ -66,9 +66,10 @@ namespace TallyJ.Controllers
       int rowId;
       var messages = model.ProcessUpload(out rowId);
 
-      return new { 
+      return new
+      {
         success = messages.HasNoContent(),
-        rowId, 
+        rowId,
         messages
       }.AsJsonResult();
     }
@@ -104,11 +105,11 @@ namespace TallyJ.Controllers
     public ActionResult DeleteFile(int id)
     {
       var importCsvModel = new ImportCsvModel();
-      
+
       return importCsvModel.DeleteFile(id);
     }
 
-    
+
     [ForAuthenticatedTeller]
     public ActionResult GetUploadlist()
     {
@@ -165,7 +166,7 @@ namespace TallyJ.Controllers
     {
       return new ImportCsvModel().Import(id);
     }
-  
+
     //[ForAuthenticatedTeller]
     //public JsonResult ImportXml(int id)
     //{
@@ -178,7 +179,7 @@ namespace TallyJ.Controllers
       return new EmailHelper().SendHeadTellerEmail(emailCode);
     }
 
- [ForAuthenticatedTeller]
+    [ForAuthenticatedTeller]
     public JsonResult GetEmailInfo()
     {
       return new EmailHelper().GetEmailInfo();
@@ -195,7 +196,7 @@ namespace TallyJ.Controllers
     {
       return new ImportCsvModel().SaveCodePage(id, cp);
     }
-    
+
     [ForAuthenticatedTeller]
     public JsonResult DeleteAllPeople()
     {
@@ -204,14 +205,14 @@ namespace TallyJ.Controllers
       return new PeopleModel().DeleteAllPeople();
     }
 
-    [ForAuthenticatedTeller]
-    public JsonResult DeleteAllPeopleAndBallots()
-    {
-      new LogHelper().Add("Deleted all ballots and people");
-
-      Election.EraseBallotsAndResults(UserSession.CurrentElectionGuid);
-
-      return new PeopleModel().DeleteAllPeople();
-    }
+    // [ForAuthenticatedTeller]
+    // public JsonResult DeleteAllPeopleAndBallots()
+    // {
+    //   new LogHelper().Add("Deleted all ballots and people");
+    //
+    //   Election.EraseBallotsAndResults(UserSession.CurrentElectionGuid);
+    //
+    //   return new PeopleModel().DeleteAllPeople();
+    // }
   }
 }

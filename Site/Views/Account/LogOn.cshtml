@@ -31,7 +31,7 @@
     <div>
       <div>
         @Html.LabelFor(m => m.UserName, "Admin Login ID (not your email address!)")
-        @Html.TextBoxFor(m => m.UserName, "", new { autocomplete = "username" })
+        @Html.TextBoxFor(m => m.UserName, "", new { autocomplete = "fname" })
         @Html.ValidationMessageFor(m => m.UserName)
       </div>
       <div>

@@ -227,11 +227,11 @@ var vueOptions = {
         //
         //          person.BallotStatus = person.RegistrationTime_Display;
         //        } else {
-        person.BallotStatus = '';
+        person.BallotStatus = '-';
         //        }
       }
 
-      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
       this.updateStatus(info);
     },
     updateRegistration: function (info) {

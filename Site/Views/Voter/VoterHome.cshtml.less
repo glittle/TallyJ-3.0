@@ -20,6 +20,16 @@ body.VoterIndex {
       }
     }
   }
+
+  div#body {
+    background-image: url(https://bmb.imgix.net/2096125/2096125-master.jpg?q=55&fm=webp&w=960&h=1);
+    background-color: #efeeef;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position-x: center;
+    color: #000;
+  }
 }
 
 #voterPage1 {
@@ -27,10 +37,12 @@ body.VoterIndex {
     padding: 1px 5px 1em 1em;
     background-color: #D0DBE6;
     margin: 0 0 7px 0;
-    border-radius: 5px;
+    //border-radius: 5px;
 
-    ul {
+    .quotesList {
       margin: 0 0 0 25px;
+      column-count: 2;
+      column-width: 25em;
     }
 
     .pdf {
@@ -39,6 +51,12 @@ body.VoterIndex {
       background-position-x: right;
       background-size: 1.2em;
     }
+  }
+
+  & > p {
+    margin: 1em 1px;
+    padding: 1em;
+    background-color: rgba(255, 255, 255, 0.95);
   }
 
   .emails {
@@ -450,7 +468,7 @@ body.VoterIndex {
       }
     }
 
-    .printDiv{
+    .printDiv {
       display: block;
       margin: .5em 0 0 0;
       text-align: center;

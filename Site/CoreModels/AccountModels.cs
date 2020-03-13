@@ -41,6 +41,7 @@ namespace TallyJ.CoreModels
   public class LogOnModelV1
   {
     [Required]
+    //[RegularExpression(@"[^@.*]",ErrorMessage ="Email address not allowed")]
     [Display(Name = "User name")]
     public string UserName
     {

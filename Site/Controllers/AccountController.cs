@@ -69,7 +69,7 @@ namespace TallyJ.Controllers
     public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
     {
       var voterHomeUrl = Url.Action("Index", "Voter").FixSiteUrl();
-      SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
+      // SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
 
       return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
     }

@@ -795,8 +795,7 @@ namespace TallyJ.CoreModels
       var hasOnline = Db.OnlineVotingInfo.Any(p => p.ElectionGuid == CurrentElectionGuid && p.ListPool != null);
       if (hasOnline)
       {
-        return
-          new
+        return new
           {
             Success = false,
             Results = "Nothing was deleted. Once online votes have been recorded, you cannot delete all the people. ",

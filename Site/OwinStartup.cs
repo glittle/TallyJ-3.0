@@ -25,6 +25,7 @@ using TallyJ.Controllers.LoginHelpers;
 using TallyJ.CoreModels.Account2Models;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
+using SameSiteMode = Microsoft.Owin.SameSiteMode;
 
 [assembly: OwinStartup(typeof(TallyJ.OwinStartup))]
 
@@ -47,10 +48,13 @@ namespace TallyJ
 
       app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
+      var useSecure = AppSettings["secure"].AsBoolean(true);
+
       app.UseCookieAuthentication(new CookieAuthenticationOptions
       {
         AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
-        CookieSecure = AppSettings["secure"].AsBoolean(true) ? CookieSecureOption.Always : CookieSecureOption.Never,
+        CookieSecure = useSecure ? CookieSecureOption.Always : CookieSecureOption.Never,
+        CookieSameSite = useSecure ?  SameSiteMode.Strict : SameSiteMode.Lax,
         ExpireTimeSpan = new TimeSpan(1, 0, 0),
         LoginPath = new PathString("/"),
         Provider = new CookieAuthenticationProvider
@@ -118,18 +122,18 @@ namespace TallyJ
             var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
             if (hasLocalId)
             {
-              var pwProvided = SessionKey.ExtPassword.FromSession("");
+              // var pwProvided = SessionKey.ExtPassword.FromSession("");
               var model = new LoginViewModel
               {
                 Email = email,
-                Password = pwProvided
+                Password = " " // no longer allow login this way...
               };
               var modelState = new ModelStateDictionary();
               var rootUrl = new SiteInfo().RootUrl;
-              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for the email address: " + email,
+              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
                 "Facebook",
                 (s, s1) => "", // not used from here
-                () => new RedirectResult(rootUrl + "/Account/Logoff"), 
+                () => new RedirectResult(rootUrl + "/Account/Logoff"),
                 () => null // not used from here
                 );
               return helpers.LocalPwLogin(model, rootUrl);
@@ -185,18 +189,18 @@ namespace TallyJ
           var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
           if (hasLocalId)
           {
-            var pwProvided = SessionKey.ExtPassword.FromSession("");
+            // var pwProvided = SessionKey.ExtPassword.FromSession("");
             var model = new LoginViewModel
             {
               Email = email,
-              Password = pwProvided
+              Password = " " // no longer allow login this way...
             };
             var modelState = new ModelStateDictionary();
             var rootUrl = new SiteInfo().RootUrl;
-            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password for the email address: " + email,
+            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
               "Google",
               (s, s1) => "", // not used from here
-              () => new RedirectResult(rootUrl + "/Account/Logoff"), 
+              () => new RedirectResult(rootUrl + "/Account/Logoff"),
               () => new RedirectResult(rootUrl + "/Account/Logoff"));
             return helpers.LocalPwLogin(model, rootUrl);
           }

@@ -1,4 +1,5 @@
 ﻿@model SetupModel
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @{
@@ -19,8 +20,11 @@
       press Enter when their name is highlighted. Use the Up and Down keys to move through
       the list of matched names.
     </li>
-    <li>If this is a tie-break election, each of the people who can be voted for in the tie break must have "Can be voted for in this Tie-Break election?" checked.</li>
-  </ol>
+    @if (UserSession.CurrentElection.ElectionMode == ElectionModeEnum.Tie)
+    {
+      <li>For this tie-break election, those tied should have a status of "Eligible to vote and be voted for" and everyone else "Tie-break: Not tied"</li>
+    }
+    </ol>
 </div>
 <div class="sideBySide">
   <div>
