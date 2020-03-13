@@ -72,6 +72,7 @@
         parentRow.css('background-color', 'red');
         var rowId = parentRow.data('rowid');
         CallAjaxHandler(publicInterface.controllerUrl + '/DeleteFile', { id: rowId }, function (info) {
+          $('#fieldSelector').hide();
           if (info.previousFiles) {
             showUploads(info);
           }
@@ -209,7 +210,7 @@
     });
   }
 
-  var fieldMapChanged = function () {
+  function fieldMapChanged() {
     var mappings = [];
 
     var selectChanged = $(this);
@@ -266,7 +267,9 @@
     });
   };
   var showFields = function (info) {
-    var host = $('#fieldSelector').html('<div class=ImportTips><span class="ui-icon ui-icon-info" id="qTipImportHead"></span><span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div>');
+    var host = $('#fieldSelector')
+      .html('<div class=ImportTips><span class="ui-icon ui-icon-info" id="qTipImportHead"></span><span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div>')
+      .show();
     var options = '<option value="{value}">{text}</option>'.filledWithEach($.map(info.possible, function (f) {
       if (f === local.statusFieldName) {
         return { value: f, text: 'Eligiblity Status' };
@@ -330,7 +333,7 @@
     });
     return list;
   };
-  var setActiveUploadRowId = function (rowId, highlightInList) {
+  function setActiveUploadRowId (rowId, highlightInList) {
     SetInStorage('ActiveUploadRowId', rowId);
     local.activeFileRowId = rowId;
     if (highlightInList) {
