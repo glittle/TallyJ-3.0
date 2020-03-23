@@ -8,7 +8,7 @@ using Microsoft.Owin.Security;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 
 namespace TallyJ.Controllers
 {
@@ -314,7 +314,7 @@ namespace TallyJ.Controllers
     public ActionResult LinkLogin(string provider)
     {
       // Request a redirect to the external login provider to link a login for the current user
-      return new Account2Controller.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage2"), GetUserId());
+      return new VoterAccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage2"), GetUserId());
     }
 
     //

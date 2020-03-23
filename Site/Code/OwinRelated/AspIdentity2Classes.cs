@@ -8,8 +8,9 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using TallyJ.Code.Session;
-using TallyJ.CoreModels.Account2Models;
+
 using TallyJ.CoreModels.Helper;
+using TallyJ.CoreModels.VoterAccountModels;
 using TallyJ.EF;
 
 namespace TallyJ.Code.OwinRelated

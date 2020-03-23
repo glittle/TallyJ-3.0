@@ -22,7 +22,7 @@ using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers.LoginHelpers;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 using TallyJ.EF;
 using static System.Configuration.ConfigurationManager;
 using SameSiteMode = Microsoft.Owin.SameSiteMode;

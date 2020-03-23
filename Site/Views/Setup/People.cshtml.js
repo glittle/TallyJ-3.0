@@ -166,7 +166,7 @@
         return false;
     };
 
-    var runSearch = function (ev) {
+    function runSearch(ev) {
         var input = $(this);
         var text = input.val();
         if (navigating(ev)) {

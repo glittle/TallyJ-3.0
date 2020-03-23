@@ -1,4 +1,4 @@
-﻿@model TallyJ.CoreModels.Account2Models.ExternalLoginListViewModel
+﻿@model TallyJ.CoreModels.VoterAccountModels.ExternalLoginListViewModel
 @using Microsoft.Owin.Security
 
 <h4>Use another service to log in.</h4>
@@ -14,7 +14,7 @@
         </div>
     }
     else {
-        using (Html.BeginForm("ExternalLogin", "Account2", new { ReturnUrl = Model.ReturnUrl })) {
+        using (Html.BeginForm("ExternalLogin", "VoterAccount", new { ReturnUrl = Model.ReturnUrl })) {
             @Html.AntiForgeryToken()
             <div id="socialLoginList">
                 <p>

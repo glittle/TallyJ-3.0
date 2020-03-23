@@ -146,7 +146,7 @@ div.closer {
   //width: 425px;
   min-height: 300px;
   //margin: 5px auto;
-  padding: 10px 15px 20px 10px;
+  padding: 10px 15px 5px 10px;
   border: 1px solid grey;
   border-radius: 5px;
   text-align: center;
@@ -445,7 +445,7 @@ div.notes {
   position: relative;
   display: flex;
   justify-content: space-around;
-  align-items: center;
+  align-items: start;
   margin: 0.5em;
 
   > div {
@@ -466,7 +466,8 @@ div.notes {
   }
 
   p {
-    margin-top: 5px;
+    width: 20vw;
+    color: #777;
   }
   //.centerL {
   //    left: 12px;
@@ -502,5 +503,11 @@ div.notes {
 
   .centerbuttons {
     flex-direction: column;
+    align-items: center;
+
+    p {
+      width: 80%;
+      margin: 5px auto 0 auto;
+    }
   }
 }

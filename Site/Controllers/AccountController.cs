@@ -11,7 +11,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Controllers.LoginHelpers;
 using TallyJ.CoreModels;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.Controllers
@@ -57,9 +57,9 @@ namespace TallyJ.Controllers
         homeUrl,
         "",
         "Local",
-        (id, code) => { return Url.Action("ConfirmEmail", "Account2", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme).FixSiteUrl(); },
-        () => RedirectToAction("Lockout", "Account2"),
-        () => RedirectToAction("SendCode", "Account2", new { ReturnUrl = voterHomeUrl }));
+        (id, code) => { return Url.Action("ConfirmEmail", "VoterAccount", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme).FixSiteUrl(); },
+        () => RedirectToAction("Lockout", "VoterAccount"),
+        () => RedirectToAction("SendCode", "VoterAccount", new { ReturnUrl = voterHomeUrl }));
       return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
     }
 

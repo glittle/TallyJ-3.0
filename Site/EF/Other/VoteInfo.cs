@@ -1,6 +1,5 @@
 ﻿using System;
 using TallyJ.Code;
-using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.CoreModels;
 
@@ -33,7 +32,7 @@ namespace TallyJ.EF
       {
         AssertAtRuntime.That(person.PersonGuid == vote.PersonGuid);
         
-        var personCanReceiveVotes = person.CanReceiveVotes.AsBoolean(true);
+        var personCanReceiveVotes = Extensions.AsBoolean(true);
 
         PersonId = person.C_RowId;
         PersonFullNameFL = person.FullNameAndArea;

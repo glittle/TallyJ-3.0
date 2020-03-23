@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Data;
-using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.EF
@@ -184,8 +182,8 @@ namespace TallyJ.EF
 
             // delete ballots in all locations... cascading will delete votes
             db.Ballot.Where(b =>
-                db.Location.Where(x => x.ElectionGuid == electionGuid).Select(l => l.LocationGuid)
-                    .Contains(b.LocationGuid)).Delete();
+              db.Location.Where(x => x.ElectionGuid == electionGuid).Select(l => l.LocationGuid)
+                .Contains(b.LocationGuid)).Delete();
         }
 
         public long RowVersionInt
@@ -222,14 +220,14 @@ namespace TallyJ.EF
                 }
                 else
                 {
-                    _extraDict = OwnerLoginId
-                        .Substring(1) // skip flag char
-                        .Trim()
-                        .Split(SplitChar)
-                        .Select(s => s.Split('='))
-                        .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
-                        // any that are not recognized are ignored and lost
-                        .ToDictionary(a => (ExtraSettingKey) Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
+                  _extraDict = OwnerLoginId
+                    .Substring(1) // skip flag char
+                    .Trim()
+                    .Split(SplitChar)
+                    .Select(s => s.Split('='))
+                    .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
+                    // any that are not recognized are ignored and lost
+                    .ToDictionary(a => (ExtraSettingKey) Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
                 }
 
                 return _extraDict;

@@ -6,7 +6,7 @@ using System.Text;
 using TallyJ.Code;
 using TallyJ.EF;
 
-namespace TallyJ.CoreModels
+namespace TallyJ.CoreModels.Helper
 {
   public class ImportHelper
   {

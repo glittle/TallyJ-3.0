@@ -1,16 +1,10 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
-using Evernote.EDAM.Type;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using TallyJ.Code.Session;
-using TallyJ.EF;
 
-namespace TallyJ.CoreModels.Account2Models
+namespace TallyJ.CoreModels.VoterAccountModels
 {
   // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
   public class ApplicationUser : IdentityUser

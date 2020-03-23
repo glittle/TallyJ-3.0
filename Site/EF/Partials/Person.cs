@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
-using EntityFramework.Caching;
-using EntityFramework.Extensions;
 using TallyJ.Code;
-using TallyJ.Code.Data;
-using TallyJ.Code.Session;
-using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.EF
 {
@@ -99,12 +94,12 @@ namespace TallyJ.EF
         else
         {
           _extraDict = CombinedSoundCodes
-              .Substring(1) // skip flag char
-              .Trim()
-              .Split(SplitChar)
-              .Select(s => s.Split('='))
-              .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
-              // any that are not recognized are ignored and lost
+            .Substring(1) // skip flag char
+            .Trim()
+            .Split(SplitChar)
+            .Select(s => s.Split('='))
+            .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
+            // any that are not recognized are ignored and lost
               .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
         }
 

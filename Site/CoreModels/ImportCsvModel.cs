@@ -10,6 +10,7 @@ using NLog.LayoutRenderers.Wrappers;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 

@@ -1,6 +1,7 @@
 ﻿@model ImportCsvModel
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
+@using TallyJ.CoreModels.Helper
 @{
   ContextItems.AddJavascriptForPage("importHubUrl", "importCsvPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("controllerUrl", "importCsvPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));

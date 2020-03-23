@@ -1,11 +1,11 @@
-﻿@model TallyJ.CoreModels.Account2Models.RegisterViewModel
+﻿@model TallyJ.CoreModels.VoterAccountModels.RegisterViewModel
 @{
     ViewBag.Title = "Register";
 }
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("Register", "Account2", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Register", "VoterAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <h4>Create a new account.</h4>

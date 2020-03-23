@@ -1,11 +1,8 @@
-using System.Collections.Concurrent;
+using System;
 using System.Linq;
 using TallyJ.Code;
-using TallyJ.Code.Session;
-using TallyJ.CoreModels.Hubs;
-using TallyJ.Code.UnityRelated;
 using TallyJ.Code.Data;
-using System;
+using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.EF
 {
@@ -110,9 +107,9 @@ namespace TallyJ.EF
       //TODO - does this hit the DB every time??
       var elections = Db.Election
         .Where(e => activeElectionGuids.Contains(e.ElectionGuid)
-             && e.ListForPublic.HasValue
-             && e.ListForPublic.Value
-             && e.ElectionPasscode != null)
+                    && e.ListForPublic.HasValue
+                    && e.ListForPublic.Value
+                    && e.ElectionPasscode != null)
         .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
         .ToList();
 

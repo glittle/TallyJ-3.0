@@ -1,9 +1,8 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 using Microsoft.Owin.Security;
-using static System.Configuration.ConfigurationManager;
 
-namespace TallyJ.Controllers
+namespace TallyJ.Controllers.LoginHelpers
 {
     public class ChallengeResult : HttpUnauthorizedResult
     {

@@ -2,6 +2,7 @@
 @using TallyJ.Code
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.EF
 @{
   ViewBag.Title = "Front Desk";
   ViewBag.Message = "Record who is voting...";
@@ -14,7 +15,7 @@
 
   switch (ballotProcessEnum)
   {
-    case TallyJ.EF.BallotProcessEnum.RegV:
+    case BallotProcessEnum.RegV:
       inPersonName = "Ballot Received";
       break;
   }
@@ -33,19 +34,19 @@
     @{
       switch (ballotProcessEnum)
       {
-        case TallyJ.EF.BallotProcessEnum.Roll:
+        case BallotProcessEnum.Roll:
           <li>
             Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
             the Roll Call is done.
           </li>
           break;
-        case TallyJ.EF.BallotProcessEnum.RegV:
+        case BallotProcessEnum.RegV:
           <li>
             Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
             they return to a teller to deposit their ballot, mark them as "@inPersonName"
           </li>
           break;
-        case TallyJ.EF.BallotProcessEnum.RegC:
+        case BallotProcessEnum.RegC:
           <li>
             Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
           </li>
@@ -76,7 +77,7 @@
     Dropped Off
     <i>0</i>
   </div>
-  @if (ballotProcessEnum == TallyJ.EF.BallotProcessEnum.RegV)
+  @if (ballotProcessEnum == BallotProcessEnum.RegV)
   {
     <div class="Registered" data-status="Registered" title="Click to filter the list">
       Registered
@@ -113,7 +114,7 @@
     <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
     {
-      case TallyJ.EF.BallotProcessEnum.RegV:
+      case BallotProcessEnum.RegV:
         <div class="Btn Registered {Registered}">Registered</div>
         break;
     }

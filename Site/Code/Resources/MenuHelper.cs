@@ -268,7 +268,7 @@ namespace TallyJ.Code.Resources
                 "<span id=menu{0} class='{0} {1} items'>{2}".FilledWith(
                   tallyStatus,
                   UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden",
-                  UserSession.IsKnownTeller ? $"<a class='SetThis' data-state='{tallyStatus}'>► Move all tellers to this state ◄</a>" : ""), "</span>")
+                  UserSession.IsKnownTeller ? $"<a class=SetThis id=setThis{tallyStatus} data-state='{tallyStatus}'>► Move all tellers to this state ◄</a>" : ""), "</span>")
             ).ToList();
 
       return list.JoinedAsString("");

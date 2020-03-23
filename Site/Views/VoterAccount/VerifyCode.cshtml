@@ -1,11 +1,11 @@
-﻿@model TallyJ.CoreModels.Account2Models.VerifyCodeViewModel
+﻿@model TallyJ.CoreModels.VoterAccountModels.VerifyCodeViewModel
 @{
     ViewBag.Title = "Verify";
 }
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("VerifyCode", "Account2", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
+@using (Html.BeginForm("VerifyCode", "VoterAccount", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
     @Html.AntiForgeryToken()
     @Html.Hidden("provider", @Model.Provider)
     @Html.Hidden("rememberMe", @Model.RememberMe)

@@ -1,11 +1,11 @@
-﻿@model TallyJ.CoreModels.Account2Models.SendCodeViewModel
+﻿@model TallyJ.CoreModels.VoterAccountModels.SendCodeViewModel
 @{
     ViewBag.Title = "Send";
 }
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("SendCode", "Account2", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
+@using (Html.BeginForm("SendCode", "VoterAccount", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
     @Html.AntiForgeryToken()
     @Html.Hidden("rememberMe", @Model.RememberMe)
     <h4>Send verification code</h4>

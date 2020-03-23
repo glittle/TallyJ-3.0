@@ -1,6 +1,6 @@
 ﻿@using Microsoft.Owin.Security
 @using TallyJ.Code.Session
-@model TallyJ.CoreModels.Account2Models.LoginViewModel
+@model TallyJ.CoreModels.VoterAccountModels.LoginViewModel
 @{
   ViewBag.OnWelcome = true;
   ViewBag.Title = "Bahá’í Election System";
@@ -30,15 +30,16 @@
       {
         <div class="centerL" title="Vote online in an election.">
           <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote Online</button>
+          <p>Vote or Register to Vote</p>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
         <button class="btn btn-primary" id="btnChooseJoin" accesskey="A">Assist as a Teller</button>
+        <p>Join an election as a teller to assist in registering voters and tallying ballots.</p>
       </div>
-      <div class="centerR"
-           title="Create and manage elections. If you do not have an account yet, you can register here.">
+      <div class="centerR">
         <button class="btn btn-success" id="btnChooseLogin" accesskey="M">Manage Elections</button>
-
+        <p>Log in to create and administer elections for your community.</p>
       </div>
     </div>
     <p class="badBrowser">
@@ -123,7 +124,7 @@
     <div class="top">
     </div>
     <h2>Manage Elections</h2>
-    <p>Log in to create and administer elections for your community.</p>
+    <p>Create and administer elections for your community.</p>
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
@@ -231,7 +232,7 @@
           @if (loginTypes.Count > 0)
           {
             <p>
-              Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "Account2")</strong> in TallyJ.
+              Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "VoterAccount")</strong> in TallyJ.
             </p>
           }
           else
@@ -330,7 +331,7 @@
                 <div class="other">
 
                   <p>
-                    @Html.ActionLink("Forgot your password?", "ForgotPassword", "Account2")
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword", "VoterAccount")
                   </p>
 
                 </div>

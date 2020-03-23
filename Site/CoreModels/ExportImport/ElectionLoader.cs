@@ -579,10 +579,10 @@ namespace TallyJ.CoreModels.ExportImport
         nodes = _xmlRoot.SelectNodes("t:result", _nsm);
         if (nodes != null)
         {
-          var toLoad = new List<EF.Result>();
+          var toLoad = new List<Result>();
           foreach (XmlElement element in nodes)
           {
-            var result = new EF.Result();
+            var result = new Result();
             element.CopyAttributeValuesTo(result);
             result.ElectionGuid = _electionGuid;
             UpdateGuidFromMapping(result, v => v.PersonGuid, Guid.Empty);

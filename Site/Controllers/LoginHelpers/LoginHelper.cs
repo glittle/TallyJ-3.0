@@ -9,7 +9,7 @@ using Microsoft.Owin.Security;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 
 namespace TallyJ.Controllers.LoginHelpers
 {

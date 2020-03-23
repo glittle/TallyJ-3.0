@@ -72,28 +72,26 @@
     hub.client.electionsListUpdated = function (listing) {
       console.log('signalR: electionsListUpdated');
 
-      $('#ddlElections').html(listing);
-      selectDefaultElection();
+      showElections(listing);
     };
 
     startSignalR(function () {
       console.log('Joining public hub');
       CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function (info) {
-        showElections(info);
+        showElections(info.html);
       });
     });
   };
 
-  var showElections = function (info) {
-    $('#ddlElections').html(info.html);
+  function showElections(html) {
+    var select = $('#ddlElections');
+    select.html(html);
+    select.attr('size', select[0].children.length + 2);
     selectDefaultElection();
   };
 
   var refreshElectionList = function () {
     connectToPublicHub();
-    //CallAjaxHandler(publicInterface.controllerUrl + 'OpenElections', null, function (info) {
-    //  showElections(info);
-    //});
   };
 
   var warnIfCompatibilityMode = function () {
@@ -105,7 +103,7 @@
     }
   };
 
-  var selectDefaultElection = function () {
+  function selectDefaultElection() {
     var children = $('#ddlElections').children();
     if (children.length === 1 && children.eq(0).val() !== 0) {
       children.eq(0).prop('selected', true);

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
-namespace TallyJ.CoreModels.Account2Models
+namespace TallyJ.CoreModels.VoterAccountModels
 {
     public class IndexViewModel
     {

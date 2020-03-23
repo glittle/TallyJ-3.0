@@ -10,10 +10,10 @@ namespace TallyJ.EF
       get
       {
         return NumEligibleToVote.AsInt() == 0
-                            ? 0
-                            : Math.Round(
-                                (NumBallotsWithManual.AsInt() * 100D) /
-                                NumEligibleToVote.AsInt(), 0).AsInt();
+          ? 0
+          : Math.Round(
+            (NumBallotsWithManual.AsInt() * 100D) /
+            NumEligibleToVote.AsInt(), 0).AsInt();
       }
     }
 

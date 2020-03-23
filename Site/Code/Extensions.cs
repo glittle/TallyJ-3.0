@@ -12,7 +12,7 @@ using System.Web.Script.Serialization;
 using RazorEngine.Text;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 using TallyJ.EF;
 
 namespace TallyJ.Code

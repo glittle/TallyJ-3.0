@@ -9,26 +9,20 @@ using Microsoft.Owin.Security;
 using TallyJ.Code;
 using TallyJ.Code.OwinRelated;
 using TallyJ.Code.Session;
-using TallyJ.CoreModels.Account2Models;
+using TallyJ.CoreModels.VoterAccountModels;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
   [Authorize]
-  public class Account2Controller : Controller
+  public class VoterAccountController : Controller
   {
     private ApplicationSignInManager _signInManager;
     private ApplicationUserManager _userManager;
 
-    public Account2Controller()
+    public VoterAccountController()
     {
     }
-
-    //        public Account2Controller(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
-    //        {
-    //            UserManager = userManager;
-    //            SignInManager = signInManager;
-    //        }
 
     public ApplicationSignInManager SignInManager
     {
@@ -177,7 +171,7 @@ namespace TallyJ.Controllers
 
           //          var hostSite = SettingsHelper.Get("HostSite", "");
           //          var callbackUrl = $"{hostSite}/Account2/ConfirmEmail?userId={user.Id}&code={code}";
-          var callbackUrl = Url.Action("ConfirmEmail", "Account2", new { userId = user.Id, code }, protocol: Request.Url.Scheme).FixSiteUrl();
+          var callbackUrl = Url.Action("ConfirmEmail", "VoterAccount", new { userId = user.Id, code }, protocol: Request.Url.Scheme).FixSiteUrl();
 
           await UserManager.SendEmailAsync(user.Id, "Confirm your account", $"<p>Hello,</p><p>Please confirm your account by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
 
@@ -247,9 +241,9 @@ namespace TallyJ.Controllers
         // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
         // Send an email with this link
         string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-        var callbackUrl = Url.Action("ResetPassword", "Account2", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme).FixSiteUrl();
+        var callbackUrl = Url.Action("ResetPassword", "VoterAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme).FixSiteUrl();
         await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password for TallyJ by clicking <a href=\"" + callbackUrl + "\">here</a>.");
-        return RedirectToAction("ForgotPasswordConfirmation", "Account2");
+        return RedirectToAction("ForgotPasswordConfirmation", "VoterAccount");
       }
 
       // If we got this far, something failed, redisplay form
@@ -287,12 +281,12 @@ namespace TallyJ.Controllers
       if (user == null)
       {
         // Don't reveal that the user does not exist
-        return RedirectToAction("ResetPasswordConfirmation", "Account2");
+        return RedirectToAction("ResetPasswordConfirmation", "VoterAccount");
       }
       var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
       if (result.Succeeded)
       {
-        return RedirectToAction("ResetPasswordConfirmation", "Account2");
+        return RedirectToAction("ResetPasswordConfirmation", "VoterAccount");
       }
       AddErrors(result);
       return View();

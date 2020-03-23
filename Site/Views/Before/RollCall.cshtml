@@ -2,9 +2,10 @@
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.EF
 @{
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new TallyJ.EF.Location()).C_RowId));
+  ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new Location()).C_RowId));
   ContextItems.AddJavascriptForPage("hasloc", "rollCallPage.hasLocations={0};".FilledWith(new LocationModel().HasLocationsWithoutOnline.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("locs", "rollCallPage.locations={0};".FilledWith(new LocationModel().LocationRowIdMap));
   ContextItems.AddJavascriptForPage("methods", "rollCallPage.methods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
