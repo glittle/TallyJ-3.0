@@ -1,9 +1,10 @@
 module.exports = {
     preset: "jest-puppeteer",
     globals: {
-        RootUrl: "https://localhost/tallyj",
+        RootUrl: "https://localhost/TallyJ",
         Output: "JsTests/Output",
     },
     testMatch: ["**/JsTests/**/*.jest.js"],
-    verbose: true
+    verbose: true,
+    // noStackTrace: true,
 };
