@@ -172,7 +172,7 @@ describe("Dashboard - Settings Up - Configure", () => {
 describe("Gathering Ballots", () => {
 
     test('In Gathering Ballots Mode', async() => {
-        await page.hover('.state.NamesReady')
+        await page.hover('.state.NamesReady');
         await page.click('#setThisNamesReady');
 
         await page.waitFor(500);
