@@ -48,13 +48,11 @@
 
     clearElectionRelatedStorageItems();
 
-    warnIfCompatibilityMode();
-
     connectToPublicHub();
 
-    if ($('.VoterLoginError').length) {
-      startJoinClick(null, 'btnChooseVoter');
-    }
+    //    if ($('.VoterLoginError').length) {
+    //      startJoinClick(null, 'btnChooseVoter');
+    //    }
 
     // refreshElectionList();
     $('form').on('submit', function () {
@@ -94,15 +92,6 @@
     connectToPublicHub();
   };
 
-  var warnIfCompatibilityMode = function () {
-    var $div = $('.browser.ie');
-    if ($div.length) {
-      if (document.documentMode < 9) {
-        $div.append('<div>When using Internet Explorer, ensure that you are NOT using compatability mode!</div>');
-      }
-    }
-  };
-
   function selectDefaultElection() {
     var children = $('#ddlElections').children();
     if (children.length === 1 && children.eq(0).val() !== 0) {
@@ -113,25 +102,25 @@
 
 
   function startJoinClick(dummy, btnIdRequested) {
-    $('.CenterPanel').addClass('chosen');
-    $('.JoinPanel').hide();
-    $('.LoginPanel').hide();
-    $('.VoterPanel').hide();
-
     var btnId = btnIdRequested || $(this).attr('id');
-
+    
+    
     if (btnId === 'btnChooseJoin') {
+      $('.CenterPanel').addClass('chosen');
+      $('.LoginPanel').hide();
       $('.JoinPanel').fadeIn();
     }
     else if (btnId === 'btnChooseVoter') {
-      $('.VoterPanel').fadeIn();
-      warmupServer();
+      location.href = 'Login';
+      //      $('.VoterPanel').fadeIn();
+      //      warmupServer();
     }
     else {
+      $('.CenterPanel').addClass('chosen');
+      $('.JoinPanel').hide();
       $('.LoginPanel').fadeIn();
       warmupServer();
     }
-    $('input:visible').eq(0).focus();
   };
 
   function warmupServer() {
@@ -146,7 +135,6 @@
     $('.CenterPanel').removeClass('chosen');
     $('.JoinPanel').hide();
     $('.LoginPanel').hide();
-    $('.VoterPanel').hide();
   }
 
   var btnJoinClick = function () {

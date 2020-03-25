@@ -1,4 +1,4 @@
-﻿const timeout = process.env.SLOWMO ? 30000 : 10000;
+﻿const timeout = process.env.SLOWMO ? 30000 : 30000;
 
 const testIdPw = 'test1234!';
 const testId = 'test1';

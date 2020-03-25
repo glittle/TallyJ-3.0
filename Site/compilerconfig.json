@@ -142,5 +142,9 @@
   {
     "outputFile": "Views/SysAdmin/Index.cshtml.css",
     "inputFile": "Views/SysAdmin/Index.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Public/VoterLogin.cshtml.css",
+    "inputFile": "Views/Public/VoterLogin.cshtml.less"
   }
 ]

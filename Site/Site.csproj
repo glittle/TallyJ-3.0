@@ -825,6 +825,12 @@
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml.css">
+      <DependentUpon>VoterLogin.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml.js">
+      <DependentUpon>VoterLogin.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\EditPerson.cshtml.css">
       <DependentUpon>EditPerson.cshtml.less</DependentUpon>
     </Content>
@@ -931,6 +937,10 @@
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\SysAdmin\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml" />
+    <Content Include="Views\Public\VoterLogin.cshtml.less">
+      <DependentUpon>VoterLogin.cshtml</DependentUpon>
     </Content>
     <None Include="Web.Local Files 3.config">
       <DependentUpon>Web.config</DependentUpon>

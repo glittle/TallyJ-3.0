@@ -52,6 +52,12 @@ namespace TallyJ.Controllers
       return View();
     }
 
+    [Route("Login")]
+    public ActionResult VoterLogin()
+    {
+      return View();
+    }
+
     public JsonResult DoScheduled(int minutes = 5)
     {
       var now = DateTime.Now;

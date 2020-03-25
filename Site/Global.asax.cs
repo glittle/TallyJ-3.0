@@ -15,6 +15,7 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Profile;
 using System.Web.Routing;
+using System.Web.Services.Protocols;
 using FluentSecurity;
 using NLog;
 using NLog.Targets;
@@ -310,6 +311,8 @@ namespace TallyJ
 
     public static void RegisterDefaultRoute(RouteCollection routes, string controllerName)
     {
+      routes.MapMvcAttributeRoutes();
+
       routes.MapRoute(
           "Default", // Route name
           "{controller}/{action}/{id}", // URL with parameters
