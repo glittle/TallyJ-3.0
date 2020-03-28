@@ -101,7 +101,8 @@
       <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me an email when an election opens that I can vote in.</label>
       <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me an email when my ballot is processed.</label>
     </p>
-    <p class="account" v-if="hasLocalId">
+
+    @*<p class="account" v-if="hasLocalId">
       Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
     </p>
     <p class="account" v-else>
@@ -109,7 +110,7 @@
       If others might use your login account, you may wish to add a TallyJ password.
       If you do this, you will need to supply the TallyJ password for all future logins.
       @Html.ActionLink("Add a TallyJ password", "Register", "VoterAccount", null, new { @class = "btn btn-mini" })
-    </p>
+    </p>*@
 
     <div class="title">Activity</div>
 
