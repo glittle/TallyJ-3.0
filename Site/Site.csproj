@@ -636,6 +636,7 @@
     <Content Include="Images\BlankBig.png" />
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />
+    <Content Include="Images\garden.jpg" />
     <Content Include="Images\google_focus.png" />
     <Content Include="Images\google.png" />
     <Content Include="Images\close.png" />
