@@ -974,8 +974,7 @@
 
     var text = (
       part === 'FL'
-        ? trimBy(host.find('.F').text(), lastNum) + ' ' +
-        trimBy(host.find('.L').text(), lastNum)
+        ? trimBy(host.find('.F').text(), lastNum) + ' ' + trimBy(host.find('.L').text(), lastNum)
         : trimBy(host.find('.' + part).text(), lastNum)
     ).trim();
 
@@ -983,9 +982,7 @@
       lastNum = btn.data('max');
       text = (
         part === 'FL'
-          ? trimBy(host.find('.F').text(), lastNum) +
-          ' ' +
-          trimBy(host.find('.L').text(), lastNum)
+          ? trimBy(host.find('.F').text(), lastNum) + ' ' + trimBy(host.find('.L').text(), lastNum)
           : trimBy(host.find('.' + part).text(), lastNum)
       ).trim();
 
@@ -1421,7 +1418,7 @@
       vote.invalid = 0;
       vote.changed = false;
       vote.ineligible = null;
-      vote.InvalidReasons = local.invalidReasonsShortHtml;
+      vote.InvalidReasons = local.invalidReasonsHtml;
 
       showVotes(vid);
 
@@ -1458,14 +1455,24 @@
     $.each(votes, function () {
       var vote = this;
 
+      var reasonList;
+
       if (this.invalid && this.invalid !== null) {
+        if (local.location.IsOnline) {
+          this.ineligible = this.ineligible || this.invalid;
+        }
         this.InvalidReasons = local.invalidReasonsShortHtml;
         this.invalidType = 'C';
+        var reason1 = publicInterface.invalidReasons.find(function (item) {
+          return item.Guid === vote.invalid;
+        });
+        this.InvalidDescription = reason1 ? reason1.Desc : 'Invalid';
       }
-      if (this.ineligible && this.ineligible !== null) {
-        // person is invalid!
 
-        var reasonList = $.grep(publicInterface.invalidReasons, function (item) {
+      if (this.ineligible && this.ineligible !== null) {
+        // person is ineligible!
+
+        reasonList = $.grep(publicInterface.invalidReasons, function (item) {
           return item.Guid === vote.ineligible;
         });
         var reason = 'Ineligible';

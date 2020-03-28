@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using System.Web.Providers.Entities;
 using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
@@ -13,6 +14,9 @@ using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using TallyJ.Code.OwinRelated;
 
 namespace TallyJ.Code.Session
 {
@@ -249,9 +253,9 @@ namespace TallyJ.Code.Session
 
     public static bool IsSysAdmin => ActivePrincipal.FindFirst("IsSysAdmin")?.Value == "true";
 
-    public static string VoterEmail => ActivePrincipal.FindFirst("Email")?.Value;
+    public static string VoterEmail => ActivePrincipal.FindFirst("https://ns.tallyj.com/email")?.Value;
     public static string VoterAuthSource => ActivePrincipal.FindFirst("Source")?.Value;
-    public static bool VoterIsVerified => ActivePrincipal.FindFirst("IsVoter")?.Value == "True";
+    public static bool VoterIsVerified => ActivePrincipal.FindFirst("https://ns.tallyj.com/email_verified")?.Value.AsBoolean() ?? false;
 
     public static DateTime VoterLastLogin
     {
@@ -502,9 +506,18 @@ namespace TallyJ.Code.Session
     {
       new LogHelper().Add("Log Out");
 
+      var current = HttpContext.Current;
+
+      if (current.User.Identity.IsAuthenticated)
+      {
+        var owinContext = current.GetOwinContext();
+        owinContext.Authentication.SignOut();
+      }
+
       LeaveElection(false);
 
       CurrentContext.Session.Clear();
+
       FormsAuthentication.SignOut();
     }
 

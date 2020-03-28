@@ -4,7 +4,7 @@
 @band2: lightgoldenrodyellow;
 @top: lighten(#7dff7a, 10%);
 
-body.VoterIndex {
+body.VoteIndex {
   &.noCursor {
     #voterPage2 {
       #pool {
@@ -32,13 +32,32 @@ body.VoterIndex {
   }
 }
 
-#voterPage1 {
-  .quotes {
-    padding: 1px 5px 1em 1em;
-    background-color: #D0DBE6;
-    margin: 0 0 7px 0;
-    //border-radius: 5px;
+.forMeditate {
+  margin: -26px 0 3px 0;
+  text-align: center;
 
+  div {
+    margin: 1em;
+  }
+
+  a {
+    color: white;
+  }
+}
+
+#voterPage1.meditate, #voterPage2.meditate {
+  transition: opacity 1.5s;
+  opacity: 0;
+}
+
+#voterPage1 {
+  background-color: rgba(255,255,255,0.6);
+  padding: 6px;
+  transition: opacity 1s;
+
+  .quotes {
+    padding: 1px 5px 2em 1em;
+    background-color: white; // rgba(255, 255, 255, 0.95);
     .quotesList {
       margin: 0 0 0 25px;
       column-count: 2;
@@ -54,9 +73,13 @@ body.VoterIndex {
   }
 
   & > p {
-    margin: 1em 1px;
+    margin: .75em 1px;
     padding: 1em;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: white;
+
+    &:first-child {
+      margin-top: 2px;
+    }
   }
 
   .emails {
@@ -212,17 +235,63 @@ body.VoterIndex {
 
 
 #voterPage2 {
+  background-color: rgba(255,255,255,0.6);
+  padding: 6px;
+  transition: opacity 1s;
+
+  &.locked {
+    max-width: 400px;
+    margin: 0 auto;
+
+    div.onImage {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: 1fr auto;
+      grid-template-areas: "tl tr" "b b";
+    }
+
+    .electionStatus {
+      grid-area: b;
+    }
+
+    h2 {
+      grid-area: tl;
+    }
+
+    .returnBtn {
+      grid-area: tr;
+    }
+  }
+
+  div.onImage {
+    background-color: #fff;
+    padding: 0 .5em;
+    margin: 0 0 18px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: flex-start;
+
+    .returnBtn {
+      justify-self: right;
+    }
+
+    h2 {
+      margin: 0;
+    }
+  }
+
   .emptyPoolMsg {
     font-weight: bold;
     margin: 3em 0;
   }
 
   .returnBtn {
-    float: right;
+    margin: .5em 0;
   }
 
   .quote {
     font-style: italic;
+    margin: 1em 0 2em;
 
     cite {
       font-size: 80%;
@@ -354,7 +423,7 @@ body.VoterIndex {
     font-weight: bold;
     font-size: 17.5px;
     line-height: 170%;
-    margin: 10px 0;
+    margin: 10px 1em;
     padding: 0.5em;
     border-radius: 2px;
 
@@ -382,8 +451,10 @@ body.VoterIndex {
 
     > div {
       flex: 50%;
+      padding: 0 1em 2em;
+      background-color: #fff;
 
-      &:first-child {
+      &.poolHolder {
         margin-right: 10px;
       }
     }
@@ -476,7 +547,7 @@ body.VoterIndex {
   }
 
   .poolSide {
-    max-width: 60%;
+    max-width: 400px;
   }
 
   #pool {
@@ -537,17 +608,17 @@ body.VoterIndex {
 
       .removeFromPool {
         padding: 0 5px 0 10px;
-        color: #6b6a6a;
+        color: #9c3838;
         cursor: pointer;
 
         &:before {
-          content: '-';
+          content: '✗';
         }
       }
 
       &.random {
         .removeFromPool:before {
-          content: 'x';
+          content: '✘';
         }
       }
 
@@ -564,6 +635,10 @@ body.VoterIndex {
     .poolBuilder {
       display: flex;
       flex-wrap: wrap;
+    }
+
+    .poolSide {
+      max-width: none;
     }
   }
 
@@ -582,7 +657,6 @@ body.VoterIndex {
 .printDiv {
   display: none;
 }
-
 //body.printingBallot {
 //  header, footer, button, h2, p, div.electionStatus, .main-content {
 //    display: none;

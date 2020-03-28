@@ -16,11 +16,11 @@ using TallyJ.EF;
 namespace TallyJ.Controllers
 {
   [AllowVoter]
-  public class VoterController : BaseController
+  public class VoteController : BaseController
   {
     public ActionResult Index()
     {
-      return View("VoterHome");
+      return View("VoteHome");
     }
 
     public void JoinVoterHubs(string connId)

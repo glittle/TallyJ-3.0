@@ -507,7 +507,7 @@
                 //                console.log(info.problems);
                 refresh();
               } else {
-                var msg = info.problems.join('<br>');
+                var msg = info.Message || info.problems.join('<br>');
                 ShowStatusFailed(msg);
               }
             });

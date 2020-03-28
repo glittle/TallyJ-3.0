@@ -286,6 +286,7 @@ section.CenterPanel.chosen:hover {
 .VoterPanel {
   display: none;
   background-color: #FCE1C1;
+  min-height: 180px;
 
   .VoterLoginError {
     margin: 1em 0;
@@ -293,6 +294,13 @@ section.CenterPanel.chosen:hover {
     font-weight: bold;
   }
 
+  .voterInfo{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+  }
+  
   .voterLogins {
     display: flex;
     justify-content: space-between;

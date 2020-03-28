@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
 using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.Controllers.LoginHelpers;
@@ -34,45 +35,45 @@ namespace TallyJ.Controllers
           DefaultAuthenticationTypes.ExternalCookie);
     }
 
-    [AllowAnonymous]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult> LogOnLocal(LoginViewModel loginViewModel)
-    {
-      var voterHomeUrl = Url.Action("Index", "Voter").FixSiteUrl();
-      var homeUrl = Url.Action("Index", "Public").FixSiteUrl();
-      if (loginViewModel.Provider != "Local")
-      {
-        return Redirect(homeUrl);
-      }
+    // [AllowAnonymous]
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public async Task<ActionResult> LogOnLocal(LoginViewModel loginViewModel)
+    // {
+    //   var voterHomeUrl = Url.Action("Index", "Vote").FixSiteUrl();
+    //   var homeUrl = Url.Action("Index", "Public").FixSiteUrl();
+    //   if (loginViewModel.Provider != "Local")
+    //   {
+    //     return Redirect(homeUrl);
+    //   }
+    //
+    //   if (!ModelState.IsValid)
+    //   {
+    //     LoginHelper.StoreModelStateErrorMessagesInSession(ModelState);
+    //     return new RedirectResult(homeUrl);
+    //     //return View(model);
+    //   }
+    //
+    //   var helpers = new LoginHelper(ModelState,
+    //     homeUrl,
+    //     "",
+    //     "Local",
+    //     (id, code) => { return Url.Action("ConfirmEmail", "VoterAccount", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme).FixSiteUrl(); },
+    //     () => RedirectToAction("Lockout", "VoterAccount"),
+    //     () => RedirectToAction("SendCode", "VoterAccount", new { ReturnUrl = voterHomeUrl }));
+    //   return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
+    // }
 
-      if (!ModelState.IsValid)
-      {
-        LoginHelper.StoreModelStateErrorMessagesInSession(ModelState);
-        return new RedirectResult(homeUrl);
-        //return View(model);
-      }
-
-      var helpers = new LoginHelper(ModelState,
-        homeUrl,
-        "",
-        "Local",
-        (id, code) => { return Url.Action("ConfirmEmail", "VoterAccount", new { userId = id, code }, protocol: HttpContext.Request.Url.Scheme).FixSiteUrl(); },
-        () => RedirectToAction("Lockout", "VoterAccount"),
-        () => RedirectToAction("SendCode", "VoterAccount", new { ReturnUrl = voterHomeUrl }));
-      return await helpers.LocalPwLogin(loginViewModel, voterHomeUrl);
-    }
-
-    [AllowAnonymous]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
-    {
-      var voterHomeUrl = Url.Action("Index", "Voter").FixSiteUrl();
-      // SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
-
-      return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
-    }
+    // [AllowAnonymous]
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public ActionResult LogOnExt(LoginExtViewModel loginViewModel)
+    // {
+    //   var voterHomeUrl = Url.Action("Index", "Vote").FixSiteUrl();
+    //   // SessionKey.ExtPassword.SetInSession(loginViewModel.ExtPassword);
+    //
+    //   return new ChallengeResult(loginViewModel.Provider, voterHomeUrl, AppSettings["XsrfValue"]);
+    // }
 
 
     [AllowAnonymous]
@@ -102,13 +103,13 @@ namespace TallyJ.Controllers
             claims.Add(new Claim("IsSysAdmin", "true"));
           }
 
-          var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
+          var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
           var authenticationProperties = new AuthenticationProperties()
           {
             AllowRefresh = true,
             IsPersistent = false,
-            ExpiresUtc = DateTime.UtcNow.AddDays(7)
+            ExpiresUtc = DateTime.UtcNow.AddDays(7),
           };
 
           System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
@@ -138,8 +139,19 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     public ActionResult LogOff()
     {
-      HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie,
-          DefaultAuthenticationTypes.ExternalCookie);
+      // HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie,
+      //     DefaultAuthenticationTypes.ExternalCookie, "Auth0");
+
+      HttpContext.GetOwinContext().Authentication.SignOut("Auth0", 
+        DefaultAuthenticationTypes.ExternalCookie, 
+        DefaultAuthenticationTypes.ApplicationCookie);
+
+      // ensure that the cookie is gone!
+      Response.Cookies.Add(new HttpCookie(".AspNet.Cookies")
+      {
+        Secure = AppSettings["secure"].AsBoolean(true),
+        Expires = DateTime.Now.AddDays(-7)
+      });
 
       UserSession.ProcessLogout();
 

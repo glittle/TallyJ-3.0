@@ -261,7 +261,15 @@ namespace TallyJ
         //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
         //Response.Write("Error on site");
       }
-      Response.End();
+
+      try
+      {
+        Response.End();
+      }
+      catch (Exception )
+      {
+        // could fail if client disconnected, etc.
+      }
     }
 
     private string FilteredStack(string stackTrace)

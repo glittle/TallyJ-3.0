@@ -246,7 +246,7 @@ namespace TallyJ.Controllers
         {
           await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
         }
-        return RedirectToAction("Index", "Voter", new { Message = ManageMessageId.ChangePasswordSuccess });
+        return RedirectToAction("Index", "Vote", new { Message = ManageMessageId.ChangePasswordSuccess });
       }
       AddErrors(result);
       return View(model);
@@ -309,13 +309,13 @@ namespace TallyJ.Controllers
 
     //
     // POST: /Manage/LinkLogin
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult LinkLogin(string provider)
-    {
-      // Request a redirect to the external login provider to link a login for the current user
-      return new VoterAccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage2"), GetUserId());
-    }
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public ActionResult LinkLogin(string provider)
+    // {
+    //   // Request a redirect to the external login provider to link a login for the current user
+    //   return new VoterAccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage2"), GetUserId());
+    // }
 
     //
     // GET: /Manage/LinkLoginCallback

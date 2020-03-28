@@ -116,7 +116,7 @@
     color: #444;
     background: #ececec;
     padding: 0 3px;
-    margin: 0 0 0 5px;
+    margin: 0 5px 0 0;
     display: inline-flex;
   }
 
@@ -178,9 +178,6 @@
             if (isSingleNameElection)
             {
               <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
-                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
-                <span class="Count">@vote.SingleNameElectionCount</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
@@ -193,13 +190,14 @@
                     }
                   </span>
                 }
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
+                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
+                <span class="Count">@vote.SingleNameElectionCount</span>
               </div>
             }
             else
             {
               <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
-                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
@@ -212,6 +210,8 @@
                     }
                   </span>
                 }
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
+                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
               </span>
             }
           }

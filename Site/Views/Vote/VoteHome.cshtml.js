@@ -43,7 +43,7 @@
 
       startSignalR(function () {
         console.log('Joining voter hub');
-        CallAjaxHandler(GetRootUrl() + 'Voter/JoinVoterHubs',
+        CallAjaxHandler(GetRootUrl() + 'Vote/JoinVoterHubs',
           {
             connId: site.signalrConnectionId
           });
@@ -88,7 +88,8 @@ var vueOptions = {
       randomOtherInfo: '',
       randomResult: '',
       addRandomToList: false,
-      hasLocalId: false
+      hasLocalId: false,
+      meditate: false
     };
   },
   computed: {
@@ -150,10 +151,13 @@ var vueOptions = {
     this.getElectionList();
   },
   methods: {
+    toggleMeditate: function() {
+      this.meditate = !this.meditate;
+    },
     getElectionList: function () {
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/GetVoterElections',
+      CallAjaxHandler(GetRootUrl() + 'Vote/GetVoterElections',
         null,
         function (info) {
           vue.loading = false;
@@ -193,7 +197,7 @@ var vueOptions = {
       var vue = this;
       var before = vue.savedLock;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/LockPool',
+      CallAjaxHandler(GetRootUrl() + 'Vote/LockPool',
         {
           locked: locked
         },
@@ -203,6 +207,7 @@ var vueOptions = {
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
             ShowStatusSuccess('Submitted' + (info.emailSent ? '. Email sent.' : ''));
+            window.scrollTo(0, 0);
           } else {
             ShowStatusFailed(info.Error);
             vue.savedLock = before;
@@ -220,26 +225,30 @@ var vueOptions = {
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
 
         person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
+        person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
+
       } else {
+        person.WhenStatus_M = null;
+        person.WhenStatus_Display = null;
+        person.BallotStatus = '-';
+        person.VotingMethod_Display = null;
+
         //        if (person.RegistrationTime) {
         //          person.RegistrationTime_M = moment(person.RegistrationTime);
         //          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
         //
         //          person.BallotStatus = person.RegistrationTime_Display;
         //        } else {
-        person.BallotStatus = '-';
         //        }
       }
 
-      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
       this.updateStatus(info);
     },
     updateRegistration: function (info) {
       var vue = this;
       var election = vue.election;
       if (election && election.person) {
-        election.person.RegistrationTime =
-          info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
         if (info.hasOwnProperty('PoolLocked')) {
           election.person.PoolLocked = info.PoolLocked;
         }
@@ -291,7 +300,7 @@ var vueOptions = {
           if (minutes < 120) {
             s.push(` (at ${info.OnlineWhenClose_M.format('h:mm a')})`);
           }
-          s.push('.');
+          //          s.push('.');
           info.Status_Display = s.join('');
         }
       } else {
@@ -310,7 +319,7 @@ var vueOptions = {
       }
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
+      CallAjaxHandler(GetRootUrl() + 'Vote/JoinElection',
         {
           electionGuid: eInfo.id
         },
@@ -336,7 +345,7 @@ var vueOptions = {
             });
 
             vue.activePage = 2;
-            vue.scrollToTop(95);
+            vue.scrollToTop(0);
 
           } else if (info.closed) {
             // show closed... show info if available
@@ -541,7 +550,7 @@ var vueOptions = {
           }
         });
         if (vue.savedPool !== list) {
-          CallAjaxHandler(GetRootUrl() + 'Voter/SavePool',
+          CallAjaxHandler(GetRootUrl() + 'Vote/SavePool',
             {
               pool: JSON.stringify(list)
             },
@@ -587,7 +596,7 @@ var vueOptions = {
 
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/GetLoginHistory',
+      CallAjaxHandler(GetRootUrl() + 'Vote/GetLoginHistory',
         null,
         function (info) {
           vue.loadingLoginHistory = false;
@@ -613,7 +622,7 @@ var vueOptions = {
       var form = {
         emailCodes: codes || null
       };
-      CallAjaxHandler(GetRootUrl() + 'Voter/SaveEmailCodes',
+      CallAjaxHandler(GetRootUrl() + 'Vote/SaveEmailCodes',
         form,
         function (info) {
           if (info.saved) {
@@ -624,7 +633,7 @@ var vueOptions = {
         });
     },
     emailTest: function () {
-      CallAjaxHandler(GetRootUrl() + 'Voter/SendTestEmail',
+      CallAjaxHandler(GetRootUrl() + 'Vote/SendTestEmail',
         null,
         function (info) {
           if (info.sent) {
@@ -638,7 +647,7 @@ var vueOptions = {
       // no need to allow < or > or &
       return s.replace(/[<>&]/g, '');
     },
-    searchForRandom: function() {
+    searchForRandom: function () {
       this.searchText = [this.randomFirst, this.randomLast].join(' ');
     },
     addRandomName: function () {
@@ -724,13 +733,13 @@ var vueOptions = {
         this.$refs.searchBox && this.$refs.searchBox.focus();
       }
     },
-    printBallot: function() {
+    printBallot: function () {
       $(document.body).addClass('printingBallot');
-      window.addEventListener("afterprint", function(ev) {
+      window.addEventListener("afterprint", function (ev) {
         $(document.body).removeClass('printingBallot');
       });
 
-      Vue.nextTick(function() {
+      Vue.nextTick(function () {
         //window.print();
       });
     }

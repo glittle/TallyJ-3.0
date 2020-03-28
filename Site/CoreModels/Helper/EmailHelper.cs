@@ -59,7 +59,7 @@ namespace TallyJ.CoreModels.Helper
       var message = new MailMessage();
       message.To.Add(new MailAddress(person.Email, person.C_FullNameFL));
 
-      var htAddress = new MailAddress(election.EmailFromAddress, election.EmailFromName);
+      var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
       message.Sender = htAddress;
       message.CC.Add(htAddress);
 
@@ -196,7 +196,7 @@ namespace TallyJ.CoreModels.Helper
       var fromAddress = e.EmailFromAddress;
       if (fromAddress.HasContent())
       {
-        message.From = new MailAddress(fromAddress, e.EmailFromName);
+        message.From = new MailAddress(fromAddress, e.EmailFromNameWithDefault);
       }
 
       var ok = SendEmail(message, html, out error);
@@ -244,10 +244,12 @@ namespace TallyJ.CoreModels.Helper
 
       electionList.ForEach(electionInfo =>
       {
-        var electionName = electionInfo.election.Name;
-        var electionType = ElectionTypeEnum.TextFor(electionInfo.election.ElectionType);
+        var election = electionInfo.election;
+
+        var electionName = election.Name;
+        var electionType = ElectionTypeEnum.TextFor(election.ElectionType);
         //        var isEstimate = electionInfo.election.OnlineCloseIsEstimate;
-        var whenClosed = electionInfo.election.OnlineWhenClose.GetValueOrDefault();
+        var whenClosed = election.OnlineWhenClose.GetValueOrDefault();
         var whenClosedUtc = whenClosed.ToUniversalTime();
         var remainingTime = whenClosed - now;
         var howLong = "";
@@ -281,9 +283,9 @@ namespace TallyJ.CoreModels.Helper
           var message = new MailMessage();
           message.To.Add(new MailAddress(voter.Email, voter.C_FullNameFL));
 
-          if (electionInfo.election.EmailFromAddress.HasContent())
+          if (election.EmailFromAddress.HasContent())
           {
-            message.From = new MailAddress(electionInfo.election.EmailFromAddress, electionInfo.election.EmailFromName);
+            message.From = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
           }
 
           var ok = SendEmail(message, html, out var emailError);
@@ -301,7 +303,7 @@ namespace TallyJ.CoreModels.Helper
           voter.ovi.NotifiedAboutOpening = true;
         });
 
-        var msg = $"Email: Election #{electionInfo.election.C_RowId} {(automated ? "automatically " : "")}announced to {numEmails} {(numEmails == 1 ? "person" : "people")}";
+        var msg = $"Email: Election #{election.C_RowId} {(automated ? "automatically " : "")}announced to {numEmails} {(numEmails == 1 ? "person" : "people")}";
 
         if (errors.Count > 0)
         {
@@ -309,7 +311,7 @@ namespace TallyJ.CoreModels.Helper
         }
 
 
-        electionInfo.election.OnlineAnnounced = now;
+        election.OnlineAnnounced = now;
 
         if (currentElection != null)
         {
@@ -388,7 +390,7 @@ namespace TallyJ.CoreModels.Helper
       {
         case HtEmailCodes.Test:
           emailTemplate = "HeadTellerEmail";
-          peopleToSendTo.Add(new NameEmail { Email = election.EmailFromAddress, PersonName = election.EmailFromName });
+          peopleToSendTo.Add(new NameEmail { Email = election.EmailFromAddressWithDefault, PersonName = election.EmailFromNameWithDefault });
           break;
 
         case HtEmailCodes.Intro:
@@ -455,7 +457,7 @@ namespace TallyJ.CoreModels.Helper
 
         if (election.EmailFromAddress.HasContent())
         {
-          message.From = new MailAddress(election.EmailFromAddress, election.EmailFromName);
+          message.From = new MailAddress(election.EmailFromAddress, election.EmailFromNameWithDefault);
         }
 
         var ok = SendEmail(message, html, out var emailError);

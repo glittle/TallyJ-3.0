@@ -146,5 +146,9 @@
   {
     "outputFile": "Views/Public/VoterLogin.cshtml.css",
     "inputFile": "Views/Public/VoterLogin.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Vote/VoteHome.cshtml.css",
+    "inputFile": "Views/Vote/VoteHome.cshtml.less"
   }
 ]

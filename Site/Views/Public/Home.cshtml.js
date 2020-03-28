@@ -83,6 +83,9 @@
 
   function showElections(html) {
     var select = $('#ddlElections');
+    if (!select.length) {
+      return;
+    }
     select.html(html);
     select.attr('size', select[0].children.length + 2);
     selectDefaultElection();
@@ -103,20 +106,25 @@
 
   function startJoinClick(dummy, btnIdRequested) {
     var btnId = btnIdRequested || $(this).attr('id');
-    
-    
+
+
     if (btnId === 'btnChooseJoin') {
       $('.CenterPanel').addClass('chosen');
       $('.LoginPanel').hide();
+      $('.VoterPanel').hide();
       $('.JoinPanel').fadeIn();
     }
     else if (btnId === 'btnChooseVoter') {
-      location.href = 'Login';
-      //      $('.VoterPanel').fadeIn();
-      //      warmupServer();
+      //location.href = GetRootUrl() + 'VoterAccount/Login';
+      $('.CenterPanel').addClass('chosen');
+      $('.JoinPanel').hide();
+      $('.LoginPanel').hide();
+      $('.VoterPanel').fadeIn();
+      warmupServer();
     }
     else {
       $('.CenterPanel').addClass('chosen');
+      $('.VoterPanel').hide();
       $('.JoinPanel').hide();
       $('.LoginPanel').fadeIn();
       warmupServer();
@@ -135,6 +143,7 @@
     $('.CenterPanel').removeClass('chosen');
     $('.JoinPanel').hide();
     $('.LoginPanel').hide();
+    $('.VoterPanel').hide();
   }
 
   var btnJoinClick = function () {

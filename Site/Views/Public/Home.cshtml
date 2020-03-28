@@ -1,4 +1,5 @@
-﻿@using Microsoft.Owin.Security
+﻿@using System.Security.Claims
+@using Microsoft.Owin.Security
 @using TallyJ.Code.Session
 @model TallyJ.CoreModels.VoterAccountModels.LoginViewModel
 @{
@@ -59,7 +60,7 @@
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
-        You are still logged in!
+        You are still logged in as a teller!
       </p>
       <p class="AlreadyIn">
         Go to the
@@ -128,7 +129,7 @@
     @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
     {
       <p class="AlreadyIn">
-        You are still logged in!
+        You are still logged in as a teller!
       </p>
       <p class="AlreadyIn">
         Go to the
@@ -166,8 +167,6 @@
       <div class="closer">
         <img src="~/Images/close.png" alt="Close" class="closer">
       </div>
-      <div class="top">
-      </div>
       <h2>Vote Online</h2>
       @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
       {
@@ -198,11 +197,11 @@
       else if (UserSession.IsVoter)
       {
         <p class="AlreadyIn">
-          You are still logged in!
+          You are still logged in to vote!
         </p>
         <p class="AlreadyIn">
           Go to the
-          <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Voter")'">Voter Page</button>
+          <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Vote")'">Voting Page</button>
         </p>
         <p class="AlreadyIn">
           or
@@ -211,147 +210,60 @@
       }
       else
       {
-        <div>
-          @{
-            var msg = (string)Session[SessionKey.VoterLoginError];
-            if (msg.HasContent())
-            {
-              Session.Remove(SessionKey.VoterLoginError);
-              <div class="VoterLoginError">
-                @msg.AsRawHtml()
-              </div>
-            }
-            var loginTypes = Context.GetOwinContext()
-              .Authentication
-              .GetAuthenticationTypes()
-              .Where(a => a.Caption.HasContent())
-              .Select(a => a.Caption)
-              .ToList();
-          }
-
-          @if (loginTypes.Count > 0)
-          {
-            <p>
-              Log in with your @loginTypes.InSentence("or") account, or <strong>@Html.ActionLink("create a local account", "Register", "VoterAccount")</strong> in TallyJ.
-            </p>
-          }
-          else
-          {
-            <p>
-              Log in with your TallyJ account.
-            </p>
-          }
-          <div class="voterLogins">
-            @if (loginTypes.Count > 0)
-            {
-              <div id="socialLoginList">
-                @using (Html.BeginForm("LogOnExt", "Account"))
-                {
-                  @Html.AntiForgeryToken()
-                  foreach (var name in loginTypes)
-                  {
-                    if (name == "Google")
-                    {
-                      <button type="submit"
-                              class="authButton @name"
-                              accesskey="G"
-                              name="Provider"
-                              value="@name"
-                              title="Log in using your @name account">
-                        <img src="@Url.Content("~/Images/google.png")">
-                      </button>
-                    }
-                    else if (name == "Facebook")
-                    {
-                      <button type="submit"
-                              class="authButton @name"
-                              accesskey="F"
-                              name="Provider"
-                              value="@name"
-                              title="Log in using your @name account">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
-                          <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
-          11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
-          11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
-          15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
-          11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
-                        </svg>
-                        <span>Log in With Facebook</span>
-                      </button>
-                    }
-                    else
-                    {
-                      @*<div>2 @name</div>*@
-                    }
-                  }
-                  <p class="externalNote">
-                    TallyJ will create a local account with the email address<br />that is provided by @loginTypes.InSentence("or").
-                  </p>
-                  <p class="externalNote">
-                    If you have added a TallyJ password to your account,<br />you must log in using the panel to the right.
-                  </p>
-                  @*<input class="form-control"
-                    name="ExtPassword"
-                    type="password">*@
-                }
-              </div>
-              <span class="voterOr">
-                or
-              </span>
-            }
-            <div class="direct">
-              @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new { name = "v2" }))
+        <div class="voterInfo">
+          <div>
+            @{
+              var msg = (string)Session[SessionKey.VoterLoginError];
+              if (msg.HasContent())
               {
-                @Html.AntiForgeryToken()
-
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="email">
-                  Email address
-                  <div>
-                    @Html.EditorFor(m => m.Email, new { htmlAttributes = new { autocomplete = "email" } })
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                  </div>
-                </div>
-                <div class="pw">
-                  TallyJ Password
-                  <div>
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                  </div>
-                </div>
-                <div class="submit">
-                  <button type="submit"
-                          class="authButton"
-                          accesskey="L"
-                          name="Provider"
-                          value="Local">
-                    Log in
-                  </button>
-                </div>
-                <div class="other">
-
-                  <p>
-                    @Html.ActionLink("Forgot your password?", "ForgotPassword", "VoterAccount")
-                  </p>
-
+                Session.Remove(SessionKey.VoterLoginError);
+                <div class="VoterLoginError">
+                  @msg.AsRawHtml()
                 </div>
               }
+
+            }
+
+            <div>
+              <p>Login to vote with your:</p>
+              <p>Cell phone number (pending) or your <a href="@Url.Action("Login", "VoterAccount")">email address</a>.</p>
+
             </div>
           </div>
 
           <p>
             By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
           </p>
-
-
         </div>
       }
-
-
     </section>
   }<div class="clear-fix">
   </div>
 </section>
+
+@*<table class="table">
+    <thead>
+      <tr>
+        <th>
+          Claim
+        </th>
+        <th>
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var claim in ((ClaimsIdentity)User.Identity).Claims)
+      {
+        <tr>
+          <td>@claim.Type</td>
+          <td>@claim.Value</td>
+        </tr>
+      }
+    </tbody>
+  </table>*@
+
+
 <div class="notes">
   <p>
     TallyJ is ready for use! Please send feedback to
@@ -407,30 +319,3 @@
 <div class="Summary">
   TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
 </div>
-@if (false && Request.Url.Host != "localhost")
-{
-  <!-- Only on the home page, not on interior pages... -->
-  <!-- Begin Inspectlet Embed Code -->
-  <script type="text/javascript" id="inspectletjs">
-    window.__insp = window.__insp || [];
-    __insp.push(['wid', 140853088]);
-    (function () {
-      function __ldinsp() {
-        var insp = document.createElement('script');
-        insp.type = 'text/javascript';
-        insp.async = true;
-        insp.id = "inspsync";
-        insp.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cdn.inspectlet.com/inspectlet.js';
-        var x = document.getElementsByTagName('script')[0];
-        x.parentNode.insertBefore(insp, x);
-      }
-
-      if (window.attachEvent) {
-        window.attachEvent('onload', __ldinsp);
-      } else {
-        window.addEventListener('load', __ldinsp, false);
-      }
-    })();
-  </script>
-  <!-- End Inspectlet Embed Code -->
-}
