@@ -270,8 +270,8 @@ namespace TallyJ.Controllers
 
             new LogHelper().Add("Locked ballot");
 
-            var emailHelper = new EmailHelper();
-            emailSent = emailHelper.SendOnVoterSubmit(person, currentElection, out var error);
+            // var emailHelper = new EmailHelper();
+            // emailSent = emailHelper.SendOnVoterSubmit(person, currentElection, out var error);
           }
           else
           {
