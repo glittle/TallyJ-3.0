@@ -261,7 +261,7 @@ var startSignalR = function (callBack, showReconnectMsg) {
           //          ResetStatusDisplay();
           console.log('starting signalR again');
           startSignalR(null, true);
-        }, 1000);
+        }, 5000);
       }
     });
   },
