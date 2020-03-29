@@ -46,7 +46,7 @@ namespace TallyJ
       app.MapSignalR();
 
       ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-      
+
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
 
       // auth0 - adapted from https://manage.auth0.com/dashboard/us/tallyj/applications/lDGuoI4pWDzNzzkjwmKq6w53alnXyKcw/quickstart/aspnet-owin
@@ -67,7 +67,7 @@ namespace TallyJ
         AuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
         LoginPath = new PathString("/Login"),
         CookieSecure = useSecure ? CookieSecureOption.Always : CookieSecureOption.Never,
-        CookieSameSite = useSecure ?  SameSiteMode.Strict : SameSiteMode.Lax,
+        CookieSameSite = useSecure ? SameSiteMode.Strict : SameSiteMode.Lax,
         CookieHttpOnly = true,
         // ExpireTimeSpan = new TimeSpan(1, 0, 0),
         // Provider = new CookieAuthenticationProvider
@@ -112,55 +112,85 @@ namespace TallyJ
         PostLogoutRedirectUri = auth0PostLogoutRedirectUri,
 
         ResponseType = OpenIdConnectResponseType.CodeIdToken,
-        Scope = "email phone",
+        Scope = "email phone", // reset below...
 
         TokenValidationParameters = new TokenValidationParameters
         {
-          NameClaimType = "name"
+          NameClaimType = "name",
         },
 
         Notifications = new OpenIdConnectAuthenticationNotifications
         {
-          AuthorizationCodeReceived = delegate(AuthorizationCodeReceivedNotification notification)
+          AuthorizationCodeReceived = delegate (AuthorizationCodeReceivedNotification notification)
           {
             var identity = notification.AuthenticationTicket.Identity;
-            identity.AddClaim(new Claim("UniqueID", identity.Claims.FirstOrDefault(c=>c.Type == "https://ns.tallyj.com/email")?.Value));
-            identity.AddClaim(new Claim("IsVoter", "True"));
-            // identity.AuthenticationType
+            var sourceClaim = identity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            var source = sourceClaim?.Value.Split('|')[0];
 
-            notification.OwinContext.Authentication.SignIn(new AuthenticationProperties()
+
+            var email = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email");
+            var ok = false;
+
+            if (email != null)
             {
-              AllowRefresh = true,
-              IsPersistent = false,
-              ExpiresUtc = DateTime.UtcNow.AddHours(1)
-            }, identity);
+              identity.AddClaim(new Claim("UniqueID", email.Value));
+              identity.AddClaim(new Claim("IsVoter", "True"));
+              ok = true;
+            }
+            else
+            {
+              
+            }
 
-            UserSession.RecordVoterLogin("Auth0", UserSession.VoterEmail);
+
+
+            if (ok)
+            {
+              notification.OwinContext.Authentication.SignIn(new AuthenticationProperties()
+              {
+                AllowRefresh = true,
+                IsPersistent = false,
+                ExpiresUtc = DateTime.UtcNow.AddHours(1)
+              }, identity);
+
+              UserSession.RecordVoterLogin(source ?? "Auth0", UserSession.VoterEmail);
+            }
+            else
+            {
+              notification.OwinContext.Authentication.SignOut("Auth0", 
+                DefaultAuthenticationTypes.ExternalCookie, 
+                DefaultAuthenticationTypes.ApplicationCookie);
+            }
 
             return Task.FromResult(0);
           },
-          MessageReceived = delegate(MessageReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+          MessageReceived = delegate (MessageReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
           {
             return Task.FromResult(0);
           },
-          SecurityTokenReceived = delegate(SecurityTokenReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+          SecurityTokenReceived = delegate (SecurityTokenReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
           {
             return Task.FromResult(0);
           },
-          SecurityTokenValidated = delegate(SecurityTokenValidatedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+          SecurityTokenValidated = delegate (SecurityTokenValidatedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
           {
             return Task.FromResult(0);
           },
-          TokenResponseReceived = delegate(TokenResponseReceivedNotification notification)
+          TokenResponseReceived = delegate (TokenResponseReceivedNotification notification)
           {
             return Task.FromResult(0);
           },
-          AuthenticationFailed = delegate(AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+          AuthenticationFailed = delegate (AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
           {
             return Task.FromResult(0);
           },
           RedirectToIdentityProvider = notification =>
           {
+            var useSms = System.Web.HttpContext.Current.Items["CELL"].AsBoolean();
+
+            //TODO - takes effect on the NEXT call
+            notification.Options.Scope = "email phone" + (useSms ? " useSMS" : "");
+
             if (notification.ProtocolMessage.RequestType == OpenIdConnectRequestType.Logout)
             {
               var logoutUri = $"https://{auth0Domain}/v2/logout?client_id={auth0ClientId}";

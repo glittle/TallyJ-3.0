@@ -157,11 +157,6 @@ namespace TallyJ.Code
       return new TemplateHelper(input).FillByArray(values);
     }
 
-    /// <Summary>Returns true if this bool? is true</Summary>
-    public static bool AsBoolean(this bool? input, bool? defaultValue = null)
-    {
-      return input ?? defaultValue.HasValue && defaultValue.Value;
-    }
 
     /// <Summary>Returns a true bool?, or null if false</Summary>
     /// <param name="input">Input value</param>
@@ -200,21 +195,35 @@ namespace TallyJ.Code
     {
       return input ? null : (bool?)false;
     }
+    
+    /// <Summary>Returns true if this bool? is true</Summary>
+    // public static bool AsBoolean(this bool? input, bool? defaultValue = null)
+    // {
+    //   return input ?? defaultValue.HasValue && defaultValue.Value;
+    // }
 
-    public static bool AsBoolean(this string input, bool defaultValue = false)
+    public static bool AsBoolean(this object input, bool defaultValue = false)
     {
-      if (input.HasNoContent()) return defaultValue;
+      if (input == null) return defaultValue;
 
-      switch (input)
+      if (input is bool b)
+      {
+        return b;
+      }
+
+      var inputStr = input.ToString().ToLower();
+      if (inputStr.HasNoContent()) return defaultValue;
+
+      switch (inputStr)
       {
         case "1":
+        case "y":
+        case "yes":
         case "true":
-        case "True":
           return true;
 
         case "0":
         case "false":
-        case "False":
         default:
           return false;
       }

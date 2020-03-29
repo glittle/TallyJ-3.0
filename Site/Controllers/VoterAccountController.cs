@@ -6,17 +6,29 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using MvcApplication.ViewModels;
+using TallyJ.Code;
 using TallyJ.Code.Session;
 
 namespace TallyJ.Controllers
 {
   public class VoterAccountController : Controller
   {
-    public ActionResult Login(string returnUrl)
+    public ActionResult LoginEmail(string returnUrl)
     {
       HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties
       {
         RedirectUri = returnUrl ?? Url.Action("Index", "Vote")
+      }, "Auth0");
+      return new HttpUnauthorizedResult();
+    }
+
+    public ActionResult LoginSms()
+    {
+      System.Web.HttpContext.Current.Items["CELL"] = true;
+
+      HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties
+      {
+        RedirectUri = Url.Action("Index", "Vote")
       }, "Auth0");
       return new HttpUnauthorizedResult();
     }
