@@ -167,7 +167,9 @@
     };
     var searchParts = trimmed.toLowerCase().split(local.nameSplitter);
 
-    if (trimmed === local.showAllCode) {
+    var showAll = trimmed === local.showAllCode;
+
+    if (showAll) {
       local.localNames.forEach(function (n) {
         if (result.People.length < maxToShow) {
           result.People.push(n);
@@ -190,7 +192,7 @@
       });
     }
 
-    sortResults(result);
+    sortResults(result, showAll);
 
     var info = markUp(result, searchParts, usedPersonIds);
 
@@ -263,7 +265,14 @@
     return 20 - index;
   }
 
-  function sortResults(result) {
+  function sortResults(result, byNameOnly) {
+    if (byNameOnly) {
+      result.People.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+      return;
+    } 
+
     if (forBallotEntry) {
       result.People.sort(function (a, b) {
         if (a.Sort1 < b.Sort1) return 1;
@@ -287,24 +296,25 @@
 
         return a.name.localeCompare(b.name);
       });
-    } else {
-      result.People.sort(function (a, b) {
-        //        console.log(a.Sort1, b.Sort1);
-        if (a.Sort1 < b.Sort1) return 1;
-        if (a.Sort1 > b.Sort1) return -1;
-        //
-        //        if (a.Parts5 < b.Parts5) return 1;
-        //        if (a.Parts5 > b.Parts5) return -1;
-        //
-        //        if (a.Parts4 < b.Parts4) return 1;
-        //        if (a.Parts4 > b.Parts4) return -1;
-        //
-        //        if (a.Parts3 < b.Parts3) return 1;
-        //        if (a.Parts3 > b.Parts3) return -1;
-
-        return a.name.localeCompare(b.name);
-      });
+      return;
     }
+
+    result.People.sort(function (a, b) {
+      //        console.log(a.Sort1, b.Sort1);
+      if (a.Sort1 < b.Sort1) return 1;
+      if (a.Sort1 > b.Sort1) return -1;
+      //
+      //        if (a.Parts5 < b.Parts5) return 1;
+      //        if (a.Parts5 > b.Parts5) return -1;
+      //
+      //        if (a.Parts4 < b.Parts4) return 1;
+      //        if (a.Parts4 > b.Parts4) return -1;
+      //
+      //        if (a.Parts3 < b.Parts3) return 1;
+      //        if (a.Parts3 > b.Parts3) return -1;
+
+      return a.name.localeCompare(b.name);
+    });
   }
 
   function markUp(info, searchParts, usedIds) {

@@ -1138,7 +1138,7 @@ function ShowStatusFailed(msg, keepTime) {
 
   if (!msgShown) {
     ResetStatusDisplay();
-    ShowStatusDisplay(text + '<span class=closeStatus>x</span>', delayBeforeShow, keepTime, true);
+    ShowStatusDisplay(text + '<span class=closeStatus>✗</span>', delayBeforeShow, keepTime, true);
   }
 
   return text;

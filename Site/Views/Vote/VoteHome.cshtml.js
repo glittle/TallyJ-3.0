@@ -143,6 +143,16 @@ var vueOptions = {
     randomOtherInfo: function () {
       this.randomOtherInfo = this.cleanText(this.randomOtherInfo);
       this.randomResult = '';
+    },
+    addRandomToList: function (a, b) {
+      var vue = this;
+      if (a) {
+        setTimeout(function () {
+          if (vue.$refs.firstInput) {
+            vue.$refs.firstInput.focus();
+          }
+        }, 100);
+      }
     }
   },
   created: function () {
@@ -151,7 +161,7 @@ var vueOptions = {
     this.getElectionList();
   },
   methods: {
-    toggleMeditate: function() {
+    toggleMeditate: function () {
       this.meditate = !this.meditate;
     },
     getElectionList: function () {
@@ -220,27 +230,21 @@ var vueOptions = {
       info.Date_Display = moment(info.DateOfElection).format('D MMM YYYY');
 
       var person = info.person;
+
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
+
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
 
         person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
-        person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
 
       } else {
         person.WhenStatus_M = null;
         person.WhenStatus_Display = null;
         person.BallotStatus = '-';
-        person.VotingMethod_Display = null;
-
-        //        if (person.RegistrationTime) {
-        //          person.RegistrationTime_M = moment(person.RegistrationTime);
-        //          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
-        //
-        //          person.BallotStatus = person.RegistrationTime_Display;
-        //        } else {
-        //        }
       }
+
 
       this.updateStatus(info);
     },
@@ -337,14 +341,13 @@ var vueOptions = {
               var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;
               vue.savedLock = locked;
               vue.lockInVotes = locked;
-              vue.setInputFocus();
+              //              vue.setInputFocus();
 
-              if (vue.useList && voterHome.peopleHelper.local.localNames.length < 20) {
-                voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
-              }
+
             });
 
             vue.activePage = 2;
+            vue.resetSearch();
             vue.scrollToTop(0);
 
           } else if (info.closed) {
@@ -353,6 +356,16 @@ var vueOptions = {
             ShowStatusFailed(info.Error);
           }
         });
+    },
+    showAll: function () {
+      var vue = this;
+      if (vue.useList) {
+        vue.searchText = '';
+
+        setTimeout(function () {
+          voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
+        }, 0);
+      }
     },
     runSearch: function (ev) {
       var text = this.searchText;
@@ -425,6 +438,9 @@ var vueOptions = {
       this.searchText = '';
       this.lastSearch = '';
       this.nameList = [];
+
+      this.resetRandomInput();
+
       $('.searchBox').focus();
     },
     addToPool: function (p) {
@@ -703,10 +719,7 @@ var vueOptions = {
           }
           this.addToPool(p);
 
-          this.randomFirst = '';
-          this.randomLast = '';
-          this.randomOtherInfo = '';
-          this.addRandomToList = false;
+          this.resetRandomInput();
 
           this.setInputFocus();
 
@@ -716,17 +729,18 @@ var vueOptions = {
 
       this.addToPool(person);
 
+      this.resetRandomInput();
+
+      this.setInputFocus();
+    },
+    resetRandomInput: function () {
       this.randomFirst = '';
       this.randomLast = '';
       this.randomOtherInfo = '';
       this.addRandomToList = false;
-
-      this.setInputFocus();
-    },
-    showRandomInput: function () {
-
     },
     setInputFocus: function () {
+      debugger
       if (this.selectionProcess === 'R') {
         this.$refs.firstInput && this.$refs.firstInput.focus();
       } else {

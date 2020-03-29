@@ -43,13 +43,12 @@
       To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
     </p>
     <div class="quotesList">
-      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></div>
+      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (3 web pages)</a></div>
       <div><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></div>
       <div><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></div>
       <div><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</div>
     </div>
   </div>
-
 
   <p v-if="loading">Searching for your email address in available elections...</p>
 
@@ -170,6 +169,7 @@
             <input accesskey="S" ref="searchBox" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
           <button accesskey="C" v-on:click="resetSearch">Clear</button>
+          <button v-on:click="showAll">Show All</button>
         </div>
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
@@ -189,7 +189,7 @@
         <p v-show="nameList.length">
           To select a name using your keyboard while typing, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
         </p>
-        <button class="btn addRandomToList" v-if="useRandom && searchText" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
+        <button class="btn addRandomToList" v-if="useRandom && nameList.length" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
       </div>
       <form v-if="useRandom && !useList || addRandomToList" class="randomInput">
         <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>
@@ -220,7 +220,7 @@
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p><span class="OtherRegistration">Your online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
+        <p><span class="OtherRegistration">This online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
         <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
@@ -230,7 +230,9 @@
         Your ballot will be processed when the head teller closes online voting and
         accepts all online ballots.
       </p>
-      <p v-if="!registration && pool.length" aria-live="polite">Be sure to submit your ballot before the election closes!</p>
+      <p v-if="!registration && pool.length" aria-live="polite">
+        Be sure to submit your ballot before the election closes!
+      </p>
 
       <p class="lockInBtns">
         <span v-if="canUnlock">Submitted</span>

@@ -567,10 +567,14 @@ namespace TallyJ.CoreModels
       return names.JoinedAsString(", ", true);
     }
 
-    public string ShowRegistrationTime(Person p)
+    public string ShowRegistrationTime(Person p, bool includeDate = false)
     {
       var timeOffset = UserSession.TimeOffsetServerAhead;
       var format = UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt";
+      if (includeDate)
+      {
+        format = "MMM d -" + format;
+      }
       return p.RegistrationTime.HasValue
           ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString(format).ToLowerInvariant()
           : "";
@@ -582,7 +586,6 @@ namespace TallyJ.CoreModels
       {
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
-
 
       var locationModel = new LocationModel();
       
@@ -613,6 +616,18 @@ namespace TallyJ.CoreModels
       if (person == null)
       {
         return new { Message = "Unknown person" }.AsJsonResult();
+      }
+
+      if (person.VotingMethod == VotingMethodEnum.Online)
+      {
+        var onlineVoter = Db.OnlineVotingInfo.SingleOrDefault(ovi => ovi.PersonGuid == person.PersonGuid && ovi.ElectionGuid == person.ElectionGuid);
+        if (onlineVoter != null)
+        {
+          if (onlineVoter.Status == OnlineBallotStatusEnum.Processed)
+          {
+            return new {Message = "This online ballot has been processed. Registration cannot be changed."}.AsJsonResult();
+          }
+        }
       }
 
       Db.Person.Attach(person);

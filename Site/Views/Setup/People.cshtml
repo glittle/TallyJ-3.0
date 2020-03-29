@@ -30,24 +30,29 @@
   <div>
     <span id="more"></span>
     <label class="searchlabel" for="txtSearch">Search for a <u>p</u>erson:</label>
+    <input id="txtSearch" class="input-medium" accesskey="P"
+           autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span>
+    <button id="btnShowAll" class="btn btn-mini" type="button">
+      Show All
+    </button>
 
-    <input id="txtSearch" class="input-medium" accesskey="P" autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span> <span id="action"></span>
+
     <button id="btnAddNew" class="btn btn-success btn-mini" type="button" accesskey="N">
       Add <u>N</u>ew Person
     </button>
     <ul id="nameList"></ul>
     @*@if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
-      {
-        <div>
-          <button id="btnListTied" type="button">Search for who can be voted for in this election</button>
-        </div>
-      }*@
+    {
+      <div>
+        <button id="btnListTied" type="button">Search for who can be voted for in this election</button>
+      </div>
+    }*@
     @*@if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
-      {
-        <div>
-          <button id="btnListVoters" type="button">Search for who can vote in this election</button>
-        </div>
-      }*@
+    {
+      <div>
+        <button id="btnListVoters" type="button">Search for who can vote in this election</button>
+      </div>
+    }*@
 
   </div>
   <div id="editPanel">
