@@ -112,7 +112,7 @@ namespace TallyJ
         PostLogoutRedirectUri = auth0PostLogoutRedirectUri,
 
         ResponseType = OpenIdConnectResponseType.CodeIdToken,
-        Scope = "email phone", // reset below...
+        Scope = "email phone",
 
         TokenValidationParameters = new TokenValidationParameters
         {
@@ -139,7 +139,7 @@ namespace TallyJ
             }
             else
             {
-              
+
             }
 
 
@@ -157,8 +157,8 @@ namespace TallyJ
             }
             else
             {
-              notification.OwinContext.Authentication.SignOut("Auth0", 
-                DefaultAuthenticationTypes.ExternalCookie, 
+              notification.OwinContext.Authentication.SignOut("Auth0",
+                DefaultAuthenticationTypes.ExternalCookie,
                 DefaultAuthenticationTypes.ApplicationCookie);
             }
 
@@ -189,7 +189,12 @@ namespace TallyJ
             var useSms = System.Web.HttpContext.Current.Items["CELL"].AsBoolean();
 
             //TODO - takes effect on the NEXT call
-            notification.Options.Scope = "email phone" + (useSms ? " useSMS" : "");
+            // notification.Options.Scope = "email phone" + (useSms ? " useSMS" : "");
+
+            if (useSms)
+            {
+              notification.ProtocolMessage.LoginHint = "useSMS";
+            }
 
             if (notification.ProtocolMessage.RequestType == OpenIdConnectRequestType.Logout)
             {
