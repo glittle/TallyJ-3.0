@@ -261,7 +261,7 @@ var startSignalR = function (callBack, showReconnectMsg) {
           //          ResetStatusDisplay();
           console.log('starting signalR again');
           startSignalR(null, true);
-        }, 5000); 
+        }, 5000);
       }
     });
   },
@@ -1102,7 +1102,7 @@ function ShowStatusSuccess(msg) {
 }
 
 function ShowStatusFailed(msg, keepTime) {
-  ResetStatusDisplay();
+  //  ResetStatusDisplay();
   var delayBeforeShow = 0;
   var msgShown = false;
 
@@ -1138,7 +1138,7 @@ function ShowStatusFailed(msg, keepTime) {
 
   if (!msgShown) {
     ResetStatusDisplay();
-    ShowStatusDisplay(text + '<span class=closeStatus>✗</span>', delayBeforeShow, keepTime, true);
+    ShowStatusDisplay(text + '<span class=closeStatus title="Dismiss error message">✗</span>', delayBeforeShow, keepTime, true);
   }
 
   return text;
@@ -1372,10 +1372,10 @@ function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustFo
     return '[Invalid Date]';
   }
   if (!doNotAdjustForServerTimeOffset) {
-    console.log('time offset {0}'.filledWith(site.timeOffset));
-    console.log('  - original: {0}'.filledWith(date.toString()));
+    console.log('time offset', site.timeOffset);
+    console.log('time original', date.toString());
     date = new Date(date.getTime() + site.timeOffset);
-    console.log('  - after   : {0}'.filledWith(date.toString()));
+    console.log('time after', date.toString());
   }
 
   if (!format) {

@@ -22,7 +22,7 @@ using Microsoft.Web.Infrastructure;
 using Owin;
 using TallyJ.Code;
 using TallyJ.Code.Data;
-using TallyJ.Code.OwinRelated;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.Controllers.LoginHelpers;
@@ -37,7 +37,7 @@ namespace TallyJ
 {
   public class OwinStartup
   {
-    private ITallyJDbContext _db;
+    // private ITallyJDbContext _db;
 
     public void Configuration(IAppBuilder app)
     {
@@ -50,11 +50,11 @@ namespace TallyJ
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
 
       // auth0 - adapted from https://manage.auth0.com/dashboard/us/tallyj/applications/lDGuoI4pWDzNzzkjwmKq6w53alnXyKcw/quickstart/aspnet-owin
-      string auth0Domain = AppSettings["auth0-domain"];
-      string auth0ClientId = AppSettings["auth0-ClientId"];
-      string auth0ClientSecret = AppSettings["auth0-ClientSecret"];
-      string auth0RedirectUri = AppSettings["auth0-RedirectUri"];
-      string auth0PostLogoutRedirectUri = AppSettings["auth0-PostLogoutRedirectUri"];
+      var auth0Domain = AppSettings["auth0-domain"];
+      var auth0ClientId = AppSettings["auth0-ClientId"];
+      var auth0ClientSecret = AppSettings["auth0-ClientSecret"];
+      var auth0RedirectUri = AppSettings["auth0-RedirectUri"];
+      var auth0PostLogoutRedirectUri = AppSettings["auth0-PostLogoutRedirectUri"];
 
       app.UseKentorOwinCookieSaver();
       app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
@@ -124,28 +124,58 @@ namespace TallyJ
           AuthorizationCodeReceived = delegate (AuthorizationCodeReceivedNotification notification)
           {
             var identity = notification.AuthenticationTicket.Identity;
+
+
             var sourceClaim = identity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-            var source = sourceClaim?.Value.Split('|')[0];
+            var source = sourceClaim?.Value.Split('|')[0] ?? "Auth0";
 
+            var country = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/country")?.Value;
 
-            var email = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email");
-            var ok = false;
+            var validLogin = false;
 
-            if (email != null)
+            var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email");
+
+            if (emailClaim != null)
             {
-              identity.AddClaim(new Claim("UniqueID", email.Value));
-              identity.AddClaim(new Claim("IsVoter", "True"));
-              ok = true;
+              var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email_verified")?.Value.AsBoolean() ?? false;
+              if (validated)
+              {
+                identity.AddClaim(new Claim("UniqueID", emailClaim.Value));
+                identity.AddClaim(new Claim("VoterId", emailClaim.Value));
+                identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Email));
+                identity.AddClaim(new Claim("IsVoter", "True"));
+               
+                validLogin = true;
+              }
+              else
+              {
+                // attempt to use unverified email?
+              }
             }
             else
             {
+              var phoneClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone");
+              if (phoneClaim != null)
+              {
+                var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone_verified")?.Value.AsBoolean() ?? false;
+                if (validated)
+                {
+                  identity.AddClaim(new Claim("UniqueID", phoneClaim.Value));
+                  identity.AddClaim(new Claim("VoterId", phoneClaim.Value));
+                  identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Phone));
+                  identity.AddClaim(new Claim("IsVoter", "True"));
 
+                  validLogin = true;
+                }
+                else
+                {
+                  // attempt to use unverified phone?
+                }
+              }
             }
 
-
-
-            if (ok)
-            {
+            if (validLogin)
+            { 
               notification.OwinContext.Authentication.SignIn(new AuthenticationProperties()
               {
                 AllowRefresh = true,
@@ -153,7 +183,9 @@ namespace TallyJ
                 ExpiresUtc = DateTime.UtcNow.AddHours(1)
               }, identity);
 
-              UserSession.RecordVoterLogin(source ?? "Auth0", UserSession.VoterEmail);
+              // rely on UserSession values now available after the SignIn just above
+
+              UserSession.RecordVoterLogin(UserSession.VoterId, UserSession.VoterIdType, source, country);
             }
             else
             {
@@ -188,9 +220,6 @@ namespace TallyJ
           {
             var useSms = System.Web.HttpContext.Current.Items["CELL"].AsBoolean();
 
-            //TODO - takes effect on the NEXT call
-            // notification.Options.Scope = "email phone" + (useSms ? " useSMS" : "");
-
             if (useSms)
             {
               notification.ProtocolMessage.LoginHint = "useSMS";
@@ -223,10 +252,6 @@ namespace TallyJ
 
 
 
-
-
-
-
       // ensure that we have authentication account details
       // if (AppSettings["facebook-AppId"].HasContent())
       // {
@@ -239,138 +264,138 @@ namespace TallyJ
       // }
     }
 
-    private CustomFacebookAuthenticationOptions CreateFacebookOptions()
-    {
-      var options = new CustomFacebookAuthenticationOptions
-      {
-        AppId = AppSettings["facebook-AppId"],
-        AppSecret = AppSettings["facebook-AppSecret"],
-      };
+    // private CustomFacebookAuthenticationOptions CreateFacebookOptions()
+    // {
+    //   var options = new CustomFacebookAuthenticationOptions
+    //   {
+    //     AppId = AppSettings["facebook-AppId"],
+    //     AppSecret = AppSettings["facebook-AppSecret"],
+    //   };
+    //
+    //   options.Scope.Add("email");
+    //
+    //   options.Provider = new FacebookAuthenticationProvider
+    //   {
+    //     OnAuthenticated = authContext =>
+    //     {
+    //       var email = (string)authContext.User["email"];
+    //       var gotEmail = email.HasContent();
+    //
+    //       if (gotEmail)
+    //       {
+    //         _db = null; // was likely disposed of
+    //         var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
+    //         if (hasLocalId)
+    //         {
+    //           // var pwProvided = SessionKey.ExtPassword.FromSession("");
+    //           var model = new LoginViewModel
+    //           {
+    //             Email = email,
+    //             Password = " " // no longer allow login this way...
+    //           };
+    //           var modelState = new ModelStateDictionary();
+    //           var rootUrl = new SiteInfo().RootUrl;
+    //           var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
+    //             "Facebook",
+    //             (s, s1) => "", // not used from here
+    //             () => new RedirectResult(rootUrl + "/Account/Logoff"),
+    //             () => null // not used from here
+    //             );
+    //           return helpers.LocalPwLogin(model, rootUrl);
+    //         }
+    //
+    //
+    //         var identity = new ClaimsIdentity(new List<Claim>
+    //         {
+    //           new Claim("Source", "Facebook"),
+    //           new Claim("Email", email),
+    //           new Claim("UniqueID", email),
+    //           new Claim("IsVoter", "True"), // Facebook doesn't show if verified
+    //         }, DefaultAuthenticationTypes.ExternalCookie);
+    //
+    //         authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()
+    //         {
+    //           AllowRefresh = true,
+    //           IsPersistent = false,
+    //           ExpiresUtc = DateTime.UtcNow.AddHours(1)
+    //         }, identity);
+    //
+    //         UserSession.RecordVoterLogin("Facebook", email);
+    //       }
+    //       else
+    //       {
+    //         //TODO - didn't get email... redirect to home page
+    //       }
+    //
+    //       return Task.FromResult(0);
+    //     }
+    //   };
+    //
+    //   return options;
+    // }
 
-      options.Scope.Add("email");
+    // private ITallyJDbContext Db => _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext);
 
-      options.Provider = new FacebookAuthenticationProvider
-      {
-        OnAuthenticated = authContext =>
-        {
-          var email = (string)authContext.User["email"];
-          var gotEmail = email.HasContent();
-
-          if (gotEmail)
-          {
-            _db = null; // was likely disposed of
-            var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
-            if (hasLocalId)
-            {
-              // var pwProvided = SessionKey.ExtPassword.FromSession("");
-              var model = new LoginViewModel
-              {
-                Email = email,
-                Password = " " // no longer allow login this way...
-              };
-              var modelState = new ModelStateDictionary();
-              var rootUrl = new SiteInfo().RootUrl;
-              var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
-                "Facebook",
-                (s, s1) => "", // not used from here
-                () => new RedirectResult(rootUrl + "/Account/Logoff"),
-                () => null // not used from here
-                );
-              return helpers.LocalPwLogin(model, rootUrl);
-            }
-
-
-            var identity = new ClaimsIdentity(new List<Claim>
-            {
-              new Claim("Source", "Facebook"),
-              new Claim("Email", email),
-              new Claim("UniqueID", email),
-              new Claim("IsVoter", "True"), // Facebook doesn't show if verified
-            }, DefaultAuthenticationTypes.ExternalCookie);
-
-            authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()
-            {
-              AllowRefresh = true,
-              IsPersistent = false,
-              ExpiresUtc = DateTime.UtcNow.AddHours(1)
-            }, identity);
-
-            UserSession.RecordVoterLogin("Facebook", email);
-          }
-          else
-          {
-            //TODO - didn't get email... redirect to home page
-          }
-
-          return Task.FromResult(0);
-        }
-      };
-
-      return options;
-    }
-
-    private ITallyJDbContext Db => _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext);
-
-    private GoogleOAuth2AuthenticationOptions CreateGoogleOptions()
-    {
-      var options = new GoogleOAuth2AuthenticationOptions
-      {
-        ClientId = AppSettings["google-ClientId"],
-        ClientSecret = AppSettings["google-ClientSecret"]
-      };
-      options.Scope.Add("email");
-      options.Provider = new GoogleOAuth2AuthenticationProvider()
-      {
-        OnAuthenticated = authContext =>
-        {
-          var email = (string)authContext.User["email"];
-
-          _db = null; // was likely disposed of
-          var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
-          if (hasLocalId)
-          {
-            // var pwProvided = SessionKey.ExtPassword.FromSession("");
-            var model = new LoginViewModel
-            {
-              Email = email,
-              Password = " " // no longer allow login this way...
-            };
-            var modelState = new ModelStateDictionary();
-            var rootUrl = new SiteInfo().RootUrl;
-            var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
-              "Google",
-              (s, s1) => "", // not used from here
-              () => new RedirectResult(rootUrl + "/Account/Logoff"),
-              () => new RedirectResult(rootUrl + "/Account/Logoff"));
-            return helpers.LocalPwLogin(model, rootUrl);
-          }
-
-
-
-          var emailIsVerified = (string)authContext.User["verified_email"];
-
-          var identity = new ClaimsIdentity(new List<Claim>
-          {
-            new Claim("Source", "Google"),
-            new Claim("Email", email),
-            new Claim("UniqueID", email),
-            new Claim("IsVoter",  emailIsVerified),
-          }, DefaultAuthenticationTypes.ExternalCookie);
-
-          authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()
-          {
-            AllowRefresh = true,
-            IsPersistent = false,
-            ExpiresUtc = DateTime.UtcNow.AddHours(1)
-          }, identity);
-
-          UserSession.RecordVoterLogin("Google", email);
-
-          return Task.FromResult(0);
-        }
-      };
-      return options;
-    }
+    // private GoogleOAuth2AuthenticationOptions CreateGoogleOptions()
+    // {
+    //   var options = new GoogleOAuth2AuthenticationOptions
+    //   {
+    //     ClientId = AppSettings["google-ClientId"],
+    //     ClientSecret = AppSettings["google-ClientSecret"]
+    //   };
+    //   options.Scope.Add("email");
+    //   options.Provider = new GoogleOAuth2AuthenticationProvider()
+    //   {
+    //     OnAuthenticated = authContext =>
+    //     {
+    //       var email = (string)authContext.User["email"];
+    //
+    //       _db = null; // was likely disposed of
+    //       var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
+    //       if (hasLocalId)
+    //       {
+    //         // var pwProvided = SessionKey.ExtPassword.FromSession("");
+    //         var model = new LoginViewModel
+    //         {
+    //           Email = email,
+    //           Password = " " // no longer allow login this way...
+    //         };
+    //         var modelState = new ModelStateDictionary();
+    //         var rootUrl = new SiteInfo().RootUrl;
+    //         var helpers = new LoginHelper(modelState, rootUrl, "You must provide your TallyJ password with the email address: " + email,
+    //           "Google",
+    //           (s, s1) => "", // not used from here
+    //           () => new RedirectResult(rootUrl + "/Account/Logoff"),
+    //           () => new RedirectResult(rootUrl + "/Account/Logoff"));
+    //         return helpers.LocalPwLogin(model, rootUrl);
+    //       }
+    //
+    //
+    //
+    //       var emailIsVerified = (string)authContext.User["verified_email"];
+    //
+    //       var identity = new ClaimsIdentity(new List<Claim>
+    //       {
+    //         new Claim("Source", "Google"),
+    //         new Claim("Email", email),
+    //         new Claim("UniqueID", email),
+    //         new Claim("IsVoter",  emailIsVerified),
+    //       }, DefaultAuthenticationTypes.ExternalCookie);
+    //
+    //       authContext.OwinContext.Authentication.SignIn(new AuthenticationProperties()
+    //       {
+    //         AllowRefresh = true,
+    //         IsPersistent = false,
+    //         ExpiresUtc = DateTime.UtcNow.AddHours(1)
+    //       }, identity);
+    //
+    //       UserSession.RecordVoterLogin("Google", email);
+    //
+    //       return Task.FromResult(0);
+    //     }
+    //   };
+    //   return options;
+    // }
 
 
   }

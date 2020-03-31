@@ -34,7 +34,7 @@ namespace TallyJ.Controllers
           ElectionName = j.e.Name,
           j.l.HostAndVersion,
           //          isVoter = j.l.VoterEmail == null ? null : "Voter",
-          j.l.VoterEmail,
+          j.l.VoterId,
           j.l.ComputerCode
         }).ToList();
 

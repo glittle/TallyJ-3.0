@@ -26,7 +26,7 @@ namespace Tests.BusinessTests
         _logMessage = logMessage;
       }
 
-      public void Add(string message, bool x = false, string voterEmail = null)
+      public void Add(string message, bool x = false, string voterId = null)
       {
         _logMessage = _logMessage + message;
       }

@@ -124,12 +124,42 @@
         alert('Please select a file from the list first.');
         return;
       }
-      ShowStatusDisplay('Processing');
-      $('#importResults').html('Processing').removeClass('failed').show();
+      ShowStatusDisplay('Starting');
+      var resultDiv = $('#importResults');
+      var currentHeight = resultDiv.outerHeight();
+      resultDiv.css('min-height', currentHeight + 'px').html('Starting').removeClass('failed').show();
 
       CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
         if (info.result) {
-          $('#importResults').html(info.result.join('<br>')).show().toggleClass('failed', info.failed === true);
+          for (var i = 0; i < info.result.length; i++) {
+            var r = info.result[i];
+            var prefix = r.substr(0, 3);
+
+            switch (prefix) {
+              case '~E ':
+              case '~W ':
+              case '~I ':
+                r = r.substr(3);
+            }
+            switch (prefix) {
+              case '~E ':
+                r = `<div class=E>${r}</div>`;
+                break;
+              case '~W ':
+                r = `<div class=W>${r}</div>`;
+                break;
+              case '~I ':
+                r = `<div class=I>${r}</div>`;
+                break;
+              default:
+                r = `<div>${r}</div>`;
+                break;
+            }
+
+            info.result[i] = r;
+          };
+
+          resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
           $('.DbCount span').text(comma(info.count));
         }
         ResetStatusDisplay();
@@ -240,7 +270,7 @@
           dups++;
         }
         var from = div.find('h5').text();
-        mappings.push(from + '->' + value);
+        mappings.push(from + String.fromCharCode(29) + value); // a " cannot be in the CSV
       }
     });
 
@@ -333,7 +363,7 @@
     });
     return list;
   };
-  function setActiveUploadRowId (rowId, highlightInList) {
+  function setActiveUploadRowId(rowId, highlightInList) {
     SetInStorage('ActiveUploadRowId', rowId);
     local.activeFileRowId = rowId;
     if (highlightInList) {

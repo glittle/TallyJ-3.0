@@ -136,7 +136,7 @@
   function extendPersonCore(p) {
     p.NameArea = p.Name + (p.Area ? ' <u>' + p.Area + '</u>' : '');
     // for searches, make lowercase
-    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase());
+    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase() + p.Phone);
     p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
     p.parts = p.namePlain.split(local.nameSplitter);
 
@@ -145,6 +145,9 @@
     if (customExtendPerson) {
       customExtendPerson(p);
     }
+//    if (forVoter) {
+//      p.sort = Math.random();
+//    }
   }
 
   function special(code, cbAfter) {
@@ -266,12 +269,22 @@
   }
 
   function sortResults(result, byNameOnly) {
+    if (forVoter) {
+      // a new random order every time
+      result.People.forEach(p => p.sort = Math.random());
+
+      result.People.sort(function(a, b) {
+         return a.sort < b.sort ? -1 : 1;
+      });
+      return;
+    }
+
     if (byNameOnly) {
       result.People.sort(function (a, b) {
         return a.name.localeCompare(b.name);
       });
       return;
-    } 
+    }
 
     if (forBallotEntry) {
       result.People.sort(function (a, b) {

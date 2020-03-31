@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using EntityFramework.Extensions;
@@ -254,6 +255,7 @@ namespace TallyJ.CoreModels
         person.OtherNames,
         person.Area,
         person.Email,
+        person.Phone,
         C_FullName = person.C_FullNameFL
       };
     }
@@ -305,6 +307,18 @@ namespace TallyJ.CoreModels
         personFromInput.IneligibleReasonGuid = null;
       }
 
+      if (personFromInput.Phone != null)
+      {
+        //check via Twilio to ensure real number?
+        if (!new Regex(@"\+[0-9]{4,15}").IsMatch(personFromInput.Phone))
+        {
+          return new
+          {
+            Message = "Invalid phone number. Must start with + and only contain digits."
+          }.AsJsonResult();
+        }
+      }
+
       var editableFields = new
       {
         // personFromInput.AgeGroup,
@@ -317,6 +331,7 @@ namespace TallyJ.CoreModels
         personFromInput.OtherNames,
         personFromInput.Area,
         personFromInput.Email,
+        personFromInput.Phone,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
@@ -355,14 +370,23 @@ namespace TallyJ.CoreModels
           {
             return new
             {
-              Message = "That email is in use for another person.",
+              Message = "That email is registered with another person.",
+              Person = PersonForEdit(personInDatastore),
+            }.AsJsonResult();
+          }
+
+          if (e.GetAllMsgs(";").Contains("IX_PersonPhone"))
+          {
+            return new
+            {
+              Message = "That phone number is registered with another person.",
               Person = PersonForEdit(personInDatastore),
             }.AsJsonResult();
           }
 
           return new
           {
-            Message = e.LastException()
+            e.LastException().Message
           }.AsJsonResult();
         }
 
@@ -521,7 +545,7 @@ namespace TallyJ.CoreModels
                         ShowRegistrationTime(p),
                         ShowTellers(p),
                         showLocations ? LocationName(p.VotingLocationGuid) : "",
-              }.JoinedAsString("; ", true) 
+              }.JoinedAsString("; ", true)
                       + FormatRegistrationLog(p),
             p.VotingMethod,
             InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
@@ -530,7 +554,7 @@ namespace TallyJ.CoreModels
             CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
             Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
             HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
-            CanBeOnline = useOnline && p.Email.HasContent(),
+            CanBeOnline = useOnline && (p.Email.HasContent() || p.Phone.HasContent()),
             Registered = p.VotingMethod == VotingMethodEnum.Registered,
             EnvNum = ShowEnvNum(p),
             p.CanVote,
@@ -576,7 +600,7 @@ namespace TallyJ.CoreModels
         format = "MMM d -" + format;
       }
       return p.RegistrationTime.HasValue
-          ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString(format).ToLowerInvariant()
+          ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString(format)
           : "";
     }
 
@@ -588,7 +612,7 @@ namespace TallyJ.CoreModels
       }
 
       var locationModel = new LocationModel();
-      
+
       var hasLocations = locationModel.HasLocationsWithoutOnline;
 
       if (hasLocations && UserSession.CurrentLocation == null)
@@ -625,7 +649,7 @@ namespace TallyJ.CoreModels
         {
           if (onlineVoter.Status == OnlineBallotStatusEnum.Processed)
           {
-            return new {Message = "This online ballot has been processed. Registration cannot be changed."}.AsJsonResult();
+            return new { Message = "This online ballot has been processed. Registration cannot be changed." }.AsJsonResult();
           }
         }
       }
@@ -811,10 +835,10 @@ namespace TallyJ.CoreModels
       if (hasOnline)
       {
         return new
-          {
-            Success = false,
-            Results = "Nothing was deleted. Once online votes have been recorded, you cannot delete all the people. ",
-          }.AsJsonResult();
+        {
+          Success = false,
+          Results = "Nothing was deleted. Once online votes have been recorded, you cannot delete all the people. ",
+        }.AsJsonResult();
       }
 
       var rows = 0;

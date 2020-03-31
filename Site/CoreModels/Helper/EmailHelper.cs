@@ -167,17 +167,19 @@ namespace TallyJ.CoreModels.Helper
     //    }
 
 
-    public bool SendWhenProcessed(Election e, Person p, OnlineVotingInfo ovi, OnlineVoter ov, out string error)
+    public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, out string error)
     {
       // only send if they asked for it
-      if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p"))
+      if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Email.HasNoContent())
       {
         error = null;
         return false;
       }
 
+
       // proceed to send
-      var email = ov.Email;
+      var email = p.Email;
+
       var hostSite = SettingsHelper.Get("HostSite", "");
 
       var html = GetEmailTemplate("BallotProcessed").FilledWithObject(new
@@ -223,24 +225,34 @@ namespace TallyJ.CoreModels.Helper
                     && e.OnlineAnnounced == null
                     && e.OnlineWhenClose > now)
         .GroupJoin(
-          // get list of voters who want to be notified when their election opens
-          db.OnlineVotingInfo.Where(ovi => !ovi.NotifiedAboutOpening.Value)
-            .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), ovi => ovi.Email, ov => ov.Email, (ovi, ov) => new { ovi, ov })
-            .Join(db.Person, j => j.ovi.PersonGuid, p => p.PersonGuid, (j, p) => new { j.ovi, j.ov, p })
+          // get list of voters who want to be notified by email when their election opens
+          db.OnlineVotingInfo
+            .Where(ovi => !ovi.NotifiedAboutOpening.Value)
+            .Join(db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
+            .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), j => j.p.Email, ov => ov.VoterId, (j, ov) => new { j.ovi, emailOv = ov, j.p })
+            .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), j => j.p.Phone, ov => ov.VoterId, (j, ov) => new { j.ovi, phoneOv = ov, j.emailOv, j.p })
           , e => e.ElectionGuid, jv => jv.ovi.ElectionGuid, (election, oviList) => new { election, oviList })
         .Select(g => new
         {
           g.election,
-          people = g.oviList.Select(jOvi => new
+          peopleEmail = g.oviList.Where(jOvi => jOvi.emailOv != null).Select(jOvi => new
           {
-            jOvi.ov.Email,
+            jOvi.p.Email,
+            jOvi.p.C_FullNameFL,
+            jOvi.ovi
+          }),
+          peopleSms = g.oviList.Where(jOvi => jOvi.phoneOv != null).Select(jOvi => new
+          {
+            jOvi.p.Phone,
             jOvi.p.C_FullNameFL,
             jOvi.ovi
           })
+
         })
         .ToList();
 
       var allMsgs = new List<string>();
+      var smsHelper = new SmsHelper();
 
       electionList.ForEach(electionInfo =>
       {
@@ -262,10 +274,10 @@ namespace TallyJ.CoreModels.Helper
           howLong = remainingTime.Hours + " hours";
         }
 
-        var numEmails = 0;
+        var numSent = 0;
         var errors = new List<string>();
 
-        electionInfo.people.ToList().ForEach(voter =>
+        electionInfo.peopleEmail.ToList().ForEach(voter =>
         {
           var html = GetEmailTemplate("ElectionOpen").FilledWithObject(new
           {
@@ -292,7 +304,7 @@ namespace TallyJ.CoreModels.Helper
 
           if (ok)
           {
-            numEmails++;
+            numSent++;
           }
           else
           {
@@ -303,7 +315,36 @@ namespace TallyJ.CoreModels.Helper
           voter.ovi.NotifiedAboutOpening = true;
         });
 
-        var msg = $"Email: Election #{election.C_RowId} {(automated ? "automatically " : "")}announced to {numEmails} {(numEmails == 1 ? "person" : "people")}";
+        electionInfo.peopleSms.ToList().ForEach(voter =>
+        {
+          var html = GetEmailTemplate("SmsElectionOpen").FilledWithObject(new
+          {
+            hostSite,
+            voter.Phone,
+            personName = voter.C_FullNameFL,
+            electionName,
+            electionType,
+            whenClosedDay = whenClosedUtc.ToString("d MMM"),
+            whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
+            howLong,
+          });
+
+          var ok = smsHelper.SendWhenOpened(voter.Phone, voter.C_FullNameFL, html, out var smsError);
+
+          if (ok)
+          {
+            numSent++;
+          }
+          else
+          {
+            errors.Add(smsError);
+          }
+
+          // regardless if the email went or not, record it
+          voter.ovi.NotifiedAboutOpening = true;
+        });
+
+        var msg = $"Email: Election #{election.C_RowId} {(automated ? "automatically " : "")}announced to {numSent} {(numSent == 1 ? "person" : "people")}";
 
         if (errors.Count > 0)
         {
@@ -366,6 +407,9 @@ namespace TallyJ.CoreModels.Helper
     public JsonResult SendHeadTellerEmail(string emailCode)
     {
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
+      // TODO - send SMS to phone numbers
+
+
       var htEmailCode = emailCode.AsEnum(HtEmailCodes._unknown_);
 
       if (htEmailCode == HtEmailCodes._unknown_)

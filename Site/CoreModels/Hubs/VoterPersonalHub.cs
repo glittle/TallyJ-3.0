@@ -15,10 +15,10 @@ namespace TallyJ.CoreModels.Hubs
     {
       get
       {
-        var email = UserSession.VoterEmail;
-        AssertAtRuntime.That(email.HasContent());
+        var emailOrPhone = UserSession.VoterId;
+        AssertAtRuntime.That(emailOrPhone.HasContent());
 
-        return "Voter" + email;
+        return "Voter" + emailOrPhone;
       }
     }
 
@@ -38,21 +38,35 @@ namespace TallyJ.CoreModels.Hubs
 
     public void Update(Person person)
     {
-      if (person != null && person.Email.HasContent())
+      if (person != null)
       {
-        CoreHub.Clients.Group("Voter" + person.Email).updateVoter(new
+        if (person.Email.HasContent())
         {
-          updateRegistration = true,
-          person.VotingMethod,
-          person.RegistrationTime,
-          person.ElectionGuid
-        });
+          CoreHub.Clients.Group("Voter" + person.Email).updateVoter(new
+          {
+            updateRegistration = true,
+            person.VotingMethod,
+            person.RegistrationTime,
+            person.ElectionGuid
+          });
+        }
+      
+        if (person.Phone.HasContent())
+        {
+          CoreHub.Clients.Group("Voter" + person.Phone).updateVoter(new
+          {
+            updateRegistration = true,
+            person.VotingMethod,
+            person.RegistrationTime,
+            person.ElectionGuid
+          });
+        }
       }
     }
 
-    public void Login(string email)
+    public void Login(string emailOrPhone)
     {
-      CoreHub.Clients.Group("Voter" + email).updateVoter(new
+      CoreHub.Clients.Group("Voter" + emailOrPhone).updateVoter(new
       {
         login = true
       });

@@ -41,7 +41,8 @@ namespace TallyJ.CoreModels
               j.p.C_FullName,
               j.p.C_RowId,
               j.ovi,
-              j.p.Email
+              j.p.Email,
+              j.p.Phone
             })
             .OrderBy(j => j.C_FullName)
             .ToList()
@@ -58,7 +59,8 @@ namespace TallyJ.CoreModels
               VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
               j.C_FullName,
               PersonId = j.C_RowId,
-              j.Email
+              j.Email,
+              j.Phone
             })
           : null;
 

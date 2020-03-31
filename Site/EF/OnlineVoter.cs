@@ -15,9 +15,12 @@ namespace TallyJ.EF
     public partial class OnlineVoter
     {
         public int C_RowId { get; set; }
-        public string Email { get; set; }
+        public string VoterId { get; set; }
+        public string VoterIdType { get; set; }
         public Nullable<System.DateTime> WhenRegistered { get; set; }
         public Nullable<System.DateTime> WhenLastLogin { get; set; }
         public string EmailCodes { get; set; }
+        public string Country { get; set; }
+        public string OtherInfo { get; set; }
     }
 }

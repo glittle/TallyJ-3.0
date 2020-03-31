@@ -843,15 +843,15 @@ namespace TallyJ.Code
       return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, 0);
     }
 
-    public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)
-    {
-      return new LoginViewModel
-      {
-        Email = input.UserName,
-        Password = input.PasswordV1,
-        //        RememberMe = input.RememberMe
-      };
-    }
+    // public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)
+    // {
+    //   return new LoginViewModel
+    //   {
+    //     Email = input.UserName,
+    //     Password = input.PasswordV1,
+    //     //        RememberMe = input.RememberMe
+    //   };
+    // }
 
     /// <summary>
     /// Convert string to matching enum. 

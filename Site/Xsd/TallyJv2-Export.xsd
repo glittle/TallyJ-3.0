@@ -104,6 +104,7 @@
           <xs:complexType>
             <xs:attribute name="PersonGuid" type="xs:string" />
             <xs:attribute name="Email" type="xs:string" />
+            <xs:attribute name="Phone" type="xs:string" />
             <xs:attribute name="PoolLocked" type="xs:boolean" />
             <xs:attribute name="Status" type="xs:string" />
             <xs:attribute name="WhenStatus" type="xs:string" use="optional" />
@@ -178,6 +179,7 @@
             <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
             <xs:attribute name="Changed" type="xs:boolean" use="optional" />
             <xs:attribute name="Email" type="xs:string" use="optional" />
+            <xs:attribute name="Phone" type="xs:string" use="optional" />
             <xs:attribute name="HasOnlineBallot" type="xs:boolean" use="optional" />
           </xs:complexType>
         </xs:element>

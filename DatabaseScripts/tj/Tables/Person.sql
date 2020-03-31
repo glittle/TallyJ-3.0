@@ -22,15 +22,18 @@
     [EnvNum]               INT              NULL,
     [_RowVersion]          ROWVERSION       NOT NULL,
     [_FullName]            AS               ((((([LastName]+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+', ')+coalesce([FirstName],''))+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
-    [_RowVersionInt]       AS               (CONVERT([bigint],[_RowVersion],0)),
+    [_RowVersionInt]       AS               (CONVERT([bigint],[_RowVersion],(0))),
     [_FullNameFL]          AS               ((((coalesce([FirstName]+' ','')+[LastName])+coalesce((' ['+nullif([OtherNames],''))+']',''))+coalesce((' ['+nullif([OtherLastNames],''))+']',''))+coalesce((' ('+nullif([OtherInfo],''))+')','')) PERSISTED,
     [Teller1]              NVARCHAR (25)    NULL,
     [Teller2]              NVARCHAR (25)    NULL,
     [Email]                NVARCHAR (250)   NULL,
+    [Phone]                VARCHAR (25)     NULL,
     [HasOnlineBallot]      BIT              NULL,
     CONSTRAINT [PK_Person] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Person_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 
@@ -90,7 +93,9 @@ CREATE NONCLUSTERED INDEX [IX_Person]
 GO
 CREATE NONCLUSTERED INDEX [IX_PersonElection]
     ON [tj].[Person]([ElectionGuid] ASC, [_FullName] ASC)
-    INCLUDE([_RowId], [CombinedInfo], [CombinedSoundCodes], [VotingMethod], [Email], [PersonGuid], [LastName], [FirstName], [OtherLastNames], [OtherNames], [OtherInfo], [Area], [BahaiId], [CombinedInfoAtStart], [AgeGroup], [CanVote], [CanReceiveVotes], [IneligibleReasonGuid], [RegistrationTime], [VotingLocationGuid], [EnvNum], [_RowVersion], [_RowVersionInt], [_FullNameFL], [Teller1], [Teller2], [HasOnlineBallot]);
+    INCLUDE([_RowId], [CombinedInfo], [CombinedSoundCodes], [VotingMethod], [Teller1], [Teller2], [HasOnlineBallot], [CanReceiveVotes], [IneligibleReasonGuid], [RegistrationTime], [VotingLocationGuid], [EnvNum], [_RowVersion], [OtherInfo], [Area], [BahaiId], [CombinedInfoAtStart], [AgeGroup], [CanVote], [Email], [PersonGuid], [LastName], [FirstName], [OtherLastNames], [OtherNames], [Phone]);
+
+
 
 
 
@@ -99,6 +104,14 @@ CREATE NONCLUSTERED INDEX [IX_PersonElection]
 
 GO
 CREATE NONCLUSTERED INDEX [IX_Person_CanVote]
-    ON [tj].[Person]([CanVote] ASC, [IneligibleReasonGuid] ASC, [Email] ASC)
-    INCLUDE([ElectionGuid], [PersonGuid], [RegistrationTime], [VotingMethod], [_FullNameFL]);
+    ON [tj].[Person]([CanVote] ASC, [IneligibleReasonGuid] ASC)
+    INCLUDE([ElectionGuid], [PersonGuid], [RegistrationTime], [VotingMethod], [Email], [Phone]);
+
+
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_PersonPhone]
+    ON [tj].[Person]([ElectionGuid] ASC, [Phone] ASC)
+    INCLUDE([PersonGuid]) WHERE ([Phone] IS NOT NULL AND [Phone]<>'');
 

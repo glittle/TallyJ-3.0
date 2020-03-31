@@ -88,7 +88,7 @@ var vueOptions = {
       randomOtherInfo: '',
       randomResult: '',
       addRandomToList: false,
-      hasLocalId: false,
+      //      hasLocalId: false,
       meditate: false
     };
   },
@@ -185,7 +185,7 @@ var vueOptions = {
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
-            vue.hasLocalId = info.hasLocalId;
+            //            vue.hasLocalId = info.hasLocalId;
 
             // for dev, go to first available election
             //            setTimeout(function () {
@@ -333,6 +333,7 @@ var vueOptions = {
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
             vue.selectionProcess = info.OnlineSelectionProcess;
+            vue.voterName = info.voterName;
 
             voterHome.peopleHelper.Prepare(function () {
               var list = JSON.parse(info.votingInfo.ListPool || '[]');
@@ -424,10 +425,10 @@ var vueOptions = {
 
       $('#P' + this.nameList[this.searchResultRow].Id)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
-    specialSearch: function (code) {
-      this.resetSearch();
-      voterHome.peopleHelper.Special(code, this.displaySearchResults);
-    },
+//    specialSearch: function (code) {
+//      this.resetSearch();
+//      voterHome.peopleHelper.Special(code, this.displaySearchResults);
+//    },
     displaySearchResults: function (info) {
       voterHome.People = info.People;
       this.nameList = voterHome.People;
@@ -649,11 +650,11 @@ var vueOptions = {
         });
     },
     emailTest: function () {
-      CallAjaxHandler(GetRootUrl() + 'Vote/SendTestEmail',
+      CallAjaxHandler(GetRootUrl() + 'Vote/SendTestMessage',
         null,
         function (info) {
           if (info.sent) {
-            ShowStatusSuccess('Email Sent');
+            ShowStatusSuccess('Message Sent');
           } else {
             ShowStatusFailed(info.Error);
           }

@@ -291,6 +291,7 @@
           voter.Status = '-';
         }
       }
+      voter.EmailPhone = [voter.Email, voter.Phone].filter(function(s) { return !!s; }).join('<br>');
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
