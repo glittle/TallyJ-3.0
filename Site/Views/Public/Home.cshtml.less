@@ -114,7 +114,7 @@ div.closer {
         width: 24px;
       }
 
-      >span {
+      > span {
         font-size: 14px;
         color: #fff;
         margin: 0 8px 0 16px;
@@ -294,19 +294,59 @@ section.CenterPanel.chosen:hover {
     font-weight: bold;
   }
 
-  .voterInfo{
+  .voterInfo {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 180px;
   }
-  
+
+  .voterOptions {
+    display: flex;
+    justify-content: center;
+    margin: 1em 3em;
+
+    > div {
+      width: 150px;
+      height: 200px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position-x: center;
+      position: relative;
+      margin: 0 3em;
+
+      a {
+        color: black;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      span {
+        position: absolute;
+        bottom: 3px;
+        height: 2.5em;
+        text-align: center;
+        left: 0;
+        right: 0;
+      }
+    }
+
+    .voterSms {
+      background-image: url(../../Images/voterSms.png);
+    }
+
+    .voterEmail {
+      background-image: url(../../Images/voterEmail.png);
+    }
+  }
+
   .voterLogins {
     display: flex;
     justify-content: space-between;
     margin: 20px 0 10px;
 
-    >div {
+    > div {
       border: 1px solid grey;
       margin: 3px;
       padding: 1em;
@@ -461,7 +501,7 @@ div.notes {
   align-items: start;
   margin: 0.5em;
 
-  >div {
+  > div {
     margin: .5em 0;
     padding: 10px 20px;
     text-align: center;
@@ -483,7 +523,6 @@ div.notes {
   p {
     color: #777;
   }
-
   //.centerL {
   //    left: 12px;
   //}
@@ -513,6 +552,14 @@ div.notes {
   .VoterPanel {
     .voterLogins {
       flex-direction: column;
+    }
+
+    .voterOptions {
+      flex-direction: column;
+
+      > div {
+        margin: 0;
+      }
     }
   }
 

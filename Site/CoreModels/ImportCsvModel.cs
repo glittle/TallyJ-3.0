@@ -306,7 +306,7 @@ namespace TallyJ.CoreModels
 
       var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
       var phoneNumberCleaner = new Regex(@"[^\+0-9]");
-      var emailChecker = new Regex(@"\S\@\S\.\S");
+      var emailChecker = new Regex(@".*@.*\..*");
 
       var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
       currentPeople.ForEach(p => p.TempImportLineNum = -1);

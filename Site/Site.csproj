@@ -738,6 +738,8 @@
     </Content>
     <Content Include="Images\pdf.png" />
     <Content Include="Images\social.png" />
+    <Content Include="Images\voterEmail.png" />
+    <Content Include="Images\voterSms.png" />
     <Content Include="Images\walk.png" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />

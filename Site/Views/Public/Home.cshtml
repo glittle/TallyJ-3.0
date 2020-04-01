@@ -212,35 +212,38 @@
       {
         <div class="voterInfo">
           <div>
-            @{
-              var msg = (string)Session[SessionKey.VoterLoginError];
-              if (msg.HasContent())
-              {
-                Session.Remove(SessionKey.VoterLoginError);
-                <div class="VoterLoginError">
-                  @msg.AsRawHtml()
-                </div>
-              }
-
-            }
+            @*@{
+                var msg = (string)Session[SessionKey.VoterLoginError];
+                if (msg.HasContent())
+                {
+                  Session.Remove(SessionKey.VoterLoginError);
+                  <div class="VoterLoginError">
+                    @msg.AsRawHtml()
+                  </div>
+                }
+              }*@
 
             <div>
-              <p>Login to vote with:</p>
-              <p>
-                your 
-                <a href="@Url.Action("LoginSms", "VoterAccount")">Cell Phone Number</a>
-                or
-                your
-                <a href="@Url.Action("LoginEmail", "VoterAccount")">Email Address</a>.
-              </p>
-
-              <p>Beta note: The voter login process is being worked on. If you have problems, please contact Glen Little.</p>
+              <p>How would you like to log in to TallyJ to vote?</p>
+              <div class="voterOptions">
+                <div class="voterSms">
+                  <a href="@Url.Action("LoginSms", "VoterAccount")">
+                    <span>Using SMS with your mobile phone</span>
+                  </a>
+                </div>
+                <div class="voterEmail">
+                  <a href="@Url.Action("LoginEmail", "VoterAccount")">
+                    <span>Using your Email address</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <p>
-            By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
-          </p>
+          <div>
+            <p>TallyJ uses Auth0 and Twilio to enable logins from anywhere on the globe!</p>
+            <p>By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.</p>
+          </div>
         </div>
       }
     </section>
