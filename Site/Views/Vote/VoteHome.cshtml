@@ -193,7 +193,7 @@
         <p v-show="nameList.length">
           To select a name using your keyboard while typing, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
         </p>
-        <button class="btn addRandomToList" v-if="useRandom && nameList.length" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
+        <button class="btn addRandomToList" v-if="useRandom" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
       </div>
       <form v-if="useRandom && !useList || addRandomToList" class="randomInput">
         <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>

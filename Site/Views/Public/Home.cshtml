@@ -31,7 +31,7 @@
       {
         <div class="centerL" title="Vote online in an election.">
           <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote Online</button>
-          <p>Vote or register to vote in an election</p>
+          <p>Vote in an election</p>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
@@ -224,7 +224,8 @@
               }*@
 
             <div>
-              <p>How would you like to log in to TallyJ to vote?</p>
+              <p>Welcome! How would you like to log in to TallyJ to vote?</p>
+        
               <div class="voterOptions">
                 <div class="voterSms">
                   <a href="@Url.Action("LoginSms", "VoterAccount")">
@@ -236,6 +237,12 @@
                     <span>Using your Email address</span>
                   </a>
                 </div>
+              </div>
+              <div class="mustPreRegister">
+                <span><strong>Important!</strong> The mobile phone number or email address</span>
+                <span>you use here <strong>MUST be pre-registered</strong> with</span>
+                <span>your local Assembly before you can vote!</span>
+                <p>Please contact your Assembly to confirm your information.</p>
               </div>
             </div>
           </div>

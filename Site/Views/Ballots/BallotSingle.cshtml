@@ -14,7 +14,8 @@
   ContextItems.AddJavascriptForPage("ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocations={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithOnline.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithOnline.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithoutOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithoutOnline.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -44,7 +45,7 @@
 <div class="Panels">
   <div class="sidePanel">
     <div id="accordion">
-      @if (ContextItems.LocationModel.HasLocationsWithOnline)
+      @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
       {
         <h3 class="LocationStatusH3">Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
@@ -63,6 +64,7 @@
       }
       <h3>
         <span class="hideIfOnline">Computers</span>
+        <span class="hideIfNotOnlineSpan">Ballots</span>
         @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
         {
           <span class="where">
@@ -80,7 +82,7 @@
           Ballots to enter:
           <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
         </div>
-        <div class="float-right">
+        <div class="float-right hideIfOnline">
           <button type="button" id="btnNewBallot" class="btn btn-mini NewBallotBtns">
             Add for Computer @UserSession.CurrentComputerCode
           </button>
@@ -186,7 +188,7 @@
       </div>
     </div>
     <div class="Top">
-      <input class="Vote" type="number" min="0" value='{count}' tabindex="2">
+      <input class="Vote hideIfOnline" type="number" min="0" value='{count}' tabindex="2">
       <span class="NameInfo">
         <span class="Invalid">Spoiled: </span>
         <span class="Name">{^Display}</span>

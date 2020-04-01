@@ -301,10 +301,25 @@ section.CenterPanel.chosen:hover {
     min-height: 180px;
   }
 
+  .mustPreRegister {
+    color: @tallyJError;
+    background: white;
+    padding: 1em 1.5em 0;
+    display: inline-block;
+    box-shadow: 0px 0 10px 0px rgba(50, 50, 50, 0.5);
+    margin: 0 0 .5em 0;
+    border-radius: 3px;
+
+    span {
+      display: block;
+    }
+  }
+
   .voterOptions {
     display: flex;
     justify-content: center;
     margin: 1em 3em;
+
 
     > div {
       width: 140px;
@@ -560,6 +575,12 @@ div.notes {
 
       > div {
         margin: 0;
+      }
+    }
+
+    .mustPreRegister {
+      span{
+        display: inline;
       }
     }
   }

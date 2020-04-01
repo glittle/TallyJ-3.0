@@ -741,7 +741,6 @@ var vueOptions = {
       this.addRandomToList = false;
     },
     setInputFocus: function () {
-      debugger
       if (this.selectionProcess === 'R') {
         this.$refs.firstInput && this.$refs.firstInput.focus();
       } else {

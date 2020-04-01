@@ -55,7 +55,9 @@ namespace TallyJ.CoreModels
           vi => vi.SingleNameElectionCount).AsInt();
 
       // vote == ballot for this election
-      ResultSummaryCalc.BallotsNeedingReview = VoteInfos.Count(VoteAnalyzer.VoteNeedReview);
+      ResultSummaryCalc.BallotsNeedingReview = 
+        Ballots.Count(BallotAnalyzer.BallotNeedsReview) + 
+        VoteInfos.Count(VoteAnalyzer.VoteNeedReview);
 
       // clear any existing results
       Results.ForEach(InitializeSomeProperties);

@@ -150,7 +150,6 @@ function clearElectionRelatedStorageItems() {
 
 };
 
-
 function scrollIntoView(element, blockWhere) {
   if (!element) return;
   if (element.jquery) {

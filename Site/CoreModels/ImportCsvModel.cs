@@ -457,7 +457,10 @@ namespace TallyJ.CoreModels
                     errorInRow = true;
                   }
 
-                  knownEmails.Add(value);
+                  if (!errorInRow)
+                  {
+                    knownEmails.Add(value);
+                  }
                 }
                 break;
               case "Phone":
@@ -478,8 +481,7 @@ namespace TallyJ.CoreModels
                   }
                   else if (originalValue != value)
                   {
-                    // too busy on the page
-                    // result.Add($"~W Line {currentLineNum} - Phone number adjusted from {rawValue} to {value} ");
+                    result.Add($"~W Line {currentLineNum} - Phone number adjusted from {rawValue} to {value} ");
                   }
 
                   if (value.HasContent())
@@ -492,6 +494,9 @@ namespace TallyJ.CoreModels
                  
                     knownPhones.Add(value);
                   }
+
+                  // update with the cleaned phone number
+                  person.SetPropertyValue(dbFieldName, value.HasContent() ? value : null);
                 }
 
                 break;
@@ -618,8 +623,8 @@ namespace TallyJ.CoreModels
         result.Add($"Import completed in {(DateTime.Now - start).TotalSeconds:N1} s.");
       }
 
-
-      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString("\r"), true);
+      var resultsForLog = result.Where(s => !s.StartsWith("~"));
+      new LogHelper().Add("Imported file #" + rowId + ": " + resultsForLog.JoinedAsString("\r"), true);
 
       return new
       {

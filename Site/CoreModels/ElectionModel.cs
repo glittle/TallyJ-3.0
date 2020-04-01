@@ -1093,7 +1093,8 @@ namespace TallyJ.CoreModels
           .Where(b => b.p.Phone.HasContent())
           .Select(b => new { VoterId = b.p.Phone, b.p.PersonGuid }))
         .GroupJoin(Db.OnlineVoter, v => v.VoterId, ov => ov.VoterId, (v, ovList) => new { v.PersonGuid, ovList })
-        .ToDictionary(j => j.PersonGuid, j => j.ovList);
+        .GroupBy(j => j.PersonGuid)
+        .ToDictionary(g => g.Key, j => j.SelectMany(o => o.ovList));
 
       var ballotModel = BallotModelFactory.GetForCurrentElection();
       var problems = new List<string>();
@@ -1198,7 +1199,7 @@ namespace TallyJ.CoreModels
                 }
               }
 
-              if (onlineBallotInfo.p.Phone.HasContent())
+              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
               {
                 var sent = smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, out var smsError);
                 if (smsError.HasContent())

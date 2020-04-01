@@ -776,6 +776,7 @@
 
   function showLocation(location) {
     local.location = location;
+    publicInterface.Location = location;
     $('#ddlTopLocation').val(local.location.Id);
 
     $('.locationInfo [data-name], .LocationName[data-name]').each(function () {
