@@ -772,9 +772,14 @@
     <Content Include="Scripts\ckeditor.js.map" />
     <Content Include="Reports\AllCanReceive.cshtml" />
     <Content Include="Reports\BallotsOnline.cshtml" />
+    <Content Include="Scripts\fonts\element-icons.ttf" />
+    <Content Include="Scripts\fonts\element-icons.woff" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />
     <Content Include="Scripts\ckeditor.vue.js" />
+    <Content Include="Scripts\element-ui-en.js" />
+    <Content Include="Scripts\element-ui.css" />
+    <Content Include="Scripts\element-ui.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />

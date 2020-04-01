@@ -17,13 +17,40 @@ namespace TallyJ.Controllers
       return View();
     }
 
-    public JsonResult GetMainLog(int lastRowId = 0, int numToShow = 50)
+    public JsonResult GetMainLog(string searchText, string searchName, int lastRowId = 0, int numToShow = 50, DateTime? fromDate = null, DateTime? toDate = null)
     {
       var dbContext = Db;
 
-      var logLines = dbContext.C_Log
-        .Where(l => l.C_RowId < lastRowId || lastRowId == 0)
-        .GroupJoin(dbContext.Election, l => l.ElectionGuid, e => e.ElectionGuid, (l, eList) => new { l, e = eList.FirstOrDefault() })
+      var query1 = dbContext.C_Log
+        .GroupJoin(dbContext.Election, l => l.ElectionGuid, e => e.ElectionGuid, (l, eList) => new {l, e = eList.FirstOrDefault()});
+
+      if (lastRowId != 0)
+      {
+        query1 = query1.Where(j => j.l.C_RowId < lastRowId);
+      }
+
+      if (fromDate.HasValue && toDate.HasValue)
+      {
+        query1 = query1.Where(j => j.l.AsOf >= fromDate.Value && j.l.AsOf <= toDate.Value);
+      }
+      
+      if (searchText.HasContent())
+      {
+        searchText = $"%{searchText}%";
+        query1 = query1.Where(j => SqlFunctions.PatIndex(searchText, j.l.Details) > 0
+        );
+      }
+
+      if (searchName.HasContent())
+      {
+        searchName = $"%{searchName}%";
+        query1 = query1.Where(j => SqlFunctions.PatIndex(searchName, j.l.VoterId) > 0
+                                   || SqlFunctions.PatIndex(searchName, j.e.Convenor) > 0
+                                   || SqlFunctions.PatIndex(searchName, j.e.Name) > 0
+        );
+      }
+
+      var logLines = query1
         .OrderByDescending(j => j.l.C_RowId)
         .Take(numToShow)
         .Select(j => new

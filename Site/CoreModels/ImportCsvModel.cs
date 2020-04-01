@@ -478,7 +478,8 @@ namespace TallyJ.CoreModels
                   }
                   else if (originalValue != value)
                   {
-                    result.Add($"~W Line {currentLineNum} - Phone number adjusted from {rawValue} to {value} ");
+                    // too busy on the page
+                    // result.Add($"~W Line {currentLineNum} - Phone number adjusted from {rawValue} to {value} ");
                   }
 
                   if (value.HasContent())
@@ -618,7 +619,7 @@ namespace TallyJ.CoreModels
       }
 
 
-      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(" "), true);
+      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString("\r"), true);
 
       return new
       {

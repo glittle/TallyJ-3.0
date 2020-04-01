@@ -21,8 +21,13 @@
   max-width: none;
 }
 
+
 .eventLog {
   margin: 10px 0;
+
+  .el-input {
+    width: auto;
+  }
 
   .spacer {
     margin-top: 2em;
@@ -92,16 +97,16 @@
     max-width: 30vw;
   }
 
-  input {
-    width: 150px;
-    margin-left: 150px;
-  }
-
+  //input {
+  //  width: 150px;
+  //  margin-left: 150px;
+  //}
+  
   .autorefresh {
     display: block;
     float: right;
     font-size: 13px;
-    margin: 0 7px 6px 0;
+    margin: -40px 7px 6px 0;
     text-align: right;
 
     .age {
@@ -122,9 +127,9 @@
   .fullDetails {
     background: white;
     box-shadow: 0 0 2px 0 #555;
-    padding: 3px;
+    padding: 3px 6px;
     margin: 0 0 5px 20px;
-    white-space: nowrap;
+    white-space: pre-wrap;
     overflow: auto;
   }
 
