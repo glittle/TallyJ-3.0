@@ -606,6 +606,11 @@ namespace TallyJ.Code
         );
     }
 
+    public static string QuotedForJavascript(this bool input)
+    {
+      return input.ToString().ToLower();
+    }
+
     //public static string CleanedForSearching(this string input)
     //{
     //  if (input.HasNoContent()) return "";

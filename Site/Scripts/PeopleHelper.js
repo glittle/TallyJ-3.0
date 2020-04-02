@@ -465,11 +465,15 @@
     searchParts.forEach(function (searchPart) {
       if ($.trim(searchPart) === '') return;
       //            var searchReg = new RegExp('[\\s\\-\\\'\\[\\(]({0})|(^{0})'.filledWith(searchPart), 'ig');
-      var searchReg = new RegExp('({0})|(^{0})'.filledWith(searchPart), 'ig');
-      name = name.replace(searchReg,
-        function (a, b, c) {
-          return local.bStart + arguments[0] + local.bEnd;
-        });
+      try {
+        var searchReg = new RegExp('({0})|(^{0})'.filledWith(searchPart), 'ig');
+        name = name.replace(searchReg,
+          function (a, b, c) {
+            return local.bStart + arguments[0] + local.bEnd;
+          });
+      } catch (e) {
+        // an invalid regex...
+      } 
     });
 
     if (personInfo.Parts4) {

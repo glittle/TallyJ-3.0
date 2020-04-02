@@ -6,15 +6,13 @@
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
-ClientFile("~/Scripts/vue{0}.js", ".min"),
-ClientFile("~/Scripts/BadiDateToday.v1.js"),
-ClientFile("~/Scripts/luxon.min.js"),
-ClientFile("~/Scripts/vue-datetime.js"),
-ClientFile("~/Scripts/ckeditor.js"),
-ClientFile("~/Scripts/ckeditor.vue.js"),
+    ClientFile("~/Scripts/vue{0}.js", ".min"),
+    ClientFile("~/Scripts/BadiDateToday.v1.js"),
+    ClientFile("~/Scripts/luxon.min.js"),
+    ClientFile("~/Scripts/vue-datetime.js"),
 };
   ViewData["ExtraCss"] = new[] {
-ClientFile("~/Scripts/vue-datetime.css"),
+    ClientFile("~/Scripts/vue-datetime.css"),
   };
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
@@ -25,7 +23,6 @@ ClientFile("~/Scripts/vue-datetime.css"),
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasOnlineBallots={0};".FilledWith(Model.HasOnlineBallots.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("setupIndexPage.defaultFromAddress={0};".FilledWith(@UserSession.CurrentElection.EmailFromAddressWithDefault.QuotedForJavascript()));
 }
 <button type="button" class="btnSave btn" accesskey="S">
   <u>S</u>ave Changes
@@ -37,10 +34,6 @@ ClientFile("~/Scripts/vue-datetime.css"),
     <a href="#step2">Step 2 - Listing</a>
     <a href="#step3">Step 3 - Features</a>
     <a href="#step4">Step 4 - Online</a>
-    @if (SettingsHelper.HostSupportsOnlineElections)
-    {
-      <a href="#step5">Step 5 - Send Notifications</a>
-    }
   </div>
   <h2>
     Step 1 <span>Define the Election</span>
@@ -530,89 +523,6 @@ ClientFile("~/Scripts/vue-datetime.css"),
 
       </tbody>
     </table>
-
-    <div class="newStep">
-      <a id="step5"></a>
-    </div>
-    <h2>
-      Step 5 <span>Send Notifications</span>
-    </h2>
-
-    <p>
-      TallyJ enables you to send an email and/or SMS message to all potential voters with registered email addresses or mobile phone numbers.
-    </p><p>
-      You can refer to the <a target="report" href="~/After/Reports#VoterEmails">Email & Phone List</a> report for a complete list of voters with contact information on file.
-      From that list, {{numWithEmails}} have email addresses and {{numWithPhones}} have mobile phone numbers.
-
-      Emails will have a return address of "{{election.EmailFromAddress || defaultFromAddress}}"<span v-if="!election.EmailFromAddress">
-        (unless a From Email Address
-        is added above)
-      </span>.
-      Text messages will be sent from TallyJ (@SettingsHelper.Get("twilio-FromNumber", "?")).
-    </p>
-
-    <div class="emailSuggestions">
-      <p>You can create the email below. To get started, you can click: <button class="btn btn-mini" v-on:click="loadSampleEmail">Start with Sample Message</button></p>
-      <p>Topics you may want to include in your message:</p>
-      <ul>
-        <li>
-          When the election will be closed. For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
-          so the online portion of the election would need to be closed sometime on that date.
-        </li>
-        <li>
-          Here are some replaceable templates that you can use in the text: {PersonName}, {hostSite}, {logo}
-        </li>
-      </ul>
-    </div>
-
-    <div>
-      Email Subject Line:
-      <input class="notSaved" v-model="emailSubject" maxlength="150" class="text100" />
-
-    </div>
-    <div class="ckHost">
-      <ckeditor ref="email" :editor="emailEditor" :config="editorConfig" v-model="election.EmailText" v-on:input="saveNeeded"></ckeditor>
-    </div>
-
-    <p class="isSaveNeeded" v-if="isSaveNeeded">Save changes to the text before sending it.</p>
-    <p class="emailSendStatus" v-if="emailSendStatus" v-text="emailSendStatus"></p>
-
-    <div class="messageBtns email">
-      <button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !election.EmailFromAddress || !emailSubject">Send me a copy by email</button>
-      <span class="comments" v-if="election.EmailFromAddress">Will be sent to: {{election.EmailFromAddress}}</span>
-      <span class="comments" v-else>(enter a From Email Address in Step 4 above)</span>
-
-      <button class="btn btn-warning" v-on:click="sendEmail('Intro')" :disabled="isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voters</button>
-    </div>
-
-    <div class="messageBtns sms">
-      <button class="btn btn-primary" v-on:click="sendSms('Test')" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
-      <input type="tel" class="notSaved" v-model="testSmsNumber" maxlength="25" class="text50" pattern="\+[0-9]{4,15}" />
-      <span class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</span>
-      <button class="btn btn-warning" v-on:click="sendSms('Intro')" :disabled="isSaveNeeded">Send the text message to {{numWithPhones}} voters</button>
-    </div>
-
-
-    <h3>Recent Message Log</h3>
-    <div class="emailHistoryHost">
-      <table>
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>When</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="e in contactLog" :key="e.C_RowId">
-            <td v-text="e.Details"></td>
-            <td class="nowrap" v-text="e.age"></td>
-            <td class="nowrap" v-text="e.when"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
 
   }
   else

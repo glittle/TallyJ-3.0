@@ -26,9 +26,21 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
+    public ActionResult Notify()
+    {
+      return View();
+    }
+
+    [ForAuthenticatedTeller]
     public JsonResult SaveElection(Election election)
     {
       return new ElectionModel().SaveElection(election);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult SaveNotification(string emailText)
+    {
+      return new ElectionModel().SaveNotification(emailText);
     }
 
     public JsonResult DetermineRules(string type, string mode)
@@ -174,21 +186,26 @@ namespace TallyJ.Controllers
     //}
 
     [ForAuthenticatedTeller]
-    public JsonResult SendEmail(string emailCode, string subject)
+    public JsonResult SendEmail(string emailCode, string subject, string list)
     {
-      return new EmailHelper().SendHeadTellerEmail(emailCode, subject);
+      return new EmailHelper().SendHeadTellerEmail(emailCode, subject, list);
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SendSms(string emailCode, string testPhone, string text)
+    public JsonResult SendSms(string emailCode, string testPhone, string text, string list)
     {
-      return new SmsHelper().SendHeadTellerMessage(emailCode, testPhone, text);
+      return new SmsHelper().SendHeadTellerMessage(emailCode, testPhone, text, list);
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult GetContactInfo()
+    public JsonResult GetContacts()
     {
-      return new EmailHelper().GetContactInfo();
+      return new EmailHelper().GetContacts();
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult GetContactLog(int lastLogId = 0)
+    {
+      return new EmailHelper().GetContactLog(lastLogId);
     }
 
     [ForAuthenticatedTeller]

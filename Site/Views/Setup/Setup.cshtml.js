@@ -17,7 +17,6 @@
       el: '#setupBody',
       components: {
         'yes-no': YesNo,
-        ckeditor: CKEditor.component
       },
       data: {
         election: publicInterface.Election,
@@ -28,30 +27,6 @@
         isMounted: false,
         useOnline: false,
         isSaveNeeded: false,
-        emailEditor: ClassicEditor,
-        contactLog: [],
-        numWithEmails: 0,
-        numWithPhones: 0,
-        originalEmailText: '',
-        emailSendStatus: '',
-        testSmsNumber: GetFromStorage('htSms', ''),
-        emailSubject: GetFromStorage('htEmailSubject', ''),
-        editorConfig: {
-          toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'bulletedList', 'image', 'link'],
-          image: {
-            toolbar: ['imageTextAlternative']
-          },
-          //          heading: {
-          //            options: [
-          //              { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-          //              { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-          //              { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-          //            ],
-          //            table: {
-          //              contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-          //            }
-          //          }
-        },
         dummy: 1
       },
       computed: {
@@ -61,9 +36,6 @@
             this.election.OnlineWhenOpen &&
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
-        },
-        defaultFromAddress: function () {
-          return publicInterface.defaultFromAddress;
         },
         closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
@@ -117,11 +89,6 @@
               this.election.OnlineCloseIsEstimate = true;
               this.election.OnlineSelectionProcess = 'B';
             };
-            this.getContactLog();
-            //            var vue = this;
-            //            Vue.nextTick(function() {
-            //              vue.setupEmailEditor();
-            //            });
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
@@ -155,18 +122,6 @@
           var input = $(domIcon).closest('div').find('input');
           locationChanged(input, true);
         },
-        //        setupEmailEditor: function() {
-        //          var vue = this;
-        //          console.log('setup', $('#EmailText').length);
-        //
-        //          // see http://jqueryte.com/documentation
-        //          $('#EmailText').jqte({
-        //            button: 'TEST',
-        //            sub: false,
-        //            sup: false,
-        //            change: function() { console.log('changed', vue.election.EmailText); },
-        //          });
-        //        },
         replaceBodyBpClass: function (process) {
           var list = window.document.body.classList;
           list.forEach(function (key) {
@@ -187,104 +142,6 @@
           if (!when) return '';
           return '(' + moment(when).fromNow() + ')';
         },
-        sendEmail: function (emailCode) {
-          var vue = this;
-          ShowStatusDisplay('Sending...');
-          var form = {
-            emailCode: emailCode,
-            subject: vue.emailSubject
-          };
-          CallAjaxHandler(publicInterface.controllerUrl + '/SendEmail', form, function (info) {
-            if (info.Success) {
-              vue.getContactLog();
-              ShowStatusSuccess(info.Status);
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
-
-        },
-        loadSampleEmail: function () {
-          this.election.EmailText = `<p>Hello {PersonName},</p>
-<p>Online voting for the Riḍván election will be opening tomorrow and will remain open until 14:00 on 2020 April 20.</p>
-<p>You can log in and cast your ballot at <a href="{hostSite}">{hostSite}</a>.</p>
-<p>The email address or mobile phone number where you got this message is registered for you to log in with. If you wish to vote using a different address or number, please 
-contact the Assembly as soon as possible!</p>
-<p>If you have any question about this process, please contact the head teller, John Smith by email at jsmith@example.com or phone at 123-456-7890.</p>
-<p>With greeting from the Elections Committee</p>
-<div><img height="50" src="{logo}" /></div>
-`;
-        },
-        getTextForSms: function () {
-          //          var text = $('.ck-content').text();
-          var html = this.$refs.email.value;
-
-          var breakToken = 'ZXZXZ';
-          var tempHtml = html
-            .replace(/<br\s?\/?>/gi, breakToken)
-            .replace(/<p.*?>(.*?)<\/p>/gi, breakToken + '$1' + breakToken)
-            .replace(/<li.*?>(.*?)<\/li>/gi, '- $1' + breakToken)
-            .replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/gi, '$2 ($1)')
-            .replace(/<ul.*?>(.*?)<\/ul>/gi, breakToken + '$1')
-            .replace(/<ol.*?>(.*?)<\/ol>/gi, breakToken + '$1')
-            ;
-          var text = $('<div>').html(tempHtml).text().replace(new RegExp(breakToken, 'g'), '\n');
-          console.log(html, text);
-          return text;
-        },
-        sendSms: function (emailCode) {
-          var vue = this;
-
-          var testPhone = vue.testSmsNumber;
-          if (!testPhone.match(/\+\d{4,15}/)) {
-            ShowStatusFailed('Invalid mobile phone number.');
-            return;
-          }
-
-          SetInStorage('htSms', testPhone);
-
-          ShowStatusDisplay('Sending...');
-          var text = vue.getTextForSms();
-
-          var form = {
-            emailCode: emailCode,
-            testPhone: testPhone,
-            text: text
-          };
-          CallAjaxHandler(publicInterface.controllerUrl + '/SendSms', form, function (info) {
-            if (info.Success) {
-              vue.getContactLog();
-              ShowStatusSuccess(info.Status);
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
-
-        },
-        getContactLog: function () {
-          var vue = this;
-          CallAjaxHandler(publicInterface.controllerUrl + '/GetContactInfo', null, function (info) {
-            if (info.Success) {
-              vue.contactLog = vue.extendLog(info.Log);
-              vue.numWithEmails = info.NumWithEmails;
-              vue.numWithPhones = info.NumWithPhones;
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
-
-        },
-        extendLog: function (list) {
-          list.forEach(function (lh) {
-            var when_M = moment(lh.AsOf);
-            lh.age = when_M.fromNow();
-            lh.when = when_M.format('llll');
-          });
-          return list;
-        },
       }
     });
 
@@ -302,7 +159,7 @@ contact the Assembly as soon as possible!</p>
     $('.Demographics').on('change keyup', '*:input', function () {
       var input = $(this);
 
-      if (input.closest('.forLocations').length || input.hasClass('notSaved')) {
+      if (input.closest('.forLocations').length) {
         return; // don't flag location related inputs
       }
       setTimeout(function () {
@@ -638,10 +495,6 @@ contact the Assembly as soon as possible!</p>
       input.html(value);
     });
 
-    //    if (!election.EmailText) {
-    //      settings.vue.loadSampleEmail();
-    //    }
-
     showForPreBallot();
 
     startToAdjustByType();
@@ -670,7 +523,6 @@ contact the Assembly as soon as possible!</p>
       OnlineSelectionProcess: election.OnlineSelectionProcess,
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
-      EmailText: encodeURIComponent(election.EmailText || '') || null,
     };
 
     $(':input[data-name]').each(function () {

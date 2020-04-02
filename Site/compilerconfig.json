@@ -150,5 +150,9 @@
   {
     "outputFile": "Views/Vote/VoteHome.cshtml.css",
     "inputFile": "Views/Vote/VoteHome.cshtml.less"
+  },
+  {
+    "outputFile": "Views/Setup/Notify.cshtml.css",
+    "inputFile": "Views/Setup/Notify.cshtml.less"
   }
 ]

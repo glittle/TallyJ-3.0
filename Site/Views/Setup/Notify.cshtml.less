@@ -1,0 +1,200 @@
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+[v-cloak] {
+  display: none;
+}
+
+.ckHost {
+  margin: 5px 0 1em 0;
+}
+
+h2 {
+  display: inline-block;
+  margin: 0 20px 0 0;
+  color: @tallyJOrangeText;
+  font-weight: normal;
+
+  span {
+    color: @tallyJBlue;
+    margin-left: 11px;
+  }
+}
+
+
+.smsText {
+  white-space: pre-line;
+  padding: 0 1em 1em;
+  max-width: 500px;
+  border: 1px solid #666;
+}
+
+.ui-icon {
+  display: inline-block;
+}
+
+.ui-icon-arrow-2-n-s {
+  cursor: pointer;
+}
+
+.techInfo {
+  font-size: 75%;
+  color: #ccc;
+}
+
+.comments {
+  font-size: 90%;
+  color: #777;
+}
+
+
+.isSaveNeeded {
+  color: @tallyJError;
+  font-style: italic;
+}
+
+
+.emailHistoryHost {
+  max-height: 140px;
+  overflow: auto;
+
+  table {
+    border-collapse: separate;
+    border-spacing: 1px 2px;
+    margin: 0 0 20px 0;
+    font-size: 85%;
+    width: 100%;
+
+    th {
+      text-align: left;
+    }
+
+    td {
+      background-color: #cbd5f7;
+      vertical-align: top;
+      width: auto;
+      padding: 0 1px;
+    }
+
+    tr.endOfSection {
+      td {
+        border-bottom: 3px double #999;
+      }
+    }
+
+    td:nth-child(3) {
+      width: auto;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+  }
+}
+
+.emailButtons {
+  table {
+    th {
+      text-align: right;
+    }
+
+    td, th {
+      vertical-align: middle;
+      width: auto;
+    }
+  }
+}
+
+.messageBtns {
+  margin: 2em 0;
+
+  .bottom {
+    margin-top: 1em;
+  }
+
+  .btn-warning {
+  }
+}
+
+div.pending {
+  margin: .5em 0;
+  font-weight: bold;
+  color: red;
+}
+
+button.pending {
+}
+
+.emailBySms {
+  display: grid;
+  grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 s3';
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 10px;
+
+  .ehead {
+    grid-area: eh;
+  }
+
+  .shead {
+    grid-area: sh;
+  }
+
+  .emailHost {
+    grid-area: e1;
+  }
+
+  .samplePhone {
+    display: inline-block;
+    margin: 0 1em 1em;
+    vertical-align: top;
+    padding: 3px 0 0 0;
+
+    .text50 {
+      width: 150px;
+    }
+
+    div {
+      padding: 3px 0 0 4px;
+    }
+  }
+
+  .listingSelection {
+    grid-area: listingSelection;
+    text-align: center;
+    padding: .5em 0;
+    background: #fafafa;
+    margin: 0 0 7px 0;
+
+    button {
+      margin: 0 .5em;
+    }
+  }
+
+  .smsHost {
+    grid-area: s1;
+  }
+
+  .messageBtns.email {
+    grid-area: e2;
+  }
+
+  .messageBtns.sms {
+    grid-area: s2;
+  }
+}
+
+.el-table th > .el-table-column--selection .cell {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+@media only screen and (max-width: 600px) {
+  .emailBySms {
+    grid-template-areas: 'eh' 'e1' 'e2' 'listingSelection' 'e3' 'sh' 's1' 's2' 's3';
+    grid-template-columns: 1fr;
+    grid-column-gap: 0;
+
+    h2 {
+      margin-top: 2em;
+    }
+  }
+}

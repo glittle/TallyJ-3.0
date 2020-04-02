@@ -217,6 +217,7 @@ var vueOptions = {
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
             ShowStatusSuccess('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
+
             window.scrollTo(0, 0);
           } else {
             ShowStatusFailed(info.Error);

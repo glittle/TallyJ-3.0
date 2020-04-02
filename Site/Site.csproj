@@ -884,6 +884,15 @@
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\Notify.cshtml.css">
+      <DependentUpon>Notify.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Notify.cshtml.js">
+      <DependentUpon>Notify.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Notify.cshtml.less">
+      <DependentUpon>Notify.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml.less</DependentUpon>
     </Content>
@@ -990,6 +999,7 @@
       <DependentUpon>VoterLogin.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\VoterAccount\Claims.cshtml" />
+    <Content Include="Views\Setup\Notify.cshtml" />
     <None Include="Web.Local Files 3.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

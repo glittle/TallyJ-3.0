@@ -89,17 +89,21 @@ namespace TallyJ.CoreModels.Helper
     /// </param>
     /// <param name="testPhoneNumber">Used when Testing </param>
     /// <param name="text"></param>
+    /// <param name="list"></param>
     /// <returns></returns>
-    public JsonResult SendHeadTellerMessage(string messageCode, string testPhoneNumber, string text)
+    public JsonResult SendHeadTellerMessage(string messageCode, string testPhoneNumber, string text, string list)
     {
       var htMessageCode = messageCode.AsEnum(HtEmailCodes._unknown_);
 
       if (htMessageCode == HtEmailCodes._unknown_)
+      {
         return new
         {
           Success = false,
           Status = "Invalid request"
         }.AsJsonResult();
+      }
+
 
       var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
@@ -117,9 +121,12 @@ namespace TallyJ.CoreModels.Helper
 
         case HtEmailCodes.Intro:
           // everyone with an email address
+          var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
+
           phoneNumbersToSendTo.AddRange(db.Person
             .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
             .Where(p => p.CanVote.Value)
+            .Where(p => personIds.Contains(p.C_RowId))
             .Select(p => new NamePhone
             {
               Phone = p.Phone,
@@ -228,15 +235,23 @@ namespace TallyJ.CoreModels.Helper
 
       TwilioClient.Init(sid, token);
 
-      var messageResource = MessageResource.Create(
-        body: messageText,
-        from: new PhoneNumber(fromNumber),
-        to: new PhoneNumber(toPhoneNumber)
-      );
+      try
+      {
+        var messageResource = MessageResource.Create(
+          body: messageText,
+          from: new PhoneNumber(fromNumber),
+          to: new PhoneNumber(toPhoneNumber)
+        );
 
-      errorMessage = messageResource.ErrorMessage; // null if okay
+        errorMessage = messageResource.ErrorMessage; // null if okay
 
-      return errorMessage.HasNoContent();
+        return errorMessage.HasNoContent();
+      }
+      catch (Exception e)
+      {
+        errorMessage = e.Message;
+        return false;
+      }
     }
 
     public class NamePhone

@@ -244,6 +244,35 @@ namespace TallyJ.CoreModels
       return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
     }
 
+    public JsonResult SaveNotification(string emailText)
+    {
+      if (emailText.HasNoContent())
+      {
+        return new
+        {
+          success = false,
+          Status = "Cannot have empty email text."
+        }.AsJsonResult();
+      }
+
+      var electionCacher = new ElectionCacher(Db);
+      var election = UserSession.CurrentElection;
+      Db.Election.Attach(election);
+
+      election.EmailText = Uri.UnescapeDataString(emailText);
+
+      Db.SaveChanges();
+
+      electionCacher.UpdateItemAndSaveCache(election);
+      
+      return new
+      {
+        success = true,
+        Status = "Saved",
+        defaultFromAddress = UserSession.CurrentElection.EmailFromAddressWithDefault,
+      }.AsJsonResult();
+    }
+
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
@@ -261,10 +290,7 @@ namespace TallyJ.CoreModels
       var currentReceive = election.CanReceive;
       var currentListed = election.ListForPublic;
 
-      if (electionFromBrowser.EmailText.HasContent())
-      {
-        electionFromBrowser.EmailText = System.Uri.UnescapeDataString(electionFromBrowser.EmailText);
-      }
+    
 
       // List of fields to allow edit from setup page
       var editableFields = new
@@ -293,7 +319,6 @@ namespace TallyJ.CoreModels
         election.OnlineSelectionProcess,
         election.EmailFromAddress,
         election.EmailFromName,
-        election.EmailText,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())

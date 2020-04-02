@@ -389,11 +389,12 @@ namespace TallyJ.CoreModels.Helper
     ///  requested by the head teller
     ///  </summary>
     ///  <param name="emailCode">
-    /// Expected: test, announce
+    ///    Expected: test, announce
     ///  </param>
     ///  <param name="subject"></param>
+    ///  <param name="list"></param>
     ///  <returns></returns>
-    public JsonResult SendHeadTellerEmail(string emailCode, string subject)
+    public JsonResult SendHeadTellerEmail(string emailCode, string subject, string list)
     {
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
       // TODO - send SMS to phone numbers
@@ -409,6 +410,7 @@ namespace TallyJ.CoreModels.Helper
           Status = "Invalid request"
         }.AsJsonResult();
       }
+
 
       var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
@@ -426,9 +428,12 @@ namespace TallyJ.CoreModels.Helper
 
         case HtEmailCodes.Intro:
           // everyone with an email address
+          var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
+
           peopleToSendTo.AddRange(db.Person
             .Where(p => p.ElectionGuid == election.ElectionGuid && p.Email != null && p.Email.Trim().Length > 0)
             .Where(p => p.CanVote.Value)
+            .Where(p => personIds.Contains(p.C_RowId))
             .Select(p => new NameEmail
             {
               Email = p.Email,

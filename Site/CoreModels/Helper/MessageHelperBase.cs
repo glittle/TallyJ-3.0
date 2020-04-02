@@ -18,8 +18,8 @@ namespace TallyJ.CoreModels.Helper
       _unknown_
     }
 
-    
-    public JsonResult GetContactInfo(int lastLogId = 0)
+
+    public JsonResult GetContacts()
     {
       var dbContext = UserSession.GetNewDbContext;
       var electionGuid = UserSession.CurrentElectionGuid;
@@ -27,10 +27,28 @@ namespace TallyJ.CoreModels.Helper
       return new
       {
         Success = true,
-        NumWithEmails = dbContext.Person
-          .Count(p => p.ElectionGuid == electionGuid && p.CanVote.Value && p.Email != null && p.Email.Trim().Length > 0),
-        NumWithPhones = dbContext.Person
-          .Count(p => p.ElectionGuid == electionGuid && p.CanVote.Value && p.Phone != null && p.Phone.Trim().Length > 0),
+        people = dbContext.Person
+          .Where(p => p.ElectionGuid == electionGuid && p.CanVote.Value && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0))
+          .OrderBy(p => p.C_FullName)
+          .Select(p => new
+          {
+            p.C_RowId,
+            p.C_FullName,
+            p.VotingMethod,
+            p.Email,
+            p.Phone
+          }),
+      }.AsJsonResult();
+    }
+
+    public JsonResult GetContactLog(int lastLogId = 0)
+    {
+      var dbContext = UserSession.GetNewDbContext;
+      var electionGuid = UserSession.CurrentElectionGuid;
+
+      return new
+      {
+        Success = true,
         Log = dbContext.C_Log
           .Where(l => l.ElectionGuid == electionGuid)
           .Where(l => l.Details.StartsWith("Email:") || l.Details.StartsWith("Sms:"))
