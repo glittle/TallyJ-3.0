@@ -97,7 +97,7 @@
     <div class="title">Settings for @UserSession.VoterId</div>
     <p class="emails">
       <button class="btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
-      <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>
+      @*<label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>*@
       <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when my ballot is processed.</label>
     </p>
 

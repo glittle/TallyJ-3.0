@@ -25,6 +25,7 @@
       j.p.BahaiId,
       j.p.Email,
       j.p.Phone,
+      j.p.CanVote,
       HasSignedInEmail = j.ovEmail != null,
       HasSignedInPhone = j.ovPhone != null,
       HasViewedThisElection = j.ovi != null,
@@ -43,10 +44,14 @@
       background-color: #eee;
     }
 
-  thead {
-    display: table-header-group;
-    font-weight: bold;
-  }
+    tr.cannotVote .name, tr.cannotVote .email {
+      text-decoration: line-through;
+    }
+
+    thead {
+      display: table-header-group;
+      font-weight: bold;
+    }
 
   td {
     padding-left: 2px;
@@ -73,6 +78,7 @@
     <thead>
       <tr>
         <td>Person</td>
+        <td>Status</td>
         <td>Email</td>
         <td>Phone</td>
         <td>Login</td>
@@ -94,8 +100,9 @@
           info.Email,
           info.Phone
         }.Where(s => s.HasContent()).JoinedAsString("<br>");
-        <tr>
+        <tr class="@(info.CanVote.GetValueOrDefault() ? "" : "cannotVote")">
           <td class="name">@Raw(info.C_FullName)</td>
+          <td>@(info.CanVote.GetValueOrDefault() ? "-" : "Cannot Vote")</td>
           <td class="email @(info.HasSignedInEmail ? "" : "none")">@info.Email</td>
           <td class="email @(info.HasSignedInPhone ? "" : "none")">@info.Phone</td>
           <td class="usage">@Raw(usage)</td>

@@ -1,0 +1,5 @@
+﻿Hello {personName},
+
+As requested, this is your notification that the "{electionName}" {electionType} election is now open for online voting at {hostSite}
+
+Have a good day!

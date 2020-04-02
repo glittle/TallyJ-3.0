@@ -80,7 +80,7 @@ var vueOptions = {
       keepStatusCurrent: false,
       loadingLoginHistory: true,
       loginHistory: [],
-      emailWhenOpen: false,
+//      emailWhenOpen: false,
       emailWhenProcessed: false,
       emailCodesLoaded: false,
       randomFirst: '',
@@ -181,7 +181,7 @@ var vueOptions = {
 
             // other info
             if (info.emailCodes) {
-              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
+//              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
@@ -216,7 +216,7 @@ var vueOptions = {
             vue.savedLock = locked;
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
-            ShowStatusSuccess('Submitted' + (info.emailSent ? '. Email sent.' : ''));
+            ShowStatusSuccess('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
             window.scrollTo(0, 0);
           } else {
             ShowStatusFailed(info.Error);
@@ -635,7 +635,7 @@ var vueOptions = {
     },
     saveEmailCodes: function () {
       var vue = this;
-      var codes = (vue.emailWhenOpen ? 'o' : '') + (vue.emailWhenProcessed ? 'p' : '');
+      var codes = (vue.emailWhenProcessed ? 'p' : ''); // (vue.emailWhenOpen ? 'o' : '') + 
       var form = {
         emailCodes: codes || null
       };

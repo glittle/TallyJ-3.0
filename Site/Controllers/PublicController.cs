@@ -57,24 +57,24 @@ namespace TallyJ.Controllers
     {
       return View();
     }
-
-    public JsonResult DoScheduled(int minutes = 5)
-    {
-      var now = DateTime.Now;
-      if (minutes < 0 || new SiteInfo().CurrentEnvironment == "Dev")
-      {
-        minutes = 0;
-      }
-      if (now - MvcApplication.LastRunOfScheduled <= TimeSpan.FromMinutes(minutes))
-      {
-        // ignore if repeated too soon
-        return new { msg = "not expected" }.AsJsonResult();
-      }
-
-      MvcApplication.LastRunOfScheduled = now;
-
-      return new EmailHelper().DoScheduled();
-    }
+    
+    // public JsonResult DoScheduled(int minutes = 5)
+    // {
+    //   var now = DateTime.Now;
+    //   if (minutes < 0 || new SiteInfo().CurrentEnvironment == "Dev")
+    //   {
+    //     minutes = 0;
+    //   }
+    //   if (now - MvcApplication.LastRunOfScheduled <= TimeSpan.FromMinutes(minutes))
+    //   {
+    //     // ignore if repeated too soon
+    //     return new { msg = "not expected" }.AsJsonResult();
+    //   }
+    //
+    //   MvcApplication.LastRunOfScheduled = now;
+    //
+    //   return new EmailHelper().DoScheduled();
+    // }
 
     [AllowAnonymous]
     public FilePathResult FavIcon()

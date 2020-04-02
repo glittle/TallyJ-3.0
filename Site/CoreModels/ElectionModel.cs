@@ -408,6 +408,7 @@ namespace TallyJ.CoreModels
       {
         success = true,
         Status = "Saved",
+        defaultFromAddress = UserSession.CurrentElection.EmailFromAddressWithDefault,
         Election = election,
         displayName = UserSession.CurrentElectionDisplayNameAndInfo
       }.AsJsonResult();
@@ -1280,16 +1281,16 @@ namespace TallyJ.CoreModels
 
       UpdateStatusInBrowsers();
 
-      string emailResult = null;
-      if (sendEmail)
-      {
-        emailResult = new EmailHelper().SendWhenOpened(election);
-      }
+      // string emailResult = null;
+      // if (sendEmail)
+      // {
+      //   emailResult = new EmailHelper().SendWhenOpened(election);
+      // }
 
       return new
       {
         success = true,
-        emailResult,
+        // emailResult,
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
       }.AsJsonResult();

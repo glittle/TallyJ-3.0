@@ -174,15 +174,21 @@ namespace TallyJ.Controllers
     //}
 
     [ForAuthenticatedTeller]
-    public JsonResult SendEmail(string emailCode)
+    public JsonResult SendEmail(string emailCode, string subject)
     {
-      return new EmailHelper().SendHeadTellerEmail(emailCode);
+      return new EmailHelper().SendHeadTellerEmail(emailCode, subject);
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult GetEmailInfo()
+    public JsonResult SendSms(string emailCode, string testPhone, string text)
     {
-      return new EmailHelper().GetEmailInfo();
+      return new SmsHelper().SendHeadTellerMessage(emailCode, testPhone, text);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult GetContactInfo()
+    {
+      return new EmailHelper().GetContactInfo();
     }
 
     [ForAuthenticatedTeller]

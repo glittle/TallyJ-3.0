@@ -490,7 +490,7 @@
             },
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Saved' + (info.emailResult ? '.\n' + info.emailResult : ''));
+                ShowStatusSuccess('Saved');
                 vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
                 vue.checkStatus();

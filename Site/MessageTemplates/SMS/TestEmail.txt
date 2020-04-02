@@ -1,0 +1,3 @@
+﻿You just requested a sample text message from TallyJ... here it is!
+
+You can log in to TallyJ at {hostSite}

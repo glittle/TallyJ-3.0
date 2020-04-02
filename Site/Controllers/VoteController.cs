@@ -273,14 +273,14 @@ namespace TallyJ.Controllers
         if (person == null || !person.CanVote.AsBoolean())
         {
           return new
-          {  
+          {
             Error = "Invalid request (2)"
           }.AsJsonResult();
         }
         Db.Person.Attach(person);
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
-        var emailSent = false;
+        string notificationType = null;
 
         person.HasOnlineBallot = locked;
 
@@ -308,8 +308,12 @@ namespace TallyJ.Controllers
 
             new LogHelper().Add("Locked ballot");
 
-            // var emailHelper = new EmailHelper();
-            // emailSent = emailHelper.SendOnVoterSubmit(person, currentElection, out var error);
+            var notificationHelper = new NotificationHelper();
+            var notificationSent = notificationHelper.SendWhenBallotSubmitted(person, currentElection, out notificationType, out var error);
+            if (!notificationSent)
+            {
+              notificationType = null;
+            }
           }
           else
           {
@@ -345,7 +349,7 @@ namespace TallyJ.Controllers
         return new
         {
           success = true,
-          emailSent,
+          notificationType,
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
           person.RegistrationTime,
@@ -457,18 +461,8 @@ namespace TallyJ.Controllers
 
     public JsonResult SendTestMessage()
     {
-      bool sent = false;
-      string error = null;
-
-      if (UserSession.VoterIdType == VoterIdTypeEnum.Email)
-      {
-        var emailHelper = new EmailHelper();
-        sent = emailHelper.SendVoterEmailTest(UserSession.VoterId, out error);
-      } else if (UserSession.VoterIdType == VoterIdTypeEnum.Phone)
-      {
-        var smsHelper = new SmsHelper();
-        sent = smsHelper.SendVoterTestMessage(UserSession.VoterId, out error);
-      }
+      var notificationHelper = new NotificationHelper();
+      var sent = notificationHelper.SendVoterTestMessage(out var error);
 
       return new
       {

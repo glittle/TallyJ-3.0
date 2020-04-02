@@ -1,10 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
+using TallyJ.Code.Helpers;
+using TallyJ.Code.Session;
 using TallyJ.EF;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace TallyJ.CoreModels.Helper
 {
-  public class SmsHelper
+  public class SmsHelper : MessageHelperBase
   {
+    private Regex PhoneNumberChecker => new Regex(@"\+[0-9]{4,15}");
+
+    public bool SendVoterTestMessage(string phone, out string error)
+    {
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var text = GetSmsTemplate("TestEmail").FilledWithObject(new
+      {
+        hostSite,
+      });
+
+      var ok = SendSms(phone, text, out error);
+
+      LogHelper.Add($"Sms: Voter test message sent", true);
+
+      return ok;
+    }
+
+    public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
+    {
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var text = GetSmsTemplate("OnSubmit").FilledWithObject(new
+      {
+        hostSite,
+        logo = hostSite + "/Images/LogoSideM.png",
+        name = person.C_FullNameFL,
+        electionName = election.Name,
+        electionType = ElectionTypeEnum.TextFor(election.ElectionType)
+      });
+
+      var ok = SendSms(person.Phone, text, out error);
+
+      LogHelper.Add($"Sms: Vote Submitted", false);
+
+      return ok;
+    }
+
     public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, out string error)
     {
       // only send if they asked for it
@@ -14,20 +64,185 @@ namespace TallyJ.CoreModels.Helper
         return false;
       }
 
-      error = "SMS notification not implemented yet";
-      return false;
+      // proceed to send
+      var phone = p.Phone;
+
+      var text = GetSmsTemplate("BallotProcessed").FilledWithObject(new
+      {
+        voterName = p.C_FullNameFL,
+        electionName = e.Name,
+        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+      });
+
+      var ok = SendSms(phone, text, out error);
+
+      // logging done at a higher level
+
+      return ok;
     }
 
-    public bool SendWhenOpened(string phone, string cFullNameFl, string html, out string error)
+    /// <summary>
+    ///   requested by the head teller
+    /// </summary>
+    /// <param name="messageCode">
+    ///   Expected: test, announce
+    /// </param>
+    /// <param name="testPhoneNumber">Used when Testing </param>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public JsonResult SendHeadTellerMessage(string messageCode, string testPhoneNumber, string text)
     {
-      error = "SMS notification not implemented yet";
-      return false;
+      var htMessageCode = messageCode.AsEnum(HtEmailCodes._unknown_);
+
+      if (htMessageCode == HtEmailCodes._unknown_)
+        return new
+        {
+          Success = false,
+          Status = "Invalid request"
+        }.AsJsonResult();
+
+      var db = UserSession.GetNewDbContext;
+      var now = DateTime.Now;
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var election = UserSession.CurrentElection;
+
+      var phoneNumbersToSendTo = new List<NamePhone>();
+
+      switch (htMessageCode)
+      {
+        case HtEmailCodes.Test:
+          phoneNumbersToSendTo.Add(new NamePhone { Phone = testPhoneNumber, PersonName = election.EmailFromNameWithDefault });
+          break;
+
+        case HtEmailCodes.Intro:
+          // everyone with an email address
+          phoneNumbersToSendTo.AddRange(db.Person
+            .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
+            .Where(p => p.CanVote.Value)
+            .Select(p => new NamePhone
+            {
+              Phone = p.Phone,
+              PersonName = p.C_FullNameFL
+            })
+          );
+          break;
+
+        default:
+          // not possible
+          return null;
+      }
+
+      // var whenOpen = election.OnlineWhenOpen.GetValueOrDefault();
+      // var whenOpenUtc = whenOpen.ToUniversalTime();
+      // var openIsFuture = whenOpen - now > 0.minutes();
+      //
+      // var whenClosed = election.OnlineWhenClose.GetValueOrDefault();
+      // var whenClosedUtc = whenClosed.ToUniversalTime();
+      // var remainingTime = whenClosed - now;
+      // var howLong = "";
+      // if (remainingTime.Days > 1)
+      // {
+      //   howLong = remainingTime.Days + " days";
+      // }
+      // else
+      // {
+      //   howLong = remainingTime.Hours + " hours";
+      // }
+
+      var numSms = 0;
+      var errors = new List<string>();
+
+      phoneNumbersToSendTo.ForEach(p =>
+      {
+        var phoneNumber = p.Phone;
+
+        if (!PhoneNumberChecker.IsMatch(phoneNumber))
+        {
+          errors.Add("Invalid phone number: " + phoneNumber);
+          return;
+        }
+
+        var html = text.FilledWithObject(new
+        {
+          hostSite,
+          p.PersonName,
+          EmailText = text,
+          // electionName = election.Name,
+          // electionType = ElectionTypeEnum.TextFor(election.ElectionType),
+          // openIsFuture,
+          // whenOpenDay = whenOpenUtc.ToString("d MMM"),
+          // whenClosedDay = whenClosedUtc.ToString("d MMM"),
+          // whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
+          // howLong,
+        });
+
+        var ok = SendSms(phoneNumber, html, out var errorMessage);
+
+        if (ok)
+          numSms++;
+        else
+          errors.Add(errorMessage);
+      });
+
+      var msg = $"Sms: Announcement sent to {numSms} {(numSms == 1 ? "person" : "people")}";
+
+      if (errors.Count > 0) msg += $" {errors.Count} failed to send. First error: {errors[0]}";
+
+      LogHelper.Add(msg, true);
+
+      return new
+      {
+        Success = numSms > 0,
+        Status = msg
+      }.AsJsonResult();
     }
 
-    public bool SendVoterTestMessage(string phone, out string error)
+
+    private string GetSmsTemplate(string emailTemplate)
     {
-      error = "SMS notification not implemented yet";
-      return false;
+      var path = $"{AppDomain.CurrentDomain.BaseDirectory}/MessageTemplates/Sms/{emailTemplate}.txt";
+
+      AssertAtRuntime.That(File.Exists(path), "Missing SMS template");
+
+      return File.ReadAllText(path);
+    }
+
+    public bool SendSms(string toPhoneNumber, string messageText, out string errorMessage)
+    {
+      var sid = SettingsHelper.Get("twilio-SID", "");
+      var token = SettingsHelper.Get("twilio-Token", "");
+      var fromNumber = SettingsHelper.Get("twilio-FromNumber", "");
+
+      if (sid.HasNoContent() || token.HasNoContent())
+      {
+        errorMessage = "Server not configured for SMS.";
+        return false;
+      }
+
+      if (!PhoneNumberChecker.IsMatch(toPhoneNumber))
+      {
+        errorMessage = "Invalid phone number: " + toPhoneNumber;
+        return false;
+      }
+
+      TwilioClient.Init(sid, token);
+
+      var messageResource = MessageResource.Create(
+        body: messageText,
+        from: new PhoneNumber(fromNumber),
+        to: new PhoneNumber(toPhoneNumber)
+      );
+
+      errorMessage = messageResource.ErrorMessage; // null if okay
+
+      return errorMessage.HasNoContent();
+    }
+
+    public class NamePhone
+    {
+      public string Phone { get; set; }
+      public string PersonName { get; set; }
     }
   }
 }

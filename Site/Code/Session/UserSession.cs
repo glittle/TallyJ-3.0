@@ -285,15 +285,21 @@ namespace TallyJ.Code.Session
 
     public static void RecordVoterLogin(string voterId, string voterIdType, string source, string country)
     {
+      var logHelper = new LogHelper();
+
       var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
       if (voterIdTypeDesc.HasNoContent())
       {
-        throw new ApplicationException("Invalid voter Id type");
+        logHelper.Add("Invalid voter Id type: " + voterIdType, true);
+        // ProcessLogout();
+        return;
       }
 
       if (voterId.HasNoContent())
       {
-        throw new ApplicationException(voterIdTypeDesc + " required");
+        logHelper.Add("Empty voter Id for " + voterIdType, true);
+        // ProcessLogout();
+        return;
       }
 
       var db = GetNewDbContext;
@@ -321,7 +327,7 @@ namespace TallyJ.Code.Session
 
       VoterLoginSource = source;
 
-      new LogHelper().Add($"Voter login from {source}", true, voterId);
+      logHelper.Add($"Voter login from {source}", true, voterId);
 
       new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
     }
