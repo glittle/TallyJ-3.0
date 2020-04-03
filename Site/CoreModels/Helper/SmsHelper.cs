@@ -55,7 +55,7 @@ namespace TallyJ.CoreModels.Helper
       return ok;
     }
 
-    public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, out string error)
+    public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
     {
       // only send if they asked for it
       if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Phone.HasNoContent())
@@ -76,7 +76,12 @@ namespace TallyJ.CoreModels.Helper
 
       var ok = SendSms(phone, text, out error);
 
-      // logging done at a higher level
+      // error logging done at a higher level
+      
+      if (ok)
+      {
+        logHelper.Add("Sms: ballot was processed", false, phone);
+      }
 
       return ok;
     }

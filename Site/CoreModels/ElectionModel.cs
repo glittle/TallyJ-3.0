@@ -1213,29 +1213,19 @@ namespace TallyJ.CoreModels
             {
               if (onlineVoter.VoterIdType == VoterIdTypeEnum.Email)
               {
-                var sent = emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, out var emailError);
+                emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var emailError);
                 if (emailError.HasContent())
                 {
                   problems.Add($"Error: {emailError}");
-                }
-
-                if (sent)
-                {
-                  logHelper.Add("Email sent per user's request'", false, onlineBallotInfo.p.Email);
                 }
               }
 
               if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
               {
-                var sent = smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, out var smsError);
+                smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var smsError);
                 if (smsError.HasContent())
                 {
                   problems.Add($"Error: {smsError}");
-                }
-
-                if (sent)
-                {
-                  logHelper.Add("SMS sent per user's request'", false, onlineBallotInfo.p.Phone);
                 }
               }
             }

@@ -32,6 +32,14 @@ namespace TallyJ.Code
 
     public void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null)
     {
+      if (voterId == null)
+      {
+        if (UserSession.VoterId.HasContent())
+        {
+          voterId = UserSession.VoterId;
+        }
+      }
+
       AddToLog(new C_Log
       {
         ElectionGuid = _electionGuid.AsNullableGuid(),

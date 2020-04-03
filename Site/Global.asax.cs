@@ -182,9 +182,13 @@ namespace TallyJ
       var logger = LogManager.GetCurrentClassLogger();
       var mainMsg = mainException.GetAllMsgs("; ");
 
-      if (mainMsg.Contains("dbo.Sessions") || mainMsg.Contains("The request was aborted"))
+      if (mainMsg.Contains("dbo.Sessions")
+          || mainMsg.Contains("The request was aborted")
+          || mainMsg.Contains("The client disconnected")
+          || mainMsg.Contains("controller for path '/favicon.ico'")
+      )
       {
-        // don't track StateServer errors...
+        // don't track odd errors...
         return;
       }
 
@@ -244,7 +248,7 @@ namespace TallyJ
         Response.StatusCode = 500;
       }
 
-      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
+      new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
 
 
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
@@ -266,7 +270,7 @@ namespace TallyJ
       {
         Response.End();
       }
-      catch (Exception )
+      catch (Exception)
       {
         // could fail if client disconnected, etc.
       }
