@@ -74,7 +74,7 @@
     <div class="messageBtns email">
       <button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>
       <span class="comments" v-if="emailFromAddress">Email will be sent to: {{emailFromAddress}}</span>
-      <span class="comments" v-else>(enter a "From Email Address" in Step 4 above)</span>
+      <div class="comments" v-else>(Must enter a "From Email Address" on the "Configure this Election" page.)</div>
 
       <div class="bottom">
         <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>

@@ -37,6 +37,7 @@ var LogView = function () {
 var logView = LogView();
 
 $(function () {
+  ELEMENT.locale(ELEMENT.lang.en);
   logView.preparePage();
 });
 
