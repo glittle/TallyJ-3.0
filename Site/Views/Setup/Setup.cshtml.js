@@ -539,6 +539,11 @@
       form[input.data('name')] = value;
     });
 
+    if (!form.Name) {
+      ShowStatusFailed('Election name is required.');
+      return;
+    }
+
     ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
       if (info.success) {
