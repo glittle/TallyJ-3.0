@@ -62,7 +62,7 @@ namespace TallyJ.CoreModels.Helper
 
       var ok = SendEmail(message, html, out error);
 
-      LogHelper.Add($"Email: Vote Submitted", false);
+      LogHelper.Add($"Email: Ballot Submitted", false);
 
       return ok;
     }

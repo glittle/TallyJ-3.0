@@ -50,7 +50,7 @@ namespace TallyJ.CoreModels.Helper
 
       var ok = SendSms(person.Phone, text, out error);
 
-      LogHelper.Add($"Sms: Vote Submitted", false);
+      LogHelper.Add($"Sms: Ballot Submitted", false);
 
       return ok;
     }
