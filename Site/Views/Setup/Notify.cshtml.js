@@ -145,7 +145,7 @@ contact the Assembly as soon as possible!</p>
           var html = this.$refs.email.value;
 
           var breakToken = 'ZXZXZ';
-          var tempHtml = html
+          var tempHtml = (html || '')
             .replace(/<br\s?\/?>/gi, breakToken)
             .replace(/<p.*?>(.*?)<\/p>/gi, breakToken + '$1' + breakToken)
             .replace(/<li.*?>(.*?)<\/li>/gi, '- $1' + breakToken)
