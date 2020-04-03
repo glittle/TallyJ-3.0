@@ -68,9 +68,14 @@
       },
       mounted: function () {
         var vue = this;
-
         vue.updateTextForSms();
         vue.refresh();
+
+        setTimeout(function() {
+          if (!vue.emailText) {
+            vue.loadSampleEmail();
+          }
+        }, 1000);
       },
       methods: {
         refresh: function () {
