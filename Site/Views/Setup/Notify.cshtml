@@ -78,7 +78,7 @@
 
       <div class="bottom">
         <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>
-        <button class="btn btn-warning" :class="{pending: pendingEmail}" v-on:click="sendEmail('Intro', true)" :disabled="!numWithEmails || isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}...</button>
+        <button class="btn btn-warning" :class="{pending: pendingEmail}" v-on:click="sendEmail('Intro', true)" :disabled="!numWithEmails || !emailFromAddress || isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}...</button>
         <span class="comments">As selected below</span>
       </div>
     </div>
