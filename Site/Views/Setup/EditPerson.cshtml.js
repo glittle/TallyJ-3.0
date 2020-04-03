@@ -57,6 +57,18 @@
     $last.on('keyup', update);
   };
 
+  function fixPhone(ev) {
+    var input = $(ev.target);
+    var original = input.val();
+    var text = original.replace(/[^\+\d]/g, '');
+    if (text.substr(0, 1) !== '+') {
+      text = '+' + text;
+    }
+    if (text !== original) {
+      input.val(text);
+    }
+  }
+
   function applyValues(panel, person, clearAll, canDelete) {
     if (panel) {
       local.hostPanel = panel;
@@ -99,6 +111,11 @@
         }
       }
     }
+
+    var $phone = local.hostPanel.find('[data-name="Phone"]');
+    $phone.on('change paste', fixPhone);
+    
+    startEdit();
 
     $('#trCanVote').toggleClass('IsNo', !person.CanVote);
     $('#trCanReceiveVotes').toggleClass('IsNo', !person.CanReceiveVotes);

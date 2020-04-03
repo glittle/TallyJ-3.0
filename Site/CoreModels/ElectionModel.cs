@@ -806,7 +806,6 @@ namespace TallyJ.CoreModels
 
       return new
       {
-        // QuickLinks = new MenuHelper(controller.Url).QuickLinks(),
         StateName = UserSession.CurrentElectionStatus
       }.AsJsonResult();
     }

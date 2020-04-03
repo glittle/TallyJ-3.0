@@ -40,7 +40,7 @@ namespace TallyJ.CoreModels
 
             if (!UserSession.IsLoggedInTeller)
             {
-                var fakeUserName = HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
+                var fakeUserName = "T:" + HttpContext.Current.Session.SessionID.Substring(0, 5) + Guid.NewGuid().ToString().Substring(0, 5);
                 //        FormsAuthentication.SetAuthCookie(fakeUserName, true);
 
                 var claims = new List<Claim>

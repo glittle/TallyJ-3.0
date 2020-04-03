@@ -19,7 +19,6 @@ namespace TallyJ.Code
   public class LogHelper : ILogHelper
   {
     private readonly Guid _electionGuid;
-    private string _hostAndVersion;
 
     public LogHelper(Guid electionGuid)
     {
@@ -34,9 +33,9 @@ namespace TallyJ.Code
     {
       if (voterId == null)
       {
-        if (UserSession.VoterId.HasContent())
+        if (UserSession.UniqueId.HasContent())
         {
-          voterId = UserSession.VoterId;
+          voterId = UserSession.UniqueId;
         }
       }
 
@@ -47,7 +46,7 @@ namespace TallyJ.Code
         LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
         VoterId = voterId,
         Details = message,
-        HostAndVersion = HostAndVersion()
+        HostAndVersion = HostAndVersion
       });
       if (alsoSendToRemoteLog)
       {
@@ -55,11 +54,8 @@ namespace TallyJ.Code
       }
     }
 
-    private string HostAndVersion()
-    {
-      return _hostAndVersion ?? (_hostAndVersion = 
-               $"{Environment.MachineName} / {HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.Url.Host} / {UserSession.SiteVersion}");
-    }
+    private string HostAndVersion =>
+        $"{Environment.MachineName} / {HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.Url.Host} / {UserSession.SiteVersion}";
 
     private void SendToRemoteLog(string message)
     {
@@ -70,7 +66,7 @@ namespace TallyJ.Code
       }
 
       var info = new NameValueCollection();
-      info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion());
+      info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
       info["value2"] = UserSession.CurrentElectionName;
       info["value3"] = message;
 

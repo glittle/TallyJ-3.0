@@ -1038,8 +1038,6 @@
     <Content Include="Scripts\jquery.qtip.min.css" />
     <Content Include="Scripts\PeopleHelper.js" />
     <Content Include="Scripts\site.js" />
-    <Content Include="Scripts\superfish.css" />
-    <Content Include="Scripts\superfish.js" />
     <Content Include="Views\After\Reports.cshtml.js">
       <DependentUpon>Reports.cshtml</DependentUpon>
     </Content>

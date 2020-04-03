@@ -140,7 +140,7 @@ namespace TallyJ
               var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email_verified")?.Value.AsBoolean() ?? false;
               if (validated)
               {
-                identity.AddClaim(new Claim("UniqueID", emailClaim.Value));
+                identity.AddClaim(new Claim("UniqueID", "V:" + emailClaim.Value));
                 identity.AddClaim(new Claim("VoterId", emailClaim.Value));
                 identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Email));
                 identity.AddClaim(new Claim("IsVoter", "True"));
@@ -160,7 +160,7 @@ namespace TallyJ
                 var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone_verified")?.Value.AsBoolean() ?? false;
                 if (validated)
                 {
-                  identity.AddClaim(new Claim("UniqueID", phoneClaim.Value));
+                  identity.AddClaim(new Claim("UniqueID", "V:" + phoneClaim.Value));
                   identity.AddClaim(new Claim("VoterId", phoneClaim.Value));
                   identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Phone));
                   identity.AddClaim(new Claim("IsVoter", "True"));

@@ -72,7 +72,6 @@ function Onload() {
 
   AttachHelp();
 
-  PrepareMainMenu();
   HighlightActiveLink();
 
   AttachHandlers();
@@ -725,10 +724,6 @@ var setTopInfo = function () {
   ddlTeller1.toggleClass('NotSet', teller1Needed);
 
   $('#ddlTopTeller2').toggleClass('NotSet', +$('#ddlTopTeller2').val() <= 0);
-}
-
-function PrepareMainMenu() {
-  $('.QuickLinks').supersubs().superfish();
 }
 
 function AttachHelp() {
