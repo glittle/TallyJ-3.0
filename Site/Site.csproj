@@ -773,6 +773,7 @@
     <Content Include="Reports\SpoiledVotes.cshtml" />
     <Content Include="Reports\BallotsTied.cshtml" />
     <Content Include="Reports\BallotsSame.cshtml" />
+    <None Include="Properties\PublishProfiles\Babak 1.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 3.pubxml" />
     <None Include="Properties\PublishProfiles\Win16a BETA 3 VM IIS.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1000,6 +1001,9 @@
     </Content>
     <Content Include="Views\VoterAccount\Claims.cshtml" />
     <Content Include="Views\Setup\Notify.cshtml" />
+    <None Include="Web.Babak 1.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Local Files 3.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
