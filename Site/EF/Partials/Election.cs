@@ -5,6 +5,7 @@ using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.UnityRelated;
+using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.EF
 {
@@ -45,6 +46,10 @@ namespace TallyJ.EF
             Env, // Envelope Mode
             T24, // use 24 hour time?
         }
+
+        public string EmailFromAddressWithDefault => EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
+        public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
+
 
         /// <summary>
         /// This is a "fake" column that is embedded into the OwnerLoginId column

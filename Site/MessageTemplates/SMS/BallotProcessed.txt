@@ -1,0 +1,5 @@
+﻿Hello {voterName},
+
+As requested, this is your notification that your online ballot in the "{electionName}" {electionType} election has been processed by the tellers.
+
+Thanks for voting and have a good day!

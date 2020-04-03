@@ -1,0 +1,279 @@
+﻿@using Microsoft.Owin.Security
+@using TallyJ.Code.Session
+@model TallyJ.CoreModels.VoterAccountModels.LoginViewModel
+@{
+  ViewBag.OnWelcome = true;
+  ViewBag.Title = "Bahá’í Election System";
+  ViewBag.Caption = "Welcome";
+  ViewBag.Message = "The election system for Bahá’í tellers";
+  ViewBag.Metas = new[]{
+""
+}.JoinedAsString("");
+
+
+  ContextItems.AddJavascriptForPage("pageUrl", "homeIndexPage.controllerUrl={0};".FilledWith((Url.Action("Index") + "Public/").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
+}
+@section Metas {
+  <link rel='canonical' href='https://www.tallyj.com/' />
+  <meta name='description' content="TallyJ facilitates the recording of ballots and votes at a Bahá'í election." />
+  <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,tallyj,tally,tally ballots,tally votes,tally election,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bye election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-social-buttons/1.3.0/css/zocial.css">
+}
+<section class="features middle">
+  @if (SettingsHelper.HostSupportsOnlineElections)
+  {
+    <section class="featureBig VoterPanel">
+      <div class="closer">
+        <img src="~/Images/close.png" alt="Close" class="closer">
+      </div>
+      <div class="top">
+      </div>
+      <h2>Vote Online</h2>
+
+      @if (UserSession.IsKnownTeller || UserSession.IsGuestTeller)
+      {
+        if (UserSession.IsKnownTeller)
+        {
+          <p class="AlreadyIn">
+            You are logged in as an administrator.
+          </p>
+        }
+        else
+        {
+          <p class="AlreadyIn">
+            You are logged in as a teller.
+          </p>
+        }
+        <p class="AlreadyIn">
+          To vote in an election, you must log out and then log in as a voter.
+        </p>
+        <p class="AlreadyIn">
+          Go to the
+          <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        </p>
+        <p class="AlreadyIn">
+          or
+          <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
+        </p>
+      }
+      else if (UserSession.IsVoter)
+      {
+        <p class="AlreadyIn">
+          You are still logged in!
+        </p>
+        <p class="AlreadyIn">
+          Go to the
+          <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Vote")'">Voter Page</button>
+        </p>
+        <p class="AlreadyIn">
+          or
+          <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
+        </p>
+      }
+      else
+      {
+        <div class="RegisterOrVote">
+          @{
+            var msg = (string)Session[SessionKey.VoterLoginError];
+            if (msg.HasContent())
+            {
+              Session.Remove(SessionKey.VoterLoginError);
+              <div class="VoterLoginError">
+                @msg.AsRawHtml()
+              </div>
+            }
+            var loginTypes = Context.GetOwinContext()
+              .Authentication
+              .GetAuthenticationTypes()
+              .Where(a => a.Caption.HasContent())
+              .Select(a => a.Caption)
+              .ToList();
+          }
+          <div>
+
+            <h3>Step 1 - Register yourself as a voter in TallyJ with one of these options:</h3>
+            <ol>
+              <li>
+                Use your email address and a new password in TallyJ:
+                <a class="btn authButton local" href="@Url.Action("Register", "VoterAccount")">
+                  <img src="@Url.Content("~/Images/LogoS.png")">
+                </a>
+              </li>
+
+              @if (loginTypes.Count > 0)
+              {
+                using (Html.BeginForm("LogOnExt", "Account"))
+                {
+                  @Html.AntiForgeryToken()
+                  foreach (var name in loginTypes)
+                  {
+                    if (name == "Google")
+                    {
+                      <li>
+                        <button type="submit"
+                                class="authButton @name"
+                                accesskey="G"
+                                name="Provider"
+                                value="@name"
+                                title="Log in using your @name account">
+                          <img src="@Url.Content("~/Images/google.png")">
+                        </button>
+                      </li>
+                    }
+                    else if (name == "Facebook")
+                    {
+                      <li>
+                        <button type="submit"
+                                class="authButton @name"
+                                accesskey="F"
+                                name="Provider"
+                                value="@name"
+                                title="Log in using your @name account">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
+                            <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
+          11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
+          11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
+          15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
+          11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
+                          </svg>
+                          <span>Sign in with Facebook</span>
+                        </button>
+                      </li>
+                    }
+                  }
+                }
+              }
+            </ol>
+          </div>
+          <div>
+            <h3>Step 2 - Log in</h3>
+
+            @if (loginTypes.Count > 0)
+            {
+              <p>
+                Log in with your @loginTypes.InSentence("or") account,
+              </p>
+            }
+            else
+            {
+              <p>
+                Log in with your TallyJ account.
+              </p>
+            }
+            <div class="voterLogins">
+              @if (loginTypes.Count > 0)
+              {
+                <div id="socialLoginList">
+                  @using (Html.BeginForm("LogOnExt", "Account"))
+                  {
+                    @Html.AntiForgeryToken()
+                    foreach (var name in loginTypes)
+                    {
+                      if (name == "Google")
+                      {
+                        <button type="submit"
+                                class="authButton @name"
+                                accesskey="G"
+                                name="Provider"
+                                value="@name"
+                                title="Log in using your @name account">
+                          <img src="@Url.Content("~/Images/google.png")">
+                        </button>
+                      }
+                      else if (name == "Facebook")
+                      {
+                        <button type="submit"
+                                class="authButton @name"
+                                accesskey="F"
+                                name="Provider"
+                                value="@name"
+                                title="Log in using your @name account">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216" class="logo" color="#fff">
+                            <path fill="#fff" d="M204.1 0H11.9C5.3 0 0 5.3 0 11.9v192.2c0 6.6 5.3 11.9 11.9
+          11.9h103.5v-83.6H87.2V99.8h28.1v-24c0-27.9 17-43.1 41.9-43.1
+          11.9 0 22.2.9 25.2 1.3v29.2h-17.3c-13.5 0-16.2 6.4-16.2
+          15.9v20.8h32.3l-4.2 32.6h-28V216h55c6.6 0 11.9-5.3
+          11.9-11.9V11.9C216 5.3 210.7 0 204.1 0z"></path>
+                          </svg>
+                          <span>Log in With Facebook</span>
+                        </button>
+                      }
+                      else
+                      {
+                        @*<div>2 @name</div>*@
+                      }
+                    }
+                    <p class="externalNote">
+                      TallyJ will create a local account with the email address<br />that is provided by @loginTypes.InSentence("or").
+                    </p>
+                    <p class="externalNote">
+                      If you have added a TallyJ password to your account,<br />you must log in using the panel to the right.
+                    </p>
+                    @*<input class="form-control"
+                      name="ExtPassword"
+                      type="password">*@
+                  }
+                </div>
+                <span class="voterOr">
+                  or
+                </span>
+              }
+              <div class="direct">
+                @using (Html.BeginForm("LogOnLocal", "Account", FormMethod.Post, new { name = "v2" }))
+                {
+                  @Html.AntiForgeryToken()
+
+                  @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                  <div class="email">
+                    Email address
+                    <div>
+                      @Html.EditorFor(m => m.Email, new { htmlAttributes = new { autocomplete = "email" } })
+                      @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                  </div>
+                  <div class="pw">
+                    TallyJ Password
+                    <div>
+                      @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                      @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                  </div>
+                  <div class="submit">
+                    <button type="submit"
+                            class="authButton"
+                            accesskey="L"
+                            name="Provider"
+                            value="Local">
+                      Log in
+                    </button>
+                  </div>
+                  <div class="other">
+
+                    <p>
+                      @Html.ActionLink("Forgot your password?", "ForgotPassword", "VoterAccount")
+                    </p>
+
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <p>
+            By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.
+          </p>
+
+
+        </div>
+      }
+
+
+    </section>
+  }
+  else
+  {
+    <div>Sorry, online voting is not enabled on this server.</div>
+  }
+
+</section>

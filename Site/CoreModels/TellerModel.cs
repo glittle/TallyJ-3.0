@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
 using TallyJ.EF;
 
 
@@ -49,7 +50,7 @@ namespace TallyJ.CoreModels
                     new Claim("UniqueID", fakeUserName),
                 };
 
-                var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
                 var authenticationProperties = new AuthenticationProperties()
                 {

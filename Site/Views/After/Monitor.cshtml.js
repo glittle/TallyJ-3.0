@@ -291,6 +291,7 @@
           voter.Status = '-';
         }
       }
+      voter.EmailPhone = [voter.Email, voter.Phone].filter(function(s) { return !!s; }).join('<br>');
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
@@ -489,7 +490,7 @@
             },
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Saved' + (info.emailResult ? '.\n' + info.emailResult : ''));
+                ShowStatusSuccess('Saved');
                 vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
                 vue.checkStatus();
@@ -507,7 +508,7 @@
                 //                console.log(info.problems);
                 refresh();
               } else {
-                var msg = info.problems.join('<br>');
+                var msg = info.Message || info.problems.join('<br>');
                 ShowStatusFailed(msg);
               }
             });

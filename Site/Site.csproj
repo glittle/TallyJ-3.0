@@ -125,14 +125,17 @@
     <Reference Include="FluentSecurity, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentSecurity.2.1.0\lib\net40\FluentSecurity.dll</HintPath>
     </Reference>
+    <Reference Include="Kentor.OwinCookieSaver, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kentor.OwinCookieSaver.1.1.1\lib\net452\Kentor.OwinCookieSaver.dll</HintPath>
+    </Reference>
     <Reference Include="Krystalware.SlickUpload">
       <HintPath>..\OtherSources\Krystalware.SlickUpload.dll</HintPath>
     </Reference>
     <Reference Include="le_nlog, Version=2.1.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\le_nlog.2.2.1\lib\Net40\le_nlog.dll</HintPath>
     </Reference>
-    <Reference Include="LumenWorks.Framework.IO">
-      <HintPath>..\OtherSources\LumenWorks.Framework.IO.dll</HintPath>
+    <Reference Include="LumenWorks.Framework.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <HintPath>..\packages\LumenWorksCsvReader.4.0.0\lib\net461\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
     <Reference Include="MemcachedProviders">
       <HintPath>..\OtherSources\MemcachedProviders.dll</HintPath>
@@ -156,6 +159,21 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.3.0\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.3.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.5.3.0\lib\net461\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.3.0\lib\net461\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.3.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.4.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
@@ -176,6 +194,9 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OpenIdConnect, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OpenIdConnect.4.1.0\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
@@ -210,12 +231,17 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.3.0\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -259,6 +285,9 @@
     <Reference Include="Thrift, Version=0.8.0.16918, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\evernote-cloud-sdk-windows.1.0.8\lib\net40\Thrift.dll</HintPath>
     </Reference>
+    <Reference Include="Twilio, Version=5.38.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.5.38.0\lib\net451\Twilio.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Mvc3, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.Mvc3.1.2\lib\net40\Unity.Mvc3.dll</HintPath>
     </Reference>
@@ -270,6 +299,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Code\AllowTellersInActiveElectionAttribute.cs" />
     <Compile Include="Code\BaseController.cs" />
+    <Compile Include="Code\Enumerations\VoterIdTypeEnum.cs" />
     <Compile Include="Code\ForSysAdminAttribute.cs" />
     <Compile Include="Code\OwinRelated\AspIdentity2Classes.cs" />
     <Compile Include="Code\SettingsHelper.cs" />
@@ -338,8 +368,11 @@
     <Compile Include="Controllers\ElectionsController.cs" />
     <Compile Include="Controllers\PublicController.cs" />
     <Compile Include="Controllers\VoterAccountController.cs" />
-    <Compile Include="Controllers\VoterController.cs" />
+    <Compile Include="Controllers\VoteController.cs" />
     <Compile Include="Controllers\Manage2Controller.cs" />
+    <Compile Include="CoreModels\Helper\NotificationHelper.cs" />
+    <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
+    <Compile Include="CoreModels\Helper\SmsHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\IdentityModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\ManageViewModels.cs" />
@@ -544,12 +577,12 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
-    <Content Include="EmailTemplates\HeadTellerEmail.html" />
-    <Content Include="EmailTemplates\GenericIdentityManagerEmail.html" />
-    <Content Include="EmailTemplates\ElectionOpen.html" />
-    <Content Include="EmailTemplates\BallotProcessed.html" />
-    <Content Include="EmailTemplates\OnSubmit.html" />
-    <Content Include="EmailTemplates\TestEmail.html" />
+    <Content Include="MessageTemplates\Email\HeadTellerEmail.html" />
+    <Content Include="MessageTemplates\Email\GenericIdentityManagerEmail.html" />
+    <Content Include="MessageTemplates\Email\ElectionOpen.html" />
+    <Content Include="MessageTemplates\Email\BallotProcessed.html" />
+    <Content Include="MessageTemplates\Email\OnSubmit.html" />
+    <Content Include="MessageTemplates\Email\TestEmail.html" />
     <Content Include="Content\bootstrap3\bootstrap.css" />
     <Content Include="Content\bootstrap3\bootstrap.js" />
     <Content Include="Content\bootstrap3\bootstrap.min.css" />
@@ -611,12 +644,14 @@
     <Content Include="Images\BlankBig.png" />
     <Content Include="Images\BlankBigB.png" />
     <Content Include="Images\BlankBigT.png" />
+    <Content Include="Images\garden.jpg" />
     <Content Include="Images\google_focus.png" />
     <Content Include="Images\google.png" />
     <Content Include="Images\close.png" />
     <Content Include="Images\favicon.ico" />
     <Content Include="Images\gplus-16.png" />
     <Content Include="Images\keys.png" />
+    <Content Include="Images\Logo150.png" />
     <Content Include="Images\LogoFullL.png" />
     <Content Include="Images\LogoFullM.png" />
     <Content Include="Images\LogoM.png" />
@@ -709,7 +744,14 @@
     </Content>
     <Content Include="Images\pdf.png" />
     <Content Include="Images\social.png" />
+    <Content Include="Images\voterEmail.png" />
+    <Content Include="Images\voterSms.png" />
     <Content Include="Images\walk.png" />
+    <Content Include="MessageTemplates\SMS\BallotProcessed.txt" />
+    <Content Include="MessageTemplates\SMS\ElectionOpen.txt" />
+    <Content Include="MessageTemplates\SMS\HeadTellerEmail.txt" />
+    <Content Include="MessageTemplates\SMS\OnSubmit.txt" />
+    <Content Include="MessageTemplates\SMS\TestEmail.txt" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
@@ -741,9 +783,14 @@
     <Content Include="Scripts\ckeditor.js.map" />
     <Content Include="Reports\AllCanReceive.cshtml" />
     <Content Include="Reports\BallotsOnline.cshtml" />
+    <Content Include="Scripts\fonts\element-icons.ttf" />
+    <Content Include="Scripts\fonts\element-icons.woff" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\ckeditor.js" />
     <Content Include="Scripts\ckeditor.vue.js" />
+    <Content Include="Scripts\element-ui-en.js" />
+    <Content Include="Scripts\element-ui.css" />
+    <Content Include="Scripts\element-ui.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -825,11 +872,26 @@
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml.css">
+      <DependentUpon>VoterLogin.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml.js">
+      <DependentUpon>VoterLogin.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\EditPerson.cshtml.css">
       <DependentUpon>EditPerson.cshtml.less</DependentUpon>
     </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Notify.cshtml.css">
+      <DependentUpon>Notify.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Notify.cshtml.js">
+      <DependentUpon>Notify.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Notify.cshtml.less">
+      <DependentUpon>Notify.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml.less</DependentUpon>
@@ -843,11 +905,14 @@
     <Content Include="Views\SysAdmin\Index.cshtml.js">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Voter\VoterHome.cshtml.css">
-      <DependentUpon>VoterHome.cshtml.less</DependentUpon>
+    <Content Include="Views\Vote\VoteHome.cshtml.css">
+      <DependentUpon>VoteHome.cshtml.less</DependentUpon>
     </Content>
-    <Content Include="Views\Voter\VoterHome.cshtml.js">
-      <DependentUpon>VoterHome.cshtml</DependentUpon>
+    <Content Include="Views\Vote\VoteHome.cshtml.js">
+      <DependentUpon>VoteHome.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Vote\VoteHome.cshtml.less">
+      <DependentUpon>VoteHome.cshtml</DependentUpon>
     </Content>
     <Content Include="Xslt\FormatExport1.xslt" />
     <Content Include="Views\Public\Home.cshtml.less">
@@ -894,10 +959,7 @@
     <Content Include="Views\Setup\EditPerson.cshtml.less">
       <DependentUpon>EditPerson.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Voter\VoterHome.cshtml" />
-    <Content Include="Views\Voter\VoterHome.cshtml.less">
-      <DependentUpon>VoterHome.cshtml</DependentUpon>
-    </Content>
+    <Content Include="Views\Vote\VoteHome.cshtml" />
     <Content Include="Views\Shared\_LayoutVoter.cshtml" />
     <Content Include="Views\Public\Privacy.cshtml" />
     <Content Include="Views\VoterAccount\ConfirmEmail.cshtml" />
@@ -932,6 +994,12 @@
     <Content Include="Views\SysAdmin\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Public\VoterLogin.cshtml" />
+    <Content Include="Views\Public\VoterLogin.cshtml.less">
+      <DependentUpon>VoterLogin.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\VoterAccount\Claims.cshtml" />
+    <Content Include="Views\Setup\Notify.cshtml" />
     <None Include="Web.Local Files 3.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -121,7 +121,8 @@
 
   function saveChanges() {
     var form = {};
-    local.hostPanel.find(':input[data-name]').each(function () {
+    var inputs = local.hostPanel.find(':input[data-name]');
+    inputs.each(function () {
       var input = $(this);
       var value;
       switch (input.attr('type')) {
@@ -135,8 +136,20 @@
       form[input.data('name')] = value;
     });
 
-    if (!(form.FirstName && form.LastName)) {
-      alert('First and Last names are required.');
+    var errors = [];
+
+    if (!form.FirstName || !form.LastName) {
+      errors.push('First and Last names are required.');
+    }
+
+    var phoneInput = local.hostPanel.find('input[data-name="Phone"]');
+    var validationMessage = phoneInput[0].validationMessage;
+    if (validationMessage) {
+      errors.push('Mobile Phone Number: ' + validationMessage);
+    }
+
+    if (errors.length) {
+      ShowStatusFailed(errors.join('<br>'), 10000);
       return;
     }
 
@@ -191,7 +204,8 @@
     site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
     site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
     site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows on Front Page and in final reports if elected.' });
-    site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Required if they want to vote online.' });
+    site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Used if they want to vote online.' });
+    site.qTips.push({ selector: '#qTipPhone', title: 'Mobile Phone Number', text: 'Optional. The person\'s mobile phone number. Used if they want to vote online.' });
     site.qTips.push({
       selector: '#qTipIneligible',
       title: 'Ineligible',

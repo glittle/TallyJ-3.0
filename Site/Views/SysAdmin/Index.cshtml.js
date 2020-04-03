@@ -37,6 +37,7 @@ var LogView = function () {
 var logView = LogView();
 
 $(function () {
+  ELEMENT.locale(ELEMENT.lang.en);
   logView.preparePage();
 });
 
@@ -73,6 +74,10 @@ Vue.component('eventLog',
         age: '',
         ageSeconds: 0,
         lastSort: null,
+        moreDates: [],
+        searchName: '',
+        numMoreMainLog: 50,
+        numMoreOptions: [10, 25, 50, 100, 500, 1000],
         currentSort: null,
         autoUpdateSettings: [
           { s: 0, t: '(no auto refresh)' },
@@ -186,6 +191,9 @@ Vue.component('eventLog',
               logInfo.log = [];
             }
 
+            form.searchText = vue.searchText;
+            form.searchName = vue.searchName;
+
             if (logInfo.log.length) {
               last = logInfo.log[logInfo.log.length - 1];
               form.lastRowId = last.C_RowId;
@@ -200,7 +208,12 @@ Vue.component('eventLog',
             break;
         }
 
-        form.numToShow = vue.numToShow;
+        if (vue.moreDates && vue.moreDates.length) {
+          form.fromDate = moment(vue.moreDates[0]).format();
+          form.toDate = moment(vue.moreDates[1]).format();
+        }
+
+        form.numToShow = vue.numMoreMainLog;
 
         ShowStatusDisplay('Getting {0} details...'.filledWith(type));
 
@@ -256,6 +269,7 @@ Vue.component('eventLog',
         details = details
           .replace(/<br\/>/g, '\n')
           .replace(/<br>/g, '\n')
+          .replace(/  /g, '\n') // two space - some old code got \n converted to two spaces
           .replace(/<u>/g, '!!u!!')
           .replace(/<\/u>/g, '!!/u!!')
           .replace(/\\n/g, '\n')
@@ -271,11 +285,13 @@ Vue.component('eventLog',
 
         var lines = details.split('<br');
 
-        item.shortDetails = lines[0];
+        var maxForShortDetails = 120;
 
-        item.numLines = lines.length;
+        item.shortDetails = details.replace(/<br>/g, '').substr(0, maxForShortDetails);
 
-        item.fullDetails = item.numLines > 1 ? details : null;
+        item.hasFullDetails = lines.length > 1 || lines[0].length > maxForShortDetails;
+
+        item.fullDetails = item.hasFullDetails ? details : null;
 
         item.showFullDetails = false;
 
@@ -324,7 +340,7 @@ Vue.component('eventLog',
         // if (row.isLargest) classes.push('Largest');
         return classes.join(' ');
       },
-      sort: function (field) {
+      sort: function(field, event) {
         field = field || this.currentSort;
         if (!field) {
           return;
@@ -333,12 +349,18 @@ Vue.component('eventLog',
         var dir = field === this.lastSort ? -1 : 1;
         var list = this.logInfo[this.report].log;
 
-        list.sort(function (a, b) {
+        list.sort(function(a, b) {
           return a[field] > b[field] ? dir : -1 * dir;
         });
 
         this.lastSort = dir === -1 ? null : field;
         this.currentSort = field;
+
+        $('thead th span').remove();
+        if (event) {
+          $(event.target).parent();
+          //todo
+        }
       }
 
     },

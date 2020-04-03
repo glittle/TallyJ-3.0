@@ -43,7 +43,7 @@
 
       startSignalR(function () {
         console.log('Joining voter hub');
-        CallAjaxHandler(GetRootUrl() + 'Voter/JoinVoterHubs',
+        CallAjaxHandler(GetRootUrl() + 'Vote/JoinVoterHubs',
           {
             connId: site.signalrConnectionId
           });
@@ -80,7 +80,7 @@ var vueOptions = {
       keepStatusCurrent: false,
       loadingLoginHistory: true,
       loginHistory: [],
-      emailWhenOpen: false,
+//      emailWhenOpen: false,
       emailWhenProcessed: false,
       emailCodesLoaded: false,
       randomFirst: '',
@@ -88,7 +88,8 @@ var vueOptions = {
       randomOtherInfo: '',
       randomResult: '',
       addRandomToList: false,
-      hasLocalId: false
+      //      hasLocalId: false,
+      meditate: false
     };
   },
   computed: {
@@ -142,6 +143,16 @@ var vueOptions = {
     randomOtherInfo: function () {
       this.randomOtherInfo = this.cleanText(this.randomOtherInfo);
       this.randomResult = '';
+    },
+    addRandomToList: function (a, b) {
+      var vue = this;
+      if (a) {
+        setTimeout(function () {
+          if (vue.$refs.firstInput) {
+            vue.$refs.firstInput.focus();
+          }
+        }, 100);
+      }
     }
   },
   created: function () {
@@ -150,10 +161,13 @@ var vueOptions = {
     this.getElectionList();
   },
   methods: {
+    toggleMeditate: function () {
+      this.meditate = !this.meditate;
+    },
     getElectionList: function () {
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/GetVoterElections',
+      CallAjaxHandler(GetRootUrl() + 'Vote/GetVoterElections',
         null,
         function (info) {
           vue.loading = false;
@@ -167,11 +181,11 @@ var vueOptions = {
 
             // other info
             if (info.emailCodes) {
-              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
+//              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
-            vue.hasLocalId = info.hasLocalId;
+            //            vue.hasLocalId = info.hasLocalId;
 
             // for dev, go to first available election
             //            setTimeout(function () {
@@ -193,7 +207,7 @@ var vueOptions = {
       var vue = this;
       var before = vue.savedLock;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/LockPool',
+      CallAjaxHandler(GetRootUrl() + 'Vote/LockPool',
         {
           locked: locked
         },
@@ -202,7 +216,9 @@ var vueOptions = {
             vue.savedLock = locked;
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
-            ShowStatusSuccess('Submitted' + (info.emailSent ? '. Email sent.' : ''));
+            ShowStatusSuccess('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
+
+            window.scrollTo(0, 0);
           } else {
             ShowStatusFailed(info.Error);
             vue.savedLock = before;
@@ -215,31 +231,29 @@ var vueOptions = {
       info.Date_Display = moment(info.DateOfElection).format('D MMM YYYY');
 
       var person = info.person;
+
+      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
+
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
 
         person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
+
       } else {
-        //        if (person.RegistrationTime) {
-        //          person.RegistrationTime_M = moment(person.RegistrationTime);
-        //          person.RegistrationTime_Display = person.RegistrationTime_M.format('D MMM YYYY hh:mm a');
-        //
-        //          person.BallotStatus = person.RegistrationTime_Display;
-        //        } else {
+        person.WhenStatus_M = null;
+        person.WhenStatus_Display = null;
         person.BallotStatus = '-';
-        //        }
       }
 
-      person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '-';
+
       this.updateStatus(info);
     },
     updateRegistration: function (info) {
       var vue = this;
       var election = vue.election;
       if (election && election.person) {
-        election.person.RegistrationTime =
-          info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
+        election.person.RegistrationTime = info.RegistrationTime; // || info.RegistrationTimeRaw.parseJsonDate().toISOString();
         if (info.hasOwnProperty('PoolLocked')) {
           election.person.PoolLocked = info.PoolLocked;
         }
@@ -291,7 +305,7 @@ var vueOptions = {
           if (minutes < 120) {
             s.push(` (at ${info.OnlineWhenClose_M.format('h:mm a')})`);
           }
-          s.push('.');
+          //          s.push('.');
           info.Status_Display = s.join('');
         }
       } else {
@@ -310,7 +324,7 @@ var vueOptions = {
       }
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/JoinElection',
+      CallAjaxHandler(GetRootUrl() + 'Vote/JoinElection',
         {
           electionGuid: eInfo.id
         },
@@ -320,6 +334,7 @@ var vueOptions = {
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
             vue.selectionProcess = info.OnlineSelectionProcess;
+            vue.voterName = info.voterName;
 
             voterHome.peopleHelper.Prepare(function () {
               var list = JSON.parse(info.votingInfo.ListPool || '[]');
@@ -328,15 +343,14 @@ var vueOptions = {
               var locked = info.votingInfo.PoolLocked && vue.pool.length >= vue.numToElect;
               vue.savedLock = locked;
               vue.lockInVotes = locked;
-              vue.setInputFocus();
+              //              vue.setInputFocus();
 
-              if (vue.useList && voterHome.peopleHelper.local.localNames.length < 20) {
-                voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
-              }
+
             });
 
             vue.activePage = 2;
-            vue.scrollToTop(95);
+            vue.resetSearch();
+            vue.scrollToTop(0);
 
           } else if (info.closed) {
             // show closed... show info if available
@@ -344,6 +358,16 @@ var vueOptions = {
             ShowStatusFailed(info.Error);
           }
         });
+    },
+    showAll: function () {
+      var vue = this;
+      if (vue.useList) {
+        vue.searchText = '';
+
+        setTimeout(function () {
+          voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
+        }, 0);
+      }
     },
     runSearch: function (ev) {
       var text = this.searchText;
@@ -402,10 +426,10 @@ var vueOptions = {
 
       $('#P' + this.nameList[this.searchResultRow].Id)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
-    specialSearch: function (code) {
-      this.resetSearch();
-      voterHome.peopleHelper.Special(code, this.displaySearchResults);
-    },
+//    specialSearch: function (code) {
+//      this.resetSearch();
+//      voterHome.peopleHelper.Special(code, this.displaySearchResults);
+//    },
     displaySearchResults: function (info) {
       voterHome.People = info.People;
       this.nameList = voterHome.People;
@@ -416,6 +440,9 @@ var vueOptions = {
       this.searchText = '';
       this.lastSearch = '';
       this.nameList = [];
+
+      this.resetRandomInput();
+
       $('.searchBox').focus();
     },
     addToPool: function (p) {
@@ -541,7 +568,7 @@ var vueOptions = {
           }
         });
         if (vue.savedPool !== list) {
-          CallAjaxHandler(GetRootUrl() + 'Voter/SavePool',
+          CallAjaxHandler(GetRootUrl() + 'Vote/SavePool',
             {
               pool: JSON.stringify(list)
             },
@@ -587,7 +614,7 @@ var vueOptions = {
 
       var vue = this;
 
-      CallAjaxHandler(GetRootUrl() + 'Voter/GetLoginHistory',
+      CallAjaxHandler(GetRootUrl() + 'Vote/GetLoginHistory',
         null,
         function (info) {
           vue.loadingLoginHistory = false;
@@ -609,11 +636,11 @@ var vueOptions = {
     },
     saveEmailCodes: function () {
       var vue = this;
-      var codes = (vue.emailWhenOpen ? 'o' : '') + (vue.emailWhenProcessed ? 'p' : '');
+      var codes = (vue.emailWhenProcessed ? 'p' : ''); // (vue.emailWhenOpen ? 'o' : '') + 
       var form = {
         emailCodes: codes || null
       };
-      CallAjaxHandler(GetRootUrl() + 'Voter/SaveEmailCodes',
+      CallAjaxHandler(GetRootUrl() + 'Vote/SaveEmailCodes',
         form,
         function (info) {
           if (info.saved) {
@@ -624,11 +651,11 @@ var vueOptions = {
         });
     },
     emailTest: function () {
-      CallAjaxHandler(GetRootUrl() + 'Voter/SendTestEmail',
+      CallAjaxHandler(GetRootUrl() + 'Vote/SendTestMessage',
         null,
         function (info) {
           if (info.sent) {
-            ShowStatusSuccess('Email Sent');
+            ShowStatusSuccess('Message Sent');
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -638,7 +665,7 @@ var vueOptions = {
       // no need to allow < or > or &
       return s.replace(/[<>&]/g, '');
     },
-    searchForRandom: function() {
+    searchForRandom: function () {
       this.searchText = [this.randomFirst, this.randomLast].join(' ');
     },
     addRandomName: function () {
@@ -694,10 +721,7 @@ var vueOptions = {
           }
           this.addToPool(p);
 
-          this.randomFirst = '';
-          this.randomLast = '';
-          this.randomOtherInfo = '';
-          this.addRandomToList = false;
+          this.resetRandomInput();
 
           this.setInputFocus();
 
@@ -707,15 +731,15 @@ var vueOptions = {
 
       this.addToPool(person);
 
+      this.resetRandomInput();
+
+      this.setInputFocus();
+    },
+    resetRandomInput: function () {
       this.randomFirst = '';
       this.randomLast = '';
       this.randomOtherInfo = '';
       this.addRandomToList = false;
-
-      this.setInputFocus();
-    },
-    showRandomInput: function () {
-
     },
     setInputFocus: function () {
       if (this.selectionProcess === 'R') {
@@ -724,13 +748,13 @@ var vueOptions = {
         this.$refs.searchBox && this.$refs.searchBox.focus();
       }
     },
-    printBallot: function() {
+    printBallot: function () {
       $(document.body).addClass('printingBallot');
-      window.addEventListener("afterprint", function(ev) {
+      window.addEventListener("afterprint", function (ev) {
         $(document.body).removeClass('printingBallot');
       });
 
-      Vue.nextTick(function() {
+      Vue.nextTick(function () {
         //window.print();
       });
     }

@@ -15,6 +15,7 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Profile;
 using System.Web.Routing;
+using System.Web.Services.Protocols;
 using FluentSecurity;
 using NLog;
 using NLog.Targets;
@@ -181,9 +182,13 @@ namespace TallyJ
       var logger = LogManager.GetCurrentClassLogger();
       var mainMsg = mainException.GetAllMsgs("; ");
 
-      if (mainMsg.Contains("dbo.Sessions") || mainMsg.Contains("The request was aborted"))
+      if (mainMsg.Contains("dbo.Sessions")
+          || mainMsg.Contains("The request was aborted")
+          || mainMsg.Contains("The client disconnected")
+          || mainMsg.Contains("controller for path '/favicon.ico'")
+      )
       {
-        // don't track StateServer errors...
+        // don't track odd errors...
         return;
       }
 
@@ -243,7 +248,7 @@ namespace TallyJ
         Response.StatusCode = 500;
       }
 
-      new LogHelper().Add(msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
+      new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
 
 
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
@@ -260,7 +265,15 @@ namespace TallyJ
         //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
         //Response.Write("Error on site");
       }
-      Response.End();
+
+      try
+      {
+        Response.End();
+      }
+      catch (Exception)
+      {
+        // could fail if client disconnected, etc.
+      }
     }
 
     private string FilteredStack(string stackTrace)
@@ -310,6 +323,8 @@ namespace TallyJ
 
     public static void RegisterDefaultRoute(RouteCollection routes, string controllerName)
     {
+      routes.MapMvcAttributeRoutes();
+
       routes.MapRoute(
           "Default", // Route name
           "{controller}/{action}/{id}", // URL with parameters

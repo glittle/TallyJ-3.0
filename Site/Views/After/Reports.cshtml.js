@@ -12,8 +12,9 @@
 
     window.addEventListener("hashchange", function () {
       $('.chooser a').removeClass('selected');
-      local.currentTitle = $(this).addClass('selected').text();
-      getReport(location.hash.substr(1), local.currentTitle);
+      var hash1 = location.hash;
+      local.currentTitle = $('.chooser a[href="' + hash1 + '"]').addClass('selected').text();
+      getReport(hash1.substr(1), local.currentTitle);
     }, false);
 
     var hash = location.hash;

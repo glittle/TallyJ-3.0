@@ -6,15 +6,13 @@
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
-ClientFile("~/Scripts/vue{0}.js", ".min"),
-ClientFile("~/Scripts/BadiDateToday.v1.js"),
-ClientFile("~/Scripts/luxon.min.js"),
-ClientFile("~/Scripts/vue-datetime.js"),
-ClientFile("~/Scripts/ckeditor.js"),
-ClientFile("~/Scripts/ckeditor.vue.js"),
+    ClientFile("~/Scripts/vue{0}.js", ".min"),
+    ClientFile("~/Scripts/BadiDateToday.v1.js"),
+    ClientFile("~/Scripts/luxon.min.js"),
+    ClientFile("~/Scripts/vue-datetime.js"),
 };
   ViewData["ExtraCss"] = new[] {
-ClientFile("~/Scripts/vue-datetime.css"),
+    ClientFile("~/Scripts/vue-datetime.css"),
   };
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
@@ -522,81 +520,10 @@ ClientFile("~/Scripts/vue-datetime.css"),
             be recognized by voters so that the email is not rejected as spam!
           </td>
         </tr>
-        <tr>
-          <th>
-            Additional Message
-          </th>
-          <td colspan="2">
-            <div>
-              Emails will be sent with election details from TallyJ. You can include an additional message by typing it here.
-            </div>
-            <div class="ckHost">
-              <ckeditor :editor="emailEditor" :config="editorConfig" v-model="election.EmailText" v-on:input="saveNeeded"></ckeditor>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th></th>
-          <td colspan="2" class="emailButtons">
-            <p class="isSaveNeeded" v-if="isSaveNeeded">Save Changes before sending emails.</p>
-            <p class="emailSendStatus" v-if="emailSendStatus" v-text="emailSendStatus"></p>
-            <table>
-              <tr>
-                <th>
-                  <button class="btn btn-mini" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !election.EmailFromAddress">Send me a test copy</button>
-                </th>
-                <td>
-                  One email will be sent to {{election.EmailFromAddress || 'the address above...'}}
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  <button class="btn" v-on:click="sendEmail('Intro')" :disabled="isSaveNeeded">Send Intro Email</button>
-                </th>
-                <td>
-                  The introduction email will be sent to {{numWithEmails}} email addresses on file.
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <th></th>
-          <td colspan="2">
-            <div>Recent Email Log</div>
-            <div class="emailHistoryHost">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Action</th>
-                    <th>When</th>
-                    <th>Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="e in emailLog" :key="e.C_RowId">
-                    <td v-text="e.Details"></td>
-                    <td class="nowrap" v-text="e.age"></td>
-                    <td class="nowrap" v-text="e.when"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-        @*<tr>
-            <th>
-              Close timtime estimated?
-            </th>
-            <td>
-              <yes-no v-model="election.OnlineCloseIsEstimate"></yes-no>
-            </td>
-            <td>
-              This affects the wording shown to voters. Usually leave as estimated until the final hours.
-            </td>
-          </tr>*@
+
       </tbody>
     </table>
+
   }
   else
   {
@@ -621,7 +548,7 @@ ClientFile("~/Scripts/vue-datetime.css"),
       </th>
       <td>
         <div id="tellersList">
-          <i>(Filled by tellers as needed)</i>
+          <i>(Filled in by tellers as needed)</i>
         </div>
       </td>
     </tr>

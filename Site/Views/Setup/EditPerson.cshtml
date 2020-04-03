@@ -13,7 +13,7 @@
             First Name
         </td>
         <td>
-            <input type="text" data-name="FirstName" maxlength="50" class="text50" />
+            <input type="text" data-name="FirstName" maxlength="50" class="text50" required />
             <span class="ui-icon ui-icon-info" id="qTipFName"></span>
         </td>
     </tr>
@@ -22,7 +22,7 @@
             Last Name
         </td>
         <td>
-            <input type="text" data-name="LastName" maxlength="50" class="text50" />
+            <input type="text" data-name="LastName" maxlength="50" class="text50" required />
             <span class="ui-icon ui-icon-info" id="qTipLName"></span>
         </td>
     </tr>
@@ -108,6 +108,16 @@
         <td>
             <input type="email" data-name="Email" maxlength="250" class="text150" />
             <span class="ui-icon ui-icon-info" id="qTipEmail"></span>
+        </td>
+    </tr> 
+    <tr>
+        <td>
+          Mobile Phone Number
+        </td>
+        <td>
+          <input type="tel" data-name="Phone" maxlength="25" class="text50" pattern="\+[0-9]{4,15}" />
+          <span class="ui-icon ui-icon-info" id="qTipPhone"></span>
+          <div class="comments">Sample: +15873281844</div>
         </td>
     </tr>
     @*        <tr>

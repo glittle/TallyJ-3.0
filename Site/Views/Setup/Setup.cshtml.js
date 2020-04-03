@@ -17,7 +17,6 @@
       el: '#setupBody',
       components: {
         'yes-no': YesNo,
-        ckeditor: CKEditor.component
       },
       data: {
         election: publicInterface.Election,
@@ -28,23 +27,6 @@
         isMounted: false,
         useOnline: false,
         isSaveNeeded: false,
-        emailEditor: ClassicEditor,
-        emailLog: [],
-        numWithEmails: 0,
-        emailSendStatus: '',
-        editorConfig: {
-          toolbar: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'indent', 'outdent', 'bulletedList', 'numberedList', 'link', 'insertTable'],
-          heading: {
-            options: [
-              { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-              { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-              { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-            ],
-            table: {
-              contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-            }
-          }
-        },
         dummy: 1
       },
       computed: {
@@ -107,11 +89,6 @@
               this.election.OnlineCloseIsEstimate = true;
               this.election.OnlineSelectionProcess = 'B';
             };
-            this.getEmailLog();
-            //            var vue = this;
-            //            Vue.nextTick(function() {
-            //              vue.setupEmailEditor();
-            //            });
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
@@ -145,18 +122,6 @@
           var input = $(domIcon).closest('div').find('input');
           locationChanged(input, true);
         },
-        //        setupEmailEditor: function() {
-        //          var vue = this;
-        //          console.log('setup', $('#EmailText').length);
-        //
-        //          // see http://jqueryte.com/documentation
-        //          $('#EmailText').jqte({
-        //            button: 'TEST',
-        //            sub: false,
-        //            sup: false,
-        //            change: function() { console.log('changed', vue.election.EmailText); },
-        //          });
-        //        },
         replaceBodyBpClass: function (process) {
           var list = window.document.body.classList;
           list.forEach(function (key) {
@@ -177,42 +142,6 @@
           if (!when) return '';
           return '(' + moment(when).fromNow() + ')';
         },
-        sendEmail: function (emailCode) {
-          var vue = this;
-          ShowStatusDisplay('Sending...');
-          var form = { emailCode: emailCode };
-          CallAjaxHandler(publicInterface.controllerUrl + '/SendEmail', form, function (info) {
-            if (info.Success) {
-              vue.getEmailLog();
-              ShowStatusSuccess(info.Status);
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
-
-        },
-        getEmailLog: function () {
-          var vue = this;
-          CallAjaxHandler(publicInterface.controllerUrl + '/GetEmailInfo', null, function (info) {
-            if (info.Success) {
-              vue.emailLog = vue.extendLog(info.Log);
-              vue.numWithEmails = info.NumWithEmails;
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
-
-        },
-        extendLog: function (list) {
-          list.forEach(function (lh) {
-            var when_M = moment(lh.AsOf);
-            lh.age = when_M.fromNow();
-            lh.when = when_M.format('llll');
-          });
-          return list;
-        },
       }
     });
 
@@ -228,13 +157,14 @@
     $(document).on('click', '#btnAddLocation', addLocation);
 
     $('.Demographics').on('change keyup', '*:input', function () {
-      if ($(this).closest('.forLocations').length) {
-        return; // don't flag location related
+      var input = $(this);
+
+      if (input.closest('.forLocations').length) {
+        return; // don't flag location related inputs
       }
       setTimeout(function () {
         settings.vue.saveNeeded();
-      },
-        0);
+      }, 0);
     });
 
     $('#chkPreBallot').on('change', showForPreBallot);
@@ -593,7 +523,6 @@
       OnlineSelectionProcess: election.OnlineSelectionProcess,
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
-      EmailText: encodeURIComponent(election.EmailText || '') || null,
     };
 
     $(':input[data-name]').each(function () {
@@ -620,6 +549,9 @@
             site.passcode = info.Election.ElectionPasscode;
           updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
         }
+
+        publicInterface.defaultFromAddress = info.defaultFromAddress;
+
         $('.btnSave').removeClass('btn-primary');
         settings.vue.isSaveNeeded = false;
 

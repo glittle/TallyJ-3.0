@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using System.Web.Providers.Entities;
 using System.Web.Security;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
@@ -13,6 +14,8 @@ using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace TallyJ.Code.Session
 {
@@ -249,9 +252,30 @@ namespace TallyJ.Code.Session
 
     public static bool IsSysAdmin => ActivePrincipal.FindFirst("IsSysAdmin")?.Value == "true";
 
-    public static string VoterEmail => ActivePrincipal.FindFirst("Email")?.Value;
-    public static string VoterAuthSource => ActivePrincipal.FindFirst("Source")?.Value;
-    public static bool VoterIsVerified => ActivePrincipal.FindFirst("IsVoter")?.Value == "True";
+    public static string VoterId => ActivePrincipal.FindFirst("VoterId")?.Value;
+    public static string VoterIdType => ActivePrincipal.FindFirst("VoterIdType")?.Value;
+    public static bool IsVoter => VoterId.HasContent();
+
+    // public static string VoterEmail => ActivePrincipal.FindFirst("https://ns.tallyj.com/email")?.Value;
+    // public static string VoterPhone => ActivePrincipal.FindFirst("https://ns.tallyj.com/phone")?.Value;
+    // public static bool VoterIsVerified => ActivePrincipal.FindFirst("IsVoter")?.Value.AsBoolean() ?? false;
+    //public static string VoterAuthSource => ActivePrincipal.FindFirst("Source")?.Value;
+
+    public static string VoterLoginSource
+    {
+      get => SessionKey.VoterLoginSource.FromSession("");
+      set => SessionKey.VoterLoginSource.SetInSession(value);
+    }
+    public static Guid VoterInElectionPersonGuid
+    {
+      get => SessionKey.VoterInElectionPersonGuid.FromSession(Guid.Empty);
+      set => SessionKey.VoterInElectionPersonGuid.SetInSession(value);
+    }
+    // public static string VoterInElectionPersonName
+    // {
+    //   get => SessionKey.VoterInElectionPersonName.FromSession("");
+    //   set => SessionKey.VoterInElectionPersonName.SetInSession(value);
+    // }
 
     public static DateTime VoterLastLogin
     {
@@ -259,23 +283,37 @@ namespace TallyJ.Code.Session
       set => SessionKey.VoterLastLogin.SetInSession(value);
     }
 
-    public static void RecordVoterLogin(string source, string email)
+    public static void RecordVoterLogin(string voterId, string voterIdType, string source, string country)
     {
-      if (email.HasNoContent())
+      var logHelper = new LogHelper();
+
+      var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
+      if (voterIdTypeDesc.HasNoContent())
       {
-        throw new ApplicationException("Email required");
+        logHelper.Add("Invalid voter Id type: " + voterIdType, true);
+        // ProcessLogout();
+        return;
+      }
+
+      if (voterId.HasNoContent())
+      {
+        logHelper.Add("Empty voter Id for " + voterIdType, true);
+        // ProcessLogout();
+        return;
       }
 
       var db = GetNewDbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.Email == email);
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
       var now = DateTime.Now;
 
       if (onlineVoter == null)
       {
         onlineVoter = new OnlineVoter
         {
-          Email = email,
-          WhenRegistered = now
+          VoterId = voterId,
+          VoterIdType = voterIdType,
+          WhenRegistered = now,
+          Country = country
         };
         db.OnlineVoter.Add(onlineVoter);
       }
@@ -287,9 +325,11 @@ namespace TallyJ.Code.Session
       onlineVoter.WhenLastLogin = now;
       db.SaveChanges();
 
-      new LogHelper().Add($"Voter login from {source}", true, email);
+      VoterLoginSource = source;
 
-      new VoterPersonalHub().Login(email); // in case same email is logged into a different computer
+      logHelper.Add($"Voter login from {source}", true, voterId);
+
+      new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
     }
 
     public static Location CurrentLocation
@@ -425,8 +465,6 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static bool IsVoter => VoterIsVerified;
-
     //    public static string WebProtocol
     //    {
     //      get { return new SiteInfo().CurrentEnvironment == "AppHarbor" ? "https" : "http"; }
@@ -502,9 +540,18 @@ namespace TallyJ.Code.Session
     {
       new LogHelper().Add("Log Out");
 
+      var current = HttpContext.Current;
+
+      if (current.User.Identity.IsAuthenticated)
+      {
+        var owinContext = current.GetOwinContext();
+        owinContext.Authentication.SignOut();
+      }
+
       LeaveElection(false);
 
       CurrentContext.Session.Clear();
+
       FormsAuthentication.SignOut();
     }
 

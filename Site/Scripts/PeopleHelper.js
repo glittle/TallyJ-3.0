@@ -136,7 +136,7 @@
   function extendPersonCore(p) {
     p.NameArea = p.Name + (p.Area ? ' <u>' + p.Area + '</u>' : '');
     // for searches, make lowercase
-    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase());
+    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase() + p.Phone);
     p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
     p.parts = p.namePlain.split(local.nameSplitter);
 
@@ -145,6 +145,9 @@
     if (customExtendPerson) {
       customExtendPerson(p);
     }
+//    if (forVoter) {
+//      p.sort = Math.random();
+//    }
   }
 
   function special(code, cbAfter) {
@@ -167,7 +170,9 @@
     };
     var searchParts = trimmed.toLowerCase().split(local.nameSplitter);
 
-    if (trimmed === local.showAllCode) {
+    var showAll = trimmed === local.showAllCode;
+
+    if (showAll) {
       local.localNames.forEach(function (n) {
         if (result.People.length < maxToShow) {
           result.People.push(n);
@@ -190,7 +195,7 @@
       });
     }
 
-    sortResults(result);
+    sortResults(result, showAll);
 
     var info = markUp(result, searchParts, usedPersonIds);
 
@@ -263,7 +268,24 @@
     return 20 - index;
   }
 
-  function sortResults(result) {
+  function sortResults(result, byNameOnly) {
+    if (forVoter) {
+      // a new random order every time
+      result.People.forEach(p => p.sort = Math.random());
+
+      result.People.sort(function(a, b) {
+         return a.sort < b.sort ? -1 : 1;
+      });
+      return;
+    }
+
+    if (byNameOnly) {
+      result.People.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+      return;
+    }
+
     if (forBallotEntry) {
       result.People.sort(function (a, b) {
         if (a.Sort1 < b.Sort1) return 1;
@@ -287,24 +309,25 @@
 
         return a.name.localeCompare(b.name);
       });
-    } else {
-      result.People.sort(function (a, b) {
-        //        console.log(a.Sort1, b.Sort1);
-        if (a.Sort1 < b.Sort1) return 1;
-        if (a.Sort1 > b.Sort1) return -1;
-        //
-        //        if (a.Parts5 < b.Parts5) return 1;
-        //        if (a.Parts5 > b.Parts5) return -1;
-        //
-        //        if (a.Parts4 < b.Parts4) return 1;
-        //        if (a.Parts4 > b.Parts4) return -1;
-        //
-        //        if (a.Parts3 < b.Parts3) return 1;
-        //        if (a.Parts3 > b.Parts3) return -1;
-
-        return a.name.localeCompare(b.name);
-      });
+      return;
     }
+
+    result.People.sort(function (a, b) {
+      //        console.log(a.Sort1, b.Sort1);
+      if (a.Sort1 < b.Sort1) return 1;
+      if (a.Sort1 > b.Sort1) return -1;
+      //
+      //        if (a.Parts5 < b.Parts5) return 1;
+      //        if (a.Parts5 > b.Parts5) return -1;
+      //
+      //        if (a.Parts4 < b.Parts4) return 1;
+      //        if (a.Parts4 > b.Parts4) return -1;
+      //
+      //        if (a.Parts3 < b.Parts3) return 1;
+      //        if (a.Parts3 > b.Parts3) return -1;
+
+      return a.name.localeCompare(b.name);
+    });
   }
 
   function markUp(info, searchParts, usedIds) {
@@ -442,11 +465,15 @@
     searchParts.forEach(function (searchPart) {
       if ($.trim(searchPart) === '') return;
       //            var searchReg = new RegExp('[\\s\\-\\\'\\[\\(]({0})|(^{0})'.filledWith(searchPart), 'ig');
-      var searchReg = new RegExp('({0})|(^{0})'.filledWith(searchPart), 'ig');
-      name = name.replace(searchReg,
-        function (a, b, c) {
-          return local.bStart + arguments[0] + local.bEnd;
-        });
+      try {
+        var searchReg = new RegExp('({0})|(^{0})'.filledWith(searchPart), 'ig');
+        name = name.replace(searchReg,
+          function (a, b, c) {
+            return local.bStart + arguments[0] + local.bEnd;
+          });
+      } catch (e) {
+        // an invalid regex...
+      } 
     });
 
     if (personInfo.Parts4) {

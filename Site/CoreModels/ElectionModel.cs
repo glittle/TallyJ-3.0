@@ -244,6 +244,35 @@ namespace TallyJ.CoreModels
       return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
     }
 
+    public JsonResult SaveNotification(string emailText)
+    {
+      if (emailText.HasNoContent())
+      {
+        return new
+        {
+          success = false,
+          Status = "Cannot have empty email text."
+        }.AsJsonResult();
+      }
+
+      var electionCacher = new ElectionCacher(Db);
+      var election = UserSession.CurrentElection;
+      Db.Election.Attach(election);
+
+      election.EmailText = Uri.UnescapeDataString(emailText);
+
+      Db.SaveChanges();
+
+      electionCacher.UpdateItemAndSaveCache(election);
+      
+      return new
+      {
+        success = true,
+        Status = "Saved",
+        defaultFromAddress = UserSession.CurrentElection.EmailFromAddressWithDefault,
+      }.AsJsonResult();
+    }
+
     /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
     /// <Summary>Saves changes to this election</Summary>
     public JsonResult SaveElection(Election electionFromBrowser)
@@ -261,10 +290,7 @@ namespace TallyJ.CoreModels
       var currentReceive = election.CanReceive;
       var currentListed = election.ListForPublic;
 
-      if (electionFromBrowser.EmailText.HasContent())
-      {
-        electionFromBrowser.EmailText = System.Uri.UnescapeDataString(electionFromBrowser.EmailText);
-      }
+    
 
       // List of fields to allow edit from setup page
       var editableFields = new
@@ -293,7 +319,6 @@ namespace TallyJ.CoreModels
         election.OnlineSelectionProcess,
         election.EmailFromAddress,
         election.EmailFromName,
-        election.EmailText,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
@@ -408,6 +433,7 @@ namespace TallyJ.CoreModels
       {
         success = true,
         Status = "Saved",
+        defaultFromAddress = UserSession.CurrentElection.EmailFromAddressWithDefault,
         Election = election,
         displayName = UserSession.CurrentElectionDisplayNameAndInfo
       }.AsJsonResult();
@@ -1069,15 +1095,15 @@ namespace TallyJ.CoreModels
 
       // checking ElectionGuid for person is redundant but doesn't hurt
       // checking Ready and PoolLocked is redundant but doesn't hurt
-      var onlineVoterInfo = Db.OnlineVotingInfo
+      var ballotInfoList = Db.OnlineVotingInfo
         .Where(ovi => ovi.ElectionGuid == electionGuid)
         .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
         .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid && p.VotingMethod == VotingMethodEnum.Online), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
-        .Join(Db.OnlineVoter, j => j.ovi.Email, ov => ov.Email, (j, ov) => new { j.p, j.ovi, ov })
+        // .Join(Db.OnlineVoter, j => new { j.ovi.Email, j.ovi.Phone }, ov => new { ov.Email, ov.Phone }, (j, ov) => new { j.p, j.ovi, ov })
         // .OrderBy(j => j.ovi.PersonGuid) -- no defined order... will resort later
         .ToList();
 
-      if (!onlineVoterInfo.Any())
+      if (!ballotInfoList.Any())
       {
         return new
         {
@@ -1086,22 +1112,34 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
+      var voterIdList = ballotInfoList
+        .Where(b => b.p.Email.HasContent())
+        .Select(b => new { VoterId = b.p.Email, b.p.PersonGuid })
+        .Concat(ballotInfoList
+          .Where(b => b.p.Phone.HasContent())
+          .Select(b => new { VoterId = b.p.Phone, b.p.PersonGuid }))
+        .GroupJoin(Db.OnlineVoter, v => v.VoterId, ov => ov.VoterId, (v, ovList) => new { v.PersonGuid, ovList })
+        .GroupBy(j => j.PersonGuid)
+        .ToDictionary(g => g.Key, j => j.SelectMany(o => o.ovList));
+
       var ballotModel = BallotModelFactory.GetForCurrentElection();
       var problems = new List<string>();
       var numBallotsCreated = 0;
       var emailHelper = new EmailHelper();
+      var smsHelper = new SmsHelper();
+      var logHelper = new LogHelper();
 
-      foreach (var onlineVoter in onlineVoterInfo)
+      foreach (var onlineBallotInfo in ballotInfoList)
       {
-        var name = " - " + onlineVoter.p.FullName;
+        var name = " - " + onlineBallotInfo.p.FullName;
 
-        if (!onlineVoter.p.CanVote.GetValueOrDefault())
+        if (!onlineBallotInfo.p.CanVote.GetValueOrDefault())
         {
           problems.Add("Not allowed to vote" + name);
           continue;
         }
 
-        var pool = onlineVoter.ovi.ListPool;
+        var pool = onlineBallotInfo.ovi.ListPool;
         if (pool.HasNoContent())
         {
           problems.Add("Empty pool" + name);
@@ -1119,6 +1157,7 @@ namespace TallyJ.CoreModels
 
         var ballotCreated = false;
 
+
         using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
         {
           try
@@ -1126,25 +1165,30 @@ namespace TallyJ.CoreModels
             ballotCreated = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
             if (ballotCreated)
             {
-              onlineVoter.ovi.Status = OnlineBallotStatusEnum.Processed;
-              onlineVoter.ovi.WhenStatus = now;
-              onlineVoter.ovi.WhenBallotCreated = now;
-              onlineVoter.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineVoter.ovi.Status, now.ToJSON());
+              onlineBallotInfo.ovi.Status = OnlineBallotStatusEnum.Processed;
+              onlineBallotInfo.ovi.WhenStatus = now;
+              onlineBallotInfo.ovi.WhenBallotCreated = now;
+              onlineBallotInfo.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineBallotInfo.ovi.Status, now.ToJSON());
 
-              onlineVoter.ovi.ListPool = null; // ballot created, so wipe out the original list
-              onlineVoter.ovi.PoolLocked = null;
-
-
+              onlineBallotInfo.ovi.ListPool = null; // ballot created, so wipe out the original list
+              onlineBallotInfo.ovi.PoolLocked = null;
 
               Db.SaveChanges();
 
-              new LogHelper().Add("Ballot processed", false, onlineVoter.ovi.Email);
+              if (onlineBallotInfo.p.Email.HasContent())
+              {
+                logHelper.Add("Ballot processed", false, onlineBallotInfo.p.Email);
+              }
+              if (onlineBallotInfo.p.Phone.HasContent())
+              {
+                logHelper.Add("Ballot processed", false, onlineBallotInfo.p.Phone);
+              }
 
               transaction.Complete();
 
               numBallotsCreated++;
 
-              new VoterPersonalHub().Update(onlineVoter.p);
+              new VoterPersonalHub().Update(onlineBallotInfo.p);
             }
             else
             {
@@ -1162,14 +1206,29 @@ namespace TallyJ.CoreModels
         if (ballotCreated)
         {
           // keep this outside the transaction
-          var sent = emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineVoter.p, onlineVoter.ovi, onlineVoter.ov, out var emailError);
-          if (emailError.HasContent())
+          var personGuid = onlineBallotInfo.p.PersonGuid;
+          if (voterIdList.ContainsKey(personGuid))
           {
-            problems.Add($"Error: {emailError}");
-          }
-          if (sent)
-          {
-            new LogHelper().Add("Email sent per user's request'", false, onlineVoter.ovi.Email);
+            foreach (var onlineVoter in voterIdList[personGuid])
+            {
+              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Email)
+              {
+                emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var emailError);
+                if (emailError.HasContent())
+                {
+                  problems.Add($"Error: {emailError}");
+                }
+              }
+
+              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
+              {
+                smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var smsError);
+                if (smsError.HasContent())
+                {
+                  problems.Add($"Error: {smsError}");
+                }
+              }
+            }
           }
         }
       }
@@ -1237,16 +1296,16 @@ namespace TallyJ.CoreModels
 
       UpdateStatusInBrowsers();
 
-      string emailResult = null;
-      if (sendEmail)
-      {
-        emailResult = new EmailHelper().SendWhenOpened(election);
-      }
+      // string emailResult = null;
+      // if (sendEmail)
+      // {
+      //   emailResult = new EmailHelper().SendWhenOpened(election);
+      // }
 
       return new
       {
         success = true,
-        emailResult,
+        // emailResult,
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
       }.AsJsonResult();

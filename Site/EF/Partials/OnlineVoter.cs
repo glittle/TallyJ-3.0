@@ -4,9 +4,9 @@
 //using Microsoft.AspNet.Identity.EntityFramework;
 //using TallyJ.CoreModels.Account2Models;
 //
-//namespace TallyJ.EF
-//{
-//  public partial class OnlineVoter 
-//  {
-//  }
-//}
+namespace TallyJ.EF
+{
+  // public partial class OnlineVoter
+  // {
+  // }
+}

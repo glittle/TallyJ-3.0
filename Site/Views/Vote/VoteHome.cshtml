@@ -21,20 +21,21 @@
 
   var x = this.Context.GetOwinContext().Authentication;
 }
-<div ref="forScroll"></div>
-<div id="voterPage1" v-if="activePage === 1">
+<div class="forMeditate">
+  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Meditate'"></button>
+  <div v-if="meditate">
+    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Suggested music</a>
+  </div>
+</div>
+<div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}">
   <p>
-    Welcome! Your email address @if (UserSession.VoterAuthSource != "Local")
-    {
-      <span>from @UserSession.VoterAuthSource</span>
-    } is
-    <strong>@UserSession.VoterEmail</strong>.
+    Welcome! Your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is 
+    <strong>@UserSession.VoterId</strong>.
     <span v-if="!loading">
-      <span v-if="elections.length">It is registered in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
+      <span v-if="elections.length">It is found in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
     </span>
-    <span v-if="!loading && !elections.length">It is not registered in any elections in TallyJ.</span>
+    <span v-if="!loading && !elections.length">It is not found in any elections in TallyJ.</span>
   </p>
-
 
 
   <div class="quotes">
@@ -42,13 +43,12 @@
       To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
     </p>
     <div class="quotesList">
-      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (web)</a></div>
+      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (3 web pages)</a></div>
       <div><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></div>
       <div><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></div>
       <div><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</div>
     </div>
   </div>
-
 
   <p v-if="loading">Searching for your email address in available elections...</p>
 
@@ -94,13 +94,14 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
-    <div class="title">Settings for @UserSession.VoterEmail</div>
+    <div class="title">Settings for @UserSession.VoterId</div>
     <p class="emails">
-      <button class="btn btn-mini" v-on:click="emailTest">Send me a sample email now</button>
-      <label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me an email when an election opens that I can vote in.</label>
-      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me an email when my ballot is processed.</label>
+      <button class="btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
+      @*<label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>*@
+      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when my ballot is processed.</label>
     </p>
-    <p class="account" v-if="hasLocalId">
+
+    @*<p class="account" v-if="hasLocalId">
       Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
     </p>
     <p class="account" v-else>
@@ -108,7 +109,7 @@
       If others might use your login account, you may wish to add a TallyJ password.
       If you do this, you will need to supply the TallyJ password for all future logins.
       @Html.ActionLink("Add a TallyJ password", "Register", "VoterAccount", null, new { @class = "btn btn-mini" })
-    </p>
+    </p>*@
 
     <div class="title">Activity</div>
 
@@ -142,15 +143,24 @@
   </div>
 </div>
 
-<div id="voterPage2" v-if="activePage === 2">
-  <button class="btn returnBtn" v-on:click="closeBallot">Return</button>
-  <h2>{{election.Name}}</h2>
+<div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}">
+  <div class="onImage">
+    <div>
+      <h2>{{election.Name}}</h2>
+      <div class="voterName">{{voterName}}</div>
+
+    </div>
+
+    <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
+
+    <button class="btn returnBtn" v-on:click="closeBallot">Return</button>
+  </div>
   <div class="poolBuilder">
-    <div v-if="!savedLock">
+    <div v-if="!savedLock" class="poolHolder">
       <h2>Add to your Pool</h2>
       <p tabindex="0" class="quote">
         "From among the pool of those whom the elector believes to be qualified to serve, selection should be made with due consideration given
-        to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="https://bahai-library.com/uhj_bahai_electoral_process">(source document)</a></cite>
+        to such other factors as age distribution, diversity, and gender." <cite>Universal House of Justice <a target="q0" href="https://www.bahai.org/r/395026061">(source document)</a></cite>
       </p>
       <div v-if="useList">
         <p id="searchInfo">
@@ -163,11 +173,12 @@
             <input accesskey="S" ref="searchBox" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
           <button accesskey="C" v-on:click="resetSearch">Clear</button>
+          <button v-on:click="showAll">Show All</button>
         </div>
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
           <span v-if="searchText">No matches found.</span>
-          <span v-else>Names will appear here when you search.</span>
+          <span v-else>Names will appear here in <strong>random order</strong> when you search or click "Show All".</span>
         </div>
         <ul id="nameList" v-show="nameList.length">
           <li v-for="(p,i) in nameList"
@@ -182,7 +193,7 @@
         <p v-show="nameList.length">
           To select a name using your keyboard while typing, use <strong>Up</strong> and <strong>Down</strong> arrows to move, then <strong>Enter</strong> to select.
         </p>
-        <button class="btn addRandomToList" v-if="useRandom && searchText" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
+        <button class="btn addRandomToList" v-if="useRandom" v-on:click="addRandomToList = !addRandomToList">Add someone else...</button>
       </div>
       <form v-if="useRandom && !useList || addRandomToList" class="randomInput">
         <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>
@@ -208,13 +219,12 @@
       </form>
     </div>
     <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
-      <h2>Pool & Ballot</h2>
-      <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
+      <h2 v-text="savedLock ? 'Ballot' : 'Pool & Ballot'"></h2>
       <p v-if="registration">
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
       <div v-if="registration && registration !== 'Online'">
-        <p><span class="OtherRegistration">Your online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
+        <p><span class="OtherRegistration">This online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
         <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
@@ -224,13 +234,15 @@
         Your ballot will be processed when the head teller closes online voting and
         accepts all online ballots.
       </p>
-      <p v-if="!registration && pool.length" aria-live="polite">Be sure to submit your ballot before the election closes!</p>
+      <p v-if="!registration && pool.length" aria-live="polite">
+        Be sure to submit your ballot before the election closes!
+      </p>
 
       <p class="lockInBtns">
         <span v-if="canUnlock">Submitted</span>
         <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
-        <span v-if="canLockIn" class="unlocked">Draft</span>
+        <span v-if="canLockIn" class="unlocked">(not submitted)</span>
       </p>
       <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before submitting your ballot.</p>
 
@@ -248,12 +260,19 @@
           <div v-html="p.Name"></div>
           <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
           <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-          <span role="button" class="removeFromPool" v-on:click="removeFromPool(p)" aria-label="Delete" v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
+          <span role="button" 
+                class="removeFromPool" 
+                v-on:click="removeFromPool(p)" 
+                aria-label="Delete" 
+                v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
         </div>
       </draggable>
       <p v-if="!lockInVotes && pool.length">
         To sort the names using your keyboard, press <strong>Tab</strong> to focus,
         <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
+      </p>  
+      <p v-if="!lockInVotes && pool.length">
+        Please note that when your ballot is submitted and processed, this entire pool will be deleted from TallyJ.
       </p>
       <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">
         Your pool is empty. Search for people to add!

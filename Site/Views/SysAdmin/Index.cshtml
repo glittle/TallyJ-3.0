@@ -5,6 +5,12 @@
   ViewData["ExtraScripts"] = new[]
   {
     ClientFile("~/Scripts/vue{0}.js", ".min"),
+    ClientFile("~/Scripts/element-ui.js"),
+    ClientFile("~/Scripts/element-ui-en.js"),
+  };
+  ViewData["ExtraCss"] = new[]
+  {
+    ClientFile("~/Scripts/element-ui.css"),
   };
 }
 
@@ -46,10 +52,10 @@
     </div>
 
 
-    <div>
+  
+    @*<div>
+
       <button v-on:click="searchText=''; getLog(report, true)">Refresh</button>
-      @*<input placeholder="%sql_" v-on:keyup.enter="getLog('mainLog', true)" v-model="searchText">
-    <button v-on:click="getLog('mainLog', true)">Search</button>*@
       <select v-model="numToShow" v-on:change="refresh">
         <option value="10">10</option>
         <option value="25">25</option>
@@ -57,107 +63,181 @@
         <option value="100">100</option>
         <option value="200">200</option>
       </select>
-      
-      <span v-if="report === 'electionList'">
-        Sort: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
+
+    </div>*@
+
+  <div class="mainLog" v-if="report == 'mainLog'">
+    <div>
+
+      <span>
+        Filter by Detail
       </span>
+      <el-input size="mini" type="search" v-on:keyup.enter="getLog(report, true)" v-model="searchText"></el-input>
+
+      <span>
+        Filter by Who
+      </span>
+      <el-input size="mini" type="search" v-on:keyup.enter="getLog(report, true)" v-model="searchName"></el-input>
+
+      <span>&nbsp; Within a date range:</span>
+      <el-date-picker v-model="moreDates"
+                      size="mini"
+                      type="datetimerange"
+                      range-separator="To"
+                      start-placeholder="Start date"
+                      end-placeholder="End date">
+      </el-date-picker>
+      <el-select v-model="numMoreMainLog" size="mini" class="numMoreMainLog">
+        <el-option v-for="n in numMoreOptions"
+                   :key="n"
+                   :label="'Show ' + n + ' lines'"
+                   :value="n"></el-option>
+      </el-select>
+
+      <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+
     </div>
 
-    <div class="mainLog" v-if="report == 'mainLog'">
-      <table>
-        <thead>
-          <tr>
-            <th>When</th>
-            <th>Election</th>
-            <th>Site</th>
-            <th>Comp</th>
-            <th>Voter</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody v-for="r in logInfo.mainLog.log" :key="r.C_RowId">
-          <tr :class="rowClassNames('mainLog', r)">
-            <td class="NoWrap">{{r.AsOf_Display}}</td>
-            <td>{{r.ElectionName}}</td>
-            <td>{{r.HostAndVersion}}</td>
-            <td>{{r.ComputerCode}}</td>
-            <td>{{r.VoterEmail}}</td>
-            <td>
-              <button class="btn btn-mini"
-                      v-if="r.numLines > 1"
-                      v-on:click="r.showFullDetails = !r.showFullDetails"
-                      v-text="r.numLines + ' Lines'"></button>
-              {{r.shortDetails}}
-            </td>
-          </tr>
-          <tr v-if="r.showFullDetails">
-            <td colspan="99">
-              <div class="fullDetails" v-html="r.fullDetails"></div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button v-on:click="getLog('mainLog', false)">Show More</button>
+    <table>
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Election</th>
+          <th>Site</th>
+          <th>Comp</th>
+          <th>Voter</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody v-for="r in logInfo.mainLog.log" :key="r.C_RowId">
+        <tr :class="rowClassNames('mainLog', r)">
+          <td class="NoWrap">{{r.AsOf_Display}}</td>
+          <td>{{r.ElectionName}}</td>
+          <td>{{r.HostAndVersion}}</td>
+          <td>{{r.ComputerCode}}</td>
+          <td>{{r.VoterId}}</td>
+          <td>
+            <button class="btn btn-mini"
+                    v-if="r.hasFullDetails"
+                    v-on:click="r.showFullDetails = !r.showFullDetails"
+                    v-text="'Details'"></button>
+            {{r.shortDetails}}
+          </td>
+        </tr>
+        <tr v-if="r.showFullDetails">
+          <td colspan="99">
+            <div class="fullDetails" v-html="r.fullDetails"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <span>{{logInfo.mainLog.log.length}} lines showing. &nbsp;</span>
+
+    <el-select v-model="numMoreMainLog" size="mini" class="searchNumMore">
+      <el-option v-for="n in numMoreOptions"
+                 :key="n"
+                 :label="'Add ' + n + ' more lines'"
+                 :value="n"></el-option>
+    </el-select>
+
+    <el-button icon="el-icon-bottom" size="small" type="primary" v-on:click="getLog('mainLog', false)">Get More</el-button>
+    <span>{{logInfo.mainLog.received}} lines just added.</span>
+
+  </div>
+
+
+  <div class="onlineVotingLog" v-if="report == 'onlineVotingLog'">
+    <div>
+      <span>&nbsp; Within a date range:</span>
+      <el-date-picker v-model="moreDates"
+                      size="mini"
+                      type="datetimerange"
+                      range-separator="To"
+                      start-placeholder="Start date"
+                      end-placeholder="End date">
+      </el-date-picker>
+
+      <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+
+      <span>
+        Sorting: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
+      </span>
+
+
     </div>
-
-
-    <div class="onlineVotingLog" v-if="report == 'onlineVotingLog'">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Election</th>
-            <th>Convenor</th>
-            <th>Email</th>
-            <th>Ballot Size</th>
-            <th>Tally Status</th>
-            <th>Logged In</th>
-            <th>Pending</th>
-            <th>Processed</th>
-            <th>Open Date</th>
-            <th>First Activity</th>
-            <th>Most Recent</th>
-            <th>Close Date</th>
-          </tr>
-        </thead>
-        <tbody v-for="r in logInfo.onlineVotingLog.log" :key="r.C_RowId">
-          <tr :class="rowClassNames('onlineVotingLog', r)">
-            <td>{{r.Name}}</td>
-            <td>{{r.Convenor}}</td>
-            <td>{{r.Email}}</td>
-            <td>{{r.NumberToElect}}</td>
-            <td>{{r.TallyStatus}}</td>
-            <td>{{r.Activated}}</td>
-            <td>{{r.Submitted}}</td>
-            <td>{{r.Processed}}</td>
-            <td>{{r.OnlineWhenOpen_Display}}</td>
-            <td>{{r.First_Display}}</td>
-            <td>{{r.MostRecent_Display}}</td>
-            <td>{{r.OnlineWhenClose_Display}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div>
-        Count: {{logInfo.onlineVotingLog.log.length}}
-      </div>
+    <table>
+      <thead>
+        <tr>
+          <th v-on:click="sort('Name', $event)">Election</th>
+          <th v-on:click="sort('Convenor', $event)">Convenor</th>
+          <th v-on:click="sort('Email')">Admin Email</th>
+          <th v-on:click="sort('NumberToElect')">Ballot Size</th>
+          <th v-on:click="sort('TallyStatus')">Tally Status</th>
+          <th v-on:click="sort('Activated')">Logged In</th>
+          <th v-on:click="sort('Submitted')">Pending</th>
+          <th v-on:click="sort('Processed')">Processed</th>
+          <th v-on:click="sort('OnlineWhenOpen_Date')">Open Date</th>
+          <th v-on:click="sort('First_Date')">First Activity</th>
+          <th v-on:click="sort('MostRecent_Date')">Most Recent</th>
+          <th v-on:click="sort('OnlineWhenClose_Date')">Close Date</th>
+        </tr>
+      </thead>
+      <tbody v-for="r in logInfo.onlineVotingLog.log" :key="r.C_RowId">
+        <tr :class="rowClassNames('onlineVotingLog', r)">
+          <td>{{r.Name}}</td>
+          <td>{{r.Convenor}}</td>
+          <td>{{r.Email}}</td>
+          <td>{{r.NumberToElect}}</td>
+          <td>{{r.TallyStatus}}</td>
+          <td>{{r.Activated}}</td>
+          <td>{{r.Submitted}}</td>
+          <td>{{r.Processed}}</td>
+          <td>{{r.OnlineWhenOpen_Display}}</td>
+          <td>{{r.First_Display}}</td>
+          <td>{{r.MostRecent_Display}}</td>
+          <td>{{r.OnlineWhenClose_Display}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div>
+      Count: {{logInfo.onlineVotingLog.log.length}}
     </div>
+  </div>
 
     <div class="electionList" v-if="report == 'electionList'">
+      <div>
+        <span>&nbsp; Within a date range:</span>
+        <el-date-picker v-model="moreDates"
+                        size="mini"
+                        type="datetimerange"
+                        range-separator="To"
+                        start-placeholder="Start date"
+                        end-placeholder="End date">
+        </el-date-picker>
+        <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+
+        <span>
+          Sorting: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
+        </span>
+
+      </div>
+
       <table>
         <thead>
           <tr>
-            <th><span v-on:click="sort('DateOfElection_Date')">Date</span></th>
-            <th><span v-on:click="sort('RecentActivity_Date')">Recent Activity</span></th>
-            <th><span v-on:click="sort('ShowAsTest')">Test?</span></th>
-            <th><span v-on:click="sort('Name')">Election</span></th>
-            <th><span v-on:click="sort('Convenor')">Convenor</span></th>
-            <th><span v-on:click="sort('Email')">Email</span></th>
-            <th><span v-on:click="sort('ElectionType')">Type</span></th>
-            <th><span v-on:click="sort('TallyStatus')">Status</span></th>
-            <th><span v-on:click="sort('NumberToElect')">Ballot Size</span></th>
-            <th><span v-on:click="sort('NumPeople')">People</span></th>
-            <th><span v-on:click="sort('NumOnline')">Online</span></th>
-            <th><span v-on:click="sort('NumBallots')">Ballots</span></th>
+            <th v-on:click="sort('DateOfElection_Date')">Date</th>
+            <th v-on:click="sort('RecentActivity_Date')">Recent Activity</th>
+            <th v-on:click="sort('ShowAsTest')">Test?</th>
+            <th v-on:click="sort('Name')">Election</th>
+            <th v-on:click="sort('Convenor')">Convenor</th>
+            <th v-on:click="sort('Email')">Email</th>
+            <th v-on:click="sort('ElectionType')">Type</th>
+            <th v-on:click="sort('TallyStatus')">Status</th>
+            <th v-on:click="sort('NumberToElect')">Ballot Size</th>
+            <th v-on:click="sort('NumPeople')">People</th>
+            <th v-on:click="sort('NumOnline')">Online</th>
+            <th v-on:click="sort('NumBallots')">Ballots</th>
           </tr>
         </thead>
         <tbody v-for="r in logInfo.electionList.log" :key="r.C_RowId">

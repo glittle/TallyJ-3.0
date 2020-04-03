@@ -1,0 +1,166 @@
+﻿@model SetupModel
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Resources
+@using TallyJ.Code.Session
+@{
+  ViewBag.Title = "Send Notifications";
+  ViewBag.Message = "Tell Voters about the Election";
+  ViewData["ExtraScripts"] = new[] {
+    ClientFile("~/Scripts/vue{0}.js", ".min"),
+    ClientFile("~/Scripts/ckeditor.js"),
+    ClientFile("~/Scripts/ckeditor.vue.js"),
+    ClientFile("~/Scripts/element-ui.js"),
+    ClientFile("~/Scripts/element-ui-en.js"),
+  };
+  ViewData["ExtraCss"] = new[]
+  {
+    ClientFile("~/Scripts/element-ui.css"),
+  };
+
+  var currentElection = UserSession.CurrentElection;
+
+  ContextItems.AddJavascriptForPage("notifyPage.voteMethods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
+  ContextItems.AddJavascriptForPage("notifyPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("notifyPage.Election={0};".FilledWith(currentElection.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("notifyPage.defaultFromAddress={0};".FilledWith(currentElection.EmailFromAddressWithDefault.QuotedForJavascript()));
+}
+
+<div id="notifyBody" v-cloak>
+  <p>
+    TallyJ enables you to send an email and/or SMS message to all potential voters with registered email addresses or mobile phone numbers.
+  </p>
+  <p>You can create the email below. To get started with a sample, click: <button class="btn btn-mini" v-on:click="loadSampleEmail">Start with Sample Message</button></p>
+
+  <p>
+    Here are some replaceable templates that can be used in the text: {PersonName}, {hostSite}
+  </p>
+  <p>
+    Emails will have a return address of "{{emailFromAddress || defaultFromAddress}}"
+    <span v-if="!emailFromAddress">(until a "From Email Address" is added on the "Configure this Election" page).</span>
+    <span v-else>(as set on the "Configure this Election" page).</span>
+    SMS messages will be sent from TallyJ (@SettingsHelper.Get("twilio-FromNumber", "?")).
+  </p>
+  <p v-if="@((currentElection.ElectionType == ElectionTypeEnum.Lsa && currentElection.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
+    Remember! For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
+    so the online portion of the election would need to closed sometime on or before that date.
+  </p>
+  <div class="emailBySms">
+    <h2 class="ehead">Email</h2>
+
+    <div class="emailHost">
+      <p>
+        Email Subject Line:
+        <input class="notSaved" v-model="emailSubject" maxlength="150" class="text150" />
+      </p>
+      <div class="ckHost">
+        <ckeditor ref="email" :editor="emailEditor" :config="editorConfig" v-model="emailText" v-on:input="textChanged"></ckeditor>
+      </div>
+
+      <button type="button" class="btnSave btn" v-on:click="saveChanges" accesskey="S">
+        <u>S</u>ave Changes
+      </button>
+
+      <p class="isSaveNeeded" v-if="isSaveNeeded">Save changes to the text before sending it.</p>
+
+    </div>
+
+    <h2 class="shead">SMS</h2>
+
+    <div class="smsHost">
+      <p>The content of the SMS message is automatically extracted from the Email content.</p>
+      <div class="smsText" v-text="smsText"></div>
+    </div>
+
+    <div class="messageBtns email">
+      <button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>
+      <span class="comments" v-if="emailFromAddress">Email will be sent to: {{emailFromAddress}}</span>
+      <div class="comments" v-else>(Must enter a "From Email Address" on the "Configure this Election" page.)</div>
+
+      <div class="bottom">
+        <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>
+        <button class="btn btn-warning" :class="{pending: pendingEmail}" v-on:click="sendEmail('Intro', true)" :disabled="!numWithEmails || !emailFromAddress || isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}...</button>
+        <span class="comments">As selected below</span>
+      </div>
+    </div>
+
+    <div class="messageBtns sms">
+      <button class="btn btn-primary" v-on:click="sendSms('Test', false, testSmsNumber)" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
+      <div class="samplePhone">
+        Send to <input type="tel" class="text50" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
+        <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
+      </div>
+      <div class="bottom">
+        <div class="pending" v-if="pendingSms">Are you sure? Click again to send now.</div>
+        <button class="btn btn-warning" :class="{pending: pendingSms}" v-on:click="sendSms('Intro', true)" :disabled="!numWithPhones || isSaveNeeded">Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}...</button>
+        <span class="comments">As selected below</span>
+      </div>
+    </div>
+
+    <div class="listingSelection">
+      <button class="btn btn-mini" v-on:click="select('notVoted')">Select If Not Voted</button>
+      <button class="btn btn-mini" v-on:click="select('votedOnline')">Select If Voted Online</button>
+      <button class="btn btn-mini" v-on:click="selectAll">Select All</button>
+      <button class="btn btn-mini" v-on:click="select('none')">Select None</button>
+      <button class="btn btn-mini" v-on:click="refresh">Refresh</button>
+    </div>
+
+    <div class="emailListing">
+      <el-table stripe
+                size="mini"
+                max-height="250"
+                ref="emailList"
+                :row-key="function (row) {return row.C_RowId;}"
+                v-on:selection-change="selectionChanged('email', $event)"
+                :data="peopleWithEmail">
+        <el-table-column type="selection" reserve-selection></el-table-column>
+        <el-table-column label="When" prop="C_FullName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Email" prop="Email" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
+      </el-table>
+    </div>
+    <div class="smsListing">
+      <el-table stripe
+                size="mini"
+                max-height="250"
+                ref="smsList"
+                :row-key="function (row) {return row.C_RowId;}"
+                v-on:selection-change="selectionChanged('phone', $event)"
+                :data="peopleWithPhone">
+        <el-table-column type="selection" reserve-selection></el-table-column>
+        <el-table-column label="When" prop="C_FullName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Phone" prop="Phone" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
+      </el-table>
+    </div>
+  </div>
+
+
+
+  <h3>Recent Message Log</h3>
+  <div class="emailHistoryHost">
+    <table>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>When</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="e in contactLog" :key="e.C_RowId">
+          <td v-text="e.Details"></td>
+          <td class="nowrap" v-text="e.age"></td>
+          <td class="nowrap" v-text="e.when"></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-mini" v-on:click="getMoreLog">Get More</button>
+  </div>
+
+
+  <div class="More">
+    <p class="techInfo" title="Technical information">
+      Election Id: <span v-text="ElectionGuid"></span>
+    </p>
+  </div>
+</div>

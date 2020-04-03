@@ -29,6 +29,12 @@
   @RenderSection("Metas", false)
   @RenderPage("Headers.cshtml")
   <meta name="description" content="Baha'i Election System'" />
+  <script type="application/ld+json">
+    {
+    "url": "http://tallyj.com",
+    "logo": "https://tallyj.com/images/Logo150.png"
+    }
+  </script>
   @*<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" async>*@
 </head>
 @{
@@ -46,19 +52,10 @@
     <div class="content-wrapper">
       <div class="MainTop">
         <h1 class="SeoH1">TallyJ - Bahá’í Election System</h1>
-        @{
-          //if (ViewBag.OnWelcome == null)
-          //{
-          @*<a href="@Url.Action("Index", "Public")" class="site-title" title="Go to Welcome Page">
-            </a>*@
-          //}
-          //else
-          //{
-          <div class="site-title"
-               onclick="location.href = '@Url.Action("Index", "Public")'"
-               alt="TallyJ - Bahá’í Election System"></div>
-          //}
-        }
+        <div class="site-title"
+             onclick="location.href = '@Url.Action("Index", "Public")'"
+             alt="TallyJ - Bahá’í Election System">
+        </div>
         <div class="Version">
           <span title="Last updated: @TallyJ.Properties.Settings.Default.VersionDate">Version: @TallyJ.Properties.Settings.Default.VersionNum</span>
         </div>

@@ -16,6 +16,8 @@ namespace TallyJ.EF
       RegLog, // registration log
     }
 
+    public int TempImportLineNum { get; set; }
+
     public string FullName {
       get
       {

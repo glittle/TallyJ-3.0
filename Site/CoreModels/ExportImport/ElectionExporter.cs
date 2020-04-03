@@ -95,7 +95,6 @@ namespace TallyJ.CoreModels.ExportImport
         .Select(ovi => new
         {
           ovi.PersonGuid,
-          ovi.Email,
           ovi.PoolLocked,
           ovi.Status,
           WhenStatus = ovi.WhenStatus?.ToString("o"),
@@ -149,6 +148,7 @@ namespace TallyJ.CoreModels.ExportImport
           p.AgeGroup,
           p.Area,
           p.Email,
+          p.Phone,
           p.HasOnlineBallot,
           CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
           CanVote = p.CanVote.OnlyIfFalse(),

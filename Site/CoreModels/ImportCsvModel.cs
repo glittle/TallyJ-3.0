@@ -19,6 +19,7 @@ namespace TallyJ.CoreModels
   public class ImportCsvModel : DataConnectedModel
   {
     private const string FileTypeCsv = "CSV";
+    private string MappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
 
     private IEnumerable<string> DbFieldsList
     {
@@ -27,15 +28,16 @@ namespace TallyJ.CoreModels
         var list = new List<string>
                      {
                        // same list repeated below
-                       "LastName",
                        "FirstName",
+                       "LastName",
                        "IneligibleReasonGuid",
                        "Area",
+                       "Email",
+                       "Phone",
                        "BahaiId",
                        "OtherLastNames",
                        "OtherNames",
                        "OtherInfo",
-                       "Email",
                      };
 
         // screen this hard-coded list against the Person object to ensure we aren't using old field names
@@ -174,7 +176,7 @@ namespace TallyJ.CoreModels
 
       //mapping:   csv->db,csv->db
       var currentMappings =
-        importFile.ColumnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString("->"));
+        importFile.ColumnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(MappingSymbol));
       var dbFields = DbFieldsList;
 
       const int numSampleLinesWanted = 5;
@@ -183,9 +185,8 @@ namespace TallyJ.CoreModels
 
       for (var i = 0; i < numSampleLinesFound; i++)
       {
-        if (csv.EndOfStream)
+        if (!csv.ReadNextRecord())
         {
-          numSampleLinesFound = i;
           break;
         }
         foreach (var csvHeader in csvHeaders)
@@ -197,11 +198,11 @@ namespace TallyJ.CoreModels
               // ignore second column with same title
               continue;
             }
-            sampleValues.Add(csvHeader, new List<string> { csv[i, csvHeader] });
+            sampleValues.Add(csvHeader, new List<string> { csv[csvHeader] });
           }
           else
           {
-            sampleValues[csvHeader].Add(csv[i, csvHeader]);
+            sampleValues[csvHeader].Add(csv[csvHeader]);
           }
         }
       }
@@ -263,11 +264,16 @@ namespace TallyJ.CoreModels
 
       var start = DateTime.Now;
       var textReader = new StringReader(file.Contents.AsString(file.CodePage));
-      var csv = new CsvReader(textReader, true) { SkipEmptyLines = true };
+      var csv = new CsvReader(textReader, true)
+      {
+        SkipEmptyLines = false,
+        MissingFieldAction = MissingFieldAction.ReplaceByEmpty,
+        SupportsMultiline = false,
+      };
 
       //mapping:   csv->db,csv->db
       var currentMappings =
-        columnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString("->")).ToList();
+        columnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(MappingSymbol)).ToList();
       var dbFields = DbFieldsList.ToList();
       var validMappings = currentMappings.Where(mapping => dbFields.Contains(mapping[1])).ToList();
 
@@ -289,41 +295,79 @@ namespace TallyJ.CoreModels
           result = new[] { "Last Name must be mapped" }
         }.AsJsonResult();
       }
+      if (!mappedFields.Contains("FirstName"))
+      {
+        return new
+        {
+          failed = true,
+          result = new[] { "First Name must be mapped" }
+        }.AsJsonResult();
+      }
+
+      var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
+      var phoneNumberCleaner = new Regex(@"[^\+0-9]");
+      var emailChecker = new Regex(@".*@.*\..*");
 
       var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
+      currentPeople.ForEach(p => p.TempImportLineNum = -1);
+
+      var knownEmails = currentPeople.Where(p => p.Email != null).Select(p => p.Email.ToLower()).ToList();
+      var knownPhones = currentPeople.Where(p => p.Phone != null).Select(p => p.Phone).ToList();
+
       var personModel = new PeopleModel();
       var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
-      var rowsProcessed = 0;
-      var rowsSkipped = 0;
+      var currentLineNum = 1; // including header row
+      var rowsWithErrors = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
-      var peopleSkipWarningGiven = false;
+      // var peopleSkipWarningGiven = false;
 
       var hub = new ImportHub();
       var peopleToLoad = new List<Person>();
       var result = new List<string>();
 
       var unexpectedReasons = new Dictionary<string, int>();
-      var validReasons = 0;
+      // var validReasons = 0;
+      var continueReading = true;
 
-      csv.ReadNextRecord();
-      while (!csv.EndOfStream)
+      hub.StatusUpdate("Processing", true);
+
+      while (csv.ReadNextRecord() && continueReading)
       {
-        rowsProcessed++;
+        currentLineNum++;
 
         var valuesSet = false;
-        var namesFoundInRow = false;
+        var namesFoundInRow = 0;
+        var errorInRow = false;
 
-        var query = currentPeople.AsQueryable();
+        var duplicateInFileSearch = currentPeople.AsQueryable();
 
-        var person = new Person();
+        var person = new Person
+        {
+          TempImportLineNum = currentLineNum
+        };
+
         var reason = defaultReason;
 
         foreach (var currentMapping in validMappings)
         {
           var dbFieldName = currentMapping[1];
-          var value = csv[currentMapping[0]];
+          string value;
+          try
+          {
+            value = csv[currentMapping[0]];
+          }
+          catch (Exception e)
+          {
+            result.Add($"~E Line {currentLineNum} - {e.Message.Split('\r')[0]}. Are there \"\" marks missing?");
+            errorInRow = true;
+            continueReading = false;
+            break;
+          }
+          var rawValue = HttpUtility.HtmlEncode(value);
+          var originalValue = value;
+
 
           switch (dbFieldName)
           {
@@ -332,26 +376,34 @@ namespace TallyJ.CoreModels
               value = value.Trim();
               if (value.HasContent())
               {
-                var match = IneligibleReasonEnum.GetFor(value);
-                if (match != null)
+                if (value == "Eligible")
                 {
-                  reason = match;
-                  validReasons += 1;
+                  reason = null; // don't use default
                 }
                 else
                 {
-                  // tried but didn't match a valid reason!
-                  reason = defaultReason;
-                  value = HttpUtility.HtmlEncode(value);
-                  result.Add("Invalid Eligibility Status reason on line {0}: {1}".FilledWith(rowsProcessed + 1, value));
-
-                  if (unexpectedReasons.ContainsKey(value))
+                  var match = IneligibleReasonEnum.GetFor(value);
+                  if (match != null)
                   {
-                    unexpectedReasons[value] += 1;
+                    reason = match;
+                    // validReasons += 1;
                   }
                   else
                   {
-                    unexpectedReasons.Add(value, 1);
+                    // tried but didn't match a valid reason!
+                    errorInRow = true;
+
+                    reason = defaultReason;
+                    result.Add($"~E Line {currentLineNum} - Invalid Eligibility Status reason: {rawValue}");
+
+                    if (unexpectedReasons.ContainsKey(value))
+                    {
+                      unexpectedReasons[value] += 1;
+                    }
+                    else
+                    {
+                      unexpectedReasons.Add(value, 1);
+                    }
                   }
                 }
               }
@@ -360,70 +412,134 @@ namespace TallyJ.CoreModels
               person.SetPropertyValue(dbFieldName, value);
               break;
           };
-          valuesSet = true;
 
-          switch (dbFieldName)
-          {
-            case "LastName":
-              query = query.Where(p => p.LastName == value);
-              namesFoundInRow = namesFoundInRow || value.HasContent();
-              break;
-            case "FirstName":
-              query = query.Where(p => p.FirstName == value);
-              namesFoundInRow = namesFoundInRow || value.HasContent();
-              break;
-            case "OtherLastNames":
-              query = query.Where(p => p.OtherLastNames == value);
-              break;
-            case "OtherNames":
-              query = query.Where(p => p.OtherNames == value);
-              break;
-            case "OtherInfo":
-              query = query.Where(p => p.OtherInfo == value);
-              break;
-            case "Area":
-              query = query.Where(p => p.Area == value);
-              break;
-            case "BahaiId":
-              query = query.Where(p => p.BahaiId == value);
-              break;
-            case "Email":
-              query = query.Where(p => p.Email == value);
-              break;
-            case "IneligibleReasonGuid":
-              //if (reason != defaultReason)
-              //{
-              //  query = query.Where(p => p.IneligibleReasonGuid == reason.Value);
-              //}
-              break;
-            default:
-              throw new ApplicationException("Unexpected: " + dbFieldName);
-          }
-        }
+          valuesSet = valuesSet || value.HasContent();
 
-        if (!valuesSet || !namesFoundInRow)
-        {
-          rowsSkipped++;
-          result.Add("Skipping line " + rowsProcessed);
-        }
-        else if (query.Any())
-        {
-          peopleSkipped++;
-          if (peopleSkipped < 10)
+          if (value.HasContent())
           {
-            result.Add("Duplicate on line " + (rowsProcessed + 1));
-          }
-          else {
-            if (!peopleSkipWarningGiven)
+            switch (dbFieldName)
             {
-              result.Add("More duplicates... (Only the first 10 are noted.)");
-              peopleSkipWarningGiven = true;
+              case "LastName":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.LastName == value);
+                namesFoundInRow++;
+                break;
+              case "FirstName":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.FirstName == value);
+                namesFoundInRow++;
+                break;
+              case "OtherLastNames":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherLastNames == value);
+                break;
+              case "OtherNames":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherNames == value);
+                break;
+              case "OtherInfo":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherInfo == value);
+                break;
+              case "Area":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.Area == value);
+                break;
+              case "BahaiId":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.BahaiId == value);
+                break;
+              case "Email":
+                if (value.HasContent())
+                {
+                  value = value.ToLower();
+                  if (!emailChecker.IsMatch(value))
+                  {
+                    result.Add($"~E Line {currentLineNum} - Invalid email: {rawValue}");
+                    errorInRow = true;
+                  }
+                  else if (knownEmails.Contains(value))
+                  {
+                    result.Add($"~E Line {currentLineNum} - Duplicate email: {rawValue}");
+                    errorInRow = true;
+                  }
+
+                  if (!errorInRow)
+                  {
+                    knownEmails.Add(value);
+                  }
+                }
+                break;
+              case "Phone":
+                if (value.HasContent())
+                {
+                  value = phoneNumberCleaner.Replace(value, "");
+
+                  if (!value.StartsWith("+") && value.Length == 10)
+                  {
+                    // assume north american
+                    value = "+1" + value;
+                  }
+
+                  if (!phoneNumberChecker.IsMatch(value))
+                  {
+                    result.Add($"~E Line {currentLineNum} - Invalid phone number: {rawValue}");
+                    errorInRow = true;
+                  }
+                  else if (originalValue != value)
+                  {
+                    result.Add($"~W Line {currentLineNum} - Phone number adjusted from {rawValue} to {value} ");
+                  }
+
+                  if (value.HasContent())
+                  {
+                    if (knownPhones.Contains(value))
+                    {
+                      result.Add($"~E Line {currentLineNum} - Duplicate phone number: {value}");
+                      errorInRow = true;
+                    }
+                 
+                    knownPhones.Add(value);
+                  }
+
+                  // update with the cleaned phone number
+                  person.SetPropertyValue(dbFieldName, value.HasContent() ? value : null);
+                }
+
+                break;
+              case "IneligibleReasonGuid":
+                break;
+              default:
+                throw new ApplicationException("Unexpected: " + dbFieldName);
             }
           }
         }
-        else
+
+        var addRow = true;
+
+        if (!valuesSet)
         {
-          //get ready for DB
+          // don't count it as an error
+          result.Add($"~I Line {currentLineNum} - Ignoring blank line");
+          addRow = false;
+        }
+        else if (namesFoundInRow != 2 || errorInRow)
+        {
+          addRow = false;
+          rowsWithErrors++;
+
+          if (namesFoundInRow != 2)
+          {
+            result.Add($"~E Line {currentLineNum} - First or last name missing");
+          }
+        }
+
+        var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).ToList();
+        if (duplicates.Any())
+        {
+          addRow = false;
+          peopleSkipped++;
+          var dupInfo = duplicates.Select(n => n == -1 ? "in existing records" : "on line " + n);
+          result.Add($"~E Line {currentLineNum} - Matching identifying names found {dupInfo.JoinedAsString(", ")}");
+        }
+
+
+
+        if (addRow)
+        { //get ready for DB
           person.ElectionGuid = UserSession.CurrentElectionGuid;
           person.PersonGuid = Guid.NewGuid();
 
@@ -431,42 +547,39 @@ namespace TallyJ.CoreModels
           personModel.SetInvolvementFlagsToDefault(person, reason);
 
           //Db.Person.Add(person);
-          currentPeople.Add(person);
           peopleToLoad.Add(person);
 
           peopleAdded++;
-
-          if (peopleToLoad.Count >= 500)
-          {
-            //Db.SaveChanges();
-
-            var error = BulkInsert_CheckErrors(peopleToLoad);
-            if (error != null)
-            {
-              return error;
-            }
-            peopleToLoad.Clear();
-          }
         }
 
-        if (rowsProcessed % 100 == 0)
+        currentPeople.Add(person);
+
+        if (currentLineNum % 100 == 0)
         {
-          hub.ImportInfo(rowsProcessed, peopleAdded);
+          hub.ImportInfo(currentLineNum, peopleAdded);
         }
 
-        csv.ReadNextRecord();
       }
 
-      if (peopleToLoad.Count != 0)
+      var abort = rowsWithErrors > 0 || peopleSkipped > 0;
+
+      if (!abort && peopleToLoad.Count != 0)
       {
+        hub.StatusUpdate("Saving");
+
         var error = BulkInsert_CheckErrors(peopleToLoad);
         if (error != null)
         {
-          return error;
+          abort = true;
+          result.Add(error);
+        }
+        else
+        {
+          result.Add("Saved to database");
         }
       }
 
-      file.ProcessingStatus = "Imported";
+      file.ProcessingStatus = abort ? "Import aborted" : "Imported";
 
       Db.SaveChanges();
 
@@ -474,21 +587,21 @@ namespace TallyJ.CoreModels
 
       result.AddRange(new[]
       {
-        $"Processed {rowsProcessed:N0} data line{rowsProcessed.Plural()}",
-        $"Added {peopleAdded:N0} {peopleAdded.Plural("people", "person")}."
+        "---------",
+        $"Processed {currentLineNum:N0} data line{currentLineNum.Plural()}",
       });
-      if (peopleSkipped > 0)
+      // if (peopleSkipped > 0)
+      // {
+      //   result.Add($"{peopleSkipped:N0} duplicate{peopleSkipped.Plural()} ignored.");
+      // }
+      if (rowsWithErrors > 0)
       {
-        result.Add($"{peopleSkipped:N0} duplicate{peopleSkipped.Plural()} ignored.");
+        result.Add($"{rowsWithErrors:N0} line{rowsWithErrors.Plural("s had errors or were", "had errors or was")} blank.");
       }
-      if (rowsSkipped > 0)
-      {
-        result.Add($"{rowsSkipped:N0} line{rowsSkipped.Plural()} skipped or blank.");
-      }
-      if (validReasons > 0)
-      {
-        result.Add($"{validReasons:N0} {validReasons.Plural("people", "person")} with recognized Eligibility Status Reasons.");
-      }
+      // if (validReasons > 0)
+      // {
+      //   result.Add($"{validReasons:N0} {validReasons.Plural("people", "person")} with recognized Eligibility Status Reason{validReasons.Plural()}.");
+      // }
       if (unexpectedReasons.Count > 0)
       {
         result.Add($"{unexpectedReasons.Count:N0} Eligibility Status Reason{unexpectedReasons.Count.Plural()} not recognized: ");
@@ -498,9 +611,20 @@ namespace TallyJ.CoreModels
         }
       }
 
-      result.Add($"Import completed in {(DateTime.Now - start).TotalSeconds:N1} s.");
+      result.Add("---------");
 
-      new LogHelper().Add("Imported file #" + rowId + ": " + result.JoinedAsString(" "), true);
+      if (abort)
+      {
+        result.Add($"Import aborted due to errors in file. Please correct and try again.");
+      }
+      else
+      {
+        result.Add($"Added {peopleAdded:N0} {peopleAdded.Plural("people", "person")}.");
+        result.Add($"Import completed in {(DateTime.Now - start).TotalSeconds:N1} s.");
+      }
+
+      var resultsForLog = result.Where(s => !s.StartsWith("~"));
+      new LogHelper().Add("Imported file #" + rowId + ": " + resultsForLog.JoinedAsString("\r"), true);
 
       return new
       {
@@ -509,7 +633,7 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    private JsonResult BulkInsert_CheckErrors(List<Person> peopleToLoad)
+    private string BulkInsert_CheckErrors(List<Person> peopleToLoad)
     {
       try
       {
@@ -525,21 +649,23 @@ namespace TallyJ.CoreModels
           var regMatch = Regex.Match(msg, @"\((.*), (.*)\)");
 
           var result = regMatch.Success ? $"An email address ({regMatch.Groups[2].Value}) is duplicated in the import file. Import halted."
-            :  $"An email address is duplicated in the import file. Import halted.";
+            : $"An email address is duplicated in the import file. Import halted.";
 
-          return new
-          {
-            failed = true,
-            result = new[] { result }
-          }.AsJsonResult();
+          return result;
         }
 
-        
-        return new
+        if (msg.Contains("IX_PersonPhone"))
         {
-          failed = true,
-          result = new[] { msg }
-        }.AsJsonResult();
+          var regMatch = Regex.Match(msg, @"\((.*), (.*)\)");
+
+          var result = regMatch.Success ? $"A phone number ({regMatch.Groups[2].Value}) is duplicated in the import file. Import halted."
+            : $"A phone number is duplicated in the import file. Import halted.";
+
+          return result;
+        }
+
+
+        return msg;
       }
     }
 

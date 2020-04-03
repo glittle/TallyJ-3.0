@@ -7,6 +7,7 @@
       <page title="Import Name List" featureWhen="NotStarted" controller="Setup" action="ImportCsv" requireElection="true" role="known" desc="Upload and import names of people from CSV files"></page>
       <!--<page title="Import Version 1" showOnDashboard="false" controller="Setup" action="ImportV1" requireElection="true" role="known" desc="Upload and import files from TallyJ version 1.8x"></page>-->
       <page title="Edit People's Names" featureWhen="NotStarted" controller="Setup" action="People" requireElection="true" role="known" desc="Edit people's names. Add more people."></page>
+      <page title="Send Notifications" featureWhen="OnDash,NotStarted" controller="Setup" action="Notify" requireElection="true" role="known" desc="Send email or text notifications"></page>
     </group>
     <group title="Voting" state="NamesReady" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>

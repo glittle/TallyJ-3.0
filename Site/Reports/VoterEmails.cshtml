@@ -14,15 +14,20 @@
   var currentElectionGuid = UserSession.CurrentElectionGuid;
 
   var peopleWithEmails = dbContext.Person
-    .Where(p => p.ElectionGuid == currentElectionGuid && p.Email != null)
+    .Where(p => p.ElectionGuid == currentElectionGuid && (p.Email != null || p.Phone != null))
     .GroupJoin(dbContext.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
       ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, oviList) => new { p, ovi = oviList.FirstOrDefault() })
-    .GroupJoin(dbContext.OnlineVoter, j => j.p.Email, ov => ov.Email, (j, ovList) => new { j.p, j.ovi, ov = ovList.FirstOrDefault() }).Select(j => new
+    .GroupJoin(dbContext.OnlineVoter, j => j.p.Email, ov => ov.VoterId, (j, ovList) => new { j.p, j.ovi, ovEmail = ovList.FirstOrDefault() })
+    .GroupJoin(dbContext.OnlineVoter, j => j.p.Phone, ov => ov.VoterId, (j, ovList) => new { j.p, j.ovi, j.ovEmail, ovPhone = ovList.FirstOrDefault() })
+    .Select(j => new
     {
       j.p.C_FullName,
       j.p.BahaiId,
       j.p.Email,
-      HasSignedIn = j.ov != null,
+      j.p.Phone,
+      j.p.CanVote,
+      HasSignedInEmail = j.ovEmail != null,
+      HasSignedInPhone = j.ovPhone != null,
       HasViewedThisElection = j.ovi != null,
       j.p.VotingMethod,
     })
@@ -39,17 +44,21 @@
       background-color: #eee;
     }
 
-  thead {
-    display: table-header-group;
-    font-weight: bold;
-  }
+    tr.cannotVote .name, tr.cannotVote .email {
+      text-decoration: line-through;
+    }
+
+    thead {
+      display: table-header-group;
+      font-weight: bold;
+    }
 
   td {
     padding-left: 2px;
     padding-right: 6px;
   }
 
-  .usage.none {
+  .email.none {
     color: #999;
   }
 </style>
@@ -63,14 +72,16 @@
     </div>
   </div>
   <p class="Comment">
-    All people with email addresses.
+    All people with an email address or mobile phone number on file.
   </p>
   <table class="Voters">
     <thead>
       <tr>
         <td>Person</td>
+        <td>Status</td>
         <td>Email</td>
-        <td>Usage</td>
+        <td>Phone</td>
+        <td>Login</td>
         <td>Voting Method</td>
         <td>Id</td>
       </tr>
@@ -78,10 +89,23 @@
     <tbody>
       @foreach (var info in peopleWithEmails)
       {
-        <tr>
+        var usage = new List<string>
+          {
+            //info.HasViewedThisElection ? "Voted" : "",
+            info.HasSignedInEmail ? "Email" : "",
+            info.HasSignedInPhone ? "Phone" : "",
+          }.Where(s => s.HasContent()).JoinedAsString(", ").DefaultTo("-");
+        var what = new List<string>
+        {
+          info.Email,
+          info.Phone
+        }.Where(s => s.HasContent()).JoinedAsString("<br>");
+        <tr class="@(info.CanVote.GetValueOrDefault() ? "" : "cannotVote")">
           <td class="name">@Raw(info.C_FullName)</td>
-          <td class="email">@info.Email</td>
-          <td class="usage @(info.HasSignedIn ? "" : "none")">@(info.HasViewedThisElection ? "Participated in this Election" : info.HasSignedIn ? "Has TallyJ Account" : "(never used)")</td>
+          <td>@(info.CanVote.GetValueOrDefault() ? "-" : "Cannot Vote")</td>
+          <td class="email @(info.HasSignedInEmail ? "" : "none")">@info.Email</td>
+          <td class="email @(info.HasSignedInPhone ? "" : "none")">@info.Phone</td>
+          <td class="usage">@Raw(usage)</td>
           <td class="method">@VotingMethodEnum.TextFor(info.VotingMethod).DefaultTo("-")</td>
           <td class="id">@info.BahaiId</td>
         </tr>

@@ -13,7 +13,7 @@ namespace TallyJ.Code
 {
   public interface ILogHelper
   {
-    void Add(string message, bool alsoSendToRemoteLog = false, string voterEmail = null);
+    void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null);
   }
 
   public class LogHelper : ILogHelper
@@ -30,20 +30,28 @@ namespace TallyJ.Code
     {
     }
 
-    public void Add(string message, bool alsoSendToRemoteLog = false, string voterEmail = null)
+    public void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null)
     {
+      if (voterId == null)
+      {
+        if (UserSession.VoterId.HasContent())
+        {
+          voterId = UserSession.VoterId;
+        }
+      }
+
       AddToLog(new C_Log
       {
         ElectionGuid = _electionGuid.AsNullableGuid(),
         ComputerCode = UserSession.CurrentComputerCode.DefaultTo(null),
         LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
-        VoterEmail = UserSession.VoterEmail ?? voterEmail,
+        VoterId = voterId,
         Details = message,
         HostAndVersion = HostAndVersion()
       });
       if (alsoSendToRemoteLog)
       {
-        SendToRemoteLog(message + (voterEmail.HasContent() ? $" ({voterEmail})" : ""));
+        SendToRemoteLog(message + (voterId.HasContent() ? $" ({voterId})" : ""));
       }
     }
 
@@ -53,7 +61,7 @@ namespace TallyJ.Code
                $"{Environment.MachineName} / {HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.Url.Host} / {UserSession.SiteVersion}");
     }
 
-    public void SendToRemoteLog(string message)
+    private void SendToRemoteLog(string message)
     {
       var iftttKey = ConfigurationManager.AppSettings["iftttKey"].DefaultTo("");
       if (iftttKey.HasNoContent())

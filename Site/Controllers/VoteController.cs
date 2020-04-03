@@ -16,11 +16,11 @@ using TallyJ.EF;
 namespace TallyJ.Controllers
 {
   [AllowVoter]
-  public class VoterController : BaseController
+  public class VoteController : BaseController
   {
     public ActionResult Index()
     {
-      return View("VoterHome");
+      return View("VoteHome");
     }
 
     public void JoinVoterHubs(string connId)
@@ -39,8 +39,8 @@ namespace TallyJ.Controllers
 
     public JsonResult JoinElection(Guid electionGuid)
     {
-      var email = UserSession.VoterEmail;
-      if (email.HasNoContent())
+      var voterId = UserSession.VoterId;
+      if (voterId.HasNoContent())
       {
         return new
         {
@@ -49,7 +49,25 @@ namespace TallyJ.Controllers
       }
 
       // confirm that this person is in the election
-      var electionInfo = Db.Person.Where(p => p.Email == email && p.ElectionGuid == electionGuid)
+      var personQuery = Db.Person.Where(p => p.ElectionGuid == electionGuid);
+
+      if (UserSession.VoterIdType == VoterIdTypeEnum.Email)
+      {
+        personQuery = personQuery.Where(p => p.Email == voterId);
+      }
+      else if (UserSession.VoterIdType == VoterIdTypeEnum.Phone)
+      {
+        personQuery = personQuery.Where(p => p.Phone == voterId);
+      }
+      else
+      {
+        return new
+        {
+          Error = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      var electionInfo = personQuery
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { e, p })
         .SingleOrDefault();
 
@@ -67,21 +85,37 @@ namespace TallyJ.Controllers
       var votingInfo = Db.OnlineVotingInfo
         .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.PersonGuid);
 
-      var otherVotingInfo = Db.OnlineVotingInfo
-        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.Email == electionInfo.p.Email);
-
-      if (votingInfo == null && otherVotingInfo != null)
-      {
-        return new
-        {
-          Error = "This email address was used for another person."
-        }.AsJsonResult();
-      }
+      // if (votingInfo == null)
+      // {
+      //   var existingByEmail = Db.OnlineVotingInfo
+      //     .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.Email);
+      //
+      //   if (existingByEmail != null)
+      //   {
+      //     return new
+      //     {
+      //       Error = "This email address was used for another person."
+      //     }.AsJsonResult();
+      //   }
+      //
+      //   var existingByPhone = Db.OnlineVotingInfo
+      //      .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.Phone == electionInfo.p.Phone);
+      //
+      //   if (existingByPhone != null)
+      //   {
+      //     return new
+      //     {
+      //       Error = "This phone number was used for another person."
+      //     }.AsJsonResult();
+      //   }
+      // }
 
       if (electionInfo.e.OnlineWhenOpen <= now && electionInfo.e.OnlineWhenClose > now)
       {
         // put election in session
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
+        UserSession.VoterInElectionPersonGuid = electionInfo.p.PersonGuid;
+        // UserSession.VoterInElectionPersonName = electionInfo.p.C_FullNameFL;
 
         if (votingInfo == null)
         {
@@ -89,7 +123,6 @@ namespace TallyJ.Controllers
           {
             ElectionGuid = electionInfo.e.ElectionGuid,
             PersonGuid = electionInfo.p.PersonGuid,
-            Email = email,
             Status = OnlineBallotStatusEnum.New,
             WhenStatus = now,
             HistoryStatus = "New|{0}".FilledWith(now.ToJSON())
@@ -102,6 +135,7 @@ namespace TallyJ.Controllers
         return new
         {
           open = true,
+          voterName = electionInfo.p.C_FullNameFL,
           electionInfo.e.NumberToElect,
           OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
           registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
@@ -120,8 +154,9 @@ namespace TallyJ.Controllers
     {
       // forget election
       UserSession.CurrentContext.Session.Remove(SessionKey.CurrentElectionGuid);
+      UserSession.CurrentContext.Session.Remove(SessionKey.VoterInElectionPersonGuid);
 
-      // leave hub
+      // leave hub?
 
 
       return new
@@ -133,11 +168,12 @@ namespace TallyJ.Controllers
     public JsonResult SavePool(string pool)
     {
       var electionGuid = UserSession.CurrentElectionGuid;
-      var email = UserSession.VoterEmail;
+      var personGuid = UserSession.VoterInElectionPersonGuid;
 
-      var votingInfo = Db.OnlineVotingInfo.SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.Email == email);
+      var onlineVotingInfo = Db.OnlineVotingInfo
+        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == personGuid);
 
-      if (votingInfo == null)
+      if (onlineVotingInfo == null)
       {
         return new
         {
@@ -148,12 +184,12 @@ namespace TallyJ.Controllers
       var now = DateTime.Now;
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {
-        votingInfo.ListPool = pool; // pool is JSON string
+        onlineVotingInfo.ListPool = pool; // pool is JSON string
 
         var newStatus = pool == "[]" ? OnlineBallotStatusEnum.New : OnlineBallotStatusEnum.Draft;
-        if (newStatus != votingInfo.Status)
+        if (newStatus != onlineVotingInfo.Status)
         {
-          votingInfo.Status = newStatus;
+          onlineVotingInfo.Status = newStatus;
         }
 
         Db.SaveChanges();
@@ -180,9 +216,10 @@ namespace TallyJ.Controllers
     public JsonResult LockPool(bool locked)
     {
       var currentElection = UserSession.CurrentElection;
-      var email = UserSession.VoterEmail;
+      var personGuid = UserSession.VoterInElectionPersonGuid;
 
-      var onlineVotingInfo = Db.OnlineVotingInfo.SingleOrDefault(ovi => ovi.ElectionGuid == currentElection.ElectionGuid && ovi.Email == email);
+      var onlineVotingInfo = Db.OnlineVotingInfo
+        .SingleOrDefault(ovi => ovi.ElectionGuid == currentElection.ElectionGuid && ovi.PersonGuid == personGuid);
 
       if (onlineVotingInfo == null)
       {
@@ -221,7 +258,7 @@ namespace TallyJ.Controllers
         onlineVotingInfo.PoolLocked = locked;
 
         onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Submitted : OnlineBallotStatusEnum.Draft;
-        onlineVotingInfo.HistoryStatus += ";{0}|{1}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
+        onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{now.ToJSON()}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
         if (locked)
         {
           onlineVotingInfo.WhenStatus = now;
@@ -243,7 +280,7 @@ namespace TallyJ.Controllers
         Db.Person.Attach(person);
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
-        var emailSent = false;
+        string notificationType = null;
 
         person.HasOnlineBallot = locked;
 
@@ -263,15 +300,20 @@ namespace TallyJ.Controllers
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person),
+              peopleModel.ShowRegistrationTime(person, true),
+              UserSession.VoterLoginSource,
               VotingMethodEnum.TextFor(person.VotingMethod),
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
 
             new LogHelper().Add("Locked ballot");
 
-            var emailHelper = new EmailHelper();
-            emailSent = emailHelper.SendOnVoterSubmit(person, currentElection, out var error);
+            var notificationHelper = new NotificationHelper();
+            var notificationSent = notificationHelper.SendWhenBallotSubmitted(person, currentElection, out notificationType, out var error);
+            if (!notificationSent)
+            {
+              notificationType = null;
+            }
           }
           else
           {
@@ -286,7 +328,7 @@ namespace TallyJ.Controllers
             person.RegistrationTime = now; // set time so that the log will have it
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person),
+              peopleModel.ShowRegistrationTime(person, true),
               "Cancel Online",
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible
@@ -307,7 +349,7 @@ namespace TallyJ.Controllers
         return new
         {
           success = true,
-          emailSent,
+          notificationType,
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
           person.RegistrationTime,
@@ -324,8 +366,8 @@ namespace TallyJ.Controllers
 
     public JsonResult GetVoterElections()
     {
-      var email = UserSession.VoterEmail;
-      if (email.HasNoContent())
+      var voterId = UserSession.VoterId;
+      if (voterId.HasNoContent())
       {
         return new
         {
@@ -334,7 +376,7 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
-        .Where(p => p.Email == email && p.CanVote == true)
+        .Where(p => (p.Email == voterId || p.Phone == voterId) && p.CanVote == true)
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
         .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
         .OrderByDescending(j => j.e.OnlineWhenClose)
@@ -363,22 +405,22 @@ namespace TallyJ.Controllers
         });
 
       // piggyback and get other info too
-      var emailCodes = Db.OnlineVoter.Single(ov => ov.Email == email).EmailCodes;
-      var hasLocalId = Db.AspNetUsers.Any(u => u.Email == email);
+      var emailCodes = Db.OnlineVoter.Single(ov => ov.VoterId == voterId).EmailCodes;
+      // var hasLocalId = Db.AspNetUsers.Any(u => u.Email == voterId);
 
       return new
       {
         list,
         emailCodes,
-        hasLocalId
+        // hasLocalId
       }.AsJsonResult();
     }
 
 
     public JsonResult GetLoginHistory()
     {
-      var email = UserSession.VoterEmail;
-      if (email.HasNoContent())
+      var voterId = UserSession.VoterId;
+      if (voterId.HasNoContent())
       {
         return new
         {
@@ -388,7 +430,7 @@ namespace TallyJ.Controllers
 
       var ageCutoff = DateTime.Today.Subtract(TimeSpan.FromDays(14));
       var list = Db.C_Log
-        .Where(log => log.VoterEmail == email)
+        .Where(log => log.VoterId == voterId)
         .Where(log => log.AsOf > ageCutoff)
         .Where(log => !log.Details.Contains("schema")) // hide error codes
         .OrderByDescending(log => log.AsOf)
@@ -407,7 +449,7 @@ namespace TallyJ.Controllers
 
     public JsonResult SaveEmailCodes(string emailCodes)
     {
-      var onlineVoter = Db.OnlineVoter.Single(ov => ov.Email == UserSession.VoterEmail);
+      var onlineVoter = Db.OnlineVoter.Single(ov => ov.VoterId == UserSession.VoterId);
       onlineVoter.EmailCodes = emailCodes;
       Db.SaveChanges();
 
@@ -417,11 +459,10 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
-    public JsonResult SendTestEmail()
+    public JsonResult SendTestMessage()
     {
-      var emailHelper = new EmailHelper();
-
-      var sent = emailHelper.SendVoterEmailTest(UserSession.VoterEmail, out var error);
+      var notificationHelper = new NotificationHelper();
+      var sent = notificationHelper.SendVoterTestMessage(out var error);
 
       return new
       {

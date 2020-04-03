@@ -35,7 +35,7 @@
   function preparePage() {
     local.SingleVoteLineTemplate = $('#SingleVoteLine').text();
 
-    tabNum = publicInterface.HasLocations ? {
+    tabNum = publicInterface.HasLocationsWithoutOnline ? {
       location: 0,
       ballotListing: 1,
       ballotEdit: 2,
@@ -292,52 +292,69 @@
   };
 
   function showRelevantTabs() {
-    // start with all closed...
-    local.tabList.find('h3').hide().next().hide();
 
-    // show location status if not online
-    if (!local.location.IsOnline) {
-      local.tabList.find('h3').eq(tabNum.location).show().next().show();
-    }
+    var ballotH3 = local.tabList.find('h3').eq(tabNum.ballotListing);
+    var addVoteH3 = local.tabList.find('h3').eq(tabNum.ballotEdit);
+    // show location status (if there are locations, and if not online)
+    var locationStatusH3 = local.tabList.find('h3').eq(tabNum.location);
 
-    // always show ballots
-    local.tabList.find('h3').eq(tabNum.ballotListing).show().next().show();
+    // show headings
+    ballotH3.show();
+    addVoteH3.toggle(!local.location.IsOnline);
+    locationStatusH3.toggle(!local.location.IsOnline);
 
     // show add if a ballot is selected (regular) or raw vote is selected (online)
     if (local.location.IsOnline) {
       $('#addAnother').text('Update matched person');
       if ($('.VoteHost.rawTarget').length !== 0) {
-        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+        addVoteH3.show().next().show();
+      } else {
+        addVoteH3.next().hide();
       }
+      ballotH3.next().show();
     }
     else {
       $('#addAnother').text('Add another Person');
-      if ($('#ballotList .selected').length !== 0) {
-        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+      if ($('.VoteHostFake').length !== 0 || local.addingToBallot) {
+        if (!local.showingBallotList) {
+          ballotH3.next().hide();
+        }
+        addVoteH3.next().show();
+      } else {
+        // force ballot list open
+        addVoteH3.next().hide();
+        ballotH3.next().show();
       }
     }
-    //    if (showLocationTab && !local.location.IsOnline) {
-    //      local.tabList.accordion('option', 'active', tabNum.location);
-    //    } else {
-    //      local.tabList.accordion('option', 'active', tabNum.ballotListing);
-    //    }
 
-    //    toggleAddToBallotTab(!local.location.IsOnline);
-    //    local.tabList.accordion('option', 'active', tabNum.ballotListing);
-    //    showAddToThisBtn(!local.location.IsOnline);
+    //
+    //    // start with all closed...
+    //    local.tabList.find('h3').hide().next().hide();
+    //
+    //    // show location status if not online
+    //    if (!local.location.IsOnline) {
+    //      local.tabList.find('h3').eq(tabNum.location).show().next().show();
+    //    }
+    //
+    //    // always show ballots
+    //    local.tabList.find('h3').eq(tabNum.ballotListing).show().next().show();
+    //
+    //    // show add if a ballot is selected (regular) or raw vote is selected (online)
+    //    if (local.location.IsOnline) {
+    //      $('#addAnother').text('Update matched person');
+    //      if ($('.VoteHost.rawTarget').length !== 0) {
+    //        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+    //      }
+    //    }
+    //    else {
+    //      $('#addAnother').text('Add another Person');
+    //      if ($('#ballotList .selected').length !== 0) {
+    //        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
+    //      }
+    //    }
 
   }
 
-  //  function toggleAddToBallotTab(show) {
-  //    if (show) {
-  //      local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
-  //      $('.nameListKey').fadeIn();
-  //    } else {
-  //      local.tabList.find('h3').eq(tabNum.ballotEdit).hide().next().hide();
-  //      $('.nameListKey').hide();
-  //      resetSearch();
-  //    }
-  //  };
 
 
   function newBallot() {
@@ -691,6 +708,7 @@
 
   function showLocation(location) {
     local.location = location;
+    publicInterface.Location = location;
     $('#ddlTopLocation').val(local.location.Id);
 
     $('.locationInfo [data-name], .LocationName[data-name]').each(function () {
@@ -759,7 +777,7 @@
   function highlightBallotInList() {
     var ballotList = $('#ballotList');
     var highlighted = ballotList.children().removeClass('selected').end().find('#B{0}'.filledWith(local.ballotId)).addClass('selected');
-    scrollIntoView(highlighted, ballotList);
+    scrollIntoView(highlighted);
   };
 
   function voteNumChange(ev) {
@@ -1015,6 +1033,8 @@
 
     ShowStatusDisplay('Saving...');
 
+    input.prop('readonly', true);
+
     CallAjaxHandler(publicInterface.controllerUrl + '/SaveVote', form, function (info) {
       if (info.Updated) {
         ShowStatusSuccess('Saved');
@@ -1070,6 +1090,8 @@
 
         showVotes();
 
+        local.votesList.find('#V' + local.lastVid + ' input').focus(); // keep focus here
+
         updateStatusDisplay(info);
         updateStatusInList(info);
 
@@ -1088,6 +1110,8 @@
       } else {
         var msg = info.Error || info.Message;
         ShowStatusFailed(msg);
+
+        input.prop('readonly', false);
 
         if (local.location.IsOnline) {
           loadBallot('B' + local.ballotId, true, msg);
@@ -1220,26 +1244,7 @@
     local.rowSelected = rowNum;
     var newSelected = children.eq(rowNum);
     newSelected.addClass('selected');
-    scrollIntoView(newSelected[0], local.nameList);
-  };
-
-  function scrollIntoView(element, container) {
-    if (!element) return;
-
-    element[0].scrollIntoView({
-      block: 'center'
-    });
-    return;
-
-    //    var containerTop = $(container).scrollTop();
-    //    var containerBottom = containerTop + $(container).height();
-    //    var elemTop = element.offsetTop;
-    //    var elemBottom = elemTop + $(element).height();
-    //    if (elemTop < containerTop) {
-    //      $(container).scrollTop(Math.max(0, elemTop - 10));
-    //    } else if (elemBottom > containerBottom) {
-    //      $(container).scrollTop(elemBottom - $(container).height() + 30);
-    //    }
+    scrollIntoView(newSelected);
   };
 
   function edit(selectedPersonLi) {
@@ -1606,7 +1611,8 @@
     Ballots: null,
     BallotStatus: [],
     Location: null,
-    HasLocations: false,
+    HasLocationsWithOnline: false,
+    HasLocationsWithoutOnline: false,
     PreparePage: preparePage,
     peopleHelper: function () { return local.peopleHelper; },
     local: local
