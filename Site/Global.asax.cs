@@ -248,8 +248,15 @@ namespace TallyJ
         Response.StatusCode = 500;
       }
 
-      new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
+      try
+      {
+        new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
 
+      }
+      catch (Exception)
+      {
+        // ignore?
+      }
 
       // add  /* */  because this is sometimes written onto the end of a Javascript file!!
       //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));

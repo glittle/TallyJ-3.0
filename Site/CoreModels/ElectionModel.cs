@@ -264,7 +264,7 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
 
       electionCacher.UpdateItemAndSaveCache(election);
-      
+
       return new
       {
         success = true,
@@ -290,7 +290,7 @@ namespace TallyJ.CoreModels
       var currentReceive = election.CanReceive;
       var currentListed = election.ListForPublic;
 
-    
+
 
       // List of fields to allow edit from setup page
       var editableFields = new
@@ -1267,11 +1267,11 @@ namespace TallyJ.CoreModels
       election.OnlineWhenClose = when;
       election.OnlineCloseIsEstimate = est;
 
-      var sendEmail = false;
+      // var sendEmail = false;
       if (election.OnlineCurrentlyOpen)
       {
         election.OnlineAnnounced = null;
-        sendEmail = true;
+        // sendEmail = true;
       }
 
       Db.SaveChanges();

@@ -68,7 +68,7 @@
           <th class="ename">Election</th>
           <th class="online">Online Voting</th>
           @*<th class="pname">Your Name in the Election</th>*@
-          <th class="vmethod">Your voting method</th>
+          <th class="vmethod">Voting details</th>
           <th class="vtime">Ballot status</th>
         </tr>
       </thead>
@@ -76,16 +76,17 @@
         <tr v-for="e in elections" v-bind:key="e.id" v-bind:class="e.classes">
           <td class="ename">
             <div class="n">{{e.Name}}</div>
-            <div class="t">{{e.Type_Display}} Election</div>
             <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
+            <div class="t">{{e.Type_Display}} Election</div>
           </td>
           <td class="online center" v-html="e.Status_Display"></td>
           @*<td class="pname" v-text="e.person.name"></td>*@
           <td class="vmethod center">
-            <div>{{e.person.VotingMethod_Display}}</div>
+            <div title="Registered Voting Method">{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
               <button class="btn" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
             </div>
+            <div class="pname" v-text="e.person.name"></div>
           </td>
           <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
         </tr>

@@ -60,6 +60,9 @@
   function fixPhone(ev) {
     var input = $(ev.target);
     var original = input.val();
+    if (!original) {
+      return;
+    }
     var text = original.replace(/[^\+\d]/g, '');
     if (text.substr(0, 1) !== '+') {
       text = '+' + text;

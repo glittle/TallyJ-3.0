@@ -577,6 +577,13 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Images\icons\android-chrome-96x96.png" />
+    <Content Include="Images\icons\apple-touch-icon.png" />
+    <Content Include="Images\icons\favicon-16x16.png" />
+    <Content Include="Images\icons\favicon-32x32.png" />
+    <Content Include="Images\icons\favicon.ico" />
+    <Content Include="Images\icons\mstile-150x150.png" />
+    <Content Include="Images\icons\safari-pinned-tab.svg" />
     <Content Include="MessageTemplates\Email\HeadTellerEmail.html" />
     <Content Include="MessageTemplates\Email\GenericIdentityManagerEmail.html" />
     <Content Include="MessageTemplates\Email\ElectionOpen.html" />
@@ -762,6 +769,7 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
+    <Content Include="manifest.json" />
     <None Include="packages.config" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
