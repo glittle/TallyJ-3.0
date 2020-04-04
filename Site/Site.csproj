@@ -582,6 +582,7 @@
     <Content Include="Images\icons\favicon-16x16.png" />
     <Content Include="Images\icons\favicon-32x32.png" />
     <Content Include="Images\icons\favicon.ico" />
+    <Content Include="Images\icons\icon-144.png" />
     <Content Include="Images\icons\mstile-150x150.png" />
     <Content Include="Images\icons\safari-pinned-tab.svg" />
     <Content Include="MessageTemplates\Email\HeadTellerEmail.html" />
