@@ -86,7 +86,7 @@
     <div class="messageBtns sms">
       <button class="btn btn-primary" v-on:click="sendSms('Test', false, testSmsNumber)" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
       <div class="samplePhone">
-        Send to <input type="tel" class="text50" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
+        Send to <input type="tel" class="text50" v-on:change="fixPhone" v-on:paste="fixPhone" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
         <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
       </div>
       <div class="bottom">

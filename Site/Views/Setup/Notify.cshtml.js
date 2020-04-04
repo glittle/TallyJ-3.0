@@ -71,7 +71,7 @@
         vue.updateTextForSms();
         vue.refresh();
 
-        setTimeout(function() {
+        setTimeout(function () {
           if (!vue.emailText) {
             vue.loadSampleEmail();
           }
@@ -258,6 +258,23 @@ contact the Assembly as soon as possible!</p>
             }
           });
 
+        },
+        fixPhone: function () {
+          var vue = this;
+          var original = vue.testSmsNumber;
+          if (!original) {
+            return;
+          }
+          var text = original.replace(/[^\+\d]/g, '');
+          if (text.substr(0, 1) !== '+') {
+            if (text.length === 10) {
+              text = '1' + text;
+            }
+            text = '+' + text;
+          }
+          if (text !== original) {
+            vue.testSmsNumber = text;
+          }
         },
         getMoreLog: function () {
           this.getContactLog(this.lastLogId);

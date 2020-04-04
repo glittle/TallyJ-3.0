@@ -65,6 +65,9 @@
     }
     var text = original.replace(/[^\+\d]/g, '');
     if (text.substr(0, 1) !== '+') {
+      if (text.length === 10) {
+        text = '1' + text;
+      }
       text = '+' + text;
     }
     if (text !== original) {
