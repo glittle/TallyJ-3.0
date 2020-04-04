@@ -3,17 +3,17 @@
   "short_name": "TallyJ",
   "icons": [
     {
-      "src": "./images/icons/android-chrome-96x96.png",
+      "src": "../images/icons/android-chrome-96x96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "./images/icons/icon-144.png",
+      "src": "../images/icons/icon-144.png",
       "sizes": "144x144",
       "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "..",
   "display": "standalone",
   "background_color": "#efeeef",
   "theme_color": "#023f7c"

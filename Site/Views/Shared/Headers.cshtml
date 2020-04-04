@@ -28,15 +28,15 @@
   }
 }
 @AddResourceFilesForViews("js")
-<link rel="icon" type="image/png" sizes="32x32" href="@Url.Content("~/images/icons/favicon-32x32.png")">
-<link rel="icon" type="image/png" sizes="16x16" href="@Url.Content("~/images/icons/favicon-16x16.png")">
+<link rel="icon" type="image/png" sizes="32x32" href="@ClientFile("~/images/icons/favicon-32x32.png")">
+<link rel="icon" type="image/png" sizes="16x16" href="@ClientFile("~/images/icons/favicon-16x16.png")">
 
-<link rel=icon type=image/png sizes=32x32 href="@Url.Content("~/images/icons/favicon-32x32.png")">
-<link rel=icon type=image/png sizes=16x16 href="@Url.Content("~/images/icons/favicon-16x16.png")">
-<link rel=apple-touch-icon href="@Url.Content("~/images/icons/apple-touch-icon.png")">
-<link rel=mask-icon href="@Url.Content("~/images/icons/safari-pinned-tab.svg")" color=#ffffff>
+<link rel=icon type=image/png sizes=32x32 href="@ClientFile("~/images/icons/favicon-32x32.png")">
+<link rel=icon type=image/png sizes=16x16 href="@ClientFile("~/images/icons/favicon-16x16.png")">
+<link rel=apple-touch-icon href="@ClientFile("~/images/icons/apple-touch-icon.png")">
+<link rel=mask-icon href="@ClientFile("~/images/icons/safari-pinned-tab.svg")" color=#ffffff>
 
-<link rel="manifest" href="@Url.Content("~/manifest.json")">
+<link rel="manifest" href="@ClientFile("~/Content/manifest.json")">
 
 @if (Request.Url.Host != "localhost")
 {
