@@ -1,40 +1,55 @@
 ﻿@using System.Configuration
 @{
-    ViewBag.Title = "About TallyJ";
-    ViewBag.Message = "Where we've been. Where we're going";
+  ViewBag.Title = "About TallyJ";
+  ViewBag.Message = "Where we've been. Where we're going";
 }
 @section featured {
-    <section class="featured empty">
-    </section>
+  <section class="featured empty">
+  </section>
 }
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>@ViewBag.Message</h2>
+  <h1>@ViewBag.Title.</h1>
+  <h2>@ViewBag.Message</h2>
 </hgroup>
 <article>
   <p>
     TallyJ has been around since 2002, helping with elections every year since then.
   </p>
   <p>
-    This web version of TallyJ, version 2, was first available for use in December 2011
-    for Assembly by-elections and now supports all types of Bahá'í elections.
+    The web version of TallyJ, version 2, was first available for use in December 2011
+    for Assembly by-elections and grew to support all types of Bahá'í elections.
+  </p>
+  <p>
+    Version 3, released in 2020, added the capability for individual voters to cast their ballot online.
+  </p>
+  <p>
+    In addition to the main TallyJ website, in 2019 another site called
+    <a href="https://officers.tallyj.com/" target="_blank">TallyJ for Officers</a> was made available specifically for members of an Assembly (local or national)
+    to have an online way to elect their own officers.
+  </p>
+  <p>
+    Development and hosting of TallyJ has been supported by generous contributions by the Spiritual Assembly of the Bahá'ís of Calgary,
+    the Spiritual Assembly of the Bahá'ís of Airdrie,
+    and by <a href="https://www.sunwaptasolutions.com/" target="_blank">Sunwapta Solutions Inc.</a>.
+    Many other individuals and Bahá'í Assemblies have contributed financial support over the past @(DateTime.Today.Year - 2002) years to keep
+    the servers running!
   </p>
   <p>
     You can read more on the
     <a href="https://www.facebook.com/TallyJ.Support" target="facebook">Facebook TallyJ Support</a> page,
     especially in a series of <a href="https://www.facebook.com/TallyJ.Support" target="facebook">Notes</a> there.
-</p>
+  </p>
 </article>
 @*<aside>
-    <h3>
-        Aside Title</h3>
-    <p>
-        Fusce facilisis ullamcorper consequat. Vestibulum non sapien lectus. Nam mi augue,
-        posuere at tempus vel, dignissim vitae nulla.
-    </p>
-    <ul>
-        <li>@Html.ActionLink("Home", "Index", "Dashboard")</li>
-        <li>@Html.ActionLink("About", "About", "Dashboard")</li>
-        <li>@Html.ActionLink("Contact", "Contact", "Dashboard")</li>
-    </ul>
-</aside>*@
+      <h3>
+          Aside Title</h3>
+      <p>
+          Fusce facilisis ullamcorper consequat. Vestibulum non sapien lectus. Nam mi augue,
+          posuere at tempus vel, dignissim vitae nulla.
+      </p>
+      <ul>
+          <li>@Html.ActionLink("Home", "Index", "Dashboard")</li>
+          <li>@Html.ActionLink("About", "About", "Dashboard")</li>
+          <li>@Html.ActionLink("Contact", "Contact", "Dashboard")</li>
+      </ul>
+  </aside>*@
