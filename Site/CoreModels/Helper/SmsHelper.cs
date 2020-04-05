@@ -11,6 +11,7 @@ using TallyJ.Code.Session;
 using TallyJ.EF;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using Twilio.Rest.Authy.V1;
 using Twilio.Types;
 
 namespace TallyJ.CoreModels.Helper
@@ -77,7 +78,7 @@ namespace TallyJ.CoreModels.Helper
       var ok = SendSms(phone, text, out error);
 
       // error logging done at a higher level
-      
+
       if (ok)
       {
         logHelper.Add("Sms: ballot was processed", false, phone);
@@ -225,6 +226,7 @@ namespace TallyJ.CoreModels.Helper
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
       var fromNumber = SettingsHelper.Get("twilio-FromNumber", "");
+      var messagingSid = SettingsHelper.Get("twilio-MessagingSid", "");
 
       if (sid.HasNoContent() || token.HasNoContent())
       {
@@ -242,11 +244,29 @@ namespace TallyJ.CoreModels.Helper
 
       try
       {
-        var messageResource = MessageResource.Create(
-          body: messageText,
-          from: new PhoneNumber(fromNumber),
-          to: new PhoneNumber(toPhoneNumber)
-        );
+        MessageResource messageResource;
+
+        if (messagingSid.HasContent())
+        {
+          messageResource = MessageResource.Create(
+            new PhoneNumber(toPhoneNumber),
+            body: messageText,
+            messagingServiceSid: messagingSid
+          );
+        }
+        else if (fromNumber.HasContent())
+        {
+          messageResource = MessageResource.Create(
+            new PhoneNumber(toPhoneNumber),
+            body: messageText,
+            from: new PhoneNumber(fromNumber)
+          );
+        }
+        else
+        {
+          errorMessage = "SMS not configured";
+          return false;
+        }
 
         errorMessage = messageResource.ErrorMessage; // null if okay
 
