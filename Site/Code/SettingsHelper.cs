@@ -9,7 +9,8 @@ namespace TallyJ.Code
 {
   public static class SettingsHelper
   {
-    public static bool HostSupportsOnlineElections => ConfigurationManager.AppSettings["HostSupportsOnlineElections"].AsBoolean();
+    public static bool HostSupportsOnlineElections => Get("SupportOnlineElections", true);
+    public static bool HostSupportsOnlineSmsLogin =>  Get("SupportOnlineSmsLogin", true);
 
     public static string Get(string name, string defaultValue)
     {

@@ -117,7 +117,7 @@
     <p>
       For your review and security, here is your recent activity (with the most recent first).
       If something looks wrong, please stop using TallyJ and contact
-      Glen Little (<a href="mailto:glen.little@gmail.com">glen.little@gmail.com</a>) with details.
+      @SettingsHelper.Get("TechSupportContactName", "Glen Little") (<a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little@gmail.com")">@SettingsHelper.Get("TechSupportContactEmail", "glen.little@gmail.com")</a>) with details.
       <button class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
     </p>
     <p v-if="loadingLoginHistory">Loading...</p>

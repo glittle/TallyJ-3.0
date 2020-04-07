@@ -45,10 +45,10 @@
     </div>
     <div class="officers">
       <div title="Go to TallyJ for Officers...">
-        <a class="btn btn-officers" 
+        <a class="btn btn-officers"
            href="https://officers.tallyj.com/" target="officers"
            accesskey="O">Elect Officers</a>
-        <p>For Assemblies to elect their own<br/>officers at their first meeting.</p>
+        <p>For Assemblies to elect their own<br />officers at their first meeting.</p>
       </div>
     </div>
     <p class="badBrowser">
@@ -134,10 +134,14 @@
     </div>
     <h2>Manage Elections</h2>
     <p>Create and administer elections for your community.</p>
-    <p>Some resources to learn more about TallyJ:<br/> 
+    <p>
+      Some resources to learn more about TallyJ:<br />
       <a href="https://docs.google.com/document/d/1pTD9TSclJ2iBsap-__hnZezohYgilOP1SeF1wXpW0Qo/view" target="admin1">Head Teller's Handbook</a>,
-      <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view" target="admin2">Online Voting Overview</a>,
-      <a href="https://docs.google.com/document/d/1tTzu69HekctCeZ1quwvCAXxI40xNV5L6147AmOLrudA/view" target="voter1">Voter's Guide</a>,
+      @if (SettingsHelper.HostSupportsOnlineElections)
+      {
+        <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view" target="admin2">Online Voting Overview</a><span>,</span>
+        <a href="https://docs.google.com/document/d/1tTzu69HekctCeZ1quwvCAXxI40xNV5L6147AmOLrudA/view" target="voter1">Voter's Guide</a><span>,</span>
+      }
       <a href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view" target="admin3">Status and Feedback</a>
       and some (older) <a href="https://www.youtube.com/playlist?list=PLVjUPCyfyKZ9TW9n_Huf4qZyB7nJGGOv5" target="admin4">YouTube videos</a>.
     </p>
@@ -178,7 +182,7 @@
   </section>
   @if (SettingsHelper.HostSupportsOnlineElections)
   {
-    <section class="featureBig VoterPanel">
+    <section class="featureBig VoterPanel @(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "")">
       <div class="closer">
         <img src="~/Images/close.png" alt="Close" class="closer">
       </div>
@@ -239,9 +243,9 @@
               }*@
 
             <div>
-              <p>Welcome! How would you like to log in to TallyJ to vote?</p>
+              <p>Welcome!<span class="forSmsInline"> How would you like to log in to TallyJ to vote?</span></p>
               <p>
-                Learn about voting with TallyJ with the  
+                Learn about voting with TallyJ with the
                 <a href="https://docs.google.com/document/d/1tTzu69HekctCeZ1quwvCAXxI40xNV5L6147AmOLrudA/view" target="voter1">Voter's Guide</a>.
               </p>
               <div class="voterOptions">
@@ -250,26 +254,26 @@
                     <span>Using your Email address</span>
                   </a>
                 </div>
-                <div class="voterSms">
+                <div class="voterSms forSmsBlock">
                   <a href="@Url.Action("LoginSms", "VoterAccount")">
                     <span>Using SMS with your mobile phone</span>
                   </a>
                 </div>
               </div>
               <div class="mustPreRegister">
-                <span><strong>Important!</strong> The email address or mobile phone number</span>
-                <span>you use here <strong>MUST be pre-registered</strong> with</span>
-                <span>your local Assembly before you can vote!</span>
+                <div><strong>Important!</strong> The email address <span class="forSmsInline">or mobile phone number</span></div>
+                <div>you use here <strong>MUST be pre-registered</strong> with</div>
+                <div>your local Assembly before you can vote!</div>
                 <p>Please contact your Assembly to confirm your information.</p>
               </div>
-             
+
             </div>
           </div>
 
           <div>
             <p>
-              TallyJ uses Auth0 and Twilio to enable logins from anywhere on the planet!<br>
-              Please note that SMS messages may sometimes take a few minutes to be received.
+              TallyJ uses Auth0 <span class="forSmsInline">and Twilio</span> to enable logins from anywhere on the planet!<br>
+              <span class="forSmsInline">Please note that SMS messages may sometimes take a few minutes to be received.</span>
             </p>
             <p>By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.</p>
           </div>
@@ -307,7 +311,7 @@
   <p>
     TallyJ is ready for use! Please send feedback to
     <a title="Send email to Glen"
-       href="mailto:glen.little@gmail.com">Glen Little</a> and refer to the
+       href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little@gmail.com")">@SettingsHelper.Get("TechSupportContactName", "Glen Little")</a> and refer to the
     <a title="View document"
        href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view"
        target="gdoc">Status and Feedback</a> document for current updates!

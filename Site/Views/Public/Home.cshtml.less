@@ -277,6 +277,20 @@ div.or {
   background-color: #FCE1C1;
   min-height: 180px;
 
+  .forSmsInline, .forSmsBlock {
+    display: none;
+  }
+
+  &.Sms {
+    .forSmsInline {
+      display: inline;
+    }
+
+    .forSmsBlock{
+      display: block;
+    }
+  }
+
   .VoterLoginError {
     margin: 1em 0;
     color: red;
@@ -298,10 +312,6 @@ div.or {
     box-shadow: 0px 0 10px 0px rgba(50, 50, 50, 0.5);
     margin: 0 0 .5em 0;
     border-radius: 3px;
-
-    span {
-      display: block;
-    }
   }
 
   .voterOptions {

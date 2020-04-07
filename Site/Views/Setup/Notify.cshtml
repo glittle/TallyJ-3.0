@@ -25,9 +25,9 @@
   ContextItems.AddJavascriptForPage("notifyPage.defaultFromAddress={0};".FilledWith(currentElection.EmailFromAddressWithDefault.QuotedForJavascript()));
 }
 
-<div id="notifyBody" v-cloak>
+<div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "")">
   <p>
-    TallyJ enables you to send an email and/or SMS message to all potential voters with registered email addresses or mobile phone numbers.
+    TallyJ enables you to send an email <span class="forSmsInline">and/or SMS message</span> to all potential voters with registered email addresses<span class="forSmsInline"> or mobile phone numbers</span>.
   </p>
   <p>You can create the email below. To get started with a sample, click: <button class="btn btn-mini" v-on:click="loadSampleEmail">Start with Sample Message</button></p>
 
@@ -38,7 +38,7 @@
     Emails will have a return address of "{{emailFromAddress || defaultFromAddress}}"
     <span v-if="!emailFromAddress">(until a "From Email Address" is added on the "Configure this Election" page).</span>
     <span v-else>(as set on the "Configure this Election" page).</span>
-    SMS messages will be sent from TallyJ (@SettingsHelper.Get("twilio-FromNumber", "?")).
+    <span class="forSmsInline">SMS messages will be sent from TallyJ (@SettingsHelper.Get("twilio-FromNumber", "?")).</span>
   </p>
   <p v-if="@((currentElection.ElectionType == ElectionTypeEnum.Lsa && currentElection.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
     Remember! For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
@@ -74,7 +74,7 @@
     <div class="messageBtns email">
       <button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>
       <span class="comments" v-if="emailFromAddress">Email will be sent to: {{emailFromAddress}}</span>
-      <div class="comments" v-else>(Must enter a "From Email Address" on the "Configure this Election" page.)</div>
+      <span class="comments" v-else>(Must enter a "From Email Address" on the "Configure this Election" page.)</span>
 
       <div class="bottom">
         <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>

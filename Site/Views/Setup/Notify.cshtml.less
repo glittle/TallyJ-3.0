@@ -8,6 +8,22 @@
   margin: 5px 0 1em 0;
 }
 
+#notifyBody {
+  .forSmsInline, .forSmsBlock {
+    display: none;
+  }
+
+  &.Sms {
+    .forSmsInline {
+      display: inline;
+    }
+
+    .forSmsBlock {
+      display: block;
+    }
+  }
+}
+
 h2 {
   display: inline-block;
   margin: 0 20px 0 0;
@@ -44,6 +60,7 @@ h2 {
 .comments {
   font-size: 90%;
   color: #777;
+  display: inline-block;
 }
 
 
@@ -124,10 +141,31 @@ div.pending {
 button.pending {
 }
 
+#notifyBody {
+  .emailBySms {
+    grid-template-areas: 'e1' 'e2' 'listingSelection' 'e3';
+    grid-template-columns: 1fr;
+  }
+
+  .ehead, .shead, .smsHost, .smsListing, .messageBtns.sms {
+    display: none;
+  }
+
+
+  &.Sms {
+    .emailBySms {
+      grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 s3';
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .ehead, .shead, .smsHost, .smsListing, .messageBtns.sms {
+      display: block;
+    }
+  }
+}
+
 .emailBySms {
   display: grid;
-  grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 s3';
-  grid-template-columns: 1fr 1fr;
   grid-column-gap: 10px;
 
   .ehead {
@@ -180,6 +218,14 @@ button.pending {
   .messageBtns.sms {
     grid-area: s2;
   }
+
+  .emailListing {
+    grid-area: e3;
+  }
+
+  .smsListing {
+    grid-area: s3;
+  }
 }
 
 .el-table th > .el-table-column--selection .cell {
@@ -189,7 +235,7 @@ button.pending {
 
 @media only screen and (max-width: 600px) {
   .emailBySms {
-    grid-template-areas: 'eh' 'e1' 'e2' 'listingSelection' 'e3' 'sh' 's1' 's2' 's3';
+    grid-template-areas: 'e1' 'e2' 'listingSelection' 'e3';
     grid-template-columns: 1fr;
     grid-column-gap: 0;
 
@@ -197,4 +243,27 @@ button.pending {
       margin-top: 2em;
     }
   }
+
+
+  #notifyBody {
+    .emailBySms {
+      grid-template-areas: 'e1' 'e2' 'listingSelection' 'e3';
+    }
+
+    .ehead, .shead, .smsHost, .smsListing, .messageBtns.sms {
+      display: none;
+    }
+
+
+    &.Sms {
+      .emailBySms {
+        grid-template-areas: 'eh' 'e1' 'e2' 'listingSelection' 'e3' 'sh' 's1' 's2' 's3';
+      }
+
+      .ehead, .shead, .smsHost, .smsListing, .messageBtns.sms {
+        display: block;
+      }
+    }
+  }
+
 }
