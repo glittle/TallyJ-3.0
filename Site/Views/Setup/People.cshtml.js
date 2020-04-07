@@ -8,6 +8,7 @@
     totalOnFile: 0,
     //        actionTag: null,
     inputField: null,
+    specialSearch: null,
     nameList: null,
     rowSelected: 0,
     showPersonId: null,
@@ -39,7 +40,8 @@
     $(document).on('click', '#btnAddNew', addNewPerson);
     $('#btnShowAll').on('click', function() {
       local.inputField.val('');
-      local.peopleHelper.Search(local.peopleHelper.local.showAllCode, displaySearchResults);
+      local.specialSearch = local.peopleHelper.local.showAllCode;
+      local.peopleHelper.Search(local.specialSearch, displaySearchResults);
     });
     local.totalOnFile = publicInterface.namesOnFile;
 
@@ -175,21 +177,31 @@
     if (navigating(ev)) {
       return;
     }
-    if (local.lastSearch === text.trim()) return;
-    if (text == '') {
+
+    if (local.lastSearch === text.trim()) {
+      return;
+    }
+
+    if (text === '') {
+      if (local.specialSearch) {
+        local.peopleHelper.Search(local.specialSearch, displaySearchResults);
+        return;
+      }
       resetSearch();
       return;
     }
 
     local.lastSearch = text;
+    local.specialSearch = null;
 
     local.peopleHelper.Search(text, displaySearchResults);
   };
-  var resetSearch = function () {
+  function resetSearch() {
     $('#txtSearch').val('');
     //        local.actionTag.removeClass('delaying');
     local.inputField.removeClass('delaying');
     local.lastSearch = '';
+    local.specialSearch = null;
     displaySearchResults({
       People: [],
       MoreFound: moreFound(local.totalOnFile)
@@ -234,7 +246,7 @@
 
   var personSaved = function (ev, info) {
 
-    var searchText = $('#txtSearch').val();
+    var searchText = $('#txtSearch').val() || local.specialSearch;
     local.totalOnFile = info.OnFile;
     if (searchText) {
       local.maintainCurrentRow = true;
