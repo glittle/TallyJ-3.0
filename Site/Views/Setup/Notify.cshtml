@@ -73,6 +73,8 @@
     <div class="smsHost">
       <p>The content of the SMS message is automatically extracted from the Email content.</p>
       <div class="smsText" v-text="smsText"></div>
+      <div>{{smsText.length}} characters</div>
+      <div v-if="smsText.length > 1590" class="warning">The SMS message may be too long to send. (Max is 1600.)</div>
     </div>
 
     <div class="messageBtns email">
