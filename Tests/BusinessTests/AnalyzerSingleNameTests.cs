@@ -47,14 +47,14 @@ namespace Tests.BusinessTests
 
       _samplePeople = new List<Person>
       {// 0 - 7
-        new Person {CombinedInfo="person", VotingMethod=VotingMethodEnum.InPerson}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
-        new Person {CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x0",CombinedInfo="person", VotingMethod=VotingMethodEnum.InPerson}.ForTests(),
+        new Person {FirstName="x1",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x2",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x3",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x4",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x5",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x6",CombinedInfo="person"}.ForTests(),
+        new Person {FirstName="x7",CombinedInfo="person"}.ForTests(),
       };
     }
 
@@ -76,9 +76,9 @@ namespace Tests.BusinessTests
       };
 
       var votes = new[] {
-        new Vote {SingleNameElectionCount = 33 }.ForTests(SamplePeople[0], ballots[0]),
-        new Vote {SingleNameElectionCount = 5 }.ForTests(SamplePeople[0], ballots[1]),
-        new Vote {SingleNameElectionCount = 2 }.ForTests(SamplePeople[1], ballots[2]),
+        new Vote {SingleNameElectionCount = 33 }.ForTests(ballots[0], SamplePeople[0]),
+        new Vote {SingleNameElectionCount = 5 }.ForTests(ballots[1], SamplePeople[0]),
+        new Vote {SingleNameElectionCount = 2 }.ForTests(ballots[2], SamplePeople[1]),
       };
 
       var model = new ElectionAnalyzerSingleName(_fakes); //, election, votes, ballots, SamplePeople);
@@ -119,9 +119,9 @@ namespace Tests.BusinessTests
       };
 
       var votes = new[] {
-        new Vote {SingleNameElectionCount = 33 }.ForTests(SamplePeople[0], ballots[0]),
-        new Vote {SingleNameElectionCount = 5 }.ForTests(SamplePeople[0], ballots[1]),
-        new Vote {SingleNameElectionCount = 2 }.ForTests(SamplePeople[1], ballots[2]),
+        new Vote {SingleNameElectionCount = 33 }.ForTests(ballots[0], SamplePeople[0]),
+        new Vote {SingleNameElectionCount = 5 }.ForTests(ballots[1], SamplePeople[0]),
+        new Vote {SingleNameElectionCount = 2 }.ForTests(ballots[2], SamplePeople[1]),
       };
 
       new ResultSummary
@@ -182,9 +182,9 @@ namespace Tests.BusinessTests
       };
 
       var votes = new[] {
-        new Vote {SingleNameElectionCount = 10 }.ForTests(SamplePeople[0], ballots[0]),
-        new Vote {SingleNameElectionCount = 10 }.ForTests(SamplePeople[1], ballots[1]),
-        new Vote {SingleNameElectionCount = 2 }.ForTests(SamplePeople[2], ballots[2]),
+        new Vote {SingleNameElectionCount = 10 }.ForTests(ballots[0], SamplePeople[0]),
+        new Vote {SingleNameElectionCount = 10 }.ForTests(ballots[1], SamplePeople[1]),
+        new Vote {SingleNameElectionCount = 2 }.ForTests(ballots[2], SamplePeople[2]),
       };
 
       var model = new ElectionAnalyzerSingleName(_fakes); // election, votes, ballots, SamplePeople);
@@ -246,9 +246,9 @@ namespace Tests.BusinessTests
       var votes = new[]
           {
         // all for one person in this test
-            new Vote {SingleNameElectionCount = 33}.ForTests(SamplePeople[0], ballots[0]),
-            new Vote {SingleNameElectionCount = 5}.ForTests(SamplePeople[0],ballots[0]),
-            new Vote {SingleNameElectionCount = 2}.ForTests(SamplePeople[0],ballots[0]),
+            new Vote {SingleNameElectionCount = 33}.ForTests(ballots[0], SamplePeople[0]),
+            new Vote {SingleNameElectionCount = 5}.ForTests(ballots[0], SamplePeople[0]),
+            new Vote {SingleNameElectionCount = 2}.ForTests(ballots[0], SamplePeople[0]),
           };
 
       var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
@@ -294,13 +294,13 @@ namespace Tests.BusinessTests
       // TODO 2012-03-24 Glen Little: Needs attention... these test are for normal elections, not single name...
       var votes = new[]
                     {
-                      new Vote() {SingleNameElectionCount = 33}.ForTests(SamplePeople[0], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 5}.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 2}.ForTests(SamplePeople[2], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 4 }.ForTests(SamplePeople[3], ballots[1]),
-                      new Vote() {SingleNameElectionCount = 27}.ForTests(SamplePeople[4], ballots[0]),
-                      new Vote() {SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[0]),// 5 - will require review
-                      new Vote() {SingleNameElectionCount = 27}.ForTests(new Person { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests(), ballots[0]),
+                      new Vote() {SingleNameElectionCount = 33}.ForTests(ballots[0], SamplePeople[0]),
+                      new Vote() {SingleNameElectionCount = 5}.ForTests(ballots[0], SamplePeople[1]),
+                      new Vote() {SingleNameElectionCount = 2}.ForTests(ballots[0], SamplePeople[2]),
+                      new Vote() {SingleNameElectionCount = 4 }.ForTests(ballots[1], SamplePeople[3]),
+                      new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], SamplePeople[4]),
+                      new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], SamplePeople[5]),// 5 - will require review
+                      new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], new Person {FirstName="z1", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests()),
                     };
       votes[5].PersonCombinedInfo = "different"; // these will be invalid
 
@@ -340,19 +340,19 @@ namespace Tests.BusinessTests
                         new Ballot().ForTests(),
                       };
 
-      SamplePeople[5].IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased;
+      new PeopleModel().ApplyVoteReasonFlags(SamplePeople[5], IneligibleReasonEnum.Ineligible_Deceased, true);
 
       var votes = new[]
                     {
-                      new Vote{SingleNameElectionCount = 33}.ForTests(SamplePeople[0], ballots[0]),
-                      new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[2], ballots[0]),
-                      new Vote{SingleNameElectionCount = 5 }.ForTests(SamplePeople[3], ballots[0]),
+                      new Vote{SingleNameElectionCount = 33}.ForTests(ballots[0], SamplePeople[0]),
+                      new Vote{SingleNameElectionCount = 5 }.ForTests(ballots[0], SamplePeople[1]),
+                      new Vote{SingleNameElectionCount = 5 }.ForTests(ballots[0], SamplePeople[2]),
+                      new Vote{SingleNameElectionCount = 5 }.ForTests(ballots[0], SamplePeople[3]),
 
-                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[5], ballots[1]), // spoiled person
-                      new Vote{SingleNameElectionCount = 27}.ForTests(new Person { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests(), ballots[1]),// spoiled
+                      new Vote{SingleNameElectionCount = 27}.ForTests(ballots[1], SamplePeople[5]), // spoiled person
+                      new Vote{SingleNameElectionCount = 27}.ForTests(ballots[1], new Person { FirstName = "z2", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests()),// spoiled
 
-                      new Vote{SingleNameElectionCount = 27}.ForTests(SamplePeople[4], ballots[2]),// #6 - will be Needs Review
+                      new Vote{SingleNameElectionCount = 27}.ForTests(ballots[2], SamplePeople[4]),// #6 - will be Needs Review
                     };
 
       votes[6].PersonCombinedInfo = "different"; // force a Review
@@ -417,9 +417,9 @@ namespace Tests.BusinessTests
                       };
       var votes = new[]
                     {
-                      new Vote{SingleNameElectionCount = 33 }.ForTests(SamplePeople[0], ballots[0]),
-                      new Vote { SingleNameElectionCount = 5}.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote{SingleNameElectionCount = 2  }.ForTests(SamplePeople[2], ballots[0]),
+                      new Vote{SingleNameElectionCount = 33 }.ForTests(ballots[0], SamplePeople[0]),
+                      new Vote { SingleNameElectionCount = 5}.ForTests(ballots[0], SamplePeople[1]),
+                      new Vote{SingleNameElectionCount = 2  }.ForTests(ballots[0], SamplePeople[2]),
                     };
 
       var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
@@ -457,9 +457,9 @@ namespace Tests.BusinessTests
                       };
       var votes = new[]
                     {
-                      new Vote {SingleNameElectionCount = 10}.ForTests(SamplePeople[0], ballots[0]),
-                      new Vote {SingleNameElectionCount = 10}.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote {SingleNameElectionCount = 2}.ForTests(SamplePeople[2], ballots[0]),
+                      new Vote {SingleNameElectionCount = 10}.ForTests(ballots[0], SamplePeople[0]),
+                      new Vote {SingleNameElectionCount = 10}.ForTests(ballots[0], SamplePeople[1]),
+                      new Vote {SingleNameElectionCount = 2}.ForTests(ballots[0], SamplePeople[2]),
                     };
 
       var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);
@@ -500,9 +500,9 @@ namespace Tests.BusinessTests
                       };
       var votes = new[]
                     {
-                      new Vote {SingleNameElectionCount = 10}.ForTests(SamplePeople[0], ballots[0]),
-                      new Vote {SingleNameElectionCount = 10}.ForTests(SamplePeople[1], ballots[0]),
-                      new Vote {SingleNameElectionCount = 10}.ForTests(SamplePeople[2], ballots[0]),
+                      new Vote {SingleNameElectionCount = 10}.ForTests(ballots[0], SamplePeople[0]),
+                      new Vote {SingleNameElectionCount = 10}.ForTests(ballots[0], SamplePeople[1]),
+                      new Vote {SingleNameElectionCount = 10}.ForTests(ballots[0], SamplePeople[2]),
                     };
 
       var model = new ElectionAnalyzerSingleName(_fakes); //election, votes, ballots, SamplePeople);

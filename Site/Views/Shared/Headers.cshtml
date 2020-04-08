@@ -1,14 +1,14 @@
 ﻿@using TallyJ.Code.Session
-<link href="@ClientFile("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" type="text/css" />
-<link href="@ClientFile("~/Scripts/jquery.qtip.min.css")" rel="stylesheet" type="text/css" />
+<link href="@ClientFile("~/Content/themes/base/jquery.ui.theme.css")" rel="stylesheet" />
+<link href="@ClientFile("~/Scripts/jquery.qtip.min.css")" rel="stylesheet"  />
 @if (ViewData["ExtraCss"] != null)
 {
   foreach (var s in (string[])ViewData["ExtraCss"])
   {
-    <link href="@s" type="text/css" rel="stylesheet" />
+    <link href="@s" rel="stylesheet" />
   }
 }
-<link href="@ClientFile("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<link href="@ClientFile("~/Content/Site.css")" rel="stylesheet" />
 @AddResourceFilesForViews("css")
 
 <script src="@ClientFile("~/Scripts/jquery-3.4.1{0}.js", ".min")" type="text/javascript"></script>
@@ -31,10 +31,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="@ClientFile("~/images/icons/favicon-32x32.png")">
 <link rel="icon" type="image/png" sizes="16x16" href="@ClientFile("~/images/icons/favicon-16x16.png")">
 
-<link rel=icon type=image/png sizes=32x32 href="@ClientFile("~/images/icons/favicon-32x32.png")">
-<link rel=icon type=image/png sizes=16x16 href="@ClientFile("~/images/icons/favicon-16x16.png")">
-<link rel=apple-touch-icon href="@ClientFile("~/images/icons/apple-touch-icon.png")">
-<link rel=mask-icon href="@ClientFile("~/images/icons/safari-pinned-tab.svg")" color=#ffffff>
+<link rel="icon" type="image/png" sizes="32x32" href="@ClientFile("~/images/icons/favicon-32x32.png")">
+<link rel="icon" type="image/png" sizes="16x16" href="@ClientFile("~/images/icons/favicon-16x16.png")">
+<link rel="apple-touch-icon" href="@ClientFile("~/images/icons/apple-touch-icon.png")">
+<link rel="mask-icon" href="@ClientFile("~/images/icons/safari-pinned-tab.svg")" color="#ffffff">
 
 @*<link rel="manifest" href="@ClientFile("~/Content/manifest.json")">*@
 

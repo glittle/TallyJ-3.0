@@ -179,7 +179,7 @@
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
-    $('#btnResetList').click(resetAllCanVote);
+//    $('#btnResetList').click(resetAllCanVote);
 
     $('#txtDate').on('change', getBadiDate);
 
@@ -320,14 +320,14 @@
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
   };
 
-  function resetAllCanVote() {
-
-    ShowStatusDisplay("Updating...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
-      ResetStatusDisplay();
-    });
-
-  };
+//  function resetAllCanVote() {
+//
+//    ShowStatusDisplay("Updating...");
+//    CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
+//      ResetStatusDisplay();
+//    });
+//
+//  };
 
   function deleteTeller(ev) {
     ShowStatusDisplay('Deleting...');

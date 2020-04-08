@@ -408,8 +408,7 @@ namespace TallyJ.CoreModels.ExportImport
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
 
-      var reason = Code.Enumerations.IneligibleReasonEnum.Get(person.IneligibleReasonGuid) ?? defaultReason;
-      _peopleModel.SetInvolvementFlagsToDefault(person, reason);
+      _peopleModel.ApplyVoteReasonFlags(person, defaultReason);
     }
 
     private void LoadBallots()

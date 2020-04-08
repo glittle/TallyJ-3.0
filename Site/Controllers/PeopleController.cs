@@ -44,7 +44,7 @@ namespace TallyJ.Controllers
         {
           Id = p.C_RowId,
           //p.PersonGuid,
-          Name = p.FullNameFL,
+          Name = p.C_FullName,
           p.Area,
           p.Email,
           p.Phone,
@@ -92,7 +92,7 @@ namespace TallyJ.Controllers
           .Select(p => new
           {
             Id = p.C_RowId,
-            Name = p.FullNameFL,
+            Name = p.FullName,
             IRG = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.GetValueOrDefault()),
             p.OtherInfo,
             p.Area

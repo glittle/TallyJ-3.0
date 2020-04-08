@@ -385,7 +385,7 @@ namespace TallyJ.CoreModels
       if (coreSettingsChanged)
       {
         // reset flags
-        new PeopleModel().SetInvolvementFlagsToDefault();
+        // new PeopleModel().SetInvolvementFlagsToDefault(); --> must re-import list to apply settings to everyone
 
         // update analysis
         new ResultsModel().GenerateResults();
@@ -681,19 +681,19 @@ namespace TallyJ.CoreModels
 
       UserSession.ResetWhenSwitchingElections();
 
-      var election = new Election
-      {
-        Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
-        ElectionGuid = Guid.NewGuid(),
-        Name = "[New Election]",
-        ElectionType = "LSA",
-        ElectionMode = ElectionMode.Normal,
-        TallyStatus = ElectionTallyStatusEnum.NotStarted,
-        NumberToElect = 9,
-        NumberExtra = 0,
-        CanVote = CanVoteOrReceive.All,
-        CanReceive = CanVoteOrReceive.All
-      };
+      var election = new Election();
+      // {
+      // Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
+      // ElectionGuid = Guid.NewGuid(),
+      // Name = "[New Election]",
+      // ElectionType = "LSA",
+      // ElectionMode = ElectionMode.Normal,
+      // TallyStatus = ElectionTallyStatusEnum.NotStarted,
+      // NumberToElect = 9,
+      // NumberExtra = 0,
+      // CanVote = CanVoteOrReceive.All,
+      // CanReceive = CanVoteOrReceive.All
+      // };
 
       Db.Election.Add(election);
       Db.SaveChanges();

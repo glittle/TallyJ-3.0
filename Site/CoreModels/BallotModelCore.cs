@@ -334,7 +334,7 @@ namespace TallyJ.CoreModels
           VoteUpdates = GetVoteUpdates(lastVid, voteCacher, isSingleName, personCacher),
           LastVid = vote.C_RowId,
           vote.InvalidReasonGuid,
-          Name = person1?.C_FullNameFL,
+          Name = person1?.C_FullName,
           person1?.Area,
           vote = CurrentVotesForJs(GetCurrentBallot(), new List<Vote> { vote }).First()
         }.AsJsonResult();

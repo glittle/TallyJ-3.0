@@ -13,8 +13,6 @@ using TallyJ.Code;
 
 namespace Tests.BusinessTests
 {
-
-
   [TestClass]
   public class VoteHelperTests
   {

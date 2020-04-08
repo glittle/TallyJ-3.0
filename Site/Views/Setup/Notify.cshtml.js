@@ -19,10 +19,9 @@
         emailFromAddress: publicInterface.Election.EmailFromAddress,
         emailFromName: publicInterface.Election.EmailFromName,
         smsText: '',
-        peopleWithEmail: [],
-        peopleWithPhone: [],
         emailsToSend: [],
         phonesToSend: [],
+        allPeople: [],
         emailSubject: GetFromStorage('htEmailSubject', ''), // not in db
         testSmsNumber: GetFromStorage('htSms', ''), // not in db
         contactLog: [],
@@ -59,6 +58,12 @@
         },
         numWithPhones: function () {
           return this.phonesToSend.length;
+        },
+        peopleWithEmail: function() {
+          return this.allPeople.filter(function (p) { return p.Email; });
+        },
+        peopleWithPhone: function() {
+          return this.allPeople.filter(function (p) { return p.Phone; });
         },
 
       },
@@ -227,6 +232,14 @@ contact the Assembly as soon as possible!</p>
               vue.peopleWithPhone.forEach(function (p) { vue.$refs.smsList.toggleRowSelection(p, p.VotingMethod === 'O') });
               break;
 
+            case 'emailOnly':
+              vue.peopleWithEmail.forEach(function (p) { vue.$refs.emailList.toggleRowSelection(p, !p.Phone) });
+              break;
+
+            case 'smsOnly':
+              vue.peopleWithPhone.forEach(function (p) { vue.$refs.smsList.toggleRowSelection(p, !p.Email) });
+              break;
+
             case 'none':
               break;
           }
@@ -248,8 +261,7 @@ contact the Assembly as soon as possible!</p>
             if (info.Success) {
               vue.extendPeople(info.people);
 
-              vue.peopleWithEmail = info.people.filter(function (p) { return p.Email });
-              vue.peopleWithPhone = info.people.filter(function (p) { return p.Phone });
+              vue.allPeople = info.people;
 
               vue.selectAll();
             }

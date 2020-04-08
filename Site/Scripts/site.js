@@ -60,6 +60,10 @@ function Onload() {
   }
   PrepareStatusDisplay();
 
+  if (typeof(ELEMENT) !== 'undefined') {
+    ELEMENT.locale(ELEMENT.lang.en);
+  }
+
   // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
 
   if (site.electionGuid) {

@@ -28,7 +28,7 @@ namespace TallyJ.Code.Resources
 
 			var mediaAttribute = media.HasContent() ? $" media=\"{media}\"" : string.Empty;
 
-			return $"<link href=\"{url}\"{mediaAttribute} rel=stylesheet type=\"text/css\">";
+			return $"<link href=\"{url}\"{mediaAttribute} rel=stylesheet>";
 		}
 
 		/// <summary>Create a link tag for this css file</summary>

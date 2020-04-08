@@ -180,6 +180,7 @@
     <Compile Include="BusinessTests\FakeDbContextFactory.cs" />
     <Compile Include="BusinessTests\ImportFakes.cs" />
     <Compile Include="BusinessTests\AnalyzerSingleNameTests.cs" />
+    <Compile Include="BusinessTests\PeopleModelTests.cs" />
     <Compile Include="BusinessTests\TestDbContext.cs" />
     <Compile Include="BusinessTests\TestDbSet.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />

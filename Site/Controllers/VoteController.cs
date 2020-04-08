@@ -135,7 +135,7 @@ namespace TallyJ.Controllers
         return new
         {
           open = true,
-          voterName = electionInfo.p.C_FullNameFL,
+          voterName = electionInfo.p.C_FullName,
           electionInfo.e.NumberToElect,
           OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
           registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
@@ -395,7 +395,7 @@ namespace TallyJ.Controllers
           //          j.e.TallyStatus,
           person = new
           {
-            name = j.p.C_FullNameFL,
+            name = j.p.C_FullName,
             j.p.VotingMethod,
             j.p.RegistrationTime,
             j.ovi.PoolLocked,

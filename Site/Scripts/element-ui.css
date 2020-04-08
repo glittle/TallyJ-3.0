@@ -15,10 +15,7 @@
 
 @font-face {
   font-family: element-icons;
-  src: url(fonts/element-icons.woff) format("woff"),url(fonts/element-icons.ttf) format("truetype");
-  font-weight: 400;
-  font-display: "auto";
-  font-style: normal
+  src: url(fonts/element-icons.woff?1) format("woff"),url(fonts/element-icons.ttf?1) format("truetype");
 }
 
 [class*=" el-icon-"], [class^=el-icon-] {

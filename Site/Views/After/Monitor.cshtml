@@ -11,12 +11,14 @@
     {
       ClientFile("~/Scripts/vue{0}.js", ".min"),
       ClientFile("~/Scripts/luxon.min.js"),
-      ClientFile("~/Scripts/vue-datetime.js"),
+      ClientFile("~/Scripts/element-ui.js"),
+      ClientFile("~/Scripts/element-ui-en.js"),
     };
     ViewData["ExtraCss"] = new[]
     {
-      ClientFile("~/Scripts/vue-datetime.css"),
+      ClientFile("~/Scripts/element-ui.css"),
     };
+
   }
 
   ContextItems.AddJavascriptForPage("url", "monitorPage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
@@ -181,7 +183,15 @@
         <div class="closeStatus" v-bind:class="closeStatusClass">
           <strong v-text="CloseTime_Display"></strong>
           <div>
-            <datetime v-model="CloseTime" :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())" v-on:change="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></datetime>
+            @*<el-datetime v-model="CloseTime" :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
+    v-on:confirm="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></el-datetime>*@
+            <el-date-picker v-model="CloseTime"
+                            type="datetime"
+                            :clearable="false"
+                            :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
+                            placeholder="Select date and time"
+                            v-on:change="saveClose">
+            </el-date-picker>
           </div>
           <div>
             (click to choose any day and time)

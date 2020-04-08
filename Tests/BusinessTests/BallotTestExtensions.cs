@@ -35,16 +35,6 @@ namespace Tests.BusinessTests
     {
       election.ElectionGuid = _electionGuid;
 
-      if (election.CanVote.HasNoContent())
-      {
-        election.CanVote = "A";
-      }
-      if (election.CanReceive.HasNoContent())
-      {
-        election.CanReceive = "A";
-      }
-
-
       Db.Election.Add(election);
       ItemKey.CurrentElection.SetInPageItems(election);
 
@@ -71,16 +61,12 @@ namespace Tests.BusinessTests
       person.C_RowId = _rowId++;
       person.ElectionGuid = _electionGuid;
 
-      if (person.IneligibleReasonGuid.HasValue)
-      {
-        var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
-        new PeopleModel().SetInvolvementFlagsToDefault(person, reason);
-      }
+      new PeopleModel().ApplyVoteReasonFlags(person);
 
       Db.Person.Add(person);
       return person;
     }
-    public static Vote ForTests(this Vote vote, Person person, Ballot ballot, string status = VoteHelper.VoteStatusCode.Ok)
+    public static Vote ForTests(this Vote vote, Ballot ballot, Person person, string status = VoteHelper.VoteStatusCode.Ok)
     {
       vote.PersonGuid = person.PersonGuid;
       vote.PersonCombinedInfo = person.CombinedInfo;

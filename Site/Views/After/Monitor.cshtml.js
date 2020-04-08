@@ -482,12 +482,17 @@
         },
         saveClose: function () {
           var vue = this;
+          if (vue.CloseTime.toISOString) {
+            vue.CloseTime = vue.CloseTime.toISOString();
+          }
+          var form = {
+            when: vue.CloseTime,
+            est: vue.election.OnlineCloseIsEstimate
+          };
+
           ShowStatusDisplay('Adjusting close time...');
           CallAjaxHandler(publicInterface.controllerUrl + '/SaveOnlineClose',
-            {
-              when: vue.CloseTime,
-              est: vue.election.OnlineCloseIsEstimate
-            },
+            form,
             function (info) {
               if (info.success) {
                 ShowStatusSuccess('Saved');

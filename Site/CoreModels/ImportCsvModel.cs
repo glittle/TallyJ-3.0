@@ -544,7 +544,7 @@ namespace TallyJ.CoreModels
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
-          personModel.SetInvolvementFlagsToDefault(person, reason);
+          personModel.ApplyVoteReasonFlags(person, reason);
 
           //Db.Person.Add(person);
           peopleToLoad.Add(person);

@@ -179,7 +179,7 @@
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
           <span v-if="searchText">No matches found.</span>
-          <span v-else>Names will appear here in <strong>random order</strong> when you search or click "Show All".</span>
+          <span v-else>Names will appear here when you search.<br/>Click "Show All" to view all in random order.</span>
         </div>
         <ul id="nameList" v-show="nameList.length">
           <li v-for="(p,i) in nameList"

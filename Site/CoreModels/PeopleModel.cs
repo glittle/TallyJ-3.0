@@ -71,30 +71,30 @@ namespace TallyJ.CoreModels
     }
 
 
-    /// <summary>
-    ///   Process each person record, preparing it BEFORE the election starts. Altered... too dangerous to wipe information!
-    /// </summary>
-    public void SetInvolvementFlagsToDefault()
-    {
-      var personCacher = new PersonCacher();
-      personCacher.DropThisCache();
-
-      var peopleInElection = personCacher.AllForThisElection;
-      var reason = new ElectionModel().GetDefaultIneligibleReason();
-      var counter = 0;
-      foreach (var person in peopleInElection)
-      {
-        SetInvolvementFlagsToDefault(person, reason);
-
-        if (counter++ > 500)
-        {
-          Db.SaveChanges();
-          counter = 0;
-        }
-      }
-
-      Db.SaveChanges();
-    }
+    // /// <summary>
+    // ///   Process each person record, preparing it BEFORE the election starts. Altered... too dangerous to wipe information!
+    // /// </summary>
+    // public void SetInvolvementFlagsToDefault()
+    // {
+    //   var personCacher = new PersonCacher();
+    //   personCacher.DropThisCache();
+    //
+    //   var peopleInElection = personCacher.AllForThisElection;
+    //   var reason = new ElectionModel().GetDefaultIneligibleReason();
+    //   var counter = 0;
+    //   foreach (var person in peopleInElection)
+    //   {
+    //     SetInvolvementFlagsToDefault(person, reason);
+    //
+    //     if (counter++ > 500)
+    //     {
+    //       Db.SaveChanges();
+    //       counter = 0;
+    //     }
+    //   }
+    //
+    //   Db.SaveChanges();
+    // }
 
     /// <Summary>Only to be done before an election</Summary>
     public void SetCombinedInfoAtStart(Person person)
@@ -113,20 +113,50 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///   Set person's flag based on what is default for this election
     /// </summary>
-    public void SetInvolvementFlagsToDefault(Person person, IneligibleReasonEnum reason)
+    public bool ApplyVoteReasonFlags(Person person, IneligibleReasonEnum defaultReason = null, bool forceToDefault = false)
     {
-      if (reason != null)
+      // use what they have.  If they have nothing, apply the default reason
+
+      var changed = false;
+
+      var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+
+      if (reason == null || forceToDefault)
       {
-        person.IneligibleReasonGuid = reason;
-        person.CanVote = reason.CanVote;
-        person.CanReceiveVotes = reason.CanReceiveVotes;
+        reason = defaultReason; // may be null
+
+        var reasonGuid = reason?.Value;
+        if (person.IneligibleReasonGuid != reasonGuid)
+        {
+          person.IneligibleReasonGuid = reasonGuid;
+          changed = true;
+        }
+      }
+
+      if (reason == null)
+      {
+        if (!person.CanVote.GetValueOrDefault() || !person.CanReceiveVotes.GetValueOrDefault())
+        {
+          person.CanVote = true;
+          person.CanReceiveVotes = true;
+          changed = true;
+        }
       }
       else
       {
-        person.IneligibleReasonGuid = null;
-        person.CanVote = true;
-        person.CanReceiveVotes = true;
+        if (person.CanVote != reason.CanVote)
+        {
+          person.CanVote = reason.CanVote;
+          changed = true;
+        }
+        if(person.CanReceiveVotes!= reason.CanReceiveVotes)
+        {
+          person.CanReceiveVotes= reason.CanReceiveVotes;
+          changed = true;
+        }
       }
+
+      return changed;
     }
 
     /// <summary>
@@ -158,7 +188,7 @@ namespace TallyJ.CoreModels
         if (currentElectionGuid != person.ElectionGuid)
         {
           hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
-          hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullNameFL);
+          hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullName);
         }
 
         if (person.IneligibleReasonGuid.HasValue)
@@ -199,7 +229,7 @@ namespace TallyJ.CoreModels
           person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
 
           hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
-          hub.StatusUpdate("Found unknown ineligible reason. Set to Unknown. Name: " + person.C_FullNameFL);
+          hub.StatusUpdate("Found unknown ineligible reason. Set to Unknown. Name: " + person.C_FullName);
 
           changesMade = true;
         }
@@ -256,7 +286,7 @@ namespace TallyJ.CoreModels
         person.Area,
         person.Email,
         person.Phone,
-        C_FullName = person.C_FullNameFL
+        person.C_FullName
       };
     }
 
@@ -287,8 +317,6 @@ namespace TallyJ.CoreModels
           ElectionGuid = CurrentElectionGuid
         };
 
-        var reason = new ElectionModel().GetDefaultIneligibleReason();
-        SetInvolvementFlagsToDefault(personInDatastore, reason);
         Db.Person.Add(personInDatastore);
 
         PeopleInElection.Add(personInDatastore);
@@ -337,21 +365,26 @@ namespace TallyJ.CoreModels
 
       changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
 
-      // these two may not be present, depending on the election type
-      const string all = ElectionModel.CanVoteOrReceive.All;
-      var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(CurrentElection.CanReceive == all);
-      if (personInDatastore.CanReceiveVotes != canReceiveVotes)
+      var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
+      if (ApplyVoteReasonFlags(personInDatastore, defaultReason))
       {
-        personInDatastore.CanReceiveVotes = canReceiveVotes;
         changed = true;
       }
 
-      var canVote = personFromInput.CanVote.AsBoolean(CurrentElection.CanVote == all);
-      if (personInDatastore.CanVote != canVote)
-      {
-        personInDatastore.CanVote = canVote;
-        changed = true;
-      }
+      // const string all = ElectionModel.CanVoteOrReceive.All;
+      // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(CurrentElection.CanReceive == all);
+      // if (personInDatastore.CanReceiveVotes != canReceiveVotes)
+      // {
+      //   personInDatastore.CanReceiveVotes = canReceiveVotes;
+      //   changed = true;
+      // }
+      //
+      // var canVote = personFromInput.CanVote.AsBoolean(CurrentElection.CanVote == all);
+      // if (personInDatastore.CanVote != canVote)
+      // {
+      //   personInDatastore.CanVote = canVote;
+      //   changed = true;
+      // }
 
       if (changed)
       {

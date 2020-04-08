@@ -99,6 +99,8 @@
     <div class="listingSelection">
       <button class="btn btn-mini" v-on:click="select('notVoted')">Select If Not Voted</button>
       <button class="btn btn-mini" v-on:click="select('votedOnline')">Select If Voted Online</button>
+      <button class="btn btn-mini" v-on:click="select('smsOnly')">Select If SMS Only</button>
+      <button class="btn btn-mini" v-on:click="select('emailOnly')">Select If Email Only</button>
       <button class="btn btn-mini" v-on:click="selectAll">Select All</button>
       <button class="btn btn-mini" v-on:click="select('none')">Select None</button>
       <button class="btn btn-mini" v-on:click="refresh">Refresh</button>
@@ -113,7 +115,7 @@
                 v-on:selection-change="selectionChanged('email', $event)"
                 :data="peopleWithEmail">
         <el-table-column type="selection" reserve-selection></el-table-column>
-        <el-table-column label="When" prop="C_FullName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Voter" prop="C_FullName" show-overflow-tooltip></el-table-column>
         <el-table-column label="Email" prop="Email" show-overflow-tooltip></el-table-column>
         <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
       </el-table>
@@ -127,7 +129,7 @@
                 v-on:selection-change="selectionChanged('phone', $event)"
                 :data="peopleWithPhone">
         <el-table-column type="selection" reserve-selection></el-table-column>
-        <el-table-column label="When" prop="C_FullName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="Voter" prop="C_FullName" show-overflow-tooltip></el-table-column>
         <el-table-column label="Phone" prop="Phone" show-overflow-tooltip></el-table-column>
         <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
       </el-table>

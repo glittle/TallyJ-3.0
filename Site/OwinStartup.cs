@@ -65,7 +65,7 @@ namespace TallyJ
       {
         // AuthenticationType = DefaultAuthenticationTypes.ExternalCookie,
         AuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
-        LoginPath = new PathString("/Login"),
+        LoginPath = new PathString("/"),
         CookieSecure = useSecure ? CookieSecureOption.Always : CookieSecureOption.Never,
         CookieSameSite = useSecure ? SameSiteMode.Strict : SameSiteMode.Lax,
         CookieHttpOnly = true,

@@ -5,6 +5,7 @@
     nameSplitter: /[\s\-']/,
     localNames: [],
     maxVotes: 0,
+    voterSortDone: false,
     showAllCode: String.fromCharCode(9990), // random unicode letter
     bStart: String.fromCharCode(9991),
     bEnd: String.fromCharCode(9992),
@@ -145,9 +146,9 @@
     if (customExtendPerson) {
       customExtendPerson(p);
     }
-//    if (forVoter) {
-//      p.sort = Math.random();
-//    }
+    //    if (forVoter) {
+    //      p.sort = Math.random();
+    //    }
   }
 
   function special(code, cbAfter) {
@@ -271,10 +272,21 @@
   function sortResults(result, byNameOnly) {
     if (forVoter) {
       // a new random order every time
-      result.People.forEach(p => p.sort = Math.random());
+      if (!local.voterSortDone) {
+        result.People.forEach(p => p.sort = Math.random());
+        local.voterSortDone = true;
+      }
+      console.log(byNameOnly);
 
-      result.People.sort(function(a, b) {
-         return a.sort < b.sort ? -1 : 1;
+      if (byNameOnly) {
+        result.People.sort(function (a, b) {
+          return a.sort < b.sort ? -1 : 1;
+        });
+        return;
+      }
+
+      result.People.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
       });
       return;
     }
@@ -473,7 +485,7 @@
           });
       } catch (e) {
         // an invalid regex...
-      } 
+      }
     });
 
     if (personInfo.Parts4) {

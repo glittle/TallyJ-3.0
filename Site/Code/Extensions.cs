@@ -22,12 +22,14 @@ namespace TallyJ.Code
     /// <summary>
     ///   Not IsNullOrEmpty
     /// </summary>
+    [DebuggerStepThrough]
     public static bool HasContent(this string input)
     {
       return !string.IsNullOrEmpty(input);
     }
 
     /// <Summary>Whether this guid is the Empty guid or not</Summary>
+    [DebuggerStepThrough]
     public static bool HasContent(this Guid input)
     {
       return input != Guid.Empty;
@@ -38,11 +40,13 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
+    [DebuggerStepThrough]
     public static bool HasNoContent(this string input)
     {
       return string.IsNullOrEmpty(input);
     }
 
+    [DebuggerStepThrough]
     public static bool HasNoContent(this int? input)
     {
       return !input.HasValue || input.Value == 0;
@@ -53,6 +57,7 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
+    [DebuggerStepThrough]
     public static HtmlString AsRawHtml(this string input)
     {
       return new HtmlString(input);
@@ -784,38 +789,38 @@ namespace TallyJ.Code
 
       return toLower ? withoutDiacritics.ToLowerInvariant() : withoutDiacritics;
     }
-
-    /// <summary>
-    ///   Simple convert of <see cref="Person" /> to <see cref="SearchResult" />
-    /// </summary>
-    /// <param name="input"></param>
-    /// <param name="matchType"></param>
-    /// <param name="voteHelper"></param>
-    /// <param name="forBallot"></param>
-    /// <returns></returns>
-    public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType,
-      VoteHelper voteHelper, bool forBallot)
-    {
-      return input.Select(p => p.AsSearchResult(matchType, voteHelper, forBallot));
-    }
-
-    public static SearchResult AsSearchResult(this Person p, int matchType, VoteHelper voteHelper, bool forBallot)
-    {
-      var canReceiveVotes = p.CanReceiveVotes.AsBoolean(true);
-      return new SearchResult
-      {
-        Id = p.C_RowId,
-        PersonGuid = p.PersonGuid,
-        Name = p.FullNameAndArea,
-        CanReceiveVotes = canReceiveVotes,
-        CanVote = p.CanVote.AsBoolean(true),
-        Ineligible = forBallot && canReceiveVotes ? null : p.IneligibleReasonGuid,
-        //   voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes, forBallot),
-        RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
-        BestMatch = 0, // count of votes
-        MatchType = matchType
-      };
-    }
+    //
+    // /// <summary>
+    // ///   Simple convert of <see cref="Person" /> to <see cref="SearchResult" />
+    // /// </summary>
+    // /// <param name="input"></param>
+    // /// <param name="matchType"></param>
+    // /// <param name="voteHelper"></param>
+    // /// <param name="forBallot"></param>
+    // /// <returns></returns>
+    // public static IEnumerable<SearchResult> AsSearchResults(this IEnumerable<Person> input, int matchType,
+    //   VoteHelper voteHelper, bool forBallot)
+    // {
+    //   return input.Select(p => p.AsSearchResult(matchType, voteHelper, forBallot));
+    // }
+    //
+    // public static SearchResult AsSearchResult(this Person p, int matchType, VoteHelper voteHelper, bool forBallot)
+    // {
+    //   var canReceiveVotes = p.CanReceiveVotes.AsBoolean(true);
+    //   return new SearchResult
+    //   {
+    //     Id = p.C_RowId,
+    //     PersonGuid = p.PersonGuid,
+    //     Name = p.FullNameAndArea,
+    //     CanReceiveVotes = canReceiveVotes,
+    //     CanVote = p.CanVote.AsBoolean(true),
+    //     Ineligible = forBallot && canReceiveVotes ? null : p.IneligibleReasonGuid,
+    //     //   voteHelper.IneligibleToReceiveVotes(p.IneligibleReasonGuid, p.CanReceiveVotes, forBallot),
+    //     RowVersion = p.C_RowVersionInt.HasValue ? p.C_RowVersionInt.Value : 0,
+    //     BestMatch = 0, // count of votes
+    //     MatchType = matchType
+    //   };
+    // }
 
     /// <summary>
     ///   Replace non-characters with

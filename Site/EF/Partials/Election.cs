@@ -4,7 +4,9 @@ using System.Linq;
 using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Data;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
+using TallyJ.CoreModels;
 using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.EF
@@ -39,7 +41,27 @@ namespace TallyJ.EF
     [Serializable]
     public partial class Election : IIndexedForCaching
     {
-        enum ExtraSettingKey
+      public Election()
+      {
+        Convenor = "[Convener]"; // correct spelling is Convener. DB field name is wrong.
+        ElectionGuid = Guid.NewGuid();
+        Name = "[New Election]";
+        ElectionType = "LSA";
+        ElectionMode = ElectionModeEnum.Normal;
+        TallyStatus = ElectionTallyStatusEnum.NotStarted;
+        NumberToElect = 9;
+        NumberExtra = 0;
+        
+        var rules = new ElectionModel().GetRules(ElectionType, ElectionMode);
+
+        CanVote = rules.CanVote;
+        CanReceive = rules.CanReceive;
+      
+        NumberToElect = rules.Num;
+        NumberExtra = rules.Extra;
+      }
+
+      enum ExtraSettingKey
         {
             // keep names as short as possible
             BP, // Ballot Process?
