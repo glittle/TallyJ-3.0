@@ -136,10 +136,10 @@
 
         },
         loadSampleEmail: function () {
-          this.emailText = `<p>Hello {PersonName},</p>
+          this.emailText = `<p>Hello {FirstName},</p>
 <p>Online voting for the Riḍván election will be opening tomorrow and will remain open until 14:00 on 2020 April 20.</p>
 <p>You can log in and cast your ballot at <a href="{hostSite}">TallyJ</a>.</p>
-<p>The email address or mobile phone number where you got this message is registered for you to log in with. If you wish to vote using a different address or number, please 
+<p>The email address or mobile phone number ({VoterContact}) where you received this message is registered for you to log in with. If you wish to vote using a different address or number, please 
 contact the Assembly as soon as possible!</p>
 <p>If you have any question about this process, please contact the head teller, John Smith by email at jsmith@example.com or phone at 123-456-7890.</p>
 <p>With greeting from the Elections Committee</p>

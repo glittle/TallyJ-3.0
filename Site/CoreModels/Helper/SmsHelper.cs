@@ -122,7 +122,13 @@ namespace TallyJ.CoreModels.Helper
       switch (htMessageCode)
       {
         case HtEmailCodes.Test:
-          phoneNumbersToSendTo.Add(new NamePhone { Phone = testPhoneNumber, PersonName = election.EmailFromNameWithDefault });
+          phoneNumbersToSendTo.Add(new NamePhone
+          {
+            Phone = testPhoneNumber, 
+            PersonName = election.EmailFromNameWithDefault,
+            FirstName = "(voter's first name)",
+            VoterContact = testPhoneNumber
+          });
           break;
 
         case HtEmailCodes.Intro:
@@ -136,7 +142,9 @@ namespace TallyJ.CoreModels.Helper
             .Select(p => new NamePhone
             {
               Phone = p.Phone,
-              PersonName = p.C_FullNameFL
+              PersonName = p.C_FullNameFL,
+              FirstName = p.FirstName,
+              VoterContact = p.Phone
             })
           );
           break;
@@ -181,6 +189,8 @@ namespace TallyJ.CoreModels.Helper
           hostSite,
           p.PersonName,
           EmailText = text,
+          p.FirstName,
+          p.VoterContact,
           // electionName = election.Name,
           // electionType = ElectionTypeEnum.TextFor(election.ElectionType),
           // openIsFuture,
@@ -283,6 +293,8 @@ namespace TallyJ.CoreModels.Helper
     {
       public string Phone { get; set; }
       public string PersonName { get; set; }
+      public string VoterContact { get; set; }
+      public string FirstName { get; set; }
     }
   }
 }

@@ -400,8 +400,6 @@ namespace TallyJ.CoreModels.Helper
     public JsonResult SendHeadTellerEmail(string emailCode, string subject, string list)
     {
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
-      // TODO - send SMS to phone numbers
-
 
       var htEmailCode = emailCode.AsEnum(HtEmailCodes._unknown_);
 
@@ -426,7 +424,13 @@ namespace TallyJ.CoreModels.Helper
       switch (htEmailCode)
       {
         case HtEmailCodes.Test:
-          peopleToSendTo.Add(new NameEmail { Email = election.EmailFromAddressWithDefault, PersonName = election.EmailFromNameWithDefault });
+          peopleToSendTo.Add(new NameEmail
+          {
+            Email = election.EmailFromAddressWithDefault, 
+            PersonName = election.EmailFromNameWithDefault,
+            FirstName = "(voter's first name)",
+            VoterContact = election.EmailFromAddressWithDefault
+          });
           break;
 
         case HtEmailCodes.Intro:
@@ -441,6 +445,8 @@ namespace TallyJ.CoreModels.Helper
             {
               Email = p.Email,
               PersonName = p.C_FullNameFL,
+              FirstName = p.FirstName,
+              VoterContact = p.Email
             })
             );
           break;
@@ -479,6 +485,8 @@ namespace TallyJ.CoreModels.Helper
           logo = hostSite + "/Images/LogoSideM.png",
           p.Email,
           p.PersonName,
+          p.FirstName,
+          p.VoterContact,
           election.EmailText,
           EmailSubject = subject,
           // electionName = election.Name,
@@ -624,6 +632,8 @@ namespace TallyJ.CoreModels.Helper
     {
       public string Email { get; set; }
       public string PersonName { get; set; }
+      public string VoterContact { get; set; }
+      public string FirstName { get; set; }
     }
   }
 }
