@@ -42,7 +42,7 @@
     Emails will have a return address of "{{emailFromAddress || defaultFromAddress}}"
     <span v-if="!emailFromAddress">(until a "From Email Address" is added on the "Configure this Election" page).</span>
     <span v-else>(as set on the "Configure this Election" page).</span>
-    <span class="forSmsInline">SMS messages will be sent from TallyJ (@SettingsHelper.Get("twilio-FromNumber", "?")).</span>
+    <span class="forSmsInline">SMS messages will be sent from TallyJ's SMS account.</span>
   </p>
   <p v-if="@((currentElection.ElectionType == ElectionTypeEnum.Lsa && currentElection.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
     Remember! For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
