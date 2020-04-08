@@ -115,6 +115,7 @@
         }
         else {
           ShowStatusSuccess('Saved');
+          getFieldsInfo();
         }
       });
     });
@@ -207,7 +208,7 @@
       }
     });
   };
-  var getFieldsInfo = function () {
+  function getFieldsInfo() {
     ShowStatusDisplay('Reading columns...');
     CallAjaxHandler(publicInterface.controllerUrl + '/ReadFields', { id: local.activeFileRowId }, function (info) {
       showFields(info);

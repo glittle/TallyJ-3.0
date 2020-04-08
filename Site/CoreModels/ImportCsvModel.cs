@@ -77,6 +77,8 @@ namespace TallyJ.CoreModels
         return "Read {0}. Should be {1}.".FilledWith(numWritten, fileSize);
       }
 
+      record.CodePage = DetectCodePage(record.Contents);
+
       new ImportHelper().ExtraProcessingIfMultipartEncoded(record);
 
       Db.ImportFile.Add(record);
@@ -170,7 +172,8 @@ namespace TallyJ.CoreModels
 
     private JsonResult ReadFields(ImportFile importFile)
     {
-      var textReader = new StringReader(importFile.Contents.AsString(importFile.CodePage));
+      var importFileCodePage = importFile.CodePage ?? DetectCodePage(importFile.Contents);
+      var textReader = new StringReader(importFile.Contents.AsString(importFileCodePage));
       var csv = new CsvReader(textReader, true) { SkipEmptyLines = true };
       var csvHeaders = csv.GetFieldHeaders();
 
@@ -218,6 +221,19 @@ namespace TallyJ.CoreModels
           sample = sampleValues[header]
         })
       }.AsJsonResult();
+    }
+
+    private int? DetectCodePage(byte[] importFileContents)
+    {
+      if (importFileContents.Length > 3)
+      {
+        if(importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
+        {
+          return 65001;
+        }
+      }
+
+      return null;
     }
 
     public JsonResult SaveMapping(int id, List<string> mapping)

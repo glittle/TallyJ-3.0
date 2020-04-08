@@ -599,7 +599,7 @@ namespace TallyJ.Code
     /// </summary>
     public static int DefaultTo(this int? input, int defaultValue)
     {
-      return input.HasValue && input.Value == 0 ? input.Value : defaultValue;
+      return input.HasValue && input.Value != 0 ? input.Value : defaultValue;
     }
 
 

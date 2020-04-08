@@ -25,6 +25,21 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
+    public void DefaultTo_Int()
+    {
+      int? a = 11;
+
+      a.DefaultTo(1).ShouldEqual(11);
+
+      a = 0;
+      a.DefaultTo(1).ShouldEqual(1);
+    
+      a = null;
+      a.DefaultTo(1).ShouldEqual(1);
+    }
+
+
+    [TestMethod]
     public void HasNoContent_Test()
     {
       "".HasNoContent().ShouldEqual(true);
