@@ -631,8 +631,8 @@
 
     setRule($('#txtNames'), info.NumLocked, info.Num);
     setRule($('#txtExtras'), info.ExtraLocked, info.Extra);
-    setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
-    setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
+//    setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
+//    setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
     var lockedAfterBallots = publicInterface.hasBallots || publicInterface.hasOnlineBallots;
     // core

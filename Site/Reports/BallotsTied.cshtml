@@ -43,7 +43,7 @@
             g.v.PersonFullNameFL,
             g.v.SingleNameElectionCount,
             g.v.OnlineVoteRaw,
-            Spoiled = g.v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+            Spoiled = g.v.VoteStatusCode != VoteStatusCode.Ok,
             TieBreakRequired = g.tied,
             VoteInvalidReasonDesc =
               IneligibleReasonEnum.DescriptionFor(

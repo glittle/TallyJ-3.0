@@ -123,7 +123,7 @@
     p.classesList = [];
 
     if (forVoter) {
-      p.CanReceiveVotes = !p.Ineligible;
+      p.CanReceiveVotes = !p.Ineligible; // server filters to correct list
     } else {
       p.CanReceiveVotes = p.V[0] === '1';
       p.CanVote = p.V[1] === '1';

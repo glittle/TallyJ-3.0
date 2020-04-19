@@ -362,14 +362,14 @@ namespace TallyJ.CoreModels.ExportImport
       }
 
       _peopleModel = new PeopleModel(_election);
-      var defaultReason = ElectionModel.GetDefaultIneligibleReason(_election);
+      // var defaultReason = ElectionModel.GetDefaultIneligibleReason(_election);
 
       _people = new List<Person>();
       var rowsProcessed = 0;
 
       foreach (XmlElement personXml in peopleXml)
       {
-        LoadPerson(personXml, _people, defaultReason);
+        LoadPerson(personXml, _people);
 
         rowsProcessed++;
         if (rowsProcessed % 100 == 0)
@@ -383,7 +383,7 @@ namespace TallyJ.CoreModels.ExportImport
       _hub.StatusUpdate("Loaded {0:n0} people.".FilledWith(rowsProcessed));
     }
 
-    private void LoadPerson(XmlElement personXml, List<Person> people, Code.Enumerations.IneligibleReasonEnum defaultReason)
+    private void LoadPerson(XmlElement personXml, List<Person> people)
     {
       // need to map Guid to new Guid
       var person = new Person();
@@ -407,8 +407,7 @@ namespace TallyJ.CoreModels.ExportImport
 
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
-
-      _peopleModel.ApplyVoteReasonFlags(person, defaultReason);
+      _peopleModel.ApplyVoteReasonFlags(person);
     }
 
     private void LoadBallots()

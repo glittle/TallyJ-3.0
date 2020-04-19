@@ -9,9 +9,9 @@ namespace TallyJ.Code.Enumerations
   {
     public static class GroupName
     {
-      public static readonly string Ineligible = "Cannot Vote or be Voted For";
-      public static readonly string IneligiblePartial1 = "Cannot be Voted For";
-      public static readonly string IneligiblePartial2 = "Cannot Vote";
+      public static readonly string Ineligible = "Cannot Vote, Cannot be Voted For";
+      public static readonly string IneligiblePartial1 = "Cannot be Voted For (but can Vote)";
+      public static readonly string IneligiblePartial2 = "Cannot Vote (but can be Voted For)";
       public static readonly string Unidentifiable = "Unidentifiable";
       public static readonly string Unreadable = "Unreadable";
     }

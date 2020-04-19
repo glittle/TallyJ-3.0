@@ -331,7 +331,7 @@ namespace TallyJ.CoreModels
       var knownPhones = currentPeople.Where(p => p.Phone != null).Select(p => p.Phone).ToList();
 
       var personModel = new PeopleModel();
-      var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
+      // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
       var currentLineNum = 1; // including header row
       var rowsWithErrors = 0;
@@ -364,7 +364,7 @@ namespace TallyJ.CoreModels
           TempImportLineNum = currentLineNum
         };
 
-        var reason = defaultReason;
+        IneligibleReasonEnum reason = null;
 
         foreach (var currentMapping in validMappings)
         {
@@ -394,22 +394,21 @@ namespace TallyJ.CoreModels
               {
                 if (value == "Eligible")
                 {
-                  reason = null; // don't use default
+                  // leave as null
                 }
                 else
                 {
                   var match = IneligibleReasonEnum.GetFor(value);
                   if (match != null)
                   {
-                    reason = match;
-                    // validReasons += 1;
+                    person.IneligibleReasonGuid = match;
+                    personModel.ApplyVoteReasonFlags(person);
                   }
                   else
                   {
                     // tried but didn't match a valid reason!
                     errorInRow = true;
 
-                    reason = defaultReason;
                     result.Add($"~E Line {currentLineNum} - Invalid Eligibility Status reason: {rawValue}");
 
                     if (unexpectedReasons.ContainsKey(value))
@@ -560,9 +559,7 @@ namespace TallyJ.CoreModels
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
-          personModel.ApplyVoteReasonFlags(person, reason);
 
-          //Db.Person.Add(person);
           peopleToLoad.Add(person);
 
           peopleAdded++;

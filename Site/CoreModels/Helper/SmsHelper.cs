@@ -171,6 +171,8 @@ namespace TallyJ.CoreModels.Helper
       //   howLong = remainingTime.Hours + " hours";
       // }
 
+      // var numSmsSegments = text.Length / 160;
+
       var numSms = 0;
       var errors = new List<string>();
 

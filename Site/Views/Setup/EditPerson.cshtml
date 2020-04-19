@@ -4,7 +4,7 @@
 @{
     ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
     ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
-    ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
+    // ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <input type="hidden" data-name="C_RowId" />
 <table class="personEdit">

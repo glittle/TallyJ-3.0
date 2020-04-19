@@ -31,14 +31,14 @@ namespace TallyJ.EF
       if (person != null)
       {
         AssertAtRuntime.That(person.PersonGuid == vote.PersonGuid);
-        
-        var personCanReceiveVotes = Extensions.AsBoolean(true);
+
+        new PeopleModel().ApplyVoteReasonFlags(person);
 
         PersonId = person.C_RowId;
         PersonFullNameFL = person.FullNameAndArea;
         PersonCombinedInfo = person.CombinedInfo;
-        PersonIneligibleReasonGuid = personCanReceiveVotes ? null : person.IneligibleReasonGuid;
-        PersonCanReceiveVotes = personCanReceiveVotes;
+        PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
+        PersonCanReceiveVotes = person.CanReceiveVotes.AsBoolean();
         PersonGuid = person.PersonGuid;
       }
       else
@@ -51,7 +51,7 @@ namespace TallyJ.EF
     public VoteInfo()
     {
       // mostly for testing
-      VoteStatusCode = VoteHelper.VoteStatusCode.Ok;
+      VoteStatusCode = CoreModels.VoteStatusCode.Ok;
     }
 
     public string OnlineVoteRaw { get; set; }

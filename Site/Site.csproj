@@ -426,6 +426,7 @@
     <Compile Include="CoreModels\ElectionModel.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Code\OwinRelated\CustomFacebookAuthenticationOptions.cs" />
+    <Compile Include="CoreModels\VoteStatusCode.cs" />
     <Compile Include="EF\AspNetRoles.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>

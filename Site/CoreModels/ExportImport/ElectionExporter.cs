@@ -318,8 +318,8 @@ namespace TallyJ.CoreModels.ExportImport
         ListForPublic = election.ListForPublic.OnlyIfTrue(),
         // election.ListedForPublicAsOf, -- only has value if currently loaded
         election.ElectionPasscode,
-        election.CanVote,
-        election.CanReceive,
+        // election.CanVote,
+        // election.CanReceive,
         election.LastEnvNum,
         election.OwnerLoginId,
         election.ElectionGuid,

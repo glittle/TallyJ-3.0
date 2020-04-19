@@ -23,11 +23,12 @@
 
     local.peopleHelper = new PeopleHelper(publicInterface.peopleUrl, false);
     local.peopleHelper.Prepare(function () {
-      if (local.totalOnFile < 25) {
-        specialSearch('All');
-      } else {
-        local.nameList.html('<li class=Match5>(Ready for searching)</li>');
-      }
+      //      debugger;
+      //      if (local.totalOnFile < 25) {
+      //        specialSearch(local.peopleHelper.local.showAllCode);
+      //      } else {
+      //        local.nameList.html('<li class=Match5>(Ready for searching)</li>');
+      //      }
       local.inputField.prop('disabled', false);
       local.inputField.focus();
     });
@@ -38,7 +39,7 @@
     local.nameList = $('#nameList');
     $(document).on('click', '#nameList li', nameClick).focus();
     $(document).on('click', '#btnAddNew', addNewPerson);
-    $('#btnShowAll').on('click', function() {
+    $('#btnShowAll').on('click', function () {
       local.inputField.val('');
       local.specialSearch = local.peopleHelper.local.showAllCode;
       local.peopleHelper.Search(local.specialSearch, displaySearchResults);

@@ -218,6 +218,9 @@
   };
   var showStatusReasons = function () {
     var html = [];
+    html.push('<dt>Can Vote and be Voted For</dt>');
+    html.push('<dd>Eligible</dd>');
+
     var group = '';
     for (var i = 0; i < importCsvPage.statusNames.length; i++) {
       var item = importCsvPage.statusNames[i];

@@ -41,7 +41,7 @@
             v.PersonFullNameFL,
             v.SingleNameElectionCount,
             v.OnlineVoteRaw,
-            Spoiled = v.VoteStatusCode != VoteHelper.VoteStatusCode.Ok,
+            Spoiled = v.VoteStatusCode != VoteStatusCode.Ok,
             VoteInvalidReasonDesc =
               IneligibleReasonEnum.DescriptionFor(
                 v.VoteIneligibleReasonGuid.AsGuid()).

@@ -17,19 +17,23 @@ namespace Tests.BusinessTests
 
       var person = new Person();
 
-      model.ApplyVoteReasonFlags(person, IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak, true);
+      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
+      model.ApplyVoteReasonFlags(person);
       person.CanVote.ShouldEqual(true);
       person.CanReceiveVotes.ShouldEqual(false);
 
-      model.ApplyVoteReasonFlags(person, IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate, true);
+      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+      model.ApplyVoteReasonFlags(person);
       person.CanVote.ShouldEqual(false);
       person.CanReceiveVotes.ShouldEqual(true);
 
-      model.ApplyVoteReasonFlags(person, IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently, true);
+      person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently;
+      model.ApplyVoteReasonFlags(person);
       person.CanVote.ShouldEqual(false);
       person.CanReceiveVotes.ShouldEqual(false);
 
-      model.ApplyVoteReasonFlags(person, null, true);
+      person.IneligibleReasonGuid = null;
+      model.ApplyVoteReasonFlags(person);
       person.CanVote.ShouldEqual(true);
       person.CanReceiveVotes.ShouldEqual(true);
 
@@ -50,15 +54,12 @@ namespace Tests.BusinessTests
       person.CanVote.ShouldEqual(false);
       person.CanReceiveVotes.ShouldEqual(false);
 
-      // don't wipe 
-      model.ApplyVoteReasonFlags(person, null);
+      
+      
+      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+      model.ApplyVoteReasonFlags(person);
       person.CanVote.ShouldEqual(false);
-      person.CanReceiveVotes.ShouldEqual(false);
-
-      // don't change to a different one
-      model.ApplyVoteReasonFlags(person, IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate);
-      person.CanVote.ShouldEqual(false);
-      person.CanReceiveVotes.ShouldEqual(false);
+      person.CanReceiveVotes.ShouldEqual(true);
 
 
       // ensure correct flags if person has null

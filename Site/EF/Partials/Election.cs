@@ -54,8 +54,9 @@ namespace TallyJ.EF
         
         var rules = new ElectionModel().GetRules(ElectionType, ElectionMode);
 
-        CanVote = rules.CanVote;
-        CanReceive = rules.CanReceive;
+        // No longer used as rules. Each person has own status.
+        // CanVote = rules.CanVote;  
+        // CanReceive = rules.CanReceive;
       
         NumberToElect = rules.Num;
         NumberExtra = rules.Extra;

@@ -89,13 +89,34 @@ namespace TallyJ.Controllers
       {
         people = new PersonCacher(Db)
           .AllForThisElection
-          .Select(p => new
+          .Select(p =>
           {
-            Id = p.C_RowId,
-            Name = p.FullName,
-            IRG = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.GetValueOrDefault()),
-            p.OtherInfo,
-            p.Area
+            var irg = p.IneligibleReasonGuid;
+            string descriptionFor = null;
+
+
+            if (irg != null)
+            {
+              if (p.CanReceiveVotes.GetValueOrDefault())
+              {
+                // if they can receive votes, ignore any other status they may have (e.g. not a delegate)
+                irg = null;
+              }
+
+              if (irg != null)
+              {
+                descriptionFor = IneligibleReasonEnum.DescriptionFor(irg.Value);
+              }
+            }
+
+            return new
+            {
+              Id = p.C_RowId,
+              Name = p.FullName,
+              IRG = descriptionFor,
+              p.OtherInfo,
+              p.Area
+            };
           }),
       }.AsJsonResult();
     }

@@ -66,7 +66,7 @@ namespace Tests.BusinessTests
       Db.Person.Add(person);
       return person;
     }
-    public static Vote ForTests(this Vote vote, Ballot ballot, Person person, string status = VoteHelper.VoteStatusCode.Ok)
+    public static Vote ForTests(this Vote vote, Ballot ballot, Person person, string status = VoteStatusCode.Ok)
     {
       vote.PersonGuid = person.PersonGuid;
       vote.PersonCombinedInfo = person.CombinedInfo;
@@ -77,7 +77,7 @@ namespace Tests.BusinessTests
       Db.Vote.Add(vote);
       return vote;
     }
-    public static Vote ForTests(this Vote vote, Guid ineligibleReasonGuid, Ballot ballot, string status = VoteHelper.VoteStatusCode.Ok)
+    public static Vote ForTests(this Vote vote, Guid ineligibleReasonGuid, Ballot ballot, string status = VoteStatusCode.Ok)
     {
       vote.InvalidReasonGuid = ineligibleReasonGuid;
       vote.BallotGuid = ballot.BallotGuid;

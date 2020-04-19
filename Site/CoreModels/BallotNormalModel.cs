@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels
     public override object BallotInfoForJs(Ballot b, List<Vote> allVotes)
     {
       var spoiledCount = b.StatusCode != BallotStatusEnum.Ok ? 0 : (allVotes ?? new VoteCacher(Db).AllForThisElection)
-        .Count(v => v.BallotGuid == b.BallotGuid && v.StatusCode != VoteHelper.VoteStatusCode.Ok);
+        .Count(v => v.BallotGuid == b.BallotGuid && v.StatusCode != VoteStatusCode.Ok);
       return new
       {
         Id = b.C_RowId,

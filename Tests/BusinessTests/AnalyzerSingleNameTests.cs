@@ -340,7 +340,8 @@ namespace Tests.BusinessTests
                         new Ballot().ForTests(),
                       };
 
-      new PeopleModel().ApplyVoteReasonFlags(SamplePeople[5], IneligibleReasonEnum.Ineligible_Deceased, true);
+      SamplePeople[5].IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased;
+      new PeopleModel().ApplyVoteReasonFlags(SamplePeople[5]);
 
       var votes = new[]
                     {

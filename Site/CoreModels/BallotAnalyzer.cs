@@ -94,7 +94,7 @@ namespace TallyJ.CoreModels
     public bool DetermineStatusFromVotesList(string currentStatusCode, List<VoteInfo> voteInfos,
         out string statusCode, out int spoiledCount)
     {
-      spoiledCount = voteInfos.Count(v => v.VoteStatusCode == VoteHelper.VoteStatusCode.Spoiled);
+      spoiledCount = voteInfos.Count(v => v.VoteStatusCode == VoteStatusCode.Spoiled);
 
       // if under review, don't change that status
       if (currentStatusCode == BallotStatusEnum.Review)
@@ -111,7 +111,7 @@ namespace TallyJ.CoreModels
         return StatusChanged(BallotStatusEnum.Verify, currentStatusCode, out statusCode);
       }
 
-      if (voteInfos.Any(v => v.VoteStatusCode == VoteHelper.VoteStatusCode.OnlineRaw))
+      if (voteInfos.Any(v => v.VoteStatusCode == VoteStatusCode.OnlineRaw))
       {
         return StatusChanged(BallotStatusEnum.OnlineRaw, currentStatusCode, out statusCode);
       }

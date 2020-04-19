@@ -25,17 +25,17 @@ namespace TallyJ.CoreModels
       {
         Num = 0,
         Extra = 0,
-        CanVote = "",
-        CanReceive = "",
-        IsSingleNameElection = false
+        // CanVote = "",
+        // CanReceive = "",
+        // IsSingleNameElection = false
       };
 
 
       switch (type)
       {
         case "LSA":
-          rules.CanVote = CanVoteOrReceive.All;
-          rules.CanVoteLocked = true;
+          // rules.CanVote = CanVoteOrReceive.All;
+          // rules.CanVoteLocked = true;
 
           rules.Extra = 0;
           rules.ExtraLocked = true;
@@ -45,27 +45,27 @@ namespace TallyJ.CoreModels
             case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = true;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
             case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = CanVoteOrReceive.NamedPeople;
+              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
             case ElectionMode.ByElection:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
 
-          rules.CanReceiveLocked = true;
+          // rules.CanReceiveLocked = true;
 
           break;
 
         case "NSA":
-          rules.CanVote = CanVoteOrReceive.NamedPeople; // delegates
-          rules.CanVoteLocked = true;
+          // rules.CanVote = CanVoteOrReceive.NamedPeople; // delegates
+          // rules.CanVoteLocked = true;
 
           rules.Extra = 0;
           rules.ExtraLocked = true;
@@ -75,27 +75,27 @@ namespace TallyJ.CoreModels
             case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = true;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
             case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = CanVoteOrReceive.NamedPeople;
+              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
             case ElectionMode.ByElection:
               rules.Num = 1;
               rules.NumLocked = false;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
 
-          rules.CanReceiveLocked = true;
+          // rules.CanReceiveLocked = true;
 
           break;
 
         case "Con":
-          rules.CanVote = CanVoteOrReceive.All;
-          rules.CanVoteLocked = true;
+          // rules.CanVote = CanVoteOrReceive.All;
+          // rules.CanVoteLocked = true;
 
           switch (mode)
           {
@@ -106,7 +106,7 @@ namespace TallyJ.CoreModels
               rules.Extra = 3;
               rules.ExtraLocked = false;
 
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
 
             case ElectionMode.TieBreak:
@@ -116,19 +116,19 @@ namespace TallyJ.CoreModels
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = CanVoteOrReceive.NamedPeople;
+              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
             case ElectionMode.ByElection:
               throw new ApplicationException("Unit Conventions cannot have by-elections");
           }
 
-          rules.CanReceiveLocked = true;
+          // rules.CanReceiveLocked = true;
           break;
 
         case "Reg":
-          rules.CanVote = CanVoteOrReceive.NamedPeople; // LSA members
-          rules.CanVoteLocked = false;
+          // rules.CanVote = CanVoteOrReceive.NamedPeople; // LSA members
+          // rules.CanVoteLocked = false;
 
           switch (mode)
           {
@@ -139,7 +139,7 @@ namespace TallyJ.CoreModels
               rules.Extra = 7;
               rules.ExtraLocked = false;
 
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
 
             case ElectionMode.TieBreak:
@@ -149,7 +149,7 @@ namespace TallyJ.CoreModels
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = CanVoteOrReceive.NamedPeople;
+              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
             case ElectionMode.ByElection:
@@ -161,18 +161,18 @@ namespace TallyJ.CoreModels
               rules.Extra = 0;
               rules.ExtraLocked = true;
 
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
 
-          rules.CanReceiveLocked = true;
+          // rules.CanReceiveLocked = true;
           break;
 
         case "Oth":
-          rules.CanVote = CanVoteOrReceive.All;
+          // rules.CanVote = CanVoteOrReceive.All;
 
-          rules.CanVoteLocked = false;
-          rules.CanReceiveLocked = false;
+          // rules.CanVoteLocked = false;
+          // rules.CanReceiveLocked = false;
           rules.NumLocked = false;
           rules.ExtraLocked = false;
 
@@ -181,19 +181,19 @@ namespace TallyJ.CoreModels
             case ElectionMode.Normal:
               rules.Num = 9;
               rules.Extra = 0;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
 
             case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.Extra = 0;
-              rules.CanReceive = CanVoteOrReceive.NamedPeople;
+              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
 
             case ElectionMode.ByElection:
               rules.Num = 1;
               rules.Extra = 0;
-              rules.CanReceive = CanVoteOrReceive.All;
+              // rules.CanReceive = CanVoteOrReceive.All;
               break;
           }
 
@@ -207,42 +207,42 @@ namespace TallyJ.CoreModels
     ///   Based on the 2 flags, get a default reason (may be null)
     /// </summary>
     /// <returns></returns>
-    public IneligibleReasonEnum GetDefaultIneligibleReason()
-    {
-      return GetDefaultIneligibleReason(UserSession.CurrentElection);
-    }
+    // public IneligibleReasonEnum GetDefaultIneligibleReason()
+    // {
+    //   return GetDefaultIneligibleReason(UserSession.CurrentElection);
+    // }
 
     /// <summary>
     ///   Based on the 2 flags, get a default reason (may be null)
     /// </summary>
     /// <returns></returns>
-    public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
-    {
-      if (election == null)
-      {
-        return null;
-      }
-
-      var canVote = election.CanVote == CanVoteOrReceive.All;
-      var canReceiveVotes = election.CanReceive == CanVoteOrReceive.All;
-
-      if (canVote && canReceiveVotes)
-      {
-        return null;
-      }
-
-      if (!canVote && !canReceiveVotes)
-      {
-        return IneligibleReasonEnum.Ineligible_Other;
-      }
-
-      if (!canVote)
-      {
-        return IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
-      }
-
-      return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
-    }
+    // public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
+    // {
+    //   if (election == null)
+    //   {
+    //     return null;
+    //   }
+    //
+    //   var canVote = election.CanVote == CanVoteOrReceive.All;
+    //   var canReceiveVotes = election.CanReceive == CanVoteOrReceive.All;
+    //
+    //   if (canVote && canReceiveVotes)
+    //   {
+    //     return null;
+    //   }
+    //
+    //   if (!canVote && !canReceiveVotes)
+    //   {
+    //     return IneligibleReasonEnum.Ineligible_Other;
+    //   }
+    //
+    //   if (!canVote)
+    //   {
+    //     return IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+    //   }
+    //
+    //   return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
+    // }
 
     public JsonResult SaveNotification(string emailText)
     {
@@ -286,8 +286,9 @@ namespace TallyJ.CoreModels
 
       var currentType = election.ElectionType;
       var currentMode = election.ElectionMode;
-      var currentCan = election.CanVote;
-      var currentReceive = election.CanReceive;
+      var currentNum = election.NumberToElect;
+      // var currentCan = election.CanVote;
+      // var currentReceive = election.CanReceive;
       var currentListed = election.ListForPublic;
 
 
@@ -302,8 +303,8 @@ namespace TallyJ.CoreModels
         election.ElectionMode,
         election.NumberToElect,
         election.NumberExtra,
-        election.CanVote,
-        election.CanReceive,
+        // election.CanVote,
+        // election.CanReceive,
         election.ListForPublic,
         election.ShowAsTest,
         election.ElectionPasscode,
@@ -319,7 +320,13 @@ namespace TallyJ.CoreModels
         election.OnlineSelectionProcess,
         election.EmailFromAddress,
         election.EmailFromName,
-      }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
+      }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
+
+      // if (election.ElectionType == ElectionTypeEnum.Oth)
+      // {
+      //   editableFields.Add(election.CanVote);
+      //   editableFields.Add(election.CanReceive);
+      // }
 
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
       {
@@ -331,8 +338,9 @@ namespace TallyJ.CoreModels
 
       var coreSettingsChanged = currentMode != election.ElectionMode
                                 || currentType != election.ElectionType
-                                || currentCan != election.CanVote
-                                || currentReceive != election.CanReceive;
+                                || currentNum != election.NumberToElect;
+      // || currentCan != election.CanVote
+      // || currentReceive != election.CanReceive;
 
       if (coreSettingsChanged)
       {
@@ -1003,11 +1011,11 @@ namespace TallyJ.CoreModels
     //  new PublicHub().TellPublicAboutVisibleElections();
 
     //}
-    public static class CanVoteOrReceive
-    {
-      public const string All = "A";
-      public const string NamedPeople = "N";
-    }
+    // public static class CanVoteOrReceive
+    // {
+    //   public const string All = "A";
+    //   public const string NamedPeople = "N";
+    // }
 
     public static class ElectionMode
     {

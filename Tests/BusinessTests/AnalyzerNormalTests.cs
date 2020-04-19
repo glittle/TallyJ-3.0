@@ -61,7 +61,7 @@ namespace Tests.BusinessTests
       {
         NumberToElect = 2,
         NumberExtra = 0,
-        CanReceive = ElectionModel.CanVoteOrReceive.All
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
       var ballots = new[]
@@ -114,7 +114,7 @@ namespace Tests.BusinessTests
       {
         NumberToElect = 2,
         NumberExtra = 0,
-        CanReceive = ElectionModel.CanVoteOrReceive.All
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
       var ballots = new[]
@@ -157,7 +157,7 @@ namespace Tests.BusinessTests
       {
         NumberToElect = 2,
         NumberExtra = 0,
-        CanReceive = ElectionModel.CanVoteOrReceive.All
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
       var ballots = new[]
@@ -200,7 +200,7 @@ namespace Tests.BusinessTests
       {
         NumberToElect = 2,
         NumberExtra = 0,
-        CanReceive = ElectionModel.CanVoteOrReceive.All
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
       var ballots = new[]
@@ -222,8 +222,8 @@ namespace Tests.BusinessTests
       results.Count.ShouldEqual(0);
 
       ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
-      votes[0].StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Spoiled);
-      votes[1].StatusCode.ShouldEqual(VoteHelper.VoteStatusCode.Spoiled);
+      votes[0].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
+      votes[1].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
 
       //var spoiledCount = votes.Count(v => v.InvalidReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
       //spoiledCount.ShouldEqual(2);

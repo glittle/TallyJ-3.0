@@ -292,7 +292,7 @@ namespace TallyJ.CoreModels
             invalidReason = person1.IneligibleReasonGuid;
           }
 
-          vote.StatusCode = invalidReason == null ? VoteHelper.VoteStatusCode.Ok : VoteHelper.VoteStatusCode.Spoiled;
+          vote.StatusCode = invalidReason == null ? VoteStatusCode.Ok : VoteStatusCode.Spoiled;
 
         }
 
@@ -366,7 +366,7 @@ namespace TallyJ.CoreModels
         {
           BallotGuid = ballot.BallotGuid,
           PositionOnBallot = nextVoteNum,
-          StatusCode = VoteHelper.VoteStatusCode.Ok,
+          StatusCode = VoteStatusCode.Ok,
           SingleNameElectionCount = count
         };
         if (person != null)
@@ -696,7 +696,7 @@ namespace TallyJ.CoreModels
           {
             BallotGuid = ballot.BallotGuid,
             PositionOnBallot = ++nextVoteNum,
-            StatusCode = VoteHelper.VoteStatusCode.Ok,
+            StatusCode = VoteStatusCode.Ok,
             PersonGuid = person.PersonGuid,
             PersonCombinedInfo = person.CombinedInfo,
             SingleNameElectionCount = 1, // okay if set for normal election too
@@ -710,7 +710,7 @@ namespace TallyJ.CoreModels
           {
             BallotGuid = ballot.BallotGuid,
             PositionOnBallot = ++nextVoteNum,
-            StatusCode = VoteHelper.VoteStatusCode.OnlineRaw,
+            StatusCode = VoteStatusCode.OnlineRaw,
             SingleNameElectionCount = 1,
             OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
           };

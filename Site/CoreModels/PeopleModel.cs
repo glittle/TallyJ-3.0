@@ -111,55 +111,6 @@ namespace TallyJ.CoreModels
     }
 
     /// <summary>
-    ///   Set person's flag based on what is default for this election
-    /// </summary>
-    public bool ApplyVoteReasonFlags(Person person, IneligibleReasonEnum defaultReason = null, bool forceToDefault = false)
-    {
-      // use what they have.  If they have nothing, apply the default reason
-
-      var changed = false;
-
-      var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
-
-      if (reason == null || forceToDefault)
-      {
-        reason = defaultReason; // may be null
-
-        var reasonGuid = reason?.Value;
-        if (person.IneligibleReasonGuid != reasonGuid)
-        {
-          person.IneligibleReasonGuid = reasonGuid;
-          changed = true;
-        }
-      }
-
-      if (reason == null)
-      {
-        if (!person.CanVote.GetValueOrDefault() || !person.CanReceiveVotes.GetValueOrDefault())
-        {
-          person.CanVote = true;
-          person.CanReceiveVotes = true;
-          changed = true;
-        }
-      }
-      else
-      {
-        if (person.CanVote != reason.CanVote)
-        {
-          person.CanVote = reason.CanVote;
-          changed = true;
-        }
-        if(person.CanReceiveVotes!= reason.CanReceiveVotes)
-        {
-          person.CanReceiveVotes= reason.CanReceiveVotes;
-          changed = true;
-        }
-      }
-
-      return changed;
-    }
-
-    /// <summary>
     ///   Ensure the flags match the Guid
     /// </summary>
     /// <param name="people"></param>
@@ -170,8 +121,8 @@ namespace TallyJ.CoreModels
       hub.StatusUpdate("Reviewing people", true);
       var currentElectionGuid = UserSession.CurrentElectionGuid;
 
-      var defaultCanVote = UserSession.CurrentElection.CanVote == "A";
-      var defaultCanReceiveVotes = UserSession.CurrentElection.CanReceive == "A";
+      // var defaultCanVote = UserSession.CurrentElection.CanVote == "A";
+      // var defaultCanReceiveVotes = UserSession.CurrentElection.CanReceive == "A";
 
       var numDone = 0;
       foreach (var person in people)
@@ -187,52 +138,52 @@ namespace TallyJ.CoreModels
 
         if (currentElectionGuid != person.ElectionGuid)
         {
-          hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
           hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullName);
         }
 
-        if (person.IneligibleReasonGuid.HasValue)
-        {
-          var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
-          if (reason == null)
-          {
-            unknownIneligibleGuid = true;
-          }
-          else
-          {
-            var canVote = reason.CanVote;
-            var canReceiveVotes = reason.CanReceiveVotes;
-
-            if (canVote != person.CanVote || canReceiveVotes != person.CanReceiveVotes)
-            {
-              personSaver(DbAction.Attach, person);
-              person.CanVote = canVote;
-              person.CanReceiveVotes = canReceiveVotes;
-              changesMade = true;
-            }
-          }
-        }
-        else
-        {
-          if (defaultCanVote != person.CanVote || defaultCanReceiveVotes != person.CanReceiveVotes)
-          {
-            personSaver(DbAction.Attach, person);
-            person.CanVote = defaultCanVote;
-            person.CanReceiveVotes = defaultCanReceiveVotes;
-            changesMade = true;
-          }
-        }
-
-        if (unknownIneligibleGuid)
+        var matchedReason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+        if (person.IneligibleReasonGuid.HasValue && matchedReason == null)
         {
           personSaver(DbAction.Attach, person);
           person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
 
-          hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
           hub.StatusUpdate("Found unknown ineligible reason. Set to Unknown. Name: " + person.C_FullName);
 
           changesMade = true;
         }
+
+        if (ApplyVoteReasonFlags(person))
+        {
+          personSaver(DbAction.Attach, person);
+          changesMade = true;
+        }
+        // var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+        // if (reason == null)
+        // {
+        //   unknownIneligibleGuid = true;
+        // }
+        // else
+        // {
+        //   var canVote = reason.CanVote;
+        //   var canReceiveVotes = reason.CanReceiveVotes;
+        //
+        //   if (canVote != person.CanVote || canReceiveVotes != person.CanReceiveVotes)
+        //   {
+        //     personSaver(DbAction.Attach, person);
+        //     person.CanVote = canVote;
+        //     person.CanReceiveVotes = canReceiveVotes;
+        //   }
+        // }
+        // else
+        // {
+        //   if (defaultCanVote != person.CanVote || defaultCanReceiveVotes != person.CanReceiveVotes)
+        //   {
+        //     personSaver(DbAction.Attach, person);
+        //     person.CanVote = defaultCanVote;
+        //     person.CanReceiveVotes = defaultCanReceiveVotes;
+        //     changesMade = true;
+        //   }
+        // }
 
         if (changesMade)
         {
@@ -243,6 +194,50 @@ namespace TallyJ.CoreModels
 
       hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
     }
+
+    /// <summary>
+    ///   Set person's flag based on what is default for this election
+    /// </summary>
+    public bool ApplyVoteReasonFlags(Person person)
+    {
+      // using only what they have
+
+      var changed = false;
+
+      var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+
+      if (reason == null)
+      {
+        // no reason, so set to true
+        if (!person.CanVote.GetValueOrDefault())
+        {
+          person.CanVote = true;
+          changed = true;
+        }
+        if (!person.CanReceiveVotes.GetValueOrDefault())
+        {
+          person.CanReceiveVotes = true;
+          changed = true;
+        }
+      }
+      else
+      {
+        // update to match what this reason implies
+        if (person.CanVote != reason.CanVote)
+        {
+          person.CanVote = reason.CanVote;
+          changed = true;
+        }
+        if (person.CanReceiveVotes != reason.CanReceiveVotes)
+        {
+          person.CanReceiveVotes = reason.CanReceiveVotes;
+          changed = true;
+        }
+      }
+
+      return changed;
+    }
+
 
     public JsonResult DetailsFor(int personId)
     {
@@ -365,8 +360,8 @@ namespace TallyJ.CoreModels
 
       changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
 
-      var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
-      if (ApplyVoteReasonFlags(personInDatastore, defaultReason))
+      // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
+      if (ApplyVoteReasonFlags(personInDatastore))
       {
         changed = true;
       }

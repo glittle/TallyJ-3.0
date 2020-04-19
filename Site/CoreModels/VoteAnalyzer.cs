@@ -15,15 +15,15 @@ namespace TallyJ.CoreModels
           && voteInfo.PersonGuid == null
           && voteInfo.VoteIneligibleReasonGuid == null)
       {
-        return VoteHelper.VoteStatusCode.OnlineRaw;
+        return VoteStatusCode.OnlineRaw;
       }
 
       return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
-          ? VoteHelper.VoteStatusCode.Spoiled
+          ? VoteStatusCode.Spoiled
           : voteInfo.PersonCombinedInfo.HasContent() &&
             !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote ?? "NULL")
-              ? VoteHelper.VoteStatusCode.Changed
-              : VoteHelper.VoteStatusCode.Ok;
+              ? VoteStatusCode.Changed
+              : VoteStatusCode.Ok;
     }
 
     /// <Summary>Does this vote need to be reviewed? (Underlying person info was changed)</Summary>

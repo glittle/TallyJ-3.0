@@ -51,7 +51,7 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.SpoiledBallots = invalidBallotGuids.Count();
 
       ResultSummaryCalc.SpoiledVotes =
-        VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode!=VoteHelper.VoteStatusCode.Ok).Sum(
+        VoteInfos.Where(vi => !invalidBallotGuids.Contains(vi.BallotGuid) && vi.VoteStatusCode!=VoteStatusCode.Ok).Sum(
           vi => vi.SingleNameElectionCount).AsInt();
 
       // vote == ballot for this election
@@ -68,7 +68,7 @@ namespace TallyJ.CoreModels
       var numDone = 0;
 
       // collect only valid votes
-      foreach (var voteInfo in VoteInfos.Where(vi => vi.VoteStatusCode == VoteHelper.VoteStatusCode.Ok))
+      foreach (var voteInfo in VoteInfos.Where(vi => vi.VoteStatusCode == VoteStatusCode.Ok))
       {
         numDone++;
 //        if (numDone % 10 == 0)

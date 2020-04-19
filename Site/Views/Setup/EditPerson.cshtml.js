@@ -47,13 +47,16 @@
     $('#trCanReceiveVotes').toggleClass('IsNo', !canReceiveVotes);
   };
 
-  function startEdit() {
+  function startEdit(doNotFocus) {
     var $first = local.hostPanel.find('[data-name="FirstName"]');
     var $last = local.hostPanel.find('[data-name="LastName"]');
     var update = function () {
       site.broadcast(site.broadcastCode.personNameChanging, $.trim($first.val() + ' ' + $last.val()));
     };
-    $first.on('keyup', update).focus();
+    $first.on('keyup', update);
+    if (!doNotFocus) {
+      $first.focus();
+    }
     $last.on('keyup', update);
   };
 
@@ -75,7 +78,7 @@
     }
   }
 
-  function applyValues(panel, person, clearAll, canDelete) {
+  function applyValues(panel, personProperties, clearAll, canDelete) {
     if (panel) {
       local.hostPanel = panel;
     } else {
@@ -98,7 +101,7 @@
     if (clearAll) {
       panel.find(':input[data-name]').each(function () {
         var input = $(this);
-        var value = person[input.data('name')];
+        var value = personProperties[input.data('name')];
         if (!value && value !== false) {
           value = '';
         }
@@ -106,12 +109,12 @@
       });
     } else {
       // apply only the properties given
-      for (var prop in person) {
-        if (person.hasOwnProperty(prop)) {
+      for (var prop in personProperties) {
+        if (personProperties.hasOwnProperty(prop)) {
           panel.find(':input[data-name]').each(function () {
             var input = $(this);
             if (input.data('name') === prop) {
-              setValue(input, person[prop]);
+              setValue(input, personProperties[prop]);
             }
           });
         }
@@ -120,11 +123,11 @@
 
     var $phone = local.hostPanel.find('[data-name="Phone"]');
     $phone.on('change paste', fixPhone);
-    
-    startEdit();
 
-    $('#trCanVote').toggleClass('IsNo', !person.CanVote);
-    $('#trCanReceiveVotes').toggleClass('IsNo', !person.CanReceiveVotes);
+    startEdit(true);
+
+    $('#trCanVote').toggleClass('IsNo', !personProperties.CanVote);
+    $('#trCanReceiveVotes').toggleClass('IsNo', !personProperties.CanReceiveVotes);
     //$('#trDelete').toggle(canDelete);
 
     panel.fadeIn();
@@ -261,7 +264,7 @@
   var publicInterface = {
     peopleUrl: '',
     invalidReasons: [],
-    defaultRules: null,
+    //    defaultRules: null,
     applyValues: applyValues,
     startNewPerson: startNewPerson,
     PreparePage: preparePage
