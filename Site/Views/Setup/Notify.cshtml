@@ -32,10 +32,10 @@
   <p>You can create the email below. To get started with a sample, click: <button class="btn btn-mini" v-on:click="loadSampleEmail">Start with Sample Message</button></p>
 
   <p>
-    Here are some replaceable templates that can be used in the text: 
-    <span class="template">{PersonName}</span> <span class="templateComment">(their full name)</span>, 
-    <span class="template">{FirstName}</span> <span class="templateComment">(just their first name)</span>, 
-    <span class="template">{VoterContact}</span> <span class="templateComment">(their email or phone number, as appropriate)</span>, 
+    Here are some replaceable templates that can be used in the text:
+    <span class="template">{PersonName}</span> <span class="templateComment">(their full name)</span>,
+    <span class="template">{FirstName}</span> <span class="templateComment">(just their first name)</span>,
+    <span class="template">{VoterContact}</span> <span class="templateComment">(their email or phone number, as appropriate)</span>,
     <span class="template">{hostSite}</span> <span class="templateComment">(a link to TallyJ)</span>.
   </p>
   <p>
@@ -64,42 +64,50 @@
         <u>S</u>ave Changes
       </button>
 
-      <p class="isSaveNeeded" v-if="isSaveNeeded">Save changes to the text before sending it.</p>
+      <p class="isSaveNeeded" v-if="isSaveNeeded">Save changes before sending the Email.</p>
 
     </div>
 
     <h2 class="shead">SMS</h2>
 
     <div class="smsHost">
-      <p>The content of the SMS message is automatically extracted from the Email content.</p>
+      <p>
+        The content of the SMS message is automatically extracted and simplified from the Email content. You may want to temporarily
+        edit the text to reduce the size of the SMS message.
+      </p>
       <div class="smsText" v-text="smsText"></div>
-      <div>{{smsText.length}} characters</div>
+      <div>{{smsText.length}} characters (about {{ smsSegments === 1 ? '1 segment' : (smsSegments + ' segments') }} per person)</div>
       <div v-if="smsText.length > 1590" class="warning">The SMS message may be too long to send. (Max is 1600.)</div>
     </div>
 
     <div class="messageBtns email">
-      <button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>
-      <span class="comments" v-if="emailFromAddress">Email will be sent to: {{emailFromAddress}} (will not include your first name)</span>
-      <span class="comments" v-else>(Must enter a "From Email Address" on the "Configure this Election" page.)</span>
+      @*<button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>*@
+      <p><em>You should select yourself and send the email to yourself to see what it looks like.</em></p>
 
       <div class="bottom">
+        <button class="btn" :class="[pendingEmail ? 'pending' : '', pendingEmail ? 'btn-primary' : 'btn-warning']" v-on:click="sendEmail('Intro', true)" :disabled="!numWithEmails || !emailFromAddress || isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}{{ pendingEmail ? '':'...'}}</button>
+        <div class="comments">As selected below.</div>
         <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>
-        <button class="btn btn-warning" :class="{pending: pendingEmail}" v-on:click="sendEmail('Intro', true)" :disabled="!numWithEmails || !emailFromAddress || isSaveNeeded || !emailSubject">Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}...</button>
-        <span class="comments">As selected below</span>
       </div>
+      <p>
+        <span class="comments" v-if="!emailFromAddress">(Must enter a "From Email Address" on the "Configure this Election" page.)</span>
+      </p>
+
     </div>
 
     <div class="messageBtns sms">
-      <button class="btn btn-primary" v-on:click="sendSms('Test', false, testSmsNumber)" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
-      <div class="samplePhone">
-        Send to <input type="tel" class="text50" v-on:change="fixPhone" v-on:paste="fixPhone" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
-      <span class="comments">(will not include your first name)</span>
-      <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
-      </div>
+      @*<button class="btn btn-primary" v-on:click="sendSms('Test', false, testSmsNumber)" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
+        <div class="samplePhone">
+          Send to <input type="tel" class="text50" v-on:change="fixPhone" v-on:paste="fixPhone" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
+          <span class="comments">(will not include your first name)</span>
+          <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
+        </div>*@
+      <p><em>You should select yourself and send the SMS to yourself to see what it looks like.</em></p>
+
       <div class="bottom">
+        <button class="btn" :class="[pendingSms ? 'pending' : '', pendingSms ? 'btn-primary' : 'btn-warning']" v-on:click="sendSms('Intro', true)" :disabled="!numWithPhones">Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}{{ pendingSms ? '':'...'}}</button>
+        <div class="comments">As selected below.</div>
         <div class="pending" v-if="pendingSms">Are you sure? Click again to send now.</div>
-        <button class="btn btn-warning" :class="{pending: pendingSms}" v-on:click="sendSms('Intro', true)" :disabled="!numWithPhones || isSaveNeeded">Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}...</button>
-        <span class="comments">As selected below</span>
       </div>
     </div>
 

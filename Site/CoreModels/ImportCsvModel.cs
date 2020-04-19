@@ -402,7 +402,6 @@ namespace TallyJ.CoreModels
                   if (match != null)
                   {
                     person.IneligibleReasonGuid = match;
-                    personModel.ApplyVoteReasonFlags(person);
                   }
                   else
                   {
@@ -559,6 +558,7 @@ namespace TallyJ.CoreModels
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
+          personModel.ApplyVoteReasonFlags(person);
 
           peopleToLoad.Add(person);
 

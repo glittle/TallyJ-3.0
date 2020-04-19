@@ -65,7 +65,12 @@
         peopleWithPhone: function() {
           return this.allPeople.filter(function (p) { return p.Phone; });
         },
+        smsSegments: function() {
+          var hasSpecialCharacters = false; // to determine
 
+          // as per https://www.twilio.com/blog/2017/03/what-the-heck-is-a-segment.htm
+          return 1 + Math.floor(this.smsText.length / (hasSpecialCharacters ? 67 : 153));
+        }
       },
       watch: {
       },
@@ -149,6 +154,9 @@ contact the Assembly as soon as possible!</p>
           //          var text = $('.ck-content').text();
           var html = this.$refs.email.value;
 
+          // remove accents
+          html = html.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
           var breakToken = 'ZXZXZ';
           var tempHtml = (html || '')
             .replace(/<br\s?\/?>/gi, breakToken)
@@ -158,6 +166,8 @@ contact the Assembly as soon as possible!</p>
             .replace(/<ul.*?>(.*?)<\/ul>/gi, breakToken + '$1')
             .replace(/<ol.*?>(.*?)<\/ol>/gi, breakToken + '$1')
             ;
+
+
           var text = $('<div>').html(tempHtml).text().replace(new RegExp(breakToken, 'g'), '\n');
           //          console.log(html, text);
           this.smsText = text;
@@ -263,7 +273,7 @@ contact the Assembly as soon as possible!</p>
 
               vue.allPeople = info.people;
 
-              vue.selectAll();
+              //vue.selectAll();
             }
             else {
               ShowStatusFailed(info.Status);
