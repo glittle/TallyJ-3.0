@@ -128,7 +128,6 @@ namespace TallyJ.CoreModels
       foreach (var person in people)
       {
         var changesMade = false;
-        var unknownIneligibleGuid = false;
 
         numDone++;
         if (numDone % 10 == 0)

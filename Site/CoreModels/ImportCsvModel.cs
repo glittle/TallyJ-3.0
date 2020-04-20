@@ -364,8 +364,6 @@ namespace TallyJ.CoreModels
           TempImportLineNum = currentLineNum
         };
 
-        IneligibleReasonEnum reason = null;
-
         foreach (var currentMapping in validMappings)
         {
           var dbFieldName = currentMapping[1];
