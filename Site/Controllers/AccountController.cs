@@ -280,7 +280,7 @@ namespace TallyJ.Controllers
         bool changePasswordSucceeded;
         try
         {
-          var currentUser = Membership.GetUser(User.Identity.Name, userIsOnline: true);
+          var currentUser = Membership.GetUser(UserSession.LoginId, userIsOnline: true);
           changePasswordSucceeded = currentUser.ChangePassword(model.OldPassword, model.NewPassword);
         }
         catch (Exception)
