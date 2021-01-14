@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -294,6 +295,19 @@ namespace Tests.FrameworkTests
       "a-b!".ReplacePunctuation(sep).ShouldEqual("a$b$");
       "o'conner".ReplacePunctuation(sep).ShouldEqual("o$conner");
       "ab==123".ReplacePunctuation(sep).ShouldEqual("ab$$123");
+    }
+
+    [TestMethod]
+    public void AsSendGridEmailAddress_Test()
+    {
+      var address = "address1@example.com";
+      var name = "My name";
+
+      var msEmail = new MailAddress(address, name);
+      var sendGridEmail = msEmail.AsSendGridEmailAddress();
+
+      sendGridEmail.Email.ShouldEqual(address);
+      sendGridEmail.Name.ShouldEqual(name);
     }
 
     [TestMethod]

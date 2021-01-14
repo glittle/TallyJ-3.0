@@ -7,6 +7,7 @@ Site/bin/*/*
 Site/bin/*
 Site/obj/*/*
 Site/obj/*
+Site/App_Data/
 *.user
 Site.sui
 *.vsmdi
@@ -38,7 +39,6 @@ Backup/Site.sln
 DatabaseScripts/DatabaseScripts_20150629015936.sqlproj
 UpgradeLog.htm
 DatabaseScripts/DatabaseScripts.jfm
-AppSettings.config
 node_modules/
 !jstests/screenshots/.gitkeep
 jstests/screenshots/*

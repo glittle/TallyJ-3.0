@@ -5,11 +5,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using RazorEngine.Text;
+using SendGrid.Helpers.Mail;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.VoterAccountModels;
@@ -846,6 +848,11 @@ namespace TallyJ.Code
              join b in other on func.Invoke(f) equals innerkey.Invoke(b) into g
              from result in g.DefaultIfEmpty()
              select res.Invoke(f, result);
+    }
+
+    public static EmailAddress AsSendGridEmailAddress(this MailAddress input)
+    {
+      return new EmailAddress(input.Address, input.DisplayName);
     }
 
     public static DateTime ChopToMinute(this DateTime input)

@@ -11,7 +11,6 @@ using TallyJ.Code.Session;
 using TallyJ.EF;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
-using Twilio.Rest.Authy.V1;
 using Twilio.Types;
 
 namespace TallyJ.CoreModels.Helper
