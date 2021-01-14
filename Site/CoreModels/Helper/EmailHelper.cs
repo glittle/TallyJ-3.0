@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
@@ -563,10 +565,9 @@ namespace TallyJ.CoreModels.Helper
     /// <returns></returns>
     public bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
-      message.Sender = new MailAddress(SettingsHelper.Get("FromEmailAddress", "system@tallyj.com"), "TallyJ System");
       if (message.From == null)
       {
-        message.From = message.Sender;
+        message.From = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), "TallyJ System");
       }
       message.Body = htmlBody;
       message.IsBodyHtml = true;
@@ -575,6 +576,43 @@ namespace TallyJ.CoreModels.Helper
       var subject = match.Groups["subject"];
       message.Subject = subject.Value;
 
+
+      // use SendGrid API??
+      var sendGridApiKey = SettingsHelper.Get("SendGridApiKey", "");
+      if (sendGridApiKey.HasContent())
+      {
+        return SendEmailApi(sendGridApiKey, message, htmlBody, out errorMessage);
+      }
+
+      return SendEmailSmtp(message, htmlBody, out errorMessage);
+    }
+
+    private bool SendEmailApi(string sendGridApiKey, MailMessage message, string htmlBody, out string errorMessage)
+    {
+      var msg = new SendGridMessage
+      {
+        From = message.From.AsSendGridEmailAddress(),
+        Subject = message.Subject,
+        HtmlContent = htmlBody
+      };
+      msg.AddTos(message.To.Select(a=>a.AsSendGridEmailAddress()).ToList());
+
+      var sendGridClient = new SendGridClient(sendGridApiKey);
+      var response = sendGridClient.SendEmailAsync(msg).Result;
+
+      if (response.IsSuccessStatusCode)
+      {
+        errorMessage = "";
+        return true;
+      }
+
+      errorMessage = $"{response.StatusCode} {response.Body.ReadAsStringAsync()}";
+      LogHelper.Add(errorMessage, true);
+      return false;
+    }
+
+    private bool SendEmailSmtp(MailMessage message, string htmlBody, out string errorMessage)
+    {
       var host = SettingsHelper.Get("SmtpHost", "localhost");
       var pickupDirectory = SettingsHelper.Get("SmtpPickupDirectory", "");
       var senderHostName = message.Sender?.Host ?? "TallyJ";
