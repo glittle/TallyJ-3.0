@@ -22,44 +22,32 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 <div class="forMeditate">
-  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Meditate'"></button>
+  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Take time to meditate'"></button>
   <div v-if="meditate">
-    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Suggested music</a>
+    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Show suggested music in YouTube</a>
   </div>
 </div>
 <div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}">
-  <p>
-    Welcome! Your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is 
-    <strong>@UserSession.VoterId</strong>.
-    <span v-if="!loading">
-      <span v-if="elections.length">It is found in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
-    </span>
-    <span v-if="!loading && !elections.length">It is not found in any elections in TallyJ.</span>
-  </p>
-
-
-  <div class="quotes">
+  <div class="top">
     <p>
-      To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
+      Welcome! Your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is
+      <strong>@UserSession.VoterId</strong>.
+      <span v-if="!loading">
+        <span v-if="elections.length">It is found in the <span v-if="elections.length > 1">{{elections.length}}</span> election<span v-if="elections.length!==1">s</span> shown below.</span>
+      </span>
+      <span v-if="!loading && !elections.length">It is not found in any elections in TallyJ.</span>
     </p>
-    <div class="quotesList">
-      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (3 web pages)</a></div>
-      <div><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></div>
-      <div><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></div>
-      <div><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</div>
-    </div>
+
+    <p v-if="loading">Searching for your email address in available elections...</p>
+
+    <p v-if="!loading">
+      If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller for assistance.
+    </p>
+
   </div>
-
-  <p v-if="loading">Searching for your email address in available elections...</p>
-
-  <p v-if="!loading">
-    If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller for assistance.
-  </p>
-
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
     None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
   </p>
-
   <div class="electionListDiv">
     <p v-if="!loading && !elections.length" class="noElections">No elections found.</p>
     <table class="electionList" v-if="!loading && elections.length">
@@ -103,14 +91,14 @@
     </p>
 
     @*<p class="account" v-if="hasLocalId">
-      Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
-    </p>
-    <p class="account" v-else>
-      You logged in via @UserSession.VoterAuthSource.
-      If others might use your login account, you may wish to add a TallyJ password.
-      If you do this, you will need to supply the TallyJ password for all future logins.
-      @Html.ActionLink("Add a TallyJ password", "Register", "VoterAccount", null, new { @class = "btn btn-mini" })
-    </p>*@
+        Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
+      </p>
+      <p class="account" v-else>
+        You logged in via @UserSession.VoterAuthSource.
+        If others might use your login account, you may wish to add a TallyJ password.
+        If you do this, you will need to supply the TallyJ password for all future logins.
+        @Html.ActionLink("Add a TallyJ password", "Register", "VoterAccount", null, new { @class = "btn btn-mini" })
+      </p>*@
 
     <div class="title">Activity</div>
 
@@ -142,6 +130,20 @@
     </div>
 
   </div>
+
+  <div class="quotes">
+    <p>
+      To help you prepare to vote, here are a few online resources about voting in Bahá’í elections:
+    </p>
+    <div class="quotesList">
+      <div><a target="q3" href="https://bahaiquotes.com/index.php/subject/elections">Bahá’í Quotes on Elections (3 web pages)</a></div>
+      <div><a target="q2" class="pdf" href="@(new SiteInfo().RootUrl)Content/Docs/ElectionQuotes.pdf">Bahá’í Quotes on Elections (1 page)</a></div>
+      <div><a target="q1" class="pdf" href="https://www.bahai.org/library/authoritative-texts/compilations/sanctity-nature-bahai-elections/sanctity-nature-bahai-elections.pdf">The Sanctity and Nature of Bahá’í Elections</a></div>
+      <div><a target="q4" class="pdf" href="https://bahai-library.com/pdf/a/abizadeh_how_bahais_vote.pdf">How Bahá’í Voters Should Vote</a> by Arash Abizadeh</div>
+    </div>
+  </div>
+
+
 </div>
 
 <div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}">
@@ -179,7 +181,7 @@
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
           <span v-if="searchText">No matches found.</span>
-          <span v-else>Names will appear here when you search.<br/>Click "Show All" to view all in random order.</span>
+          <span v-else>Names will appear here when you search.<br />Click "Show All" to view all in random order.</span>
         </div>
         <ul id="nameList" v-show="nameList.length">
           <li v-for="(p,i) in nameList"
@@ -261,17 +263,17 @@
           <div v-html="p.Name"></div>
           <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
           <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-          <span role="button" 
-                class="removeFromPool" 
-                v-on:click="removeFromPool(p)" 
-                aria-label="Delete" 
+          <span role="button"
+                class="removeFromPool"
+                v-on:click="removeFromPool(p)"
+                aria-label="Delete"
                 v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
         </div>
       </draggable>
       <p v-if="!lockInVotes && pool.length">
         To sort the names using your keyboard, press <strong>Tab</strong> to focus,
         <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
-      </p>  
+      </p>
       <p v-if="!lockInVotes && pool.length">
         Please note that when your ballot is submitted and processed, this entire pool will be deleted from TallyJ.
       </p>
