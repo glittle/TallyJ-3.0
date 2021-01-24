@@ -1135,6 +1135,7 @@ namespace TallyJ.CoreModels
       var emailHelper = new EmailHelper();
       var smsHelper = new SmsHelper();
       var logHelper = new LogHelper();
+      var onlineVoteHelper = new OnlineVoteHelper();
 
       foreach (var onlineBallotInfo in ballotInfoList)
       {
@@ -1146,7 +1147,7 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        var pool = onlineBallotInfo.ovi.ListPool;
+        var pool = onlineVoteHelper.GetDecryptedListPool(onlineBallotInfo.ovi);
         if (pool.HasNoContent())
         {
           problems.Add("Empty pool" + name);

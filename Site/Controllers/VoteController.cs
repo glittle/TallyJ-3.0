@@ -130,6 +130,13 @@ namespace TallyJ.Controllers
           Db.OnlineVotingInfo.Add(votingInfo);
           Db.SaveChanges();
         }
+        else
+        {
+          if (EncryptionHelper.IsEncrypted(votingInfo.ListPool))
+          {
+            votingInfo.ListPool = new OnlineVoteHelper().GetDecryptedListPool(votingInfo);
+          }
+        }
 
         // okay
         return new
@@ -184,13 +191,15 @@ namespace TallyJ.Controllers
       var now = DateTime.Now;
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {
-        onlineVotingInfo.ListPool = pool; // pool is JSON string
 
+        // pool is JSON string
         var newStatus = pool == "[]" ? OnlineBallotStatusEnum.New : OnlineBallotStatusEnum.Draft;
         if (newStatus != onlineVotingInfo.Status)
         {
           onlineVotingInfo.Status = newStatus;
         }
+
+        new OnlineVoteHelper().SetListPoolEncrypted(onlineVotingInfo, pool);
 
         Db.SaveChanges();
 
@@ -241,11 +250,19 @@ namespace TallyJ.Controllers
       var now = DateTime.Now;
       if (currentElection.OnlineWhenOpen <= now && currentElection.OnlineWhenClose > now)
       {
+        var onlineVoteHelper = new OnlineVoteHelper();
+
+        if (!EncryptionHelper.IsEncrypted(onlineVotingInfo.ListPool))
+        {
+          // upgrade previous record
+          onlineVoteHelper.SetListPoolEncrypted(onlineVotingInfo);
+        }
+
         if (locked)
         {
           // ensure we have enough votes
           //TODO use JSON
-          var votes = onlineVotingInfo.ListPool?.Split(',').Length ?? 0;
+          var votes = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo)?.Split(',').Length ?? 0;
           if (votes < currentElection.NumberToElect)
           {
             return new

@@ -163,6 +163,9 @@
     <Reference Include="Microsoft.AspNetCore.DataProtection.Abstractions, Version=5.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.DataProtection.Abstractions.5.0.2\lib\net461\Microsoft.AspNetCore.DataProtection.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNetCore.DataProtection.Extensions, Version=5.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.DataProtection.Extensions.5.0.2\lib\net461\Microsoft.AspNetCore.DataProtection.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.DataProtection.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.DataProtection.SystemWeb.2.2.0\lib\net461\Microsoft.AspNetCore.DataProtection.SystemWeb.dll</HintPath>
     </Reference>
@@ -475,9 +478,11 @@
     <Compile Include="Controllers\VoterAccountController.cs" />
     <Compile Include="Controllers\VoteController.cs" />
     <Compile Include="Controllers\Manage2Controller.cs" />
+    <Compile Include="CoreModels\Helper\EncryptionHelper.cs" />
     <Compile Include="CoreModels\Helper\NotificationHelper.cs" />
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
     <Compile Include="CoreModels\Helper\SmsHelper.cs" />
+    <Compile Include="CoreModels\OnlineVoteHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\IdentityModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\ManageViewModels.cs" />
