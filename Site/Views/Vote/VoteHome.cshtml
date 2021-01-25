@@ -9,7 +9,7 @@
     ClientFile("~/Scripts/BadiDateToday.v1.js"),
     ClientFile("~/Scripts/PeopleHelper.js"),
     "//cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js",
-    "//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"
+    "//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.24.3/vuedraggable.umd.min.js"
   };
 
   ContextItems.AddJavascriptForPage("voterHome.voteMethods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
@@ -114,6 +114,7 @@
       <table class="loginHistory">
         <thead>
           <tr>
+            <th>Election</th>
             <th>Action</th>
             <th>When</th>
             <th>Time</th>
@@ -121,6 +122,7 @@
         </thead>
         <tbody>
           <tr v-for="(lh, i) in loginHistory" v-bind:key="i">
+            <td class="election" v-text="lh.ElectionName"></td>
             <td class="details" v-text="lh.Details"></td>
             <td class="nowrap" v-text="lh.age"></td>
             <td class="nowrap" v-text="lh.when"></td>
@@ -172,11 +174,11 @@
         </p>
         <div>
           <label>
-            Search:
+            Enter Name:
             <input accesskey="S" ref="searchBox" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
-          <button accesskey="C" v-on:click="resetSearch">Clear</button>
           <button v-on:click="showAll">Show All</button>
+          <button accesskey="C" v-on:click="resetSearch">Clear</button>
         </div>
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
@@ -221,8 +223,9 @@
         </div>
       </form>
     </div>
+
     <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open']">
-      <h2 v-text="savedLock ? 'Ballot' : 'Pool & Ballot'"></h2>
+      <h2 v-if="!savedLock" v-text="'Voting'"></h2>
       <p v-if="registration">
         You are registered as having voted: <strong>{{registration}}</strong>.
       </p>
@@ -241,41 +244,78 @@
         Be sure to submit your ballot before the election closes!
       </p>
 
-      <p class="lockInBtns">
+      <p class="lockInBtns" v-if="canLockIn || canUnlock">
         <span v-if="canUnlock">Submitted</span>
         <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
         <span v-if="canLockIn" class="unlocked">(not submitted)</span>
       </p>
-      <p v-if="pool.length < numToElect">You must add at least {{numToElect}} people before submitting your ballot.</p>
+      <p v-if="pool.length < numToElect">You must add {{numToElect}} people before submitting your ballot.</p>
 
-      <p v-if="!lockInVotes && pool.length">
+      @*<p v-if="!lockInVotes && pool.length">
         Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
-      </p>
-      <draggable id="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
-        <div v-for="(p, i) in pool"
+      </p>*@
+
+    <div class="beforePool">
+      My Ballot
+      <span>(The order of names does not matter)</span>
+    </div>
+
+      <draggable class="pool pool1" group="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
+
+        <div v-for="p in poolInCoreBallot"
              :key="p.Id"
              tabindex="0"
-             v-on:keydown="keydownInPool(p, i, $event)"
+             v-on:keydown="keydownInPool(p, p.index, $event)"
              v-bind:ref="'p' + p.Id"
-             v-bind:class="[i < lastInTop ? 'inTop' : i === lastInTop ? 'inTop' : 'inOther', i === lastInTop + 1 ? 'firstInOther' : '', p.moving ? 'moving' : '', p.Id < 0 ? 'random' : 'inList' ]">
-          <span class="num">{{i + 1}}</span>
+             v-bind:class="p.classes">
+          <span class="num">{{p.index + 1}}</span>
           <div v-html="p.Name"></div>
           <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
           <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
           <span role="button"
                 class="removeFromPool"
+                v-if="!p.empty"
+                v-on:click="removeFromPool(p)"
+                aria-label="Delete"
+                v-bind:title="'Remove' + (p.Id < 0 ? ' and forget' : '')"></span>
+        </div>
+
+      </draggable>
+      <div v-if="poolBeyondBallot.length && !savedLock" class="afterPool">
+        My pool of others that I'm considering
+      </div>
+
+      <draggable class="pool pool2" group="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
+
+        <div v-for="p in poolBeyondBallot"
+             :key="p.Id"
+             tabindex="0"
+             v-on:keydown="keydownInPool(p, p.index, $event)"
+             v-bind:ref="'p' + p.Id"
+             v-bind:class="p.classes">
+          <span class="num"></span>
+          <div v-html="p.Name"></div>
+          <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
+          <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
+          <span role="button"
+                class="removeFromPool"
+                v-if="!p.empty"
                 v-on:click="removeFromPool(p)"
                 aria-label="Delete"
                 v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
         </div>
+
       </draggable>
+
+
+
       <p v-if="!lockInVotes && pool.length">
         To sort the names using your keyboard, press <strong>Tab</strong> to focus,
         <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
       </p>
       <p v-if="!lockInVotes && pool.length">
-        Please note that when your ballot is submitted and processed, this entire pool will be deleted from TallyJ.
+        Please note that when your ballot is submitted and processed, this pool will be deleted from TallyJ.
       </p>
       <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">
         Your pool is empty. Search for people to add!
@@ -288,6 +328,6 @@
           <div class="printDiv">
           <button class="btn" v-on:click="printBallot">Print Ballot</button>
         </div>*@
-    </div>
   </div>
+</div>
 </div>

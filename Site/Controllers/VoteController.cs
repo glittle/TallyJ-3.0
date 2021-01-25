@@ -307,6 +307,7 @@ namespace TallyJ.Controllers
         }
         else
         {
+          var logHelper = new LogHelper();
           if (locked)
           {
             person.VotingMethod = VotingMethodEnum.Online;
@@ -323,7 +324,9 @@ namespace TallyJ.Controllers
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
 
-            new LogHelper().Add("Locked ballot");
+            // logHelper.Add("Locked ballot");
+            logHelper.Add("Submitted Ballot", false, UserSession.VoterId);
+
 
             var notificationHelper = new NotificationHelper();
             var notificationSent = notificationHelper.SendWhenBallotSubmitted(person, currentElection, out notificationType, out var error);
@@ -351,9 +354,9 @@ namespace TallyJ.Controllers
             person.RegistrationTime = null; // don't keep it visible
             person.RegistrationLog = log;
 
-            new LogHelper().Add("Unlocked ballot");
+            // logHelper.Add("Unlocked ballot");
+            logHelper.Add("Recalled Ballot", false, UserSession.VoterId);
           }
-
         }
 
         Db.SaveChanges();
@@ -447,15 +450,21 @@ namespace TallyJ.Controllers
 
       var ageCutoff = DateTime.Today.Subtract(TimeSpan.FromDays(14));
       var list = Db.C_Log
-        .Where(log => log.VoterId == voterId)
-        .Where(log => log.AsOf > ageCutoff)
-        .Where(log => !log.Details.Contains("schema")) // hide error codes
-        .OrderByDescending(log => log.AsOf)
-        .Take(19)
-        .Select(log => new
+        .GroupJoin(Db.Election, log => log.ElectionGuid, e => e.ElectionGuid, (log, eList) => new
         {
-          log.AsOf,
-          log.Details,
+          log,
+          ElectionName = eList.FirstOrDefault().Name ?? (log.ElectionGuid == null ? "" : "(removed)")
+        })
+        .Where(j => j.log.VoterId == voterId)
+        .Where(j => j.log.AsOf > ageCutoff)
+        .Where(j => !j.log.Details.Contains("schema")) // hide error codes
+        .OrderByDescending(j => j.log.AsOf)
+        .Take(19)
+        .Select(j => new
+        {
+          j.log.AsOf,
+          j.ElectionName,
+          j.log.Details,
         });
 
       return new

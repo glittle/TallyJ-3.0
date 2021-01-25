@@ -80,7 +80,7 @@ var vueOptions = {
       keepStatusCurrent: false,
       loadingLoginHistory: true,
       loginHistory: [],
-//      emailWhenOpen: false,
+      //      emailWhenOpen: false,
       emailWhenProcessed: false,
       emailCodesLoaded: false,
       randomFirst: '',
@@ -124,6 +124,72 @@ var vueOptions = {
     },
     useRandom: function () {
       return this.selectionProcess === 'R' || this.selectionProcess === 'B';
+    },
+    poolWithIndex: function () {
+      var list = this.pool
+        .filter(o => o)
+        .map((o, i) => {
+          o.index = i;
+          return o;
+        });
+
+      for (var j = list.length; j < this.numToElect; j++) {
+        list.push({
+          index: j,
+          inPool: true,
+          moving: false,
+          empty: true
+        });
+      }
+
+      var numToElect = this.numToElect;
+      var lastInTop = this.lastInTop;
+
+      list.forEach(o => {
+        o.classes = [];
+
+        if (o.index === 0) {
+          o.classes.push('startTop');
+        }
+
+        if (o.index < lastInTop) {
+          o.classes.push('showBottomBorder');
+        } 
+
+        if (o.index <= lastInTop) {
+          o.classes.push('inTop');
+        } else {
+          o.classes.push('inOther');
+        }
+
+        if (o.index === lastInTop) {
+          o.classes.push('endTop');
+        }
+
+        if (o.index === numToElect) {
+          o.classes.push('firstInOther');
+        }
+
+        if (o.moving) {
+          o.classes.push('moving');
+        }
+        if (o.ID < 0) {
+          o.classes.push('random');
+        } else {
+          o.classes.push('inList');
+        }
+
+        if (o.empty) {
+          o.classes.push('empty');
+        }
+      });
+      return list;
+    },
+    poolInCoreBallot: function () {
+      return this.poolWithIndex.filter(o => o && o.index < this.numToElect);
+    },
+    poolBeyondBallot: function () {
+      return this.poolWithIndex.filter(o => o && o.index >= this.numToElect);
     }
   },
   watch: {
@@ -181,7 +247,7 @@ var vueOptions = {
 
             // other info
             if (info.emailCodes) {
-//              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
+              //              vue.emailWhenOpen = info.emailCodes.indexOf('o') !== -1;
               vue.emailWhenProcessed = info.emailCodes.indexOf('p') !== -1;
             }
             vue.emailCodesLoaded = true;
@@ -426,10 +492,10 @@ var vueOptions = {
 
       $('#P' + this.nameList[this.searchResultRow].Id)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
-//    specialSearch: function (code) {
-//      this.resetSearch();
-//      voterHome.peopleHelper.Special(code, this.displaySearchResults);
-//    },
+    //    specialSearch: function (code) {
+    //      this.resetSearch();
+    //      voterHome.peopleHelper.Special(code, this.displaySearchResults);
+    //    },
     displaySearchResults: function (info) {
       voterHome.People = info.People;
       this.nameList = voterHome.People;
@@ -691,7 +757,7 @@ var vueOptions = {
         return;
 
       }
-      const nameLowerCase = person.Name.toLowerCase();
+      var nameLowerCase = person.Name.toLowerCase();
 
       // ensure that it is not a duplicate
       var existing = this.pool.find(function (p) {

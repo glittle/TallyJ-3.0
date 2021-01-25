@@ -11,7 +11,7 @@ body {
 body.VoteIndex {
   &.noCursor {
     #voterPage2 {
-      #pool {
+      .pool {
         > div {
           &:hover {
             border-color: transparent;
@@ -164,6 +164,9 @@ body.VoteIndex {
       background-color: @band2;
       //white-space: nowrap;
       &.Processed {
+        background-color: @onlineFuture;
+      }
+      &.Submitted{
         background-color: @onlineFuture;
       }
     }
@@ -353,7 +356,7 @@ body.VoteIndex {
         background-color: rgba(0,255,0,0.2);
 
         &:after {
-          content: '(in pool)';
+          content: '(selected)';
           margin-left: 10px;
           font-size: 80%;
           font-style: italic;
@@ -525,7 +528,7 @@ body.VoteIndex {
   }
 
   .movingInPool {
-    #pool {
+    .pool {
       div:active {
         color: green;
       }
@@ -537,7 +540,7 @@ body.VoteIndex {
   }
 
   .locked {
-    #pool {
+    .pool {
       > div {
         cursor: default;
         user-select: none;
@@ -567,20 +570,66 @@ body.VoteIndex {
 
   .poolSide {
     max-width: 400px;
+    max-height: 75vh;
+    overflow: auto;
   }
 
-  #pool {
+  .beforePool {
+    font-size: 1.3em;
+    margin: 1.5em 0 10px 0;
+    border-bottom: 1px solid #000;
+    position: relative;
+
+    span {
+      position: absolute;
+      bottom: 1px;
+      right: 0;
+      font-size: .7rem;
+      color: #777;
+    }
+  }
+
+  .afterPool {
+    font-size: 1.2em;
+    border-bottom: 1px solid #000;
+    margin: 30px 0 0 0;
+  }
+
+  .pool1 {
+    box-shadow: 0 0 20px rgba(0, 0, 0, .15), 0 0 10px 1px rgba(0, 0, 0, .43);
+    border-radius: 5px;
+    background-color: #eee;
+  }
+
+  .pool {
     > div {
       display: flex;
       align-items: center;
-      margin: 3px 0;
+      margin: 3px 0 -1px;
       padding: 3px 0;
       font-size: 110%;
       border: 2px solid transparent;
       cursor: ns-resize;
+      min-height: 21px;
+      position: relative;
+
+      &.inList {
+      }
+
+      &.showBottomBorder {
+        //border-bottom: 1px solid grey;
+      }
 
       &:hover {
         border-color: grey;
+      }
+
+      &.empty {
+        cursor: default;
+
+        &:hover {
+          border-color: transparent;
+        }
       }
 
       &.sortable-ghost {
@@ -595,16 +644,45 @@ body.VoteIndex {
       }
 
       &.inTop {
+        font-weight: bold;
+        // &:before, &:after {
+        //   content: " ";
+        //   height: 108%;
+        //   position: absolute;
+        //   top: -2px;
+        //   width: 10px;
+        // }
+        //
+        // &:before {
+        //   box-shadow: -10px 0 10px -10px inset;
+        //   left: -10px;
+        // }
+        //
+        // &:after {
+        //   box-shadow: 10px 0 10px -10px inset;
+        //   right: -10px;
+        // }
         background-color: @top;
         transition: background-color 2s linear;
       }
 
-      &.firstInOther {
-        border-top: double 3px darkgray;
+      &.startTop {
+        //&:before{
+        //  content: " ";
+        //  height: 10px;
+        //  position: absolute;
+        //  bottom: 0;
+        //  box-shadow: 0 -10px 10px -10px inset;
+        //}
+      }
+
+      &.endTop {
+        //margin-bottom: 10px;
+        //box-shadow: 0 1px 5px 3px #00000030;
       }
 
       &.inOther {
-        color: #333;
+        color: #666;
       }
 
       u {
@@ -658,6 +736,7 @@ body.VoteIndex {
 
     .poolSide {
       max-width: none;
+      max-height: none;
     }
   }
 
