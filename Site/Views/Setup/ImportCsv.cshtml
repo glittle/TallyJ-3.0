@@ -65,6 +65,9 @@
           Content Encoding
         </th>
         <th>
+          Headers<br/>on Line
+        </th>
+        <th>
           Upload Time
         </th>
         <th>
@@ -78,8 +81,8 @@
     <tbody id="uploadListBody">
       <tr data-rowid="{C_RowId}" class="{ProcessingStatus} {RowClass}">
         <td class="Actions">
-          <div class="MakeActive" title="Select this file for mapping columns and importing people">Select</div>
-          <div class="CopyMap" title="Copy the column mapping information from this file to the selected one">Copy Mapping</div>
+          <div class="MakeActive btn btn-mini" title="Select this file for mapping columns and importing people">Select</div>
+          <div class="CopyMap btn btn-mini" title="Copy the column mapping information from this file to the selected one">Copy Mapping</div>
           <span>(selected)</span>
         </td>
         <td>
@@ -89,8 +92,13 @@
           {OriginalFileName}
         </td>
         <td>
-          <select data-value="{CodePage}">
+          <select data-value="{CodePage}" class="codePage">
             @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+          </select>
+        </td>
+        <td>
+          <select data-value="{FirstDataRow}" class="dataRow">
+            @Enumerable.Range(1, 10).Select(i => "<option value='{0}'>{1}</option>".FilledWith(i + 1, i)).JoinedAsString().AsRawHtml()
           </select>
         </td>
         <td>
@@ -119,7 +127,7 @@
   If you have already done that, it does not need to be done again.
 </p>
 <div class="fieldSelector">
-  <span>Number of columns found: <span id="numColumns">-</span></span>
+  <div class="numFound">Number of columns found: <span id="numColumns">-</span></div>
   @*<button type="button" id="btnPrepareFields">
     Re-analyze the file and get column names
   </button>*@
@@ -166,6 +174,11 @@
 </h2>
 <p>
   All the records in the file will be processed and added to the names already in the database. Any that match exactly will not be added again.
+</p>
+<p>
+  After importing, use the "Edit People's Names" page to carefully review the list.
+</p>
+<p>
   If you need to erase all the currently loaded names (before ballots are entered), use the "Delete all People Records" below before importing again.
 </p>
 <div class="importDiv">

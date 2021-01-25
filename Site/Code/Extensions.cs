@@ -202,7 +202,7 @@ namespace TallyJ.Code
     {
       return input ? null : (bool?)false;
     }
-    
+
     /// <Summary>Returns true if this bool? is true</Summary>
     // public static bool AsBoolean(this bool? input, bool? defaultValue = null)
     // {
@@ -940,5 +940,31 @@ namespace TallyJ.Code
       }
     }
 
+    public static string GetLinesAfterSkipping(this string input, int numFirstRowsToSkip)
+    {
+      var row = 0;
+      var stringBuilder = new StringBuilder(input.Length);
+      const string crlf = "\r\n";
+      using (var sr = new StringReader(input))
+      {
+        string line;
+        while ((line = sr.ReadLine()) != null)
+        {
+          row++;
+          if (row <= numFirstRowsToSkip)
+          {
+            continue;
+          }
+
+          if (stringBuilder.Length > 0)
+          {
+            stringBuilder.Append(crlf);
+          }
+          stringBuilder.Append(line);
+        }
+      }
+
+      return stringBuilder.ToString();
+    }
   }
 }

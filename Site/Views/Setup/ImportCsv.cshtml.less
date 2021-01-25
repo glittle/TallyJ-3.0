@@ -179,7 +179,7 @@ tr.Uploaded .CopyMap {
 }
 
 #fieldSelector > div {
-  width: 100px;
+  min-width: 100px;
   display: inline-block;
   background-color: #ddd;
   margin: 0 0 0 1px;
@@ -187,7 +187,7 @@ tr.Uploaded .CopyMap {
 }
 
 #fieldSelector > div.Col.FirstCol {
-  margin-left: 22px;
+  // margin-left: 22px;
 }
 
 #fieldSelector > div.Col {
@@ -230,21 +230,35 @@ tr.Uploaded .CopyMap {
 }
 
 #fieldSelector > div.ImportTips {
-  height: 100%;
-  position: absolute;
-  width: 20px;
+  //height: 100%;
+  //position: absolute;
   background-color: transparent;
+  vertical-align: top;
+  width: auto;
+  min-width: 0;
+
+
+  div {
+    white-space: nowrap;
+    text-align: right;
+    height: 20px;
+    margin: 3px 0 5px;
+  }
 }
 
 .ImportTips span {
-  display: inline-block;
-  position: absolute;
-  right: 0px;
-  top: 2px;
+  //display: inline-block;
+  //position: absolute;
+  //right: 0px;
+  //top: 2px;
 }
 
 .ImportTips span#qTipImportFoot {
-  top: 27px;
+  // top: 27px;
+}
+
+.numFound{
+  margin: 1em 0;
 }
 
 #mappingError {

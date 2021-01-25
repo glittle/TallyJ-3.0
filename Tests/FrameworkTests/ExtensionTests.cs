@@ -362,6 +362,32 @@ namespace Tests.FrameworkTests
 
       46.PercentOf(1000, -2).ShouldEqual("4.6%");
     }
+
+    [TestMethod]
+    public void GetLinesAfterSkipping_Test1()
+    {
+      var s = "123\n234\n345";
+
+      var withRN = "123\r\n234\r\n345";
+
+      s.GetLinesAfterSkipping(0).ShouldEqual(withRN);
+      s.GetLinesAfterSkipping(1).ShouldEqual("234\r\n345");
+      s.GetLinesAfterSkipping(2).ShouldEqual("345");
+      s.GetLinesAfterSkipping(3).ShouldEqual("");
+
+      var s2 = "123\r234\r345";
+      s2.GetLinesAfterSkipping(0).ShouldEqual(withRN);
+      s2.GetLinesAfterSkipping(1).ShouldEqual("234\r\n345");
+      s2.GetLinesAfterSkipping(2).ShouldEqual("345");
+      s2.GetLinesAfterSkipping(3).ShouldEqual("");
+
+      var s3 = "123\r\n234\r\n345";
+      s3.GetLinesAfterSkipping(0).ShouldEqual(withRN);
+      s3.GetLinesAfterSkipping(1).ShouldEqual("234\r\n345");
+      s3.GetLinesAfterSkipping(2).ShouldEqual("345");
+      s3.GetLinesAfterSkipping(3).ShouldEqual("");
+
+    }
   }
 
 }

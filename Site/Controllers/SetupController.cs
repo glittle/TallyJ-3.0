@@ -221,6 +221,12 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
+    public JsonResult FileDataRow(int id, int firstDataRow)
+    {
+      return new ImportCsvModel().SaveDataRow(id, firstDataRow);
+    }
+
+    [ForAuthenticatedTeller]
     public JsonResult DeleteAllPeople()
     {
       new LogHelper().Add("Deleted all people");

@@ -106,10 +106,31 @@
       });
     });
 
-    $('#uploadListBody').on('change', 'select', function () {
+    $('#uploadListBody').on('change', 'select.codePage', function () {
       var select = $(this);
       ShowStatusDisplay('Saving...');
-      CallAjaxHandler(publicInterface.controllerUrl + '/FileCodePage', { id: select.parents('tr').data('rowid'), cp: select.val() }, function (info) {
+      CallAjaxHandler(publicInterface.controllerUrl + '/FileCodePage',
+        {
+           id: select.parents('tr').data('rowid'), cp: select.val()
+        }, function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+        }
+        else {
+          ShowStatusSuccess('Saved');
+          getFieldsInfo();
+        }
+      });
+    });
+
+    $('#uploadListBody').on('change', 'select.dataRow', function () {
+      var select = $(this);
+      ShowStatusDisplay('Saving...');
+      CallAjaxHandler(publicInterface.controllerUrl + '/FileDataRow',
+        {
+          id: select.parents('tr').data('rowid'),
+          firstDataRow: select.val()
+        }, function (info) {
         if (info.Message) {
           ShowStatusFailed(info.Message);
         }
@@ -211,8 +232,13 @@
   function getFieldsInfo() {
     ShowStatusDisplay('Reading columns...');
     CallAjaxHandler(publicInterface.controllerUrl + '/ReadFields', { id: local.activeFileRowId }, function (info) {
-      showFields(info);
-      ResetStatusDisplay();
+      if (info.Success) {
+        showFields(info);
+        ResetStatusDisplay();
+      } else {
+        $('#fieldSelector').hide();
+        ShowStatusFailed(info.Message);
+      }
     });
 
   };
@@ -300,9 +326,9 @@
       }
     });
   };
-  var showFields = function (info) {
+  function showFields(info) {
     var host = $('#fieldSelector')
-      .html('<div class=ImportTips><span class="ui-icon ui-icon-info" id="qTipImportHead"></span><span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div>')
+      .html('<div class=ImportTips><div>Source<span class="ui-icon ui-icon-info" id="qTipImportHead"></span></div><div>TallyJ <span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div></div>')
       .show();
     var options = '<option value="{value}">{text}</option>'.filledWithEach($.map(info.possible, function (f) {
       if (f === local.statusFieldName) {
@@ -406,7 +432,7 @@
 
     showUploads(publicInterface);
 
-    if (activeUploadFileRow().length == 0) {
+    if (!activeUploadFileRow().length) {
       local.activeFileRowId = 0;
       SetInStorage('ActiveUploadRowId', 0);
     } else {

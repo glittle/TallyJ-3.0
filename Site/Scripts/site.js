@@ -60,7 +60,7 @@ function Onload() {
   }
   PrepareStatusDisplay();
 
-  if (typeof(ELEMENT) !== 'undefined') {
+  if (typeof (ELEMENT) !== 'undefined') {
     ELEMENT.locale(ELEMENT.lang.en);
   }
 
@@ -962,7 +962,7 @@ function CallAjaxHandler(handlerUrl,
     success: function (data, textStatus, jqXhr) {
       if (HasErrors(data, jqXhr)) return;
 
-      ResetStatusDisplay();
+      //      ResetStatusDisplay();
 
       if (typeof callbackWithInfo !== 'undefined') {
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);

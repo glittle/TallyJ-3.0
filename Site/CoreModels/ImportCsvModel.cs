@@ -13,6 +13,7 @@ using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
+using Twilio.Rest.Voice.V1;
 
 namespace TallyJ.CoreModels
 {
@@ -108,6 +109,7 @@ namespace TallyJ.CoreModels
           vi.FileType,
           vi.ProcessingStatus,
           vi.OriginalFileName,
+          vi.FirstDataRow,
           vi.CodePage,
           vi.Messages
         })
@@ -173,9 +175,32 @@ namespace TallyJ.CoreModels
     private JsonResult ReadFields(ImportFile importFile)
     {
       var importFileCodePage = importFile.CodePage ?? DetectCodePage(importFile.Contents);
-      var textReader = new StringReader(importFile.Contents.AsString(importFileCodePage));
-      var csv = new CsvReader(textReader, true) { SkipEmptyLines = true };
-      var csvHeaders = csv.GetFieldHeaders();
+      var fileString = importFile.Contents.AsString(importFileCodePage);
+
+      var firstDataRow = importFile.FirstDataRow.AsInt();
+      if (firstDataRow > 2)
+      {
+        // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
+      }
+
+      var textReader = new StringReader(fileString);
+      var csv = new CsvReader(textReader, true)
+      {
+        MissingFieldAction = MissingFieldAction.ReplaceByEmpty
+      };
+
+    var csvHeaders = csv.GetFieldHeaders();
+
+      if (csvHeaders.Length == 1)
+      {
+        // likely failed to parse in this codepage
+        return new
+        {
+          Success = false,
+          Message = "Unable to parse headers. Is this the correct content encoding?"
+        }.AsJsonResult();
+      }
 
       //mapping:   csv->db,csv->db
       var currentMappings =
@@ -212,6 +237,7 @@ namespace TallyJ.CoreModels
 
       return new
       {
+        Success = true,
         possible = dbFields,
         csvFields = csvHeaders.Select(header => new
         {
@@ -225,12 +251,27 @@ namespace TallyJ.CoreModels
 
     private int? DetectCodePage(byte[] importFileContents)
     {
-      if (importFileContents.Length > 3)
+      if (importFileContents.Length > 4)
       {
-        if(importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
+        // if (importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
+        // {
+        //   // return 65001;
+        // }
+
+        if ((importFileContents[0] == 0xef && importFileContents[1] == 0xbb && importFileContents[2] == 0xbf)) // utf-8 
         {
-          return 65001;
+          return 65001; // utf8
         }
+
+        if ((importFileContents[0] == 0xff && importFileContents[1] == 0xfe) || // ucs-2le, ucs-4le, and ucs-16le 
+            (importFileContents[0] == 0xfe && importFileContents[1] == 0xff) || // utf-16 and ucs-2 
+            (importFileContents[0] == 0 && importFileContents[1] == 0 && importFileContents[2] == 0xfe && importFileContents[3] == 0xff)) // ucs-4 
+        {
+          // ?? will others work with this??
+          return 1200; // utf16
+        }
+
+        return 1252;
       }
 
       return null;
@@ -279,9 +320,24 @@ namespace TallyJ.CoreModels
       }
 
       var start = DateTime.Now;
-      var textReader = new StringReader(file.Contents.AsString(file.CodePage));
-      var csv = new CsvReader(textReader, true)
+      var fileString = file.Contents.AsString(file.CodePage);
+
+      var firstDataRow = file.FirstDataRow.AsInt();
+      var numFirstRowsToSkip = firstDataRow - 2;
+      if (numFirstRowsToSkip > 0)
       {
+        // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        fileString = fileString.GetLinesAfterSkipping(numFirstRowsToSkip);
+      }
+      else
+      {
+        numFirstRowsToSkip = 0;
+      }
+
+      var textReader = new StringReader(fileString);
+      var csv = new CsvReader(textReader, true, ',', '"', '"', '#', ValueTrimmingOptions.All, 4096, null)
+      {
+        // had to provide all parameters in order to set ValueTrimmingOption.All
         SkipEmptyLines = false,
         MissingFieldAction = MissingFieldAction.ReplaceByEmpty,
         SupportsMultiline = false,
@@ -333,7 +389,7 @@ namespace TallyJ.CoreModels
       var personModel = new PeopleModel();
       // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
-      var currentLineNum = 1; // including header row
+      var currentLineNum = numFirstRowsToSkip > 0 ? numFirstRowsToSkip : 1; // including header row
       var rowsWithErrors = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
@@ -351,13 +407,20 @@ namespace TallyJ.CoreModels
 
       while (csv.ReadNextRecord() && continueReading)
       {
-        currentLineNum++;
+        if (csv.GetCurrentRawData() == null)
+        {
+          continue;
+        }
+
+        // currentLineNum++;
+        currentLineNum = numFirstRowsToSkip + (int)csv.CurrentRecordIndex + 1;
 
         var valuesSet = false;
         var namesFoundInRow = 0;
         var errorInRow = false;
 
         var duplicateInFileSearch = currentPeople.AsQueryable();
+        var doDupQuery = false;
 
         var person = new Person
         {
@@ -366,11 +429,13 @@ namespace TallyJ.CoreModels
 
         foreach (var currentMapping in validMappings)
         {
+          var csvColumnName = currentMapping[0];
           var dbFieldName = currentMapping[1];
+
           string value;
           try
           {
-            value = csv[currentMapping[0]];
+            value = csv[csvColumnName] ?? "";
           }
           catch (Exception e)
           {
@@ -420,6 +485,18 @@ namespace TallyJ.CoreModels
                 }
               }
               break;
+            case "FirstName":
+            case "LastName":
+              if (value.Trim() == "")
+              {
+                result.Add($"~E Line {currentLineNum} - {dbFieldName} must not be blank");
+              }
+              else
+              {
+                person.SetPropertyValue(dbFieldName, value);
+              }
+              break;
+
             default:
               person.SetPropertyValue(dbFieldName, value);
               break;
@@ -429,6 +506,7 @@ namespace TallyJ.CoreModels
 
           if (value.HasContent())
           {
+            doDupQuery = true;
             switch (dbFieldName)
             {
               case "LastName":
@@ -503,7 +581,7 @@ namespace TallyJ.CoreModels
                       result.Add($"~E Line {currentLineNum} - Duplicate phone number: {value}");
                       errorInRow = true;
                     }
-                 
+
                     knownPhones.Add(value);
                   }
 
@@ -539,13 +617,26 @@ namespace TallyJ.CoreModels
           }
         }
 
-        var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).ToList();
-        if (duplicates.Any())
+        if (doDupQuery)
         {
-          addRow = false;
-          peopleSkipped++;
-          var dupInfo = duplicates.Select(n => n == -1 ? "in existing records" : "on line " + n);
-          result.Add($"~E Line {currentLineNum} - Matching identifying names found {dupInfo.JoinedAsString(", ")}");
+          var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).Distinct().ToList();
+          if (duplicates.Any())
+          {
+            addRow = false;
+
+            if (duplicates.All(n => n == -1))
+            {
+              result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName} - skipped - Matching person found in existing records");
+            }
+            else
+            {
+              peopleSkipped++;
+              foreach (var n in duplicates.Where(n => n > 0))
+              {
+                result.Add($"~E Line {currentLineNum} - {person.FirstName} {person.LastName} - Duplicate person found on line {n}");
+              }
+            }
+          }
         }
 
 
@@ -560,6 +651,8 @@ namespace TallyJ.CoreModels
 
           peopleToLoad.Add(person);
 
+          result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");
+
           peopleAdded++;
         }
 
@@ -568,6 +661,12 @@ namespace TallyJ.CoreModels
         if (currentLineNum % 100 == 0)
         {
           hub.ImportInfo(currentLineNum, peopleAdded);
+        }
+
+        if (result.Count(s => s.StartsWith("~E")) == 10)
+        {
+          result.Add("~E Import aborted after 10 errors");
+          break;
         }
 
       }
@@ -635,7 +734,7 @@ namespace TallyJ.CoreModels
       }
 
       var resultsForLog = result.Where(s => !s.StartsWith("~"));
-      new LogHelper().Add("Imported file #" + rowId + ": " + resultsForLog.JoinedAsString("\r"), true);
+      new LogHelper().Add("Imported file #" + rowId + ":\r" + resultsForLog.JoinedAsString("\r"), true);
 
       return new
       {
@@ -695,6 +794,22 @@ namespace TallyJ.CoreModels
       }
 
       fileInfo.CodePage = codepage;
+
+      Db.SaveChanges();
+
+      return new { Message = "" }.AsJsonResult();
+    }
+
+    public JsonResult SaveDataRow(int id, int firstDataRow)
+    {
+      var fileInfo = Db.ImportFile.SingleOrDefault(
+        fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == id);
+      if (fileInfo == null)
+      {
+        throw new ApplicationException("File not found");
+      }
+
+      fileInfo.FirstDataRow = firstDataRow;
 
       Db.SaveChanges();
 
