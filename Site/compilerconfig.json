@@ -1,10 +1,11 @@
-﻿[
+[
   {
     "outputFile": "Content/Site.css",
     "inputFile": "Content/Site.less",
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -15,6 +16,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -25,6 +27,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -35,6 +38,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -45,6 +49,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -55,6 +60,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -65,6 +71,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -75,13 +82,15 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
   },
   {
     "outputFile": "Views/Ballots/BallotNormal.cshtml.css",
-    "inputFile": "Views/Ballots/BallotNormal.cshtml.less"
+    "inputFile": "Views/Ballots/BallotNormal.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Setup/ImportCsv.cshtml.css",
@@ -89,6 +98,7 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
@@ -99,60 +109,69 @@
     "minify": {
       "enabled": false
     },
+    "sourceMap": false,
     "options": {
       "sourceMap": true
     }
   },
   {
     "outputFile": "Views/After/Reports.cshtml.css",
-    "inputFile": "Views/After/Reports.cshtml.less"
+    "inputFile": "Views/After/Reports.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Ballots/Reconcile.cshtml.css",
-    "inputFile": "Views/Ballots/Reconcile.cshtml.less"
+    "inputFile": "Views/Ballots/Reconcile.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/After/Monitor.cshtml.css",
-    "inputFile": "Views/After/Monitor.cshtml.less"
+    "inputFile": "Views/After/Monitor.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Setup/People.cshtml.css",
-    "inputFile": "Views/Setup/People.cshtml.less"
+    "inputFile": "Views/Setup/People.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Ballots/BallotSingle.cshtml.css",
-    "inputFile": "Views/Ballots/BallotSingle.cshtml.less"
+    "inputFile": "Views/Ballots/BallotSingle.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Ballots/SortBallots.cshtml.css",
-    "inputFile": "Views/Ballots/SortBallots.cshtml.less"
+    "inputFile": "Views/Ballots/SortBallots.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Setup/EditPerson.cshtml.css",
-    "inputFile": "Views/Setup/EditPerson.cshtml.less"
+    "inputFile": "Views/Setup/EditPerson.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Voter/VoterHome.cshtml.css",
-    "inputFile": "Views/Voter/VoterHome.cshtml.less"
+    "inputFile": "Views/Voter/VoterHome.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/After/Presenter.cshtml.css",
-    "inputFile": "Views/After/Presenter.cshtml.less"
+    "inputFile": "Views/After/Presenter.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/SysAdmin/Index.cshtml.css",
-    "inputFile": "Views/SysAdmin/Index.cshtml.less"
-  },
-  {
-    "outputFile": "Views/Public/VoterLogin.cshtml.css",
-    "inputFile": "Views/Public/VoterLogin.cshtml.less"
+    "inputFile": "Views/SysAdmin/Index.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Vote/VoteHome.cshtml.css",
-    "inputFile": "Views/Vote/VoteHome.cshtml.less"
+    "inputFile": "Views/Vote/VoteHome.cshtml.less",
+    "sourceMap": false
   },
   {
     "outputFile": "Views/Setup/Notify.cshtml.css",
-    "inputFile": "Views/Setup/Notify.cshtml.less"
+    "inputFile": "Views/Setup/Notify.cshtml.less",
+    "sourceMap": false
   }
 ]
