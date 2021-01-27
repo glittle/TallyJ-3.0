@@ -41,7 +41,7 @@
     <p v-if="loading">Searching for your email address in available elections...</p>
 
     <p v-if="!loading">
-      If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller for assistance.
+      If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller or primary contact for assistance.
     </p>
 
   </div>
@@ -54,6 +54,7 @@
       <thead>
         <tr>
           <th class="ename">Election</th>
+          <th class="contact">Primary Contact</th>
           <th class="online">Online Voting</th>
           @*<th class="pname">Your Name in the Election</th>*@
           <th class="vmethod">Voting details</th>
@@ -66,6 +67,11 @@
             <div class="n">{{e.Name}}</div>
             <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
             <div class="t">{{e.Type_Display}} Election</div>
+          </td>
+          <td class="contact">
+            <div class="n" v-if="e.EmailFromName">{{e.EmailFromName}}</div>
+            <div class="c" v-if="e.EmailFromAddress">{{e.EmailFromAddress}}</div>
+            <div class="c" v-if="!e.EmailFromAddress && !e.EmailFromName">(Not set)</div>
           </td>
           <td class="online center" v-html="e.Status_Display"></td>
           @*<td class="pname" v-text="e.person.name"></td>*@
@@ -231,7 +237,7 @@
       </p>
       <div v-if="registration && registration !== 'Online'">
         <p><span class="OtherRegistration">This online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
-        <p>If that is not correct, please contact the head teller of this election before the election is closed.</p>
+        <p>If that is not correct, please contact the head teller or primary contact for this election before the election is closed.</p>
       </div>
       <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
         <strong>You have completed online voting in this election.</strong>

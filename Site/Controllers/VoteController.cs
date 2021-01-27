@@ -409,6 +409,8 @@ namespace TallyJ.Controllers
           j.e.Convenor,
           j.e.ElectionType,
           j.e.DateOfElection,
+          j.e.EmailFromAddress,
+          j.e.EmailFromName,
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,
