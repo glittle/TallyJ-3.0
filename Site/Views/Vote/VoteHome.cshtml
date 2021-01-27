@@ -261,7 +261,15 @@
       <span>(The order of names does not matter)</span>
     </div>
 
-      <draggable class="pool pool1" group="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
+      <draggable class="pool"
+                 :class="{movingIntoTop: movingIntoTop}"
+                 id="pool1"
+                 group="pool" 
+                 v-model="poolInCoreBallot" 
+                 v-on:change="poolChangedCore" 
+                 v-on:end="movingDone"
+                 :move="movingStart"
+                 :disabled="lockInVotes">
 
         <div v-for="p in poolInCoreBallot"
              :key="p.Id"
@@ -286,7 +294,14 @@
         My pool of others that I'm considering
       </div>
 
-      <draggable class="pool pool2" group="pool" v-model="pool" v-on:end="savePool" :disabled="lockInVotes">
+      <draggable class="pool"
+                 id="pool2"
+                 group="pool" 
+                 v-model="poolBeyondBallot"  
+                 v-on:change="poolChangedBeyond"                  
+                 v-on:end="movingDone"
+                 :move="movingStart"
+                 :disabled="lockInVotes">
 
         <div v-for="p in poolBeyondBallot"
              :key="p.Id"

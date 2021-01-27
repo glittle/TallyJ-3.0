@@ -89,7 +89,8 @@ var vueOptions = {
       randomResult: '',
       addRandomToList: false,
       //      hasLocalId: false,
-      meditate: false
+      meditate: false,
+      movingIntoTop: false
     };
   },
   computed: {
@@ -154,7 +155,7 @@ var vueOptions = {
 
         if (o.index < lastInTop) {
           o.classes.push('showBottomBorder');
-        } 
+        }
 
         if (o.index <= lastInTop) {
           o.classes.push('inTop');
@@ -185,11 +186,22 @@ var vueOptions = {
       });
       return list;
     },
-    poolInCoreBallot: function () {
-      return this.poolWithIndex.filter(o => o && o.index < this.numToElect);
+    poolInCoreBallot: {
+      get: function () {
+        return this.poolWithIndex.filter(o => o && o.index < this.numToElect);
+      },
+      set: function (v) {
+        //        console.log('in', v);
+      }
     },
-    poolBeyondBallot: function () {
-      return this.poolWithIndex.filter(o => o && o.index >= this.numToElect);
+    poolBeyondBallot:
+    {
+      get: function () {
+        return this.poolWithIndex.filter(o => o && o.index >= this.numToElect);
+      },
+      set: function (v) {
+        //        console.log('beyond', v);
+      }
     }
   },
   watch: {
@@ -217,7 +229,8 @@ var vueOptions = {
           if (vue.$refs.firstInput) {
             vue.$refs.firstInput.focus();
           }
-        }, 100);
+        },
+          100);
       }
     }
   },
@@ -227,6 +240,38 @@ var vueOptions = {
     this.getElectionList();
   },
   methods: {
+    poolChangedCore(ev) {
+      //      console.log('core', ev);
+      this.poolChangedInner(0, ev.added || ev.moved);
+    },
+    poolChangedBeyond(ev) {
+      //      console.log('beyond', ev);
+      this.poolChangedInner(this.numToElect, ev.added || ev.moved);
+    },
+    poolChangedInner(offset, action) {
+      if (action) {
+        // move from old to new location
+        var fromIndex = action.element.index;
+        var toIndex = offset + action.newIndex;
+
+        //        console.log(fromIndex, toIndex);
+
+        var beingMoved = this.pool.splice(fromIndex, 1)[0];
+        if (fromIndex < toIndex) {
+          //          toIndex += -2;
+        }
+
+        this.pool.splice(toIndex, 0, beingMoved);
+      }
+    },
+    movingStart(ev) {
+      if (ev.from.id === 'pool2' && ev.to.id === 'pool1') {
+        this.movingIntoTop = true;
+      }
+    },
+    movingDone() {
+      this.movingIntoTop = false;
+    },
     toggleMeditate: function () {
       this.meditate = !this.meditate;
     },
@@ -572,6 +617,9 @@ var vueOptions = {
             } else {
               // move cursor
               var next = ev.target.nextElementSibling;
+              if (!next && ev.target.classList.contains('inTop')) {
+                next = $('#pool2 > div')[0];
+              }
               if (next) {
                 setTimeout(function () {
                   next.focus();
@@ -590,6 +638,10 @@ var vueOptions = {
             } else {
               // move cursor
               var prev = ev.target.previousElementSibling;
+              if (!prev && ev.target.classList.contains('inOther')) {
+                prev = $('#pool1 > div').last()[0];
+              }
+
               if (prev) {
                 setTimeout(function () {
                   prev.focus();
@@ -655,6 +707,8 @@ var vueOptions = {
       var vue = this;
       this.nameList.forEach(function (p) {
         p.inPool = false;
+        p.index = 0;
+        p.classes = [];
       });
       vue.pool = [];
       poolItems.forEach(function (item) {

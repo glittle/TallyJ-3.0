@@ -895,6 +895,7 @@
     <Content Include="Reports\BallotsSame.cshtml" />
     <None Include="Properties\PublishProfiles\Babak 1.pubxml" />
     <None Include="Properties\PublishProfiles\Local Files 3.pubxml" />
+    <None Include="Properties\PublishProfiles\TallyJ v3 UAT.pubxml" />
     <None Include="Properties\PublishProfiles\Win16a BETA 3 VM IIS.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
@@ -1129,6 +1130,9 @@
     </None>
     <None Include="Web.Standalone.config">
       <SubType>Designer</SubType>
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.TallyJ v3 UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.TallyJ3-staging - Web Deploy.config">

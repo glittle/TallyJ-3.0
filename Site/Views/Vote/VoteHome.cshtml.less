@@ -166,7 +166,8 @@ body.VoteIndex {
       &.Processed {
         background-color: @onlineFuture;
       }
-      &.Submitted{
+
+      &.Submitted {
         background-color: @onlineFuture;
       }
     }
@@ -595,10 +596,16 @@ body.VoteIndex {
     margin: 30px 0 0 0;
   }
 
-  .pool1 {
+  #pool1 {
     box-shadow: 0 0 20px rgba(0, 0, 0, .15), 0 0 10px 1px rgba(0, 0, 0, .43);
     border-radius: 5px;
     background-color: #eee;
+
+    &.movingIntoTop {
+      .sortable-ghost ~ .endTop {
+        background-color: #fff;
+      }
+    }
   }
 
   .pool {
@@ -707,6 +714,7 @@ body.VoteIndex {
         padding: 0 5px 0 10px;
         color: #9c3838;
         cursor: pointer;
+        font-weight: bold;
 
         &:before {
           content: '✗';
