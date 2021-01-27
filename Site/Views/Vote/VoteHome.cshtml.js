@@ -95,7 +95,7 @@ var vueOptions = {
   },
   computed: {
     canAddRandom: function () {
-      return this.randomFirst && this.randomLast;
+      return [this.randomFirst, this.randomLast, this.randomOtherInfo].filter(function (s) { return s.trim() }).length > 1;
     },
     lastInTop: function () {
       return this.numToElect - 1;
@@ -249,19 +249,17 @@ var vueOptions = {
       this.poolChangedInner(this.numToElect, ev.added || ev.moved);
     },
     poolChangedInner(offset, action) {
+      var vue = this;
+
       if (action) {
         // move from old to new location
         var fromIndex = action.element.index;
         var toIndex = offset + action.newIndex;
 
-        //        console.log(fromIndex, toIndex);
-
         var beingMoved = this.pool.splice(fromIndex, 1)[0];
-        if (fromIndex < toIndex) {
-          //          toIndex += -2;
-        }
-
         this.pool.splice(toIndex, 0, beingMoved);
+
+        vue.savePool();
       }
     },
     movingStart(ev) {
@@ -805,12 +803,12 @@ var vueOptions = {
         Id: nextFakeId,
       };
       person.Name = `${person.First} ${person.Last}`;
-      if (person.Name.trim().indexOf(' ') === -1) {
-        // only have one name
-        this.randomResult = 'Require both First and Last name.';
-        return;
-
-      }
+      //      if (person.Name.trim().indexOf(' ') === -1) {
+      //        // only have one name
+      //        this.randomResult = 'Require both First and Last name.';
+      //        return;
+      //
+      //      }
       var nameLowerCase = person.Name.toLowerCase();
 
       // ensure that it is not a duplicate

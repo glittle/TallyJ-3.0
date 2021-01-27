@@ -946,6 +946,7 @@
     if (!selectRawVote(ev, true)) {
       return;
     }
+    showRelevantTabs();
 
     var btn = $(ev.target);
     var host = btn.closest('.rawVote');
