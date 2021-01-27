@@ -962,7 +962,7 @@ function CallAjaxHandler(handlerUrl,
     success: function (data, textStatus, jqXhr) {
       if (HasErrors(data, jqXhr)) return;
 
-      //      ResetStatusDisplay();
+      ResetStatusDisplay();
 
       if (typeof callbackWithInfo !== 'undefined') {
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
