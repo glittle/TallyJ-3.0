@@ -46,7 +46,8 @@
 
   </div>
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
-    None of these elections are available for you to vote in at this time. When an election is available, you will be able to select it.
+    None of these elections are available for you to vote in at this time.<br> 
+    When an election is available, you will be able to select it.
   </p>
   <div class="electionListDiv">
     <p v-if="!loading && !elections.length" class="noElections">No elections found.</p>
@@ -66,7 +67,7 @@
           <td class="ename">
             <div class="n">{{e.Name}}</div>
             <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
-            <div class="t">{{e.Type_Display}} Election</div>
+            <div class="t">{{e.Type_Display}}</div>
           </td>
           <td class="contact">
             <div class="n" v-if="e.EmailFromName">{{e.EmailFromName}}</div>
