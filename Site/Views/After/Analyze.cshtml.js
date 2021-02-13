@@ -407,7 +407,7 @@
       null,
       function (info) {
         if (info.success) {
-          ShowStatusSuccess(info.Message);
+          ShowStatusSuccess(info.Message || 'Done');
           setTimeout(function() {
             runAnalysis(false);
           }, 1000);

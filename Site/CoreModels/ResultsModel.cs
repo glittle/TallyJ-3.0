@@ -136,7 +136,7 @@ namespace TallyJ.CoreModels
           : 0;
         if (unprocessedOnlineBallots > 0)
         {
-          issues.Add($"Online ballots ready to be created: {unprocessedOnlineBallots}");
+          issues.Add($"Online ballots waiting to be accepted: {unprocessedOnlineBallots}");
         }
 
         if (resultSummaryFinal.BallotsNeedingReview != 0 || issues.Any())
