@@ -485,7 +485,7 @@ body.VoteIndex {
     }
 
     .searchBox {
-      width: 100px;
+      width: 140px;
     }
   }
 
@@ -761,20 +761,39 @@ body.VoteIndex {
   }
 }
 
-@media print{
+@media print {
   #voterPage2 {
     .poolSide {
       max-width: none;
       max-height: none;
     }
-  }
-  .MainTop{
-    display: none;
-  }
-  button{
-    display: none!important;
+
+    h2 {
+      text-align: center;
+    }
+
+    .pool div {
+      font-weight: normal;
+    }
+
+    .beforePool {
+      span {
+        display: none;
+      }
+    }
+
+    p, .voterName, .electionStatus {
+      display: none;
+    }
   }
 
+  .MainTop {
+    display: none;
+  }
+
+  button {
+    display: none !important;
+  }
 }
 
 .printDiv {

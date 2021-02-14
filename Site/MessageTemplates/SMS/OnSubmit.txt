@@ -1,5 +1,1 @@
-﻿Hello {name},
-
-For the record, you just submitted your ballot for the "{electionName}" {electionType} election.
-
-Thanks for voting and have a good day!
+﻿Hello {name}. Your ballot for the "{electionName}" {electionType} election has been received.

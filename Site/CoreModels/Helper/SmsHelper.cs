@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels.Helper
     {
       var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var text = GetSmsTemplate("TestEmail").FilledWithObject(new
+      var text = GetSmsTemplate("TestSms").FilledWithObject(new
       {
         hostSite,
       });

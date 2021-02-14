@@ -181,8 +181,14 @@
         </p>
         <div>
           <label>
-            Enter Name:
-            <input accesskey="S" ref="searchBox" aria-describedby="searchInfo" type="text" v-model="searchText" v-on:keydown="keyDownInSearch" class="searchBox" />
+            Search:
+            <input accesskey="S" 
+                   ref="searchBox" 
+                   aria-describedby="searchInfo" 
+                   type="text" 
+                   placeholder="First or Last Name"
+                   v-model="searchText" 
+                   v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
           <button v-on:click="showAll">Show All</button>
           <button accesskey="C" v-on:click="resetSearch">Clear</button>
@@ -255,10 +261,11 @@
         <span v-if="canUnlock">Submitted</span>
         <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
-        <span v-if="canLockIn" class="unlocked">(not submitted)</span>
+        <span v-if="canLockIn" class="unlocked">(not yet submitted)</span>
       </p>
       <p v-if="pool.length < numToElect">You must add {{numToElect}} people before submitting your ballot.</p>
-
+      
+      <p v-if="!pool.length">Use the left side of the page to find or enter a name to add...</p>
       @*<p v-if="!lockInVotes && pool.length">
         Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
       </p>*@
@@ -337,7 +344,7 @@
         <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
       </p>
       <p v-if="!lockInVotes && pool.length">
-        Please note that when your ballot is submitted and processed, this pool will be deleted from TallyJ.
+        Please note that when your ballot is submitted and processed, this list of names will be removed from TallyJ.
       </p>
       <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">
         Your pool is empty. Search for people to add!

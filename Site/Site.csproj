@@ -870,7 +870,7 @@
     <Content Include="MessageTemplates\SMS\ElectionOpen.txt" />
     <Content Include="MessageTemplates\SMS\HeadTellerEmail.txt" />
     <Content Include="MessageTemplates\SMS\OnSubmit.txt" />
-    <Content Include="MessageTemplates\SMS\TestEmail.txt" />
+    <Content Include="MessageTemplates\SMS\TestSms.txt" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
