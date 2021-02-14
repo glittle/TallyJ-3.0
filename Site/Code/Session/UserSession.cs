@@ -289,17 +289,17 @@ namespace TallyJ.Code.Session
     {
       var logHelper = new LogHelper();
 
-      var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
-      if (voterIdTypeDesc.HasNoContent())
+      if (voterId.HasNoContent())
       {
-        logHelper.Add("Invalid voter Id type: " + voterIdType, true);
+        logHelper.Add($"Empty voter Id for {voterIdType} ({UniqueId})", true);
         // ProcessLogout();
         return;
       }
 
-      if (voterId.HasNoContent())
+      var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
+      if (voterIdTypeDesc.HasNoContent())
       {
-        logHelper.Add("Empty voter Id for " + voterIdType, true);
+        logHelper.Add($"Invalid voter Id type: {voterIdType} ({UniqueId})", true);
         // ProcessLogout();
         return;
       }
