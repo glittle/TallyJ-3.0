@@ -18,7 +18,7 @@
         emailFromName: publicInterface.Election.EmailFromNameWithDefault,
         emailSubject: publicInterface.Election.EmailSubject || '',
         emailText: publicInterface.Election.EmailText || '',
-        smsText: publicInterface.Election.SmsText || '',
+        smsText: (publicInterface.Election.SmsText || ''),
         emailChanged: false,
         smsChanged: false,
         toSend: [],
@@ -197,8 +197,8 @@
           CallAjaxHandler(publicInterface.controllerUrl + '/SendSms', form, function (info) {
             if (info.Success) {
               vue.getContactLog();
-              setTimeout(() => vue.getContactLog(), 1000);
-              setTimeout(() => vue.getContactLog(), 2000);
+              setTimeout(() => vue.getContactLog(), 2500);
+              setTimeout(() => vue.getContactLog(), 5000);
               ShowStatusSuccess(info.Status);
             }
             else {
@@ -424,8 +424,14 @@ contact the Assembly as soon as possible!</p>
         saveSms: function () {
           var vue = this;
 
+          var breakToken = 'QZQZQ';
+          var text = vue.smsText
+            .replace(/<p.*?>(.*?)<\/p>/gi, breakToken + '$1' + breakToken)
+            .replace(/<br\s?\/?>/gi, breakToken);
+          text = $('<div>').html(text).text().split(breakToken).filter(function (s) { return s; }).join('\n'); //.replace(new RegExp(breakToken, 'g'), '\n');
+
           var form = {
-            smsText: encodeURIComponent(vue.smsText || '') || null,
+            smsText: encodeURIComponent(text || '') || null,
           };
 
           ShowStatusDisplay("Saving...");

@@ -24,7 +24,7 @@
     election.ElectionGuid,
     election.EmailSubject,
     election.EmailText,
-    election.SmsText,
+    SmsText = election.SmsText.Split('\n').JoinedAsString("", "<p>", "</p>", true),
     election.EmailFromAddressWithDefault,
     election.EmailFromNameWithDefault,
   };
@@ -139,7 +139,7 @@
         <el-button size="small"
                    :type="enableSmsSend  ? 'primary' : ''"
                    @* :class="[pendingSms ? 'pending' : '', pendingSms ? 'btn-warning' : 'btn-primary']" *@
-                    v-on:click="sendSms(true)" 
+                   v-on:click="sendSms(true)"
                    :disabled="!enableSmsSend">
           Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}{{ pendingSms ? '':'...'}}
         </el-button>
