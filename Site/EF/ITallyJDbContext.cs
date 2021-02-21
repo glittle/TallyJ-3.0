@@ -29,6 +29,7 @@ namespace TallyJ.EF
     DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
 
     DbSet<AspNetUsers> AspNetUsers { get; set; }
+    DbSet<SmsLog> SmsLog { get; set; }
 
     int SaveChanges();
     long CurrentRowVersion();

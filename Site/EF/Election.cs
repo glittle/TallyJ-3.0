@@ -47,5 +47,7 @@ namespace TallyJ.EF
         public string EmailFromAddress { get; set; }
         public string EmailFromName { get; set; }
         public string EmailText { get; set; }
+        public string SmsText { get; set; }
+        public string EmailSubject { get; set; }
     }
 }

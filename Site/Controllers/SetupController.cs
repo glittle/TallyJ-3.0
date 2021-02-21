@@ -38,9 +38,9 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SaveNotification(string emailText)
+    public JsonResult SaveNotification(string emailSubject, string emailText, string smsText)
     {
-      return new ElectionModel().SaveNotification(emailText);
+      return new ElectionModel().SaveNotification(emailSubject, emailText, smsText);
     }
 
     public JsonResult DetermineRules(string type, string mode)
@@ -186,15 +186,15 @@ namespace TallyJ.Controllers
     //}
 
     [ForAuthenticatedTeller]
-    public JsonResult SendEmail(string emailCode, string subject, string list)
+    public JsonResult SendEmail(string list)
     {
-      return new EmailHelper().SendHeadTellerEmail(emailCode, subject, list);
+      return new EmailHelper().SendHeadTellerEmail(list);
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult SendSms(string emailCode, string testPhone, string text, string list)
+    public JsonResult SendSms(string list)
     {
-      return new SmsHelper().SendHeadTellerMessage(emailCode, testPhone, text, list);
+      return new SmsHelper().SendHeadTellerMessage(list);
     }
 
     [ForAuthenticatedTeller]
@@ -206,6 +206,12 @@ namespace TallyJ.Controllers
     public JsonResult GetContactLog(int lastLogId = 0)
     {
       return new EmailHelper().GetContactLog(lastLogId);
+    }
+
+    [ForAuthenticatedTeller]
+    public FileResult DownloadContactLog()
+    {
+      return new EmailHelper().DownloadContactLog();
     }
 
     [ForAuthenticatedTeller]

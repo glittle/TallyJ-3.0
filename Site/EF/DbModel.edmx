@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -108,6 +108,20 @@
           <Property Name="HistoryStatus" Type="varchar(max)" />
           <Property Name="NotifiedAboutOpening" Type="bit" />
         </EntityType>
+        <EntityType Name="SmsLog">
+          <Key>
+            <PropertyRef Name="_RowId" />
+          </Key>
+          <Property Name="_RowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SmsSid" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Phone" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SentDate" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="ElectionGuid" Type="uniqueidentifier" />
+          <Property Name="PersonGuid" Type="uniqueidentifier" />
+          <Property Name="LastStatus" Type="varchar" MaxLength="50" />
+          <Property Name="LastDate" Type="datetime2" Precision="7" />
+          <Property Name="ErrorCode" Type="int" />
+        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserId" />
@@ -183,6 +197,8 @@
           <Property Name="EmailFromAddress" Type="nvarchar" MaxLength="250" />
           <Property Name="EmailFromName" Type="nvarchar" MaxLength="100" />
           <Property Name="EmailText" Type="nvarchar(max)" />
+          <Property Name="SmsText" Type="nvarchar" MaxLength="500" />
+          <Property Name="EmailSubject" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -481,6 +497,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="Memberships" EntityType="Self.Memberships" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OnlineVoter" EntityType="Self.OnlineVoter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OnlineVotingInfo" EntityType="Self.OnlineVotingInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SmsLog" EntityType="Self.SmsLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="_Log" EntityType="Self._Log" Schema="tj" store:Type="Tables" />
           <EntitySet Name="Ballot" EntityType="Self.Ballot" Schema="tj" store:Type="Tables" />
@@ -566,6 +583,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
           <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
           <EntitySet Name="C_Log" EntityType="TallyJ2dModel.C_Log" />
+          <EntitySet Name="SmsLog" EntityType="TallyJ2dModel.SmsLog" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -892,6 +910,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="EmailFromAddress" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="EmailFromName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="EmailText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SmsText" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="EmailSubject" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
@@ -968,6 +988,20 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="ComputerCode" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="HostAndVersion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="SmsLog">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SmsSid" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SentDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ElectionGuid" Type="Guid" />
+          <Property Name="PersonGuid" Type="Guid" />
+          <Property Name="LastStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastDate" Type="DateTime" Precision="7" />
+          <Property Name="ErrorCode" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1226,6 +1260,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Election">
             <EntityTypeMapping TypeName="TallyJ2dModel.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="EmailSubject" ColumnName="EmailSubject" />
+                <ScalarProperty Name="SmsText" ColumnName="SmsText" />
                 <ScalarProperty Name="EmailText" ColumnName="EmailText" />
                 <ScalarProperty Name="EmailFromName" ColumnName="EmailFromName" />
                 <ScalarProperty Name="EmailFromAddress" ColumnName="EmailFromAddress" />
@@ -1338,6 +1374,21 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="LocationGuid" ColumnName="LocationGuid" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="AsOf" ColumnName="AsOf" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SmsLog">
+            <EntityTypeMapping TypeName="TallyJ2dModel.SmsLog">
+              <MappingFragment StoreEntitySet="SmsLog">
+                <ScalarProperty Name="ErrorCode" ColumnName="ErrorCode" />
+                <ScalarProperty Name="LastDate" ColumnName="LastDate" />
+                <ScalarProperty Name="LastStatus" ColumnName="LastStatus" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="SentDate" ColumnName="SentDate" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="SmsSid" ColumnName="SmsSid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
             </EntityTypeMapping>
