@@ -106,7 +106,7 @@ namespace TallyJ.CoreModels.Helper
         .ToList();
 
       var dateOldest = logEntries.Min(l => l.When);
-      var dateRecent = logEntries.Max(l => l.When);
+      var dateRecent = DateTime.Now;// logEntries.Max(l => l.When);
 
       var smsLog = dbContext.SmsLog
         .Where(sms => sms.ElectionGuid == electionGuid)
