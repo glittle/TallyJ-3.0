@@ -38,7 +38,7 @@
 
 <div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "")">
   <p>
-    TallyJ enables you to send an email <span class="forSmsInline">and/or SMS message</span> to all potential voters with registered email addresses<span class="forSmsInline"> or mobile phone numbers</span>.
+    Use this page to send emails <span class="forSmsInline">and/or SMS messages</span> to voters with registered email addresses<span class="forSmsInline"> or mobile phone numbers</span>.
   </p>
 
   <p>
@@ -107,7 +107,7 @@
 
     <div class="messageBtns email">
       @*<button class="btn btn-primary" v-on:click="sendEmail('Test')" :disabled="isSaveNeeded || !emailFromAddress || !emailSubject">Send me a copy by email</button>*@
-      <p><em>You should select yourself and send the email to yourself to see what it looks like.</em></p>
+      <p><em>Test the email first to see what it looks like by sending it just to yourself!</em></p>
 
       <div class="bottom">
         <el-button size="small"
@@ -133,7 +133,7 @@
           <span class="comments">(will not include your first name)</span>
           <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
         </div>*@
-      <p><em>You should select yourself and send the SMS to yourself to see what it looks like.</em></p>
+      <p><em>Test the SMS first to see what it looks like by sending it just to yourself!</em></p>
 
       <div class="bottom">
         <el-button size="small"

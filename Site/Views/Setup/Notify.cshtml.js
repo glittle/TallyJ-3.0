@@ -218,7 +218,7 @@ contact the Assembly as soon as possible!</p>
 <p>With greetings from the Elections Committee</p>`;
           this.smsText = `<p>Hello {FirstName},</p>
 <p>Online voting opens tomorrow.</p>
-<p>Log in and cast your ballot at {hostSite} using this phone number.</p>
+<p>Cast your ballot at {hostSite}</p>
 <p>Elections Committee</p>`;
         },
         updateTextForSms: function () {
@@ -428,7 +428,7 @@ contact the Assembly as soon as possible!</p>
           var text = vue.smsText
             .replace(/<p.*?>(.*?)<\/p>/gi, breakToken + '$1' + breakToken)
             .replace(/<br\s?\/?>/gi, breakToken);
-          text = $('<div>').html(text).text().split(breakToken).filter(function (s) { return s; }).join('\n'); //.replace(new RegExp(breakToken, 'g'), '\n');
+          text = $('<div>').html(text).text().split(breakToken).filter(function (s) { return s; }).join('\n\n'); //.replace(new RegExp(breakToken, 'g'), '\n');
 
           var form = {
             smsText: encodeURIComponent(text || '') || null,

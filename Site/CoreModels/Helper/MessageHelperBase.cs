@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels.Helper
       var timeOffset = UserSession.TimeOffsetServerAhead;
 
       var lines = new List<string>();
-      lines.Add("When,Name,Phone,Action");
+      lines.Add("When,Action,Who,Phone");
       lines.AddRange(log
         .OrderBy(l => l.When)
         .Select(l =>
@@ -74,7 +74,7 @@ namespace TallyJ.CoreModels.Helper
         return new string[]
         {
           l.When.AddMilliseconds(0 - timeOffset).ToString("yyyy MMM d HH:mm"),
-          l.Details, // ? l.Details.Replace("\"", "\"\"").SurroundContentWith("\"", "\"") : l.Details
+          (l.RowId < 0 ? "Sms -- " : "") + l.Details, // ? l.Details.Replace("\"", "\"\"").SurroundContentWith("\"", "\"") : l.Details
           l.Name,
           l.Phone.SurroundContentWith("Ph: ", ""), // add Ph: to avoid Excel formatting phone number as a number
         }.JoinedAsString(",", "\"", "\"", false);
