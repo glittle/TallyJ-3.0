@@ -482,6 +482,7 @@
     <Compile Include="CoreModels\Helper\NotificationHelper.cs" />
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
     <Compile Include="CoreModels\Helper\SmsHelper.cs" />
+    <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\OnlineVoteHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\IdentityModels.cs" />
@@ -630,6 +631,9 @@
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\ResultTie.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\SmsLog.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Teller.cs">

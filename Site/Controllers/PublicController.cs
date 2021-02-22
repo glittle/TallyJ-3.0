@@ -110,6 +110,24 @@ namespace TallyJ.Controllers
       }.AsJsonResult();
     }
 
+    [HttpPost]
+    public void SmsStatus(string smsSid, string messageStatus, string to, int? errorCode = null)
+    {
+      // Request form keys:
+      //  "ErrorCode"
+      //  "SmsSid"
+      //  "SmsStatus"
+      //  "Body"
+      //  "MessageStatus"
+      //  "To"
+      //  "MessagingServiceSid"
+      //  "MessageSid"
+      //  "AccountSid"
+      //  "From"
+      //  "ApiVersion"
+      new SmsHelper().LogSmsStatus(smsSid, messageStatus, to, errorCode);
+    }
+
     public JsonResult PublicHub(string connId)
     {
       new PublicHub().Join(connId);

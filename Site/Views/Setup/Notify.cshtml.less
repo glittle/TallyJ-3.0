@@ -24,6 +24,16 @@
   }
 }
 
+.estSmsCost {
+  color: dimgray;
+}
+
+.estSmsCostComment {
+  color: dimgray;
+  font-style: italic;
+  margin-top: -.5em;
+}
+
 .template {
   color: @tallyJOrangeText;
   user-select: all;
@@ -56,6 +66,10 @@ h2 {
   border: 1px solid #666;
 }
 
+.subject{
+  width: 300px;
+}
+
 .ui-icon {
   display: inline-block;
 }
@@ -81,14 +95,28 @@ h2 {
   font-style: italic;
 }
 
+.sideBySide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5em 0 0 0;
+
+  h3 {
+    margin: 0;
+  }
+}
 
 .emailHistoryHost {
-  max-height: 140px;
+  max-height: 400px;
   overflow: auto;
+
+  &.loadingLog {
+    opacity: 0.4;
+  }
 
   table {
     border-collapse: separate;
-    border-spacing: 1px 2px;
+    border-spacing: 1px 1px;
     margin: 0 0 20px 0;
     font-size: 85%;
     width: 100%;
@@ -101,12 +129,24 @@ h2 {
       background-color: #cbd5f7;
       vertical-align: top;
       width: auto;
-      padding: 0 1px;
+      padding: 2px 3px;
     }
 
-    tr.endOfSection {
-      td {
-        border-bottom: 3px double #999;
+    tr {
+      &.endOfSection {
+        td {
+          border-bottom: 3px double #999;
+        }
+      }
+
+      &.withPhone {
+        td {
+          background-color: rgba(203, 213, 247, 0.38);
+
+          &:first-child {
+            padding-left: 10px;
+          }
+        }
       }
     }
 
@@ -134,7 +174,7 @@ h2 {
 }
 
 .messageBtns {
-  margin: 2em 0;
+  margin: 1em 0;
 
   .bottom {
     margin-top: 1em;
@@ -170,7 +210,7 @@ button.pending {
 
   &.Sms {
     .emailBySms {
-      grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 s3';
+      grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 e3';
       grid-template-columns: 1fr 1fr;
     }
 
@@ -239,9 +279,9 @@ button.pending {
     grid-area: e3;
   }
 
-  .smsListing {
-    grid-area: s3;
-  }
+  //.smsListing {
+  //  grid-area: s3;
+  //}
 }
 
 .el-table th > .el-table-column--selection .cell {

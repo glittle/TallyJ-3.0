@@ -29,11 +29,17 @@
     [OnlineCloseIsEstimate]  BIT              DEFAULT ((1)) NOT NULL,
     [OnlineSelectionProcess] VARCHAR (1)      NULL,
     [OnlineAnnounced]        DATETIME2 (0)    NULL,
-    [EmailFromAddress] NVARCHAR(250) NULL, 
-    [EmailFromName] NVARCHAR(100) NULL, 
-    [EmailText] NVARCHAR(MAX) NULL, 
+    [EmailFromAddress]       NVARCHAR (250)   NULL,
+    [EmailFromName]          NVARCHAR (100)   NULL,
+    [EmailText]              NVARCHAR (MAX)   NULL,
+    [SmsText]                NVARCHAR (500)   NULL,
+    [EmailSubject]           NVARCHAR (250)   NULL,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
+
+
 
 
 

@@ -10,8 +10,11 @@ using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 using Twilio;
+using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
+using Twilio.Rest.Api.V2010.Account.Call;
 using Twilio.Types;
+using FeedbackResource = Twilio.Rest.Api.V2010.Account.Message.FeedbackResource;
 
 namespace TallyJ.CoreModels.Helper
 {
@@ -28,7 +31,8 @@ namespace TallyJ.CoreModels.Helper
         hostSite,
       });
 
-      var ok = SendSms(phone, text, out error);
+      // this voter is not in a specific election... just testing from the voter page
+      var ok = SendSms(phone, text, null, out error);
 
       LogHelper.Add($"Sms: Voter test message sent", true);
 
@@ -48,7 +52,7 @@ namespace TallyJ.CoreModels.Helper
         electionType = ElectionTypeEnum.TextFor(election.ElectionType)
       });
 
-      var ok = SendSms(person.Phone, text, out error);
+      var ok = SendSms(person.Phone, text, person.PersonGuid, out error);
 
       LogHelper.Add($"Sms: Ballot Submitted", false);
 
@@ -74,7 +78,7 @@ namespace TallyJ.CoreModels.Helper
         electionType = ElectionTypeEnum.TextFor(e.ElectionType),
       });
 
-      var ok = SendSms(phone, text, out error);
+      var ok = SendSms(phone, text, p.PersonGuid, out error);
 
       // error logging done at a higher level
 
@@ -94,64 +98,74 @@ namespace TallyJ.CoreModels.Helper
     /// </param>
     /// <param name="testPhoneNumber">Used when Testing </param>
     /// <param name="text"></param>
-    /// <param name="list"></param>
+    /// <param name="idList"></param>
     /// <returns></returns>
-    public JsonResult SendHeadTellerMessage(string messageCode, string testPhoneNumber, string text, string list)
+    public JsonResult SendHeadTellerMessage(string idList)
     {
-      var htMessageCode = messageCode.AsEnum(HtEmailCodes._unknown_);
-
-      if (htMessageCode == HtEmailCodes._unknown_)
-      {
-        return new
-        {
-          Success = false,
-          Status = "Invalid request"
-        }.AsJsonResult();
-      }
-
+      // var htMessageCode = messageCode.AsEnum(HtEmailCodes._unknown_);
+      //
+      // if (htMessageCode == HtEmailCodes._unknown_)
+      // {
+      //   return new
+      //   {
+      //     Success = false,
+      //     Status = "Invalid request"
+      //   }.AsJsonResult();
+      // }
+      //
 
       var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
 
       var election = UserSession.CurrentElection;
+      var text = election.SmsText;
+
+      if (text.HasNoContent())
+      {
+        return new
+        {
+          Success = false,
+          Status = "SMS text not set"
+        }.AsJsonResult();
+      }
 
       var phoneNumbersToSendTo = new List<NamePhone>();
 
-      switch (htMessageCode)
-      {
-        case HtEmailCodes.Test:
-          phoneNumbersToSendTo.Add(new NamePhone
-          {
-            Phone = testPhoneNumber, 
-            PersonName = election.EmailFromNameWithDefault,
-            FirstName = "(voter's first name)",
-            VoterContact = testPhoneNumber
-          });
-          break;
+      // switch (htMessageCode)
+      // {
+      //   case HtEmailCodes.Test:
+      //     phoneNumbersToSendTo.Add(new NamePhone
+      //     {
+      //       Phone = testPhoneNumber, 
+      //       PersonName = election.EmailFromNameWithDefault,
+      //       FirstName = "(voter's first name)",
+      //       VoterContact = testPhoneNumber
+      //     });
+      //     break;
+      //
+      //   case HtEmailCodes.Intro:
+      var personIds = idList.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
 
-        case HtEmailCodes.Intro:
-          // everyone with an email address
-          var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
-
-          phoneNumbersToSendTo.AddRange(db.Person
-            .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
-            .Where(p => p.CanVote.Value)
-            .Where(p => personIds.Contains(p.C_RowId))
-            .Select(p => new NamePhone
-            {
-              Phone = p.Phone,
-              PersonName = p.C_FullNameFL,
-              FirstName = p.FirstName,
-              VoterContact = p.Phone
-            })
-          );
-          break;
-
-        default:
-          // not possible
-          return null;
-      }
+      phoneNumbersToSendTo.AddRange(db.Person
+        .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
+        .Where(p => p.CanVote.Value)
+        .Where(p => personIds.Contains(p.C_RowId))
+        .Select(p => new NamePhone
+        {
+          Phone = p.Phone,
+          PersonName = p.C_FullNameFL,
+          FirstName = p.FirstName,
+          VoterContact = p.Phone,
+          PersonGuid = p.PersonGuid
+        })
+      );
+      //     break;
+      //
+      //   default:
+      //     // not possible
+      //     return null;
+      // }
 
       // var whenOpen = election.OnlineWhenOpen.GetValueOrDefault();
       // var whenOpenUtc = whenOpen.ToUniversalTime();
@@ -185,23 +199,15 @@ namespace TallyJ.CoreModels.Helper
           return;
         }
 
-        var html = text.FilledWithObject(new
+        var messageText = text.FilledWithObject(new
         {
           hostSite,
           p.PersonName,
-          EmailText = text,
           p.FirstName,
           p.VoterContact,
-          // electionName = election.Name,
-          // electionType = ElectionTypeEnum.TextFor(election.ElectionType),
-          // openIsFuture,
-          // whenOpenDay = whenOpenUtc.ToString("d MMM"),
-          // whenClosedDay = whenClosedUtc.ToString("d MMM"),
-          // whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
-          // howLong,
         });
 
-        var ok = SendSms(phoneNumber, html, out var errorMessage);
+        var ok = SendSms(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
 
         if (ok)
           numSms++;
@@ -232,12 +238,14 @@ namespace TallyJ.CoreModels.Helper
       return File.ReadAllText(path);
     }
 
-    public bool SendSms(string toPhoneNumber, string messageText, out string errorMessage)
+    public bool SendSms(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage)
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
       var fromNumber = SettingsHelper.Get("twilio-FromNumber", "");
       var messagingSid = SettingsHelper.Get("twilio-MessagingSid", "");
+      var callbackUrlRaw = SettingsHelper.Get("twilio-CallbackUrl", "");
+      var callbackUrl = callbackUrlRaw.HasContent() ? new Uri(callbackUrlRaw) : null;
 
       if (sid.HasNoContent() || token.HasNoContent())
       {
@@ -262,7 +270,8 @@ namespace TallyJ.CoreModels.Helper
           messageResource = MessageResource.Create(
             new PhoneNumber(toPhoneNumber),
             body: messageText,
-            messagingServiceSid: messagingSid
+            messagingServiceSid: messagingSid,
+            statusCallback: callbackUrl
           );
         }
         else if (fromNumber.HasContent())
@@ -270,7 +279,8 @@ namespace TallyJ.CoreModels.Helper
           messageResource = MessageResource.Create(
             new PhoneNumber(toPhoneNumber),
             body: messageText,
-            from: new PhoneNumber(fromNumber)
+            from: new PhoneNumber(fromNumber),
+            statusCallback: callbackUrl
           );
         }
         else
@@ -281,7 +291,25 @@ namespace TallyJ.CoreModels.Helper
 
         errorMessage = messageResource.ErrorMessage; // null if okay
 
+        var dbContext = UserSession.GetNewDbContext;
+        dbContext.SmsLog.Add(new SmsLog
+        {
+          SmsSid = messageResource.Sid,
+          Phone = toPhoneNumber,
+          SentDate = DateTime.Now,
+          ElectionGuid = UserSession.CurrentElectionGuid,
+          PersonGuid = personGuid == Guid.Empty ? null : personGuid,
+          LastDate = DateTime.Now,
+          LastStatus = "submitted"
+        });
+        dbContext.SaveChanges();
+
         return errorMessage.HasNoContent();
+      }
+      catch (ApiException e)
+      {
+        errorMessage = $"Twilio Error {e.Code} - {e.MoreInfo}";
+        return false;
       }
       catch (Exception e)
       {
@@ -290,12 +318,36 @@ namespace TallyJ.CoreModels.Helper
       }
     }
 
+    private void SendTwilioConfirmation()
+    {
+      var messageSid = "X";
+      FeedbackResource.Create(pathMessageSid: messageSid, outcome: FeedbackResource.OutcomeEnum.Confirmed);
+    }
+
     public class NamePhone
     {
       public string Phone { get; set; }
       public string PersonName { get; set; }
       public string VoterContact { get; set; }
       public string FirstName { get; set; }
+      public Guid PersonGuid { get; set; }
+    }
+
+    public void LogSmsStatus(string smsSid, string messageStatus, string to, int? errorCode)
+    {
+      var dbContext = UserSession.GetNewDbContext;
+      var log = dbContext.SmsLog.FirstOrDefault(sl => sl.SmsSid == smsSid);
+      if (log == null)
+      {
+        return;
+      }
+
+      log.LastStatus = messageStatus;
+      log.ErrorCode = errorCode;
+      log.LastDate = DateTime.Now;
+      log.Phone = to;
+
+      dbContext.SaveChanges();
     }
   }
 }
