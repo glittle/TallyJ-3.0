@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Transactions;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
@@ -244,32 +245,52 @@ namespace TallyJ.CoreModels
     //   return IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
     // }
 
-    public JsonResult SaveNotification(string emailText)
-    {
-      if (emailText.HasNoContent())
-      {
-        return new
-        {
-          success = false,
-          Status = "Cannot have empty email text."
-        }.AsJsonResult();
-      }
 
+    /// <summary>
+    ///   Will be either email or sms
+    /// </summary>
+    /// <returns></returns>
+    public JsonResult SaveNotification(string emailSubject, string emailText, string smsText)
+    {
       var electionCacher = new ElectionCacher(Db);
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
 
-      election.EmailText = Uri.UnescapeDataString(emailText);
+      var changed = false;
 
-      Db.SaveChanges();
+      if (emailSubject != null) // don't use HasContent - if empty string, save it
+      {
+        election.EmailSubject = Uri.UnescapeDataString(emailSubject);
+        changed = true;
+      }
 
-      electionCacher.UpdateItemAndSaveCache(election);
+      if (emailText != null) // don't use HasContent - if empty string, save it
+      {
+        election.EmailText = Uri.UnescapeDataString(emailText);
+        changed = true;
+      }
+
+      if (smsText != null)
+      {
+        election.SmsText = Uri.UnescapeDataString(smsText);
+        changed = true;
+      }
+
+      if (changed)
+      {
+        Db.SaveChanges();
+        electionCacher.UpdateItemAndSaveCache(election);
+        return new
+        {
+          success = true,
+          Status = "Saved",
+        }.AsJsonResult();
+      }
 
       return new
       {
-        success = true,
-        Status = "Saved",
-        defaultFromAddress = UserSession.CurrentElection.EmailFromAddressWithDefault,
+        success = false,
+        Status = "Nothing to save",
       }.AsJsonResult();
     }
 

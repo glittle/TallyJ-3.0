@@ -32,6 +32,8 @@ namespace Tests.BusinessTests
     public int SaveChangesCount { get; private set; }
     public DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
 
+    public DbSet<SmsLog> SmsLog { get; set; }
+
     public int SaveChanges()
     {
       this.SaveChangesCount++;

@@ -393,26 +393,22 @@ namespace TallyJ.CoreModels.Helper
     ///  <summary>
     ///  requested by the head teller
     ///  </summary>
-    ///  <param name="emailCode">
-    ///    Expected: test, announce
-    ///  </param>
-    ///  <param name="subject"></param>
     ///  <param name="list"></param>
     ///  <returns></returns>
-    public JsonResult SendHeadTellerEmail(string emailCode, string subject, string list)
+    public JsonResult SendHeadTellerEmail(string list)
     {
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
 
-      var htEmailCode = emailCode.AsEnum(HtEmailCodes._unknown_);
+      // var htEmailCode = emailCode.AsEnum(HtEmailCodes._unknown_);
 
-      if (htEmailCode == HtEmailCodes._unknown_)
-      {
-        return new
-        {
-          Success = false,
-          Status = "Invalid request"
-        }.AsJsonResult();
-      }
+      // if (htEmailCode == HtEmailCodes._unknown_)
+      // {
+      //   return new
+      //   {
+      //     Success = false,
+      //     Status = "Invalid request"
+      //   }.AsJsonResult();
+      // }
 
 
       var db = UserSession.GetNewDbContext;
@@ -423,40 +419,41 @@ namespace TallyJ.CoreModels.Helper
 
       var peopleToSendTo = new List<NameEmail>();
 
-      switch (htEmailCode)
-      {
-        case HtEmailCodes.Test:
-          peopleToSendTo.Add(new NameEmail
-          {
-            Email = election.EmailFromAddressWithDefault, 
-            PersonName = election.EmailFromNameWithDefault,
-            FirstName = "(voter's first name)",
-            VoterContact = election.EmailFromAddressWithDefault
-          });
-          break;
+      // switch (htEmailCode)
+      // {
+      //   case HtEmailCodes.Test:
+      //     peopleToSendTo.Add(new NameEmail
+      //     {
+      //       Email = election.EmailFromAddressWithDefault, 
+      //       PersonName = election.EmailFromNameWithDefault,
+      //       FirstName = "(voter's first name)",
+      //       VoterContact = election.EmailFromAddressWithDefault
+      //     });
+      //     break;
+      //
+      //   case HtEmailCodes.Intro:
+      
 
-        case HtEmailCodes.Intro:
-          // everyone with an email address
-          var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
+      var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
 
-          peopleToSendTo.AddRange(db.Person
-            .Where(p => p.ElectionGuid == election.ElectionGuid && p.Email != null && p.Email.Trim().Length > 0)
-            .Where(p => p.CanVote.Value)
-            .Where(p => personIds.Contains(p.C_RowId))
-            .Select(p => new NameEmail
-            {
-              Email = p.Email,
-              PersonName = p.C_FullNameFL,
-              FirstName = p.FirstName,
-              VoterContact = p.Email
-            })
-            );
-          break;
-
-        default:
-          // not possible
-          return null;
-      }
+      peopleToSendTo.AddRange(db.Person
+        .Where(p => p.ElectionGuid == election.ElectionGuid && p.Email != null && p.Email.Trim().Length > 0)
+        .Where(p => p.CanVote.Value)
+        .Where(p => personIds.Contains(p.C_RowId))
+        .Select(p => new NameEmail
+        {
+          Email = p.Email,
+          PersonName = p.C_FullNameFL,
+          FirstName = p.FirstName,
+          VoterContact = p.Email
+        })
+        );
+      //     break;
+      //
+      //   default:
+      //     // not possible
+      //     return null;
+      // }
 
 
       // var whenOpen = election.OnlineWhenOpen.GetValueOrDefault();
@@ -490,7 +487,7 @@ namespace TallyJ.CoreModels.Helper
           p.FirstName,
           p.VoterContact,
           election.EmailText,
-          EmailSubject = subject,
+          election.EmailSubject,
           // electionName = election.Name,
           // electionType = ElectionTypeEnum.TextFor(election.ElectionType),
           // openIsFuture,
@@ -595,7 +592,7 @@ namespace TallyJ.CoreModels.Helper
         Subject = message.Subject,
         HtmlContent = htmlBody
       };
-      msg.AddTos(message.To.Select(a=>a.AsSendGridEmailAddress()).ToList());
+      msg.AddTos(message.To.Select(a => a.AsSendGridEmailAddress()).ToList());
 
       var sendGridClient = new SendGridClient(sendGridApiKey);
       var response = sendGridClient.SendEmailAsync(msg).Result;
@@ -673,5 +670,6 @@ namespace TallyJ.CoreModels.Helper
       public string VoterContact { get; set; }
       public string FirstName { get; set; }
     }
+
   }
 }

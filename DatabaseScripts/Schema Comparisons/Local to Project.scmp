@@ -3,7 +3,7 @@
   <Version>10</Version>
   <SourceModelProvider>
     <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=.;Initial Catalog=TallyJ3b;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False</ConnectionString>
+      <ConnectionString>Data Source=glen-dev.database.windows.net;Initial Catalog=TallyJ3Dev;Persist Security Info=True;User ID=glen;Pooling=False</ConnectionString>
     </ConnectionBasedModelProvider>
   </SourceModelProvider>
   <TargetModelProvider>
@@ -34,6 +34,10 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>BackupDatabaseBeforeChanges</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>IgnoreIndexesStatisticsOnEnclaveEnabledColumns</Name>
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
@@ -302,7 +306,7 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetDatabaseName</Name>
-        <Value>TallyJ2d</Value>
+        <Value>DatabaseScripts</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetConnectionString</Name>
@@ -1455,6 +1459,9 @@
       <Name>dbo</Name>
       <Name>OnlineVoter</Name>
       <Name>IX_OnlineElection_Phone</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlDatabaseCredential, Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>https://tallyj3.blob.core.windows.net/sqldbauditlogs</Name>
     </SelectedItem>
   </ExcludedSourceElements>
   <ExcludedTargetElements>
