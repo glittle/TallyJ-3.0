@@ -1164,7 +1164,7 @@ namespace TallyJ.CoreModels
 
         if (!onlineBallotInfo.p.CanVote.GetValueOrDefault())
         {
-          problems.Add("Not allowed to vote" + name);
+          problems.Add("Not allowed to vote: " + name);
           continue;
         }
 
