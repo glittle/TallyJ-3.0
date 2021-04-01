@@ -222,7 +222,7 @@
           <input type="button"
                  class="btn"
                  v-on:click="processReadyBallots"
-                 v-bind:disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore())"
+                 :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots"
                  value='Accept online ballots that are Submitted'>
         </p>
       }

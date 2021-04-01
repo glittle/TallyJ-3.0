@@ -48,7 +48,7 @@
     }
 
     connectToFrontDeskHub();
-    
+
     setAutoRefresh(false);
   };
 
@@ -76,7 +76,7 @@
     hub.client.updateOnlineElection = function (info) {
       console.log('signalR: frontDesk updateOnlineElection');
       if (settings.vue) {
-        settings.vue.showOnlineTimes(info); 
+        settings.vue.showOnlineTimes(info);
       }
     };
 
@@ -142,7 +142,7 @@
     setAutoRefresh();
     $('#mainBody, #ballotsBody, #onlineBallotsBody').removeClass('Hidden');
   };
-  function startAutoMinutes () {
+  function startAutoMinutes() {
     var startTime = new Date();
     $('.minutesOld').each(function () {
       var span = $(this);
@@ -291,7 +291,7 @@
           voter.Status = '-';
         }
       }
-      voter.EmailPhone = [voter.Email, voter.Phone].filter(function(s) { return !!s; }).join('<br>');
+      voter.EmailPhone = [voter.Email, voter.Phone].filter(function (s) { return !!s; }).join('<br>');
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
@@ -381,6 +381,7 @@
         CloseTime: null,
         T24: false,
         dummy: 0,
+        processingReadyBallots: false,
         onlineBallots: []
       },
       computed: {
@@ -443,7 +444,7 @@
       mounted: function () {
       },
       methods: {
-        showOnlineTimes: function(info) {
+        showOnlineTimes: function (info) {
           this.election = info;
           this.election.OnlineWhenOpen = moment(this.election.OnlineWhenOpen).toISOString();
           this.CloseTime = this.election.OnlineWhenClose = moment(this.election.OnlineWhenClose).toISOString();
@@ -503,11 +504,13 @@
             });
         },
         processReadyBallots: function () {
-//          var vue = this;
+          var vue = this;
+          this.processingReadyBallots = true;
           ShowStatusDisplay('Processing...');
           CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,
             function (info) {
+              vue.processingReadyBallots = false;
               if (info.success) {
                 ShowStatusSuccess(info.Message || 'Done');
                 //                console.log(info.problems);
