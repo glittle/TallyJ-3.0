@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Security;
@@ -11,13 +12,31 @@ namespace TallyJ.CoreModels.Helper
 {
   public static class EncryptionHelper
   {
-    private static IDataProtector _protector;
-    public const string EncryptionPrefix = "CfDJ8";
+    private static IDataProtector _protectorV1;
+    private static IDataProtector _protectorV2;
+    public const string EncryptionPrefix = "CfDJ8"; // standard .net prefix
+
+    /*
+     * Need to make sure that the encryption keys are transferable between web servers. If a server fails during
+     * an election, we must be able to move the keys to a different server to continue the process. The new server
+     * must be able to read the votes encrypted by the first server. Otherwise, the new server would be unable
+     * to read any of the votes previously submitted.
+     * 
+     */
 
     static EncryptionHelper()
     {
-      // _protector = UnityInstance.Resolve<IDataProtectionProvider>().CreateProtector("OnlineVotes.v1");
-      _protector = DataProtectionProvider.Create("TallyJv3").CreateProtector("OnlineVotes.v1");
+      // keeping V1 for backward compatibility only
+      _protectorV1 = DataProtectionProvider.Create("TallyJv3").CreateProtector("OnlineVotes.v1");
+
+
+      var folder = SettingsHelper.Get("EncryptionKeysFolder", "");
+      if (folder.HasNoContent())
+      {
+        throw new ApplicationException("Invalid EncryptionKeysFolder in AppSettings");
+      }
+      var keyFolder = new DirectoryInfo(folder);
+      _protectorV2 = DataProtectionProvider.Create(keyFolder).CreateProtector("OnlineVotes.v2");
     }
 
     /// <summary>
@@ -33,7 +52,7 @@ namespace TallyJ.CoreModels.Helper
 
       var toEncrypt = salt + text;
 
-      return _protector.Protect(toEncrypt);
+      return _protectorV2.Protect(toEncrypt);
     }
 
     /// <summary>
@@ -55,12 +74,21 @@ namespace TallyJ.CoreModels.Helper
 
       try
       {
-        _protector.Unprotect(text);
+        _protectorV2.Unprotect(text);
         return true;
       }
-      catch (CryptographicException)
+      catch (Exception)
       {
-        return false;
+        try
+        {
+          // fall back to V1
+          _protectorV1.Unprotect(text);
+          return true;
+        }
+        catch (CryptographicException ex)
+        {
+          return false;
+        }
       }
     }
 
@@ -95,12 +123,21 @@ namespace TallyJ.CoreModels.Helper
       string unprotected;
       try
       {
-        unprotected = _protector.Unprotect(encryptedText);
+        unprotected = _protectorV2.Unprotect(encryptedText);
       }
-      catch (CryptographicException e)
+      catch (CryptographicException e1)
       {
-        errorMessage = e.Message;
-        return null;
+        try
+        {
+          // fallback to v1
+          unprotected = _protectorV1.Unprotect(encryptedText);
+        }
+        catch (CryptographicException e2)
+        {
+          // the first exception is the one we are interested in
+          errorMessage = e1.Message;
+          return null;
+        }
       }
 
       if (unprotected.StartsWith(salt))

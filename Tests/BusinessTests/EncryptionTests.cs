@@ -134,12 +134,24 @@ namespace Tests.BusinessTests
       EncryptionHelper.IsEncrypted("Not encrypted").ShouldEqual(false);
       EncryptionHelper.IsEncrypted("").ShouldEqual(false);
       EncryptionHelper.IsEncrypted(null).ShouldEqual(false);
-     
+
       EncryptionHelper.IsEncrypted(EncryptionHelper.EncryptionPrefix + "Not encrypted").ShouldEqual(false);
 
 
       var encrypted = EncryptionHelper.Encrypt("Hello", "salt");
       EncryptionHelper.IsEncrypted(encrypted).ShouldEqual(true);
+    }
+
+    [TestMethod]
+    public void v1_to_v2_Decrypt()
+    {
+      // captured output from first text (above) when temporarily hardcoded to use v1
+      var v1result =
+        "CfDJ8CDzsoxHFAROsU-9aq_i2lqJcZ7xNV32pzWQpLGqRuTQ2RoioZ2DXbrHyretWC6YoM2gRiIo-QCyWiKwzhSmk4jqYhhKfgirnnabUta-PEJPV7ZExHPTIEXXs4O75mr9oWGkuWg7WU2WzdMOfbFEImM";
+      var salt = "123";
+
+      var v2result = EncryptionHelper.Decrypt(v1result, salt, out var eroMessage);
+      v2result.ShouldEqual("This should be encrypted");
     }
   }
 }
