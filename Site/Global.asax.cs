@@ -235,7 +235,7 @@ namespace TallyJ
       logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
 
       var sendToRemoteLog = true;
-      string publicMessage = "Exception: {0}<br>".FilledWith(msgs.JoinedAsString("<br>"));
+      string publicMessage = "Exception: {0}".FilledWith(msgs.JoinedAsString("\n"));
 
       if (mainException.HResult == -2147467259)
       {

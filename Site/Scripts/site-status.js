@@ -19,7 +19,7 @@ var StatusDisplay = function () {
           '<div v-for="m in summary" v-bind:class="[m.type]">' +
             '<i v-if="m.type===\'error\'" class="el-icon-warning"></i>' +
             '<i v-if="m.type===\'busy\'" class="el-icon-loading"></i>' +
-           '<span class=msg v-text="m.msgText + (m.count > 1 ? \' (\' + m.count + \' times)\' : \'\')"></span>' +
+           '<span class=msg v-html="m.msgText + (m.count > 1 ? \' (\' + m.count + \' times)\' : \'\')"></span>' +
            '<span class=close v-if="m.type===\'error\'">' +
             '<i v-on:click="reset(m)" class="el-icon-circle-close" title="Dismiss this message"></i>' +
            '</span>' +

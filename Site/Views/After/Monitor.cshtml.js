@@ -251,7 +251,7 @@
   };
 
   function refresh(showMsg) {
-    console.log(showMsg)
+    //    console.log(showMsg)
     var options = showMsg === true ? {
       busy: 'Refreshing',
       done: 'Refreshed'
