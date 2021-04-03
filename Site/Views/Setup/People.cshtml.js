@@ -120,17 +120,15 @@
         return false;
       }
     });
-    ShowStatusDisplay("Loading...");
-    CallAjaxHandler(publicInterface.peopleUrl + '/GetDetail', { id: personId }, showPersonDetail);
+    CallAjax2(publicInterface.peopleUrl + '/GetDetail', { id: personId },
+      {
+        busy: 'Loading'
+      },
+      applyValues);
   };
 
   var addNewPerson = function () {
     editPersonPage.startNewPerson($('#editPanel'));
-  };
-
-  var showPersonDetail = function (info) {
-    applyValues(info);
-    ResetStatusDisplay();
   };
 
   var applyValues = function (info) {

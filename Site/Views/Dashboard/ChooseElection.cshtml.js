@@ -51,7 +51,7 @@
       //                    '<span class="qq-upload-failed-text">Failed</span>' +
       //                    '</li>',
       //                onSubmit: function(id, fileName) {
-      //                    ShowStatusDisplay('Loading...');
+      //                    ShowStatusBusy('Loading...');
       //                },
       //                onProgress: function(id, fileName, loaded, total) {
       //                    return false;
@@ -112,7 +112,7 @@
       return;
     }
 
-    ShowStatusDisplay("Loading election...");
+    ShowStatusBusy("Loading election...");
 
     $('#loadingLog').show();
     $('#log').html('');
@@ -146,7 +146,7 @@
 
       if (info.Success) {
         showElections(info.Elections);
-        ShowStatusSuccess('Loaded');
+        ShowStatusDone('Loaded');
 
         var newRow = $('div.Election[data-guid="{0}"]'.filledWith(info.ElectionGuid));
         scrollToMe(newRow);
@@ -161,7 +161,7 @@
         //                    {
         //                        guid: info.ElectionGuid
         //                    };
-        //                ShowStatusDisplay("Selecting election...");
+        //                ShowStatusBusy("Selecting election...");
         //                CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form2, afterSelectElection);
       }
       else {
@@ -217,10 +217,9 @@
         oldComputerGuid: GetFromStorage('compcode_' + guid, null)
       };
 
-    ShowStatusDisplay("Opening election...");
-
     clearElectionRelatedStorageItems();
 
+    ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
     CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
   };
 
@@ -238,7 +237,6 @@ var afterSelectElection = function (info) {
   //    if (info.Pulse) {
   //      ProcessPulseResult(info.Pulse);
   //    }
-  ResetStatusDisplay();
 
   if (info.Selected) {
     //TODO: store computer Guid
@@ -275,7 +273,7 @@ var afterSelectElection = function (info) {
 //            id: btn.data('id')
 //        };
 
-//        ShowStatusDisplay('Selecting location...');
+//        ShowStatusBusy('Selecting location...');
 
 //        CallAjaxHandler(publicInterface.electionsUrl + '/SelectLocation', form, afterSelectLocation);
 //    };
@@ -307,7 +305,7 @@ var exportElection = function () {
   var btn = $(this);
   var guid = btn.parents('.Election').data('guid');
 
-  ShowStatusDisplay("Preparing file...");
+  ShowStatusBusy("Preparing file...");
 
   //var oldText = btn.text();
 
@@ -332,8 +330,6 @@ var deleteElection = function () {
   btn.addClass('active');
   row.addClass('deleting');
 
-  ShowStatusDisplay('Deleting...', 0);
-
   if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
     btn.removeClass('active');
     row.removeClass('deleting');
@@ -347,12 +343,16 @@ var deleteElection = function () {
       guid: row.data('guid')
     };
 
-  CallAjaxHandler(publicInterface.electionsUrl + '/DeleteElection', form, function (info) {
+  CallAjax2(publicInterface.electionsUrl + '/DeleteElection', form,
+    {
+      busy: 'Deleting'
+    },
+    function (info) {
     btn.removeClass('active');
     if (info.Deleted) {
       row.slideUp(1000, 0, function () {
         row.remove();
-        ShowStatusSuccess('Deleted.');
+        ShowStatusDone('Deleted.');
       });
     } else {
       row.removeClass('deleting');

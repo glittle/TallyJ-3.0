@@ -56,31 +56,36 @@
         }
         var rowId = +$(this).parents('tr').data('rowid');
 
-        ShowStatusDisplay('Saving...');
-        CallAjaxHandler(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId }, function (info) {
-          ShowStatusSuccess('Saved');
-          showFields(info);
-        });
+        CallAjax2(publicInterface.controllerUrl + '/CopyMap', { from: rowId, to: local.activeFileRowId },
+          {
+            busy: 'Saving',
+            done: 'Saved'
+          },
+          function (info) {
+            showFields(info);
+          });
       })
       .on('click', 'button.deleteFile', function () {
         if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
           return;
         }
-        ShowStatusDisplay('Deleting...');
 
         var parentRow = $(this).parents('tr');
         parentRow.css('background-color', 'red');
         var rowId = parentRow.data('rowid');
-        CallAjaxHandler(publicInterface.controllerUrl + '/DeleteFile', { id: rowId }, function (info) {
-          $('#fieldSelector').hide();
-          if (info.previousFiles) {
-            showUploads(info);
-          }
-          if (rowId == local.activeFileRowId) {
-            local.activeFileRowId = 0;
-          }
-          ShowStatusSuccess('Deleted');
-        });
+        CallAjax2(publicInterface.controllerUrl + '/DeleteFile', { id: rowId },
+          {
+            busy: 'Deleting'
+          },
+          function (info) {
+            $('#fieldSelector').hide();
+            if (info.previousFiles) {
+              showUploads(info);
+            }
+            if (rowId == local.activeFileRowId) {
+              local.activeFileRowId = 0;
+            }
+          });
       })
       .on('click', 'button.download', function () {
         top.location.href = '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
@@ -93,52 +98,58 @@
       if (!confirm('Are you sure you want to permanently delete all the People records in this election?')) {
         return;
       }
-      ShowStatusDisplay('Deleting...');
 
-      CallAjaxHandler(publicInterface.controllerUrl + '/DeleteAllPeople', null, function (info) {
-        if (info.Success) {
-          ShowStatusSuccess('Deleted');
-          $('#importResults').html(info.Results).show();
-          $('.DbCount span').text(comma(info.count));
-        } else {
-          ShowStatusFailed(info.Results);
-        }
-      });
+      CallAjax2(publicInterface.controllerUrl + '/DeleteAllPeople', null,
+        {
+          busy: 'Deleting',
+        },
+        function (info) {
+          if (info.Success) {
+            $('#importResults').html(info.Results).show();
+            $('.DbCount span').text(comma(info.count));
+          } else {
+            ShowStatusFailed(info.Results);
+          }
+        });
     });
 
     $('#uploadListBody').on('change', 'select.codePage', function () {
       var select = $(this);
-      ShowStatusDisplay('Saving...');
-      CallAjaxHandler(publicInterface.controllerUrl + '/FileCodePage',
+      CallAjax2(publicInterface.controllerUrl + '/FileCodePage',
         {
-           id: select.parents('tr').data('rowid'), cp: select.val()
+          id: select.parents('tr').data('rowid'), cp: select.val()
+        },
+        {
+          busy: 'Saving',
+          done: 'Saved'
         }, function (info) {
-        if (info.Message) {
-          ShowStatusFailed(info.Message);
-        }
-        else {
-          ShowStatusSuccess('Saved');
-          getFieldsInfo();
-        }
-      });
+          if (info.Message) {
+            ShowStatusFailed(info.Message);
+          }
+          else {
+            getFieldsInfo();
+          }
+        });
     });
 
     $('#uploadListBody').on('change', 'select.dataRow', function () {
       var select = $(this);
-      ShowStatusDisplay('Saving...');
-      CallAjaxHandler(publicInterface.controllerUrl + '/FileDataRow',
+      CallAjax2(publicInterface.controllerUrl + '/FileDataRow',
         {
           id: select.parents('tr').data('rowid'),
           firstDataRow: select.val()
+        },
+        {
+          busy: 'Saving',
+          done: 'Saved'
         }, function (info) {
-        if (info.Message) {
-          ShowStatusFailed(info.Message);
-        }
-        else {
-          ShowStatusSuccess('Saved');
-          getFieldsInfo();
-        }
-      });
+          if (info.Message) {
+            ShowStatusFailed(info.Message);
+          }
+          else {
+            getFieldsInfo();
+          }
+        });
     });
 
     $('#btnImport').on('click', function () {
@@ -146,46 +157,49 @@
         alert('Please select a file from the list first.');
         return;
       }
-      ShowStatusDisplay('Starting');
+
       var resultDiv = $('#importResults');
       var currentHeight = resultDiv.outerHeight();
       resultDiv.css('min-height', currentHeight + 'px').html('Starting').removeClass('failed').show();
 
-      CallAjaxHandler(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId }, function (info) {
-        if (info.result) {
-          for (var i = 0; i < info.result.length; i++) {
-            var r = info.result[i];
-            var prefix = r.substr(0, 3);
+      CallAjax2(publicInterface.controllerUrl + '/Import', { id: local.activeFileRowId },
+        {
+          busy: 'Starting'
+        },
+        function (info) {
+          if (info.result) {
+            for (var i = 0; i < info.result.length; i++) {
+              var r = info.result[i];
+              var prefix = r.substr(0, 3);
 
-            switch (prefix) {
-              case '~E ':
-              case '~W ':
-              case '~I ':
-                r = r.substr(3);
-            }
-            switch (prefix) {
-              case '~E ':
-                r = `<div class=E>${r}</div>`;
-                break;
-              case '~W ':
-                r = `<div class=W>${r}</div>`;
-                break;
-              case '~I ':
-                r = `<div class=I>${r}</div>`;
-                break;
-              default:
-                r = `<div>${r}</div>`;
-                break;
-            }
+              switch (prefix) {
+                case '~E ':
+                case '~W ':
+                case '~I ':
+                  r = r.substr(3);
+              }
+              switch (prefix) {
+                case '~E ':
+                  r = `<div class=E>${r}</div>`;
+                  break;
+                case '~W ':
+                  r = `<div class=W>${r}</div>`;
+                  break;
+                case '~I ':
+                  r = `<div class=I>${r}</div>`;
+                  break;
+                default:
+                  r = `<div>${r}</div>`;
+                  break;
+              }
 
-            info.result[i] = r;
-          };
+              info.result[i] = r;
+            };
 
-          resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
-          $('.DbCount span').text(comma(info.count));
-        }
-        ResetStatusDisplay();
-      });
+            resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
+            $('.DbCount span').text(comma(info.count));
+          }
+        });
     });
 
     $('#fieldSelector').on('change', 'select', fieldMapChanged);
@@ -200,7 +214,7 @@
       action: publicInterface.controllerUrl + '/Upload',
       allowedExtensions: ['CSV'],
       onSubmit: function (id, fileName) {
-        ShowStatusDisplay('Uploading...');
+        ShowStatusBusy('Uploading...');
         if (fileName.length > 50) {
           alert('Please shorten the name of the file to less than 50 characters long. This one was ' + fileName.length + '.');
           return false;
@@ -230,16 +244,18 @@
     });
   };
   function getFieldsInfo() {
-    ShowStatusDisplay('Reading columns...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/ReadFields', { id: local.activeFileRowId }, function (info) {
-      if (info.Success) {
-        showFields(info);
-        ResetStatusDisplay();
-      } else {
-        $('#fieldSelector').hide();
-        ShowStatusFailed(info.Message);
-      }
-    });
+    CallAjax2(publicInterface.controllerUrl + '/ReadFields', { id: local.activeFileRowId },
+      {
+        busy: 'Reading columns'
+      },
+      function (info) {
+        if (info.Success) {
+          showFields(info);
+        } else {
+          $('#fieldSelector').hide();
+          ShowStatusFailed(info.Message);
+        }
+      });
 
   };
   var showStatusReasons = function () {
@@ -313,18 +329,18 @@
     }
     $err.text('');
 
-    ShowStatusDisplay('Saving...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/SaveMapping', { id: local.activeFileRowId, mapping: mappings }, function (info) {
-      if (info.Message) {
-        ShowStatusFailed(info.Message);
-      }
-      else {
-        ShowStatusSuccess('Saved');
-      }
-      if (info.Status) {
-        activeUploadFileRow().children().eq(1).text(info.Status);
-      }
-    });
+    CallAjax2(publicInterface.controllerUrl + '/SaveMapping', { id: local.activeFileRowId, mapping: mappings },
+      {
+        busy: 'Saving',
+        done: 'Saved'
+      }, function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+        }
+        if (info.Status) {
+          activeUploadFileRow().children().eq(1).text(info.Status);
+        }
+      });
   };
   function showFields(info) {
     var host = $('#fieldSelector')
@@ -446,7 +462,7 @@
     hub.client.importInfo = function (lines, people) {
       ResetStatusDisplay();
       var msg = 'Processed {0} lines<br>{1} people added'.filledWith(comma(lines), comma(people));
-      ShowStatusDisplay(msg, 0, 9999999);
+      ShowStatusDone(msg);
       $('#importResults').html(msg).show();
     };
 

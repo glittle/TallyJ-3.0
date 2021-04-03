@@ -38,8 +38,7 @@
 
     $('#chkList').click(updateListing);
     $('#btnRefresh').click(function () {
-      ShowStatusDisplay("Refreshing...");
-      refresh();
+      refresh(true);
     });
 
     if (publicInterface.isGuest) {
@@ -241,17 +240,25 @@
     var form = {
       listOnPage: chk.prop('checked')
     };
-    ShowStatusDisplay('Saving...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/UpdateListing',
+    CallAjax2(publicInterface.controllerUrl + '/UpdateListing',
       form,
+      {
+        busy: 'Changing Open Status'
+      },
       function () {
-        ShowStatusSuccess('Saved');
         updatePasscodeDisplay(form.listOnPage, site.passcodeRaw);
       });
   };
 
-  function refresh() {
-    CallAjaxHandler(publicInterface.controllerUrl + '/RefreshMonitor', null, showInfo);
+  function refresh(showMsg) {
+    console.log(showMsg)
+    var options = showMsg === true ? {
+      busy: 'Refreshing',
+      done: 'Refreshed'
+    } : {};
+    CallAjax2(publicInterface.controllerUrl + '/RefreshMonitor', null,
+      options,
+      showInfo);
   };
 
   function expandBallots(ballots) {
@@ -476,7 +483,7 @@
           //            },
           //            function (info) {
           //              if (info.success) {
-          //                ShowStatusSuccess('Saved');
+          //                ShowStatusDone('Saved');
           //                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
           //              }
           //            });
@@ -491,12 +498,13 @@
             est: vue.election.OnlineCloseIsEstimate
           };
 
-          ShowStatusDisplay('Adjusting close time...');
-          CallAjaxHandler(publicInterface.controllerUrl + '/SaveOnlineClose',
+          CallAjax2(publicInterface.controllerUrl + '/SaveOnlineClose',
             form,
+            {
+              busy: 'Adjusting close time'
+            },
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Saved');
                 vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
                 vue.checkStatus();
@@ -506,14 +514,17 @@
         processReadyBallots: function () {
           var vue = this;
           this.processingReadyBallots = true;
-          ShowStatusDisplay('Processing...');
-          CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
+          CallAjax2(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,
+            {
+              busy: 'Processing'
+            },
             function (info) {
               vue.processingReadyBallots = false;
               if (info.success) {
-                ShowStatusSuccess(info.Message || 'Done');
-                //                console.log(info.problems);
+                if (info.Message) {
+                  ShowStatusDone(info.Message);
+                }
                 refresh();
               } else {
                 var msg = info.Message || info.problems.join('<br>');

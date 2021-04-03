@@ -61,15 +61,16 @@
   };
 
   var getReportData = function () {
-    ShowStatusDisplay('Getting results...');
     clearTimeout(settings.refreshTimeout);
-    CallAjaxHandler(publicInterface.controllerUrl + '/GetReport', null, showInfo);
+    CallAjax2(publicInterface.controllerUrl + '/GetReport', null,
+      {
+        busy: 'Getting results'
+      },
+      showInfo);
   };
 
-  var showInfo = function (info) {
-    var votesTable = $('table.Main');
-
-    ResetStatusDisplay();
+  function showInfo(info) {
+    //    var votesTable = $('table.Main');
 
     if (info.Status != 'Finalized') {
       $('#Results').hide();
@@ -90,8 +91,6 @@
 
     if (info.ReportVotes) {
       $('#mainBody').html(settings.rowTemplate.filledWithEach(expand(info)));
-    }
-    else {
     }
 
     $('#totalCounts').find('span[data-name]').each(function () {

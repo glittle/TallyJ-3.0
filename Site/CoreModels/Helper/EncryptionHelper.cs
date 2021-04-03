@@ -67,29 +67,28 @@ namespace TallyJ.CoreModels.Helper
         return false;
       }
 
-      if (!text.StartsWith(EncryptionPrefix))
-      {
-        return false;
-      }
+      return text.StartsWith(EncryptionPrefix);
 
-      try
-      {
-        _protectorV2.Unprotect(text);
-        return true;
-      }
-      catch (Exception)
-      {
-        try
-        {
-          // fall back to V1
-          _protectorV1.Unprotect(text);
-          return true;
-        }
-        catch (CryptographicException ex)
-        {
-          return false;
-        }
-      }
+      // we found the prefix, so it is encrypted... will find out later if we can decrypt it!
+
+      // try
+      // {
+      //   _protectorV2.Unprotect(text);
+      //   return true;
+      // }
+      // catch (Exception)
+      // {
+      //   try
+      //   {
+      //     // fall back to V1
+      //     _protectorV1.Unprotect(text);
+      //     return true;
+      //   }
+      //   catch (CryptographicException ex)
+      //   {
+      //     return false;
+      //   }
+      // }
     }
 
     /// <summary>
@@ -135,7 +134,15 @@ namespace TallyJ.CoreModels.Helper
         catch (CryptographicException e2)
         {
           // the first exception is the one we are interested in
-          errorMessage = e1.Message;
+          if (e1.Message.Contains("was not found in the key ring"))
+          {
+            errorMessage = "Ballot unreadable. Please submit a fresh ballot.";
+          }
+          else
+          {
+            errorMessage = e1.Message + $" ({e2.Message})";
+          }
+
           return null;
         }
       }

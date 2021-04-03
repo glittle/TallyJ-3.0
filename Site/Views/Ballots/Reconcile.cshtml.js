@@ -88,8 +88,11 @@
   function changeLocation(highlight) {
     var newLocation = local.hasLocations ? +$('#ddlTopLocation').val() : -2;
     if (newLocation !== local.currentLocation && newLocation) {
-      ShowStatusDisplay('Loading ballot information');
-      CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
+      CallAjax2(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation },
+        {
+          busy: 'Loading ballot information'
+        },
+        function (info) {
         if (highlight) {
           $('#Totals').effect('highlight', {}, 5000);
         }
@@ -99,7 +102,6 @@
         processBallots(info.Ballots);
 
         ActivateTips(true);
-        ResetStatusDisplay();
       });
     }
   };

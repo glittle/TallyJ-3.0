@@ -5,22 +5,6 @@
   ViewBag.Title = "Election Monitor";
   ViewBag.Message = "What's Happening?";
 
-  if (SettingsHelper.HostSupportsOnlineElections)
-  {
-    ViewData["ExtraScripts"] = new[]
-    {
-      ClientFile("~/Scripts/vue{0}.js", ".min"),
-      ClientFile("~/Scripts/luxon.min.js"),
-      ClientFile("~/Scripts/element-ui.js"),
-      ClientFile("~/Scripts/element-ui-en.js"),
-    };
-    ViewData["ExtraCss"] = new[]
-    {
-      ClientFile("~/Scripts/element-ui.css"),
-    };
-
-  }
-
   ContextItems.AddJavascriptForPage("url", "monitorPage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("pageUrl", "monitorPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("locations", "monitorPage.initial={0};".FilledWith(Model.MonitorInfoJson));

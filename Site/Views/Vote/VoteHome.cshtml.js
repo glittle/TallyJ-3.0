@@ -36,7 +36,7 @@
           host.vue.getElectionList();
         }
         else if (info.login) {
-          ShowStatusDisplay('This email has just been logged in with in another browser.');
+          ShowStatusDone('This email has just been logged in with in another browser.');
           host.vue.getLoginHistory();
         }
       };
@@ -88,6 +88,7 @@ var vueOptions = {
       randomOtherInfo: '',
       randomResult: '',
       addRandomToList: false,
+      clearingRandom: false,
       //      hasLocalId: false,
       meditate: false,
       movingIntoTop: false
@@ -325,7 +326,7 @@ var vueOptions = {
             vue.savedLock = locked;
             vue.lockInVotes = locked;
             vue.updateRegistration(info);
-            ShowStatusSuccess('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
+            ShowStatusDone('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
 
             window.scrollTo(0, 0);
           } else {
@@ -457,6 +458,10 @@ var vueOptions = {
 
             });
 
+            if (info.poolDecryptError) {
+              ShowStatusFailed(info.poolDecryptError, null, null, null, 'error1');
+            }
+
             vue.activePage = 2;
             vue.resetSearch();
             vue.scrollToTop(0);
@@ -477,6 +482,9 @@ var vueOptions = {
           voterHome.peopleHelper.Search(voterHome.peopleHelper.local.showAllCode, vue.displaySearchResults);
         }, 0);
       }
+    },
+    plural: function (a, b, c, d) {
+      return Plural(a, b, c, d);
     },
     runSearch: function (ev) {
       var text = this.searchText;
@@ -559,7 +567,7 @@ var vueOptions = {
       if (p.inPool) return;
       if (!p.CanReceiveVotes) return;
       if (this.election.person.PoolLocked) {
-        ShowStatusDisplay('Must unlock your selection to add more people to the pool.', 0, 5000, false, true);
+        ShowStatusDone('Must unlock your selection to add more people to the pool.');
         return;
       };
 
@@ -569,6 +577,7 @@ var vueOptions = {
       this.pool.splice(position, 0, p);
       this.savePool();
       this.showMouseCursor();
+      this.resetRandomInput();
     },
     removeFromPool: function (p) {
       var where = this.pool.findIndex(function (i) { return i.Id === p.Id; });
@@ -690,7 +699,7 @@ var vueOptions = {
             },
             function (info) {
               if (info.success) {
-                ShowStatusSuccess('Saved');
+                ShowStatusDone('Saved');
                 vue.savedPool = list;
                 vue.election.person.Status = info.newStatus;
               } else {
@@ -762,7 +771,7 @@ var vueOptions = {
         form,
         function (info) {
           if (info.saved) {
-            ShowStatusSuccess('Saved');
+            ShowStatusDone('Saved');
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -773,7 +782,7 @@ var vueOptions = {
         null,
         function (info) {
           if (info.sent) {
-            ShowStatusSuccess('Message Sent');
+            ShowStatusDone('Message Sent');
           } else {
             ShowStatusFailed(info.Error);
           }
@@ -784,7 +793,10 @@ var vueOptions = {
       return s.replace(/[<>&]/g, '');
     },
     searchForRandom: function () {
-      this.searchText = [this.randomFirst, this.randomLast].join(' ');
+      console.log('searching', this.clearingRandom)
+      if (!this.clearingRandom) {
+        this.searchText = [this.randomFirst, this.randomLast].join(' ');
+      }
     },
     addRandomName: function () {
       var nextFakeId = this.pool
@@ -854,10 +866,15 @@ var vueOptions = {
       this.setInputFocus();
     },
     resetRandomInput: function () {
+      this.clearingRandom = true;
       this.randomFirst = '';
       this.randomLast = '';
       this.randomOtherInfo = '';
       this.addRandomToList = false;
+
+      setTimeout(() => {
+        this.clearingRandom = false;
+      }, 0);
     },
     setInputFocus: function () {
       if (this.selectionProcess === 'R') {

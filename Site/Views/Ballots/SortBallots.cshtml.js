@@ -65,16 +65,18 @@
   var changeLocation = function (highlight) {
     var newLocation = $('#ddlTopLocation').val() || -2;
     if (newLocation != local.currentLocation && newLocation) {
-      ShowStatusDisplay('Loading ballot information');
-      CallAjaxHandler(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation }, function (info) {
-        local.currentLocation = newLocation;
-        processBallots(info.Ballots);
-        sortSection();
-        highlightRecentChanges();
+      CallAjax2(publicInterface.controllerUrl + '/BallotsForLocation', { id: newLocation },
+        {
+          busy: 'Loading ballot information'
+        },
+        function (info) {
+          local.currentLocation = newLocation;
+          processBallots(info.Ballots);
+          sortSection();
+          highlightRecentChanges();
 
-        ActivateTips(true);
-        ResetStatusDisplay();
-      });
+          ActivateTips(true);
+        });
     }
   };
 
@@ -128,7 +130,7 @@
 
     var ballotList = '<div id="B_{PersonId}">{^EnvInfo}<span>{C_FullName}</span><span class=When>{^TellerIcon}</span></div>'.filledWithEach(local.ballots);
     host.append('<div>{^0}<h3>Envelopes: {1}</h3><div class=Names>{^2}</div></div>'.filledWith(
-        local.sortSelector, local.ballots.length, ballotList));
+      local.sortSelector, local.ballots.length, ballotList));
 
     $('#lists .Names').toggleClass('Col3', local.ballots.length > ThresholdFor3Columns)
 

@@ -23,27 +23,30 @@
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li>
+    <li class="onlyOffline">
       Each paper ballot needs to be recorded here.
     </li>
     <li>
-      The Ballot is automatically saved as Votes are added to it.
+      A ballot is automatically saved as votes are added or modified.
     </li>
     <li>
       Duplicate names will be noticed and marked.
     </li>
-    <li class="ForLocations">
-      Be sure to update it to indicate the status of
+    <li class="onlyOnline">
+      Be sure to update your Location's information to indicate the status of
       your counting process, and the Contact Info in case the head teller needs to contact
       you.
     </li>
-    <li class="ForOnlineLI">
+    <li class="onlyOnline">
       For online ballots requiring finishing, click vote to select it. Can click "Find" to search for the full name or
       the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
     </li>
-    <li class="ForOnlineLI">
+    <li class="onlyOnline">
       Please note that the "Online Voter #" displayed for online ballots is a random number and will
       be randomly re-assigned whenever any new online ballots are processed.
+    </li>
+    <li class="onlyOffline">
+      To delete a ballot, first delete all the votes on the ballot.
     </li>
   </ol>
 </div>
@@ -82,16 +85,16 @@
             Refresh List
           </button>
         </div>
-        <div class="ballotDiv1">
+        <div class="ballotDiv1 onlyOffline">
           Ballots to enter:
           <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
         </div>
-        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right" accesskey="N">
+        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right onlyOffline" accesskey="N">
           Start <u>N</u>ew Ballot
         </button>
         <div class="ballotNumEntered">
           Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
-          <select id="ballotFilter">
+          <select id="ballotFilter" class="onlyOffline">
             <option value="">Show All</option>
             @foreach (var code in new BallotCacher().AllForThisElection.Where(b => b.ComputerCode != ComputerModel.ComputerCodeForOnline).Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
             {
@@ -181,11 +184,13 @@
       C<u>l</u>ose Ballot
     </button>
     @*<button type="button" id="btnAddToThis" class="btn btn-mini">
-      Add Votes to Ballot
-    </button>*@
-    <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Only needed if ballot status or vote lines and numbers appear to be wrong.">
+        Add Votes to Ballot
+      </button>*@
+    <button type="button" id="btnRefreshBallot" class="btn btn-mini" title="Reload this ballot. Can be used any time, especially if vote lines and numbers appear to be wrong.">
       Reload Ballot
     </button>
+    <span class="ui-icon ui-icon-info" id="qTipReload"></span>
+
     <div class="review">
       <label for="cbReview">
         If this ballot needs review by the head teller, tick here

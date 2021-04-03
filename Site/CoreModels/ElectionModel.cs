@@ -1168,7 +1168,13 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        var pool = onlineVoteHelper.GetDecryptedListPool(onlineBallotInfo.ovi);
+        var pool = onlineVoteHelper.GetDecryptedListPool(onlineBallotInfo.ovi, out var errorMessage);
+        if (errorMessage.HasContent())
+        {
+          problems.Add(errorMessage + name);
+          continue;
+        }
+
         if (pool.HasNoContent())
         {
           problems.Add("Empty pool" + name);
@@ -1273,9 +1279,9 @@ namespace TallyJ.CoreModels
 
       var ballotNum = 1;
       sorted.ForEach(b =>
-      {
-        b.BallotNumAtComputer = ballotNum++;
-      });
+        {
+          b.BallotNumAtComputer = ballotNum++;
+        });
       Db.SaveChanges();
       new BallotCacher().DropThisCache();
 

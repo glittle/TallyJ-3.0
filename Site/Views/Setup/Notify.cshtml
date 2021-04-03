@@ -7,15 +7,8 @@
   ViewBag.Title = "Send Notifications";
   ViewBag.Message = "Tell Voters about the Election";
   ViewData["ExtraScripts"] = new[] {
-    ClientFile("~/Scripts/vue{0}.js", ".min"),
     ClientFile("~/Scripts/ckeditor.js"),
     ClientFile("~/Scripts/ckeditor.vue.js"),
-    ClientFile("~/Scripts/element-ui.js"),
-    ClientFile("~/Scripts/element-ui-en.js"),
-  };
-  ViewData["ExtraCss"] = new[]
-  {
-    ClientFile("~/Scripts/element-ui.css"),
   };
 
   var election = UserSession.CurrentElection;

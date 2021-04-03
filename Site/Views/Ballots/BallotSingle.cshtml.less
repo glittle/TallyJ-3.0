@@ -455,25 +455,15 @@ div.heading {
   display: none;
 }
 
-.ForOnlineLI {
-  display: none;
-}
-
-.hideIfNotOnlineSpan{
-  display: none;
+body.IsOffline {
+  .onlyOnline {
+    display: none;
+  }
 }
 
 body.IsOnline {
-  .ForOnlineLI {
-    display: list-item;
-  }
-
-  .hideIfOnline {
+  .onlyOffline {
     display: none;
-  }
-
-  .hideIfNotOnlineSpan {
-    display: inline;
   }
 
   .titleDivNormal {

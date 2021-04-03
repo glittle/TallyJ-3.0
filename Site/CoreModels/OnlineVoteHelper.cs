@@ -1,4 +1,5 @@
 using TallyJ.Code;
+using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
@@ -17,22 +18,22 @@ namespace TallyJ.CoreModels
       onlineVotingInfo.ListPool = encrypted;
     }
 
-    public string GetDecryptedListPool(OnlineVotingInfo onlineVotingInfo)
+    public string GetDecryptedListPool(OnlineVotingInfo onlineVotingInfo, out string errorMessage)
     {
       var rawText = onlineVotingInfo.ListPool;
 
       if (!EncryptionHelper.IsEncrypted(rawText))
       {
+        errorMessage = null;
         return rawText;
       }
 
       var salt = onlineVotingInfo.C_RowId.ToString();
-      var listPool = EncryptionHelper.Decrypt(rawText, salt, out string errorMessage);
+      var listPool = EncryptionHelper.Decrypt(rawText, salt, out errorMessage);
 
       if (errorMessage.HasContent())
       {
-        // failed
-        // log it??
+        new LogHelper().Add("DecryptionError: " + errorMessage, true, UserSession.VoterId);
         return null;
       }
 

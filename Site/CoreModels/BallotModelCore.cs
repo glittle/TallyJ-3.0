@@ -214,7 +214,7 @@ namespace TallyJ.CoreModels
           count = vi.SingleNameElectionCount,
           pid = vi.PersonId,
           pos = vi.PositionOnBallot,
-          name = vi.PersonFullNameFL,
+          name = vi.PersonFullName,
           changed = vi.PersonCombinedInfo.HasContent() && !vi.PersonCombinedInfo.StartsWith(vi.PersonCombinedInfoInVote ?? "NULL"),
           invalid = vi.VoteIneligibleReasonGuid,
           ineligible = vi.PersonIneligibleReasonGuid,

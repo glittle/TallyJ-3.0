@@ -58,7 +58,7 @@ function Onload() {
   if (site.onload.length !== 0) {
     eval(site.onload.join(';'));
   }
-  PrepareStatusDisplay();
+  //  PrepareStatusDisplay();
 
   if (typeof (ELEMENT) !== 'undefined') {
     ELEMENT.locale(ELEMENT.lang.en);
@@ -213,10 +213,10 @@ var startSignalR = function (callBack, showReconnectMsg) {
       //console.log('error', error);
       if (msg.indexOf('The client has been inactive since') !== -1) {
         ShowStatusFailed("We've been disconnected from the server for too long." +
-          "<br>Please reload/refresh this page to reconnect and continue.");
+          "\nPlease reload/refresh this page to reconnect and continue.");
       } else if (msg.indexOf('WebSocket closed')) {
         ShowStatusFailed("Disconnected from the server." +
-          "<br>Please reload/refresh this page to reconnect and continue.");
+          "\nPlease reload/refresh this page to reconnect and continue.");
       } else {
         ShowStatusFailed(msg);
       }
@@ -226,7 +226,7 @@ var startSignalR = function (callBack, showReconnectMsg) {
       .start()
       .done(function () {
         if (showReconnectMsg) {
-          ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
+          ShowStatusDone('Reconnected!');
         }
         // console.log('signalR client connected', $.connection.hub.id);
         site.signalrConnectionId = $.connection.hub.id;
@@ -242,23 +242,23 @@ var startSignalR = function (callBack, showReconnectMsg) {
 
     $.connection.hub.connectionSlow(function () {
       console.log('slow');
-      ShowStatusDisplay('The connection to the server is slow... please wait...', null, null, true);
+      ShowStatusBusy('The connection to the server is slow... please wait...');
     });
     $.connection.hub.reconnecting(function () {
       console.log('reconnecting');
-      ShowStatusDisplay('Attempting to reconnect to the server...', null, null, true);
+      ShowStatusBusy('Attempting to reconnect to the server...');
       site.signalrReconnecting = true;
     });
     $.connection.hub.reconnected(function () {
       console.log('connected');
-      ShowStatusDisplay('Reconnected!', 0, 9000, false, true);
+      ShowStatusDone('Reconnected!');
       site.signalrReconnecting = false;
     });
     $.connection.hub.disconnected(function () {
       console.log('disconnected');
       if (site.signalrReconnecting) {
         ShowStatusFailed("We've been disconnected from the server." +
-          "<br>Please reload/refresh this page to reconnect and continue.");
+          "\nPlease reload/refresh this page to reconnect and continue.");
         setTimeout(function () {
           //          ResetStatusDisplay();
           console.log('starting signalR again');
@@ -432,14 +432,14 @@ function AttachHandlers() {
         return;
       }
 
-      ShowStatusDisplay('Saving...');
-      CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus',
+      CallAjax2(site.rootUrl + 'Elections/UpdateElectionStatus',
         form,
+        {
+          busy: 'Changing State'
+        },
         function (info) {
           if (info.Message) {
             ShowStatusFailed(info.Message);
-          } else {
-            ResetStatusDisplay();
           }
           HighlightActiveLink();
         });
@@ -640,7 +640,6 @@ function CheckTimeOffset() {
 }
 
 function topLocationChanged(ev) {
-  ShowStatusDisplay('Saving...');
   var ddl = $(ev.currentTarget);
   var form = {
     id: ddl.val()
@@ -654,10 +653,12 @@ function topLocationChanged(ev) {
     return;
   }
 
-  CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseLocation',
+  CallAjax2(GetRootUrl() + 'Dashboard/ChooseLocation',
     form,
+    {
+      busy: 'Changing Location...'
+    },
     function () {
-      ShowStatusSuccess('Saved');
       site.broadcast(site.broadcastCode.locationChanged);
       setTopInfo();
     });
@@ -682,12 +683,14 @@ function tellerChanged(ev) {
       text = 'Please enter a short name (up to 25 letters) for this teller:';
     } while (form.newName.length > 25);
   }
-  ShowStatusDisplay('Saving...');
 
-  CallAjaxHandler(GetRootUrl() + 'Dashboard/ChooseTeller',
+  CallAjax2(GetRootUrl() + 'Dashboard/ChooseTeller',
     form,
+    {
+      busy: 'Changing Teller',
+      done: 'Changed'
+    },
     function (info) {
-      ShowStatusSuccess('Saved');
 
       ddl.data('current', ddl.val());
 
@@ -947,25 +950,58 @@ function ProcessPulseResult(info) {
 // }, 1000);
 // }
 
+function CallAjax2(handlerUrl,
+  form,
+  statusOptions, // add and move to 3rd position
+  //{
+  //  busy: 'Changing Location',
+  //  done: 'Done',
+  //}
+  callbackWithInfo,
+  optionalExtraObjectForCallbackFunction,
+  callbackOnFailed,
+  waitForResponse) {
+  CallAjaxHandler(handlerUrl,
+    form,
+    callbackWithInfo,
+    optionalExtraObjectForCallbackFunction,
+    callbackOnFailed,
+    waitForResponse,
+    statusOptions);
+}
 
 function CallAjaxHandler(handlerUrl,
   form,
   callbackWithInfo,
   optionalExtraObjectForCallbackFunction,
   callbackOnFailed,
-  waitForResponse) {
+  waitForResponse,
+  statusOptions) {
   /// <summary>Do a POST to the named handler. If form is not needed, pass null. Query and Form are objects with named properties.</summary>
+  var callMsg = null;
+
+  if (statusOptions && statusOptions.busy) {
+    var text = statusOptions.busy;
+    callMsg = ShowStatusBusy(text + (text.slice(0, -3) === '...' ? '' : '...'));
+  }
+
   var options = {
     type: 'POST',
     url: handlerUrl,
     traditional: true,
     success: function (data, textStatus, jqXhr) {
-      if (HasErrors(data, jqXhr)) return;
+      if (callMsg) {
+        ResetStatusDisplay(callMsg);
+      }
 
-      ResetStatusDisplay();
+      if (HasErrors(data, jqXhr)) return;
 
       if (typeof callbackWithInfo !== 'undefined') {
         callbackWithInfo(JsonParse(data), optionalExtraObjectForCallbackFunction);
+      }
+
+      if (statusOptions && statusOptions.done) {
+        ShowStatusDone(statusOptions.done);
       }
     },
     error: function (jqXhr, textStatus) {
@@ -984,6 +1020,7 @@ function CallAjaxHandler(handlerUrl,
   if (waitForResponse) {
     options.async = false;
   }
+
   return $.ajax(options);
 }
 
@@ -1039,130 +1076,130 @@ function GetRootUrl() {
   return site.rootUrl;
 }
 
-//  Status Display //////////////////////////////////////
-var statusDisplay = {
-  minDisplayTimeBeforeStatusReset: 0,
-  resetTimer: null,
-  delayedShowStatusArray: []
-};
-
-function PrepareStatusDisplay() {
-  //if ($('body').hasClass('Public Index')) {
-  //  var target = $('body').hasClass('Public Index') ? 'body' : '#body';
-
-  $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">' +
-    '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>' +
-    '</div></div></div>');
-  //} else {
-  //    $('#body').prepend('<div class="StatusOuter2 content-wrapper"><span id="statusDisplay2" class="StatusActive" style="display: none;"></span></div>');
-  //}
-}
-
-function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
-  statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
-    (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 600 * 1000;
-  if (statusDisplay.minDisplayTimeBeforeStatusReset) {
-    clearTimeout(statusDisplay.resetTimer);
-    statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
-    statusDisplay.minDisplayTimeBeforeStatusReset = 0;
-  }
-
-  if (typeof delayBeforeShowing !== 'number') {
-    delayBeforeShowing = 0;
-  }
-
-  if (delayBeforeShowing > 0) {
-    statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function () {
-      ShowStatusDisplay(msg, 0, timeBeforeStatusReset, showErrorIcon);
-    },
-      delayBeforeShowing);
-    return;
-  }
-  var target = $('#statusDisplay2, #statusDisplay');
-  if (target.length === 0) {
-    // ??? on a page without a Status display
-  }
-  var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
-  var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' : showNoIcon ? '' : loaderPath;
-  target.html(imageHtml + msg).show();
-  if (showErrorIcon) {
-    target.addClass('error');
-    $('body').addClass('errorStatus');
-  } else {
-    target.removeClass('error');
-    $('body').removeClass('errorStatus');
-  }
-  // idea: hold errors until click ok?    <button onclick="ClearDisplay()" type=button>Ok</button>
-}
-
-function ShowStatusSuccess(msg) {
-  ShowStatusDisplay(msg, 0, 3000, false, true);
-}
-
-function ShowStatusFailed(msg, keepTime) {
-  //  ResetStatusDisplay();
-  var delayBeforeShow = 0;
-  var msgShown = false;
-
-  if (typeof keepTime == 'undefined') keepTime = 600 * 1000; // 10 minutes
-
-  var text;
-  if (typeof msg === 'string') {
-    text = msg;
-  } else if (typeof msg.statusText === 'string') {
-    if (msg.status === 200 || msg.status === 406) {
-      text = msg.responseText;
-    } else if (msg.status === 0 && msg.statusText === 'error') {
-      text = 'Please wait...';
-      ShowStatusDisplay(text, 0, keepTime, false, false);
-      msgShown = true;
-    } else if (msg.status === 503) {
-      top.location.href = top.location.href;
-      return '';
-    } else {
-      text = '(' + msg.status + ') ' + msg.statusText + ': ';
-      if (msg.responseText) {
-        var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);
-        if (matches !== null) {
-          text = text + matches[1];
-        } else {
-          text = text + msg.responseText;
-        }
-      }
-    }
-  } else {
-    text = 'Error';
-  }
-
-  if (!msgShown) {
-    ResetStatusDisplay();
-    ShowStatusDisplay(text + '<span class=closeStatus title="Dismiss error message">✗</span>', delayBeforeShow, keepTime, true);
-  }
-
-  return text;
-}
-
-function ResetStatusDisplay() {
-  clearTimeout(statusDisplay.resetTimer);
-  $('body').removeClass('errorStatus');
-
-  for (; statusDisplay.delayedShowStatusArray.length;) {
-    clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
-    statusDisplay.delayedShowStatusArray.length--;
-  }
-
-  if (statusDisplay.minDisplayTimeBeforeStatusReset !== 0) {
-    statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
-    statusDisplay.minDisplayTimeBeforeStatusReset = 0;
-    return;
-  }
-
-  HideStatusDisplay();
-}
-
-function HideStatusDisplay() {
-  $('#statusDisplay2, #statusDisplay').hide();
-}
+////  Status Display //////////////////////////////////////
+//var statusDisplay = {
+//  minDisplayTimeBeforeStatusReset: 0,
+//  resetTimer: null,
+//  delayedShowStatusArray: []
+//};
+//
+//function PrepareStatusDisplay() {
+//  //if ($('body').hasClass('Public Index')) {
+//  //  var target = $('body').hasClass('Public Index') ? 'body' : '#body';
+//
+//  $('body').prepend('<div class="StatusOuter"><div class="StatusMiddle"><div class="StatusInner">' +
+//    '<div id="statusDisplay" class="StatusActive" style="display: none;"></div>' +
+//    '</div></div></div>');
+//  //} else {
+//  //    $('#body').prepend('<div class="StatusOuter2 content-wrapper"><span id="statusDisplay2" class="StatusActive" style="display: none;"></span></div>');
+//  //}
+//}
+//
+//function ShowStatusDisplay(msg, delayBeforeShowing, timeBeforeStatusReset, showErrorIcon, showNoIcon) {
+//  statusDisplay.minDisplayTimeBeforeStatusReset = timeBeforeStatusReset =
+//    (typeof timeBeforeStatusReset === 'number') ? timeBeforeStatusReset : 600 * 1000;
+//  if (statusDisplay.minDisplayTimeBeforeStatusReset) {
+//    clearTimeout(statusDisplay.resetTimer);
+//    statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
+//    statusDisplay.minDisplayTimeBeforeStatusReset = 0;
+//  }
+//
+//  if (typeof delayBeforeShowing !== 'number') {
+//    delayBeforeShowing = 0;
+//  }
+//
+//  if (delayBeforeShowing > 0) {
+//    statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length] = setTimeout(function () {
+//      ShowStatusDisplay(msg, 0, timeBeforeStatusReset, showErrorIcon);
+//    },
+//      delayBeforeShowing);
+//    return;
+//  }
+//  var target = $('#statusDisplay2, #statusDisplay');
+//  if (target.length === 0) {
+//    // ??? on a page without a Status display
+//  }
+//  var loaderPath = '<img class=ajaxIcon src="' + GetRootUrl() + 'images/ajax-loader.gif"> ';
+//  var imageHtml = showErrorIcon ? '<span class="ui-icon ui-icon-alert"></span>' : showNoIcon ? '' : loaderPath;
+//  target.html(imageHtml + msg).show();
+//  if (showErrorIcon) {
+//    target.addClass('error');
+//    $('body').addClass('errorStatus');
+//  } else {
+//    target.removeClass('error');
+//    $('body').removeClass('errorStatus');
+//  }
+//  // idea: hold errors until click ok?    <button onclick="ClearDisplay()" type=button>Ok</button>
+//}
+//
+//function ShowStatusDone(msg) {
+//  ShowStatusDisplay(msg, 0, 3000, false, true);
+//}
+//
+//function ShowStatusFailed(msg, keepTime) {
+//  //  ResetStatusDisplay();
+//  var delayBeforeShow = 0;
+//  var msgShown = false;
+//
+//  if (typeof keepTime == 'undefined') keepTime = 600 * 1000; // 10 minutes
+//
+//  var text;
+//  if (typeof msg === 'string') {
+//    text = msg;
+//  } else if (typeof msg.statusText === 'string') {
+//    if (msg.status === 200 || msg.status === 406) {
+//      text = msg.responseText;
+//    } else if (msg.status === 0 && msg.statusText === 'error') {
+//      text = 'Please wait...';
+//      ShowStatusDisplay(text, 0, keepTime, false, false);
+//      msgShown = true;
+//    } else if (msg.status === 503) {
+//      top.location.href = top.location.href;
+//      return '';
+//    } else {
+//      text = '(' + msg.status + ') ' + msg.statusText + ': ';
+//      if (msg.responseText) {
+//        var matches = msg.responseText.match(/\<title\>(.*?)\<\/title\>/i);
+//        if (matches !== null) {
+//          text = text + matches[1];
+//        } else {
+//          text = text + msg.responseText;
+//        }
+//      }
+//    }
+//  } else {
+//    text = 'Error';
+//  }
+//
+//  if (!msgShown) {
+//    ResetStatusDisplay();
+//    ShowStatusBusy(text + '<span class=closeStatus title="Dismiss error message">✗</span>', delayBeforeShow, keepTime, true);
+//  }
+//
+//  return text;
+//}
+//
+//function ResetStatusDisplay() {
+//  clearTimeout(statusDisplay.resetTimer);
+//  $('body').removeClass('errorStatus');
+//
+//  for (; statusDisplay.delayedShowStatusArray.length;) {
+//    clearTimeout(statusDisplay.delayedShowStatusArray[statusDisplay.delayedShowStatusArray.length - 1]);
+//    statusDisplay.delayedShowStatusArray.length--;
+//  }
+//
+//  if (statusDisplay.minDisplayTimeBeforeStatusReset !== 0) {
+//    statusDisplay.resetTimer = setTimeout(ResetStatusDisplay, statusDisplay.minDisplayTimeBeforeStatusReset);
+//    statusDisplay.minDisplayTimeBeforeStatusReset = 0;
+//    return;
+//  }
+//
+//  HideStatusDisplay();
+//}
+//
+//function HideStatusDisplay() {
+//  $('#statusDisplay2, #statusDisplay').hide();
+//}
 
 
 function alerts(arg1, arg2, arg3, etc) {

@@ -84,16 +84,20 @@ namespace TallyJ.Controllers
             people = new List<string>()
           }.AsJsonResult();
       }
+      
+      var rnd = new Random();
+
+      var allForThisElection = new PersonCacher(Db).AllForThisElection;
+
+      var maxRnd = allForThisElection.Count * 100;
 
       return new
       {
-        people = new PersonCacher(Db)
-          .AllForThisElection
+        people = allForThisElection
           .Select(p =>
           {
             var irg = p.IneligibleReasonGuid;
             string descriptionFor = null;
-
 
             if (irg != null)
             {
@@ -115,9 +119,11 @@ namespace TallyJ.Controllers
               Name = p.FullName,
               IRG = descriptionFor,
               p.OtherInfo,
-              p.Area
+              p.Area,
+              sort = rnd.Next(maxRnd)
             };
-          }),
+          })
+          .OrderBy(p=> p.sort)
       }.AsJsonResult();
     }
 

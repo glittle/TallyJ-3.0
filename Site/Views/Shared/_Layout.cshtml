@@ -44,6 +44,7 @@
       SettingsHelper.HostSupportsOnlineElections && UserSession.CurrentElection != null ? "Online" + (UserSession.CurrentElection.OnlineCurrentlyOpen ? "Open" : UserSession.CurrentElection.OnlineEnabled ? "Closed" : "NotEnabled") : null,
       "Auth" + UserSession.AuthLevel,
       ContextItems.LocationModel.ShowLocationSelector(currentMenu) ? "HasLocations" : "NoLocations",
+      ContextItems.LocationModel.HasLocationsWithoutOnline ? "" : "HasOfflineLocations",
       UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
     };
 }

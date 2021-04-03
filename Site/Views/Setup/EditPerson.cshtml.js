@@ -179,8 +179,11 @@
       return;
     }
 
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SavePerson', form, function (info) {
+    CallAjax2(publicInterface.controllerUrl + '/SavePerson', form,
+      {
+        busy: 'Saving'
+      },
+      function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
         if (info.Person) {
@@ -194,7 +197,7 @@
 
         site.broadcast(site.broadcastCode.personSaved, info);
       }
-      ShowStatusSuccess(info.Status);
+      ShowStatusDone(info.Status);
     });
   };
 
@@ -203,14 +206,14 @@
   //    id: local.hostPanel.find(':input[data-name=C_RowId]').val()
   //  };
 
-  //  ShowStatusDisplay("Deleting...");
+  //  ShowStatusBusy("Deleting...");
   //  CallAjaxHandler(publicInterface.controllerUrl + '/DeletePerson', form, function (info) {
   //    if (info.Message) {
   //      ShowStatusFailed(info.Message);
   //      return;
   //    }
 
-  //    ShowStatusSuccess(info.Status);
+  //    ShowStatusDone(info.Status);
   //  });
   //}
 

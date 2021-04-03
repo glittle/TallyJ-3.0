@@ -352,7 +352,8 @@ body.VoteIndex {
     //}
     li {
       border: 1px solid transparent;
-      padding: 0 3px;
+      padding: 0 3px 0 23px;
+      text-indent: -20px;
       user-select: none;
 
       &.inPool {
@@ -449,8 +450,8 @@ body.VoteIndex {
     font-size: 17.5px;
     line-height: 170%;
     margin: 10px 1em;
-    padding: 0.5em;
-    border-radius: 2px;
+    padding: 0.5em 1em;
+    border-radius: 5px;
 
     &.onlineFuture {
       background-color: @onlineFuture;
@@ -625,6 +626,9 @@ body.VoteIndex {
       &.inList {
       }
 
+      &.firstInOther {
+      }
+
       &.showBottomBorder {
         //border-bottom: 1px solid grey;
       }
@@ -653,7 +657,7 @@ body.VoteIndex {
       }
 
       &.inTop {
-        font-weight: bold;
+        //font-weight: bold;
         // &:before, &:after {
         //   content: " ";
         //   height: 108%;

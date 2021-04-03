@@ -179,7 +179,7 @@
 
     $('#tellersList').on('click', '.ui-icon-trash', deleteTeller);
 
-//    $('#btnResetList').click(resetAllCanVote);
+    //    $('#btnResetList').click(resetAllCanVote);
 
     $('#txtDate').on('change', getBadiDate);
 
@@ -320,29 +320,32 @@
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
   };
 
-//  function resetAllCanVote() {
-//
-//    ShowStatusDisplay("Updating...");
-//    CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
-//      ResetStatusDisplay();
-//    });
-//
-//  };
+  //  function resetAllCanVote() {
+  //
+  //    ShowStatusBusy("Updating...");
+  //    CallAjaxHandler(publicInterface.controllerUrl + '/ResetInvolvementFlags', null, function (info) {
+  //      ResetStatusDisplay();
+  //    });
+  //
+  //  };
 
   function deleteTeller(ev) {
-    ShowStatusDisplay('Deleting...');
     var icon = $(ev.target);
     var targetDiv = $(icon.parent());
     var target = targetDiv.data('id');
     var form = { id: target };
-    CallAjaxHandler(GetRootUrl() + 'Dashboard/DeleteTeller', form, function (info) {
-      if (info.Deleted) {
-        targetDiv.remove();
-      }
-      else {
-        ShowStatusFailed(info.Error);
-      }
-    });
+    CallAjax2(GetRootUrl() + 'Dashboard/DeleteTeller', form,
+      {
+        busy: 'Deleting'
+      },
+      function (info) {
+        if (info.Deleted) {
+          targetDiv.remove();
+        }
+        else {
+          ShowStatusFailed(info.Error);
+        }
+      });
   };
 
 
@@ -412,28 +415,31 @@
       return;
     }
 
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/EditLocation', form, function (info) {
-      if (info.Success) {
-        ShowStatusSuccess(info.Status);
-        if (info.Id == 0) {
-          // removed
-          input.parent().remove();
+    CallAjax2(publicInterface.controllerUrl + '/EditLocation', form,
+      {
+        busy: 'Saving'
+      },
+      function (info) {
+        if (info.Success) {
+          ShowStatusDone(info.Status);
+          if (info.Id == 0) {
+            // removed
+            input.parent().remove();
 
-          // vue array is disconnected from the DOM array... need the length matches the DOM
-          settings.vue.numLocations = $('#locationList input').length;
+            // vue array is disconnected from the DOM array... need the length matches the DOM
+            settings.vue.numLocations = $('#locationList input').length;
 
-          // setupLocationSortable();
-        } else {
-          input.val(info.Text);
-          if (info.Id != form.id) {
-            input.data('id', info.Id);
+            // setupLocationSortable();
+          } else {
+            input.val(info.Text);
+            if (info.Id != form.id) {
+              input.data('id', info.Id);
+            }
           }
+        } else {
+          ShowStatusFailed(info.Status);
         }
-      } else {
-        ShowStatusFailed(info.Status);
-      }
-    });
+      });
   };
 
   function setupLocationSortable() {
@@ -458,10 +464,11 @@
     var form = {
       ids: ids
     };
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SortLocations', form, function (info) {
-      ShowStatusSuccess("Saved");
-    });
+    CallAjax2(publicInterface.controllerUrl + '/SortLocations', form,
+      {
+        busy: 'Saving locations',
+        done: 'Locations Saved'
+      });
   };
 
   function applyValues(election) {
@@ -544,36 +551,38 @@
       return;
     }
 
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SaveElection', form, function (info) {
-      if (info.success) {
-        if (info.Election) {
-          applyValues(info.Election);
-          $('.CurrentElectionName').text(info.displayName);
-          site.passcodeRaw =
-            site.passcode = info.Election.ElectionPasscode;
-          updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
+    CallAjax2(publicInterface.controllerUrl + '/SaveElection', form,
+      {
+        busy: 'Saving'
+      },
+      function (info) {
+        if (info.success) {
+          if (info.Election) {
+            applyValues(info.Election);
+            $('.CurrentElectionName').text(info.displayName);
+            site.passcodeRaw =
+              site.passcode = info.Election.ElectionPasscode;
+            updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
+          }
+
+          publicInterface.defaultFromAddress = info.defaultFromAddress;
+
+          $('.btnSave').removeClass('btn-primary');
+          settings.vue.isSaveNeeded = false;
+
+          var isClosed = moment(form.OnlineWhenClose).isBefore();
+          $('body').toggleClass('OnlineOpen', !isClosed);
+          $('body').toggleClass('OnlineClosed', isClosed);
+
+          ShowStatusDone(info.Status);
+        } else {
+          ShowStatusFailed(info.Status);
+          if (info.Election) {
+            applyValues(info.Election);
+            $('.CurrentElectionName').text(info.displayName);
+          }
         }
-
-        publicInterface.defaultFromAddress = info.defaultFromAddress;
-
-        $('.btnSave').removeClass('btn-primary');
-        settings.vue.isSaveNeeded = false;
-
-        var isClosed = moment(form.OnlineWhenClose).isBefore();
-        $('body').toggleClass('OnlineOpen', !isClosed);
-        $('body').toggleClass('OnlineClosed', isClosed);
-
-        ResetStatusDisplay();
-        ShowStatusSuccess(info.Status);
-      } else {
-        ShowStatusFailed(info.Status);
-        if (info.Election) {
-          applyValues(info.Election);
-          $('.CurrentElectionName').text(info.displayName);
-        }
-      }
-    });
+      });
   };
 
   function startToAdjustByType() {
@@ -631,8 +640,8 @@
 
     setRule($('#txtNames'), info.NumLocked, info.Num);
     setRule($('#txtExtras'), info.ExtraLocked, info.Extra);
-//    setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
-//    setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
+    //    setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
+    //    setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
     var lockedAfterBallots = publicInterface.hasBallots || publicInterface.hasOnlineBallots;
     // core

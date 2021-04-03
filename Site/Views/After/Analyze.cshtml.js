@@ -35,11 +35,11 @@
 
     $('#body').on('change keyup', 'input.Manual', function () {
       $('.btnSaveManualCounts').addClass('btn-primary');
-      diableAnalysisBtnIfNeeded();
+      disableAnalysisBtnIfNeeded();
     });
     $('#body').on('change keyup', 'input.TieBreakCount', function () {
       $('.btnSaveTieCounts').addClass('btn-primary');
-      diableAnalysisBtnIfNeeded();
+      disableAnalysisBtnIfNeeded();
     });
 
     settings.rowTemplate = $('#mainTableRow').text();
@@ -71,7 +71,7 @@
 
   };
 
-  function diableAnalysisBtnIfNeeded() {
+  function disableAnalysisBtnIfNeeded() {
     var disable = $('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary');
     $('#btnRefresh').prop('disabled', disable);
   }
@@ -88,15 +88,17 @@
     var form = {
       state: (rb.val() === 'Finalized' && rb.prop('checked')) ? 'Finalized' : 'Tallying'
     };
-    ShowStatusDisplay('Saving...');
-    CallAjaxHandler(site.rootUrl + 'Elections/UpdateElectionStatus', form, function (info) {
-      if (info.Message) {
-        ShowStatusFailed(info.Message);
-        return;
-      }
-      ResetStatusDisplay();
-      site.broadcast(site.broadcastCode.electionStatusChanged, info);
-    });
+    CallAjax2(site.rootUrl + 'Elections/UpdateElectionStatus', form,
+      {
+        busy: 'Changing State'
+      },
+      function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          return;
+        }
+        site.broadcast(site.broadcastCode.electionStatusChanged, info);
+      });
 
   }
 
@@ -146,7 +148,6 @@
       // ?
     }
 
-    ShowStatusDisplay('Analyzing ballots...', 0, 5 * 60 * 1000);
     $('body').removeClass('notReady ready');
     $('body').addClass('analyzing');
     $('#InitialMsg').text('Analyzing all ballots...').removeClass('bad').show();
@@ -154,7 +155,10 @@
     showLog(true);
     $('#log, #tempLog').html('');
 
-    CallAjaxHandler(publicInterface.controllerUrl + '/RunAnalyze', null, showInfo, firstLoad);
+    CallAjax2(publicInterface.controllerUrl + '/RunAnalyze', null,
+      {
+        busy: 'Analyzing ballots'
+      }, showInfo, firstLoad);
   };
 
   function showInfo(info, firstLoad) {
@@ -179,8 +183,6 @@
     $('#InitialMsg').hide();
     $('#tieResults').hide();
     $('#HasCloseVote').hide();
-
-    ResetStatusDisplay();
 
     if (info.Votes) {
       $('.NoAnalysis').hide();
@@ -239,10 +241,10 @@
         $('#totalCounts').removeClass('onlineReady');
 
         if (info.OnlineCurrentlyOpen) {
-          onlineIssues.unshift('Use the <a href=Monitor>Monitor</a> page to Close online voting.');
+          onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to Close online voting.');
         }
         $('#btnProcessOnline').toggle(!info.OnlineCurrentlyOpen);
-        
+
         $('#onlineIssues').html('<p>' + onlineIssues.join('<p>'));
         $('#hasOnlineIssues').show();
       } else {
@@ -402,13 +404,17 @@
   };
 
   function processReadyBallots() {
-    ShowStatusDisplay('Processing...');
-    CallAjaxHandler(publicInterface.controllerUrl + '/ProcessOnlineBallots',
+    CallAjax2(publicInterface.controllerUrl + '/ProcessOnlineBallots',
       null,
+      {
+        busy: 'Processing'
+      },
       function (info) {
         if (info.success) {
-          ShowStatusSuccess(info.Message || 'Done');
-          setTimeout(function() {
+          if (info.Message) {
+            ShowStatusDone(info.Message);
+          }
+          setTimeout(function () {
             runAnalysis(false);
           }, 1000);
         } else {
@@ -429,21 +435,22 @@
       form[input.data('name')] = input.val();
     });
 
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SaveManual', form, function (info) {
-      ResetStatusDisplay();
-      if (info.Saved) {
-        fillValues('Manual', settings.info.ResultsManual = info.ResultsManual);
-        fillValues('Final', settings.info.ResultsFinal = info.ResultsFinal);
-        summarizeCounts();
-        ShowStatusSuccess('Saved');
-        showLog(false);
-        $('.btnSaveManualCounts').removeClass('btn-primary');
-        diableAnalysisBtnIfNeeded()
-      } else {
-        ShowStatusSuccess(info.Message);
-      }
-    });
+    CallAjax2(publicInterface.controllerUrl + '/SaveManual', form,
+      {
+        busy: 'Saving',
+      },
+      function (info) {
+        if (info.Saved) {
+          fillValues('Manual', settings.info.ResultsManual = info.ResultsManual);
+          fillValues('Final', settings.info.ResultsFinal = info.ResultsFinal);
+          summarizeCounts();
+          showLog(false);
+          $('.btnSaveManualCounts').removeClass('btn-primary');
+          disableAnalysisBtnIfNeeded();
+        } else {
+          ShowStatusDone(info.Message);
+        }
+      });
 
   };
 
@@ -476,13 +483,15 @@
     var form = {
       counts: values
     };
-    ShowStatusDisplay("Saving...");
-    CallAjaxHandler(publicInterface.controllerUrl + '/SaveTieCounts', form, function (info) {
+    CallAjax2(publicInterface.controllerUrl + '/SaveTieCounts', form,
+      {
+        busy: 'Saving Tie Counts'
+      },
+      function (info) {
       if (info.Saved) {
-        ShowStatusSuccess("Saved");
         runAnalysis(false);
         $('.btnSaveTieCounts').removeClass('btn-primary');
-        diableAnalysisBtnIfNeeded()
+        disableAnalysisBtnIfNeeded()
       } else {
         ShowStatusFailed(info.Msg);
       }

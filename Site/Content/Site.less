@@ -876,79 +876,145 @@ a.gplus {
 a.twitter {
   background-position: -98px -2px;
 }
+
 /* Statuses */
-#statusDisplay, #statusDisplay2 {
-  color: #000;
-  background-color: #ccffbe;
-  border: 1px solid #AAA;
-  border-top: none;
-  padding: 3px 20px 6px 20px;
-  -moz-border-radius-bottomright: 6px;
-  border-bottom-right-radius: 6px;
-  -moz-border-radius-bottomleft: 6px;
-  border-bottom-left-radius: 6px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-  .closeStatus {
-    margin-left: 15px;
-    padding: 1px 3px;
-    cursor: pointer;
-
-    &:hover {
-      color: #eee;
-    }
-  }
-}
-
-.StatusOuter2 {
-  text-align: center;
-}
-
-#statusDisplay2 {
-  padding-bottom: 2px;
-  position: absolute;
-}
-
-
-#statusDisplay.error, #statusDisplay2.error {
-  background-color: #e00000;
-  color: white;
-  padding-right: 5px;
-  padding-left: 10px;
-}
-
-#statusDisplay2 .ajaxIcon, #statusDisplay .ajaxIcon {
-  margin: 2px 5px 0 0;
-  float: left;
-}
-
-#statusDisplay2 span.ui-icon-alert, #statusDisplay span.ui-icon-alert {
-  display: inline-block;
-  margin: 0 10px 0 0;
-  top: 3px;
-  position: relative;
-}
 
 .StatusOuter {
   /* inspired by http://simon.html5.org/sandbox/css/center-fixed */
-  min-width: 400px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 9999;
-  pointer-events: none;
+  z-index: 99999;
+  height: 0;
+  text-align: center;
 }
 
 .StatusMiddle {
-  margin: 0 auto;
-  display: table;
-  pointer-events: all;
+  display: inline-block;
+  max-width: 50%;
+  height: 0;
 }
 
-.StatusInner {
-  display: table-cell;
+#statusDisplayVue {
+  color: #fff;
+  margin-top: 3px;
+  font-size: 1rem;
+
+  > div {
+    background-color: #00a500; // @BtnGreen; //#9bec9c; //#FFE4AC; // #9bec9c //#FFF3DB
+
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 15px 8px;
+    border-radius: 6px;
+    margin: 1px auto 1px;
+    min-height: 19px;
+    width: fit-content;
+
+    span {
+      flex-grow: 1;
+    }
+
+    > i {
+      flex-grow: 0;
+      margin-right: 10px;
+    }
+
+    &.error {
+      background-color: #e00000; // #ff3d3d; //#FFE4AC; // #9bec9c //#FFF3DB
+      color: #fff;
+    }
+
+    .close { // override bootstrap
+      margin-left: 10px;
+      flex-grow: 0;
+      color: #fff;
+      text-shadow: none;
+      font-weight: normal;
+      opacity: 1;
+      font-size: 1rem;
+    }
+  }
 }
+
+
+
+
+//#statusDisplay, #statusDisplay2 {
+//  color: #000;
+//  background-color: #ccffbe;
+//  border: 1px solid #AAA;
+//  border-top: none;
+//  padding: 3px 20px 6px 20px;
+//  -moz-border-radius-bottomright: 6px;
+//  border-bottom-right-radius: 6px;
+//  -moz-border-radius-bottomleft: 6px;
+//  border-bottom-left-radius: 6px;
+//  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+//
+//  .closeStatus {
+//    margin-left: 15px;
+//    padding: 1px 3px;
+//    cursor: pointer;
+//
+//    &:hover {
+//      color: #eee;
+//    }
+//  }
+//}
+//
+//.StatusOuter2 {
+//  text-align: center;
+//}
+//
+//#statusDisplay2 {
+//  padding-bottom: 2px;
+//  position: absolute;
+//}
+//
+//
+//#statusDisplay.error, #statusDisplay2.error {
+//  background-color: #e00000;
+//  color: white;
+//  padding-right: 5px;
+//  padding-left: 10px;
+//}
+//
+//#statusDisplay2 .ajaxIcon, #statusDisplay .ajaxIcon {
+//  margin: 2px 5px 0 0;
+//  float: left;
+//}
+//
+//#statusDisplay2 span.ui-icon-alert, #statusDisplay span.ui-icon-alert {
+//  display: inline-block;
+//  margin: 0 10px 0 0;
+//  top: 3px;
+//  position: relative;
+//}
+//
+//.StatusOuter {
+//  /* inspired by http://simon.html5.org/sandbox/css/center-fixed */
+//  min-width: 400px;
+//  position: fixed;
+//  top: 0;
+//  left: 0;
+//  width: 100%;
+//  z-index: 9999;
+//  pointer-events: none;
+//}
+//
+//.StatusMiddle {
+//  margin: 0 auto;
+//  display: table;
+//  pointer-events: all;
+//}
+//
+//.StatusInner {
+//  display: table-cell;
+//}
 /* End: Statuses */
 .CompCode {
   color: #737373;

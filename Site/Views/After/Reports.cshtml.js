@@ -108,15 +108,17 @@
   }
 
   function getReport(code, title) {
-    ShowStatusDisplay('Getting report');
     local.reportLines = [];
     local.reportHolder.html('<div class=getting>Getting report: ' + title + '</div>');
     $('#Status').hide();
-    CallAjaxHandler(publicInterface.controllerUrl + '/GetReportData', { code: code }, showInfo, { code: code, title: title });
+    CallAjax2(publicInterface.controllerUrl + '/GetReportData', { code: code },
+      {
+        busy: 'Getting report'
+      },
+      showInfo, { code: code, title: title });
   }
 
   function showInfo(info, codeTitle) {
-    ResetStatusDisplay();
     if (!info) {
       return;
     }

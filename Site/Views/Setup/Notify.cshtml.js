@@ -154,8 +154,6 @@
           //          var list = emailCode === 'Test' ? null : vue.emailsToSend.map(function (p) { return p.C_RowId });
           var list = vue.emailsToSend.map(function (p) { return p.C_RowId });
 
-          ShowStatusDisplay('Sending...');
-
           //          SetInStorage('htEmailSubject', vue.emailSubject);
 
           var form = {
@@ -163,15 +161,19 @@
             //            subject: vue.emailSubject,
             list: JSON.stringify(list)
           };
-          CallAjaxHandler(publicInterface.controllerUrl + '/SendEmail', form, function (info) {
-            if (info.Success) {
-              vue.getContactLog();
-              ShowStatusSuccess(info.Status);
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
+          CallAjax2(publicInterface.controllerUrl + '/SendEmail', form,
+            {
+              busy: 'Sending Email'
+            },
+            function (info) {
+              if (info.Success) {
+                vue.getContactLog();
+                ShowStatusDone(info.Status);
+              }
+              else {
+                ShowStatusFailed(info.Status);
+              }
+            });
 
         },
         sendSms: function (usePending) {
@@ -189,22 +191,24 @@
 
           var list = vue.phonesToSend.map(function (p) { return p.C_RowId });
 
-          ShowStatusDisplay('Sending...');
-
           var form = {
             list: JSON.stringify(list),
           };
-          CallAjaxHandler(publicInterface.controllerUrl + '/SendSms', form, function (info) {
-            if (info.Success) {
-              vue.getContactLog();
-              setTimeout(() => vue.getContactLog(), 2500);
-              setTimeout(() => vue.getContactLog(), 5000);
-              ShowStatusSuccess(info.Status);
-            }
-            else {
-              ShowStatusFailed(info.Status);
-            }
-          });
+          CallAjax2(publicInterface.controllerUrl + '/SendSms', form,
+            {
+              busy: 'Sending SMS'
+            },
+            function (info) {
+              if (info.Success) {
+                vue.getContactLog();
+                setTimeout(() => vue.getContactLog(), 2500);
+                setTimeout(() => vue.getContactLog(), 5000);
+                ShowStatusDone(info.Status);
+              }
+              else {
+                ShowStatusFailed(info.Status);
+              }
+            });
 
         },
         loadSamples: function () {
@@ -408,18 +412,20 @@ contact the Assembly as soon as possible!</p>
             emailText: encodeURIComponent(vue.emailText || '') || null,
           };
 
-          ShowStatusDisplay("Saving...");
-          CallAjaxHandler(publicInterface.controllerUrl + '/SaveNotification', form, function (info) {
-            if (info.success) {
-              $('.btnSave').removeClass('btn-primary');
-              vue.emailChanged = false;
+          CallAjax2(publicInterface.controllerUrl + '/SaveNotification', form,
+            {
+              busy: 'Saving'
+            },
+            function (info) {
+              if (info.success) {
+                $('.btnSave').removeClass('btn-primary');
+                vue.emailChanged = false;
 
-              ResetStatusDisplay();
-              ShowStatusSuccess(info.Status);
-            } else {
-              ShowStatusFailed(info.Status);
-            }
-          });
+                ShowStatusDone(info.Status);
+              } else {
+                ShowStatusFailed(info.Status);
+              }
+            });
         },
         saveSms: function () {
           var vue = this;
@@ -434,14 +440,17 @@ contact the Assembly as soon as possible!</p>
             smsText: encodeURIComponent(text || '') || null,
           };
 
-          ShowStatusDisplay("Saving...");
-          CallAjaxHandler(publicInterface.controllerUrl + '/SaveNotification', form, function (info) {
+          CallAjax2(publicInterface.controllerUrl + '/SaveNotification', form,
+            {
+              busy: 'Saving'
+            },
+            function (info) {
             if (info.success) {
               $('.btnSave').removeClass('btn-primary');
               vue.smsChanged = false;
 
               ResetStatusDisplay();
-              ShowStatusSuccess(info.Status);
+              ShowStatusDone(info.Status);
             } else {
               ShowStatusFailed(info.Status);
             }

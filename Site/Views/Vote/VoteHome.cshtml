@@ -46,7 +46,7 @@
 
   </div>
   <p v-if="!loading && elections.length && !atLeastOneOpen" class="noneAvailable">
-    None of these elections are available for you to vote in at this time.<br> 
+    None of these elections are available for you to vote in at this time.<br>
     When an election is available, you will be able to select it.
   </p>
   <div class="electionListDiv">
@@ -79,7 +79,7 @@
           <td class="vmethod center">
             <div title="Registered Voting Method">{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
-              <button class="btn" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
+              <button class="btn btn-primary" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
             </div>
             <div class="pname" v-text="e.person.name"></div>
           </td>
@@ -177,17 +177,17 @@
       <div v-if="useList">
         <p id="searchInfo">
           Search for individuals that you believe to be qualified to serve.
-          Click to add them to your pool for this election.
+          Click a name to add it to your ballot and pool for this election.
         </p>
         <div>
           <label>
             Search:
-            <input accesskey="S" 
-                   ref="searchBox" 
-                   aria-describedby="searchInfo" 
-                   type="text" 
+            <input accesskey="S"
+                   ref="searchBox"
+                   aria-describedby="searchInfo"
+                   type="text"
                    placeholder="First or Last Name"
-                   v-model="searchText" 
+                   v-model="searchText"
                    v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
           <button v-on:click="showAll">Show All</button>
@@ -196,7 +196,7 @@
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
           <span v-if="searchText">No matches found.</span>
-          <span v-else>Names will appear here when you search.<br />Click "Show All" to view all in random order.</span>
+          <span v-else>Names will appear here when you search.<br />Click "Show All" to view all names in random order.</span>
         </div>
         <ul id="nameList" v-show="nameList.length">
           <li v-for="(p,i) in nameList"
@@ -230,6 +230,7 @@
             Use this if the name may not be enough. But remember, your vote is anonymous so do not reference yourself in this description!
           </div>
         </div>
+        <div v-if="useList && nameList.length">Did this person  show up in the list above? If so, please select that name!</div>
         <div>
           <button class="btn" v-on:click="addRandomName" type="button" :disabled="!canAddRandom">Add Person</button>
           <span class="randomResult">{{randomResult}}</span>
@@ -263,24 +264,24 @@
         <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
         <span v-if="canLockIn" class="unlocked">(not yet submitted)</span>
       </p>
-      <p v-if="pool.length < numToElect">You must add {{numToElect}} people before submitting your ballot.</p>
-      
+      <p v-if="pool.length < numToElect">Please add {{numToElect}} {{plural(numToElect,'people','person')}} before submitting your ballot.</p>
+
       <p v-if="!pool.length">Use the left side of the page to find or enter a name to add...</p>
       @*<p v-if="!lockInVotes && pool.length">
-        Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
-      </p>*@
+      Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
+    </p>*@
 
-    <div class="beforePool">
-      My Ballot
-      <span>(The order of names does not matter)</span>
-    </div>
+      <div class="beforePool">
+        My Ballot
+        <span>(The order of names does not matter)</span>
+      </div>
 
       <draggable class="pool"
                  :class="{movingIntoTop: movingIntoTop}"
                  id="pool1"
-                 group="pool" 
-                 v-model="poolInCoreBallot" 
-                 v-on:change="poolChangedCore" 
+                 group="pool"
+                 v-model="poolInCoreBallot"
+                 v-on:change="poolChangedCore"
                  v-on:end="movingDone"
                  :move="movingStart"
                  :disabled="lockInVotes">
@@ -304,15 +305,22 @@
         </div>
 
       </draggable>
+
+      <div v-if="poolBeyondBallot.length && !savedLock">
+        <p>Drag names into and out of your ballot and the pool of extras.</p>
+        <p>To sort the names using your keyboard, press <strong>Tab</strong> to focus,
+          <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.</p>
+      </div>
+
       <div v-if="poolBeyondBallot.length && !savedLock" class="afterPool">
         My pool of others that I'm considering
       </div>
 
       <draggable class="pool"
                  id="pool2"
-                 group="pool" 
-                 v-model="poolBeyondBallot"  
-                 v-on:change="poolChangedBeyond"                  
+                 group="pool"
+                 v-model="poolBeyondBallot"
+                 v-on:change="poolChangedBeyond"
                  v-on:end="movingDone"
                  :move="movingStart"
                  :disabled="lockInVotes">
@@ -340,11 +348,7 @@
 
 
       <p v-if="!lockInVotes && pool.length">
-        To sort the names using your keyboard, press <strong>Tab</strong> to focus,
-        <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
-      </p>
-      <p v-if="!lockInVotes && pool.length">
-        Please note that when your ballot is submitted and processed, this list of names will be removed from TallyJ.
+        Please note that when your ballot is submitted and processed, this entire list of names will be removed from TallyJ.
       </p>
       <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">
         Your pool is empty. Search for people to add!
@@ -353,10 +357,10 @@
         Loading...
       </p>
       @*
-          not needed - if submitted, don't need paper version
-          <div class="printDiv">
-          <button class="btn" v-on:click="printBallot">Print Ballot</button>
-        </div>*@
+      not needed - if submitted, don't need paper version
+      <div class="printDiv">
+      <button class="btn" v-on:click="printBallot">Print Ballot</button>
+    </div>*@
+    </div>
   </div>
-</div>
 </div>

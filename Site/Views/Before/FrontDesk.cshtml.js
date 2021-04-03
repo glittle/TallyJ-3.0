@@ -477,7 +477,6 @@
       form.forceDeselect = true;
     }
 
-    ShowStatusDisplay("Saving...");
     CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
@@ -489,12 +488,15 @@
   };
 
   var startGettingPeople = function () {
-    ShowStatusDisplay('Getting names');
-    CallAjaxHandler(publicInterface.controllerUrl + '/PeopleForFrontDesk', {}, function (list) {
-      publicInterface.initial = list;
-      fillList();
-      updateTotals();
-    });
+    CallAjax2(publicInterface.controllerUrl + '/PeopleForFrontDesk', {},
+      {
+        busy: 'Getting names'
+      },
+      function (list) {
+        publicInterface.initial = list;
+        fillList();
+        updateTotals();
+      });
 
   }
 

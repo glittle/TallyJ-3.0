@@ -215,10 +215,11 @@ Vue.component('eventLog',
 
         form.numToShow = vue.numMoreMainLog;
 
-        ShowStatusDisplay('Getting {0} details...'.filledWith(type));
-
-        CallAjaxHandler(_url[type],
+        CallAjax2(_url[type],
           form,
+          {
+            busy: 'Getting {0} details...'.filledWith(type)
+          },
           function (info) {
             logInfo.loaded = true;
 
@@ -340,7 +341,7 @@ Vue.component('eventLog',
         // if (row.isLargest) classes.push('Largest');
         return classes.join(' ');
       },
-      sort: function(field, event) {
+      sort: function (field, event) {
         field = field || this.currentSort;
         if (!field) {
           return;
@@ -349,7 +350,7 @@ Vue.component('eventLog',
         var dir = field === this.lastSort ? -1 : 1;
         var list = this.logInfo[this.report].log;
 
-        list.sort(function(a, b) {
+        list.sort(function (a, b) {
           return a[field] > b[field] ? dir : -1 * dir;
         });
 

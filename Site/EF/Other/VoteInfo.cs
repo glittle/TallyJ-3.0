@@ -36,6 +36,7 @@ namespace TallyJ.EF
 
         PersonId = person.C_RowId;
         PersonFullNameFL = person.FullNameAndArea;
+        PersonFullName = person.C_FullName;
         PersonCombinedInfo = person.CombinedInfo;
         PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
         PersonCanReceiveVotes = person.CanReceiveVotes.AsBoolean();
@@ -66,7 +67,7 @@ namespace TallyJ.EF
     public string PersonCombinedInfo { get; set; }
     public Guid? PersonGuid { get; set; }
     public int? PersonId { get; set; }
-    //public string PersonFullName { get; set; }
+    public string PersonFullName { get; set; }
     public string PersonFullNameFL { get; set; }
     public Guid? PersonIneligibleReasonGuid { get; set; }
 

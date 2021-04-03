@@ -5,7 +5,6 @@
     nameSplitter: /[\s\-']/,
     localNames: [],
     maxVotes: 0,
-    voterSortDone: false,
     showAllCode: String.fromCharCode(9990), // random unicode letter
     bStart: String.fromCharCode(9991),
     bEnd: String.fromCharCode(9992),
@@ -23,22 +22,25 @@
   }
 
   function startLoadingAllNames(cb) {
-    ShowStatusDisplay('Loading names list');
-    CallAjaxHandler(local.url + '/' + (forVoter ? 'GetForVoter' : 'GetAll'),
+    CallAjax2(local.url + '/' + (forVoter ? 'GetForVoter' : 'GetAll'),
       {},
+      {
+        busy: 'Loading Names List'
+      },
       function (info) {
         if (info.Error) {
           ShowStatusFailed(info.Error);
           return;
         }
-        ShowStatusDisplay('Preparing names');
+
+        var msg = ShowStatusBusy('Preparing names...');
 
         local.localNames = extendPeople(info.people);
         if (cb) {
           cb(info.lastVid);
         }
 
-        ResetStatusDisplay();
+        ResetStatusDisplay(msg);
       }
     );
   }
@@ -271,20 +273,15 @@
 
   function sortResults(result, byNameOnly) {
     if (forVoter) {
-      // a new random order every time
-      if (!local.voterSortDone) {
-        result.People.forEach(p => p.sort = Math.random());
-        local.voterSortDone = true;
-      }
-      console.log(byNameOnly);
-
       if (byNameOnly) {
+        // use random sort from server
         result.People.sort(function (a, b) {
           return a.sort < b.sort ? -1 : 1;
         });
         return;
       }
 
+      // use name sort
       result.People.sort(function (a, b) {
         return a.name.localeCompare(b.name);
       });
@@ -518,8 +515,7 @@
       .replace(new RegExp(local.iEnd, 'g'), '</i>');
 
     if (debugSearch) {
-      personInfo.DisplayName += `<u>${personInfo.soundParts.join('-')},${personInfo.MatchType},${
-        personInfo.matchedParts.join('')},${personInfo.classesList.join('/')}</u>`;
+      personInfo.DisplayName += `<u>${personInfo.soundParts.join('-')},${personInfo.MatchType},${personInfo.matchedParts.join('')},${personInfo.classesList.join('/')}</u>`;
     }
 
   }

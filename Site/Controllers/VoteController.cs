@@ -116,6 +116,7 @@ namespace TallyJ.Controllers
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
         UserSession.VoterInElectionPersonGuid = electionInfo.p.PersonGuid;
         // UserSession.VoterInElectionPersonName = electionInfo.p.C_FullNameFL;
+        string poolDecryptError = null;
 
         if (votingInfo == null)
         {
@@ -134,7 +135,7 @@ namespace TallyJ.Controllers
         {
           if (EncryptionHelper.IsEncrypted(votingInfo.ListPool))
           {
-            votingInfo.ListPool = new OnlineVoteHelper().GetDecryptedListPool(votingInfo);
+            votingInfo.ListPool = new OnlineVoteHelper().GetDecryptedListPool(votingInfo, out poolDecryptError);
           }
         }
 
@@ -146,7 +147,8 @@ namespace TallyJ.Controllers
           electionInfo.e.NumberToElect,
           OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
           registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
-          votingInfo
+          votingInfo,
+          poolDecryptError
         }.AsJsonResult();
       }
 
@@ -200,6 +202,8 @@ namespace TallyJ.Controllers
         }
 
         new OnlineVoteHelper().SetListPoolEncrypted(onlineVotingInfo, pool);
+
+        onlineVotingInfo.WhenStatus = now;
 
         Db.SaveChanges();
 
@@ -261,8 +265,14 @@ namespace TallyJ.Controllers
         if (locked)
         {
           // ensure we have enough votes
-          //TODO use JSON
-          var votes = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo)?.Split(',').Length ?? 0;
+          var votes = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo, out var errorMessage)?.Split(',').Length ?? 0;
+          if (errorMessage.HasContent())
+          {
+            return new
+            {
+              Error = errorMessage
+            }.AsJsonResult();
+          }
           if (votes < currentElection.NumberToElect)
           {
             return new
@@ -276,14 +286,7 @@ namespace TallyJ.Controllers
 
         onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Submitted : OnlineBallotStatusEnum.Draft;
         onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{now.ToJSON()}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
-        if (locked)
-        {
-          onlineVotingInfo.WhenStatus = now;
-        }
-        else
-        {
-          onlineVotingInfo.WhenStatus = null;
-        }
+        onlineVotingInfo.WhenStatus = now;
 
         var personCacher = new PersonCacher(Db);
         var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == onlineVotingInfo.PersonGuid);
