@@ -4,8 +4,8 @@ ALTER TABLE [tj].[Election]
     ADD [CustomMethods] NVARCHAR (50) NULL,
         [VotingMethods] VARCHAR (10)  NULL;
 
--- default VotingMethods on existing elections to "PDM":
--- update tj.Election set VotingMethods = 'PDM' + case when UseCallInButton = 1 then 'C' else '' end where VotingMethods is null
+-- update existing elections:
+-- update tj.Election set VotingMethods = 'PDM' + case when UseCallInButton = 1 then 'C' else '' end  + case when OnlineWhenOpen is null then '' else 'O' end where VotingMethods is null
 
 GO
 ALTER TABLE [tj].[ResultSummary]
