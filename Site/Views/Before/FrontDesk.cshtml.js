@@ -447,6 +447,19 @@
   var voteBtnClicked = function (target, forceDeselect) {
     var btn = $(target);
 
+    var row = btn.closest('.Voter');
+    var pid = row.attr('id').substr(1);
+
+    var pidNum = +pid;
+    var person = publicInterface.initial.find(function (p) { return p.PersonId === pidNum; });
+    if (!person) {
+      return;
+    }
+    if (person.OnlineProcessed) {
+      // teller may have used keyboard to change (mouse is blocked)
+      return;
+    }
+
     if (!forceDeselect && (btn.hasClass('True') || btn.hasClass('true') || btn.hasClass('clicked'))) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
@@ -456,7 +469,6 @@
 
     btn.addClass('clicked');
 
-    var row = btn.closest('.Voter');
     setSelection(row, false);
 
     var btnType =
@@ -470,12 +482,24 @@
                     : btn.hasClass('Custom2') ? '2'
                       : btn.hasClass('Custom3') ? '3'
                         : '?';
-    var pid = row.attr('id').substr(1);
 
-    saveBtnClick(pid, btnType, btn, forceDeselect);
+    saveBtnClick(pid, btnType, btn, forceDeselect, person);
   };
 
-  var saveBtnClick = function (pid, btnType, btn, forceDeselect) {
+  function saveBtnClick(pid, btnType, btn, forceDeselect, person) {
+    if (!person) {
+      var pidNum = +pid;
+      person = publicInterface.initial.find(function(p) { return p.PersonId === pidNum; });
+    }
+    if (!person) {
+      debugger;
+      return;
+    }
+    if (person.OnlineProcessed) {
+      // teller may have used keyboard to change (mouse is blocked)
+      return;
+    }
+
     var form = {
       id: pid,
       type: btnType

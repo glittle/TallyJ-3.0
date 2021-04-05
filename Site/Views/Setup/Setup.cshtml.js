@@ -128,7 +128,7 @@
         var s = this.election.VotingMethods;
         this.votingMethodsArray = s ? s.split('') : [];
 
-        this.useOnline = this.election.OnlineWhenOpen || this.election.OnlineWhenClose; // do again, to set useOnline correctly
+        this.useOnline = !!(this.election.OnlineWhenOpen || this.election.OnlineWhenClose); // do again, to set useOnline correctly
 
         var customs = ((this.election.CustomMethods || '') + '||').split('|');
         this.custom1 = customs[0];

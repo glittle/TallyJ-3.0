@@ -141,7 +141,7 @@
 <div id="afterList"></div>
 
 <script type="text/x-template" id="frontDeskLineTemplate">
-  <div id="P{PersonId}" class="Voter VM-{VotingMethod} {extraClass}" data-name="{NameLower}">
+  <div id="P{PersonId}" class="Voter VM-{VotingMethod} OnlineProcessed-{OnlineProcessed} {extraClass}" data-name="{NameLower}">
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
     {
       <div class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>

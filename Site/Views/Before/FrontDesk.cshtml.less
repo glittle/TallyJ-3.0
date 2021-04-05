@@ -196,40 +196,50 @@ p {
   }
 }
 
-div.CalledIn, span.CalledIn, div.Online, span.Online {
-  display: none;
-}
-
-.UseCallIn {
-  .CalledIn {
-    display: inline-block;
-  }
-}
-
-.UseOnline {
-  .Online {
-    display: inline-block;
-  }
-}
+//div.CalledIn, span.CalledIn, div.Online, span.Online {
+//  display: none;
+//}
+//
+//.UseCallIn {
+//  .CalledIn {
+//    display: inline-block;
+//  }
+//}
+//
+//.UseOnline {
+//  .Online {
+//    display: inline-block;
+//  }
+//}
 
 #Main {
   overflow: auto;
   clear: both;
+  //&.UseOnline {
+  .Online {
+    opacity: 0.25;
 
-  &.UseOnline {
-    .Online {
-      opacity: 0.25;
+    &.Hastrue {
+      opacity: 1;
+    }
 
-      &.Hastrue {
+    &.Canfalse {
+      opacity: .05;
+      pointer-events: none;
+    }
+  }
+  //}
+
+  .OnlineProcessed-true {
+    .Btn {
+      opacity: 0.05;
+      pointer-events: none;
+
+      &.Online {
         opacity: 1;
-      }
-
-      &.Canfalse {
-        opacity: .05;
       }
     }
   }
-
 
   p {
     margin: 0 0 0 5px;

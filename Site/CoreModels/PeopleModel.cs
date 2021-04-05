@@ -552,8 +552,21 @@ namespace TallyJ.CoreModels
     public IEnumerable<object> FrontDeskPersonLines(List<Person> people,
         FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
     {
+      var peopleCount = people.Count;
+      if (peopleCount == 0)
+      {
+        return  new List<object>();
+      }
       var showLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
       var useOnline = UserSession.CurrentElection.OnlineEnabled;
+      var firstPersonGuid = people[0].PersonGuid;
+
+      var onlineProcessed = Db.OnlineVotingInfo
+        .Where(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid)
+        .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Processed.Value)
+        .Where(ovi => peopleCount != 1 || firstPersonGuid == ovi.PersonGuid)
+        .Select(ovi => ovi.PersonGuid)
+        .ToList();
 
       return people
           .OrderBy(p => sortType == FrontDeskSortEnum.ByArea ? p.Area : "")
@@ -584,7 +597,8 @@ namespace TallyJ.CoreModels
             Custom3 = p.VotingMethod == VotingMethodEnum.Custom3,
             Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
             HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
-            CanBeOnline = useOnline && (p.Email.HasContent() || p.Phone.HasContent()),
+            CanBeOnline = useOnline && (p.VotingMethod == VotingMethodEnum.Online || p.Email.HasContent() || p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
+            OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
             Registered = p.VotingMethod == VotingMethodEnum.Registered,
             EnvNum = ShowEnvNum(p),
             p.CanVote,

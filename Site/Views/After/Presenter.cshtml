@@ -4,7 +4,7 @@
 @{
   ViewBag.Title = "Election Results";
   ViewBag.Message = "Celebrate the election";
-
+  var election = UserSession.CurrentElection;
   ContextItems.AddJavascriptForPage("pageUrl", "presenterPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 }
 @*<script src="@Url.Content("~/Scripts/highcharts/highcharts.js")"></script>
@@ -73,7 +73,8 @@
                   <span data-name="EnvelopesDroppedOff"></span>
                 </td>
                 <td class="numberCell"></td>
-              </tr> 
+              </tr>
+
               <tr class="Method">
                 <td class="Left">
                   Mailed In
@@ -88,6 +89,37 @@
                 </td>
                 <td class="numberCell"></td>
               </tr>
+              if (election.VotingMethodsContains("1"))
+              {
+                <tr class="Method">
+                  <td class="Left">
+                    @election.Custom1Name
+                    <span data-name="EnvelopesCustom1"></span>
+                  </td>
+                  <td class="numberCell"></td>
+                </tr>
+              }
+              if (election.VotingMethodsContains("2"))
+              {
+                <tr class="Method">
+                  <td class="Left">
+                    @election.Custom2Name
+                    <span data-name="EnvelopesCustom2"></span>
+                  </td>
+                  <td class="numberCell"></td>
+                </tr>
+              }
+              if (election.VotingMethodsContains("3"))
+              {
+                <tr class="Method">
+                  <td class="Left">
+                    @election.Custom3Name
+                    <span data-name="EnvelopesCustom3"></span>
+                  </td>
+                  <td class="numberCell"></td>
+                </tr>
+              }
+
               <tr class="Method" id="online">
                 <td class="Left">
                   Online
