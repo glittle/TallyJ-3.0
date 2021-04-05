@@ -300,40 +300,40 @@
         How will ballots be received?
       </th>
       <td>
-        <el-checkbox-group v-model="votingMethods" class="votingMethods" :class="{missing: !votingMethods.length}">
+        <el-checkbox-group v-model="votingMethodsArray" class="votingMethods" :class="{missing: !votingMethodsArray.length}">
           <el-checkbox label="@VotingMethodEnum.InPerson.Value">@VotingMethodEnum.InPerson.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.DroppedOff.Value">@VotingMethodEnum.DroppedOff.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
+          <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
-          <el-checkbox :disabled="true" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             1
             <el-input
               size="small"
               v-model="custom1"
               :maxlength="15"
-              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom1.Value')"></el-input>
+              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom1.Value')"></el-input>
           </el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom2.Value">
             2 <el-input 
               size="small"
               v-model="custom2"
               :maxlength="15"
-              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom2.Value')"></el-input>
+              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom2.Value')"></el-input>
           </el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom3.Value">
             3 <el-input 
               size="small"
               v-model="custom3"
               :maxlength="15"
-              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom3.Value')"></el-input>
+              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom3.Value')"></el-input>
           </el-checkbox>
         </el-checkbox-group>
       </td>
       <td>
-        <p v-if="!votingMethods.length" class="warning">At least one voting method is required.</p>
+        <p v-if="!votingMethodsArray.length" class="warning">At least one voting method is required.</p>
         <div>Select all the methods that you are using to accept ballots from voters.</div>
-        <p>If using TallyJ's Online Voting, select it in Step 4 (below).</p>
+        <p>To use TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
       </td>
     </tr>

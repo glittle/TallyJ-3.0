@@ -66,6 +66,20 @@ h2 {
   .el-checkbox {
     margin: 0;
     display: block;
+
+    &.partialDisable {
+      .el-checkbox__inner {
+        background-color: #95c9ff;
+
+        &::after {
+          border-color: #fff;
+        }
+      }
+
+      span.el-checkbox__label {
+        color: #606266; // normal color
+      }
+    }
   }
 
   .el-input__inner {

@@ -6,6 +6,15 @@ body {
   overflow-y: scroll; //avoid jitter
 }
 
+#body {
+  &.saving {
+    #tabNameSearch {
+      pointer-events: none;
+      opacity: 0.4;
+    }
+  }
+}
+
 .PullInstructionsHandle {
   position: absolute;
   top: 2px;

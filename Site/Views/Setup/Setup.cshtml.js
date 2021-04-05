@@ -27,7 +27,7 @@
         isMounted: false,
         useOnline: false,
         isSaveNeeded: false,
-        votingMethods: [],
+        votingMethodsArray: [],
         custom1: '',
         custom2: '',
         custom3: '',
@@ -93,11 +93,15 @@
               this.election.OnlineCloseIsEstimate = true;
               this.election.OnlineSelectionProcess = 'B';
             };
+            if (!this.votingMethodsArray.includes('O')) {
+              this.votingMethodsArray.push('O');
+            }
           } else {
             this.election.OnlineWhenOpen = null;
             this.election.OnlineWhenClose = null;
             this.election.OnlineCloseIsEstimate = null;
             this.election.OnlineSelectionProcess = null;
+            this.votingMethodsArray = this.votingMethodsArray.filter(s => s !== 'O');
           }
         }
         //locations: function (a, b) {
@@ -122,7 +126,9 @@
         this.isMounted = true;
 
         var s = this.election.VotingMethods;
-        this.votingMethods = s ? s.split('') : [];
+        this.votingMethodsArray = s ? s.split('') : [];
+
+        this.useOnline = this.election.OnlineWhenOpen || this.election.OnlineWhenClose; // do again, to set useOnline correctly
 
         var customs = ((this.election.CustomMethods || '') + '||').split('|');
         this.custom1 = customs[0];
@@ -541,10 +547,10 @@
       customs = [vue.custom1, vue.custom2, vue.custom3].join('|');
     }
 
-    var votingMethods = vue.votingMethods.join('');
-    if (vue.useOnline && !votingMethods.includes('O')) {
-      votingMethods += 'O';
-    }
+    var votingMethods = vue.votingMethodsArray.join('');
+    //    if (vue.useOnline && !votingMethods.includes('O')) {
+    //      votingMethods += 'O';
+    //    }
 
     var form = {
       C_RowId: election.C_RowId,

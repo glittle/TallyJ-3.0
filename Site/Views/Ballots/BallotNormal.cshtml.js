@@ -30,6 +30,7 @@
     addingToBallot: false,
     showingBallotList: false,
     lastFindId: 0,
+    saving: false,
     settingNameForOnlineVote: null
   };
   var tabNum = {};
@@ -1027,6 +1028,13 @@
       return;
     }
 
+    if (local.saving) {
+      return;
+    }
+    $('#body').addClass('saving');
+
+    local.saving = true;
+
     var personId = host.data('person-id') || 0;
     var invalids = host.find('select:visible');
     var invalidId = invalids.val() || '';
@@ -1110,6 +1118,8 @@
             }
             else {
               ShowStatusFailed('Error on save. Please reload this page.');
+              $('#body').removeClass('saving');
+              local.saving = false;
               return;
             }
           }
@@ -1142,9 +1152,15 @@
               $('#btnNewBallot2').effect('highlight', null, 1500);
             }
           }
-          ShowStatusDone('Saved')
+          ShowStatusDone('Saved');
+          local.saving = false;
+          $('#body').removeClass('saving');
+
         }
         else {
+          local.saving = false;
+          $('#body').removeClass('saving');
+
           var msg = info.Error || info.Message;
           ShowStatusFailed(msg);
 

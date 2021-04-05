@@ -54,14 +54,20 @@ namespace TallyJ.Code.Enumerations
     {
       var text = item.DisplayText;
 
+      var currentElection = UserSession.CurrentElection;
+      if (currentElection == null)
+      {
+        return text;
+      }
+
       switch (text)
       {
         case "Custom1":
-          return UserSession.CurrentElection.Custom1Name;
+          return currentElection.Custom1Name;
         case "Custom2":
-          return UserSession.CurrentElection.Custom2Name;
+          return currentElection.Custom2Name;
         case "Custom3":
-          return UserSession.CurrentElection.Custom3Name;
+          return currentElection.Custom3Name;
       }
 
       return text;
