@@ -16,6 +16,9 @@
     [CalledInBallots]      INT              NULL,
     [OnlineBallots]        INT              NULL,
     [SpoiledManualBallots] INT              NULL,
+    [Custom1Ballots] INT NULL, 
+    [Custom2Ballots] INT NULL, 
+    [Custom3Ballots] INT NULL, 
     CONSTRAINT [PK_ResultSummary] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_ResultSummary_Election1] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
@@ -54,5 +57,5 @@ GRANT DELETE
 GO
 CREATE NONCLUSTERED INDEX [Ix_ResultSummary_Election]
     ON [tj].[ResultSummary]([ElectionGuid] ASC)
-    INCLUDE([_RowId], [ResultType], [UseOnReports], [NumVoters], [NumEligibleToVote], [MailedInBallots], [DroppedOffBallots], [InPersonBallots], [SpoiledBallots], [SpoiledVotes], [TotalVotes], [BallotsReceived], [BallotsNeedingReview], [CalledInBallots], [OnlineBallots], [SpoiledManualBallots]);
+    INCLUDE([_RowId], [ResultType], [UseOnReports], [NumVoters], [NumEligibleToVote], [MailedInBallots], [DroppedOffBallots], [InPersonBallots], [SpoiledBallots], [SpoiledVotes], [TotalVotes], [BallotsReceived], [BallotsNeedingReview], [CalledInBallots], [OnlineBallots], [SpoiledManualBallots], Custom1Ballots, Custom2Ballots, Custom3Ballots);
 

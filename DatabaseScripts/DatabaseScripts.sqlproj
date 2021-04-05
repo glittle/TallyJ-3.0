@@ -130,6 +130,7 @@
     <Folder Include="tj\Functions\" />
     <Folder Include="tj\Stored Procedures\" />
     <Folder Include="Snapshots" />
+    <Folder Include="Change Scripts" />
   </ItemGroup>
   <ItemGroup>
     <BuildContributorArgument Include="OutDir=$(OutDir)" />
@@ -139,6 +140,7 @@
     <None Include="DatabaseScripts.publish.xml" />
     <None Include="Snapshots\TallyJ.20140121b.dacpac" />
     <None Include="Snapshots\DatabaseScripts_20140917_00-39-27.dacpac" />
+    <None Include="Change Scripts\Ver 3.2.2.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />

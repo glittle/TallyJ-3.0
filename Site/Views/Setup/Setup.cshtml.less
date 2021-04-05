@@ -55,6 +55,27 @@ h2 {
   }
 }
 
+.votingMethods {
+  padding: 5px 0 9px 10px;
+  background-color: #dde6dd;
+
+  &.missing {
+    background-color: #e6dddd;
+  }
+
+  .el-checkbox {
+    margin: 0;
+    display: block;
+  }
+
+  .el-input__inner {
+    height: auto;
+    line-height: normal;
+    padding: 3px 3px 2px 3px;
+    width: 102px;
+  }
+}
+
 table.Demographics {
   //float: left;
   margin-left: 20px;
@@ -170,6 +191,9 @@ input[type='date'] {
   }
 }
 
+.warning {
+  color: @tallyJError;
+}
 
 tr.electionDetail {
   //border-left: 1px solid #666;

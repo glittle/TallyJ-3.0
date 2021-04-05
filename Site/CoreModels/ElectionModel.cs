@@ -329,7 +329,7 @@ namespace TallyJ.CoreModels
         election.ListForPublic,
         election.ShowAsTest,
         election.ElectionPasscode,
-        election.UseCallInButton,
+        //election.UseCallInButton, - use VotingMethods now
         election.HidePreBallotPages,
         election.MaskVotingMethod,
         election.BallotProcessRaw,
@@ -341,6 +341,8 @@ namespace TallyJ.CoreModels
         election.OnlineSelectionProcess,
         election.EmailFromAddress,
         election.EmailFromName,
+        election.VotingMethods,
+        election.CustomMethods,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
 
       // if (election.ElectionType == ElectionTypeEnum.Oth)

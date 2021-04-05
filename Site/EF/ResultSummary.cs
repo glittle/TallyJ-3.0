@@ -31,5 +31,8 @@ namespace TallyJ.EF
         public Nullable<int> CalledInBallots { get; set; }
         public Nullable<int> OnlineBallots { get; set; }
         public Nullable<int> SpoiledManualBallots { get; set; }
+        public Nullable<int> Custom1Ballots { get; set; }
+        public Nullable<int> Custom2Ballots { get; set; }
+        public Nullable<int> Custom3Ballots { get; set; }
     }
 }

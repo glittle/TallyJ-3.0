@@ -23,13 +23,17 @@ namespace TallyJ.EF
       get
       {
         if (InPersonBallots.HasValue || DroppedOffBallots.HasValue || MailedInBallots.HasValue ||
-            CalledInBallots.HasValue || OnlineBallots.HasValue)
+            CalledInBallots.HasValue || OnlineBallots.HasValue || Custom1Ballots.HasValue ||
+            Custom2Ballots.HasValue || Custom3Ballots.HasValue)
         {
           return InPersonBallots.GetValueOrDefault()
                  + DroppedOffBallots.GetValueOrDefault()
                  + MailedInBallots.GetValueOrDefault()
                  + CalledInBallots.GetValueOrDefault()
                  + OnlineBallots.GetValueOrDefault()
+                 + Custom1Ballots.GetValueOrDefault()
+                 + Custom2Ballots.GetValueOrDefault()
+                 + Custom3Ballots.GetValueOrDefault()
             ;
         }
         return null;

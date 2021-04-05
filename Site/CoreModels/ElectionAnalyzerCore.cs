@@ -859,6 +859,10 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
       ResultSummaryCalc.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
       ResultSummaryCalc.OnlineBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Online);
+      
+      ResultSummaryCalc.Custom1Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom1);
+      ResultSummaryCalc.Custom2Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom2);
+      ResultSummaryCalc.Custom3Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom3);
       // ignore Registered
     }
 
@@ -891,6 +895,19 @@ namespace TallyJ.CoreModels
       ResultSummaryFinal.CalledInBallots = manualOverride.CalledInBallots.HasValue
         ? manualOverride.CalledInBallots.Value
         : ResultSummaryCalc.CalledInBallots.GetValueOrDefault();
+
+      ResultSummaryFinal.Custom1Ballots = manualOverride.Custom1Ballots.HasValue
+        ? manualOverride.Custom1Ballots.Value
+        : ResultSummaryCalc.Custom1Ballots.GetValueOrDefault();
+
+      ResultSummaryFinal.Custom2Ballots = manualOverride.Custom2Ballots.HasValue
+        ? manualOverride.Custom2Ballots.Value
+        : ResultSummaryCalc.Custom2Ballots.GetValueOrDefault();
+
+      ResultSummaryFinal.Custom3Ballots = manualOverride.Custom3Ballots.HasValue
+        ? manualOverride.Custom3Ballots.Value
+        : ResultSummaryCalc.Custom3Ballots.GetValueOrDefault();
+
 
       ResultSummaryFinal.OnlineBallots =
         ResultSummaryCalc.OnlineBallots.GetValueOrDefault();

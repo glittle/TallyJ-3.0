@@ -102,6 +102,9 @@ namespace TallyJ.CoreModels
           EnvelopesDroppedOff = resultSummaryFinal.DroppedOffBallots,
           EnvelopesCalledIn = resultSummaryFinal.CalledInBallots,
           EnvelopesOnline = resultSummaryFinal.OnlineBallots,
+          EnvelopesCustom1 = resultSummaryFinal.Custom1Ballots,
+          EnvelopesCustom2 = resultSummaryFinal.Custom2Ballots,
+          EnvelopesCustom3 = resultSummaryFinal.Custom3Ballots,
           resultSummaryFinal.NumVoters,
           Participation = resultSummaryFinal.PercentParticipation,
           Status = tallyStatus,
@@ -234,7 +237,9 @@ namespace TallyJ.CoreModels
           Ties = ties,
           NumToElect = _election.NumberToElect,
           NumExtra = _election.NumberExtra,
-          ShowCalledIn = _election.UseCallInButton,
+          // ShowCalledIn = _election.UseCallInButton,
+          // _election.CustomMethods,
+          _election.VotingMethods,
           ShowOnline = _election.OnlineWhenOpen.HasValue,
           ResultsManual =
             (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())
@@ -410,6 +415,9 @@ namespace TallyJ.CoreModels
         resultSummary.DroppedOffBallots,
         resultSummary.InPersonBallots,
         resultSummary.MailedInBallots,
+        resultSummary.Custom1Ballots,
+        resultSummary.Custom2Ballots,
+        resultSummary.Custom3Ballots,
         resultSummary.NumEligibleToVote,
         resultSummary.SpoiledManualBallots,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();

@@ -136,6 +136,9 @@
     sumUp('DroppedOff');
     sumUp('InPerson');
     sumUp('Registered');
+    sumUp('Custom1');
+    sumUp('Custom2');
+    sumUp('Custom3');
     $('.Counts .Total i').text(total);
     $('.Counts .Other i').text($('.Voter.VM-').length);
   }
@@ -364,7 +367,8 @@
       focusOnMatches();
     } else {
       var btnCode;
-      switch (String.fromCharCode(key)) {
+      var keyCode = String.fromCharCode(key);
+      switch (keyCode) {
         case 'I':
         case 'P': // in person
           btnCode = 'P';
@@ -383,6 +387,11 @@
           break;
         case 'D': //dropped off
           btnCode = 'D';
+          break;
+        case '1': //custom
+        case '2': //custom
+        case '3': //custom
+          btnCode = keyCode;
           break;
         default:
       }
@@ -457,7 +466,10 @@
             : btn.hasClass('CalledIn') ? 'C'
               : btn.hasClass('MailedIn') ? 'M'
                 : btn.hasClass('Registered') ? 'R'
-                  : '?';
+                  : btn.hasClass('Custom1') ? '1'
+                    : btn.hasClass('Custom2') ? '2'
+                      : btn.hasClass('Custom3') ? '3'
+                        : '?';
     var pid = row.attr('id').substr(1);
 
     saveBtnClick(pid, btnType, btn, forceDeselect);

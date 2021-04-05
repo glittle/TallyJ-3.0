@@ -47,6 +47,9 @@ namespace TallyJ.CoreModels
         //VotingMethodEnum.Registered, -- not registered (should not be used with RollCall)
         VotingMethodEnum.CalledIn,
         VotingMethodEnum.Online,
+        VotingMethodEnum.Custom1,
+        VotingMethodEnum.Custom2,
+        VotingMethodEnum.Custom3,
       }.Select(vm => vm.Value).ToList();
 
       return IncludeAbsentees

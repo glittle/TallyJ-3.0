@@ -2,15 +2,15 @@
 <SchemaComparison>
   <Version>10</Version>
   <SourceModelProvider>
-    <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=glen-dev.database.windows.net;Initial Catalog=TallyJ3Dev;Persist Security Info=True;User ID=glen;Pooling=False</ConnectionString>
-    </ConnectionBasedModelProvider>
-  </SourceModelProvider>
-  <TargetModelProvider>
     <ProjectBasedModelProvider>
       <ProjectGuid>{318a3641-8822-4b4e-9848-80c3538a03d7}</ProjectGuid>
       <Name>DatabaseScripts</Name>
     </ProjectBasedModelProvider>
+  </SourceModelProvider>
+  <TargetModelProvider>
+    <ConnectionBasedModelProvider>
+      <ConnectionString>Data Source=glen-dev.database.windows.net;Initial Catalog=TallyJ3Dev;Persist Security Info=True;User ID=glen;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=True;TrustServerCertificate=False</ConnectionString>
+    </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
     <SchemaCompareSettingsService>
@@ -69,6 +69,10 @@
         <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>DisableIndexesForDataPhase</Name>
+        <Value>True</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>DoNotAlterChangeDataCaptureObjects</Name>
         <Value>True</Value>
       </PropertyElementName>
@@ -110,6 +114,10 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>GenerateSmartDefaults</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>HashObjectNamesInLogs</Name>
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
@@ -273,8 +281,20 @@
         <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>PreserveIdentityLastValues</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>RegisterDataTierApplication</Name>
         <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>RebuildIndexesOfflineForDataPhase</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>RestoreSequenceCurrentValue</Name>
+        <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>ScriptDatabaseCollation</Name>
@@ -306,11 +326,11 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetDatabaseName</Name>
-        <Value>DatabaseScripts</Value>
+        <Value>TallyJ3Dev</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetConnectionString</Name>
-        <Value>Integrated Security=True;Pooling=False;Connect Timeout=30</Value>
+        <Value>Data Source=glen-dev.database.windows.net;Initial Catalog=TallyJ3Dev;Persist Security Info=True;User ID=glen;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=True;TrustServerCertificate=False;Application Name="Microsoft SQL Server Data Tools, Schema Compare"</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TreatVerificationErrorsAsWarnings</Name>
@@ -335,6 +355,10 @@
       <PropertyElementName>
         <Name>AllowDropBlockingAssemblies</Name>
         <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>DoNotEvaluateSqlCmdVariables</Name>
+        <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>DoNotDropAggregates</Name>
@@ -405,6 +429,22 @@
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>IgnoreDatabaseWorkloadGroups</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>DoNotDropDatabaseWorkloadGroups</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>IgnoreWorkloadClassifiers</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>DoNotDropWorkloadClassifiers</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>DoNotDropDefaults</Name>
         <Value>False</Value>
       </PropertyElementName>
@@ -437,7 +477,15 @@
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>DoNotDropExternalStreamingJobs</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>DoNotDropExternalTables</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>DoNotDropExternalStreams</Name>
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
@@ -681,7 +729,15 @@
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
+        <Name>ExcludeExternalStreamingJobs</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
         <Name>ExcludeExternalTables</Name>
+        <Value>False</Value>
+      </PropertyElementName>
+      <PropertyElementName>
+        <Name>ExcludeExternalStreams</Name>
         <Value>False</Value>
       </PropertyElementName>
       <PropertyElementName>
@@ -1515,6 +1571,9 @@
     <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlDefaultConstraint, Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>dbo</Name>
       <Name>DF_OnlineVoter_VoterIdType</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlDatabaseEventSession, Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>ADS_Standard_Azure</Name>
     </SelectedItem>
   </ExcludedTargetElements>
 </SchemaComparison>

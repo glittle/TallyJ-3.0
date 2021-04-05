@@ -27,6 +27,10 @@
         isMounted: false,
         useOnline: false,
         isSaveNeeded: false,
+        votingMethods: [],
+        custom1: '',
+        custom2: '',
+        custom3: '',
         dummy: 1
       },
       computed: {
@@ -116,6 +120,44 @@
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
         this.isMounted = true;
+
+        var s = this.election.VotingMethods;
+        this.votingMethods = s ? s.split('') : [];
+
+        var customs = ((this.election.CustomMethods || '') + '||').split('|');
+        this.custom1 = customs[0];
+        this.custom2 = customs[1];
+        this.custom3 = customs[2];
+
+
+        site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
+        site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
+        site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
+        site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, included in some reports, and shown in the list of active elections on the Home page when desired.' });
+        site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
+        site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
+        //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
+        site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
+        site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
+        site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
+        site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });
+        site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
+        site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
+        //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
+        site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
+        site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
+        site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
+        site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
+        site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
+        site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
+        site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
+        site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'Everyone is updated automatically if the election type is changed. Click to set everyone now. After resetting, apply special eligibility as needed. (Be sure to Save changes before using Reset.)' });
+        site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
+        site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
+        site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
+        site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
+        //site.qTips.push({ selector: '#qTip', title: '', text: '' });
+
       },
       methods: {
         removeLocation: function (domIcon) {
@@ -197,33 +239,6 @@
     $('.showGlory13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
     //$('#txtName').focus();
 
-    site.qTips.push({ selector: '#qTipLocked1', title: 'Election Locked', text: 'The core settings for the election will be locked when ballots are been entered.' });
-    site.qTips.push({ selector: '#qTipLocked2', title: 'Election Locked', text: 'The core settings for the election are locked because ballots have been entered.' });
-    site.qTips.push({ selector: '#qTipTest', title: 'Testing', text: 'This is just to help you keep your test elections separate. It has no other impact.' });
-    site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, included in some reports, and shown in the list of active elections on the Home page when desired.' });
-    site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
-    site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
-    //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
-    site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
-    site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
-    site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
-    site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });
-    site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
-    site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
-    //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
-    site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
-    site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
-    site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
-    site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
-    site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
-    site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
-    site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
-    site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'Everyone is updated automatically if the election type is changed. Click to set everyone now. After resetting, apply special eligibility as needed. (Be sure to Save changes before using Reset.)' });
-    site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
-    site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
-    site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
-    site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
-    //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
     $(window).on('beforeunload', function () {
       if ($('.btnSave').hasClass('btn-primary')) {
@@ -513,14 +528,30 @@
   }
 
   function saveChanges() {
-    var election = settings.vue.election;
+    var vue = settings.vue;
+    var election = vue.election;
+
+    var testCustom = vue.custom1 + vue.custom2 + vue.custom3;
+    var customs = '';
+    if (testCustom) {
+      if (/[|<]/.test(testCustom)) {
+        ShowStatusFailed('Special characters not allowed in voting methods.');
+        return;
+      }
+      customs = [vue.custom1, vue.custom2, vue.custom3].join('|');
+    }
+
+    var votingMethods = vue.votingMethods.join('');
+    if (vue.useOnline && !votingMethods.includes('O')) {
+      votingMethods += 'O';
+    }
 
     var form = {
       C_RowId: election.C_RowId,
       ShowAsTest: election.ShowAsTest,
       BallotProcessRaw: election.BallotProcessRaw,
       EnvNumModeRaw: election.EnvNumModeRaw,
-      UseCallInButton: election.UseCallInButton,
+      //UseCallInButton: election.UseCallInButton,
       ListForPublic: election.ListForPublic,
       ElectionPasscode: election.ElectionPasscode,
       T24: election.T24,
@@ -530,6 +561,8 @@
       OnlineSelectionProcess: election.OnlineSelectionProcess,
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
+      VotingMethods: votingMethods,
+      CustomMethods: customs
     };
 
     $(':input[data-name]').each(function () {
@@ -568,7 +601,7 @@
           publicInterface.defaultFromAddress = info.defaultFromAddress;
 
           $('.btnSave').removeClass('btn-primary');
-          settings.vue.isSaveNeeded = false;
+          vue.isSaveNeeded = false;
 
           var isClosed = moment(form.OnlineWhenClose).isBefore();
           $('body').toggleClass('OnlineOpen', !isClosed);

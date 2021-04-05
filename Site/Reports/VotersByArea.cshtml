@@ -6,6 +6,7 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
+  var election = UserSession.CurrentElection;
   var areas = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
     .GroupBy(p => p.Area)
@@ -19,11 +20,33 @@
       DroppedOff = g.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
       MailedIn = g.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
       CalledIn = g.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+      Custom1 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom1.ToString()),
+      Custom2 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
+      Custom3 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.Count(p => p.VotingMethod == VotingMethodEnum.Online.ToString()),
       Registered = g.Count(p => p.VotingMethod == VotingMethodEnum.Registered.ToString()),
     })
     .ToList();
 
+  var total = new
+  {
+    Total = areas.Sum(a => a.Total),
+    Voted = areas.Sum(a => a.Voted),
+    InPerson = areas.Sum(a => a.InPerson),
+    MailedIn = areas.Sum(a => a.MailedIn),
+    DroppedOff = areas.Sum(a => a.DroppedOff),
+    CalledIn = areas.Sum(a => a.CalledIn),
+    Custom1 = areas.Sum(a => a.Custom1),
+    Custom2 = areas.Sum(a => a.Custom2),
+    Custom3 = areas.Sum(a => a.Custom3),
+    Online = areas.Sum(a => a.Online),
+    //Registered = areas.Sum(a => a.Registered),
+  };
+  var showCalledIn = total.CalledIn.AsInt() > 0;
+  var showCustom1 = total.Custom1.AsInt() > 0;
+  var showCustom2 = total.Custom2.AsInt() > 0;
+  var showCustom3 = total.Custom3.AsInt() > 0;
+  var showOnline = total.Online.AsInt() > 0;
 }
 <style>
   .pct {
@@ -73,21 +96,6 @@
   <p class="Comment">
     Showing the areas of those registered on the Front Desk.
   </p>
-  @{
-    var total = new
-    {
-      Total = areas.Sum(a => a.Total),
-      Voted = areas.Sum(a => a.Voted),
-      InPerson = areas.Sum(a => a.InPerson),
-      MailedIn = areas.Sum(a => a.MailedIn),
-      DroppedOff = areas.Sum(a => a.DroppedOff),
-      CalledIn = areas.Sum(a => a.CalledIn),
-      Online = areas.Sum(a => a.Online),
-      //Registered = areas.Sum(a => a.Registered),
-    };
-    var showCalledIn = total.CalledIn.AsInt() > 0;
-    var showOnline = total.Online.AsInt() > 0;
-  }
   <table class="Areas">
     <thead>
       <tr>
@@ -101,6 +109,18 @@
         {
           <th>Called In</th>
         }
+        @if (showCustom1)
+        {
+          <th>@election.Custom1Name</th>
+        }
+        @if (showCustom2)
+        {
+          <th>@election.Custom2Name</th>
+        }
+        @if (showCustom3)
+        {
+          <th>@election.Custom3Name</th>
+        }
         @if (showOnline)
         {
           <th>Online</th>
@@ -109,7 +129,12 @@
       <tr class="pct">
         <td>(% of community)</td>
         <td>(% of area adults)</td>
-        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% of area voted)</td>
+        <td colspan="@(3 
+                       + (showCalledIn ? 1 : 0) 
+                       + (showCustom1 ? 1 : 0) 
+                       + (showCustom2 ? 1 : 0) 
+                       + (showCustom3 ? 1 : 0) 
+                       + (showOnline ? 1 : 0))">(% of area voted)</td>
       </tr>
     </thead>
     <tbody>
@@ -128,6 +153,18 @@
             {
               <td class="method">@area.CalledIn @area.CalledIn.PercentInSpan(area.Voted, -1, true)</td>
             }
+            @if (showCustom1)
+            {
+              <td class="method">@area.Custom1 @area.Custom1.PercentInSpan(area.Voted, -1, true)</td>
+            }
+            @if (showCustom2)
+            {
+              <td class="method">@area.Custom2 @area.Custom2.PercentInSpan(area.Voted, -1, true)</td>
+            }
+            @if (showCustom3)
+            {
+              <td class="method">@area.Custom3 @area.Custom3.PercentInSpan(area.Voted, -1, true)</td>
+            }
             @if (showOnline)
             {
               <td class="method">@area.Online @area.Online.PercentInSpan(area.Voted, -1, true)</td>
@@ -145,6 +182,18 @@
         @if (showCalledIn)
         {
           <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showCustom1)
+        {
+          <td class="method">@total.Custom1 @total.Custom1.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showCustom2)
+        {
+          <td class="method">@total.Custom2 @total.Custom2.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showCustom3)
+        {
+          <td class="method">@total.Custom3 @total.Custom3.PercentInSpan(total.Voted, -1, true)</td>
         }
         @if (showOnline)
         {

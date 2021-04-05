@@ -6,6 +6,7 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
+  var election = UserSession.CurrentElection;
   var people = new PersonCacher().AllForThisElection.Where(p => p.CanVote.GetValueOrDefault()).ToList();
   var locations = new LocationCacher().AllForThisElection
     .GroupJoin(people, l => l.LocationGuid, p => p.VotingLocationGuid, (l, pList) => new { l, pList })
@@ -18,6 +19,9 @@
       DroppedOff = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.DroppedOff.ToString()),
       MailedIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.MailedIn.ToString()),
       CalledIn = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.CalledIn.ToString()),
+      Custom1 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom1.ToString()),
+      Custom2 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
+      Custom3 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Online.ToString()),
     })
     .OrderBy(r => r.LocationName)
@@ -31,10 +35,16 @@
     MailedIn = locations.Sum(a => a.MailedIn),
     DroppedOff = locations.Sum(a => a.DroppedOff),
     CalledIn = locations.Sum(a => a.CalledIn),
+    Custom1 = locations.Sum(a => a.Custom1),
+    Custom2 = locations.Sum(a => a.Custom2),
+    Custom3 = locations.Sum(a => a.Custom3),
     Online = locations.Sum(a => a.Online),
   };
 
   var showCalledIn = total.CalledIn.AsInt() > 0;
+  var showCustom1 = total.Custom1.AsInt() > 0;
+  var showCustom2 = total.Custom2.AsInt() > 0;
+  var showCustom3 = total.Custom3.AsInt() > 0;
   var showOnline = total.Online.AsInt() > 0;
 }
 <style>
@@ -97,14 +107,31 @@
         {
           <th>Called In</th>
         }
-        @if (showOnline)
+        @if (showCustom1)
+        {
+          <th>@election.Custom1Name</th>
+        }
+        @if (showCustom2)
+        {
+          <th>@election.Custom2Name</th>
+        }
+        @if (showCustom3)
+        {
+          <th>@election.Custom3Name</th>
+        }@if (showOnline)
         {
           <th>Online</th>
         }
       </tr>
       <tr class="pct">
         <td>(% of all voters)</td>
-        <td colspan="@(3 + (showCalledIn ? 1 : 0) + (showOnline ? 1 : 0))">(% at venue)</td>
+        <td colspan="@(3 + (showCalledIn ? 1 : 0)
+                       + (showCustom1 ? 1 : 0)
+                       + (showCustom2 ? 1 : 0)
+                       + (showCustom3 ? 1 : 0)
+                       + (showOnline ? 1 : 0))">
+          (% at venue)
+        </td>
       </tr>
     </thead>
     <tbody>
@@ -124,6 +151,18 @@
               {
                 <td class="method">-</td>
               }
+              @if (showCustom1)
+              {
+                <td class="method">-</td>
+              }
+              @if (showCustom2)
+              {
+                <td class="method">-</td>
+              }
+              @if (showCustom3)
+              {
+                <td class="method">-</td>
+              }
               <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
             </tr>
           }
@@ -138,6 +177,18 @@
               @if (showCalledIn)
               {
                 <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
+              }
+              @if (showCustom1)
+              {
+                <td class="method">@loc.Custom1 @loc.Custom1.PercentInSpan(loc.Voted, -1, true)</td>
+              }
+              @if (showCustom2)
+              {
+                <td class="method">@loc.Custom2 @loc.Custom2.PercentInSpan(loc.Voted, -1, true)</td>
+              }
+              @if (showCustom3)
+              {
+                <td class="method">@loc.Custom3 @loc.Custom3.PercentInSpan(loc.Voted, -1, true)</td>
               }
               @if (showOnline)
               {

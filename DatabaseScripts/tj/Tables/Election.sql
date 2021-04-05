@@ -34,6 +34,8 @@
     [EmailText]              NVARCHAR (MAX)   NULL,
     [SmsText]                NVARCHAR (500)   NULL,
     [EmailSubject]           NVARCHAR (250)   NULL,
+    [CustomMethods] NVARCHAR(50) NULL, 
+    [VotingMethods] VARCHAR(10) NULL, 
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
 

@@ -9,6 +9,7 @@
   ContextItems.AddJavascriptForPage("results", "analyzePage.results={0};".FilledWith(Model.GetCurrentResultsIfAvailable().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("hubUrl", "analyzePage.analyzeHubUrl={0};".FilledWith(@Url.Action("JoinAnalyzeHub", "Elections").QuotedForJavascript()));
 
+  var election = UserSession.CurrentElection;
   var approvedForReporting = UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized;
 }
 <div class="overallWarning">Issues highlighted in red below must be resolved before election can be finalized for reporting.</div>
@@ -16,7 +17,7 @@
 <div class="analysisContent">
 
   <div class="LeftHalf">
-    <table id="totalCounts" class="float-left hideCalledIn hideOnline onlineReady">
+    <table id="totalCounts" class="float-left hideCalledIn hideCustom1 hideCustom2 hideCustom3 hideOnline onlineReady">
       <thead>
         <tr>
           <th>Counts</th>
@@ -116,6 +117,48 @@
           </td>
           <td>
             <span class="Final" data-name="CalledInBallots"></span>
+          </td>
+        </tr>
+        <tr id="custom1">
+          <td>
+            @election.Custom1Name
+          </td>
+          <td>
+            <span class="Calc" data-name="Custom1Ballots"></span>
+          </td>
+          <td>
+            <input class="Manual" data-name="Custom1Ballots" type="number" min="0">
+          </td>
+          <td>
+            <span class="Final" data-name="Custom1Ballots"></span>
+          </td>
+        </tr>
+        <tr id="custom2">
+          <td>
+            @election.Custom2Name
+          </td>
+          <td>
+            <span class="Calc" data-name="Custom2Ballots"></span>
+          </td>
+          <td>
+            <input class="Manual" data-name="Custom2Ballots" type="number" min="0">
+          </td>
+          <td>
+            <span class="Final" data-name="Custom2Ballots"></span>
+          </td>
+        </tr>
+        <tr id="custom3">
+          <td>
+            @election.Custom3Name
+          </td>
+          <td>
+            <span class="Calc" data-name="Custom3Ballots"></span>
+          </td>
+          <td>
+            <input class="Manual" data-name="Custom3Ballots" type="number" min="0">
+          </td>
+          <td>
+            <span class="Final" data-name="Custom3Ballots"></span>
           </td>
         </tr>
         <tr class="online">

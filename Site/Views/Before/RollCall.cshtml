@@ -4,6 +4,7 @@
 @using TallyJ.Code.Session
 @using TallyJ.EF
 @{
+  ViewBag.Title = "Roll Call";
   ContextItems.AddJavascriptForPage("url", "rollCallPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("location", "rollCallPage.location={0};".FilledWith((UserSession.CurrentLocation ?? new Location()).C_RowId));
   ContextItems.AddJavascriptForPage("hasloc", "rollCallPage.hasLocations={0};".FilledWith(new LocationModel().HasLocationsWithoutOnline.SerializedAsJsonString()));

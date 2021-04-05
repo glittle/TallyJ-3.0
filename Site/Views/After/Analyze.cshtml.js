@@ -8,6 +8,9 @@
     hasCloseVote: false,
     hasTie: false,
     calledInTotal: 0,
+    custom1Total: 0,
+    custom2Total: 0,
+    custom3Total: 0,
     onlineTotal: 0
   };
 
@@ -255,6 +258,9 @@
     }
 
     settings.calledInTotal = 0;
+    settings.custom1Total = 0;
+    settings.custom2Total = 0;
+    settings.custom3Total = 0;
     fillValues('Calc', info.ResultsCalc);
     fillValues('Manual', info.ResultsManual);
     fillValues('Final', info.ResultsFinal);
@@ -267,6 +273,9 @@
 
   function summarizeCounts() {
     $('#totalCounts').toggleClass('hideCalledIn', !(settings.calledInTotal > 0 || !!settings.info.ShowCalledIn));
+    $('#totalCounts').toggleClass('hideCustom1', !(settings.custom1Total > 0 || settings.info.VotingMethods.includes('1')));
+    $('#totalCounts').toggleClass('hideCustom2', !(settings.custom2Total > 0 || settings.info.VotingMethods.includes('2')));
+    $('#totalCounts').toggleClass('hideCustom3', !(settings.custom3Total > 0 || settings.info.VotingMethods.includes('3')));
     $('#totalCounts').toggleClass('hideOnline', !(settings.onlineTotal > 0 || !!settings.info.ShowOnline));
     $('#totalCounts tr').each(function () {
       var row = $(this);
@@ -288,6 +297,15 @@
   function fillValues(name, results) {
     if (results.CalledInBallots) {
       settings.calledInTotal += results.CalledInBallots;
+    }
+    if (results.Custom1Ballots) {
+      settings.custom1Total += results.Custom1Ballots;
+    }
+    if (results.Custom2Ballots) {
+      settings.custom2Total += results.Custom2Ballots;
+    }
+    if (results.Custom3Ballots) {
+      settings.custom3Total += results.Custom3Ballots;
     }
     if (results.OnlineBallots) {
       settings.onlineTotal += results.OnlineBallots;
@@ -380,7 +398,7 @@
           var list = $.map(votes, function (v) {
             return v.TieBreakGroup == tie.TieBreakGroup ? v : null;
           });
-          tie.People = '<div><input data-rid="{rid}" class=TieBreakCount type=number min=0 value="{TieBreakCount}">{PersonName}</div>'.filledWithEach(list.sort(function (a, b) {
+          tie.People = '<div><input data-rid="{rid}" class=TieBreakCount type=number min=0 value="{TieBreakCount}"><span>{PersonName}</span></div>'.filledWithEach(list.sort(function (a, b) {
             if (a.PersonName < b.PersonName) return -1;
             if (a.PersonName > b.PersonName) return 1;
             return 0;

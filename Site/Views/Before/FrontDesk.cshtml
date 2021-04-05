@@ -1,5 +1,6 @@
 ﻿@model PeopleModel
 @using TallyJ.Code
+@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Resources
 @using TallyJ.Code.Session
 @using TallyJ.EF
@@ -60,23 +61,56 @@
   <input accesskey="S" id="search">
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
-<div class="Counts @(currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "") @(currentElection.OnlineEnabled ? "UseOnline" : "")">
-  <div class="Online" data-status="Online" title="Click to filter the list">
-    Online
-    <i>0</i>
-  </div>
-  <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
-    Called In
-    <i>0</i>
-  </div>
-  <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
-    Mailed In
-    <i>0</i>
-  </div>
-  <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
-    Dropped Off
-    <i>0</i>
-  </div>
+<div class="Counts">
+  @if (currentElection.VotingMethodsContains("O"))
+  {
+    <div class="Online" data-status="Online" title="Click to filter the list">
+      Online
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("C"))
+  {
+    <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
+      Called In
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("M"))
+  {
+    <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
+      Mailed In
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("D"))
+  {
+    <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
+      Dropped Off
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("1"))
+  {
+    <div class="Custom1" data-status="Custom1" title="Click to filter the list">
+      1 @currentElection.Custom1Name
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("2"))
+  {
+    <div class="Custom2" data-status="Custom2" title="Click to filter the list">
+      2 @currentElection.Custom2Name
+      <i>0</i>
+    </div>
+  }
+  @if (currentElection.VotingMethodsContains("3"))
+  {
+    <div class="Custom3" data-status="Custom3" title="Click to filter the list">
+      3 @currentElection.Custom3Name
+      <i>0</i>
+    </div>
+  }
   @if (ballotProcessEnum == BallotProcessEnum.RegV)
   {
     <div class="Registered" data-status="Registered" title="Click to filter the list">
@@ -84,10 +118,13 @@
       <i>0</i>
     </div>
   }
-  <div class="InPerson" data-status="InPerson" title="Click to filter the list">
-    @inPersonName
-    <i>0</i>
-  </div>
+  @if (currentElection.VotingMethodsContains("P"))
+  {
+    <div class="InPerson" data-status="InPerson" title="Click to filter the list">
+      @inPersonName
+      <i>0</i>
+    </div>
+  }
   <div class="Total" data-status="Total" title="Click to filter the list">
     Total
     <i>0</i>
@@ -96,9 +133,7 @@
     Other <i>0</i>
   </span>
 </div>
-<div id="Main" class="@(new[] {currentElection.UseCallInButton.AsBoolean() ? "UseCallIn" : "",
-                          currentElection.OnlineEnabled ? "UseOnline" : "",
-                          "EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
+<div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
     Type the first letter of a button to click it. Press Esc or Enter when done.
   </div>
@@ -107,10 +142,35 @@
 
 <script type="text/x-template" id="frontDeskLineTemplate">
   <div id="P{PersonId}" class="Voter VM-{VotingMethod} {extraClass}" data-name="{NameLower}">
-    <div class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
-    <div class="Btn CalledIn {CalledIn}">Called In</div>
-    <div class="Btn MailedIn {MailedIn}">Mailed In</div>
-    <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
+    {
+      <div class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.CalledIn.Value))
+    {
+      <div class="Btn CalledIn {CalledIn}">Called In</div>
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.MailedIn.Value))
+    {
+      <div class="Btn MailedIn {MailedIn}">Mailed In</div>
+
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.DroppedOff.Value))
+    {
+      <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom1.Value))
+    {
+      <div class="Btn Custom1 {Custom1}">1 @currentElection.Custom1Name</div>
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom2.Value))
+    {
+      <div class="Btn Custom2 {Custom2}">2 @currentElection.Custom2Name</div>
+    }
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom3.Value))
+    {
+      <div class="Btn Custom3 {Custom3}">3 @currentElection.Custom3Name</div>
+    }
     <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
     {
@@ -118,7 +178,10 @@
         <div class="Btn Registered {Registered}">Registered</div>
         break;
     }
-    <div class="Btn InPerson {InPerson}">@inPersonName</div>
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
+    {
+      <div class="Btn InPerson {InPerson}">@inPersonName</div>
+    }
     <b>{FullName}</b>
     <p>{BahaiId}</p>
     <u title="Lives in">{Area}</u>

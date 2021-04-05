@@ -241,6 +241,30 @@ UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.Reason == 
         @Model.CalledInBallots.AsInt().ToString("N0")
       </td>
     </tr>
+    <tr class="rpt1Detail @(Model.Custom1Ballots == 0 ? "Hidden" : "")">
+      <td>
+        Ballots: @currentElection.Custom1Name
+      </td>
+      <td>
+        @Model.Custom1Ballots.AsInt().ToString("N0")
+      </td>
+    </tr>
+    <tr class="rpt2Detail @(Model.Custom2Ballots == 0 ? "Hidden" : "")">
+      <td>
+        Ballots: @currentElection.Custom2Name
+      </td>
+      <td>
+        @Model.Custom2Ballots.AsInt().ToString("N0")
+      </td>
+    </tr>
+    <tr class="rpt3Detail @(Model.Custom3Ballots == 0 ? "Hidden" : "")">
+      <td>
+        Ballots: @currentElection.Custom3Name
+      </td>
+      <td>
+        @Model.Custom3Ballots.AsInt().ToString("N0")
+      </td>
+    </tr>
 
     <tr class="line"><td colspan="2"><div></div></td></tr>
 

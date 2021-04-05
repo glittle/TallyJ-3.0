@@ -630,7 +630,12 @@ body.HasOfflineLocations {
 
         .names {
           > span {
-            display: block;
+            display: flex;
+            align-items: center;
+
+            button {
+              margin-right: 5px;
+            }
           }
 
           button {
@@ -642,7 +647,7 @@ body.HasOfflineLocations {
         .btnFindPart {
           line-height: 120%;
           padding: 2px 6px;
-          font-size: 10.5px;
+          font-size: 11px;
           border-radius: 3px;
         }
       }

@@ -49,5 +49,7 @@ namespace TallyJ.EF
         public string EmailText { get; set; }
         public string SmsText { get; set; }
         public string EmailSubject { get; set; }
+        public string CustomMethods { get; set; }
+        public string VotingMethods { get; set; }
     }
 }

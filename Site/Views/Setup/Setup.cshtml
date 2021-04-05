@@ -6,7 +6,6 @@
   ViewBag.Title = "Election Setup";
   ViewBag.Message = "Who, What, When and Where!";
   ViewData["ExtraScripts"] = new[] {
-    ClientFile("~/Scripts/vue{0}.js", ".min"),
     ClientFile("~/Scripts/BadiDateToday.v1.js"),
     ClientFile("~/Scripts/luxon.min.js"),
     ClientFile("~/Scripts/vue-datetime.js"),
@@ -298,16 +297,47 @@
     </tr>
     <tr v-if="usingBallotProcess">
       <th>
-        Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
+        How will ballots be received?
       </th>
-      <td colspan="2">
-        <div class="flex">
-          <env-mode v-model="election.EnvNumModeRaw"></env-mode>
-          <div>For whom should envelope numbers be shown on the Front Desk?</div>
-        </div>
+      <td>
+        <el-checkbox-group v-model="votingMethods" class="votingMethods" :class="{missing: !votingMethods.length}">
+          <el-checkbox label="@VotingMethodEnum.InPerson.Value">@VotingMethodEnum.InPerson.DisplayText</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.DroppedOff.Value">@VotingMethodEnum.DroppedOff.DisplayText</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
+          <el-checkbox :disabled="true" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.Custom1.Value">
+            1
+            <el-input
+              size="small"
+              v-model="custom1"
+              :maxlength="15"
+              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom1.Value')"></el-input>
+          </el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.Custom2.Value">
+            2 <el-input 
+              size="small"
+              v-model="custom2"
+              :maxlength="15"
+              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom2.Value')"></el-input>
+          </el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.Custom3.Value">
+            3 <el-input 
+              size="small"
+              v-model="custom3"
+              :maxlength="15"
+              :disabled="!votingMethods.includes('@VotingMethodEnum.Custom3.Value')"></el-input>
+          </el-checkbox>
+        </el-checkbox-group>
+      </td>
+      <td>
+        <p v-if="!votingMethods.length" class="warning">At least one voting method is required.</p>
+        <div>Select all the methods that you are using to accept ballots from voters.</div>
+        <p>If using TallyJ's Online Voting, select it in Step 4 (below).</p>
+        <p>There are spaces for 3 extra methods that you can define yourself.</p>
       </td>
     </tr>
-    <tr v-if="usingBallotProcess">
+    @*<tr v-if="usingBallotProcess">
       <th>
         Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
       </th>
@@ -317,8 +347,19 @@
       <td>
         Are you set up to accept ballots by telephone?
       </td>
+    </tr>*@
+    <tr v-if="usingBallotProcess">
+      <th>
+        Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
+      </th>
+      <td colspan="2">
+        <div class="flex">
+          <env-mode v-model="election.EnvNumModeRaw"></env-mode>
+          <div>For whom should envelope numbers be shown on the Front Desk?</div>
+        </div>
+      </td>
     </tr>
-    <tr class="forLocations">
+       <tr class="forLocations">
       <th>
         Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
       </th>
@@ -578,7 +619,7 @@
   <span class="EnvMode" v-bind:class="'EnvMode' + mode">
     <label>
       <input type="radio" value="Absentee" v-model="mode">
-      Mailed In and Dropped Off
+      All but "In Person"
     </label>
     <label>
       <input type="radio" value="All" v-model="mode">
