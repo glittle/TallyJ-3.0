@@ -4,6 +4,10 @@ body {
   overflow-y: scroll; // keep scroll bar
 }
 
+.content-wrapper {
+  max-width: 1200px;
+}
+
 p {
   margin-top: -25px;
   margin-left: 60px;
@@ -12,6 +16,7 @@ p {
 .Voter {
   clear: both;
   border: 2px solid transparent;
+  white-space: nowrap;
 
   div.Btn {
     &:hover {
@@ -22,11 +27,19 @@ p {
       background-color: plum;
     }
 
+    &.selected {
+      background-color: #fbd0fb;
+    }
+
     &.true, &.True {
       background-color: #9bff9b;
 
       &.Registered {
         background-color: #9bfffe;
+      }
+
+      &.selected {
+        background-color: #ffc8c8;
       }
     }
   }
@@ -40,7 +53,9 @@ p {
   }
 
   &.KeyMatch {
-    background-color: #ffffaa;
+    background-color: #ffffdf;
+    margin: 0 4px;
+    padding: 0 1px;
   }
 
   &:hover {
@@ -89,7 +104,7 @@ p {
   font-size: 90%;
   color: green;
   background-color: #f9f9f9;
-  padding: 3px 4px;
+  padding: 10px 20px;
   border-radius: 2px;
   box-shadow: 0 3px 9px #555;
   z-index: 1;
@@ -134,7 +149,7 @@ p {
   width: 30px;
   display: inline-block;
   text-align: center;
-  color: #019401;
+  color: #000;
 }
 
 .fakeEsc {
@@ -215,6 +230,7 @@ p {
 #Main {
   overflow: auto;
   clear: both;
+  padding: 3px 0;
   //&.UseOnline {
   .Online {
     opacity: 0.25;
@@ -287,6 +303,7 @@ p {
 
     .Voter.Selection {
       opacity: 1;
+      box-shadow: 0 0 5px #555;
     }
   }
 }

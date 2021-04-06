@@ -93,21 +93,21 @@
   @if (currentElection.VotingMethodsContains("1"))
   {
     <div class="Custom1" data-status="Custom1" title="Click to filter the list">
-      1 @currentElection.Custom1Name
+      @currentElection.Custom1Name
       <i>0</i>
     </div>
   }
   @if (currentElection.VotingMethodsContains("2"))
   {
     <div class="Custom2" data-status="Custom2" title="Click to filter the list">
-      2 @currentElection.Custom2Name
+      @currentElection.Custom2Name
       <i>0</i>
     </div>
   }
   @if (currentElection.VotingMethodsContains("3"))
   {
     <div class="Custom3" data-status="Custom3" title="Click to filter the list">
-      3 @currentElection.Custom3Name
+      @currentElection.Custom3Name
       <i>0</i>
     </div>
   }
@@ -135,7 +135,7 @@
 </div>
 <div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
-    Type the first letter of a button to click it. Press Esc or Enter when done.
+    Type the first letter of any button to select it. Press &larr; or &rarr; to move the selection. Press Enter to click. Press Esc when done.
   </div>
 </div>
 <div id="afterList"></div>
@@ -144,43 +144,42 @@
   <div id="P{PersonId}" class="Voter VM-{VotingMethod} OnlineProcessed-{OnlineProcessed} {extraClass}" data-name="{NameLower}">
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
     {
-      <div class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
+      <div data-vm="@VotingMethodEnum.Online.Value" class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.CalledIn.Value))
     {
-      <div class="Btn CalledIn {CalledIn}">Called In</div>
+      <div data-vm="@VotingMethodEnum.CalledIn.Value" class="Btn CalledIn {CalledIn}">Called In</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.MailedIn.Value))
     {
-      <div class="Btn MailedIn {MailedIn}">Mailed In</div>
-
+      <div data-vm="@VotingMethodEnum.MailedIn.Value" class="Btn MailedIn {MailedIn}">Mailed In</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.DroppedOff.Value))
     {
-      <div class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
+      <div data-vm="@VotingMethodEnum.DroppedOff.Value" class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom1.Value))
     {
-      <div class="Btn Custom1 {Custom1}">1 @currentElection.Custom1Name</div>
+      <div data-vm="@VotingMethodEnum.Custom1.Value" class="Btn Custom1 {Custom1}">@currentElection.Custom1Name</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom2.Value))
     {
-      <div class="Btn Custom2 {Custom2}">2 @currentElection.Custom2Name</div>
+      <div data-vm="@VotingMethodEnum.Custom2.Value" class="Btn Custom2 {Custom2}">@currentElection.Custom2Name</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom3.Value))
     {
-      <div class="Btn Custom3 {Custom3}">3 @currentElection.Custom3Name</div>
+      <div data-vm="@VotingMethodEnum.Custom3.Value" class="Btn Custom3 {Custom3}">@currentElection.Custom3Name</div>
     }
     <div class="Env">{EnvNum}</div>
     @switch (ballotProcessEnum)
     {
       case BallotProcessEnum.RegV:
-        <div class="Btn Registered {Registered}">Registered</div>
+        <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
         break;
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
     {
-      <div class="Btn InPerson {InPerson}">@inPersonName</div>
+      <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
     }
     <b>{FullName}</b>
     <p>{BahaiId}</p>

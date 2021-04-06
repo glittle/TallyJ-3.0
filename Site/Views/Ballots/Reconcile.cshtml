@@ -18,6 +18,7 @@
   }
 
   ContextItems.AddJavascriptForPage("reconcilePage.envNumMode={0};".FilledWith(envNumMode.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("reconcilePage.methods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
   ContextItems.AddJavascriptForPage("reconcilePage.inPersonName={0};".FilledWith(inPersonName.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reconcilePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("reconcilePage.beforeUrl={0};".FilledWith(Url.Action("Index", "Before").QuotedForJavascript()));

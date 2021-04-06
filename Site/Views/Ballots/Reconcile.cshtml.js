@@ -93,16 +93,16 @@
           busy: 'Loading ballot information'
         },
         function (info) {
-        if (highlight) {
-          $('#Totals').effect('highlight', {}, 5000);
-        }
-        local.currentLocation = newLocation;
-        publicInterface.deselected = info.Deselected;
-        
-        processBallots(info.Ballots);
+          if (highlight) {
+            $('#Totals').effect('highlight', {}, 5000);
+          }
+          local.currentLocation = newLocation;
+          publicInterface.deselected = info.Deselected;
 
-        ActivateTips(true);
-      });
+          processBallots(info.Ballots);
+
+          ActivateTips(true);
+        });
     }
   };
 
@@ -132,7 +132,7 @@
   function processBallots(ballots) {
     local.groupedBallots = {};
     local.ballotMethods = [];
-    
+
     var method;
 
     for (var i = 0; i < ballots.length; i++) {
@@ -149,15 +149,22 @@
     }
 
 
-    var methodInfos = {
-      P: { name: reconcilePage.inPersonName, count: 0 },
-      D: { name: 'Dropped Off', count: 0 },
-      M: { name: 'Mailed In', count: 0 },
-      O: { name: 'Online', count: 0 },
-      R: { name: 'Registered, not Received', count: 0 },
-      C: { name: 'Called In', count: 0 }
-    };
-    var methodList = ['P', 'D', 'M', 'C', 'R', 'O'];
+    var methodList = Object.keys(reconcilePage.methods);
+    var methodInfos = {};
+    methodList.forEach(m => {
+      methodInfos[m] = {
+        name: reconcilePage.methods[m],
+        count: 0
+      }
+    })
+    //    var methodInfos = {
+    //      P: { name: reconcilePage.inPersonName, count: 0 },
+    //      D: { name: 'Dropped Off', count: 0 },
+    //      M: { name: 'Mailed In', count: 0 },
+    //      O: { name: 'Online', count: 0 },
+    //      R: { name: 'Registered, not Received', count: 0 },
+    //      C: { name: 'Called In', count: 0 }
+    //    };
 
     var host = $('#lists');
     host.html('');
@@ -188,19 +195,31 @@
     }
 
     var totals = {
-      absent: methodInfos['M'].count + methodInfos['D'].count + methodInfos['C'].count,
+      absent: methodList.filter(m => m !== 'P').map(m => methodInfos[m]).reduce((acc, mi) => acc += mi.count, 0),
       inPerson: methodInfos['P'].count
     };
     totals.total = totals.inPerson + totals.absent;
 
-    $('#Totals').html([
-      'Total: {total}'.filledWith(totals),
-      (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
-      (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
-      (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
-      (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),
-      (methodInfos.R.count > 0 ? ('(' + methodInfos.R.name + ': {0})'.filledWith(methodInfos.R.count)) : ''),
-    ].join(' &nbsp; &nbsp; '));
+    //    $('#Totals').html([
+    //      'Total: {total}'.filledWith(totals),
+    //      (methodInfos.P.name + ': {0}'.filledWith(methodInfos.P.count)).bold(),
+    //      (methodInfos.D.name + ': {0}'.filledWith(methodInfos.D.count)).bold(),
+    //      (methodInfos.M.name + ': {0}'.filledWith(methodInfos.M.count)).bold(),
+    //      (methodInfos.C.count > 0 ? (methodInfos.C.name + ': {0}'.filledWith(methodInfos.C.count)) : '').bold(),
+    //      (methodInfos.R.count > 0 ? ('(' + methodInfos.R.name + ': {0})'.filledWith(methodInfos.R.count)) : ''),
+    //    ].join(' &nbsp; &nbsp; '));
+    var html = [
+      'Total: {total}'.filledWith(totals)
+    ];
+    methodList.forEach(m => {
+      var mi = methodInfos[m];
+      if (!mi.count) {
+        return;
+      }
+      html.push(`<b>${mi.name}: ${mi.count}</b>`);
+    });
+    $('#Totals').html(html.join(''));
+
 
     if (local.showingNames) {
       $('.Names').fadeIn();

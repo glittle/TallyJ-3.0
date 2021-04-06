@@ -10,6 +10,8 @@
     lastStatusFilter: '',
     focusedOnMatches: false,
     headerSpace: 0,
+    lastLetter: '',
+    lastLetterIndex: -1,
     pageSize: 100,
     afterList: null,
     lineTemplate: null
@@ -163,6 +165,8 @@
     var letter, key = ev.which;
     if (ev.altKey) return;
     if (ev.ctrlKey) return;
+    var personIsSelected = inSelectionMode();
+
     switch (key) {
       case 222:
         letter = "'";
@@ -170,7 +174,7 @@
       case 116: // F5
         return;
       case 27: // esc
-        if (inSelectionMode()) {
+        if (personIsSelected) {
           $('#Main').removeClass('InSelection');
         }
         else {
@@ -186,12 +190,81 @@
 
     var doSearch = false;
 
-    if (inSelectionMode()) {
-      $('.Voter.Selection div.Btn:visible:not(.Hasfalse)').each(function (i, el) {
-        if (letter === el.innerText.substr(0, 1)) {
-          voteBtnClicked(el);
+    if (personIsSelected) {
+      var btnList = $('.Voter.Selection div.Btn:visible:not(.Hasfalse)').get().map(el => { return { el: el, initial: el.innerText[0] } });
+      var next = local.lastLetterIndex;
+      var delta = 0;
+
+      switch (key) {
+        case 13:
+          var selected = btnList.find(btn => btn.el.classList.contains('selected'));
+          if (selected) {
+            selected.el.classList.remove('selected');
+            voteBtnClicked(selected.el);
+            return;
+          }
+          break;
+        case 39:
+          delta = 1;
+          break;
+        case 37:
+          delta = -1;
+          break;
+      }
+
+      var matched = null;
+
+      if (delta) {
+        next += delta;
+        if (next >= btnList.length) next = 0;
+        else if (next < 0) next = btnList.length - 1;
+
+        matched = btnList[next];
+      } else {
+        if (local.lastLetter !== letter) {
+          local.lastLetterIndex = -1;
         }
-      });
+
+        var start = local.lastLetterIndex;
+        var looped = false;
+        while (true) {
+          next++;
+          if (looped && next >= start) {
+            break;
+          }
+
+          if (next < btnList.length && btnList[next].initial === letter) {
+            matched = btnList[next];
+            local.lastLetter = letter;
+            break;
+          }
+
+          if (next >= btnList.length) {
+            next = -1;
+            looped = true;
+          }
+        }
+      }
+
+      if (matched) {
+        // clear all 'selected'
+        btnList.forEach(btn => btn.el.classList.remove('selected'));
+        btnList[next].el.classList.add('selected');
+        local.lastLetterIndex = next;
+        //        voteBtnClicked(el);
+        return;
+      } else {
+        local.lastLetter = '';
+      }
+      //      btnList.each(function (i, el) {
+      //        if (letter === el.innerText.substr(0, 1) && i > local.lastLetterIndex) {
+      //          voteBtnClicked(el);
+      //          local.lastLetterIndex = i;
+      //          local.lastLetter = letter;
+      //          matchFound = true;
+      //          return false;
+      //        }
+      //      });
     }
     else if (/[\w]/.test(letter)) {
       //console.log(local.focusedOnMatches)
@@ -213,7 +286,7 @@
     //console.log('main ' + key);
     switch (key) {
       case 13: // enter
-        if (inSelectionMode()) {
+        if (personIsSelected) {
           $('#Main').removeClass('InSelection');
         } else {
           activateSelection();
@@ -253,7 +326,7 @@
     }
   };
 
-  var inSelectionMode = function () {
+  function inSelectionMode() {
     return $('#Main').hasClass('InSelection');
   }
 
@@ -262,7 +335,7 @@
     if (!current.length) {
       return;
     }
-    $('#selectorTip').css('top', current.offset().top - local.headerSpace - 40);
+    $('#selectorTip').css('top', current.offset().top - local.headerSpace - 44);
     $('#Main').addClass('InSelection');
   }
   var moveSelector = function (delta) {
@@ -374,20 +447,10 @@
           btnCode = 'P';
           break;
         case 'O': // online
-          btnCode = 'O';
-          break;
         case 'C': // called in (if used)
-          btnCode = 'C';
-          break;
         case 'R': // received (if used)
-          btnCode = 'R';
-          break;
         case 'M': // mailed in
-          btnCode = 'M';
-          break;
         case 'D': //dropped off
-          btnCode = 'D';
-          break;
         case '1': //custom
         case '2': //custom
         case '3': //custom
@@ -397,6 +460,7 @@
       }
       if (btnCode) {
         id = currentId.substr(1);
+        console.log(btnCode, id);
         saveBtnClick(id, btnCode);
       }
     }
@@ -444,7 +508,7 @@
       $('.Voter').addClass('hidden').slice(0, local.pageSize).removeClass('hidden');
     }
   }
-  var voteBtnClicked = function (target, forceDeselect) {
+  function voteBtnClicked(target, forceDeselect) {
     var btn = $(target);
 
     var row = btn.closest('.Voter');
@@ -460,7 +524,9 @@
       return;
     }
 
-    if (!forceDeselect && (btn.hasClass('True') || btn.hasClass('true') || btn.hasClass('clicked'))) {
+    var classes = btn[0].classList;
+
+    if (!forceDeselect && (classes.contains('True') || classes.contains('true') || classes.contains('clicked'))) {
       // already on
       if (!confirm('Are you sure you want to de-select this person?')) {
         return;
@@ -471,17 +537,17 @@
 
     setSelection(row, false);
 
-    var btnType =
-      btn.hasClass('InPerson') ? 'P'
-        : btn.hasClass('DroppedOff') ? 'D'
-          : btn.hasClass('Online') ? 'O'
-            : btn.hasClass('CalledIn') ? 'C'
-              : btn.hasClass('MailedIn') ? 'M'
-                : btn.hasClass('Registered') ? 'R'
-                  : btn.hasClass('Custom1') ? '1'
-                    : btn.hasClass('Custom2') ? '2'
-                      : btn.hasClass('Custom3') ? '3'
-                        : '?';
+    var btnType = btn.data('vm');
+    //      classes.contains('InPerson') ? 'P'
+    //        : classes.contains('DroppedOff') ? 'D'
+    //          : classes.contains('Online') ? 'O'
+    //            : classes.contains('CalledIn') ? 'C'
+    //              : classes.contains('MailedIn') ? 'M'
+    //                : classes.contains('Registered') ? 'R'
+    //                  : classes.contains('Custom1') ? '1'
+    //                    : classes.contains('Custom2') ? '2'
+    //                      : classes.contains('Custom3') ? '3'
+    //                        : '?';
 
     saveBtnClick(pid, btnType, btn, forceDeselect, person);
   };
@@ -489,10 +555,9 @@
   function saveBtnClick(pid, btnType, btn, forceDeselect, person) {
     if (!person) {
       var pidNum = +pid;
-      person = publicInterface.initial.find(function(p) { return p.PersonId === pidNum; });
+      person = publicInterface.initial.find(function (p) { return p.PersonId === pidNum; });
     }
     if (!person) {
-      debugger;
       return;
     }
     if (person.OnlineProcessed) {

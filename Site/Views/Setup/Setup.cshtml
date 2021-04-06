@@ -94,27 +94,27 @@
       </td>
     </tr>
     @*<tr class="electionDetail">
-      <th>
-        Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
-      </th>
-      <td>
-        <select id="ddlCanVote" data-name="CanVote">
-          <option value="A">Everyone on the list</option>
-          <option value="N">Named delegates</option>
-        </select>
-      </td>
-    </tr>
-    <tr class="electionDetail B">
-      <th>
-        Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
-      </th>
-      <td>
-        <select id="ddlCanReceive" data-name="CanReceive">
-          <option value="A">Everyone on the list</option>
-          <option value="N">Named individuals</option>
-        </select>
-      </td>
-    </tr>*@
+        <th>
+          Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
+        </th>
+        <td>
+          <select id="ddlCanVote" data-name="CanVote">
+            <option value="A">Everyone on the list</option>
+            <option value="N">Named delegates</option>
+          </select>
+        </td>
+      </tr>
+      <tr class="electionDetail B">
+        <th>
+          Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
+        </th>
+        <td>
+          <select id="ddlCanReceive" data-name="CanReceive">
+            <option value="A">Everyone on the list</option>
+            <option value="N">Named individuals</option>
+          </select>
+        </td>
+      </tr>*@
     <tr>
       <th>
         Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
@@ -307,26 +307,22 @@
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
-            1
-            <el-input
-              size="small"
-              v-model="custom1"
-              :maxlength="15"
-              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom1.Value')"></el-input>
+            <el-input size="small"
+                      v-model="custom1"
+                      :maxlength="15"
+                      :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom1.Value')"></el-input>
           </el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom2.Value">
-            2 <el-input 
-              size="small"
-              v-model="custom2"
-              :maxlength="15"
-              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom2.Value')"></el-input>
+            <el-input size="small"
+                      v-model="custom2"
+                      :maxlength="15"
+                      :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom2.Value')"></el-input>
           </el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom3.Value">
-            3 <el-input 
-              size="small"
-              v-model="custom3"
-              :maxlength="15"
-              :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom3.Value')"></el-input>
+            <el-input size="small"
+                      v-model="custom3"
+                      :maxlength="15"
+                      :disabled="!votingMethodsArray.includes('@VotingMethodEnum.Custom3.Value')"></el-input>
           </el-checkbox>
         </el-checkbox-group>
       </td>
@@ -338,16 +334,16 @@
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">
-      <th>
-        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
-      </th>
-      <td>
-        <yes-no v-model="election.UseCallInButton"></yes-no>
-      </td>
-      <td>
-        Are you set up to accept ballots by telephone?
-      </td>
-    </tr>*@
+        <th>
+          Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+        </th>
+        <td>
+          <yes-no v-model="election.UseCallInButton"></yes-no>
+        </td>
+        <td>
+          Are you set up to accept ballots by telephone?
+        </td>
+      </tr>*@
     <tr v-if="usingBallotProcess">
       <th>
         Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
@@ -359,7 +355,7 @@
         </div>
       </td>
     </tr>
-       <tr class="forLocations">
+    <tr class="forLocations">
       <th>
         Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
       </th>
@@ -398,7 +394,7 @@
       </td>
       <td></td>
     </tr>
-    
+
     <tr>
       <th>
         From Email Address
