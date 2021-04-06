@@ -1270,7 +1270,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      // all ballots done
+      // all ballots done - resort all (include any alrady processed)
       var onlineBallots = Db.Ballot
         .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
         .Where(b => b.ComputerCode == ComputerModel.ComputerCodeForOnline)
