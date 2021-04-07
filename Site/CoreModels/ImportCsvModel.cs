@@ -706,7 +706,7 @@ namespace TallyJ.CoreModels
       // }
       if (rowsWithErrors > 0)
       {
-        result.Add($"{rowsWithErrors:N0} line{rowsWithErrors.Plural("s had errors or were", "had errors or was")} blank.");
+        result.Add($"{rowsWithErrors:N0} line{rowsWithErrors.Plural("s had errors or were", " had errors or was")} blank.");
       }
       // if (validReasons > 0)
       // {
