@@ -31,23 +31,33 @@ namespace TallyJ.Code
 
     public void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null)
     {
-      if (voterId == null)
+      try
       {
-        if (UserSession.UniqueId.HasContent())
+        if (voterId == null)
         {
-          voterId = UserSession.UniqueId;
+          if (UserSession.UniqueId.HasContent())
+          {
+            voterId = UserSession.UniqueId;
+          }
         }
+
+        AddToLog(new C_Log
+        {
+          ElectionGuid = _electionGuid.AsNullableGuid(),
+          ComputerCode = UserSession.CurrentComputerCode.DefaultTo(null),
+          LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
+          VoterId = voterId,
+          Details = message,
+          HostAndVersion = HostAndVersion
+        });
+
+      }
+      catch (Exception e)
+      {
+        message = message + "\nError in logging: "+ e.Message;
+        alsoSendToRemoteLog = true;
       }
 
-      AddToLog(new C_Log
-      {
-        ElectionGuid = _electionGuid.AsNullableGuid(),
-        ComputerCode = UserSession.CurrentComputerCode.DefaultTo(null),
-        LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
-        VoterId = voterId,
-        Details = message,
-        HostAndVersion = HostAndVersion
-      });
       if (alsoSendToRemoteLog)
       {
         SendToRemoteLog(message + (voterId.HasContent() ? $" ({voterId})" : ""));

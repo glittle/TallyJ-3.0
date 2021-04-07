@@ -179,107 +179,126 @@ namespace TallyJ
 
       var msgs = new List<string>();
 
-      var logger = LogManager.GetCurrentClassLogger();
-      var mainMsg = mainException.GetAllMsgs("; ");
-
-      if (mainMsg.Contains("dbo.Sessions")
-          || mainMsg.Contains("The request was aborted")
-          || mainMsg.Contains("The client disconnected")
-          || mainMsg.Contains("controller for path '/favicon.ico'")
-      )
+      try
       {
-        // don't track odd errors...
-        return;
-      }
 
-      msgs.Add(mainMsg);
 
-      // April 2016 - trying to determine source of ths error
-      if (mainMsg.StartsWith("A public action method"))
-      {
-        msgs.Add(Request.Url.AbsolutePath);
-        if (Request.UrlReferrer != null)
+        var logger = LogManager.GetCurrentClassLogger();
+        var mainMsg = mainException.GetAllMsgs("; ");
+
+        if (mainMsg.Contains("dbo.Sessions")
+            || mainMsg.Contains("The request was aborted")
+            || mainMsg.Contains("The client disconnected")
+            || mainMsg.Contains("controller for path '/favicon.ico'")
+        )
         {
-          msgs.Add("From: " + Request.UrlReferrer.AbsolutePath);
+          // don't track odd errors...
+          return;
         }
-      }
 
-      var ex = mainException;
-      while (ex != null)
-      {
-        var dbEntityValidation = ex as DbEntityValidationException;
-        if (dbEntityValidation != null)
+        msgs.Add(mainMsg);
+
+        // April 2016 - trying to determine source of ths error
+        if (mainMsg.StartsWith("A public action method"))
         {
-          var msg = dbEntityValidation.EntityValidationErrors
+          msgs.Add(Request.Url.AbsolutePath);
+          if (Request.UrlReferrer != null)
+          {
+            msgs.Add("From: " + Request.UrlReferrer.AbsolutePath);
+          }
+        }
+
+        var ex = mainException;
+        while (ex != null)
+        {
+          var dbEntityValidation = ex as DbEntityValidationException;
+          if (dbEntityValidation != null)
+          {
+            var msg = dbEntityValidation.EntityValidationErrors
               .Select(eve => eve.ValidationErrors
-                  .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
-                  .JoinedAsString("; "))
+                .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
+                .JoinedAsString("; "))
               .JoinedAsString("; ");
-          logger.Debug(msg);
-          msgs.Add(msg);
+            logger.Debug(msg);
+            msgs.Add(msg);
+          }
+
+          var compileError = ex as HttpCompileException;
+          if (compileError != null)
+          {
+            var errors = compileError.Results.Errors;
+            var list = new CompilerError[errors.Count];
+            errors.CopyTo(list, 0);
+            var msg = list.Select(err => "{0}".FilledWith(err.ErrorText)).JoinedAsString("; ");
+            logger.Debug(msg);
+            msgs.Add(msg);
+          }
+
+          ex = ex.InnerException;
         }
 
-        var compileError = ex as HttpCompileException;
-        if (compileError != null)
+        logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
+
+        var sendToRemoteLog = true;
+        string publicMessage = "Exception: {0}".FilledWith(msgs.JoinedAsString("\n"));
+
+        // if (mainException.HResult == -2147467259)
+        // {
+        //   Response.StatusCode = 404;
+        //   publicMessage = "Not found.";
+        //   sendToRemoteLog = false;
+        // }
+        // else
         {
-          var list = new CompilerError[0];
-          compileError.Results.Errors.CopyTo(list, 0);
-          var msg = list.Select(err => "{0}".FilledWith(err.ErrorText)).JoinedAsString("; ");
-          logger.Debug(msg);
-          msgs.Add(msg);
+          Response.StatusCode = 500;
         }
 
-        ex = ex.InnerException;
-      }
+        try
+        {
+          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
 
-      logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
+        }
+        catch (Exception)
+        {
+          // ignore?
+        }
 
-      var sendToRemoteLog = true;
-      string publicMessage = "Exception: {0}".FilledWith(msgs.JoinedAsString("\n"));
+        // add  /* */  because this is sometimes written onto the end of a Javascript file!!
+        //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
 
-      if (mainException.HResult == -2147467259)
-      {
-        Response.StatusCode = 404;
-        publicMessage = "Not found.";
-        sendToRemoteLog = false;
-      }
-      else
-      {
-        Response.StatusCode = 500;
-      }
+        Response.Write(publicMessage);
+        //      Response.Write(String.Format("{0}", FilteredStack(mainException.StackTrace).Replace("\n", "<br>")));
+        // if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
+        // {
+        //   //Response.Write("Error on site");
+        // }
+        // else
+        // {
+        //   //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
+        //   //Response.Write("Error on site");
+        // }
 
-      try
-      {
-        new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
+        try
+        {
+          Response.End();
+        }
+        catch (Exception)
+        {
+          // could fail if client disconnected, etc.
+        }
 
       }
-      catch (Exception)
+      catch (Exception exception)
       {
-        // ignore?
-      }
-
-      // add  /* */  because this is sometimes written onto the end of a Javascript file!!
-      //      Response.Write(String.Format("/* Server Error: {0} */", msgs.JoinedAsString("\r\n")));
-
-      Response.Write(publicMessage);
-      //      Response.Write(String.Format("{0}", FilteredStack(mainException.StackTrace).Replace("\n", "<br>")));
-      if (HttpContext.Current.Request.Url.AbsolutePath.EndsWith(url))
-      {
-        //Response.Write("Error on site");
-      }
-      else
-      {
-        //Response.Write(String.Format("<script>location.href='{0}'</script>", url));
-        //Response.Write("Error on site");
-      }
-
-      try
-      {
-        Response.End();
-      }
-      catch (Exception)
-      {
-        // could fail if client disconnected, etc.
+        try
+        {
+          msgs.Add(exception.Message);
+          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), true);
+        }
+        catch (Exception)
+        {
+          // ignore
+        }
       }
     }
 
