@@ -1,5 +1,6 @@
 ﻿@using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
+@using System.Configuration;
 @model MonitorModel
 @{
   ViewBag.Title = "Election Monitor";
@@ -97,6 +98,9 @@
             <span class="countdown"></span>
           </span>
         </span>
+        <button type="button" class="btn btn-small btnRefresh" id="btnRefresh" accesskey="R">
+          <u>R</u>efresh Now
+        </button>
       </div>
     </div>
     @if (UserSession.IsKnownTeller)
@@ -115,9 +119,7 @@
         </div>
       </div>
     }
-    <button type="button" class="btn" id="btnRefresh" accesskey="R">
-      <u>R</u>efresh Now
-    </button>
+
   </div>
   <table class="Ballots">
     <caption>Ballots needing attention</caption>
@@ -168,7 +170,7 @@
           <strong v-text="CloseTime_Display"></strong>
           <div>
             @*<el-datetime v-model="CloseTime" :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
-    v-on:confirm="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></el-datetime>*@
+              v-on:confirm="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></el-datetime>*@
             <el-date-picker v-model="CloseTime"
                             type="datetime"
                             :clearable="false"
@@ -278,3 +280,23 @@
     </label>
   </span>
 </script>
+
+
+@section scripts{
+  @if (ConfigurationManager.AppSettings["TawkToAccount"].HasContent())
+  {
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+      (function() {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/@ConfigurationManager.AppSettings["TawkToAccount"]';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+    <!--End of Tawk.to Script-->
+  }
+}
