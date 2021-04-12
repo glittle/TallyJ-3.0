@@ -186,9 +186,13 @@ namespace TallyJ.CoreModels.Helper
 
       // var numSmsSegments = text.Length / 160;
 
-      var numSms = 0;
+      var numSent = 0;
       var errors = new List<string>();
+      var numToSend = phoneNumbersToSendTo.Count;
 
+      LogHelper.Add($"Sms: Sending to {numToSend} {numToSend.Plural("people", "person")} (see above)", true);
+      var startTime = DateTime.Now;
+      
       phoneNumbersToSendTo.ForEach(p =>
       {
         var phoneNumber = p.Phone;
@@ -210,21 +214,21 @@ namespace TallyJ.CoreModels.Helper
         var ok = SendSms(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
 
         if (ok)
-          numSms++;
+          numSent++;
         else
           errors.Add(errorMessage);
       });
 
-      var msg = $"Sms: Announcement sent to {numSms} {(numSms == 1 ? "person" : "people")}";
+      var seconds = (DateTime.Now - startTime).TotalSeconds.AsInt();
 
-      if (errors.Count > 0) msg += $" {errors.Count} failed to send. First error: {errors[0]}";
-
-      LogHelper.Add(msg, true);
+      var msg2 = $"Sms: Sent to {numSent} {numSent.Plural("people", "person")} in {seconds} second{seconds.Plural()}";
+      if (errors.Count > 0) msg2 = $" - {errors.Count} failed to send. First error: {errors[0]}";
+      LogHelper.Add(msg2, true);
 
       return new
       {
-        Success = numSms > 0,
-        Status = msg
+        Success = numSent > 0,
+        Status = msg2
       }.AsJsonResult();
     }
 

@@ -37,28 +37,24 @@ namespace TallyJ.CoreModels
                 new { p, ovi })
             .Select(j => new
             {
-              j.p.VotingMethod,
-              j.p.C_FullName,
               j.p.C_RowId,
-              j.ovi,
+              j.p.C_FullName,
+              j.p.VotingMethod,
               j.p.Email,
-              j.p.Phone
+              j.p.Phone,
+              j.ovi,
             })
-            .OrderBy(j => j.C_FullName)
             .ToList()
             .Select(j => new
             {
-              j.ovi?.Status,
-              j.ovi?.WhenStatus,
-              j.ovi?.HistoryStatus,
-              votesReady = j.ovi != null && (j.ovi.PoolLocked.GetValueOrDefault()
-                                             //use JSON or do not check length of pool name
-                                             //&& j.ovi.ListPool?.Split(',').Length >= currentElection.NumberToElect
-                                             ),
-              j.VotingMethod,
-              VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
-              j.C_FullName,
               PersonId = j.C_RowId,
+              j.C_FullName,
+              j.VotingMethod,
+              j.ovi.Status,
+              j.ovi.WhenStatus,
+              j.ovi.HistoryStatus,
+              votesReady = j.ovi.PoolLocked.GetValueOrDefault(),
+              VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
               j.Email,
               j.Phone
             })

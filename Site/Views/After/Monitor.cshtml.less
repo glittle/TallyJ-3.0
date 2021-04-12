@@ -4,6 +4,10 @@
   display: inline-block;
 }
 
+section.content-wrapper {
+  padding: 30px 0 0 0;
+}
+
 table {
   border-collapse: separate;
   border-spacing: 0px 0px;
@@ -33,10 +37,86 @@ table {
   }
 }
 
-.OnlineBallotsDiv {
-  max-height: 80vh;
-  overflow: auto;
+.el-table {
+  .cell {
+    word-break: normal;
+  }
 }
+
+.OnlineBallotsDiv {
+  .el-table {
+    font-size: 14px;
+    background-color: transparent;
+
+    th, tr {
+      background-color: transparent;
+      color: #000;
+      padding: 0;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    .el-table__header-wrapper {
+      background-color: transparent;
+      color: #000;
+      border-bottom: 1px solid #000;
+    }
+  }
+
+  .el-table--mini {
+    td {
+      padding: 0;
+
+      .cell {
+        padding: 0 5px;
+      }
+    }
+  }
+
+  tr, tr:hover {
+    &.method_Online {
+      .votingMethod {
+        background-color: #b7ff95;
+      }
+    }
+
+    &.method_other {
+      .votingMethod {
+        background-color: #ffc195;
+      }
+    }
+
+    &.ballot_Submitted {
+      .onlineStatus {
+        background-color: #409eff;
+        color: #fff;
+      }
+    }
+
+    &.ballot_Processed {
+      .onlineStatus {
+        background-color: #b7ff95;
+      }
+    }
+
+    &.ballot_Draft {
+      .onlineStatus {
+        background-color: #ffc195;
+      }
+    }
+
+    &.ballot_ {
+      .onlineStatus,
+      .votingMethod {
+        background-color: #ff6666;
+      }
+    }
+  }
+}
+
+
 
 
 .Main > thead th,
@@ -82,7 +162,7 @@ tbody th {
 .midSection {
   display: flex;
   justify-content: space-between;
-  margin: 2em 0;
+  margin: 2em 0 0;
 
   > div, > table {
     flex: 1 1 50%;
@@ -94,17 +174,14 @@ tbody th {
 
   .chkLine {
     display: flex;
-    margin: 10px 0;
+    margin: 4px 0;
+    align-items: center;
   }
 
   .line, #lastRefreshArea {
     white-space: nowrap;
     font-size: 85%;
     padding: 0 20px;
-  }
-
-  .byCheckBox {
-    margin: -4px 0 15px 3px;
   }
 }
 
@@ -170,6 +247,8 @@ table.compList thead th {
 }
 
 .Ballots {
+  margin: 0 0 3em 0;
+
   caption {
     text-align: left;
     font-style: italic;
@@ -191,22 +270,31 @@ table.compList thead th {
 }
 
 .noOnlineVoting {
-}
-
-.onlineH2 {
-  margin: 0;
+  margin: 3em 0 0 0;
 }
 
 #onlineDiv {
-  margin: 0 0 4em 0;
+  margin: 3em 0 0 0;
 
-  .votingTop {
-    display: flex;
-    align-items: flex-start;
+  .closeTime {
+    margin: 8px 0 0 13px;
+
+    .el-input {
+      width: auto;
+    }
+
+    .el-input--suffix .el-input__inner {
+      padding-right: 0;
+    }
+
+    .comments {
+      font-size: 85%;
+      margin: 1px 0 0 3px;
+    }
   }
 
   .votingMisc {
-    padding-left: 10px;
+    margin: 4px 0 0 10px;
 
     button {
       display: block;
@@ -214,22 +302,66 @@ table.compList thead th {
     }
   }
 
+  .onlineTop {
+    margin: 2em 0 1em 0;
+    display: flex;
+    align-items: flex-start;
 
-  h2 {
+    .onlineH2 {
+      font-weight: normal;
+      display: inline-block;
+      margin: 3px 0 0;
+      white-space: nowrap;
+    }
+
+    .closeStatusDiv {
+      margin: 3px 0 0 3em;
+
+      .expected {
+        text-align: center;
+      }
+    }
+
+    .closeStatus {
+      text-align: center;
+      display: inline-block;
+      padding: 10px 1em;
+      border-radius: 2px;
+      font-size: 1.1rem;
+    }
+
+    .onlineFuture {
+      background-color: @onlineFuture;
+    }
+
+    .onlineNow {
+      background-color: @onlineNow;
+    }
+
+    .onlineSoon {
+      background-color: @onlineSoon;
+    }
+
+    .onlinePast {
+      background-color: @onlinePast;
+    }
   }
 
-  h3 {
-  }
+  .accept {
+    display: flex;
+    align-items: center;
+    margin: 1em 0;
+    background-color: #fff;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
 
-  .closeStatus {
-    text-align: center;
-    display: inline-block;
-    padding: .5em 1.5em 1.5em;
-    border-radius: 5px;
+    > div {
+      margin: 0 2em 0 0;
+    }
 
-    strong {
-      display: block;
-      margin: 1em;
+    button.el-button {
+      padding: 9px 15px;
     }
   }
 
@@ -240,23 +372,6 @@ table.compList thead th {
   .vdatetime-input {
     width: auto;
     text-align: center;
-  }
-
-
-  .onlineFuture {
-    background-color: @onlineFuture;
-  }
-
-  .onlineNow {
-    background-color: @onlineNow;
-  }
-
-  .onlineSoon {
-    background-color: @onlineSoon;
-  }
-
-  .onlinePast {
-    background-color: @onlinePast;
   }
 }
 

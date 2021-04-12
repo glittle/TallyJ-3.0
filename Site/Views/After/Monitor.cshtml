@@ -12,6 +12,44 @@
   ContextItems.AddJavascriptForPage("guest", "monitorPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("monitorPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 }
+
+<table class="Ballots">
+  <caption>Ballots needing attention</caption>
+  <thead>
+    <tr>
+      <th>
+        Ballot
+      </th>
+      <th>
+        Status
+      </th>
+      <th>
+        Tellers
+      </th>
+      <th>
+        Location
+      </th>
+    </tr>
+  </thead>
+  <tbody id="ballotsBody" class="Hidden tbody">
+    <tr>
+      <th>
+        {Code} {^Btn}
+      </th>
+      <td>
+        {Status}
+      </td>
+      <td>
+        {Tellers}
+      </td>
+      <td>
+        {LocationName}
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
 <table class="Main">
   <thead>
     <tr>
@@ -82,27 +120,6 @@
 </table>
 <div class="midSection">
   <div>
-    <div class="chkLine">
-      <input type="checkbox" id="chkAutoRefresh" />
-      <div class="byCheckBox">
-        <label for="chkAutoRefresh">Auto-refresh this page every </label>
-        <select id="ddlRefresh" class="input-medium">
-          <option value="15">15 seconds</option>
-          <option value="30">30 seconds</option>
-          <option value="60">minute</option>
-          <option value="120">2 minutes</option>
-        </select>
-        <span id="lastRefreshArea">
-          Refreshed at <span id="lastRefresh"></span> <span id="age"></span>
-          <span class="countdownOuter">
-            <span class="countdown"></span>
-          </span>
-        </span>
-        <button type="button" class="btn btn-small btnRefresh" id="btnRefresh" accesskey="R">
-          <u>R</u>efresh Now
-        </button>
-      </div>
-    </div>
     @if (UserSession.IsKnownTeller)
     {
       <div class="chkLine">
@@ -119,150 +136,174 @@
         </div>
       </div>
     }
+    <div class="chkLine">
+      <input type="checkbox" id="chkAutoRefresh" />
+      <div class="byCheckBox">
+        <label for="chkAutoRefresh">Auto-refresh this page every </label>
+        <select id="ddlRefresh" class="input-medium">
+          <option value="30">30 seconds</option>
+          <option value="60">minute</option>
+          <option value="120">2 minutes</option>
+          <option value="300">5 minutes</option>
+        </select>
+        <span id="lastRefreshArea">
+          Refreshed at <span id="lastRefresh"></span> <span id="age"></span>
+          <span class="countdownOuter">
+            <span class="countdown"></span>
+          </span>
+        </span>
+        <button type="button" class="btn btn-small btnRefresh" id="btnRefresh" accesskey="R">
+          <u>R</u>efresh Now
+        </button>
+      </div>
+    </div>
 
   </div>
-  <table class="Ballots">
-    <caption>Ballots needing attention</caption>
-    <thead>
-      <tr>
-        <th>
-          Ballot
-        </th>
-        <th>
-          Status
-        </th>
-        <th>
-          Tellers
-        </th>
-        <th>
-          Location
-        </th>
-      </tr>
-    </thead>
-    <tbody id="ballotsBody" class="Hidden tbody">
-      <tr>
-        <th>
-          {Code} {^Btn}
-        </th>
-        <td>
-          {Status}
-        </td>
-        <td>
-          {Tellers}
-        </td>
-        <td>
-          {LocationName}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
 </div>
 
 @if (SettingsHelper.HostSupportsOnlineElections)
 {
   if (UserSession.CurrentElection.OnlineEnabled)
   {
-    <h2 class="onlineH2">Online Voting</h2>
     <div id="onlineDiv" v-cloak>
-      <div class="votingTop">
-        <div class="closeStatus" v-bind:class="closeStatusClass">
-          <strong v-text="CloseTime_Display"></strong>
-          <div>
-            @*<el-datetime v-model="CloseTime" :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
-              v-on:confirm="saveClose" type="datetime" :minute-step="10" :use12-hour="T24"></el-datetime>*@
-            <el-date-picker v-model="CloseTime"
-                            type="datetime"
-                            :clearable="false"
-                            :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
-                            placeholder="Select date and time"
-                            v-on:change="saveClose">
-            </el-date-picker>
-          </div>
-          <div>
-            (click to choose any day and time)
+      <div class="onlineTop">
+        <h2 class="onlineH2">
+          Online Voting
+        </h2>
+        <div class="closeStatusDiv">
+          <div class="closeStatus" v-bind:class="closeStatusClass" v-text="CloseTime_Display"></div>
+          @if (UserSession.IsKnownTeller)
+          {
+            <div v-if="!isClosed" class="expected">
+              Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
+            </div>
+          }
+        </div>
+
+        <div class="closeTime">
+          <el-date-picker v-model="CloseTime"
+                          type="datetime"
+                          size="small"
+                          :clearable="false"
+                          :disabled="@((!UserSession.IsKnownTeller).ToString().ToLower())"
+                          placeholder="Select date and time"
+                          v-on:change="saveClose">
+          </el-date-picker>
+          <div class="comments">
+            (closing day and time)
           </div>
         </div>
+
         @if (UserSession.IsKnownTeller)
         {
           <div class="votingMisc">
-            <button v-if="!isClosed" v-on:click="closeOnline(30, true)">Close in 30 minutes (expected)</button>
-            <button v-if="!isClosed" v-on:click="closeOnline(5, false)">Close in 5 minutes (firm)</button>
-            <button v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</button>
-            <button v-if="!isClosed" v-on:click="closeOnline()">Close now</button>
-            <div v-if="!isClosed">
-              Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
-            </div>
-            <p v-if="!isClosed">
-              Suggestion: Set to close in 5 minutes when most of the paper ballots have been tallied.
-              If using a random voting method, leave extra time for tellers to process the online ballots.
-            </p>
+            <el-button size="small" v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline(30, true)">Schedule close in 30 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline(5, false)">Schedule close in 5 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline()">Close now</el-button>
           </div>
+        }
+
+      </div>
+
+      <div class="accept">
+        <div v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process after Online Voting is closed.</div>
+        <div v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to process.</div>
+
+        @if (UserSession.IsKnownTeller)
+        {
+          <el-button :type="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots ? '' : 'primary'"
+                     v-on:click="processReadyBallots"
+                     :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots">
+            Process Online Ballots that are Submitted
+          </el-button>
         }
       </div>
 
-      <h3>Voters Registered in TallyJ to Vote Online</h3>
-      @if (UserSession.IsKnownTeller)
-      {
-        <p>
-          <input type="button"
-                 class="btn"
-                 v-on:click="processReadyBallots"
-                 :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots"
-                 value='Accept online ballots that are Submitted'>
-        </p>
-      }
-      <p v-if="!isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept after Online Voting is closed.</p>
-      <p v-if="isClosed">{{onlineToProcess}} ballot{{onlineToProcess === 1 ? '' : 's'}} ready to accept.</p>
-
       <div class="OnlineBallotsDiv">
-        <table class="OnlineBallots">
-          <thead>
-            <tr>
-              <th>
-                Voter Name
-              </th>
-              <th>
-                Voter Email / Phone
-              </th>
-              <th>
-                Voting Method<br />on Front Desk
-              </th>
-              <th>
-                Online Ballot<br />Status
-              </th>
-              <th>
-                When
-              </th>
-            </tr>
-          </thead>
-          <tbody id="onlineBallotsBody" class="Hidden tbody">
-            <tr>
-              <td class="OnlineName">
-                {C_FullName}
-              </td>
-              <td class="OnlineName">
-                {^EmailPhone}
-              </td>
-              <td class="method_{VoteMethodClass}">
-                {VotingMethod_Display}
-              </td>
-              <td class="row{StatusClass}">
-                {Status}
-              </td>
-              <td>
-                {WhenStatus_Display}
-                <span class="ui-icon ui-icon-info History History{HasHistory_Tip}" title="Full History:{History_Tip}"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <el-table size="mini"
+                  :row-key="function (row) {return row.PersonId;}"
+                  :row-class-name="tableRowClassName"
+                  v-on:sort-change="sortChange"
+                  :default-sort="defaultSort"
+                  :data="onlineBallots">
+          <el-table-column label="Voter" prop="C_FullName" width="170" sortable show-overflow-tooltip></el-table-column>
+          <el-table-column label="Email" prop="Email" width="150" sortable show-overflow-tooltip></el-table-column>
+          <el-table-column label="Phone" prop="Phone" width="130" sortable show-overflow-tooltip></el-table-column>
+          <el-table-column label="Front Desk"
+                           prop="VotingMethod_Display"
+                           width="120"
+                           class-name="votingMethod"
+                           sortable></el-table-column>
+          <el-table-column label="Online Ballot"
+                           prop="Status"
+                           width="140"
+                           class-name="onlineStatus"
+                           sortable></el-table-column>
+          <el-table-column label="When"
+                           align="right"
+                           min-width="160"
+                           sort-by="WhenStatus_Sort"
+                           sortable>
+            <template slot-scope="scope">
+              <div>
+                {{scope.row.WhenStatus_Display}}
+                <span class="ui-icon ui-icon-info History"
+                      :class="'History' + scope.row.HasHistory_Tip"
+                      :title="'Full History: ' + scope.row.History_Tip"></span>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+
+
+        @*<table class="OnlineBallots">
+            <thead>
+              <tr>
+                <th>
+                  Voter Name
+                </th>
+                <th>
+                  Voter Email / Phone
+                </th>
+                <th>
+                  Voting Method<br />on Front Desk
+                </th>
+                <th>
+                  Online Ballot<br />Status
+                </th>
+                <th>
+                  When
+                </th>
+              </tr>
+            </thead>
+            <tbody id="onlineBallotsBody" class="Hidden tbody">
+              <tr>
+                <td class="OnlineName">
+                  {C_FullName}
+                </td>
+                <td class="OnlineName">
+                  {^EmailPhone}
+                </td>
+                <td class="method_{VoteMethodClass}">
+                  {VotingMethod_Display}
+                </td>
+                <td class="row{StatusClass}">
+                  {Status}
+                </td>
+                <td>
+                  {WhenStatus_Display}
+                  <span class="ui-icon ui-icon-info History History{HasHistory_Tip}" title="Full History:{History_Tip}"></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>*@
       </div>
     </div>
   }
   else
   {
-    <p class="noOnlineVoting">Online voting not enabled for this election.</p>
+    <p class="noOnlineVoting">(Online voting is not enabled for this election.)</p>
   }
 }
 

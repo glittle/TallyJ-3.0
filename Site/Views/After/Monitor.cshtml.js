@@ -92,24 +92,27 @@
 
     clearInterval(settings.autoMinutesTimeout);
 
+    info.OnlineBallots.forEach(extendVoter);
+
     if (settings.vue) {
       settings.vue.onlineBallots = info.OnlineBallots;
       settings.vue.showOnlineTimes(info.OnlineInfo);
     }
 
-    var table = $('#mainBody');
+    var tables = $('#mainBody, .el-table__body');
     if (!firstLoad) {
-      table.animate({
+      tables.animate({
         opacity: 0.4
       },
         10,
         function () {
-          table.animate({
+          tables.animate({
             opacity: 1
           },
             500);
         });
     }
+    var table = $('#mainBody');
     table.html(expandLocations(info.Locations));
 
     var ballotHost = $('table.Ballots');
@@ -121,16 +124,16 @@
       ballotTable.html(expandBallots(info.Ballots));
     }
 
-    var onlineBallotHost = $('table.OnlineBallots');
-    if (onlineBallotHost.length) {
-      if (info.OnlineBallots.length === 0) {
-        onlineBallotHost.hide();
-      } else {
-        onlineBallotHost.show();
-        var onlineBallotTable = $('#onlineBallotsBody');
-        onlineBallotTable.html(expandOnlineBallots(info.OnlineBallots));
-      }
-    }
+    //    var onlineBallotHost = $('table.OnlineBallots');
+    //    if (onlineBallotHost.length) {
+    //      if (info.OnlineBallots.length === 0) {
+    //        onlineBallotHost.hide();
+    //      } else {
+    //        onlineBallotHost.show();
+    //        var onlineBallotTable = $('#onlineBallotsBody');
+    //        onlineBallotTable.html(expandOnlineBallots(info.OnlineBallots));
+    //      }
+    //    }
 
     var now = settings.lastRefresh = new Date();
     $('#lastRefresh').html(monitorPage.T24
@@ -274,31 +277,35 @@
     return html.join('');
   }
 
+  function extendVoter(voter) {
+    var timeTemplate = monitorPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
+
+    var history = (voter.HistoryStatus || '')
+      .split(';')
+      .filter(function (x) { return x; })
+      .map(function (x) {
+        var parts = x.split('|');
+        var when = parts.length > 1 ? parts[1].replace(/[\\"]/g, '') : '';
+        return '{0} at {1}'.filledWith(parts[0], moment(when).format(timeTemplate));
+      });
+    voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
+    voter.WhenStatus_Sort = voter.WhenStatus ? moment(voter.WhenStatus).toISOString() : '';
+    voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
+    voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : '';
+    voter.History_Display = history.length ? history[history.length - 1] : '-';
+    voter.History_Tip = '\n' + history.join('\n');
+    voter.HasHistory_Tip = history.length > 0;
+    if (!voter.Status) {
+      if (!voter.votesReady) {
+        voter.Status = '-';
+      }
+    }
+    voter.EmailPhone = [voter.Email, voter.Phone].filter(function (s) { return !!s; }).join('<br>');
+  }
+
   function expandOnlineBallots(voters) {
     var html = [];
-    var timeTemplate = monitorPage.T24 ? 'MMM D, H:mm' : 'MMM D, h:mm a';
-
     $.each(voters, function (i, voter) {
-      var history = (voter.HistoryStatus || '')
-        .split(';')
-        .filter(function (x) { return x; })
-        .map(function (x) {
-          var parts = x.split('|');
-          var when = parts.length > 1 ? parts[1].replace(/[\\"]/g, '') : '';
-          return '{0} at {1}'.filledWith(parts[0], moment(when).format(timeTemplate));
-        });
-      voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
-      voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
-      voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : '';
-      voter.History_Display = history.length ? history[history.length - 1] : '-';
-      voter.History_Tip = '\n' + history.join('\n');
-      voter.HasHistory_Tip = history.length > 0;
-      if (!voter.Status) {
-        if (!voter.votesReady) {
-          voter.Status = '-';
-        }
-      }
-      voter.EmailPhone = [voter.Email, voter.Phone].filter(function (s) { return !!s; }).join('<br>');
       html.push(settings.rowTemplateOnline.filledWith(voter));
     });
     return html.join('');
@@ -435,6 +442,13 @@
             return minutes <= 5 ? 'onlineSoon' : 'onlineNow';
           }
           return '';
+        },
+        defaultSort: function () {
+          console.log('get default')
+          return {
+            prop: GetFromStorage(storageKey.OVSort, 'WhenStatus_Sort'),
+            order: GetFromStorage(storageKey.OVSortDir, 'descending')
+          };
         }
       },
       watch: {
@@ -510,6 +524,21 @@
                 vue.checkStatus();
               }
             });
+        },
+        tableRowClassName: function (info) {
+          var row = info.row;
+          var classes = [
+            'method_' + row.VotingMethod_Display,
+            'ballot_' + row.StatusClass
+          ];
+
+          return classes.filter(s => s).join(' ');
+        },
+        sortChange: function(info) {
+          var dir = info.order;
+          var sortBy = info.prop || info.column.sortBy;
+          SetInStorage(storageKey.OVSort, sortBy);
+          SetInStorage(storageKey.OVSortDir, dir);
         },
         processReadyBallots: function () {
           var vue = this;

@@ -32,6 +32,8 @@
         pendingEmail: false,
         lastLogId: 0,
         loadingLog: true,
+        closeTime: '',
+        displayUpdateCount: 0,
         originalEmailText: '',
         editor: ClassicEditor,
         emailEditorConfig: {
@@ -86,6 +88,20 @@
         enableEmailSend: function () {
           return !!(this.numWithEmails && this.emailFromAddress && this.emailSubject && !this.emailChanged);
         },
+        closeTime_Display: function () {
+          var x = this.displayUpdateCount;
+          var closeTime = this.closeTime;
+          if (!closeTime) return '';
+          var when = moment(closeTime);
+          var prefix = moment().isBefore(when) ? 'Open for ' : 'Closed ';
+          return prefix + when.fromNow();
+        },
+        closeTime_Date: function () {
+          var closeTime = this.closeTime;
+          if (!closeTime) return '';
+          var when = moment(closeTime);
+          return when.format('llll');
+        },
         smsCost: function () {
           if (!this.numWithPhones) {
             return '';
@@ -128,6 +144,10 @@
             vue.loadSamples();
           }
         }, 1000);
+
+        setInterval(function() {
+            vue.displayUpdateCount++;
+          }, 60000);
       },
       methods: {
         refresh: function () {
@@ -275,7 +295,7 @@ contact the Assembly as soon as possible!</p>
               break;
 
             case 'onlineUnfinished':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !!p.OnlineStatus && !p.VotingMethod) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !!p.Status && !p.VotingMethod) });
               break;
 
             case 'emailOnly':
@@ -293,6 +313,9 @@ contact the Assembly as soon as possible!</p>
         selectionChanged: function (selected) {
           this.toSend = selected;
         },
+        isSelectable: function (data, i) {
+          return !!(data.Email || data.Phone);
+        },
         //selectionChanged: function (type, selected) {
         //  var vue = this;
         //  switch (type) {
@@ -304,12 +327,22 @@ contact the Assembly as soon as possible!</p>
         //      break;
         //  }
         //},
+        tableRowClassName: function (info) {
+          var row = info.row;
+          var classes = [
+            'method_' + row.VotingMethod_Display,
+            'ballot_' + row.Status
+          ];
+
+          return classes.filter(s => s).join(' ');
+        },
         getContacts: function () {
           var vue = this;
           CallAjaxHandler(publicInterface.controllerUrl + '/GetContacts', null, function (info) {
             if (info.Success) {
               vue.extendPeople(info.people);
 
+              vue.closeTime = moment(info.onlineInfo.OnlineWhenClose).toISOString();
               vue.allPeople = info.people;
 
               //vue.selectAll();
@@ -445,16 +478,16 @@ contact the Assembly as soon as possible!</p>
               busy: 'Saving'
             },
             function (info) {
-            if (info.success) {
-              $('.btnSave').removeClass('btn-primary');
-              vue.smsChanged = false;
+              if (info.success) {
+                $('.btnSave').removeClass('btn-primary');
+                vue.smsChanged = false;
 
-              ResetStatusDisplay();
-              ShowStatusDone(info.Status);
-            } else {
-              ShowStatusFailed(info.Status);
-            }
-          });
+                ResetStatusDisplay();
+                ShowStatusDone(info.Status);
+              } else {
+                ShowStatusFailed(info.Status);
+              }
+            });
         },
       }
     });

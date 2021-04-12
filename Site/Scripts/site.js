@@ -47,7 +47,9 @@ var site = {
 };
 var storageKey = {
   MonitorRefresh: 'MonitorRefresh',
-  MonitorRefreshOn: 'MonitorRefreshOn'
+  MonitorRefreshOn: 'MonitorRefreshOn',
+  OVSort: 'OVSort',
+  OVSortDir: 'OVSortDir'
 };
 var MyResources = {};
 

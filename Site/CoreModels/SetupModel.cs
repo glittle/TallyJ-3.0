@@ -77,8 +77,9 @@ namespace TallyJ.CoreModels
     }
 
     public bool HasBallots => new BallotCacher(Db).AllForThisElection.Any();
-    public bool HasOnlineBallots => Db.OnlineVotingInfo.Any(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid);
+    public bool HasOnlineBallots => Db.OnlineVotingInfo
+      .Any(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Processed);
 
-   
+
   }
 }

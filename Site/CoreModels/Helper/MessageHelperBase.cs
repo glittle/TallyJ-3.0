@@ -27,15 +27,29 @@ namespace TallyJ.CoreModels.Helper
     {
       var dbContext = UserSession.GetNewDbContext;
       var electionGuid = UserSession.CurrentElectionGuid;
+      var currentElection = UserSession.CurrentElection;
+
+      // catch online ballots from someone with contact info removed
+      var hasOnlineBallot = dbContext.OnlineVotingInfo
+        .Where(ovi => ovi.ElectionGuid == electionGuid)
+        .Select(ovi => ovi.PersonGuid);
 
       return new
       {
         Success = true,
+        onlineInfo = SettingsHelper.HostSupportsOnlineElections
+          ? new
+          {
+            currentElection.OnlineWhenClose,
+          }
+          : null,
         people = dbContext.Person
-          .Where(p => p.ElectionGuid == electionGuid && p.CanVote.Value && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0))
+          .Where(p => p.ElectionGuid == electionGuid
+                      && (hasOnlineBallot.Contains(p.PersonGuid) 
+                          || p.CanVote.Value
+                          && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
           .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
-              (p, oviList) => new { p, OnlineStatus = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
-          .OrderBy(j => j.p.C_FullName)
+              (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
           .Select(j => new
           {
             j.p.C_RowId,
@@ -43,7 +57,7 @@ namespace TallyJ.CoreModels.Helper
             j.p.VotingMethod,
             j.p.Email,
             j.p.Phone,
-            j.OnlineStatus
+            j.Status
           }),
       }.AsJsonResult();
     }
@@ -110,7 +124,7 @@ namespace TallyJ.CoreModels.Helper
 
       var smsLog = dbContext.SmsLog
         .Where(sms => sms.ElectionGuid == electionGuid)
-        .GroupJoin(dbContext.Person.Where(p => p.ElectionGuid == electionGuid), sms => sms.PersonGuid, p => p.PersonGuid, (sms, pList) => new { sms, Name = pList.Select(p=>p.C_FullNameFL).FirstOrDefault() })
+        .GroupJoin(dbContext.Person.Where(p => p.ElectionGuid == electionGuid), sms => sms.PersonGuid, p => p.PersonGuid, (sms, pList) => new { sms, Name = pList.Select(p => p.C_FullNameFL).FirstOrDefault() })
         .Where(j => j.sms.SentDate >= dateOldest && j.sms.SentDate <= dateRecent)
         .ToList();
 

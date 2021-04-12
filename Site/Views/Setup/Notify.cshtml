@@ -147,14 +147,29 @@
     </div>
 
     <div class="listingSelection">
-      <button class="btn btn-mini" v-on:click="selectAll" title="All people in the election">All</button>
-      <button class="btn btn-mini" v-on:click="select('none')" title="Clear checkboxes">None</button>
-      <button class="btn btn-mini" v-on:click="select('notVoted')" title="Not voted">Not Voted</button>
-      <button class="btn btn-mini" v-on:click="select('votedOnline')" title="Has finished voting online">Voted Online</button>
-      <button class="btn btn-mini" v-on:click="select('onlineUnfinished')" title="Has created an online ballot but not yet submitted it">Unfinished Online Ballot</button>
-      <button class="btn btn-mini" v-on:click="select('emailOnly')" title="Only Email on file">Only has Email</button>
-      <button class="btn btn-mini" v-on:click="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
-      <button class="btn btn-mini" v-on:click="refresh">Reload List</button>
+      <div class="electionInfo">
+        <span v-text="closeTime_Display"></span>
+        -
+        <span>{{closeTime_Date}}</span>
+      </div>
+      <div class="selections">
+        <span>
+          <button class="btn btn-mini" v-on:click="selectAll" title="All people in the election">All</button>
+          <button class="btn btn-mini" v-on:click="select('none')" title="Clear checkboxes">None</button>
+        </span>
+        <span>
+          <button class="btn btn-mini" v-on:click="select('notVoted')" title="Not voted">Not Voted</button>
+          <button class="btn btn-mini" v-on:click="select('votedOnline')" title="Has finished voting online">Voted Online</button>
+          <button class="btn btn-mini" v-on:click="select('onlineUnfinished')" title="Has created an online ballot but not yet submitted it">Unfinished Online Ballot</button>
+        </span>
+        <span>
+          <button class="btn btn-mini" v-on:click="select('emailOnly')" title="Only Email on file">Only has Email</button>
+          <button class="btn btn-mini" v-on:click="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
+        </span>
+        <span>
+          <button class="btn btn-mini" v-on:click="refresh">Reload List</button>
+        </span>
+      </div>
     </div>
 
     <div class="emailListing">
@@ -162,43 +177,36 @@
                 size="mini"
                 max-height="250"
                 ref="wholeList"
+                :row-class-name="tableRowClassName"
                 :row-key="function (row) {return row.C_RowId;}"
                 v-on:selection-change="selectionChanged($event)"
                 :data="allPeople">
-        <el-table-column type="selection" reserve-selection></el-table-column>
-        <el-table-column label="Voter" prop="C_FullName" show-overflow-tooltip></el-table-column>
-        <el-table-column label="Email" prop="Email" show-overflow-tooltip></el-table-column>
-        <el-table-column label="Phone" prop="Phone" show-overflow-tooltip></el-table-column>
-        <el-table-column label="Voted" prop="VotingMethod_Display"></el-table-column>
-        <el-table-column label="Online Status" prop="OnlineStatus"></el-table-column>
+        <el-table-column type="selection"
+                         :selectable="isSelectable"
+                         reserve-selection></el-table-column>
+        <el-table-column label="Voter" prop="C_FullName"
+                         sortable
+                         width="170"
+                         show-overflow-tooltip></el-table-column>
+        <el-table-column label="Email" prop="Email"
+                         sortable
+                         width="150"
+                         show-overflow-tooltip></el-table-column>
+        <el-table-column label="Phone" prop="Phone"
+                         sortable
+                         width="130"
+                         show-overflow-tooltip></el-table-column>
+        <el-table-column label="Front Desk"
+                         prop="VotingMethod_Display"
+                         width="120"
+                         class-name="votingMethod"
+                         sortable></el-table-column>
+        <el-table-column label="Online Ballot"
+                         prop="Status"
+                         width="140"
+                         class-name="onlineStatus"
+                         sortable></el-table-column>
       </el-table>
-      @*<el-table stripe
-                    size="mini"
-                    max-height="250"
-                    ref="emailList"
-                    :row-key="function (row) {return row.C_RowId;}"
-                    v-on:selection-change="selectionChanged('email', $event)"
-                    :data="peopleWithEmail">
-            <el-table-column type="selection" reserve-selection></el-table-column>
-            <el-table-column label="Voter" prop="C_FullName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="Email" prop="Email" show-overflow-tooltip></el-table-column>
-            <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
-          </el-table>
-        </div>
-        <div class="smsListing">
-          <el-table stripe
-                    size="mini"
-                    max-height="250"
-                    ref="smsList"
-                    :row-key="function (row) {return row.C_RowId;}"
-                    v-on:selection-change="selectionChanged('phone', $event)"
-                    :data="peopleWithPhone">
-            <el-table-column type="selection" reserve-selection></el-table-column>
-            <el-table-column label="Voter" prop="C_FullName" show-overflow-tooltip></el-table-column>
-            <el-table-column label="Phone" prop="Phone" show-overflow-tooltip></el-table-column>
-            <el-table-column label="Voted?" prop="VotingMethod_Display"></el-table-column>
-          </el-table>
-        </div>*@
     </div>
   </div>
 
