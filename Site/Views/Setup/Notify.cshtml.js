@@ -32,6 +32,7 @@
         pendingEmail: false,
         lastLogId: 0,
         loadingLog: true,
+        loadingContacts: true,
         closeTime: '',
         displayUpdateCount: 0,
         originalEmailText: '',
@@ -41,16 +42,6 @@
           image: {
             toolbar: ['imageTextAlternative']
           },
-          //          heading: {
-          //            options: [
-          //              { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-          //              { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-          //              { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-          //            ],
-          //            table: {
-          //              contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-          //            }
-          //          }
         },
         smsEditorConfig: {
           toolbar: ['undo', 'redo'],
@@ -87,6 +78,12 @@
         },
         enableEmailSend: function () {
           return !!(this.numWithEmails && this.emailFromAddress && this.emailSubject && !this.emailChanged);
+        },
+        defaultSort: function () {
+          return {
+            prop: GetFromStorage(storageKey.OVNSort, 'C_FullName'),
+            order: GetFromStorage(storageKey.OVNSortDir, 'ascending')
+          };
         },
         closeTime_Display: function () {
           var x = this.displayUpdateCount;
@@ -145,9 +142,9 @@
           }
         }, 1000);
 
-        setInterval(function() {
-            vue.displayUpdateCount++;
-          }, 60000);
+        setInterval(function () {
+          vue.displayUpdateCount++;
+        }, 60000);
       },
       methods: {
         refresh: function () {
@@ -338,7 +335,9 @@ contact the Assembly as soon as possible!</p>
         },
         getContacts: function () {
           var vue = this;
+          vue.loadingContacts = true;
           CallAjaxHandler(publicInterface.controllerUrl + '/GetContacts', null, function (info) {
+            vue.loadingContacts = false;
             if (info.Success) {
               vue.extendPeople(info.people);
 
@@ -353,23 +352,6 @@ contact the Assembly as soon as possible!</p>
           });
 
         },
-        //        fixPhone: function () {
-        //          var vue = this;
-        //          var original = vue.testSmsNumber;
-        //          if (!original) {
-        //            return;
-        //          }
-        //          var text = original.replace(/[^\+\d]/g, '');
-        //          if (text.substr(0, 1) !== '+') {
-        //            if (text.length === 10) {
-        //              text = '1' + text;
-        //            }
-        //            text = '+' + text;
-        //          }
-        //          if (text !== original) {
-        //            vue.testSmsNumber = text;
-        //          }
-        //        },
         getMoreLog: function () {
           this.getContactLog(this.lastLogId);
         },
@@ -437,6 +419,13 @@ contact the Assembly as soon as possible!</p>
           //          this.emailFromName = election.EmailFromName;
           //          this.emailFromAddress = election.EmailFromAddress;
         },
+        sortChange: function (info) {
+          var dir = info.order;
+          var sortBy = info.prop || info.column.sortBy;
+          SetInStorage(storageKey.OVNSort, sortBy);
+          SetInStorage(storageKey.OVNSortDir, dir);
+        },
+
         saveEmail: function () {
           var vue = this;
 

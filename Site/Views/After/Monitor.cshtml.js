@@ -444,7 +444,6 @@
           return '';
         },
         defaultSort: function () {
-          console.log('get default')
           return {
             prop: GetFromStorage(storageKey.OVSort, 'WhenStatus_Sort'),
             order: GetFromStorage(storageKey.OVSortDir, 'descending')

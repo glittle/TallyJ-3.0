@@ -120,18 +120,11 @@
     </div>
 
     <div class="messageBtns sms">
-      @*<button class="btn btn-primary" v-on:click="sendSms('Test', false, testSmsNumber)" :disabled="isSaveNeeded || !testSmsNumber">Send me a copy by SMS</button>
-        <div class="samplePhone">
-          Send to <input type="tel" class="text50" v-on:change="fixPhone" v-on:paste="fixPhone" v-model="testSmsNumber" maxlength="25" pattern="\+[0-9]{4,15}" />
-          <span class="comments">(will not include your first name)</span>
-          <div class="comments">Sample: @SettingsHelper.Get("twilio-FromNumber", "?")</div>
-        </div>*@
       <p><em>Test the SMS first to see what it looks like by sending it just to yourself!</em></p>
 
       <div class="bottom">
         <el-button size="small"
                    :type="enableSmsSend  ? 'primary' : ''"
-                   @* :class="[pendingSms ? 'pending' : '', pendingSms ? 'btn-warning' : 'btn-primary']" *@
                    v-on:click="sendSms(true)"
                    :disabled="!enableSmsSend">
           Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}{{ pendingSms ? '':'...'}}
@@ -167,12 +160,12 @@
           <button class="btn btn-mini" v-on:click="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
         </span>
         <span>
-          <button class="btn btn-mini" v-on:click="refresh">Reload List</button>
+          <button class="btn btn-mini" v-on:click="refresh">Refresh List</button>
         </span>
       </div>
     </div>
 
-    <div class="emailListing">
+    <div class="emailListing" :class="{loading:loadingContacts}">
       <el-table stripe
                 size="mini"
                 max-height="250"
@@ -180,17 +173,19 @@
                 :row-class-name="tableRowClassName"
                 :row-key="function (row) {return row.C_RowId;}"
                 v-on:selection-change="selectionChanged($event)"
+                v-on:sort-change="sortChange"
+                :default-sort="defaultSort"
                 :data="allPeople">
         <el-table-column type="selection"
                          :selectable="isSelectable"
                          reserve-selection></el-table-column>
         <el-table-column label="Voter" prop="C_FullName"
                          sortable
-                         width="170"
+                         min-width="170"
                          show-overflow-tooltip></el-table-column>
         <el-table-column label="Email" prop="Email"
                          sortable
-                         width="150"
+                         min-width="150"
                          show-overflow-tooltip></el-table-column>
         <el-table-column label="Phone" prop="Phone"
                          sortable

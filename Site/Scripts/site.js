@@ -49,7 +49,9 @@ var storageKey = {
   MonitorRefresh: 'MonitorRefresh',
   MonitorRefreshOn: 'MonitorRefreshOn',
   OVSort: 'OVSort',
-  OVSortDir: 'OVSortDir'
+  OVSortDir: 'OVSortDir',
+  OVNSort: 'OVNSort',
+  OVNSortDir: 'OVNSortDir'
 };
 var MyResources = {};
 
