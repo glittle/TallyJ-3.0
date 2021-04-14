@@ -78,9 +78,9 @@ namespace TallyJ.CoreModels
         return "Read {0}. Should be {1}.".FilledWith(numWritten, fileSize);
       }
 
-      record.CodePage = DetectCodePage(record.Contents);
+      record.CodePage = ImportHelper.DetectCodePage(record.Contents);
 
-      new ImportHelper().ExtraProcessingIfMultipartEncoded(record);
+      ImportHelper.ExtraProcessingIfMultipartEncoded(record);
 
       Db.ImportFile.Add(record);
       Db.SaveChanges();
@@ -174,7 +174,7 @@ namespace TallyJ.CoreModels
 
     private JsonResult ReadFields(ImportFile importFile)
     {
-      var importFileCodePage = importFile.CodePage ?? DetectCodePage(importFile.Contents);
+      var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents);
       var fileString = importFile.Contents.AsString(importFileCodePage);
 
       var firstDataRow = importFile.FirstDataRow.AsInt();
@@ -249,33 +249,6 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    private int? DetectCodePage(byte[] importFileContents)
-    {
-      if (importFileContents.Length > 4)
-      {
-        // if (importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
-        // {
-        //   // return 65001;
-        // }
-
-        if ((importFileContents[0] == 0xef && importFileContents[1] == 0xbb && importFileContents[2] == 0xbf)) // utf-8 
-        {
-          return 65001; // utf8
-        }
-
-        if ((importFileContents[0] == 0xff && importFileContents[1] == 0xfe) || // ucs-2le, ucs-4le, and ucs-16le 
-            (importFileContents[0] == 0xfe && importFileContents[1] == 0xff) || // utf-16 and ucs-2 
-            (importFileContents[0] == 0 && importFileContents[1] == 0 && importFileContents[2] == 0xfe && importFileContents[3] == 0xff)) // ucs-4 
-        {
-          // ?? will others work with this??
-          return 1200; // utf16
-        }
-
-        return 1252;
-      }
-
-      return null;
-    }
 
     public JsonResult SaveMapping(int id, List<string> mapping)
     {

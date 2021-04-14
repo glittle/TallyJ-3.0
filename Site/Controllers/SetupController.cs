@@ -59,6 +59,17 @@ namespace TallyJ.Controllers
       return View(importCsvModel);
     }
 
+    [ForAuthenticatedTeller]
+    public ActionResult ImportBallots(ImportBallotsModel importBallotsModel)
+    {
+      if (importBallotsModel == null)
+      {
+        importBallotsModel = new ImportBallotsModel();
+      }
+
+      return View(importBallotsModel);
+    }
+
     //[ForAuthenticatedTeller]
     //public ActionResult ImportV1(ImportV1Model importV1Model)
     //{

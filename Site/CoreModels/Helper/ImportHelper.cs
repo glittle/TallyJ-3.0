@@ -24,7 +24,7 @@ namespace TallyJ.CoreModels.Helper
       }
     }
 
-    public void ExtraProcessingIfMultipartEncoded(ImportFile record)
+    public static  void ExtraProcessingIfMultipartEncoded(ImportFile record)
     {
       const string multipartDividerPrefix = "-----------------------------";
       foreach (var codePage in Encodings.Select(encoding => encoding.Key))
@@ -87,5 +87,33 @@ namespace TallyJ.CoreModels.Helper
       }
     }
 
+
+    public static int? DetectCodePage(byte[] importFileContents)
+    {
+      if (importFileContents.Length > 4)
+      {
+        // if (importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
+        // {
+        //   // return 65001;
+        // }
+
+        if ((importFileContents[0] == 0xef && importFileContents[1] == 0xbb && importFileContents[2] == 0xbf)) // utf-8 
+        {
+          return 65001; // utf8
+        }
+
+        if ((importFileContents[0] == 0xff && importFileContents[1] == 0xfe) || // ucs-2le, ucs-4le, and ucs-16le 
+            (importFileContents[0] == 0xfe && importFileContents[1] == 0xff) || // utf-16 and ucs-2 
+            (importFileContents[0] == 0 && importFileContents[1] == 0 && importFileContents[2] == 0xfe && importFileContents[3] == 0xff)) // ucs-4 
+        {
+          // ?? will others work with this??
+          return 1200; // utf16
+        }
+
+        return 1252;
+      }
+
+      return null;
+    }
   }
 }

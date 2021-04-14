@@ -483,6 +483,7 @@
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
     <Compile Include="CoreModels\Helper\SmsHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
+    <Compile Include="CoreModels\ImportBallotsModel.cs" />
     <Compile Include="CoreModels\OnlineVoteHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />
     <Compile Include="CoreModels\VoterAccountModels\IdentityModels.cs" />
@@ -1002,6 +1003,12 @@
     <Content Include="Views\Setup\EditPerson.cshtml.css">
       <DependentUpon>EditPerson.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\ImportBallots.cshtml.css">
+      <DependentUpon>ImportBallots.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportBallots.cshtml.js">
+      <DependentUpon>ImportBallots.cshtml</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
     </Content>
@@ -1117,6 +1124,10 @@
     <Content Include="Views\Setup\Notify.cshtml" />
     <Content Include="Scripts\jquery-3.5.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.5.1.min.map" />
+    <Content Include="Views\Setup\ImportBallots.cshtml" />
+    <Content Include="Views\Setup\ImportBallots.cshtml.less">
+      <DependentUpon>ImportBallots.cshtml</DependentUpon>
+    </Content>
     <None Include="Web.Babak 1.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

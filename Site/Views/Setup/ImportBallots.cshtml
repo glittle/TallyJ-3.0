@@ -1,0 +1,143 @@
+﻿@model ImportBallotsModel
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Session
+@using TallyJ.CoreModels.Helper
+@{
+  ContextItems.AddJavascriptForPage("importHubUrl", "importBallotsPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("controllerUrl", "importBallotsPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("previous", "importBallotsPage.previousFiles={0};".FilledWith(Model.PreviousUploads().SerializedAsJsonString()));
+  ViewBag.Title = "Import Ballots from External Source";
+}
+<script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
+<div id="main">
+  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div class="PullInstructions">
+    <ol>
+      <li>
+        This page is designed to import ballots from an external system.  TallyJ is customized to support each external system.
+      </li>
+      <li>
+        As of April 2021, the only known and supported system is the Election system in the Canadian Bahá'í Community's Membership Portal.
+      </li>
+    </ol>
+  </div>
+  <h2>
+    Step 1 <span>Choose Source System</span>
+    
+  </h2>
+  <el-select>
+    <el-option>Canadian Bahá'í Community Membership Portal</el-option>
+  </el-select>
+  <p>
+    To prepare your TallyJ election for tallying, you should first obtain the list of voters using the "Download Voters" button available when viewing the details
+    of the election in the Portal. This generates a CSV file. You then use the "Import Name List" page in TallyJ to load the list of names.
+  </p>
+  <p>
+    The file that you can download after the Portal's online election is ended contains a list of people who voted and a collection of the ballots that
+    they submitted. The list of voters will be applied to the Front Desk to indicate who voted in the Portal. The ballots will be used to create new "online" ballots
+    in TallyJ. (There is no connection between the voters and the ballots.)
+  </p>
+
+  <h2>
+    Step 2 <span>Upload the ballots file</span>
+  </h2>
+  <p>
+    Click the button below to choose and upload the ballots XML file, or drag the file from Windows
+    Explorer to this window.
+  </p>
+  <div id="file-uploader">
+  </div>
+  <div class="uploadList">
+    <h4>
+      Files on the Server
+    </h4>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Action
+          </th>
+          <th>
+            Status
+          </th>
+          <th>
+            Name
+          </th>
+          <th>
+            Content Encoding
+          </th>
+          <th>
+            Headers<br />on Line
+          </th>
+          <th>
+            Upload Time
+          </th>
+          <th>
+            Size
+          </th>
+          <th>
+            Other Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody id="uploadListBody">
+        <tr data-rowid="{C_RowId}" class="{ProcessingStatus} {RowClass}">
+          <td class="Actions">
+            <div class="MakeActive btn btn-mini" title="Select this file for mapping columns and importing people">Select</div>
+            <div class="CopyMap btn btn-mini" title="Copy the column mapping information from this file to the selected one">Copy Mapping</div>
+            <span>(selected)</span>
+          </td>
+          <td>
+            {ProcessingStatusAndSteps}
+          </td>
+          <td>
+            {OriginalFileName}
+          </td>
+          <td>
+            <select data-value="{CodePage}" class="codePage">
+              @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+            </select>
+          </td>
+          <td>
+            <select data-value="{FirstDataRow}" class="dataRow">
+              @Enumerable.Range(1, 10).Select(i => "<option value='{0}'>{1}</option>".FilledWith(i + 1, i)).JoinedAsString().AsRawHtml()
+            </select>
+          </td>
+          <td>
+            {UploadTimeExt}
+          </td>
+          <td>
+            {FileSize}
+          </td>
+          <td>
+            <button type="button" class="download" title="Download a copy of this file">
+              <span class="ui-icon ui-icon-arrowreturn-1-s"></span>
+            </button>
+            <button type="button" class="deleteFile" title="Permanently delete this from the server">
+              <span class="ui-icon ui-icon-trash"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>
+    Step 3 <span>Preview the Contents</span>
+  </h2>
+  <p>
+  </p>
+
+  <h2>
+    Step 4 <span>Import the Voters and Ballots</span>
+  </h2>
+  <p>
+    All the details in the file will be loaded. The Front Desk will be marked with the people who voted in the external system. The external ballots will be
+    entered as online ballots for further processing by tellers.
+  </p>
+  <div class="importDiv">
+    <button type="button" id="btnImport">
+      Import now
+    </button>
+    <div id="importResults"></div>
+  </div>
+</div>
