@@ -25,6 +25,7 @@
         //emailsToSend: [],
         //phonesToSend: [],
         allPeople: [],
+        numEmailError: 0,
         //        testSmsNumber: GetFromStorage('htSms', ''), // not in db
         contactLog: [],
         ElectionGuid: publicInterface.Election.ElectionGuid,
@@ -399,7 +400,16 @@ contact the Assembly as soon as possible!</p>
           location.href = publicInterface.controllerUrl + '/DownloadContactLog';
         },
         extendPeople: function (list) {
+          var vue = this;
+          this.numEmailError = 0;
+
           list.forEach(function (p) {
+            if (p.EmailError) {
+              p.EmailErrorCopy = p.Email;
+              p.Email = null;
+              vue.numEmailError += 1;
+            }
+
             p.VotingMethod_Display = publicInterface.voteMethods[p.VotingMethod] || p.VotingMethod || '';
             //            if (p.OnlineStatus) {
             //              if (p.VotingMethod === 'O') {
