@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -296,7 +297,15 @@ namespace TallyJ.Code
       object realValue;
       if (typeName == typeof(DateTime).Name)
       {
-        realValue = DateTime.Parse(newValueString);
+        try
+        {
+          realValue = DateTime.Parse(newValueString);
+        }
+        catch (Exception e)
+        {
+          // try another format
+          realValue = DateTime.ParseExact(newValueString, "yyyy-MM-dd / HH:mm:ss", CultureInfo.InvariantCulture);
+        }
       }
       else if(typeName == typeof(Boolean).Name)
       {

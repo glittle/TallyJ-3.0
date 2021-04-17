@@ -23,121 +23,191 @@
   </div>
   <h2>
     Step 1 <span>Choose Source System</span>
-    
-  </h2>
-  <el-select>
-    <el-option>Canadian Bahá'í Community Membership Portal</el-option>
-  </el-select>
-  <p>
-    To prepare your TallyJ election for tallying, you should first obtain the list of voters using the "Download Voters" button available when viewing the details
-    of the election in the Portal. This generates a CSV file. You then use the "Import Name List" page in TallyJ to load the list of names.
-  </p>
-  <p>
-    The file that you can download after the Portal's online election is ended contains a list of people who voted and a collection of the ballots that
-    they submitted. The list of voters will be applied to the Front Desk to indicate who voted in the Portal. The ballots will be used to create new "online" ballots
-    in TallyJ. (There is no connection between the voters and the ballots.)
-  </p>
 
-  <h2>
-    Step 2 <span>Upload the ballots file</span>
   </h2>
-  <p>
-    Click the button below to choose and upload the ballots XML file, or drag the file from Windows
-    Explorer to this window.
-  </p>
-  <div id="file-uploader">
+  <div>
+    <span>Source</span>
+    <el-select v-model="sourceSystem" size="small" class="selectSource">
+      <el-option value="Cdn" label="Canadian Bahá'í Community Membership Portal"></el-option>
+      <el-option value="">Other</el-option>
+    </el-select>
   </div>
-  <div class="uploadList">
-    <h4>
-      Files on the Server
-    </h4>
-    <table>
-      <thead>
-        <tr>
-          <th>
-            Action
-          </th>
-          <th>
-            Status
-          </th>
-          <th>
-            Name
-          </th>
-          <th>
-            Content Encoding
-          </th>
-          <th>
-            Headers<br />on Line
-          </th>
-          <th>
-            Upload Time
-          </th>
-          <th>
-            Size
-          </th>
-          <th>
-            Other Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody id="uploadListBody">
-        <tr data-rowid="{C_RowId}" class="{ProcessingStatus} {RowClass}">
-          <td class="Actions">
-            <div class="MakeActive btn btn-mini" title="Select this file for mapping columns and importing people">Select</div>
-            <div class="CopyMap btn btn-mini" title="Copy the column mapping information from this file to the selected one">Copy Mapping</div>
-            <span>(selected)</span>
-          </td>
-          <td>
-            {ProcessingStatusAndSteps}
-          </td>
-          <td>
-            {OriginalFileName}
-          </td>
-          <td>
-            <select data-value="{CodePage}" class="codePage">
-              @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
-            </select>
-          </td>
-          <td>
-            <select data-value="{FirstDataRow}" class="dataRow">
-              @Enumerable.Range(1, 10).Select(i => "<option value='{0}'>{1}</option>".FilledWith(i + 1, i)).JoinedAsString().AsRawHtml()
-            </select>
-          </td>
-          <td>
-            {UploadTimeExt}
-          </td>
-          <td>
-            {FileSize}
-          </td>
-          <td>
-            <button type="button" class="download" title="Download a copy of this file">
-              <span class="ui-icon ui-icon-arrowreturn-1-s"></span>
-            </button>
-            <button type="button" class="deleteFile" title="Permanently delete this from the server">
-              <span class="ui-icon ui-icon-trash"></span>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <h2>
-    Step 3 <span>Preview the Contents</span>
-  </h2>
-  <p>
-  </p>
+  <div class="PullInstructionsHandle btn btn-mini sourceTips">Instructions</div>
+  <div class="PullInstructions sourceTips">
+    <div v-if="sourceSystem==='Cdn'">
+      <p>
+        TallyJ can be used to tally the votes received in the National Portal.  At the same time, you can receive and tally votes from others sources, such as ballots
+        received by mail.
+      </p>
+      <p>
+        When setting up your <strong>TallyJ election</strong>, you should visit the National Portal, go to "Elections", then click "View List of Eligible Voters".
+        This downloads a CSV file to your computer. You can then use the "<a href="ImportCsv">Import Name List</a>" page in TallyJ to import that list of names.
+      </p>
+      <p>
+        When the Portal's online election is "Finalized", view the Election Details page of the election and click the "Download XML" button:
 
-  <h2>
-    Step 4 <span>Import the Voters and Ballots</span>
-  </h2>
-  <p>
-    All the details in the file will be loaded. The Front Desk will be marked with the people who voted in the external system. The external ballots will be
-    entered as online ballots for further processing by tellers.
-  </p>
-  <div class="importDiv">
-    <button type="button" id="btnImport">
-      Import now
-    </button>
-    <div id="importResults"></div>
+        <img class="cdnPortal1" src="~/Images/CdnPortal1.png">
+
+        If you do not see that button, send an email to <a href="mailto:ict@bahai.ca">ict@bahai.ca</a> to request that it be enabled for your community!
+      </p>
+      <p>
+        Upload that file on this page, and follow the rest of the steps below.
+      </p>
+    </div>
+    <div v-if="sourceSystem===''">
+      <p>
+        The import system for each source must be pre-built into TallyJ.  Please contact Glen Little if you have another source that should be considered!
+      </p>
+    </div>
+
+  </div>
+
+  <div v-show="sourceSystem">
+    <h2>
+      Step 2 <span>Upload the ballots file</span>
+    </h2>
+    <p>
+      Click the button below to choose and upload the ballots file, or drag the file from Windows
+      Explorer to this window.
+    </p>
+    <div id="file-uploader">
+    </div>
+    <div class="uploadList">
+      <h4>
+        Files uploaded and on the Server
+      </h4>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              Action
+            </th>
+            <th>
+              Status
+            </th>
+            <th>
+              Name
+            </th>
+            <th>
+              Content Encoding
+            </th>
+            <th>
+              Upload Time
+            </th>
+            <th>
+              Size
+            </th>
+            <th>
+              Other Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="uploadListBody">
+          <tr data-rowid="{C_RowId}" class="{ProcessingStatus} {RowClass}">
+            <td class="Actions">
+              <div class="MakeActive btn btn-mini">Select</div>
+              <span>(selected)</span>
+            </td>
+            <td>
+              {ProcessingStatusAndSteps}
+            </td>
+            <td>
+              {OriginalFileName}
+            </td>
+            <td>
+              <select data-value="{CodePage}" class="codePage">
+                @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+              </select>
+            </td>
+            <td>
+              {UploadTimeExt}
+            </td>
+            <td>
+              {FileSize}
+            </td>
+            <td>
+              <button type="button" class="previewFile" title="Refresh preview">
+                <i class="el-icon-view"></i>
+              </button>
+              <button type="button" class="download" title="Download a copy of this file">
+                <span class="ui-icon ui-icon-arrowreturn-1-s"></span>
+              </button>
+              <button type="button" class="deleteFile" title="Permanently delete this from the server">
+                <span class="ui-icon ui-icon-trash"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h2>
+      Step 3 <span>Preview the Contents</span>
+      <el-button size="small" v-on:click="getPreviewInfo">Refresh</el-button>
+    </h2>
+
+    <div class="preview">
+      <div v-if="previewInfo.voters && previewInfo.voters.length">
+        <h4>File Contents</h4>
+        <p>
+          Election locality: {{previewInfo.locality}}
+        </p>
+        <p>
+          Number of Ballots included: {{previewInfo.numBallots}}
+        </p>
+      </div>
+
+      <div v-if="previewInfo.voters && previewInfo.voters.length">
+        <h4>People who voted</h4>
+        <ul>
+          <li v-for="s in previewInfo.voters" :key="s.bahaiid">
+            {{s.firstname}} {{s.lastname}}
+            
+            <span class="alreadyVoted" v-if="s.VotingMethod">
+              (Already voted: {{s.VotingMethod}})
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="previewInfo.ImportErrors && previewInfo.ImportErrors.length">
+        <h4>Issues Found</h4>
+        <ol>
+          <li v-for="s in previewInfo.ImportErrors" :key="s">{{s}}</li>
+        </ol>
+
+        <p v-if="previewInfo.HasUnregistered">
+          Any not registered in TallyJ need to be registered, then you can try this import again.
+          You can edit names in <a href="People">Edit People's Names</a> or import a complete list of
+          people on the <a href="ImportCsv">Import Name List</a> page.
+        </p>
+        <h4 class="errorText">
+          This file cannot be imported until these issues are resolved.
+        </h4>
+      </div>
+
+      <div v-if="previewInfo.ImportErrors && !previewInfo.ImportErrors.length">
+        <h4>Ready to Import</h4>
+        <p>
+          This file is ready to import!
+        </p>
+      </div>
+    </div>
+
+    <h2>
+      Step 4 <span>Import the Voters and Ballots</span>
+    </h2>
+    <p>
+      When you click "Import Now" the ballots will be loaded into TallyJ and the people listed above will be marked on the Front Desk as having voted in the external system.
+    </p>
+    <p>
+      The ballots will need further processing by tellers on the "Enter Ballots" page.
+    </p>
+    <div class="importDiv">
+      <el-button v-on:click="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length)">
+        Import now
+      </el-button>
+      <div id="importResults"></div>
+    </div>
+
   </div>
 </div>

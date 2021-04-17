@@ -70,6 +70,50 @@ namespace TallyJ.Controllers
       return View(importBallotsModel);
     }
 
+
+    [ForAuthenticatedTeller]
+    public ActionResult GetBallotUploadlist()
+    {
+      var importBallotsModel = new ImportBallotsModel();
+      return importBallotsModel.GetUploadList();
+    }
+
+
+    [ForAuthenticatedTeller]
+    public JsonResult UploadBallots()
+    {
+      var model = new ImportBallotsModel();
+      var messages = model.ProcessUpload(out var rowId);
+
+      return new
+      {
+        success = messages.HasNoContent(),
+        rowId,
+        messages
+      }.AsJsonResult();
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult PreviewBallotsFile(int id)
+    {
+      return new ImportBallotsModel().GetPreviewInfo(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult LoadBallotsFile(int id)
+    {
+      return new ImportBallotsModel().LoadFile(id);
+    }
+
+
+    [ForAuthenticatedTeller]
+    public ActionResult DeleteBallotsFile(int id)
+    {
+      var importBallotsModel = new ImportBallotsModel();
+
+      return importBallotsModel.DeleteFile(id);
+    }
+
     //[ForAuthenticatedTeller]
     //public ActionResult ImportV1(ImportV1Model importV1Model)
     //{
@@ -234,6 +278,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult FileCodePage(int id, int cp)
     {
+      // generic for csv or ballot files
       return new ImportCsvModel().SaveCodePage(id, cp);
     }
 

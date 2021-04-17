@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="election">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="voted-online">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="voter">
+                <xs:complexType>
+                  <xs:attribute name="bahaiid" type="xs:unsignedInt" use="required" />
+                  <xs:attribute name="firstname" type="xs:string" use="required" />
+                  <xs:attribute name="lastname" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ballots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="ballot">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="vote">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="index" type="xs:unsignedByte" use="required" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="guid" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="guid" type="xs:string" use="required" />
+      <xs:attribute name="timestamp" type="xs:string" use="required" />
+      <xs:attribute name="locality" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

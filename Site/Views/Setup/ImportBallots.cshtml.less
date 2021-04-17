@@ -5,14 +5,36 @@ h2 {
   color: @tallyJOrangeText;
   font-weight: normal;
 
-  span {
+  > span {
     color: @tallyJBlue;
     margin-left: 11px;
   }
+
+
 }
 
 .importDiv {
   margin-bottom: 50px;
+}
+
+.selectSource {
+  width: 400px;
+
+  .el-input__inner{
+    background-color: #fff;
+    padding-left: 7px;
+  }
+}
+
+.errorText{
+  color: red;
+  font-weight: bold;
+}
+
+.alreadyVoted{
+  color: red;
+  font-size: 90%;
+  margin-left: 1em;
 }
 
 #chooseFile {
@@ -27,6 +49,16 @@ h2 {
 
 .uploadList {
   margin-left: 10px;
+
+  .previewFile {
+    visibility: hidden;
+  }
+
+  tr.Active {
+    .previewFile {
+      visibility: visible;
+    }
+  }
 }
 
 .uploadList h4 {
@@ -39,13 +71,14 @@ h2 {
 
 .uploadList table td {
   border: 1px solid #ccc;
-  padding: 0 6px 0 6px;
+  padding: 2px 6px 2px 6px;
 }
 
 
 .qq-uploader {
   position: relative;
   width: 100%;
+  margin-left: 15px;
 }
 
 .qq-upload-button {
@@ -56,6 +89,7 @@ h2 {
   background: @tallyJGreen;
   border-bottom: 1px solid #ddd;
   color: #fff;
+  border-radius: 2px;
 }
 
 .qq-upload-button-hover {
@@ -132,6 +166,11 @@ h2 {
   display: inline;
 }
 
+.cdnPortal1 {
+  display: block;
+  margin: 8px 0 8px 20px;
+}
+
 tr.Active {
   background-color: #fff;
 }
@@ -160,181 +199,30 @@ tr.Active .Actions div {
   display: none;
 }
 
-tr.Active .Actions span {
+tr.Active {
+  background-color: #e5f2d4;
 }
 
 tr.NotActive .Actions span {
   display: none;
 }
 
-tr.Uploaded .CopyMap {
-  display: none;
-}
-
-#fieldSelector {
-  white-space: nowrap;
-  clear: right;
-  position: relative;
-  overflow-x: auto;
-}
-
-#fieldSelector > div {
-  min-width: 100px;
-  display: inline-block;
-  background-color: #ddd;
-  margin: 0 0 0 1px;
-  overflow: hidden;
-}
-
-#fieldSelector > div.Col.FirstCol {
-  // margin-left: 22px;
-}
-
-#fieldSelector > div.Col {
-  background-color: #ffe9e9;
-  color: #aaa;
-}
-
-#fieldSelector > div.Col.mapped {
-  background-color: #e9ffe9;
-  color: #000;
-}
-
-
-#fieldSelector select {
-  display: block;
-  margin-top: 5px;
-  width: 100px;
-  color: #005800;
-}
-
-#fieldSelector select.Mapped {
-  color: black;
-  font-weight: bold;
-}
-
-#fieldSelector div div {
-  overflow: hidden;
-  padding: 0 0 0 2px;
-}
-
-#fieldSelector h5 {
-  margin: 0 0 2px 2px;
-  padding: 0 0 0 2px;
-  color: #333;
-}
-
-
-#btnPrepareFields {
-  float: right;
-}
-
-#fieldSelector > div.ImportTips {
-  //height: 100%;
-  //position: absolute;
-  background-color: transparent;
-  vertical-align: top;
-  width: auto;
-  min-width: 0;
-
-
-  div {
-    white-space: nowrap;
-    text-align: right;
-    height: 20px;
-    margin: 3px 0 5px;
+.PullInstructions {
+  > div {
+    margin: 0 1em;
   }
 }
 
-.ImportTips span {
-  //display: inline-block;
-  //position: absolute;
-  //right: 0px;
-  //top: 2px;
-}
-
-.ImportTips span#qTipImportFoot {
-  // top: 27px;
-}
-
-.numFound{
+.numFound {
   margin: 1em 0;
 }
 
-#mappingError {
-  color: red;
-  font-size: 110%;
-  margin: 4px 0 0 23px;
-}
+.preview {
+  padding: 1px 10px 1px 35px;
+  background: #fff;
 
-.reasonExamples {
-  display: flex;
-}
-
-.reasonExamples h3 {
-  margin: 0;
-}
-
-.reasonList {
-  padding: 5px 9px;
-  margin: -3px 0 5px 5px;
-  background-color: #fcF6f2;
-  flex-shrink: 0;
-}
-
-.reasonSamples {
-  margin: 0 0 0 15px;
-
-  dt {
-    margin-top: 10px;
-    // color: darken(@tallyJGreen, 15%);
-  }
-
-  dd {
-    margin-left: 25px;
-
-    strong {
-      display: block;
-      margin: 0 0 0 45px;
-      border: 1px solid transparent;
-      padding: 0 2px 0 4px;
-      margin-bottom: -1px;
-      cursor: pointer;
-      color: @tallyJGreenText;
-
-      &:hover {
-        border-color: @tallyJGreen;
-      }
-    }
-  }
-}
-
-p.aboutEligibility {
-  margin: 1em 0 0 0;
-}
-
-dl {
-  margin-top: 0;
-}
-
-#listOfStatusReasons {
-  dt {
-    margin: 15px 0 0 0;
-    font-weight: normal;
-    border-bottom: 1px solid #333;
-  }
-
-  dd {
-    cursor: pointer;
-    font-weight: bold;
-    border: 1px solid transparent;
-    padding: 0 2px 0 4px;
-    margin-bottom: -1px;
-    color: @tallyJGreenText;
-
-    &:hover {
-      border-color: @tallyJGreen;
-    }
+  h4 {
+    margin-left: -20px;
   }
 }
 

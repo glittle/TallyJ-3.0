@@ -693,6 +693,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Images\CdnPortal1.png" />
     <Content Include="Images\icons\android-chrome-96x96.png" />
     <Content Include="Images\icons\apple-touch-icon.png" />
     <Content Include="Images\icons\favicon-16x16.png" />
@@ -1143,6 +1144,9 @@
     </None>
     <None Include="Web.TallyJ v3 UAT.config">
       <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Xsd\CdnBallotImport.xsd">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
