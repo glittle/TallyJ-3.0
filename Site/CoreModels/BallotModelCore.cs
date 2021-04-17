@@ -714,6 +714,24 @@ namespace TallyJ.CoreModels
             SingleNameElectionCount = 1,
             OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
           };
+
+          // attempt to match if it is exact...
+          var matched = new PersonCacher(Db).AllForThisElection
+              // match on first and last name only
+            .Where(b => b.FirstName.ToLower() == rawVote.First.ToLower() && b.LastName.ToLower() == rawVote.Last.ToLower())
+              // don't match if our list has "otherInfo" for this person - there might be some special considerations
+            .Where(b => b.OtherInfo.HasNoContent())
+            .ToList();
+
+          if (matched.Count == 1)
+          {
+            // found one exact match
+            var person = matched[0];
+            vote.StatusCode = VoteStatusCode.Ok;
+            vote.PersonGuid = person.PersonGuid;
+            vote.PersonCombinedInfo = person.CombinedInfo;
+            vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+          }
         }
 
         Db.Vote.Add(vote);

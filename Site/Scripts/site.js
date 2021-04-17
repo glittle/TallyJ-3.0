@@ -1687,15 +1687,27 @@ function SetInStorage(key, value) {
 //};
 
 function ExpandName(s) {
-  var result = [];
-  for (var i = 0, len = s.length; i < len; i++) {
-    var ch = s[i];
-    if (ch >= 'A' && ch <= 'Z') {
-      result.push(' ');
-    }
-    result.push(ch);
+  if (!s || s === s.toUpperCase()) {
+    return s;
   }
-  return result.join('');
+  var parts = s.split(/(?=[A-Z])/);
+  // return parts;
+  var result = '';
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    if (i > 0) {
+      if (p[0].toUpperCase() === p[0]) {
+        if (parts[i - 1].toUpperCase() === parts[i - 1]) {
+          // consecutive caps
+          result += p;
+          continue;
+        }
+      }
+      result += ' ';
+    }
+    result += p;
+  }
+  return result;
 }
 
 

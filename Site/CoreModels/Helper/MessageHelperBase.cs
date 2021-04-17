@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Web.Mvc;
 using Microsoft.SqlServer.Server;
@@ -34,6 +35,34 @@ namespace TallyJ.CoreModels.Helper
         .Where(ovi => ovi.ElectionGuid == electionGuid)
         .Select(ovi => ovi.PersonGuid);
 
+      var people = dbContext.Person
+        .Where(p => p.ElectionGuid == electionGuid
+                    && (hasOnlineBallot.Contains(p.PersonGuid) 
+                        || p.CanVote.Value
+                        && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
+        .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
+          (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
+        .Select(j => new
+        {
+          j.p.C_RowId,
+          j.p.C_FullName,
+          j.p.VotingMethod,
+          j.p.Email,
+          j.p.Phone,
+          j.Status
+        })
+        .ToList()
+        .Select(p=>new
+        {
+          p.C_RowId,
+          p.C_FullName,
+          p.VotingMethod,
+          p.Email,
+          EmailError = ValidateEmailSyntax(p.Email),
+          p.Phone,
+          p.Status
+        });
+
       return new
       {
         Success = true,
@@ -43,22 +72,7 @@ namespace TallyJ.CoreModels.Helper
             currentElection.OnlineWhenClose,
           }
           : null,
-        people = dbContext.Person
-          .Where(p => p.ElectionGuid == electionGuid
-                      && (hasOnlineBallot.Contains(p.PersonGuid) 
-                          || p.CanVote.Value
-                          && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
-          .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
-              (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
-          .Select(j => new
-          {
-            j.p.C_RowId,
-            j.p.C_FullName,
-            j.p.VotingMethod,
-            j.p.Email,
-            j.p.Phone,
-            j.Status
-          }),
+        people,
       }.AsJsonResult();
     }
 
@@ -71,6 +85,25 @@ namespace TallyJ.CoreModels.Helper
         Success = true,
         Log = log
       }.AsJsonResult();
+    }
+
+    private string ValidateEmailSyntax(string email)
+    {
+      if (email.HasNoContent())
+      {
+        return null;
+      }
+
+      try
+      {
+        var mailAddress = new MailAddress(email);
+      }
+      catch (Exception e)
+      {
+        return e.Message;
+      }
+
+      return null;
     }
 
     public FileResult DownloadContactLog()

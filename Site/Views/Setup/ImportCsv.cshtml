@@ -65,7 +65,7 @@
           Content Encoding
         </th>
         <th>
-          Headers<br/>on Line
+          Headers<br />on Line
         </th>
         <th>
           Upload Time
@@ -126,11 +126,26 @@
   For each column in <span id="activeFileName"></span> that you wish to import, select the TallyJ field it should be mapped to.
   If you have already done that, it does not need to be done again.
 </p>
+<div class="PullInstructionsHandle btn btn-mini">TallyJ Fields</div>
+<div class="PullInstructions">
+  <table class="fieldsList">
+    <tr><th>First Name</th><td><em>Required</em></td><td>The individual's first/given name.</td></tr>
+    <tr><th>Last Name</th><td><em>Required</em></td><td>The individual's last name/surname.</td></tr>
+    <tr><th>Bahá'í Id</th><td></td><td>Useful for reporting.</td></tr>
+    <tr><th>Eligibility Status</th><td></td><td>See below for details.</td></tr>
+    <tr><th>Area</th><td></td><td>Geographical area. Useful for reporting.</td></tr>
+    <tr><th>Email</th><td></td><td>Email or Phone needed for Online Voting.</td></tr>
+    <tr><th>Phone</th><td></td><td>Email or Phone needed for Online Voting.</td></tr>
+    <tr><th>Other Names</th><td></td><td>Other names this person may be known by.</td></tr>
+    <tr><th>Other Last Names</th><td></td><td>Other names this person may be known by.</td></tr>
+    <tr><th>Other Info</th><td></td><td>Other distinguishing information to identify this person.</td></tr>
+  </table>
+</div>
 <div class="fieldSelector">
-  <div class="numFound">Number of columns found: <span id="numColumns">-</span></div>
+  <div class="numFound">Number of columns found in this CSV file: <span id="numColumns">-</span></div>
   @*<button type="button" id="btnPrepareFields">
-    Re-analyze the file and get column names
-  </button>*@
+      Re-analyze the file and get column names
+    </button>*@
   <div id="fieldSelector">
   </div>
   <div id="mappingError"></div>
@@ -156,7 +171,7 @@
         <dt>For a tie-break election</dt>
         <dd>Set those being voted for to blank</dd>
         <dd>All others should have a status of: <strong>Tie-break: Not tied</strong></dd>
-         <dt>For a by-election</dt>
+        <dt>For a by-election</dt>
         <dd>Set those serving on the Institution to: <strong>By-election: On Institution already</strong></dd>
         <dd>All other voters should be blank</dd>
         <dt>For a National Convention</dt>
@@ -177,6 +192,9 @@
 </p>
 <p>
   After importing, use the "Edit People's Names" page to carefully review the list.
+</p>
+<p>
+  Please note that email addresses and phone numbers can only be imported when there are none on file already. Use the "Edit People's Names" page to add email addresses and phone numbers later.
 </p>
 <p>
   If you need to erase all the currently loaded names (before ballots are entered), use the "Delete all People Records" below before importing again.

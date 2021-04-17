@@ -116,6 +116,7 @@
         <span class="comments" v-if="!emailFromAddress">(Must enter a "From Email Address" on the "Configure this Election" page.)</span>
       </p>
       <p class="isSaveNeeded" v-if="emailChanged">Save changes before sending the Email.</p>
+      <p class="EmailError" v-if="numEmailError">Invalid Email addresses: {{numEmailError}}</p>
 
     </div>
 
@@ -183,10 +184,18 @@
                          sortable
                          min-width="170"
                          show-overflow-tooltip></el-table-column>
-        <el-table-column label="Email" prop="Email"
+        <el-table-column label="Email"
                          sortable
+                         sort-by="Email"
                          min-width="150"
-                         show-overflow-tooltip></el-table-column>
+                         show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div :class="{EmailError: scope.row.EmailError}" :title="scope.row.EmailError">
+              {{scope.row.Email || scope.row.EmailErrorCopy}}
+              <i class="el-icon-error" v-if="scope.row.EmailError"></i>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="Phone" prop="Phone"
                          sortable
                          width="130"
