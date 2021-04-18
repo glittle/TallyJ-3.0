@@ -34,5 +34,6 @@ namespace TallyJ.EF
         public Nullable<int> Custom1Ballots { get; set; }
         public Nullable<int> Custom2Ballots { get; set; }
         public Nullable<int> Custom3Ballots { get; set; }
+        public Nullable<int> ImportedBallots { get; set; }
     }
 }

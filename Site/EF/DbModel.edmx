@@ -335,6 +335,7 @@
           <Property Name="Custom1Ballots" Type="int" />
           <Property Name="Custom2Ballots" Type="int" />
           <Property Name="Custom3Ballots" Type="int" />
+          <Property Name="ImportedBallots" Type="int" />
         </EntityType>
         <EntityType Name="ResultTie">
           <Key>
@@ -733,6 +734,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Custom1Ballots" Type="Int32" />
           <Property Name="Custom2Ballots" Type="Int32" />
           <Property Name="Custom3Ballots" Type="Int32" />
+          <Property Name="ImportedBallots" Type="Int32" />
         </EntityType>
         <EntityType Name="Memberships">
           <Key>
@@ -1137,6 +1139,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="ResultSummary">
             <EntityTypeMapping TypeName="TallyJ2dModel.ResultSummary">
               <MappingFragment StoreEntitySet="ResultSummary">
+                <ScalarProperty Name="ImportedBallots" ColumnName="ImportedBallots" />
                 <ScalarProperty Name="Custom3Ballots" ColumnName="Custom3Ballots" />
                 <ScalarProperty Name="Custom2Ballots" ColumnName="Custom2Ballots" />
                 <ScalarProperty Name="Custom1Ballots" ColumnName="Custom1Ballots" />

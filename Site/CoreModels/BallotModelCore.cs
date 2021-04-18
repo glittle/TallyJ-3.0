@@ -230,7 +230,7 @@ namespace TallyJ.CoreModels
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
-      if (locationModel.HasLocationsWithoutOnline && UserSession.CurrentLocation == null)
+      if (locationModel.HasMultiplePhysicalLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }
@@ -278,7 +278,7 @@ namespace TallyJ.CoreModels
         var person1 = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
         vote.PersonCombinedInfo = person1?.CombinedInfo;
 
-        if (UserSession.CurrentLocation.IsTheOnlineLocation)
+        if (UserSession.CurrentLocation.IsVirtual)
         {
           // changing person on an online ballot
 
@@ -343,7 +343,7 @@ namespace TallyJ.CoreModels
       // make a new Vote record
       var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
-      if (location.IsTheOnlineLocation)
+      if (location.IsVirtual)
       {
         return new { Updated = false, Error = "Cannot add votes to an online ballot" }.AsJsonResult();
       }
@@ -498,7 +498,7 @@ namespace TallyJ.CoreModels
       var isSingleName = UserSession.CurrentElection.IsSingleNameElection;
       var location = new LocationCacher(Db).AllForThisElection.Single(l => l.LocationGuid == ballot.LocationGuid);
 
-      if (location.IsTheOnlineLocation)
+      if (location.IsVirtual)
       {
         return new { Message = "Cannot delete votes from an online ballot." }.AsJsonResult();
       }
@@ -717,10 +717,10 @@ namespace TallyJ.CoreModels
 
           // attempt to match if it is exact...
           var matched = new PersonCacher(Db).AllForThisElection
-              // match on first and last name only
-            .Where(b => b.FirstName.ToLower() == rawVote.First.ToLower() && b.LastName.ToLower() == rawVote.Last.ToLower())
-              // don't match if our list has "otherInfo" for this person - there might be some special considerations
-            .Where(b => b.OtherInfo.HasNoContent())
+            // match on first and last name only
+            .Where(p => p.FirstName.ToLower() == rawVote.First.ToLower() && p.LastName.ToLower() == rawVote.Last.ToLower())
+            // don't match if our list has "otherInfo" for this person - there might be some special considerations
+            .Where(p => p.OtherInfo.HasNoContent())
             .ToList();
 
           if (matched.Count == 1)
@@ -736,6 +736,73 @@ namespace TallyJ.CoreModels
 
         Db.Vote.Add(vote);
 
+        Db.SaveChanges();
+
+        voteCacher.UpdateItemAndSaveCache(vote);
+      }
+
+      var votes = voteCacher.AllForThisElection;
+      BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
+
+      ballotCacher.UpdateItemAndSaveCache(ballot);
+      Db.SaveChanges();
+
+      errorMessage = "";
+      return true;
+    }
+
+    public bool CreateBallotForImportedBallot(ImportBallotsModel.Ballot incomingBallot, Guid importLocationGuid,
+      out string errorMessage, BallotCacher ballotCacher, VoteCacher voteCacher, List<Person> allPeople)
+    {
+      // create ballot
+      var ballot = new Ballot
+      {
+        BallotGuid = incomingBallot.guid, // re-use the one from the source xml document
+        LocationGuid = importLocationGuid,
+        ComputerCode = ComputerModel.ComputerCodeForImported,
+        BallotNumAtComputer = 0, // maxNum + 1, // will reset later
+        StatusCode = BallotStatusEnum.Empty,
+      };
+      Db.Ballot.Add(ballot);
+      Db.SaveChanges();
+
+      ballotCacher.UpdateItemAndSaveCache(ballot);
+
+      // add Votes
+      var nextVoteNum = 0;
+
+      foreach (var rawVote in incomingBallot.Votes)
+      {
+        nextVoteNum++;
+        var vote = new Vote
+        {
+          BallotGuid = ballot.BallotGuid,
+          PositionOnBallot = nextVoteNum,
+          StatusCode = VoteStatusCode.OnlineRaw,
+          SingleNameElectionCount = 1,
+          OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
+        };
+
+        // attempt to match if it is exact...
+        var matched = allPeople
+          // match on first and last name only
+          .Where(p => p.FirstName.ToLower() == rawVote.First.ToLower() &&
+                      p.LastName.ToLower() == rawVote.Last.ToLower())
+          // don't match if our list has "otherInfo" for this person - there might be some special considerations
+          .Where(p => p.OtherInfo.HasNoContent())
+          .ToList();
+
+        if (matched.Count == 1)
+        {
+          // found one exact match
+          var person = matched[0];
+          vote.StatusCode = VoteStatusCode.Ok;
+          vote.PersonGuid = person.PersonGuid;
+          vote.PersonCombinedInfo = person.CombinedInfo;
+          vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid; // status code will be updated later if this is set
+        }
+
+        Db.Vote.Add(vote);
         Db.SaveChanges();
 
         voteCacher.UpdateItemAndSaveCache(vote);
@@ -803,7 +870,7 @@ namespace TallyJ.CoreModels
       if (!currentLocationGuid.HasContent())
       {
         var locationModel = new LocationModel();
-        currentLocationGuid = locationModel.GetLocations(false).First().LocationGuid;
+        currentLocationGuid = locationModel.GetLocations_Physical().First().LocationGuid;
         UserSession.CurrentLocationGuid = currentLocationGuid;
       }
       var computerCode = UserSession.CurrentComputerCode;

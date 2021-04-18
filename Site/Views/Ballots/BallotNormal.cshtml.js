@@ -312,16 +312,19 @@
 
     var ballotH3 = local.tabList.find('h3').eq(tabNum.ballotListing);
     var addVoteH3 = local.tabList.find('h3').eq(tabNum.ballotEdit);
+
     // show location status (if there are locations, and if not online)
     var locationStatusH3 = local.tabList.find('h3').eq(tabNum.location);
 
+    console.log(local.location)
+
     // show headings
     ballotH3.show();
-    addVoteH3.toggle(!local.location.IsOnline);
-    locationStatusH3.toggle(!local.location.IsOnline);
+    addVoteH3.toggle(local.location.IsPhysical);
+    locationStatusH3.toggle(local.location.IsPhysical);
 
     // show add if a ballot is selected (regular) or raw vote is selected (online)
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
       if ($('.VoteHost.rawTarget').length !== 0) {
         addVoteH3.show().next().show();
       } else {
@@ -341,15 +344,15 @@
         ballotH3.next().show();
       }
     }
-    //    if (showLocationTab && !local.location.IsOnline) {
+    //    if (showLocationTab && local.location.IsPhysical) {
     //      local.tabList.accordion('option', 'active', tabNum.location);
     //    } else {
     //      local.tabList.accordion('option', 'active', tabNum.ballotListing);
     //    }
 
-    //    toggleAddToBallotTab(!local.location.IsOnline);
+    //    toggleAddToBallotTab(local.location.IsPhysical);
     //    local.tabList.accordion('option', 'active', tabNum.ballotListing);
-    //    showAddToThisBtn(!local.location.IsOnline);
+    //    showAddToThisBtn(local.location.IsPhysical);
 
   }
 
@@ -371,7 +374,7 @@
   //    local.addingToBallot = show;
   //    showRelevantTabs();
   //
-  //    //    if (show && !local.location.IsOnline) {
+  //    //    if (show && local.location.IsPhysical) {
   //    //      $('#btnAddToThis').show();
   //    //    } else {
   //    //      $('#btnAddToThis').hide();
@@ -453,20 +456,11 @@
       $('.LocationStatus').text(': ' + text);
     }
     var location = local.location;
-    var regularLocation = !location.IsOnline;
+    var isPhysical = location.IsPhysical;
 
-    //    console.log('hide btns', regularLocation, location.IsOnline, location);
-
-    $('#btnNewBallot, #btnNewBallot2').toggle(regularLocation);
-    $('.ballotDiv1').toggle(regularLocation);
-    $('.ballotNumEntered').toggle(regularLocation);
-    //    let hideThis = !location.IsOnline;
-    //    console.log('hide btns', hideThis, location.IsOnline, location);
-    //    $('#btnNewBallot').toggle(hideThis);
-    //    $('#btnNewBallot2').toggle(hideThis);
-    //    $('#btnAddToThis').toggle(hideThis);
-    //    $('.ballotDiv1').toggle(hideThis);
-    //    $('.ballotNumEntered').toggle(hideThis);
+    $('#btnNewBallot, #btnNewBallot2').toggle(isPhysical);
+    $('.ballotDiv1').toggle(isPhysical);
+    $('.ballotNumEntered').toggle(isPhysical);
   }
 
   function changeLocationStatus() {
@@ -608,11 +602,12 @@
 
     var ballotInfo = info.BallotInfo;
     if (ballotInfo) {
-      $('#votesPanel').css('visibility', 'visible').toggleClass('online', local.location.IsOnline);
+      $('#votesPanel').css('visibility', 'visible').toggleClass('online', local.location.IsVirtual);
 
       var ballot = ballotInfo.Ballot;
       $('.ballotCode').text(ballot.Code);
       $('#ballotStatus').text(ballot.StatusCode);
+      $('.BallotGuid').text(ballot.Guid);
 
       local.votesNeeded = ballotInfo.NumNeeded;
       local.ballotStatus = ballot.StatusCode;
@@ -624,11 +619,6 @@
 
       updateStatusDisplay(ballot);
 
-      //      var toShow = local.location.IsOnline ? tabNum.ballotListing : (ballot.StatusCode === 'TooFew' || ballot.StatusCode === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
-      //      toggleAddToBallotTab(toShow === tabNum.ballotEdit);
-      //      local.tabList.accordion('option', 'active', toShow);
-      //      showAddToThisBtn(toShow === tabNum.ballotListing);
-
       highlightBallotInList();
 
     } else {
@@ -637,7 +627,7 @@
       $('#votesPanel').css('visibility', 'hidden');
       $('#votesList').html('');
 
-      //      if (showLocationTab && !local.location.IsOnline) {
+      //      if (showLocationTab && local.location.IsPhysical) {
       //        local.tabList.accordion('option', 'active', tabNum.location);
       //      } else {
       //        local.tabList.accordion('option', 'active', tabNum.ballotListing);
@@ -817,11 +807,13 @@
       }
     });
 
-    $('#ballotHeading').text(location.IsOnline ? 'Match name for' : 'Add votes to Ballot #');
-    $('body').toggleClass('IsOnline', location.IsOnline);
-    $('body').toggleClass('IsOffline', !location.IsOnline);
+    $('#ballotHeading').text(location.IsVirtual ? 'Match name for' : 'Add votes to Ballot #');
+    $('#btnAddSpoiled').html(location.IsVirtual ? 'Mark as spoiled' : '<u>A</u>dd new or spoiled');
 
-    if (local.location.IsOnline) {
+    $('body').toggleClass('IsVirtual', location.IsVirtual);
+    $('body').toggleClass('IsPhysical', location.IsPhysical);
+
+    if (local.location.IsVirtual) {
       $('#addAnother').text('Update matched person');
     }
     else {
@@ -853,7 +845,7 @@
       ballot.onlineStatus = ballot.hasOnlineRawToFinish
         ? '- Teller to Complete'
         : '';
-      if (ballot.Code.startsWith('OL')) {
+      if (ballot.Code.startsWith('OL') || ballot.Code.startsWith('IM')) {
         ballot.onlineNum = ballot.Code.substring(2);
       }
     });
@@ -865,7 +857,9 @@
     local.ballots = list;
 
     var ballotListTemplate = local.location.IsOnline
-      ? '<div id=B{Id}>Online Voter #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+      ? '<div id=B{Id}>Online Ballot #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+      : local.location.IsImported
+      ? '<div id=B{Id}>Imported Ballot #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
       : '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>';
 
     $('#ballotList').html(ballotListTemplate.filledWithEach(list));
@@ -1148,7 +1142,7 @@
           if (info.BallotStatus === 'Ok') {
             // local.tabList.accordion('option', 'active', tabNum.ballotListing);
 
-            if (!local.location.IsOnline) {
+            if (local.location.IsPhysical) {
               $('#btnNewBallot2').effect('highlight', null, 1500);
             }
           }
@@ -1164,7 +1158,7 @@
           var msg = info.Error || info.Message;
           ShowStatusFailed(msg);
 
-          if (local.location.IsOnline) {
+          if (local.location.IsVirtual) {
             loadBallot('B' + local.ballotId, true, msg);
           }
           else {
@@ -1371,7 +1365,7 @@
       personName = `${personName} <u>${area}</u>`;
     }
 
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
       var voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
         return;
@@ -1440,7 +1434,7 @@
 
     var voteHost;
 
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
 
       voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
@@ -1504,7 +1498,7 @@
       var reasonList;
 
       if (this.invalid && this.invalid !== null) {
-        if (local.location.IsOnline) {
+        if (local.location.IsVirtual) {
           this.ineligible = this.ineligible || this.invalid;
         }
         this.InvalidReasons = local.invalidReasonsShortHtml;

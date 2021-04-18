@@ -52,6 +52,10 @@
             <xs:attribute name="EnvelopesCalledIn" type="xs:nonNegativeInteger" use="optional" />
 
             <xs:attribute name="OnlineBallots" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="ImportedBallots" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="Custom1Ballots" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="Custom2Ballots" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="Custom3Ballots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesOnline" type="xs:nonNegativeInteger" use="optional" />
 
             <xs:attribute name="BallotsNeedingReview" type="xs:nonNegativeInteger" use="optional" />

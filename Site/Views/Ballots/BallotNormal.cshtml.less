@@ -483,6 +483,12 @@ div.heading {
   }
 }
 
+.BallotGuid{
+  font-weight: normal;
+  font-size: 90%;
+  margin: 0 1em;
+}
+
 #votesPanel.showAllVotes {
   #votesList {
     max-height: none;
@@ -493,14 +499,14 @@ div.heading {
   display: none;
 }
 
-body.IsOffline {
-  .onlyOnline {
+body.IsPhysical {
+  .onlyVirtualLocation {
     display: none;
   }
 }
 
-body.IsOnline {
-  .onlyOffline {
+body.IsVirtual {
+  .onlyPhysicalLocation {
     display: none;
   }
 

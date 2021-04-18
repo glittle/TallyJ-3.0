@@ -293,6 +293,7 @@ namespace TallyJ.CoreModels.ExportImport
         EnvelopesMailedIn = rs.MailedInBallots,
         EnvelopesCalledIn = rs.CalledInBallots,
         EnvelopesOnline = rs.OnlineBallots,
+        EnvelopesImported = rs.ImportedBallots,
         EnvelopesCustom1 = rs.Custom1Ballots,
         EnvelopesCustom2 = rs.Custom2Ballots,
         EnvelopesCustom3 = rs.Custom3Ballots,

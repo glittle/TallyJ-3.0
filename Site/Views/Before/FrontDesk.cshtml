@@ -62,6 +62,13 @@
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
 <div class="Counts">
+  @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
+  {
+    <div class="Imported" data-status="Imported" title="Click to filter the list">
+      Imported
+      <i>0</i>
+    </div>
+  }
   @if (currentElection.VotingMethodsContains("O"))
   {
     <div class="Online" data-status="Online" title="Click to filter the list">
@@ -141,7 +148,11 @@
 <div id="afterList"></div>
 
 <script type="text/x-template" id="frontDeskLineTemplate">
-  <div id="P{PersonId}" class="Voter VM-{VotingMethod} OnlineProcessed-{OnlineProcessed} {extraClass}" data-name="{NameLower}">
+  <div id="P{PersonId}" class="Voter VM-{VotingMethod} OnlineProcessed-{OnlineProcessed} Imported-{Imported} {extraClass}" data-name="{NameLower}">
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
+    {
+      <div data-vm="@VotingMethodEnum.Imported.Value" class="Btn Imported {Imported} Has{HasImported}">@VotingMethodEnum.Imported.DisplayText</div>
+    }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
     {
       <div data-vm="@VotingMethodEnum.Online.Value" class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>

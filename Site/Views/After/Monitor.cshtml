@@ -13,42 +13,43 @@
   ContextItems.AddJavascriptForPage("monitorPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 }
 
-<table class="Ballots">
-  <caption>Ballots needing attention</caption>
-  <thead>
-    <tr>
-      <th>
-        Ballot
-      </th>
-      <th>
-        Status
-      </th>
-      <th>
-        Tellers
-      </th>
-      <th>
-        Location
-      </th>
-    </tr>
-  </thead>
-  <tbody id="ballotsBody" class="Hidden tbody">
-    <tr>
-      <th>
-        {Code} {^Btn}
-      </th>
-      <td>
-        {Status}
-      </td>
-      <td>
-        {Tellers}
-      </td>
-      <td>
-        {LocationName}
-      </td>
-    </tr>
-  </tbody>
-</table>
-
+<div class="BallotsHolder">
+  <table class="Ballots">
+    <caption>Ballots needing attention</caption>
+    <thead>
+      <tr>
+        <th>
+          Ballot
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+          Tellers
+        </th>
+        <th>
+          Location
+        </th>
+      </tr>
+    </thead>
+    <tbody id="ballotsBody" class="Hidden tbody">
+      <tr>
+        <th>
+          {Code} {^Btn}
+        </th>
+        <td>
+          {Status}
+        </td>
+        <td>
+          {Tellers}
+        </td>
+        <td>
+          {LocationName}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <table class="Main">
   <thead>
@@ -301,10 +302,10 @@
       </div>
     </div>
   }
-  else
+  @*else
   {
     <p class="noOnlineVoting">(Online voting is not enabled for this election.)</p>
-  }
+  }*@
 }
 
 

@@ -15,15 +15,15 @@
   ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.BallotStatus={0};".FilledWith(BallotStatusEnum.Listing.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithOnline.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithoutOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithoutOnline.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithOnline={0};".FilledWith(ContextItems.LocationModel.HasMultipleLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithoutOnline={0};".FilledWith(ContextItems.LocationModel.HasSomePhysicalLocations.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
 <div class="PullInstructions">
   <ol>
-    <li class="onlyOffline">
+    <li class="onlyPhysicalLocation">
       Each paper ballot needs to be recorded here.
     </li>
     <li>
@@ -32,20 +32,19 @@
     <li>
       Duplicate names will be noticed and marked.
     </li>
-    <li class="onlyOnline">
+    <li class="onlyPhysicalLocation">
       Be sure to update your Location's information to indicate the status of
       your counting process, and the Contact Info in case the head teller needs to contact
       you.
     </li>
-    <li class="onlyOnline">
-      For online ballots requiring finishing, click vote to select it. Can click "Find" to search for the full name or
-      the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
+    <li class="onlyVirtualLocation">
+      For online ballots requiring finishing, click a vote to select it. Click "Find" to search for the full name or
+      the F or L buttons to search by just the First or Last name. Click again to copy fewer letters!
     </li>
-    <li class="onlyOnline">
-      Please note that the "Online Voter #" displayed for online ballots is a random number and will
-      be randomly re-assigned whenever any new online ballots are processed.
+    <li class="onlyVirtualLocation">
+      Please note that the "Online Ballot #" is a random number and may change whenever any new online ballots are processed.
     </li>
-    <li class="onlyOffline">
+    <li class="onlyPhysicalLocation">
       To delete a ballot, first delete all the votes on the ballot.
     </li>
   </ol>
@@ -54,7 +53,7 @@
 <div class="Panels">
   <div class="sidePanel">
     <div id="accordion">
-      @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
+      @if (ContextItems.LocationModel.HasSomePhysicalLocations)
       {
         <h3 class="LocationStatusH3">Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
@@ -72,7 +71,7 @@
         </div>
       }
       <h3>
-        <span>Ballots</span> @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
+        <span>Ballots</span> @if (ContextItems.LocationModel.HasMultiplePhysicalLocations)
         {
           <span class="where">
             <span>-</span> <span class="LocationName" data-name="Name"></span>
@@ -85,16 +84,16 @@
             Refresh List
           </button>
         </div>
-        <div class="ballotDiv1 onlyOffline">
+        <div class="ballotDiv1 onlyPhysicalLocation">
           Ballots to enter:
           <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
         </div>
-        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right onlyOffline" accesskey="N">
+        <button id="btnNewBallot2" class="NewBallotBtns btn btn-mini btn-success float-right onlyPhysicalLocation" accesskey="N">
           Start <u>N</u>ew Ballot
         </button>
         <div class="ballotNumEntered">
           Ballots entered (<span id="showingWhat"></span>): <span id="lblNumEntered" class="lblNumEntered"></span>
-          <select id="ballotFilter" class="onlyOffline">
+          <select id="ballotFilter" class="onlyPhysicalLocation">
             <option value="">Show All</option>
             @foreach (var code in new BallotCacher().AllForThisElection.Where(b => b.ComputerCode != ComputerModel.ComputerCodeForOnline).Select(b => b.ComputerCode).Distinct().OrderBy(s => s))
             {
@@ -106,15 +105,14 @@
         </div>
       </div>
 
-      <h3 id="tabNameSearchTitle"><span>Add to Ballot <span class="ballotCode"></span></span></h3>
+      <h3><span><span id="ballotHeading"></span> <span class="ballotCode"></span></span></h3>
       <div id="tabNameSearch">
         <div class="action float-right">
           <span id="action"></span><span id="more"></span>
         </div>
-        <div class="heading">
-          <span id="ballotHeading"></span>
+        @*<div class="heading">
           Ballot # <span class="ballotCode"></span>
-        </div>
+        </div>*@
         <div>
           Search for a <u>p</u>erson:
           <span class="ui-icon ui-icon-info" id="qTipSearch"></span>
@@ -122,7 +120,7 @@
         <div class="float-right">
           <span class="ui-icon ui-icon-info float-right Clear" id="qTipSpoiled"></span>
           <button id="btnAddSpoiled" type="button" tabindex="2" accesskey="A" class="btn btn-mini btn-warn spoiledBtn float-right">
-            <u>A</u>dd new or spoiled
+            
           </button>
         </div>
         <div class="float-left" id="searchInput">
@@ -168,6 +166,7 @@
         Ballot # <span class="ballotCode"></span>
       </div>
       <span class="VoteNum">#</span> Names on the ballot
+      <span class="BallotGuid"></span>
     </div>
     <div id="votesList">
     </div>

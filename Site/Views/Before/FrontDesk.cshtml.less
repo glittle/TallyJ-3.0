@@ -231,7 +231,6 @@ p {
   overflow: auto;
   clear: both;
   padding: 3px 0;
-  //&.UseOnline {
   .Online {
     opacity: 0.25;
 
@@ -244,7 +243,6 @@ p {
       pointer-events: none;
     }
   }
-  //}
 
   .OnlineProcessed-true {
     .Btn {
@@ -254,6 +252,24 @@ p {
       &.Online {
         opacity: 1;
       }
+    }
+  }
+
+  .Imported-true {
+    .Btn {
+      opacity: 0.05;
+      pointer-events: none;
+
+      &.Imported {
+        opacity: 1;
+      }
+    }
+  }
+
+  .Imported-false {
+    .Imported {
+      opacity: 0.25;
+      pointer-events: none;
     }
   }
 

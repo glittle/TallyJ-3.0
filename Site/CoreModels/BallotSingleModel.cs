@@ -87,7 +87,7 @@ namespace TallyJ.CoreModels
       }
 
       var locationModel = new LocationModel();
-      if (locationModel.HasLocationsWithoutOnline && UserSession.CurrentLocation == null)
+      if (locationModel.HasMultiplePhysicalLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }

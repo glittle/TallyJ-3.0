@@ -17,6 +17,7 @@ namespace TallyJ.CoreModels
     private Dictionary<Guid, int> _idMap;
 
     public const string OnlineLocationName = "Online";
+    public const string ImportedLocationName = "Imported";
 
     public LocationModel(ITallyJDbContext db) : base(db)
     {
@@ -26,12 +27,31 @@ namespace TallyJ.CoreModels
     {
     }
 
-    /// <Summary>List of "normal" Locations</Summary>
-    public List<Location> GetLocations(bool includeOnlineLocation)
+
+
+    public List<Location> GetLocations_All()
     {
       var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
       return locations
-        .Where(l => includeOnlineLocation || !l.IsTheOnlineLocation)
+        .OrderBy(l => l.SortOrder)
+        .ToList();
+    }
+
+    public List<Location> GetLocations_Physical()
+    {
+      var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
+      return locations
+        .Where(l => !l.IsVirtual)
+        .OrderBy(l => l.SortOrder)
+        .ToList();
+    }
+
+    public List<Location> GetLocations_Virtual()
+    {
+      var locations = _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
+      return locations
+        .Where(l => l.IsVirtual)
+        .OrderBy(l => l.SortOrder)
         .ToList();
     }
 
@@ -39,7 +59,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return _idMap ?? (_idMap = GetLocations(true).ToDictionary(l => l.LocationGuid, l => l.C_RowId));
+        return _idMap ?? (_idMap = GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.C_RowId));
       }
     }
 
@@ -47,7 +67,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        return GetLocations(true)
+        return GetLocations_All()
           .Select(l => "{0}:{1}".FilledWith(l.C_RowId, l.Name.SerializedAsJsonString()))
           .JoinedAsString(", ")
           .SurroundContentWith("{", "}");
@@ -76,21 +96,26 @@ namespace TallyJ.CoreModels
 
     public string ShowDisabled
     {
-      get { return GetLocations(true).Count == 1 ? " disabled" : ""; }
+      get { return GetLocations_All().Count == 1 ? " disabled" : ""; }
     }
 
     /// <Summary>Does this election have more than one real location?</Summary>
-    public bool HasLocationsWithoutOnline
+    public bool HasMultiplePhysicalLocations
     {
-      get { return GetLocations(false).Count > 1; }
+      get { return GetLocations_Physical().Count > 1; }
     }
 
-    public bool HasLocationsWithOnline
+    public bool HasSomePhysicalLocations
     {
-      get { return GetLocations(true).Count > 1; }
+      get { return GetLocations_Physical().Count >= 1; }
     }
 
-    public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true, bool includeOnline = false)
+    public bool HasMultipleLocations
+    {
+      get { return GetLocations_All().Count > 1; }
+    }
+
+    public HtmlString GetLocationOptions(bool includeWhichIfNeeded = true, bool includeVirtual = false)
     {
       // for RollCall, don't need to show Online as an option to filter on
 
@@ -104,8 +129,8 @@ namespace TallyJ.CoreModels
       return
         (
         (selected == 0 && includeWhichIfNeeded ? "<option value='-1'>Which Location?</option>" : "") +
-        GetLocations(includeOnline)
-        .OrderBy(l => l.IsTheOnlineLocation)
+        (includeVirtual ? GetLocations_All() : GetLocations_Physical())
+        .OrderBy(l => l.IsVirtual)
         .ThenBy(l => l.SortOrder)
         .ThenBy(l => l.Name)
         .Select(l => new { l.C_RowId, l.Name, Selected = l.C_RowId == selected ? " selected" : "" })
@@ -117,15 +142,15 @@ namespace TallyJ.CoreModels
     /// <Summary>Does this page need to show the location selector?</Summary>
     public bool ShowLocationSelector(MenuHelper currentMenu)
     {
-      return currentMenu.ShowLocationSelection && HasLocationsWithoutOnline 
-             || currentMenu.ShowLocationSelectionWithOnline && HasLocationsWithOnline;
+      return currentMenu.ShowLocationSelection && HasMultiplePhysicalLocations
+             || currentMenu.ShowLocationSelectionWithOnline && HasMultipleLocations;
     }
 
     public JsonResult UpdateStatus(int locationId, string status)
     {
       var locationCacher = new LocationCacher(Db);
 
-      var location = GetLocations(false).SingleOrDefault(l => l.C_RowId == locationId);
+      var location = GetLocations_Physical().SingleOrDefault(l => l.C_RowId == locationId);
 
       if (location == null)
       {
@@ -135,7 +160,7 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      if (location.IsTheOnlineLocation)
+      if (location.IsVirtual)
       {
         return new
         {
@@ -177,7 +202,7 @@ namespace TallyJ.CoreModels
 
       if (currentLocation == null)
       {
-        currentLocation = new LocationModel().GetLocations(true).First();
+        currentLocation = new LocationModel().GetLocations_All().First();
       }
 
       return LocationInfoForJson(currentLocation);
@@ -202,7 +227,11 @@ namespace TallyJ.CoreModels
         location.BallotsCollected,
         location.Name,
         BallotsEntered = sum,
-        IsOnline = location.IsTheOnlineLocation
+        IsOnline = location.IsTheOnlineLocation,
+        IsImported = location.IsTheImportedLocation,
+        location.IsVirtual,
+        IsPhysical = !location.IsVirtual,
+
       };
     }
 
@@ -247,7 +276,12 @@ namespace TallyJ.CoreModels
 
     public Location GetOnlineLocation()
     {
-      return GetLocations(true).FirstOrDefault(l => l.IsTheOnlineLocation);
+      return GetLocations_All().FirstOrDefault(l => l.IsTheOnlineLocation);
+    }
+
+    public Location GetImportedLocation()
+    {
+      return GetLocations_All().FirstOrDefault(l => l.IsTheImportedLocation);
     }
 
     public JsonResult EditLocation(int id, string text, bool allowModifyOnline = false)
@@ -258,6 +292,15 @@ namespace TallyJ.CoreModels
         {
           Success = false,
           Status = $"Cannot name a location as \"{OnlineLocationName}\""
+        }.AsJsonResult();
+      }
+
+      if (text == ImportedLocationName)
+      {
+        return new
+        {
+          Success = false,
+          Status = $"Cannot name a location as \"{ImportedLocationName}\""
         }.AsJsonResult();
       }
 
@@ -278,7 +321,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        if (location.IsTheOnlineLocation && !allowModifyOnline)
+        if (location.IsVirtual && !allowModifyOnline)
         {
           return new
           {
@@ -301,7 +344,7 @@ namespace TallyJ.CoreModels
 
         // don't delete last location
         if (location.IsTheOnlineLocation && allowModifyOnline
-           || GetLocations(false).Count > 1)
+           || GetLocations_Physical().Count > 1)
         {
           // delete existing if we can
           if (!IsLocationInUse(location.LocationGuid))
@@ -391,7 +434,7 @@ namespace TallyJ.CoreModels
         }
 
         // keep "Online" at the bottom of this list.  Use Html/css to support this rule.
-        var newOrder = location.IsTheOnlineLocation ? 999 : sortOrder++;
+        var newOrder = location.IsTheOnlineLocation ? 90 : location.IsTheImportedLocation ? 91 : sortOrder++;
 
         if (location.SortOrder != newOrder)
         {

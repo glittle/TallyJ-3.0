@@ -21,8 +21,8 @@
 
   var locationModel = new LocationModel();
 
-  var hasLocations = locationModel.HasLocationsWithoutOnline;
-  var locations = locationModel.GetLocations(true).ToDictionary(l => l.LocationGuid, l => l.Name);
+  var hasMultipleLocations = locationModel.HasMultipleLocations;
+  var locations = locationModel.GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.Name);
 }
 <style>
   b {
@@ -85,7 +85,7 @@
         <td>Person</td>
         <td>Id</td>
         <td>How</td>
-        @if (hasLocations)
+        @if (hasMultipleLocations)
         {
           <td>Where</td>
         }
@@ -95,21 +95,23 @@
     <tbody>
       @foreach (var person in people)
       {
-        <tr>
-          <td class="name">@Raw(person.PersonName)</td>
-          <td class="id">@person.BahaiId</td>
-          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
-          @if (hasLocations)
+      <tr>
+        <td class="name">@Raw(person.PersonName)</td>
+        <td class="id">@person.BahaiId</td>
+        <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
+        @if (hasMultipleLocations)
+        {
+          if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out var locName))
           {
-            string locName;
-            if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
-            {
-              locName = null;
-            }
+            <td class="where"></td>
+          }
+          else
+          {
             <td class="where">@locName</td>
           }
-          <td class="when">@person.RegistrationTime</td>
-        </tr>
+        }
+        <td class="when">@person.RegistrationTime</td>
+      </tr>
       }
     </tbody>
   </table>

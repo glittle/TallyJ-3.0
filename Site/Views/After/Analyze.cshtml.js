@@ -310,6 +310,9 @@
     if (results.OnlineBallots) {
       settings.onlineTotal += results.OnlineBallots;
     }
+    if (results.ImportedBallots) {
+      settings.importedTotal += results.ImportedBallots;
+    }
     $('#totalCounts').find('span.{0}[data-name]'.filledWith(name)).each(function () {
       var span = $(this);
       var value = results[span.data('name')];

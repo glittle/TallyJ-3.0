@@ -216,12 +216,9 @@
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
                   <span class="raw">
-                    <span class="f">@json.First</span>
-                    <span class="l">@json.Last</span>
-                    @if (json.OtherInfo.HasContent())
-                    {
-                      <span class="o">@json.OtherInfo</span>
-                    }
+                    @json.First.SurroundContentWith("<span class=f>", "</span>")
+                    @json.Last.SurroundContentWith("<span class=l>", "</span>")
+                    @json.OtherInfo.SurroundContentWith("<span class=o>", "</span>")
                   </span>
                 }
               </div>
@@ -235,12 +232,9 @@
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
                   <span class="raw">
-                    <span class="f">@json.First</span>
-                    <span class="l">@json.Last</span>
-                    @if (json.OtherInfo.HasContent())
-                    {
-                      <span class="o">@json.OtherInfo</span>
-                    }
+                    @json.First.SurroundContentWith("<span class=f>", "</span>")
+                    @json.Last.SurroundContentWith("<span class=l>", "</span>")
+                    @json.OtherInfo.SurroundContentWith("<span class=o>", "</span>")
                   </span>
                 }
               </span>

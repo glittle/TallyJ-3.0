@@ -16,37 +16,43 @@
     local.uploadListTemplate = local.uploadListBody.html();
 
     $('#uploadListBody')
-      .on('click', '.MakeActive', function () {
-        var rowId = +$(this).parents('tr').data('rowid');
-        setActiveUploadRowId(rowId, true);
-      })
-      .on('click', 'button.deleteFile', function () {
-        if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
-          return;
-        }
+      .on('click',
+        '.MakeActive',
+        function() {
+          var rowId = +$(this).parents('tr').data('rowid');
+          setActiveUploadRowId(rowId, true);
+        })
+      .on('click',
+        'button.deleteFile',
+        function() {
+          if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
+            return;
+          }
 
-        var parentRow = $(this).parents('tr');
-        parentRow.css('background-color', 'red');
-        var rowId = parentRow.data('rowid');
-        CallAjax2(publicInterface.controllerUrl + '/DeleteBallotsFile', { id: rowId },
-          {
-            busy: 'Deleting'
-          },
-          function (info) {
-            if (info.previousFiles) {
-              showUploads(info);
-            }
-            if (rowId == local.activeFileRowId) {
-              local.activeFileRowId = 0;
-            }
-          });
-      })
-      .on('click', 'button.download', function () {
-        top.location.href = '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
-      })
-      .on('click', 'button.previewFile', function () {
-        getPreviewInfo();
-      });
+          var parentRow = $(this).parents('tr');
+          parentRow.css('background-color', 'red');
+          var rowId = parentRow.data('rowid');
+          CallAjax2(publicInterface.controllerUrl + '/DeleteBallotsFile',
+            { id: rowId },
+            {
+              busy: 'Deleting'
+            },
+            function(info) {
+              if (info.previousFiles) {
+                showUploads(info);
+              }
+              if (rowId == local.activeFileRowId) {
+                local.activeFileRowId = 0;
+                local.vue.activeFileRowId = local.activeFileRowId;
+              }
+            });
+        })
+      .on('click',
+        'button.download',
+        function() {
+          top.location.href =
+            '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
+        });
 
     $('#uploadListBody').on('change', 'select.codePage', function () {
       var select = $(this);
@@ -151,6 +157,12 @@
 
           resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
           $('.DbCount span').text(comma(info.count));
+
+          getPreviewInfo();
+
+        } else if (info.ImportErrors) {
+          local.vue.previewInfo = info;
+
         }
       });
   }
@@ -162,8 +174,12 @@
       }
     });
   };
-  function getPreviewInfo() {
-    CallAjax2(publicInterface.controllerUrl + '/PreviewBallotsFile', { id: local.activeFileRowId },
+  function getPreviewInfo(forceRefreshCache) {
+    CallAjax2(publicInterface.controllerUrl + '/GetBallotsPreviewInfo',
+      {
+        id: local.activeFileRowId,
+        forceRefreshCache: forceRefreshCache || false
+      },
       {
         busy: 'Reading ballot file'
       },
@@ -207,6 +223,8 @@
   function setActiveUploadRowId(rowId, highlightInList) {
     SetInStorage('ActiveUploadRowId', rowId);
     local.activeFileRowId = rowId;
+    local.vue.activeFileRowId = local.activeFileRowId;
+
     if (highlightInList) {
       $('tr[data-rowid]').removeClass('Active').addClass('NotActive');
 
@@ -232,13 +250,15 @@
   function preparePage() {
     staticSetup();
     local.activeFileRowId = GetFromStorage('ActiveUploadRowId', 0);
-
+    local.vue.activeFileRowId = local.activeFileRowId;
+    
     connectToImportHub();
 
     showUploads(publicInterface);
 
     if (!activeUploadFileRow().length) {
       local.activeFileRowId = 0;
+      local.vue.activeFileRowId = local.activeFileRowId;
       SetInStorage('ActiveUploadRowId', 0);
     } else {
       getPreviewInfo();
@@ -271,6 +291,7 @@
       data: {
         sourceSystem: 'Cdn',
         previewInfo: {},
+        activeFileRowId: 0,
         dummy: 1
       },
       computed: {
@@ -292,7 +313,7 @@
           return Plural(s, a, b, c);
         },
         getPreviewInfo: function () {
-          getPreviewInfo();
+          getPreviewInfo(true);
         },
         importNow: function () {
           importNow();

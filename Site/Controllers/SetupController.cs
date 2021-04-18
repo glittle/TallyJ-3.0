@@ -94,9 +94,9 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult PreviewBallotsFile(int id)
+    public JsonResult GetBallotsPreviewInfo(int id, bool forceRefreshCache = false)
     {
-      return new ImportBallotsModel().GetPreviewInfo(id);
+      return new ImportBallotsModel().GetPreviewInfo(id, forceRefreshCache);
     }
 
     [ForAuthenticatedTeller]

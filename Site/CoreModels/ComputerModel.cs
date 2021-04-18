@@ -29,14 +29,16 @@ namespace TallyJ.CoreModels
 
       var locationGuid = UserSession.CurrentLocationGuid;
       var locationModel = new LocationModel();
-      var hasLocationsWithoutOnline = locationModel.HasLocationsWithoutOnline;
-      if (locationGuid == Guid.Empty && !hasLocationsWithoutOnline)
+      var hasMultiplePhysicalLocations = locationModel.HasMultiplePhysicalLocations;
+      if (locationGuid == Guid.Empty && !hasMultiplePhysicalLocations)
       {
         // if only one location, learn what it is
-        var locations = new LocationCacher(Db)
-          .AllForThisElection
-          .Where(l => l.Name != LocationModel.OnlineLocationName)
-          .OrderBy(l => l.SortOrder).ToList();
+        var locations = locationModel.GetLocations_Physical();
+        // var locations = new LocationCacher(Db)
+        //   .AllForThisElection
+        //   .Where(l => l.Name != LocationModel.OnlineLocationName)
+        //   .Where(l => l.Name != LocationModel.ImportedLocationName)
+        //   .OrderBy(l => l.SortOrder).ToList();
         if (locations.Count == 0)
         {
           // missing location?  fix it
@@ -213,5 +215,6 @@ namespace TallyJ.CoreModels
     //  }
     //}
     public const string ComputerCodeForOnline = "OL";
+    public const string ComputerCodeForImported = "IM";
   }
 }

@@ -470,70 +470,6 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    //    private void SaveOnlineElection(OnlineElection onlineElectionFromBrowser, bool useOnline)
-    //    {
-    //      // save online election - ignore Guid from browser
-    //      var onlineInDb = Db.OnlineElection.FirstOrDefault(oe => oe.ElectionGuid == UserSession.CurrentElectionGuid);
-    //      if (useOnline)
-    //      {
-    //        if (onlineInDb == null)
-    //        {
-    //          onlineInDb = new OnlineElection
-    //          {
-    //            ElectionGuid = UserSession.CurrentElectionGuid,
-    //            ElectionName = UserSession.CurrentElectionName,
-    //          };
-    //          Db.OnlineElection.Add(onlineInDb);
-    //        }
-    //
-    //        var changed = onlineElectionFromBrowser.CopyPropertyValuesTo(onlineInDb, new
-    //        {
-    //          onlineInDb.CloseIsEstimate,
-    //          onlineInDb.WhenOpen,
-    //          onlineInDb.WhenClose,
-    //        }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray());
-    //
-    //        if (changed)
-    //        {
-    //          Db.SaveChanges();
-    //
-    //          new AllVotersHub()
-    //            .UpdateVoters(new
-    //            {
-    //              changed = true,
-    //              onlineInDb.WhenClose,
-    //              onlineInDb.WhenOpen,
-    //              onlineInDb.CloseIsEstimate,
-    //            });
-    //        }
-    //        UserSession.UsingOnlineElection = true;
-    //      }
-    //      else
-    //      {
-    //        if (onlineInDb != null)
-    //        {
-    //          Db.OnlineElection.Remove(onlineInDb);
-    //          Db.SaveChanges();
-    //        }
-    //        UserSession.UsingOnlineElection = false;
-    //      }
-    //
-    //      new AllVotersHub().UpdateVoters(new { changed = true });
-    //
-    //    }
-
-    //    public bool JoinIntoElection(int wantedElectionId, Guid oldComputerGuid)
-    //    {
-    //      var electionGuid = Db.Election.Where(e => e.C_RowId == wantedElectionId).Select(e => e.ElectionGuid)
-    //          .FirstOrDefault();
-    //      if (electionGuid == Guid.Empty)
-    //      {
-    //        return false;
-    //      }
-    //
-    //      return JoinIntoElection(electionGuid, oldComputerGuid);
-    //    }
-
     public bool JoinIntoElection(Guid wantedElectionGuid, Guid oldComputerGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
@@ -953,131 +889,12 @@ namespace TallyJ.CoreModels
       new PublicHub().TellPublicAboutVisibleElections();
     }
 
-    //    public bool ProcessPulse()
-    //    {
-    //      if (!UserSession.CurrentElectionGuid.HasContent())
-    //      {
-    //        return false;
-    //      }
-    //
-    //
-    //      //      var sharer = new ElectionStatusSharer();
-    //      //      var sharedState = sharer.GetStateFor(UserSession.CurrentElectionGuid);
-    //      //      var someoneElseChangedTheStatus = sharedState != election.TallyStatus;
-    //      //      if (someoneElseChangedTheStatus)
-    //      //      {
-    //      //        //election = GetFreshFromDb(election.ElectionGuid);
-    //      //        sharer.SetStateFor(election);
-    //      //      }
-    //
-    //      UpdateListedForPublicTime();
-    //
-    //      //      return someoneElseChangedTheStatus;
-    //      return true;
-    //    }
-    /// <Summary>Do any processing for the election</Summary>
-    /// <returns> True if the status changed </returns>
-    /// <summary>
-    ///   Should be called whenever the known teller has contacted us
-    /// </summary>
-    //    public static void UpdateListedForPublicTime()
-    //    {
-    //      if (!UserSession.IsKnownTeller)
-    //      {
-    //        return;
-    //      }
-    //
-    //      var election = UserSession.CurrentElection;
-    //      if (election == null || !election.ListForPublic.AsBoolean())
-    //      {
-    //        return;
-    //      }
-    //
-    //      // don't bother saving this to the database
-    //      var now = DateTime.Now;
-    //
-    //      if (now - election.ListedForPublicAsOf < 1.minutes())
-    //      {
-    //        // don't need to update in less than a minute
-    //        return;
-    //      }
-    //
-    //      election.ListedForPublicAsOf = now;
-    //
-    //      var electionCacher = new ElectionCacher(Db);
-    //      electionCacher.UpdateItemAndSaveCache(election);
-    //    }
-
-    //public void UpdateElectionWhenComputerFreshnessChanges(List<Computer> computers = null)
-    //{
-    //  var currentElection = UserSession.CurrentElection;
-    //  if (currentElection == null)
-    //  {
-    //    return;
-    //  }
-
-    //  var lastContactOfTeller = (computers ?? new ComputerCacher().AllForThisElection)
-    //    .Where(c => c.AuthLevel == "Known")
-    //    .Max(c => c.LastContact);
-
-    //  if (lastContactOfTeller != null &&
-    //      (currentElection.ListedForPublicAsOf == null
-    //       ||
-    //       Math.Abs((DateTime.Now - lastContactOfTeller.Value).TotalMinutes) >
-    //       5.minutes().TotalMinutes))
-    //  {
-    //    currentElection.ListedForPublicAsOf = lastContactOfTeller;
-    //    new ElectionCacher(Db).UpdateItemAndSaveCache(currentElection);
-    //  }
-
-    //  //new PublicElectionLister().UpdateThisElectionInList();
-    //  new PublicHub().TellPublicAboutVisibleElections();
-
-    //}
-    // public static class CanVoteOrReceive
-    // {
-    //   public const string All = "A";
-    //   public const string NamedPeople = "N";
-    // }
-
     public static class ElectionMode
     {
       public const string Normal = "N";
       public const string TieBreak = "T";
       public const string ByElection = "B";
     }
-
-    //    public JsonResult CloseOnline(int minutes, bool est)
-    //    {
-    //      var electionCacher = new ElectionCacher(Db);
-    //
-    //      var election = UserSession.CurrentElection;
-    //      Db.Election.Attach(election);
-    //
-    //      election.OnlineWhenClose = minutes == 0
-    //        ? DateTime.Now.ChopToMinute()
-    //        : DateTime.Now.ChopToMinute().AddMinutes(minutes);
-    //      election.OnlineCloseIsEstimate = est;
-    //
-    //      Db.SaveChanges();
-    //
-    //      electionCacher.UpdateItemAndSaveCache(election);
-    //
-    //      new AllVotersHub()
-    //        .UpdateVoters(new
-    //        {
-    //          election.OnlineWhenClose,
-    //          election.OnlineWhenOpen,
-    //          election.OnlineCloseIsEstimate,
-    //        });
-    //
-    //      return new
-    //      {
-    //        success = true,
-    //        election.OnlineWhenClose,
-    //        election.OnlineCloseIsEstimate,
-    //      }.AsJsonResult();
-    //    }
 
     public JsonResult ProcessOnlineBallots()
     {
@@ -1142,6 +959,7 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
+      // map person guids to their possible voter ids (email and/or phone)
       var voterIdList = ballotInfoList
         .Where(b => b.p.Email.HasContent())
         .Select(b => new { VoterId = b.p.Email, b.p.PersonGuid })
@@ -1188,7 +1006,7 @@ namespace TallyJ.CoreModels
         var poolList = completePool.Take(numToElect).ToList();
         if (poolList.Count != numToElect)
         {
-          problems.Add($"Pool too small ({completePool.Count})" + name);
+          problems.Add($"Incorrect number of votes ({completePool.Count})" + name);
           continue;
         }
 
@@ -1270,14 +1088,14 @@ namespace TallyJ.CoreModels
         }
       }
 
-      // all ballots done - resort all (include any alrady processed)
+      // all ballots done - resort all (include any already processed)
       var onlineBallots = Db.Ballot
         .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
         .Where(b => b.ComputerCode == ComputerModel.ComputerCodeForOnline)
         .ToList();
 
-      var rnd = new Random();
-      var sorted = onlineBallots.OrderBy(b => rnd.Next(0, 99999)).ToList();
+      // sort of random, by guid (won't keep changing) but new ones will be inserted randomly
+      var sorted = onlineBallots.OrderBy(b => b.BallotGuid).ToList();
 
       var ballotNum = 1;
       sorted.ForEach(b =>

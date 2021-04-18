@@ -859,7 +859,8 @@ namespace TallyJ.CoreModels
       ResultSummaryCalc.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
       ResultSummaryCalc.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
       ResultSummaryCalc.OnlineBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Online);
-      
+      ResultSummaryCalc.ImportedBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Imported);
+
       ResultSummaryCalc.Custom1Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom1);
       ResultSummaryCalc.Custom2Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom2);
       ResultSummaryCalc.Custom3Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom3);
@@ -908,7 +909,9 @@ namespace TallyJ.CoreModels
         ? manualOverride.Custom3Ballots.Value
         : ResultSummaryCalc.Custom3Ballots.GetValueOrDefault();
 
-
+      ResultSummaryFinal.ImportedBallots = 
+        ResultSummaryCalc.ImportedBallots.GetValueOrDefault();
+      
       ResultSummaryFinal.OnlineBallots =
         ResultSummaryCalc.OnlineBallots.GetValueOrDefault();
 

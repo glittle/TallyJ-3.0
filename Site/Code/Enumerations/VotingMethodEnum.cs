@@ -15,6 +15,7 @@ namespace TallyJ.Code.Enumerations
     public static readonly VotingMethodEnum CalledIn = new VotingMethodEnum("C", "Called In");
     public static readonly VotingMethodEnum Registered = new VotingMethodEnum("R", "Registered");
     public static readonly VotingMethodEnum Online = new VotingMethodEnum("O", "Online");
+    public static readonly VotingMethodEnum Imported = new VotingMethodEnum("I", "Imported");
     public static readonly VotingMethodEnum Custom1 = new VotingMethodEnum("1", "Custom1");
     public static readonly VotingMethodEnum Custom2 = new VotingMethodEnum("2", "Custom2");
     public static readonly VotingMethodEnum Custom3 = new VotingMethodEnum("3", "Custom3");
@@ -31,6 +32,7 @@ namespace TallyJ.Code.Enumerations
       Add(Custom1);
       Add(Custom2);
       Add(Custom3);
+      Add(Imported);
       Add(Unknown);
     }
 

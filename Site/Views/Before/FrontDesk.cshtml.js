@@ -74,6 +74,11 @@
       updatePeople(info);
     };
 
+    hub.client.reloadPage = function (info) {
+      console.log('signalR: reloadPage');
+      location.reload();
+    };
+
     startSignalR(function () {
       console.log('Joining frontDesk hub');
       CallAjaxHandler(publicInterface.controllerUrl + '/JoinFrontDeskHub', { connId: site.signalrConnectionId });
@@ -133,6 +138,7 @@
       $('.Counts .{0} i'.filledWith(name)).text(num);
     }
     sumUp('Online');
+    sumUp('Imported');
     sumUp('CalledIn');
     sumUp('MailedIn');
     sumUp('DroppedOff');
@@ -442,10 +448,10 @@
       var btnCode;
       var keyCode = String.fromCharCode(key);
       switch (keyCode) {
-        case 'I':
         case 'P': // in person
           btnCode = 'P';
           break;
+        // case 'I': // imported
         case 'O': // online
         case 'C': // called in (if used)
         case 'R': // received (if used)
@@ -519,7 +525,8 @@
     if (!person) {
       return;
     }
-    if (person.OnlineProcessed) {
+    
+    if (person.OnlineProcessed || person.Imported) {
       // teller may have used keyboard to change (mouse is blocked)
       return;
     }

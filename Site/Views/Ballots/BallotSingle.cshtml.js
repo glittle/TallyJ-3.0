@@ -308,11 +308,11 @@
 
     // show headings
     ballotH3.show();
-    addVoteH3.toggle(!local.location.IsOnline);
-    locationStatusH3.toggle(!local.location.IsOnline);
+    addVoteH3.toggle(local.location.IsPhysical);
+    locationStatusH3.toggle(local.location.IsPhysical);
 
     // show add if a ballot is selected (regular) or raw vote is selected (online)
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
       $('#addAnother').text('Update matched person');
       if ($('.VoteHost.rawTarget').length !== 0) {
         addVoteH3.show().next().show();
@@ -340,7 +340,7 @@
     //    local.tabList.find('h3').hide().next().hide();
     //
     //    // show location status if not online
-    //    if (!local.location.IsOnline) {
+    //    if (local.location.IsPhysical) {
     //      local.tabList.find('h3').eq(tabNum.location).show().next().show();
     //    }
     //
@@ -348,7 +348,7 @@
     //    local.tabList.find('h3').eq(tabNum.ballotListing).show().next().show();
     //
     //    // show add if a ballot is selected (regular) or raw vote is selected (online)
-    //    if (local.location.IsOnline) {
+    //    if (local.location.IsVirtual) {
     //      $('#addAnother').text('Update matched person');
     //      if ($('.VoteHost.rawTarget').length !== 0) {
     //        local.tabList.find('h3').eq(tabNum.ballotEdit).show().next().show();
@@ -438,13 +438,13 @@
       $('.LocationStatus').text(': ' + text);
     }
     var location = local.location;
-    var regularLocation = !location.IsOnline;
+    var isPhysical = location.IsPhysical;
 
-    //    console.log('hide btns', regularLocation, location.IsOnline, location);
+    //    console.log('hide btns', regularLocation, location.IsVirtual, location);
 
-    $('#btnNewBallot').toggle(regularLocation && needBallotForThisComputer());
-    $('.ballotDiv1').toggle(regularLocation);
-    $('.ballotNumEntered').toggle(regularLocation);
+    $('#btnNewBallot').toggle(isPhysical && needBallotForThisComputer());
+    $('.ballotDiv1').toggle(isPhysical);
+    $('.ballotNumEntered').toggle(isPhysical);
   }
 
   function needBallotForThisComputer() {
@@ -591,7 +591,7 @@
 
     var ballotInfo = info.BallotInfo;
     if (ballotInfo) {
-      $('#votesPanel').css('visibility', 'visible').toggleClass('online', local.location.IsOnline);
+      $('#votesPanel').css('visibility', 'visible').toggleClass('online', local.location.IsVirtual);
 
       var ballot = ballotInfo.Ballot;
       $('.ballotCode').text(ballot.Code);
@@ -606,7 +606,7 @@
 
       updateStatusDisplay(ballot);
 
-      //      var toShow = local.location.IsOnline 
+      //      var toShow = local.location.IsVirtual 
       //        ? tabNum.ballotListing 
       //        : (ballot.StatusCode === 'TooFew' || ballot.StatusCode === 'Empty') 
       //          ? tabNum.ballotEdit 
@@ -737,8 +737,8 @@
       }
     });
 
-    $('#ballotHeading').text(location.IsOnline ? 'Match name for' : 'Add votes to Ballot #');
-    $('body').toggleClass('IsOnline', location.IsOnline);
+    $('#ballotHeading').text(location.IsVirtual ? 'Match name for' : 'Add votes to Ballot #');
+    $('body').toggleClass('IsVirtual', location.IsVirtual);
   };
 
   function showBallotCount(numEnteredOnThisComputer, numEnteredInLocation) {
@@ -775,8 +775,8 @@
     var list = extendBallots(info.Ballots);
     local.ballots = list;
 
-    var ballotListTemplate = local.location.IsOnline
-      ? '<div id=B{Id}>Online Voter ({Code} - {onlineStatus})</div>'
+    var ballotListTemplate = local.location.IsVirtual
+      ? '<div id=B{Id}>Online Ballot ({Code} - {onlineStatus})</div>'
       : '<div id=B{Id}>Teller Ballots {Code} &nbsp; (<span>{people}</span> {peoplePlural}, <span>{Count}</span> vote{ballotPlural})</div>';
 
     $('#ballotList').html(ballotListTemplate.filledWithEach(list));
@@ -1127,7 +1127,7 @@
 
           input.prop('readonly', false);
 
-          if (local.location.IsOnline) {
+          if (local.location.IsVirtual) {
             loadBallot('B' + local.ballotId, true, msg);
           }
           else {
@@ -1291,7 +1291,7 @@
       personName = `${personName} <u>${area}</u>`;
     }
 
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
       var voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {
         return;
@@ -1360,7 +1360,7 @@
 
     var voteHost;
 
-    if (local.location.IsOnline) {
+    if (local.location.IsVirtual) {
 
       voteHost = $('.rawTarget');
       if (voteHost.length !== 1) {

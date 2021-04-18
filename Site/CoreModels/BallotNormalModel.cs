@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -32,7 +33,8 @@ namespace TallyJ.CoreModels
       }
 
       var filter = UserSession.CurrentBallotFilter;
-      if (UserSession.CurrentLocationName == LocationModel.OnlineLocationName)
+      if (UserSession.CurrentLocationName == LocationModel.OnlineLocationName
+       || UserSession.CurrentLocationName == LocationModel.ImportedLocationName)
       {
         // ignore filter for online
         filter = null;
@@ -69,6 +71,7 @@ namespace TallyJ.CoreModels
       return new
       {
         Id = b.C_RowId,
+        Guid = b.ComputerCode == ComputerModel.ComputerCodeForImported ? (Guid?)b.BallotGuid : null,
         Code = b.C_BallotCode,
         b.StatusCode,
         StatusCodeText = BallotStatusEnum.TextFor(b.StatusCode),
@@ -83,7 +86,7 @@ namespace TallyJ.CoreModels
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
       var locationModel = new LocationModel();
-      if (locationModel.HasLocationsWithoutOnline && UserSession.CurrentLocation == null)
+      if (locationModel.HasMultiplePhysicalLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }

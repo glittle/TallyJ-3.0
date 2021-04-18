@@ -52,7 +52,7 @@ h2 span {
   display: block;
 }
 .votingMethods .el-checkbox.partialDisable .el-checkbox__inner {
-  background-color: #95c9ff;
+  background-color: #409EFF;
 }
 .votingMethods .el-checkbox.partialDisable .el-checkbox__inner::after {
   border-color: #fff;

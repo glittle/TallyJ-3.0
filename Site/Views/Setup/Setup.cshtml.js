@@ -41,6 +41,9 @@
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
         },
+        showImported: function() {
+          return this.votingMethodsArray.includes('I');
+        },
         closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
         }

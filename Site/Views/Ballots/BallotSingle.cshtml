@@ -14,8 +14,8 @@
   ContextItems.AddJavascriptForPage("ballotPage.BallotInfo={0};".FilledWith(Model.CurrentBallotInfo().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Ballots={0};".FilledWith(Model.CurrentBallotsInfoList().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.Location={0};".FilledWith(ContextItems.LocationModel.CurrentBallotLocationJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithOnline.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithoutOnline={0};".FilledWith(ContextItems.LocationModel.HasLocationsWithoutOnline.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithOnline={0};".FilledWith(ContextItems.LocationModel.HasMultipleLocations.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("ballotPage.HasLocationsWithoutOnline={0};".FilledWith(ContextItems.LocationModel.HasMultiplePhysicalLocations.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("ballotPage.isGuest={0};".FilledWith(UserSession.IsGuestTeller.SerializedAsJsonString()));
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
@@ -35,7 +35,7 @@
         your counting process, and the Contact Info in case the head teller needs to contact
         you.
       </li>
-    <li class="onlyOnline">
+    <li class="onlyVirtualLocation">
       For online ballots, click the Find button to copy the full name to the search box, or
       the F or L buttons to copy just the First or Last name. Click again to copy fewer letters.
     </li>
@@ -45,7 +45,7 @@
 <div class="Panels">
   <div class="sidePanel">
     <div id="accordion">
-      @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
+      @if (ContextItems.LocationModel.HasMultiplePhysicalLocations)
       {
         <h3 class="LocationStatusH3">Location Status<span class="LocationStatus"></span></h3>
         <div class="locationInfo">
@@ -63,12 +63,12 @@
         </div>
       }
       <h3>
-        <span class="onlyOffline">Computers</span>
-        <span class="onlyOffline">Ballots</span>
-        @if (ContextItems.LocationModel.HasLocationsWithoutOnline)
+        <span class="onlyPhysicalLocation">Computers</span>
+        <span class="onlyPhysicalLocation">Ballots</span>
+        @if (ContextItems.LocationModel.HasMultiplePhysicalLocations)
         {
           <span class="where">
-            <span class="onlyOffline">-</span> <span class="LocationName" data-name="Name"></span>
+            <span class="onlyPhysicalLocation">-</span> <span class="LocationName" data-name="Name"></span>
           </span>
         }
       </h3>
@@ -82,7 +82,7 @@
           Ballots to enter:
           <input id="txtNumCollected" type="number" min="0" data-name="BallotsCollected" class="txtNumCollected" />
         </div>
-        <div class="float-right onlyOffline">
+        <div class="float-right onlyPhysicalLocation">
           <button type="button" id="btnNewBallot" class="btn btn-mini NewBallotBtns">
             Add for Computer @UserSession.CurrentComputerCode
           </button>
@@ -188,7 +188,7 @@
       </div>
     </div>
     <div class="Top">
-      <input class="Vote onlyOffline" type="number" min="0" value='{count}' tabindex="2">
+      <input class="Vote onlyPhysicalLocation" type="number" min="0" value='{count}' tabindex="2">
       <span class="NameInfo">
         <span class="Invalid">Spoiled: </span>
         <span class="Name">{^Display}</span>

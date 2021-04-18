@@ -102,6 +102,10 @@ namespace Tests.BusinessTests
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
+      resultSummaryFinal.ImportedBallots.ShouldEqual(0);
+      resultSummaryFinal.Custom1Ballots.ShouldEqual(0);
+      resultSummaryFinal.Custom2Ballots.ShouldEqual(0);
+      resultSummaryFinal.Custom3Ballots.ShouldEqual(0);
       resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);

@@ -233,6 +233,14 @@ UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.Reason == 
         @Model.OnlineBallots.AsInt().ToString("N0")
       </td>
     </tr>
+    <tr class="rpt1Detail @(Model.ImportedBallots == 0 ? "Hidden" : "")">
+      <td>
+        Ballots imported
+      </td>
+      <td>
+        @Model.ImportedBallots.AsInt().ToString("N0")
+      </td>
+    </tr>
     <tr class="rpt1Detail @(Model.CalledInBallots == 0 ? "Hidden" : "")">
       <td>
         Ballots phoned-in

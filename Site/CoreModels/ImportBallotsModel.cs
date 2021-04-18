@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using CsQuery.ExtensionMethods;
 using Microsoft.Owin.Security.DataHandler;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -14,6 +15,7 @@ using TallyJ.Code.Session;
 using TallyJ.Controllers;
 using TallyJ.CoreModels.ExportImport;
 using TallyJ.CoreModels.Helper;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.CoreModels
@@ -140,14 +142,53 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-
-
       return new
       {
       }.AsJsonResult();
     }
 
-    public JsonResult GetPreviewInfo(int id)
+    public JsonResult GetPreviewInfo(int id, bool forceRefreshCache)
+    {
+      if (forceRefreshCache)
+      {
+        new ElectionCacher().DropThisCache();
+        new LocationCacher().DropThisCache();
+        new BallotCacher().DropThisCache();
+        new VoteCacher().DropThisCache();
+        new PersonCacher().DropThisCache();
+      }
+
+      var electionInfo = ProcessFile(id);
+
+      return ElectionPreviewInfo(electionInfo);
+    }
+
+    public JsonResult LoadFile(int id)
+    {
+      var electionInfo = ProcessFile(id);
+
+      if (electionInfo.ImportErrors.Any())
+      {
+        return ElectionPreviewInfo(electionInfo);
+      }
+
+      return ImportPeopleAndBallots(electionInfo);
+    }
+
+    private static JsonResult ElectionPreviewInfo(CdnImportDto electionInfo)
+    {
+      return new
+      {
+        numBallots = electionInfo.Ballots.Count,
+        voters = electionInfo.Voters.OrderBy(v => v.lastname).ThenBy(v => v.firstname),
+        electionInfo.locality,
+        electionInfo.ImportErrors,
+        electionInfo.AlreadyLoaded,
+        electionInfo.HasUnregistered
+      }.AsJsonResult();
+    }
+
+    private CdnImportDto ProcessFile(int id)
     {
       var importFile =
         Db.ImportFile.SingleOrDefault(
@@ -158,15 +199,7 @@ namespace TallyJ.CoreModels
       }
 
       var electionInfo = ParseCdnBallotsFile(importFile);
-
-      return new
-      {
-        numBallots = electionInfo.Ballots.Count,
-        voters = electionInfo.Voters,
-        electionInfo.locality,
-        electionInfo.ImportErrors,
-        electionInfo.HasUnregistered
-      }.AsJsonResult();
+      return electionInfo;
     }
 
     private CdnImportDto ParseCdnBallotsFile(ImportFile importFile)
@@ -240,9 +273,7 @@ namespace TallyJ.CoreModels
 
           foreach (XmlElement incomingVote in incomingBallot.SelectNodes("vote"))
           {
-            var voteLine = new VoteLine();
-            incomingVote.CopyAttributeValuesTo(voteLine);
-            voteLine.Text = incomingVote.InnerText;
+            var voteLine = new OnlineRawVote(incomingVote.InnerText);
             ballot.Votes.Add(voteLine);
           }
         }
@@ -253,12 +284,12 @@ namespace TallyJ.CoreModels
         return electionInfo;
       }
 
-      AnalyzeImportFile(electionInfo);
+      AnalyzeImportData(electionInfo);
 
       return electionInfo;
     }
 
-    private void AnalyzeImportFile(CdnImportDto electionInfo)
+    private void AnalyzeImportData(CdnImportDto electionInfo)
     {
 
       // file is good; analyze more
@@ -274,7 +305,7 @@ namespace TallyJ.CoreModels
       foreach (var incomingVoter in electionInfo.Voters)
       {
         var matched = knownPeople
-          // match on Bahai ID (valid for Canada)
+          // match on Baha'i ID (valid for Canada)
           .Where(p => p.BahaiId == incomingVoter.bahaiid)
           .ToList();
 
@@ -288,7 +319,7 @@ namespace TallyJ.CoreModels
 
           if (!person.CanVote.GetValueOrDefault())
           {
-            electionInfo.ImportErrors.Add($"{person.FullNameFL} is not able vote.");
+            electionInfo.ImportErrors.Add($"{person.FullNameFL} is not permitted to vote.");
           }
         }
         else
@@ -306,6 +337,9 @@ namespace TallyJ.CoreModels
 
       // check ballots
       var knownBallots = new BallotCacher(Db).AllForThisElection;
+      var numToElect = UserSession.CurrentElection.NumberToElect.AsInt(0);
+      var invalidNumVotes = false;
+
       foreach (var incomingBallot in electionInfo.Ballots)
       {
         var matched = knownBallots.FirstOrDefault(b => b.BallotGuid == incomingBallot.guid);
@@ -313,6 +347,16 @@ namespace TallyJ.CoreModels
         {
           incomingBallot.AlreadyLoaded = true;
         }
+
+        if (incomingBallot.Votes.Count != numToElect)
+        {
+          invalidNumVotes = true;
+        }
+      }
+
+      if (invalidNumVotes)
+      {
+        electionInfo.ImportErrors.Add($"At least one ballot has the incorrect number of votes. Expecting {numToElect}.");
       }
 
       var numBallotsAlreadyIn = electionInfo.Ballots.Count(b => b.AlreadyLoaded);
@@ -321,6 +365,7 @@ namespace TallyJ.CoreModels
         if (numBallotsAlreadyIn == electionInfo.Ballots.Count)
         {
           electionInfo.ImportErrors.Add("All ballots already loaded");
+          electionInfo.AlreadyLoaded = true;
         }
         else
         {
@@ -329,7 +374,145 @@ namespace TallyJ.CoreModels
       }
     }
 
+    private JsonResult ImportPeopleAndBallots(CdnImportDto importedElectionInfo)
+    {
+      // electionInfo has been cleaned, but make sure!
+      if (importedElectionInfo.ImportErrors.Any() || !importedElectionInfo.Ballots.Any() || !importedElectionInfo.Voters.Any())
+      {
+        return ElectionPreviewInfo(importedElectionInfo);
+      }
+
+      var result = new List<string>();
+
+      // update election configuration
+      var now = DateTime.Now;
+      var election = UserSession.CurrentElection;
+
+      if (election.TallyStatus == ElectionTallyStatusEnum.Finalized.Value)
+      {
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
+      }
+
+      // upgrade this election to support Imported!
+      var locationModel = new LocationModel();
+
+      var importLocation = locationModel.GetImportedLocation();
+      if (importLocation == null)
+      {
+        importLocation = new Location
+        {
+          Name = LocationModel.ImportedLocationName,
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = election.ElectionGuid,
+          SortOrder = 91
+        };
+        Db.Location.Add(importLocation);
+        Db.SaveChanges();
+        new LocationCacher(Db).UpdateItemAndSaveCache(importLocation);
+      }
+
+      if (!election.VotingMethodsContains(VotingMethodEnum.Imported))
+      {
+        Db.Election.Attach(election);
+        election.VotingMethods += VotingMethodEnum.Imported.Value;
+        Db.SaveChanges();
+        new FrontDeskHub().ReloadPage();
+      }
+
+      // ready to start
+      var personCacher = new PersonCacher(Db);
+      var peopleModel = new PeopleModel();
+
+      // marked who voted via imported ballot
+      foreach (var voter in importedElectionInfo.Voters)
+      {
+        var person = personCacher.AllForThisElection.Single(p => p.PersonGuid == voter.PersonGuid);
+        Db.Person.Attach(person);
+        person.VotingMethod = VotingMethodEnum.Imported.Value;
+        person.VotingLocationGuid = importLocation.LocationGuid;
+        person.RegistrationTime = now;
+        person.EnvNum = null;
+
+        var log = person.RegistrationLog;
+        log.Add(new[]
+        {
+          peopleModel.ShowRegistrationTime(person, true),
+          VotingMethodEnum.TextFor(person.VotingMethod),
+        }.JoinedAsString("; ", true));
+        person.RegistrationLog = log;
+
+        peopleModel.UpdateFrontDeskListing(person);
+      }
+
+      // load ballots
+      var electionGuid = election.ElectionGuid;
+      var problems = new List<string>();
+      var numBallotsCreated = 0;
+      var ballotNum = 0;
+
+      var ballotModel = BallotModelFactory.GetForCurrentElection();
+      var ballotCacher = new BallotCacher(Db);
+      var voteCacher = new VoteCacher(Db);
+      var allPeople = new PersonCacher(Db).AllForThisElection;
+
+      foreach (var importedBallot in importedElectionInfo.Ballots)
+      {
+        ballotNum++;
+
+        try
+        {
+          var ballotCreated = ballotModel.CreateBallotForImportedBallot(importedBallot,
+            importLocation.LocationGuid, out var message, ballotCacher, voteCacher, allPeople);
+          if (ballotCreated)
+          {
+            numBallotsCreated++;
+          }
+          else
+          {
+            problems.Add(message + " - ballot #" + ballotNum);
+          }
+        }
+        catch (Exception e)
+        {
+          problems.Add($"Error: {e.LastException().Message} - #{ballotNum}");
+        }
+
+      }
+
+      Db.SaveChanges();
+
+      // all ballots done - resort all (include any already processed)
+      var onlineBallots = Db.Ballot
+        .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid && l.LocationGuid == importLocation.LocationGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
+        .ToList();
+
+      // sort of random, by guid (won't keep changing) but new ones will be inserted randomly
+      var sorted = onlineBallots.OrderBy(b => b.BallotGuid).ToList();
+
+      ballotNum = 1;
+      sorted.ForEach(b =>
+      {
+        b.BallotNumAtComputer = ballotNum++;
+      });
+      Db.SaveChanges();
+      new BallotCacher().DropThisCache();
+
+      foreach (var problem in problems)
+      {
+        result.Add("~E " + problem);
+      }
+
+      result.Add($"Created {numBallotsCreated} ballot{numBallotsCreated.Plural()}.");
+      result.Add($"Import Complete");
+
+      return new
+      {
+        result
+      }.AsJsonResult();
+    }
+
     // custom for Canadian import.  If/when more are added, can make more flexible.
+
 
     [Serializable]
     public class CdnImportDto
@@ -347,6 +530,7 @@ namespace TallyJ.CoreModels
       public List<Ballot> Ballots { get; set; }
       public List<string> ImportErrors { get; set; }
       public bool HasUnregistered { get; set; }
+      public bool AlreadyLoaded { get; set; }
     }
 
     [Serializable]
@@ -364,30 +548,19 @@ namespace TallyJ.CoreModels
     {
       public Ballot()
       {
-        Votes = new List<VoteLine>();
+        Votes = new List<OnlineRawVote>();
       }
 
       public Guid guid { get; set; }
-      public List<VoteLine> Votes { get; set; }
+      public List<OnlineRawVote> Votes { get; set; }
       public bool AlreadyLoaded { get; set; }
     }
-
-    [Serializable]
-    public class VoteLine
-    {
-      public string Text { get; set; }
-      public int index { get; set; }
-    }
-
-    public JsonResult LoadFile(int id)
-    {
-      return new
-      {
-        result = new List<string>
-        {
-          "Not done"
-        }
-      }.AsJsonResult();
-    }
+    //
+    // [Serializable]
+    // public class VoteLine
+    // {
+    //   public string Text { get; set; }
+    //   public int index { get; set; }
+    // }
   }
 }

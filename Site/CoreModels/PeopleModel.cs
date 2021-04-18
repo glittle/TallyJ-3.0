@@ -457,7 +457,7 @@ namespace TallyJ.CoreModels
 
     public IEnumerable<object> Deselected()
     {
-      var showLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
+      var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
 
       var ballotSources = PeopleInElection // start with everyone
           .Where(
@@ -470,7 +470,7 @@ namespace TallyJ.CoreModels
           {
             PersonId = p.C_RowId,
             C_FullName = p.FullName,
-            VotedAt = showLocations ? LocationName(p.VotingLocationGuid) : null,
+            VotedAt = hasMultipleLocations ? LocationName(p.VotingLocationGuid) : null,
             When = ShowRegistrationTime(p),
             p.RegistrationTime,
             Log = FormatRegistrationLog(p),
@@ -501,6 +501,7 @@ namespace TallyJ.CoreModels
       var ballotSources = PeopleInElection // start with everyone
           .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
           .Where(p => p.VotingMethod != VotingMethodEnum.Online)
+          .Where(p => p.VotingMethod != VotingMethodEnum.Imported)
           .Where(p => p.VotingMethod != VotingMethodEnum.Registered)
           .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
           .ToList()
@@ -557,7 +558,7 @@ namespace TallyJ.CoreModels
       {
         return  new List<object>();
       }
-      var showLocations = ContextItems.LocationModel.HasLocationsWithoutOnline;
+      var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
       var useOnline = UserSession.CurrentElection.OnlineEnabled;
       var firstPersonGuid = people[0].PersonGuid;
 
@@ -584,7 +585,7 @@ namespace TallyJ.CoreModels
               {
                         ShowRegistrationTime(p),
                         ShowTellers(p),
-                        showLocations ? LocationName(p.VotingLocationGuid) : "",
+                        hasMultipleLocations ? LocationName(p.VotingLocationGuid) : "",
               }.JoinedAsString("; ", true)
                       + FormatRegistrationLog(p),
             p.VotingMethod,
@@ -595,6 +596,7 @@ namespace TallyJ.CoreModels
             Custom1 = p.VotingMethod == VotingMethodEnum.Custom1,
             Custom2 = p.VotingMethod == VotingMethodEnum.Custom2,
             Custom3 = p.VotingMethod == VotingMethodEnum.Custom3,
+            Imported = p.VotingMethod == VotingMethodEnum.Imported,
             Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
             HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
             CanBeOnline = useOnline && (p.VotingMethod == VotingMethodEnum.Online || p.Email.HasContent() || p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
@@ -657,9 +659,9 @@ namespace TallyJ.CoreModels
 
       var locationModel = new LocationModel();
 
-      var hasLocations = locationModel.HasLocationsWithoutOnline;
+      var hasMultiplePhysicalLocations = locationModel.HasMultiplePhysicalLocations;
 
-      if (hasLocations && UserSession.CurrentLocation == null)
+      if (hasMultiplePhysicalLocations && UserSession.CurrentLocation == null)
       {
         return new { Message = "Must select your location first!" }.AsJsonResult();
       }
@@ -722,7 +724,7 @@ namespace TallyJ.CoreModels
                     ShowRegistrationTime(person),
                     "De-selected",
                     ShowTellers(person),
-                    hasLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
+                    hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
                 }.JoinedAsString("; ", true));
         person.RegistrationLog = log;
       }
@@ -743,7 +745,7 @@ namespace TallyJ.CoreModels
                     ShowRegistrationTime(person),
                     VotingMethodEnum.TextFor(person.VotingMethod),
                     ShowTellers(person),
-                    hasLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
+                    hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null,
         }.JoinedAsString("; ", true));
         person.RegistrationLog = log;
 

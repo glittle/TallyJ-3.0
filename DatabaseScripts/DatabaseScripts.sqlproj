@@ -140,7 +140,7 @@
     <None Include="DatabaseScripts.publish.xml" />
     <None Include="Snapshots\TallyJ.20140121b.dacpac" />
     <None Include="Snapshots\DatabaseScripts_20140917_00-39-27.dacpac" />
-    <None Include="Change Scripts\Ver 3.2.2.sql" />
+    <None Include="Change Scripts\Ver 3.2.10.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\UsersInRoles.sql" />

@@ -7,5 +7,7 @@ namespace TallyJ.EF
   public partial class Location : IIndexedForCaching
   {
     public bool IsTheOnlineLocation => Name == LocationModel.OnlineLocationName;
+    public bool IsTheImportedLocation => Name == LocationModel.ImportedLocationName;
+    public bool IsVirtual => IsTheImportedLocation || IsTheImportedLocation;
   }
 }

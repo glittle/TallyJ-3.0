@@ -150,6 +150,11 @@ namespace TallyJ.EF
       return VotingMethods.DefaultTo("").Contains(method);
     }
 
+    public bool VotingMethodsContains(VotingMethodEnum method)
+    {
+      return VotingMethods.DefaultTo("").Contains(method.Value);
+    }
+
     public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];
     public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
     public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];

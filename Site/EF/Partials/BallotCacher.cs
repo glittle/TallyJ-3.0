@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels;
 
 namespace TallyJ.EF
 {
@@ -32,10 +33,10 @@ namespace TallyJ.EF
       return AllForThisElection.FirstOrDefault(b => b.LocationGuid == UserSession.CurrentLocationGuid && b.ComputerCode == UserSession.CurrentComputerCode);
     }
 
-    public IEnumerable<Ballot> BallotsFromOnline()
-    {
-      return AllForThisElection.Where(t => t.ComputerCode == "OL");
-    }
+    // public IEnumerable<Ballot> BallotsFromOnline()
+    // {
+    //   return AllForThisElection.Where(t => t.ComputerCode == ComputerModel.ComputerCodeForOnline);
+    // }
 
     protected override object LockCacheBaseObject
     {

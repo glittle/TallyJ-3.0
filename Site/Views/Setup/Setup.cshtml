@@ -305,8 +305,9 @@
           <el-checkbox label="@VotingMethodEnum.InPerson.Value">@VotingMethodEnum.InPerson.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.DroppedOff.Value">@VotingMethodEnum.DroppedOff.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
-          <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
+          <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText *</el-checkbox>
+          <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Imported.Value" v-if="showImported">@VotingMethodEnum.Imported.DisplayText **</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             <el-input size="small"
                       v-model="custom1"
@@ -330,8 +331,9 @@
       <td>
         <p v-if="!votingMethodsArray.length" class="warning">At least one voting method is required.</p>
         <div>Select all the methods that you are using to accept ballots from voters.</div>
-        <p>To use TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
+        <p>* To use TallyJ's Online Voting, select it in Step 4 (below).</p>
+        <p v-if="showImported">** @VotingMethodEnum.Imported.DisplayText is enabled because ballots have been imported.</p>
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">

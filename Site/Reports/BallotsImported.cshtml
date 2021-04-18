@@ -13,29 +13,18 @@
   var isSingleNameElection = election.IsSingleNameElection;
 
   var data = ballots
-    .OrderBy(b =>
+    .Join(locations.Where(l => l.Name == LocationModel.ImportedLocationName), b => b.LocationGuid, l => l.LocationGuid, (b, l) => new { b, LocationId = l.C_RowId })
+    .OrderBy(bl => bl.b.BallotNumAtComputer)
+    .Select(bl =>
     {
-      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
-      return location == null ? "" : location.Name;
-    })
-    .ThenBy(b => b.ComputerCode)
-    .ThenBy(b => b.BallotNumAtComputer)
-    .Select(b =>
-    {
-      var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
-      var locName = locations.Count > 1 && location != null ? location.Name : "";
-      var locId = location == null ? 0 : location.C_RowId;
       return new
       {
-        C_BallotCode = b.C_BallotCode,
-        Location = locName,
-        IsOnline = locName == LocationModel.OnlineLocationName,
-        IsImported = locName == LocationModel.ImportedLocationName,
-        BallotId = b.C_RowId,
-        LocationId = locId,
-        b.StatusCode,
-        Spoiled = b.StatusCode != BallotStatusEnum.Ok,
-        Votes = new BallotHelper().VoteInfosForBallot(b, votes)
+        bl.b.C_BallotCode,
+        BallotId = bl.b.C_RowId,
+        bl.LocationId,
+        bl.b.StatusCode,
+        Spoiled = bl.b.StatusCode != BallotStatusEnum.Ok,
+        Votes = new BallotHelper().VoteInfosForBallot(bl.b, votes)
           .OrderBy(v => isSingleNameElection ? v.PersonFullNameFL : v.PositionOnBallot.ToString("0000"))
           .Select(v => new
           {
@@ -79,6 +68,7 @@
   .Ballot {
     margin-top: 3px;
     counter-reset: voteNum;
+    page-break-inside: avoid;
   }
 
   .BallotSpoiled,
@@ -121,20 +111,12 @@
       padding-right: 4px;
     }
 
-  .Ballot.Imported .Vote {
-    display: inline-flex;
-  }
-
-    .Ballot.Imported .Vote::before {
-      padding-right: 4px;
-    }
-
   .raw {
     border: 1px solid grey;
     color: #444;
     background: #ececec;
     padding: 0 3px;
-    margin: 0 0 0 5px;
+    margin: 0 5px 0 0;
     display: inline-flex;
   }
 
@@ -178,16 +160,17 @@
     </div>
   </div>
   <p class="Comment">
-    This listing can be used to review ballots entered. To "re-count", check this listing against the paper ballots to ensure that all ballots were entered correctly.
+    This listing contains all the ballots that were submitted online.
+    A printed copy of this list of ballots could be stored with the paper ballots for archival purposes.
+    Please note that online votes that have not yet been processed do not appear here.
   </p>
   <table class="Ballots">
     @foreach (var ballot in data)
     {
-      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "") @(ballot.IsOnline ? "Online" : "") @(ballot.IsImported ? "Imported" : "")">
+      <tr class="Ballot @(ballot.Spoiled ? "BallotSpoiled" : "") Online">
         <td>
           <a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a>
           <div>@ballot.StatusCode</div>
-          <div>@ballot.Location</div>
         </td>
         <td>
           @foreach (var vote in ballot.Votes)
@@ -195,9 +178,6 @@
             if (isSingleNameElection)
             {
               <div class="Vote Line @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
-                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
-                <span class="Count">@vote.SingleNameElectionCount</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
@@ -207,13 +187,14 @@
                     @json.OtherInfo.SurroundContentWith("<span class=o>", "</span>")
                   </span>
                 }
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
+                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
+                <span class="Count">@vote.SingleNameElectionCount</span>
               </div>
             }
             else
             {
               <span class="Vote @(vote.Spoiled ? "Spoiled" : "")">
-                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
-                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
                 @if (vote.OnlineVoteRaw.HasContent())
                 {
                   var json = JsonConvert.DeserializeObject<OnlineRawVote>(vote.OnlineVoteRaw);
@@ -223,6 +204,8 @@
                     @json.OtherInfo.SurroundContentWith("<span class=o>", "</span>")
                   </span>
                 }
+                <span class="Person">@Raw(vote.PersonFullNameFL)</span>
+                <span class="Invalid">@vote.VoteInvalidReasonDesc</span>
               </span>
             }
           }
