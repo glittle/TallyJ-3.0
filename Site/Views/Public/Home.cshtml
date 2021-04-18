@@ -21,6 +21,11 @@
   <meta name='keywords' content="bahai,baha'i,Bahá’í,Bahá'í,Baha’i,Faith,election,ballot,tallyj,tally,tally ballots,tally votes,tally election,vote,local spiritual assembly,LSA,national spiritual assembly,NSA,unit convention,delegates,participate,mailed in,dropped off,absentee,teller, head teller,chief teller,tie-break,by election,bye election,bi-election,tied,next highest,roll call,front desk,reconcile,analyze,report,teller's report'" />
 }
 <section class="features middle">
+  <div class="badBrowser">
+    <p>Sorry, this type of web browser is not supported.</p>
+    <p>Please use a recent version of Chrome, Edge or Firefox.</p>
+    <span class="detail"></span>
+  </div>
   <section class="featureBig CenterPanel">
     <div class="top">
     </div>
@@ -51,10 +56,7 @@
         <p>For head tellers to create and administer elections for their community.</p>
       </div>
     </div>
-    <p class="badBrowser">
-      Sorry, this type of web browser is not supported. Please use a modern browser, such as Chrome, Firefox or Edge (2020+).
-      <span class="detail"></span>
-    </p>
+
 
   </section>
   <section class="featureBig JoinPanel">
@@ -72,11 +74,11 @@
       </p>
       <p class="AlreadyIn">
         Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
       </p>
       <p class="AlreadyIn">
         or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+        <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
       </p>
     }
     else if (UserSession.IsVoter)
@@ -88,11 +90,11 @@
       </p>
       <p class="AlreadyIn">
         Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
       </p>
       <p class="AlreadyIn">
         or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+        <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
       </p>
     }
     else
@@ -152,11 +154,11 @@
       </p>
       <p class="AlreadyIn">
         Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
       </p>
       <p class="AlreadyIn">
         or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+        <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
       </p>
     }
     else if (UserSession.IsVoter)
@@ -168,11 +170,11 @@
       </p>
       <p class="AlreadyIn">
         Go to the
-        <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+        <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
       </p>
       <p class="AlreadyIn">
         or
-        <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+        <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
       </p>
     }
     else
@@ -206,11 +208,11 @@
         </p>
         <p class="AlreadyIn">
           Go to the
-          <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Index", "Dashboard")'">Dashboard</button>
+          <button type="button" class="btn btn-success" onclick="location.href = '@Url.Action("Index", "Dashboard")'">Dashboard</button>
         </p>
         <p class="AlreadyIn">
           or
-          <button type="button" class="btn" onclick="logoffSignalR(); location.href='@Url.Action("LogOff", "Account")'">Log out</button>
+          <button type="button" class="btn" onclick="logoffSignalR();location.href = '@Url.Action("LogOff", "Account")'">Log out</button>
         </p>
       }
       else if (UserSession.IsVoter)
@@ -283,7 +285,8 @@
         </div>
       }
     </section>
-  }<div class="clear-fix">
+  }
+  <div class="clear-fix">
   </div>
 </section>
 
