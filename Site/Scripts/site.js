@@ -532,7 +532,7 @@ function updateElectionStatus(ev, info) {
 
   updatePasscodeDisplay(info.Listed, info.Passcode);
 
-  let isClosed = !info.Online;
+  var isClosed = !info.Online;
   $('body').toggleClass('OnlineOpen', !isClosed);
   $('body').toggleClass('OnlineClosed', isClosed);
 
