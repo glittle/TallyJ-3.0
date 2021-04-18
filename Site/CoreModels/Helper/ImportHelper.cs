@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TallyJ.Code;
 using TallyJ.EF;
@@ -17,29 +18,34 @@ namespace TallyJ.CoreModels.Helper
       {
         return new Dictionary<int, string>
                  {
-                   {1252, "English & European"},
                    {65001, "UTF-8"},
                    {1200, "UTF-16"},
+                   {1252, "Code page 1252"},
                  };
       }
     }
 
-    public static  void ExtraProcessingIfMultipartEncoded(ImportFile record)
+    public static void ExtraProcessingIfMultipartEncoded(ImportFile record)
     {
-      const string multipartDividerPrefix = "-----------------------------";
-      foreach (var codePage in Encodings.Select(encoding => encoding.Key))
+      if (record.CodePage == null)
       {
-        var textReader = new StringReader(record.Contents.AsString(codePage));
+        return;
+      }
+
+      const string multipartDividerPrefix = "-----------------------------";
+      // foreach (var codePage in Encodings.Select(encoding => encoding.Key))
+      {
+        var textReader = new StringReader(record.Contents.AsString(record.CodePage));
         var line = textReader.ReadLine();
         if (line == null)
         {
           textReader.Dispose();
-          continue;
+          return;
         }
         if (!line.StartsWith(multipartDividerPrefix))
         {
           textReader.Dispose();
-          continue;
+          return;
         }
 
         // this file is encoded...
@@ -77,43 +83,82 @@ namespace TallyJ.CoreModels.Helper
         if (lines.Count == 0)
         {
           textReader.Dispose();
-          continue;
+          return;
         }
 
-        record.Contents = Encoding.GetEncoding(codePage).GetBytes(lines.JoinedAsString("\r\n", false));
-        record.CodePage = codePage;
+        record.Contents = Encoding.GetEncoding(record.CodePage.Value).GetBytes(lines.JoinedAsString("\r\n", false));
+        // record.CodePage = codePage;
 
         return;
       }
     }
 
-
-    public static int? DetectCodePage(byte[] importFileContents)
+    /// <summary>
+    /// Improved method
+    /// </summary>
+    /// <remarks>Added to StackOverflow: https://stackoverflow.com/a/67154016/32429 </remarks>
+    /// <param name="contents"></param>
+    /// <returns></returns>
+    public static Encoding DetectCodePage(byte[] contents)
     {
-      if (importFileContents.Length > 4)
+      if (contents == null || contents.Length == 0)
       {
-        // if (importFileContents[0] == 0xEF && importFileContents[1] == 0xBB && importFileContents[2] == 0xBF)
-        // {
-        //   // return 65001;
-        // }
-
-        if ((importFileContents[0] == 0xef && importFileContents[1] == 0xbb && importFileContents[2] == 0xbf)) // utf-8 
-        {
-          return 65001; // utf8
-        }
-
-        if ((importFileContents[0] == 0xff && importFileContents[1] == 0xfe) || // ucs-2le, ucs-4le, and ucs-16le 
-            (importFileContents[0] == 0xfe && importFileContents[1] == 0xff) || // utf-16 and ucs-2 
-            (importFileContents[0] == 0 && importFileContents[1] == 0 && importFileContents[2] == 0xfe && importFileContents[3] == 0xff)) // ucs-4 
-        {
-          // ?? will others work with this??
-          return 1200; // utf16
-        }
-
-        return 1252;
+        return Encoding.Default;
       }
 
-      return null;
+      return TestCodePage(Encoding.UTF8, contents)
+             ?? TestCodePage(Encoding.Unicode, contents)
+             ?? TestCodePage(Encoding.BigEndianUnicode, contents)
+             ?? TestCodePage(Encoding.GetEncoding(1252), contents) // Western European
+             ?? TestCodePage(Encoding.GetEncoding(28591), contents) // ISO Western European
+             ?? TestCodePage(Encoding.ASCII, contents)
+             ?? TestCodePage(Encoding.Default, contents); // likely Unicode
     }
+
+
+    private static Encoding TestCodePage(Encoding testCode, byte[] byteArray)
+    {
+      try
+      {
+        var encoding = Encoding.GetEncoding(testCode.CodePage, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
+        var a = encoding.GetCharCount(byteArray);
+        return testCode;
+      }
+      catch (Exception e)
+      {
+        return null;
+      }
+    }
+
+    // public static string ConvertToString(byte[] importFileContents)
+    // {
+    //   if (importFileContents == null || importFileContents.Length == 0)
+    //   {
+    //     return null;
+    //   }
+    //
+    //   return ConvertWithCodePage(Encoding.UTF8, importFileContents)
+    //          ?? ConvertWithCodePage(Encoding.Unicode, importFileContents)
+    //          ?? ConvertWithCodePage(Encoding.ASCII, importFileContents)
+    //          ?? ConvertWithCodePage(Encoding.BigEndianUnicode, importFileContents)
+    //          ?? ConvertWithCodePage(Encoding.Default, importFileContents);
+    // }
+    //
+    // private static string ConvertWithCodePage(Encoding testCode, byte[] byteArray)
+    // {
+    //   try
+    //   {
+    //     var encoding = Encoding.GetEncoding(testCode.CodePage, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
+    //     var s = encoding.GetString(byteArray);
+    //     return s;
+    //   }
+    //   catch (Exception e)
+    //   {
+    //     Console.WriteLine(e);
+    //     return null;
+    //   }
+    //
+    // } 
+
   }
 }

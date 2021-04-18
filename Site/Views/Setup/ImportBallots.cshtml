@@ -89,7 +89,7 @@
               Name
             </th>
             <th>
-              Content Encoding
+              Encoding
             </th>
             <th>
               Upload Time
@@ -115,10 +115,13 @@
               {OriginalFileName}
             </td>
             <td>
+              {CodePageName}
+            </td>
+            @*<td>
               <select data-value="{CodePage}" class="codePage">
                 @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
               </select>
-            </td>
+            </td>*@
             <td>
               {UploadTimeExt}
             </td>

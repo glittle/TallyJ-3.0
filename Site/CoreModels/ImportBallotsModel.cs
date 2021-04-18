@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
@@ -47,7 +48,7 @@ namespace TallyJ.CoreModels
           UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
           vi.ProcessingStatus,
           vi.OriginalFileName,
-          vi.CodePage,
+          CodePageName = vi.CodePage == null ? null : Encoding.GetEncoding(vi.CodePage.Value).EncodingName,
           vi.Messages
         })
         .ToList();
@@ -110,12 +111,10 @@ namespace TallyJ.CoreModels
       var numWritten = inputStream.Read(record.Contents, 0, fileSize);
       if (numWritten != fileSize)
       {
-        return "Read {0}. Should be {1}.".FilledWith(numWritten, fileSize);
+        return $"Read {numWritten} bytes. Should be {fileSize}.";
       }
 
-      record.CodePage = ImportHelper.DetectCodePage(record.Contents);
-
-      ImportHelper.ExtraProcessingIfMultipartEncoded(record);
+      record.CodePage = ImportHelper.DetectCodePage(record.Contents).CodePage;
 
       Db.ImportFile.Add(record);
       Db.SaveChanges();
@@ -210,7 +209,7 @@ namespace TallyJ.CoreModels
 
       try
       {
-        var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents);
+        var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents)?.CodePage;
         xmlString = importFile.Contents.AsString(importFileCodePage);
         xml.LoadXml(xmlString);
       }

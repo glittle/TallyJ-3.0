@@ -347,7 +347,7 @@ button.smallButton {
 
 .InvalidP div.InvalidPerson {
   color: @invalidColor;
-  padding: 0 0 6px 33px;
+  padding: 4px 0 5px 38px;
 }
 
 select.Invalid {
@@ -483,7 +483,7 @@ div.heading {
   }
 }
 
-.BallotGuid{
+.BallotGuid {
   font-weight: normal;
   font-size: 90%;
   margin: 0 1em;
@@ -617,6 +617,7 @@ body.HasOfflineLocations {
 
       .rawVote {
         display: flex;
+        align-items: center;
         border: 1px solid #efeeef;
         background-color: #e6e6e6;
         border-top: none;
@@ -625,14 +626,13 @@ body.HasOfflineLocations {
         margin: 2px;
         opacity: 0.7;
 
-        > div {
-          flex-grow: 1;
+        .other {
+          width: 50%;
         }
 
         > span {
           padding: 0 10px 0 8px;
-          display: flex;
-          align-items: center;
+          flex-shrink: 0;
 
           span {
             display: inline-block;
@@ -640,6 +640,8 @@ body.HasOfflineLocations {
         }
 
         .names {
+          flex-grow: 1;
+
           > span {
             display: flex;
             align-items: center;

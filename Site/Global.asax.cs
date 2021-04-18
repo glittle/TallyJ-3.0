@@ -325,6 +325,10 @@ namespace TallyJ
     private void FixUpConnectionString()
     {
       var cnString = ConfigurationManager.ConnectionStrings["MainConnection3"];
+      if (cnString == null)
+      {
+        return;
+      }
 
       var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
       fi.SetValue(cnString, false);

@@ -18,13 +18,13 @@
     $('#uploadListBody')
       .on('click',
         '.MakeActive',
-        function() {
+        function () {
           var rowId = +$(this).parents('tr').data('rowid');
           setActiveUploadRowId(rowId, true);
         })
       .on('click',
         'button.deleteFile',
-        function() {
+        function () {
           if (!confirm('Are you sure you want to permanently remove this file from the server?')) {
             return;
           }
@@ -37,7 +37,7 @@
             {
               busy: 'Deleting'
             },
-            function(info) {
+            function (info) {
               if (info.previousFiles) {
                 showUploads(info);
               }
@@ -49,29 +49,29 @@
         })
       .on('click',
         'button.download',
-        function() {
+        function () {
           top.location.href =
             '{0}/Download?id={1}'.filledWith(publicInterface.controllerUrl, $(this).parents('tr').data('rowid'));
         });
 
-    $('#uploadListBody').on('change', 'select.codePage', function () {
-      var select = $(this);
-      CallAjax2(publicInterface.controllerUrl + '/FileCodePage',
-        {
-          id: select.parents('tr').data('rowid'), cp: select.val()
-        },
-        {
-          busy: 'Saving',
-          done: 'Saved'
-        }, function (info) {
-          if (info.Message) {
-            ShowStatusFailed(info.Message);
-          }
-          else {
-            getPreviewInfo();
-          }
-        });
-    });
+    //    $('#uploadListBody').on('change', 'select.codePage', function () {
+    //      var select = $(this);
+    //      CallAjax2(publicInterface.controllerUrl + '/FileCodePage',
+    //        {
+    //          id: select.parents('tr').data('rowid'), cp: select.val()
+    //        },
+    //        {
+    //          busy: 'Saving',
+    //          done: 'Saved'
+    //        }, function (info) {
+    //          if (info.Message) {
+    //            ShowStatusFailed(info.Message);
+    //          }
+    //          else {
+    //            getPreviewInfo();
+    //          }
+    //        });
+    //    });
 
     $('#btnImport').on('click', importNow);
 
@@ -251,8 +251,6 @@
     staticSetup();
     local.activeFileRowId = GetFromStorage('ActiveUploadRowId', 0);
     local.vue.activeFileRowId = local.activeFileRowId;
-    
-    connectToImportHub();
 
     showUploads(publicInterface);
 
@@ -263,24 +261,6 @@
     } else {
       getPreviewInfo();
     }
-  };
-
-  function connectToImportHub() {
-    var hub = $.connection.importHubCore;
-
-    hub.client.importInfo = function (lines, people) {
-      ResetStatusDisplay();
-      var msg = 'Processed {0} lines<br>{1} people added'.filledWith(comma(lines), comma(people));
-      ShowStatusDone(msg);
-      $('#importResults').html(msg).show();
-    };
-
-    startSignalR(function () {
-      console.log('Joining import hub');
-      CallAjaxHandler(publicInterface.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
-
-      });
-    });
   };
 
   function setupVue() {

@@ -39,7 +39,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return _session[key];
+        return _session?[key];
       }
 
       set

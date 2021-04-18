@@ -78,7 +78,7 @@ namespace TallyJ.CoreModels
         return "Read {0}. Should be {1}.".FilledWith(numWritten, fileSize);
       }
 
-      record.CodePage = ImportHelper.DetectCodePage(record.Contents);
+      record.CodePage = ImportHelper.DetectCodePage(record.Contents).CodePage;
 
       ImportHelper.ExtraProcessingIfMultipartEncoded(record);
 
@@ -174,7 +174,7 @@ namespace TallyJ.CoreModels
 
     private JsonResult ReadFields(ImportFile importFile)
     {
-      var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents);
+      var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents)?.CodePage;
       var fileString = importFile.Contents.AsString(importFileCodePage);
 
       var firstDataRow = importFile.FirstDataRow.AsInt();
