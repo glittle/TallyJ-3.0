@@ -3,26 +3,28 @@
     reconnectHubTimeout: null,
     hubReconnectionTime: 95000,
     warmupDone: false,
+    isBad: false
   };
 
   var isBadBrowser = function () {
     if (window.safari) {
       // odd layout issues?
-      return 'safari';
+      return 'Safari';
     }
     // catch ie11 and some old mobile chromes
-    if (typeof Symbol === "undefined") return 'no symbol';
-    //    try {
-    //      // no support for ES2015
-    //      eval('var test = (x) => x');
-    //    } catch (e) {
-    //      return 'no arrow function';
-    //    }
+    if (typeof Symbol === "undefined") return 'Symbol';
+
+    var msg = '';
+    try {
+      eval('let x = 1');
+    } catch (e) {
+      return 'Old browser';
+    }
     return '';
   };
 
   var preparePage = function () {
-    var isBad = isBadBrowser();
+    var isBad = local.isBad = isBadBrowser();
     if (isBad) {
       $('.badBrowser .detail').text(isBad + ', ' + navigator.userAgent).show();
       $('.badBrowser').show();
