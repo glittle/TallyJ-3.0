@@ -1150,9 +1150,9 @@
     <None Include="Web.TallyJ v3 UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <None Include="Xsd\CdnBallotImport.xsd">
+    <Content Include="Xsd\CdnBallotImport.xsd">
       <SubType>Designer</SubType>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
