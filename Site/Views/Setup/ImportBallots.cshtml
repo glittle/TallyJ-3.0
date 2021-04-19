@@ -37,22 +37,26 @@
     <div v-if="sourceSystem==='Cdn'">
       <p>
         TallyJ can be used to tally the votes received in the National Portal.  At the same time, you can receive and tally votes from others sources, such as ballots
-        received by mail.
+        received by mail. You will need to follow these steps:
       </p>
-      <p>
-        When setting up your <strong>TallyJ election</strong>, you should visit the National Portal, go to "Elections", then click "View List of Eligible Voters".
-        This downloads a CSV file to your computer. You can then use the "<a href="ImportCsv">Import Name List</a>" page in TallyJ to import that list of names.
-      </p>
-      <p>
-        When the Portal's online election is "Finalized", view the Election Details page of the election and click the "Download XML" button:
+      <ol>
+        <li>
+          When setting up your <strong>TallyJ election</strong>, you should visit the National Portal, go to "Elections", then click "View List of Eligible Voters".
+          This downloads a CSV file to your computer. You can then use the "<a href="ImportCsv">Import Name List</a>" page in TallyJ to import that list of names.
+        </li>
+        <li>
+          <p>
+            When the Portal's online election is "Finalized", view the Election Details page of the election and click the "Download XML" button:
 
-        <img class="cdnPortal1" src="~/Images/CdnPortal1.png">
+            <img class="cdnPortal1" src="~/Images/CdnPortal1.png">
 
-        If you do not see that button, send an email to <a href="mailto:ict@bahai.ca">ict@bahai.ca</a> to request that it be enabled for your community!
-      </p>
-      <p>
-        Upload that file on this page, and follow the rest of the steps below.
-      </p>
+            If you do not see that button, send an email to <a href="mailto:ict@bahai.ca">ict@bahai.ca</a> to request that it be enabled for your community!
+          </p>
+          <p>
+            Upload that file on this page, and follow the rest of the steps below.
+          </p>
+        </li>
+      </ol>
     </div>
     <div v-if="sourceSystem===''">
       <p>
@@ -118,10 +122,10 @@
               {CodePageName}
             </td>
             @*<td>
-              <select data-value="{CodePage}" class="codePage">
-                @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
-              </select>
-            </td>*@
+                <select data-value="{CodePage}" class="codePage">
+                  @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+                </select>
+              </td>*@
             <td>
               {UploadTimeExt}
             </td>
@@ -189,8 +193,8 @@
           </ol>
 
           <p v-if="previewInfo.HasUnregistered">
-            Any not registered in TallyJ need to be registered, then you can try this import again.
-            You can edit names in <a href="People">Edit People's Names</a> or import a complete list of
+            Anyone not registered in TallyJ needs to be registered, then you can try this import again.
+            You can add people on the <a href="People">Edit People's Names</a> page or import a complete list of
             people on the <a href="ImportCsv">Import Name List</a> page.
           </p>
 
