@@ -179,6 +179,7 @@ namespace TallyJ.CoreModels
           return new
           {
             NeedReview = needReview.Concat(needReview2).Distinct(),
+            _election.VotingMethods,
             ResultsFinal = _analyzer.ResultSummaryFinal
                 .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
             ResultsCalc =
