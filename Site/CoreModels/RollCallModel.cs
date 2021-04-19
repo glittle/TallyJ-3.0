@@ -38,7 +38,6 @@ namespace TallyJ.CoreModels
     private IEnumerable<Person> PeopleInCurrentElectionQuery()
     {
       var peopleInCurrentElection = new PersonCacher(Db).AllForThisElection;
-      // && p.VotingLocationGuid == UserSession.CurrentLocationGuid
       var withAbsentees = new[]
       {
         VotingMethodEnum.InPerson,
@@ -47,6 +46,7 @@ namespace TallyJ.CoreModels
         //VotingMethodEnum.Registered, -- not registered (should not be used with RollCall)
         VotingMethodEnum.CalledIn,
         VotingMethodEnum.Online,
+        VotingMethodEnum.Imported,
         VotingMethodEnum.Custom1,
         VotingMethodEnum.Custom2,
         VotingMethodEnum.Custom3,

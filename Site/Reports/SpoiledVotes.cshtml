@@ -9,10 +9,12 @@
   var people = new BallotCacher().AllForThisElection
             .Where(bi => bi.StatusCode == BallotStatusEnum.Ok)
             .Join(new VoteCacher().AllForThisElection, b => b.BallotGuid, v => v.BallotGuid, (b, v) => new { b, v })
-            .Join(new PersonCacher().AllForThisElection, bv => bv.v.PersonGuid, p => p.PersonGuid, (bv, p) => new { bv.b, bv.v, p })
+            .GroupJoin(new PersonCacher().AllForThisElection, bv => bv.v.PersonGuid, p => p.PersonGuid, (bv, pList) => new { bv.b, bv.v, p = pList.FirstOrDefault() ?? new Person { C_FullName = "" } })
+            .Where(gj => gj.v.InvalidReasonGuid != null || gj.p.IneligibleReasonGuid != null)
             .GroupBy(g => g.p, (p, bvp) => new
             {
               p,
+              bvp.FirstOrDefault().v,
               VoteCount = bvp.Count()
             })
             .OrderBy(g => g.p.C_FullName)
@@ -22,7 +24,8 @@
               g.VoteCount,
               InvalidReasonDesc =
                 UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
-                ? null : IneligibleReasonEnum.DescriptionFor(g.p.IneligibleReasonGuid.AsGuid()),
+                ? null
+                  : IneligibleReasonEnum.DescriptionFor((g.p.IneligibleReasonGuid ?? g.v.InvalidReasonGuid).AsGuid()),
             })
             .Where(g => g.InvalidReasonDesc.HasContent())
             .Select(g => new

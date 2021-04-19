@@ -36,6 +36,10 @@ namespace TallyJ.CoreModels
       SetAsCurrentBallot(ballotId);
 
       var ballot = GetCurrentBallot(refresh);
+      if (ballot == null)
+      {
+        return new {};
+      }
 
       SessionKey.CurrentLocationGuid.SetInSession(ballot.LocationGuid);
 

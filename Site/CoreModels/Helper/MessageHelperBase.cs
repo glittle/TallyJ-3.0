@@ -152,7 +152,7 @@ namespace TallyJ.CoreModels.Helper
         })
         .ToList();
 
-      var dateOldest = logEntries.Min(l => l.When);
+      var dateOldest = logEntries.Any() ? logEntries.Min(l => l.When) : DateTime.Now;
       var dateRecent = DateTime.Now;// logEntries.Max(l => l.When);
 
       var smsLog = dbContext.SmsLog

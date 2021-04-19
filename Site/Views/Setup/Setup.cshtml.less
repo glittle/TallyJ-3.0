@@ -49,9 +49,12 @@ h2 {
   right: 10px;
   top: 100px;
   z-index: 1;
-  box-shadow: 0 0 15px 15px #efeeef;
+  box-shadow: 0 0 5px 5px #efeeef;
 
   &.btn-primary {
+    animation-name: color;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
   }
 }
 
@@ -68,8 +71,14 @@ h2 {
     display: block;
 
     &.partialDisable {
+      &.is-checked {
+        .el-checkbox__inner {
+          background-color: #409EFF;
+        }
+      }
+
       .el-checkbox__inner {
-        background-color: #409EFF;
+        background-color: #fff;
 
         &::after {
           border-color: #fff;
@@ -428,4 +437,19 @@ option:disabled {
 .isSaveNeeded {
   color: @tallyJError;
   font-style: italic;
+}
+
+
+@keyframes color {
+  0% {
+    box-shadow: 0 0 5px 5px #efeeef;
+  }
+
+  50% {
+    box-shadow: 0 0 15px 15px yellow;
+  }
+
+  100% {
+    box-shadow: 0 0 5px 5px #efeeef;
+  }
 }

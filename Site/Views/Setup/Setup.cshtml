@@ -337,16 +337,16 @@
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">
-        <th>
-          Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
-        </th>
-        <td>
-          <yes-no v-model="election.UseCallInButton"></yes-no>
-        </td>
-        <td>
-          Are you set up to accept ballots by telephone?
-        </td>
-      </tr>*@
+      <th>
+        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.UseCallInButton"></yes-no>
+      </td>
+      <td>
+        Are you set up to accept ballots by telephone?
+      </td>
+    </tr>*@
     <tr v-if="usingBallotProcess">
       <th>
         Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
@@ -397,7 +397,18 @@
       </td>
       <td></td>
     </tr>
-
+    <tr>
+      <th>
+        From Name
+      </th>
+      <td>
+        <input type="text" v-model="election.EmailFromName" v-on:change="saveNeeded">
+      </td>
+      <td>
+        This will be name with the From address. Use your name, another person's name, or the name of an agency that will
+        be recognized by voters so that the email is not rejected as spam!
+      </td>
+    </tr>
     <tr>
       <th>
         From Email Address
@@ -409,18 +420,7 @@
         When emails are sent to voters regarding this election, this will be the From address. The address will be visible to all voters receiving emails.
       </td>
     </tr>
-    <tr>
-      <th>
-        From Name
-      </th>
-      <td>
-        <input type="text" v-model="election.EmailFromName" v-on:change="saveNeeded">
-      </td>
-      <td>
-        This will be name with the From address. Use a person's name, or the name of an agency, that will
-        be recognized by voters so that the email is not rejected as spam!
-      </td>
-    </tr>
+
   </table>
 
 

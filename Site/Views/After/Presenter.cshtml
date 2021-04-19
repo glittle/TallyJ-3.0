@@ -120,6 +120,17 @@
                 </tr>
               }
 
+              if (election.VotingMethodsContains(VotingMethodEnum.Imported))
+              {
+                <tr class="Method">
+                  <td class="Left">
+                    @VotingMethodEnum.Imported.DisplayText
+                    <span data-name="EnvelopesImported"></span>
+                  </td>
+                  <td class="numberCell"></td>
+                </tr>
+              }
+
               <tr class="Method" id="online">
                 <td class="Left">
                   Online

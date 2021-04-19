@@ -57,6 +57,10 @@
     position: relative;
   }
 
+  .name {
+    width: 250px;
+  }
+
     .person.first {
       margin-top: .5em;
     }
@@ -101,7 +105,8 @@
         <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
         @if (hasMultipleLocations)
         {
-          if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out var locName))
+          string locName;
+          if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
           {
             <td class="where"></td>
           }

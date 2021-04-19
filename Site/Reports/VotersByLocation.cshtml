@@ -125,7 +125,7 @@
         {
           <th>Online</th>
         }
-        }@if (showImported)
+        @if (showImported)
         {
           <th>@VotingMethodEnum.Imported.DisplayText</th>
         }
@@ -147,102 +147,38 @@
       {
         foreach (var loc in locations)
         {
-          if (loc.LocationName == LocationModel.OnlineLocationName)
-          {
-            <tr class="area">
-              <td class="name">@loc.LocationName</td>
-              <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
-              <td class="method">-</td>
-              <td class="method">-</td>
-              <td class="method">-</td>
-              @if (showCalledIn)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom1)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom2)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom3)
-              {
-                <td class="method">-</td>
-              }
+
+          <tr class="area">
+            <td class="name">@loc.LocationName</td>
+            <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
+            <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
+            <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
+            <td class="method">@loc.DroppedOff @loc.DroppedOff.PercentInSpan(loc.Voted, -1, true)</td>
+            @if (showCalledIn)
+            {
+              <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
+            }
+            @if (showCustom1)
+            {
+              <td class="method">@loc.Custom1 @loc.Custom1.PercentInSpan(loc.Voted, -1, true)</td>
+            }
+            @if (showCustom2)
+            {
+              <td class="method">@loc.Custom2 @loc.Custom2.PercentInSpan(loc.Voted, -1, true)</td>
+            }
+            @if (showCustom3)
+            {
+              <td class="method">@loc.Custom3 @loc.Custom3.PercentInSpan(loc.Voted, -1, true)</td>
+            }
+            @if (showOnline)
+            {
               <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
-              @if (showImported)
-              {
-                <td class="method">-</td>
-              }
-            </tr>
-          }
-          else if (loc.LocationName == LocationModel.ImportedLocationName)
-          {
-            <tr class="area">
-              <td class="name">@loc.LocationName</td>
-              <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
-              <td class="method">-</td>
-              <td class="method">-</td>
-              <td class="method">-</td>
-              @if (showCalledIn)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom1)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom2)
-              {
-                <td class="method">-</td>
-              }
-              @if (showCustom3)
-              {
-                <td class="method">-</td>
-              }
-              @if (showOnline)
-              {
-                <td class="method">-</td>
-              }
+            }
+            @if (showImported)
+            {
               <td class="method">@loc.Imported @loc.Imported.PercentInSpan(loc.Voted, -1, true)</td>
-            </tr>
-          }
-          else
-          {
-            <tr class="area">
-              <td class="name">@loc.LocationName</td>
-              <td class="total">@loc.Total @(loc.Total.PercentInSpan(total.Total, 0, true))</td>
-              <td class="method">@loc.InPerson @loc.InPerson.PercentInSpan(loc.Voted, -1, true)</td>
-              <td class="method">@loc.MailedIn @loc.MailedIn.PercentInSpan(loc.Voted, -1, true)</td>
-              <td class="method">@loc.DroppedOff @loc.DroppedOff.PercentInSpan(loc.Voted, -1, true)</td>
-              @if (showCalledIn)
-              {
-                <td class="method">@loc.CalledIn @loc.CalledIn.PercentInSpan(loc.Voted, -1, true)</td>
-              }
-              @if (showCustom1)
-              {
-                <td class="method">@loc.Custom1 @loc.Custom1.PercentInSpan(loc.Voted, -1, true)</td>
-              }
-              @if (showCustom2)
-              {
-                <td class="method">@loc.Custom2 @loc.Custom2.PercentInSpan(loc.Voted, -1, true)</td>
-              }
-              @if (showCustom3)
-              {
-                <td class="method">@loc.Custom3 @loc.Custom3.PercentInSpan(loc.Voted, -1, true)</td>
-              }
-              @if (showOnline)
-              {
-                <td class="method">-</td>
-              }
-              @if (showImported)
-              {
-                <td class="method">-</td>
-              }
-            </tr>
-          }
+            }
+          </tr>
         }
         <tr class="total">
           <td class="name">Total</td>

@@ -558,7 +558,7 @@ function showAllPages(btnRaw) {
 }
 
 var quickDashCloser = function (ev) {
-  console.log($(ev.srcElement).closest('.QuickDash'));
+  //  console.log($(ev.srcElement).closest('.QuickDash'));
   if ($(ev.srcElement).closest('.QuickDash').length === 0) {
     $('.QuickDash').fadeOut('fast');
     $('.ElectionState .General').removeClass('GeneralActive');

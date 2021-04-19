@@ -58,7 +58,7 @@
   </div>
    <p class="Comment">
     A count of the alignment of ballots to the final results.  For example, the first row shows
-    how many ballots where for all @numElected of the elected, while the last line shows how
+    how many ballots voted for all @numElected of the elected, while the last line shows how
     many ballots had none of those elected.
   </p>
   @if (message.HasContent())
@@ -80,7 +80,7 @@
         {
           <tr>
             <td>@alignment.i</td>
-            <td>@alignment.sum</td>
+            <td>@(alignment.sum == 0 ? "-" : alignment.sum.ToString())</td>
           </tr>
         }
       </tbody>

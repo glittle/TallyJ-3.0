@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
@@ -18,6 +19,14 @@ namespace TallyJ.Controllers
 
     public ActionResult FrontDesk()
     {
+      // ensure we are at a physical location!
+      var currentLocation = UserSession.CurrentLocation;
+      if (currentLocation.IsVirtual)
+      {
+        var newLocation = new LocationModel().GetLocations_Physical().First();
+        UserSession.CurrentLocationGuid = newLocation.LocationGuid;
+      }
+
       return View(new PeopleModel());
     }
 

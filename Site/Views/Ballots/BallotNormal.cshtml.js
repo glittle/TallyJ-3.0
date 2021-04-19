@@ -108,6 +108,9 @@
     local.votesList.on('click', '.btnFindL', function (ev) {
       findWithRawVotePart(ev, 'L');
     });
+    local.votesList.on('click', '.btnFindO', function (ev) {
+      findWithRawVotePart(ev, 'O');
+    });
     local.votesList.on('click', '.VoteHost.withRawtrue', function (ev) {
       if (ev.target.tagName === 'SELECT') {
         return;
@@ -316,7 +319,7 @@
     // show location status (if there are locations, and if not online)
     var locationStatusH3 = local.tabList.find('h3').eq(tabNum.location);
 
-    console.log(local.location)
+    //    console.log(local.location)
 
     // show headings
     ballotH3.show();
@@ -859,8 +862,8 @@
     var ballotListTemplate = local.location.IsOnline
       ? '<div id=B{Id}>Online Ballot #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
       : local.location.IsImported
-      ? '<div id=B{Id}>Imported Ballot #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
-      : '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>';
+        ? '<div id=B{Id}>Imported Ballot #{onlineNum} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>'
+        : '<div id=B{Id}>{Code} - <span id=BallotStatus{Id}>' + temp1 + '</span></div>';
 
     $('#ballotList').html(ballotListTemplate.filledWithEach(list));
 
@@ -1213,49 +1216,49 @@
         busy: 'Deleting vote'
       },
       function (info) {
-      if (info.Deleted) {
-        host.remove();
+        if (info.Deleted) {
+          host.remove();
 
-        if (info.NumNeeded) {
-          local.votesNeeded = info.NumNeeded;
+          if (info.NumNeeded) {
+            local.votesNeeded = info.NumNeeded;
+          }
+
+          if (info.Votes) {
+            local.votes = info.Votes;
+            showVotes();
+          }
+
+          if (info.BallotStatus === 'Ok') {
+            //          local.tabList.accordion('option', 'active', tabNum.ballotListing);
+            //          showAddToThisBtn(true);
+          } else {
+            //          local.tabList.accordion('option', 'active', tabNum.ballotEdit);
+
+            //          var toShow = (info.BallotStatus === 'TooFew' || info.BallotStatus === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
+            //          toggleAddToBallotTab(true);
+            //          local.tabList.accordion('option', 'active', toShow);
+            //          showAddToThisBtn(toShow === tabNum.ballotListing);
+          }
+
+          if (info.Location) {
+            showLocation(info.Location);
+          }
+
+          var ballotNums = $('#B' + info.BallotId + ' span');
+          ballotNums.eq(0).text(info.SingleBallotNames);
+          ballotNums.eq(1).text(info.SingleBallotCount);
+
+          updateStatusDisplay(info);
+          updateStatusInList(info);
+          showRelevantTabs();
+
+          showBallotCount(info.LocationBallotsEntered);
+          local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
         }
-
-        if (info.Votes) {
-          local.votes = info.Votes;
-          showVotes();
+        else {
+          ShowStatusFailed(info.Message);
         }
-
-        if (info.BallotStatus === 'Ok') {
-          //          local.tabList.accordion('option', 'active', tabNum.ballotListing);
-          //          showAddToThisBtn(true);
-        } else {
-          //          local.tabList.accordion('option', 'active', tabNum.ballotEdit);
-
-          //          var toShow = (info.BallotStatus === 'TooFew' || info.BallotStatus === 'Empty') ? tabNum.ballotEdit : tabNum.ballotListing;
-          //          toggleAddToBallotTab(true);
-          //          local.tabList.accordion('option', 'active', toShow);
-          //          showAddToThisBtn(toShow === tabNum.ballotListing);
-        }
-
-        if (info.Location) {
-          showLocation(info.Location);
-        }
-
-        var ballotNums = $('#B' + info.BallotId + ' span');
-        ballotNums.eq(0).text(info.SingleBallotNames);
-        ballotNums.eq(1).text(info.SingleBallotCount);
-
-        updateStatusDisplay(info);
-        updateStatusInList(info);
-        showRelevantTabs();
-
-        showBallotCount(info.LocationBallotsEntered);
-        local.peopleHelper.RefreshListing(local.inputField.val(), displaySearchResults, getUsedIds(), info);
-      }
-      else {
-        ShowStatusFailed(info.Message);
-      }
-    });
+      });
   };
 
   function deleteBallot() {
@@ -1264,17 +1267,17 @@
         busy: 'Deleting ballot'
       },
       function (info) {
-      if (info.Deleted) {
-        showBallot(info);
+        if (info.Deleted) {
+          showBallot(info);
 
-        if (info.Location) {
-          showLocation(info.Location);
+          if (info.Location) {
+            showLocation(info.Location);
+          }
         }
-      }
-      else {
-        ShowStatusFailed(info.Message);
-      }
-    });
+        else {
+          ShowStatusFailed(info.Message);
+        }
+      });
   };
 
   function displaySearchResults(info, beingRefreshed, showNoneFound) {
@@ -1535,6 +1538,10 @@
         this.rawFirst = rawVote.First;
         this.rawLast = rawVote.Last;
         this.rawOtherInfo = rawVote.OtherInfo;
+        this.hasFirst = !!rawVote.First;
+        this.hasLast = !!rawVote.Last;
+        this.hasFL = this.hasFirst || this.hasLast;
+        this.hasOtherInfo = !!rawVote.OtherInfo;
         this.rawDone = vote.pid > 0 || !!vote.invalid;
       }
       //      num++;
@@ -1560,7 +1567,7 @@
     vote.addClass('rawTarget');
 
     if (!inRow) {
-      vote.find('.btnFind').trigger('click');
+      vote.find('button:visible:first').trigger('click');
     }
 
     return true;
@@ -1711,17 +1718,20 @@
     if (ballotId.substr(0, 1) === 'B') {
       ballotId = ballotId.substr(1);
     }
+    if (ballotId === '0') {
+      return;
+    }
     CallAjax2(publicInterface.controllerUrl + '/SwitchToBallot', { ballotId: ballotId, refresh: refresh || false },
       {
         busy: 'Loading',
         done: 'Ballot loaded'
       },
       function (info) {
-      if (refresh) {
-        startToRefreshBallotList(successMsg);
-      }
-      showBallot(info);
-    });
+        if (refresh) {
+          startToRefreshBallotList(successMsg);
+        }
+        showBallot(info);
+      });
   };
 
   function nameClick(ev) {
