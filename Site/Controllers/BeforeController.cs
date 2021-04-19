@@ -21,7 +21,7 @@ namespace TallyJ.Controllers
     {
       // ensure we are at a physical location!
       var currentLocation = UserSession.CurrentLocation;
-      if (currentLocation.IsVirtual)
+      if (currentLocation == null || currentLocation.IsVirtual)
       {
         var newLocation = new LocationModel().GetLocations_Physical().First();
         UserSession.CurrentLocationGuid = newLocation.LocationGuid;

@@ -8,6 +8,6 @@ namespace TallyJ.EF
   {
     public bool IsTheOnlineLocation => Name == LocationModel.OnlineLocationName;
     public bool IsTheImportedLocation => Name == LocationModel.ImportedLocationName;
-    public bool IsVirtual => IsTheImportedLocation || IsTheImportedLocation;
+    public bool IsVirtual => Name == LocationModel.OnlineLocationName || Name == LocationModel.ImportedLocationName;
   }
 }
