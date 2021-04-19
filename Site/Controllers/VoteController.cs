@@ -190,6 +190,12 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
+      if (pool.HasNoContent())
+      {
+        // shouldn't be possible, but happened
+        pool = "[]";
+      }
+
       var now = DateTime.Now;
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {

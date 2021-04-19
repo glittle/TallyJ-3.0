@@ -338,7 +338,7 @@ var vueOptions = {
     },
     extendElectionInfo: function (info) {
       info.Type_Display = voterHome.electionTypes[info.ElectionType] || info.ElectionType || '';
-      info.Date_Display = moment(info.DateOfElection).format('D MMM YYYY');
+      info.Date_Display = info.DateOfElection ? moment(info.DateOfElection).format('D MMM YYYY') : '(no date)';
 
       var person = info.person;
 
