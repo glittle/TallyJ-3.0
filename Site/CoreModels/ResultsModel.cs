@@ -123,7 +123,8 @@ namespace TallyJ.CoreModels
     {
       try
       {
-        var resultSummaryFinal = _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+        var resultSummaryFinal =
+          _analyzer.ResultSummaryFinal; // resultSummaries.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
 
         //TODO build online checks into base analysis
 
@@ -136,6 +137,7 @@ namespace TallyJ.CoreModels
 
         var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue
           ? Db.OnlineVotingInfo
+            .Join(Db.Person.Where(p => p.VotingMethod == VotingMethodEnum.Online.Value), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => ovi)
             .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Submitted)
           : 0;
         if (unprocessedOnlineBallots > 0)
