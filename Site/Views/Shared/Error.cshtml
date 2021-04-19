@@ -1,14 +1,35 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
+﻿@using TallyJ.Code.Session
+@model System.Web.Mvc.HandleErrorInfo
 
 @{
-    ViewBag.Title = "Error";
+  ViewBag.Title = "Error";
+
+  // make sure this gets logged
+
+  var message = Model?.Exception.GetBaseException().Message;
+  var filteredStackTrace = Model?.Exception.StackTrace.FilteredStackTrace();
+
+  var electionGuid = Guid.Empty;
+
+  try
+  {
+    electionGuid = UserSession.CurrentElectionGuid;
+  }
+  catch (Exception)
+  {
+    //ignore
+  }
+  new LogHelper(electionGuid).SendToRemoteLog($"Error... {message}\r\n{filteredStackTrace}");
 }
 
 <hgroup class="title">
-    <h1 class="error">Error.</h1>
-    <h2 class="error">An error occurred while processing your request.</h2>
-  <div class="error">@(Model?.Exception.Message)</div>
+  <h1 class="error">Error.</h1>
+  <h2 class="error">An error occurred while processing your request.</h2>
+  <div class="error">@message</div>
   <div style="display: none">
-    @(Model?.Exception.StackTrace.Replace("\n", "<br>"))
+
+    @{
+    }
+    @Html.Raw(filteredStackTrace?.Replace("\n", "<br>"))
   </div>
 </hgroup>

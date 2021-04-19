@@ -54,7 +54,7 @@ namespace TallyJ.Code
       }
       catch (Exception e)
       {
-        message = message + "\nError in logging: "+ e.Message;
+        message = message + "\nError in logging: " + e.Message;
         alsoSendToRemoteLog = true;
       }
 
@@ -67,7 +67,7 @@ namespace TallyJ.Code
     private string HostAndVersion =>
         $"{Environment.MachineName} / {HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.Url.Host} / {UserSession.SiteVersion}";
 
-    private void SendToRemoteLog(string message)
+    public void SendToRemoteLog(string message)
     {
       var iftttKey = ConfigurationManager.AppSettings["iftttKey"].DefaultTo("");
       if (iftttKey.HasNoContent())
@@ -77,7 +77,21 @@ namespace TallyJ.Code
 
       var info = new NameValueCollection();
       info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
-      info["value2"] = UserSession.CurrentElectionName;
+      try
+      {
+        info["value2"] = UserSession.CurrentElectionName;
+      }
+      catch (Exception)
+      {
+        if (_electionGuid != Guid.Empty)
+        {
+          info["value2"] = _electionGuid.ToString();
+        }
+        else
+        {
+          info["value2"] = "";
+        }
+      }
       info["value3"] = message;
 
       var url = "https://maker.ifttt.com/trigger/{0}/with/key/{1}".FilledWith("TallyJ", iftttKey);
@@ -88,7 +102,8 @@ namespace TallyJ.Code
         {
           var response = client.UploadValues(url, info);
         }
-        catch (Exception) {
+        catch (Exception)
+        {
           // ignore if we can't send to remote log
         }
       }
@@ -102,8 +117,10 @@ namespace TallyJ.Code
       db.SaveChanges();
     }
   }
-  public class WebClientWithTimeout : WebClient {
-    public WebClientWithTimeout(int timeout) {
+  public class WebClientWithTimeout : WebClient
+  {
+    public WebClientWithTimeout(int timeout)
+    {
       Timeout = timeout;
     }
     public int Timeout { get; set; }

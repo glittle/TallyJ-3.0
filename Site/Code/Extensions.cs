@@ -966,5 +966,25 @@ namespace TallyJ.Code
 
       return stringBuilder.ToString();
     }
+
+
+    public static string FilteredStackTrace(this string stackTrace)
+    {
+      var parts = stackTrace.Split(new[] { '\n', '\r' }).Where(s => !string.IsNullOrEmpty(s)).Reverse().ToList();
+      var newParts = new List<string>();
+      var foundOurCode = false;
+      foreach (var part in parts)
+      {
+        if (part.Contains("at TallyJ."))
+        {
+          foundOurCode = true;
+        }
+        if (foundOurCode)
+        {
+          newParts.Add(part);
+        }
+      }
+      return newParts.Select(s => s).Reverse().JoinedAsString("\r\n");
+    }
   }
 }

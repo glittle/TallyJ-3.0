@@ -255,7 +255,7 @@ namespace TallyJ
 
         try
         {
-          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), sendToRemoteLog);
+          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + mainException.StackTrace.FilteredStackTrace(), sendToRemoteLog);
 
         }
         catch (Exception)
@@ -293,7 +293,7 @@ namespace TallyJ
         try
         {
           msgs.Add(exception.Message);
-          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + FilteredStack(mainException.StackTrace), true);
+          new LogHelper().Add("Error: " + msgs.JoinedAsString("\n") + "\n" + mainException.StackTrace.FilteredStackTrace(), true);
         }
         catch (Exception)
         {
@@ -302,24 +302,6 @@ namespace TallyJ
       }
     }
 
-    private string FilteredStack(string stackTrace)
-    {
-      var parts = stackTrace.Split(new[] { '\n', '\r' }).Where(s => !string.IsNullOrEmpty(s)).Reverse().ToList();
-      var newParts = new List<string>();
-      var foundOurCode = false;
-      foreach (var part in parts)
-      {
-        if (part.Contains("at TallyJ."))
-        {
-          foundOurCode = true;
-        }
-        if (foundOurCode)
-        {
-          newParts.Add(part);
-        }
-      }
-      return newParts.Select(s => s).Reverse().JoinedAsString("\r\n");
-    }
 
 
     private void FixUpConnectionString()
