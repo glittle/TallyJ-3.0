@@ -9,7 +9,7 @@
     bStart: String.fromCharCode(9991),
     bEnd: String.fromCharCode(9992),
     iStart: String.fromCharCode(9993),
-    iEnd: String.fromCharCode(9994)
+    iEnd: String.fromCharCode(9994),
   };
 
   var maxToShow = 1000;
@@ -76,7 +76,7 @@
 
   function updatePeople(info) {
     // from changes when a person's info changes elsewhere
-    var updatedExisting = false;
+    var updatedExisting = [];
 
     info.PersonLines.forEach(function (editedPerson) {
 
@@ -96,20 +96,24 @@
 
         local.localNames.push(editedPerson);
       } else {
-        var old = local.localNames[i];
+        var person = local.localNames[i];
+        var before = JSON.stringify(person)
 
-        old.Name = editedPerson.FullName;
-        old.CanVote = editedPerson.CanVote;
-        old.CanReceiveVotes = editedPerson.CanReceiveVotes;
-        old.Ineligible = editedPerson.IneligibleReasonGuid;
+        person.Name = editedPerson.FullName;
+        person.CanVote = editedPerson.CanVote;
+        person.CanReceiveVotes = editedPerson.CanReceiveVotes;
+        person.Ineligible = editedPerson.IneligibleReasonGuid;
 
-        extendPersonCore(old);
+        extendPersonCore(person);
 
-        updatedExisting = true;
+        var after = JSON.stringify(person);
+        if (before !== after) {
+          updatedExisting.push(person.Name);
+        }
       }
     });
 
-    return updatedExisting;
+    return updatedExisting.length ? updatedExisting : false;
   }
 
   function extendPeople(arr) {

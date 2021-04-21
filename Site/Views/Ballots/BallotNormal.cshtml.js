@@ -17,6 +17,7 @@
     ballotStatus: '',
     ballotId: 0,
     votes: [],
+    updatedNames: [],
     votesList: null,
     tabList: null,
     ballotCountAtLastLoad: 0,
@@ -156,6 +157,10 @@
     $('#btnRefreshBallotCount').on('click', changeLocationStatus);
     $('#btnRefreshBallotList').on('click', function () { startToRefreshBallotList(); });
     $('#btnRefreshBallot').on('click', function () { loadBallot('B' + local.ballotId, true); });
+    $('#btnNamesUpdated').on('click', function () {
+      startToRefreshBallotList();
+      loadBallot('B' + local.ballotId, true);
+    });
 
     $('#btnNewBallot').on('click', newBallot);
     $('#btnNewBallot2').on('click', newBallot);
@@ -236,11 +241,12 @@
     hub.client.updatePeople = function (info) {
       console.log('signalR: updatePeople');
       var updatedExisting = local.peopleHelper.UpdatePeople(info);
-      local.lastSearch = '';
-      searchTextChanged();
       if (updatedExisting) {
-        startToRefreshBallotList(null, 'Names were changed. Reloading ballot.');
-        loadBallot('B' + local.ballotId, true);
+        updatedExisting.forEach(function (n) { local.updatedNames.push('<li>' + n); })
+        local.lastSearch = '';
+        searchTextChanged();
+        $('#updatedNames').html(local.updatedNames.join(''));
+        $('.FrontDeskUpdated').show();
       }
     };
 
@@ -437,6 +443,8 @@
         busy: msg || 'Refreshing ballots'
       },
       function (info) {
+        $('.FrontDeskUpdated').hide();
+        local.updatedNames = [];
         showBallots(info);
         highlightBallotInList();
         showRelevantTabs();
