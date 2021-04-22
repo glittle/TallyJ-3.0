@@ -301,7 +301,7 @@ namespace TallyJ.Code
         {
           realValue = DateTime.Parse(newValueString);
         }
-        catch (Exception e)
+        catch (Exception)
         {
           // try another format
           realValue = DateTime.ParseExact(newValueString, "yyyy-MM-dd / HH:mm:ss", CultureInfo.InvariantCulture);

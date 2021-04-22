@@ -124,7 +124,7 @@ namespace TallyJ.CoreModels.Helper
         var a = encoding.GetCharCount(byteArray);
         return testCode;
       }
-      catch (Exception e)
+      catch (Exception)
       {
         return null;
       }
