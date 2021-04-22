@@ -190,6 +190,7 @@ namespace TallyJ
             || mainMsg.Contains("The request was aborted")
             || mainMsg.Contains("The client disconnected")
             || mainMsg.Contains("controller for path '/favicon.ico'")
+            || mainMsg.Contains("controller for path '/apple-touch-icon")
         )
         {
           // don't track odd errors...
