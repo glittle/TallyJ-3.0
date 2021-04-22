@@ -559,7 +559,7 @@
 
     var vote, newHost;
     var person = info.Person;
-
+    
     var voteId = local.settingNameForOnlineVote;
     if (voteId) {
       vote = local.votes.find(function (v) { return v.vid === voteId; });
@@ -618,7 +618,7 @@
       var ballot = ballotInfo.Ballot;
       $('.ballotCode').text(ballot.Code);
       $('#ballotStatus').text(ballot.StatusCode);
-      $('.BallotGuid').text(ballot.Guid);
+      //$('.BallotGuid').text(ballot.Guid);
 
       local.votesNeeded = ballotInfo.NumNeeded;
       local.ballotStatus = ballot.StatusCode;
