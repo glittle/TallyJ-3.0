@@ -25,7 +25,5 @@ namespace TallyJ.CoreModels
     JsonResult SetNeedsReview(bool needsReview);
     object BallotInfoForJs(Ballot b, List<Vote> allVotes);
     bool CreateBallotForOnlineVoter(List<OnlineRawVote> poolIds, out string errorMessage);
-    bool CreateBallotForImportedBallot(ImportBallotsModel.Ballot incomingBallot, Guid importLocationGuid,
-      out string errorMessage, BallotCacher ballotCacher, VoteCacher voteCacher, List<Person> allPeople);
   }
 }

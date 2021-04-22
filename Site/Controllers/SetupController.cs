@@ -6,6 +6,7 @@ using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.Helper;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -59,6 +60,13 @@ namespace TallyJ.Controllers
       return View(importCsvModel);
     }
 
+
+    [ForAuthenticatedTeller]
+    public void JoinBallotImportHub(string connId)
+    {
+      new BallotImportHub().Join(connId);
+    }
+
     [ForAuthenticatedTeller]
     public ActionResult ImportBallots(ImportBallotsModel importBallotsModel)
     {
@@ -103,6 +111,12 @@ namespace TallyJ.Controllers
     public JsonResult LoadBallotsFile(int id)
     {
       return new ImportBallotsModel().LoadFile(id);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult RemoveImportedInfo()
+    {
+      return new ImportBallotsModel().RemoveImportedInfo();
     }
 
 

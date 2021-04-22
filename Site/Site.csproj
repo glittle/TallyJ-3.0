@@ -487,6 +487,7 @@
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
     <Compile Include="CoreModels\Helper\SmsHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
+    <Compile Include="CoreModels\Hubs\BallotImportHub.cs" />
     <Compile Include="CoreModels\ImportBallotsModel.cs" />
     <Compile Include="CoreModels\OnlineVoteHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />

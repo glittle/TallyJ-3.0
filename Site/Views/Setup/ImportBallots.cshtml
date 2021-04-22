@@ -4,7 +4,7 @@
 @using TallyJ.Code.Session
 @using TallyJ.CoreModels.Helper
 @{
-  ContextItems.AddJavascriptForPage("importHubUrl", "importBallotsPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("importHubUrl", "importBallotsPage.ballotImportHubUrl={0};".FilledWith(@Url.Action("JoinBallotImportHub", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("controllerUrl", "importBallotsPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("previous", "importBallotsPage.previousFiles={0};".FilledWith(Model.PreviousUploads().SerializedAsJsonString()));
   ViewBag.Title = "Import Ballots from External Source";
@@ -212,6 +212,15 @@
       </div>
     </div>
 
+    <div class="remove">
+      <p>If you have previously imported ballots into this election, you can click here to remove them. </p>
+      <p><el-checkbox v-model="enableRemove">Enable the 'Remove Now' button</el-checkbox></p>
+      <p v-if="enableRemove">
+        Caution: this will remove the ballots even if tellers have made changes to them!
+      </p>
+      <el-button type="warning" size="small" v-on:click="removeImportedInfo" :disabled="!enableRemove">Remove Now</el-button>
+    </div>
+
     <h2>
       Step 4 <span>Import the Voters and Ballots</span>
     </h2>
@@ -226,6 +235,10 @@
         <el-button v-on:click="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length)">
           Import now
         </el-button>
+        <div id="loadingLog">
+          <div id="log"></div>
+          <div id="tempLog"></div>
+        </div>
         <div id="importResults"></div>
       </div>
     </div>

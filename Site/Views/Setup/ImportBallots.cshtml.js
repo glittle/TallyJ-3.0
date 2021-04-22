@@ -117,13 +117,20 @@
       return;
     }
 
+    local.vue.importJustDone = false;
+
+    ResetStatusDisplay();
+
+    $('#loadingLog').show();
+    $('#log').html('');
+
     var resultDiv = $('#importResults');
     var currentHeight = resultDiv.outerHeight();
     resultDiv.css('min-height', currentHeight + 'px').html('Starting').removeClass('failed').show();
 
     CallAjax2(publicInterface.controllerUrl + '/LoadBallotsFile', { id: local.activeFileRowId },
       {
-        busy: 'Starting'
+        busy: 'Importing'
       },
       function (info) {
         if (info.result) {
@@ -158,11 +165,30 @@
           resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
           $('.DbCount span').text(comma(info.count));
 
+          local.vue.importJustDone = true;
           getPreviewInfo();
 
         } else if (info.ImportErrors) {
           local.vue.previewInfo = info;
 
+        }
+      });
+  }
+
+  function removeImportedInfo() {
+    $('#log').html('');
+    ResetStatusDisplay();
+
+    CallAjax2(publicInterface.controllerUrl + '/RemoveImportedInfo', null,
+      {
+        busy: 'Removing ballots'
+      },
+      function (info) {
+        if (info.Success) {
+          ShowStatusDone(info.Message);
+          getPreviewInfo();
+        } else {
+          ShowStatusFailed(info.Message);
         }
       });
   }
@@ -181,7 +207,7 @@
         forceRefreshCache: forceRefreshCache || false
       },
       {
-        busy: 'Reading ballot file'
+        busy: 'Reading the ballots file'
       },
       function (info) {
         local.vue.previewInfo = info;
@@ -224,6 +250,7 @@
     SetInStorage('ActiveUploadRowId', rowId);
     local.activeFileRowId = rowId;
     local.vue.activeFileRowId = local.activeFileRowId;
+    local.vue.importJustDone = false;
 
     if (highlightInList) {
       $('tr[data-rowid]').removeClass('Active').addClass('NotActive');
@@ -252,6 +279,8 @@
     local.activeFileRowId = GetFromStorage('ActiveUploadRowId', 0);
     local.vue.activeFileRowId = local.activeFileRowId;
 
+    connectToImportHub();
+
     showUploads(publicInterface);
 
     if (!activeUploadFileRow().length) {
@@ -263,6 +292,31 @@
     }
   };
 
+
+  function connectToImportHub() {
+    var hub = $.connection.ballotImportHubCore;
+
+    hub.client.StatusUpdate = function (msg, isTemp) {
+      var mainLogDiv = $('#log');
+      mainLogDiv.show();
+
+      var tempLogDiv = $('#tempLog');
+      if (isTemp) {
+        tempLogDiv.html(msg);
+      } else {
+        tempLogDiv.html('');
+        mainLogDiv.append('<div>' + msg + '</div>');
+      }
+    };
+
+    startSignalR(function () {
+      console.log('Joining ballot import hub');
+      CallAjaxHandler(publicInterface.ballotImportHubUrl, { connId: site.signalrConnectionId }, function (info) {
+
+      });
+    });
+  };
+
   function setupVue() {
     local.vue = new Vue({
       el: '#main',
@@ -272,6 +326,8 @@
         sourceSystem: 'Cdn',
         previewInfo: {},
         activeFileRowId: 0,
+        enableRemove: false,
+        importJustDone: false,
         dummy: 1
       },
       computed: {
@@ -297,6 +353,10 @@
         },
         importNow: function () {
           importNow();
+        },
+        removeImportedInfo: function () {
+          this.enableRemove = false;
+          removeImportedInfo();
         }
       }
     });

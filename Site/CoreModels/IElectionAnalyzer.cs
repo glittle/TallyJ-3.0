@@ -29,6 +29,8 @@ namespace TallyJ.CoreModels
 
     void PrepareResultSummaries();
 
+    void RefreshBallotStatuses();
+
     void FinalizeSummaries();
 
     IStatusUpdateHub AnalyzeHub { get; }

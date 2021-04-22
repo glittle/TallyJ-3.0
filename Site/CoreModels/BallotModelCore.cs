@@ -38,7 +38,7 @@ namespace TallyJ.CoreModels
       var ballot = GetCurrentBallot(refresh);
       if (ballot == null)
       {
-        return new {};
+        return new { };
       }
 
       SessionKey.CurrentLocationGuid.SetInSession(ballot.LocationGuid);
@@ -755,83 +755,17 @@ namespace TallyJ.CoreModels
       return true;
     }
 
-    public bool CreateBallotForImportedBallot(ImportBallotsModel.Ballot incomingBallot, Guid importLocationGuid,
-      out string errorMessage, BallotCacher ballotCacher, VoteCacher voteCacher, List<Person> allPeople)
-    {
-      // create ballot
-      var ballot = new Ballot
-      {
-        BallotGuid = incomingBallot.guid, // re-use the one from the source xml document
-        LocationGuid = importLocationGuid,
-        ComputerCode = ComputerModel.ComputerCodeForImported,
-        BallotNumAtComputer = 0, // maxNum + 1, // will reset later
-        StatusCode = BallotStatusEnum.Empty,
-      };
-      Db.Ballot.Add(ballot);
-      Db.SaveChanges();
 
-      ballotCacher.UpdateItemAndSaveCache(ballot);
-
-      // add Votes
-      var nextVoteNum = 0;
-
-      foreach (var rawVote in incomingBallot.Votes)
-      {
-        nextVoteNum++;
-        var vote = new Vote
-        {
-          BallotGuid = ballot.BallotGuid,
-          PositionOnBallot = nextVoteNum,
-          StatusCode = VoteStatusCode.OnlineRaw,
-          SingleNameElectionCount = 1,
-          OnlineVoteRaw = JsonConvert.SerializeObject(rawVote),
-        };
-
-        // attempt to match if it is exact...
-        var matched = allPeople
-          // match on first and last name only
-          .Where(p => p.FirstName.ToLower() == rawVote.First.ToLower() &&
-                      p.LastName.ToLower() == rawVote.Last.ToLower())
-          // don't match if our list has "otherInfo" for this person - there might be some special considerations
-          .Where(p => p.OtherInfo.HasNoContent())
-          .ToList();
-
-        if (matched.Count == 1)
-        {
-          // found one exact match
-          var person = matched[0];
-          vote.StatusCode = VoteStatusCode.Ok;
-          vote.PersonGuid = person.PersonGuid;
-          vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid; // status code will be updated later if this is set
-        }
-
-        Db.Vote.Add(vote);
-        Db.SaveChanges();
-
-        voteCacher.UpdateItemAndSaveCache(vote);
-      }
-
-      var votes = voteCacher.AllForThisElection;
-      BallotAnalyzerLocal.UpdateBallotStatus(ballot, VoteInfosFor(ballot, votes), true);
-
-      ballotCacher.UpdateItemAndSaveCache(ballot);
-      Db.SaveChanges();
-
-      errorMessage = "";
-      return true;
-    }
-
-    public List<Vote> CurrentVotes()
-    {
-      var ballot = GetCurrentBallot();
-
-      if (ballot == null)
-      {
-        return new List<Vote>();
-      }
-      return new VoteCacher(Db).AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
-    }
+    // public List<Vote> CurrentVotes()
+    // {
+    //   var ballot = GetCurrentBallot();
+    //
+    //   if (ballot == null)
+    //   {
+    //     return new List<Vote>();
+    //   }
+    //   return new VoteCacher(Db).AllForThisElection.Where(v => v.BallotGuid == ballot.BallotGuid).ToList();
+    // }
 
     public List<VoteInfo> VoteInfosFor(Ballot ballot, List<Vote> allVotes = null)
     {
