@@ -112,6 +112,10 @@
     local.votesList.on('click', '.btnFindO', function (ev) {
       findWithRawVotePart(ev, 'O');
     });
+    local.votesList.on('click', '.btnTakeFirstMatch', function (ev) {
+      ev.preventDefault();
+      edit(local.nameList.children().eq(local.rowSelected));
+    });
     local.votesList.on('click', '.VoteHost.withRawtrue', function (ev) {
       if (ev.target.tagName === 'SELECT') {
         return;
@@ -1298,6 +1302,7 @@
       var search = local.inputField.val();
       if (search && showNoneFound) {
         local.nameList.append('<li>...no matches found...</li>');
+        $('.rawTarget').removeClass('canTakeFirstMatch')
       }
     } else {
       if (info.MoreFound && local.lastSearch) {
@@ -1320,6 +1325,7 @@
           }
         }
       });
+      $('.rawTarget').addClass('canTakeFirstMatch')
     }
 
     setSelected(local.nameList.children(), local.rowSelected);
@@ -1565,7 +1571,7 @@
 
     var vote = $(ev.target).closest('.VoteHost');
     var oldVote = $('.rawTarget');
-    oldVote.removeClass('rawTarget');
+    oldVote.removeClass('rawTarget canTakeFirstMatch');
 
     //    if (!inRow && oldVote.attr('id') === vote.attr('id')) {
     //      toggleAddToBallotTab(false);

@@ -453,7 +453,7 @@ namespace TallyJ.CoreModels
                 hub.StatusUpdate(message);
               }
 
-              if (ballotNum % 10 == 0) hub.StatusUpdate("Ballots imported: " + ballotNum, true);
+              if (ballotNum % 10 == 0) hub.StatusUpdate("Ballots read: " + ballotNum, true);
             }
             catch (Exception e)
             {
@@ -463,7 +463,7 @@ namespace TallyJ.CoreModels
             }
           }
 
-          hub.StatusUpdate("Ballots imported: " + ballotNum);
+          hub.StatusUpdate("Ballots read: " + ballotNum);
 
           // all done
           dbContext.SaveChanges();

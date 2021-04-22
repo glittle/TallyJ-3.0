@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace TallyJ.CoreModels
 {
   public class OnlineRawVote
@@ -15,19 +17,28 @@ namespace TallyJ.CoreModels
       Last = "";
 
       var split = text.Split(' ');
-      if (split.Length == 2)
+      var numWords = split.Length;
+      if (numWords >= 2)
       {
         // likely  first last
         // or last, first
+        var name1 = split.First().Trim(',');
+        var name2 = split.Last().Trim(',');
         if (text.Contains(","))
         {
-          Last = split[0].Trim(',');
-          First = split[1].Trim(',');
+          Last = name1;
+          if (numWords == 2)
+          {
+            First = name2;
+          }
         }
         else
         {
-          First = split[0].Trim(',');
-          Last = split[1].Trim(',');
+          First = name1;
+          if (numWords == 2)
+          {
+            Last = name2;
+          }
         }
       }
     }

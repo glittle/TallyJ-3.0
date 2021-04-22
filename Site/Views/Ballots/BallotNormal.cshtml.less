@@ -595,6 +595,7 @@ body.HasOfflineLocations {
     .Top {
       display: flex;
       align-items: flex-start;
+      min-height: 26px;
     }
 
     .NameInfo {
@@ -608,6 +609,9 @@ body.HasOfflineLocations {
       flex: 0 0 auto;
     }
 
+    .btnTakeFirstMatch {
+      display: none;
+    }
 
     &.withRawtrue {
       margin: 8px 0;
@@ -617,6 +621,7 @@ body.HasOfflineLocations {
       option[value="cd27534d-d7e8-e011-a095-002269c41d11"] {
         display: none;
       }
+
 
       .Name {
         margin-right: 5px;
@@ -692,15 +697,29 @@ body.HasOfflineLocations {
           opacity: 1;
         }
       }
+
+      &.canTakeFirstMatch.rawDonefalse {
+        .btnTakeFirstMatch {
+          display: block;
+          margin: 0 0 3px 120px;
+        }
+      }
     }
 
     &.rawDonefalse {
       background-color: #f1b787;
-      border-color: #f1b787;
 
       .rawVote {
         background-color: #f1b787;
         opacity: 1;
+      }
+
+      &.rawTarget {
+        background-color: #ffcca2;
+
+        .rawVote {
+          background-color: #ffcca2;
+        }
       }
     }
 
