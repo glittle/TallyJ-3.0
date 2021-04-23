@@ -624,7 +624,7 @@ namespace TallyJ.CoreModels
 
           peopleToLoad.Add(person);
 
-          result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");
+          // result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");  -- not good for large lists!
 
           peopleAdded++;
         }
