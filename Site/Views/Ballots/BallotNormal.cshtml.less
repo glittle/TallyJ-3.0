@@ -539,6 +539,10 @@ body.HasOfflineLocations {
   }
 }
 
+.btnTakeFirstMatch {
+  display: none;
+}
+
 #votesList {
   position: relative;
   width: 100%;
@@ -609,19 +613,23 @@ body.HasOfflineLocations {
       flex: 0 0 auto;
     }
 
-    .btnTakeFirstMatch {
-      display: none;
+    .btnFind {
+      visibility: hidden;
     }
 
     &.withRawtrue {
       margin: 8px 0;
       border-color: #f1ffde;
-      cursor: pointer;
+
+      &.hasBothtrue {
+        .btnFind {
+          visibility: visible;
+        }
+      }
 
       option[value="cd27534d-d7e8-e011-a095-002269c41d11"] {
         display: none;
       }
-
 
       .Name {
         margin-right: 5px;
@@ -642,8 +650,7 @@ body.HasOfflineLocations {
         margin: 2px;
         opacity: 0.7;
 
-        .other {
-          width: 50%;
+        .btnFind {
         }
 
         > span {
@@ -657,10 +664,21 @@ body.HasOfflineLocations {
 
         .names {
           flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
 
           > span {
+            cursor: zoom-in;
             display: flex;
             align-items: center;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            padding: 1px 3px;
+
+            &:hover {
+              border: 1px solid #aaa;
+            }
 
             button {
               margin-right: 5px;
@@ -672,6 +690,22 @@ body.HasOfflineLocations {
             vertical-align: text-top;
           }
         }
+
+        .other {
+          width: 50%;
+
+          > span {
+            border: 1px solid transparent;
+            border-radius: 3px;
+            padding: 1px 3px;
+            cursor: zoom-in;
+
+            &:hover {
+              border: 1px solid #aaa;
+            }
+          }
+        }
+
 
         .btnFindPart {
           line-height: 120%;

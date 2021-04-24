@@ -103,13 +103,13 @@
     local.votesList.on('click', '.btnFind', function (ev) {
       findWithRawVotePart(ev, 'FL');
     });
-    local.votesList.on('click', '.btnFindF', function (ev) {
+    local.votesList.on('click', '.F', function (ev) {
       findWithRawVotePart(ev, 'F');
     });
-    local.votesList.on('click', '.btnFindL', function (ev) {
+    local.votesList.on('click', '.L', function (ev) {
       findWithRawVotePart(ev, 'L');
     });
-    local.votesList.on('click', '.btnFindO', function (ev) {
+    local.votesList.on('click', '.O', function (ev) {
       findWithRawVotePart(ev, 'O');
     });
     local.votesList.on('click', '.btnTakeFirstMatch', function (ev) {
@@ -563,7 +563,7 @@
 
     var vote, newHost;
     var person = info.Person;
-    
+
     var voteId = local.settingNameForOnlineVote;
     if (voteId) {
       vote = local.votes.find(function (v) { return v.vid === voteId; });
@@ -1555,6 +1555,7 @@
         this.hasFirst = !!rawVote.First;
         this.hasLast = !!rawVote.Last;
         this.hasFL = this.hasFirst || this.hasLast;
+        this.hasBoth = this.hasFirst && this.hasLast;
         this.hasOtherInfo = !!rawVote.OtherInfo;
         this.rawDone = vote.pid > 0 || !!vote.invalid;
       }
@@ -1580,9 +1581,9 @@
 
     vote.addClass('rawTarget');
 
-    if (!inRow) {
-      vote.find('button:visible:first').trigger('click');
-    }
+    //if (!inRow) {
+    // vote.find('button:visible:first').trigger('click');
+    //}
 
     return true;
   }
