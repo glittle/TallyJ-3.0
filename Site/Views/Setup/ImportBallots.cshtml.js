@@ -124,53 +124,26 @@
     $('#loadingLog').show();
     $('#log').html('');
 
-    var resultDiv = $('#importResults');
-    var currentHeight = resultDiv.outerHeight();
-    resultDiv.css('min-height', currentHeight + 'px').html('Starting').removeClass('failed').show();
+    //var resultDiv = $('#importResults');
+    //var currentHeight = resultDiv.outerHeight();
+    //resultDiv.css('min-height', currentHeight + 'px').html('Starting').removeClass('failed').show();
 
     CallAjax2(publicInterface.controllerUrl + '/LoadBallotsFile', { id: local.activeFileRowId },
       {
         busy: 'Importing'
       },
       function (info) {
-        if (info.result) {
-          for (var i = 0; i < info.result.length; i++) {
-            var r = info.result[i];
-            var prefix = r.substr(0, 3);
+        local.vue.importing = false;
 
-            switch (prefix) {
-              case '~E ':
-              case '~W ':
-              case '~I ':
-                r = r.substr(3);
-            }
-            switch (prefix) {
-              case '~E ':
-                r = `<div class=E>${r}</div>`;
-                break;
-              case '~W ':
-                r = `<div class=W>${r}</div>`;
-                break;
-              case '~I ':
-                r = `<div class=I>${r}</div>`;
-                break;
-              default:
-                r = `<div>${r}</div>`;
-                break;
-            }
-
-            info.result[i] = r;
-          };
-
-          resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
-          $('.DbCount span').text(comma(info.count));
+        if (info.Success) {
+          ShowStatusDone('Imported');
 
           local.vue.importJustDone = true;
           getPreviewInfo();
 
-        } else if (info.ImportErrors) {
-          local.vue.previewInfo = info;
-
+        } else {
+          ShowStatusFailedMessage('Import failed. See details below.');
+          getPreviewInfo();
         }
       });
   }
@@ -184,6 +157,9 @@
         busy: 'Removing ballots'
       },
       function (info) {
+        local.vue.enableRemove = false;
+        local.vue.removing = false;
+
         if (info.Success) {
           ShowStatusDone(info.Message);
           getPreviewInfo();
@@ -300,6 +276,8 @@
       var mainLogDiv = $('#log');
       mainLogDiv.show();
 
+      local.vue.statusUpdated = true;
+
       var tempLogDiv = $('#tempLog');
       if (isTemp) {
         tempLogDiv.html(msg);
@@ -327,7 +305,10 @@
         previewInfo: {},
         activeFileRowId: 0,
         enableRemove: false,
+        importing: false,
+        removing: false,
         importJustDone: false,
+        statusUpdated: false,
         dummy: 1
       },
       computed: {
@@ -352,10 +333,12 @@
           getPreviewInfo(true);
         },
         importNow: function () {
+          this.statusUpdated = false;
+          this.importing = true;
           importNow();
         },
         removeImportedInfo: function () {
-          this.enableRemove = false;
+          this.removing = true;
           removeImportedInfo();
         }
       }

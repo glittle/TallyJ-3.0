@@ -311,7 +311,7 @@ namespace TallyJ.CoreModels
 
       // check ballots
       var importedLocation = new LocationModel(Db).GetImportedLocation();
-      var importedBallots = new BallotCacher(Db).AllForThisElection.Where(b=>b.LocationGuid == importedLocation?.LocationGuid).ToList();
+      var importedBallots = new BallotCacher(Db).AllForThisElection.Where(b => b.LocationGuid == importedLocation?.LocationGuid).ToList();
       var numToElect = UserSession.CurrentElection.NumberToElect.AsInt(0);
       var invalidNumVotes = false;
 
@@ -362,6 +362,7 @@ namespace TallyJ.CoreModels
       var peopleToUpdate = new List<Person>();
 
       var hub = new BallotImportHub();
+      var importOkay = true;
 
       // recoded to not use Cacher objects
       using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(10)))
@@ -464,6 +465,7 @@ namespace TallyJ.CoreModels
           }
 
           hub.StatusUpdate("Ballots read: " + ballotNum);
+          hub.StatusUpdate("Saving ballots... (please wait)", true);
 
           // all done
           dbContext.SaveChanges();
@@ -493,38 +495,47 @@ namespace TallyJ.CoreModels
           // }
 
           // result.Add($"Created {numBallotsCreated} ballot{numBallotsCreated.Plural()}.");
-          result.Add("Import Complete");
+          // result.Add("Import Complete");
         }
         catch (Exception e)
         {
-          result.Add("~E " + e.Message);
+          hub.StatusUpdate("Error - " + e.GetAllMsgs("; "));
+          // result.Add("~E " + e.Message);
+          importOkay = false;
         }
       }
 
       // foreach (var person in peopleToUpdate) peopleModel.UpdateFrontDeskListing(person);
 
-      // hub.StatusUpdate("Front desk updated");
+      if (importOkay)
+      {
+        // hub.StatusUpdate("Front desk updated");
+        hub.StatusUpdate("Updating ballot statuses... (please wait)", true);
 
-      new ElectionCacher().DropThisCache();
-      new LocationCacher().DropThisCache();
-      new BallotCacher().DropThisCache();
-      new VoteCacher().DropThisCache();
-      new PersonCacher().DropThisCache();
+        new ElectionCacher().DropThisCache();
+        new LocationCacher().DropThisCache();
+        new BallotCacher().DropThisCache();
+        new VoteCacher().DropThisCache();
+        new PersonCacher().DropThisCache();
 
-      var currentElection = UserSession.CurrentElection;
-      var analyzer = currentElection.IsSingleNameElection
-        ? new ElectionAnalyzerSingleName(currentElection) as IElectionAnalyzer
-        : new ElectionAnalyzerNormal(currentElection);
-      analyzer.RefreshBallotStatuses();
+        var currentElection = UserSession.CurrentElection;
+        var analyzer = currentElection.IsSingleNameElection
+          ? new ElectionAnalyzerSingleName(currentElection) as IElectionAnalyzer
+          : new ElectionAnalyzerNormal(currentElection);
+        analyzer.RefreshBallotStatuses();
 
-      hub.StatusUpdate("Ballot statuses updated");
+        hub.StatusUpdate("Ballot statuses updated");
+        hub.StatusUpdate("Updating front desk...", true);
 
-      new FrontDeskHub().ReloadPage();
-      hub.StatusUpdate("Front desk updated");
+        new FrontDeskHub().ReloadPage();
+        hub.StatusUpdate("Front desk updated");
+        hub.StatusUpdate("---");
+        hub.StatusUpdate("Import complete");
+      }
 
       return new
       {
-        result
+        Success = importOkay
       }.AsJsonResult();
     }
 
@@ -660,7 +671,7 @@ namespace TallyJ.CoreModels
       new BallotCacher().DropThisCache();
       new VoteCacher().DropThisCache();
       new PersonCacher().DropThisCache();
-      
+
       new FrontDeskHub().ReloadPage();
 
       return new

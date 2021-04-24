@@ -212,15 +212,7 @@
       </div>
     </div>
 
-    <div class="remove">
-      <p>If you have previously imported ballots into this election, you can click here to remove them. </p>
-      <p><el-checkbox v-model="enableRemove">Enable the 'Remove Now' button</el-checkbox></p>
-      <p v-if="enableRemove">
-        Caution: this will remove the ballots even if tellers have made changes to them!
-      </p>
-      <el-button type="warning" size="small" v-on:click="removeImportedInfo" :disabled="!enableRemove">Remove Now</el-button>
-    </div>
-
+   
     <h2>
       Step 4 <span>Import the Voters and Ballots</span>
     </h2>
@@ -228,19 +220,24 @@
       <p>
         When you click "Import Now" the ballots will be loaded into TallyJ and the people listed above will be marked on the Front Desk as having voted in the external system.
       </p>
-      <p>
-        The ballots will need further processing by tellers on the "Enter Ballots" page.
-      </p>
       <div class="importDiv">
-        <el-button v-on:click="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length)">
+        <el-button type="primary" v-on:click="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length) || importing">
           Import now
         </el-button>
         <div id="loadingLog">
           <div id="log"></div>
           <div id="tempLog"></div>
         </div>
-        <div id="importResults"></div>
       </div>
+    </div>
+
+    <div class="remove">
+      <p>If you have previously imported ballots into this election and want to remove them...</p>
+      <p v-if="enableRemove" class="error">
+        Caution: this will remove the ballots even if tellers have made changes to them!
+      </p>
+      <el-button type="warning" size="small" v-on:click="removeImportedInfo" :disabled="!enableRemove || removing">Remove Imported Ballots</el-button>
+      <p><el-checkbox v-model="enableRemove">Enable the 'Remove Imported Ballots' button</el-checkbox></p>
     </div>
   </div>
 </div>
