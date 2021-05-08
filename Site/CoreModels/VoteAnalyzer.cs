@@ -18,7 +18,8 @@ namespace TallyJ.CoreModels
         return VoteStatusCode.OnlineRaw;
       }
 
-      return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
+      // return voteInfo.VoteIneligibleReasonGuid.HasValue || !voteInfo.PersonCanReceiveVotes
+      return !voteInfo.PersonCanReceiveVotes
           ? VoteStatusCode.Spoiled
           : voteInfo.PersonCombinedInfo.HasContent() &&
             !voteInfo.PersonCombinedInfo.StartsWith(voteInfo.PersonCombinedInfoInVote ?? "NULL")
