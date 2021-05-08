@@ -55,6 +55,7 @@
     }
     else {
       $('#btnRefreshDiv').show();
+      disableManualIfAnalysisNotRun();
       //setTimeout(function () {
       //  runAnalysis(true);
       //}, 0);
@@ -66,13 +67,21 @@
       $(id).prop('checked', true);
     });
 
+
     $(window).on('beforeunload', function () {
       if ($('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary')) {
         return "Changes have been made and not saved.";
       }
     });
-
   };
+
+  function disableManualIfAnalysisNotRun() {
+    if (!settings.info.ResultsManual || !settings.info.ResultsManual.C_RowId) {
+      $('.btnSaveManualCounts, input.Manual').prop('disabled', true);
+    } else {
+      $('.btnSaveManualCounts, input.Manual').prop('disabled', false);
+    }
+  }
 
   function disableAnalysisBtnIfNeeded() {
     var disable = $('.btnSaveManualCounts').hasClass('btn-primary') || $('.btnSaveTieCounts').hasClass('btn-primary');
@@ -181,6 +190,8 @@
     var table;
 
     settings.info = info;
+
+    disableManualIfAnalysisNotRun();
 
     showLog(false);
     $('#InitialMsg').hide();
@@ -509,14 +520,14 @@
         busy: 'Saving Tie Counts'
       },
       function (info) {
-      if (info.Saved) {
-        runAnalysis(false);
-        $('.btnSaveTieCounts').removeClass('btn-primary');
-        disableAnalysisBtnIfNeeded()
-      } else {
-        ShowStatusFailed(info.Msg);
-      }
-    });
+        if (info.Saved) {
+          runAnalysis(false);
+          $('.btnSaveTieCounts').removeClass('btn-primary');
+          disableAnalysisBtnIfNeeded()
+        } else {
+          ShowStatusFailed(info.Msg);
+        }
+      });
   };
 
   var publicInterface = {
