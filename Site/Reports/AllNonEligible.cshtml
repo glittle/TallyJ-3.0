@@ -50,14 +50,14 @@
     </div>
   </div>
   <p class="Comment">
-    Showing all who cannot vote and all who cannot be voted for in this election.
+    Showing all who have a specific eligibility status for this election.
   </p>
   <table class="Voters">
     <tr class="person header">
       <th class="name">Person</th>
+      <th class="method">Status</th>
       <th class="vote">Can Vote</th>
-      <th class="vote">Can Receive Votes</th>
-      <th class="method">Reason</th>
+      <th class="vote">Can Be Voted For</th>
     </tr>
 
     @foreach (var person in people)
@@ -80,9 +80,9 @@
 
       <tr class="person @firstClass">
         <td class="name">@Raw(name)</td>
-        <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Y" : "-")</td>
-        <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Y" : "-")</td>
         <td class="method">@person.InvalidReasonDesc</td>
+        <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
+        <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
       </tr>
     }
   </table>

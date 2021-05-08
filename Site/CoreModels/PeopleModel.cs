@@ -428,7 +428,7 @@ namespace TallyJ.CoreModels
         Status = "Saved",
         Person = PersonForEdit(personInDatastore),
         OnFile = persons.Count(),
-        Eligible = persons.Count(p => p.IneligibleReasonGuid == null),
+        Eligible = persons.Count(p => p.IneligibleReasonGuid == null), //TODO? split to: can vote, can receive votes
       }.AsJsonResult();
     }
 

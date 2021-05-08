@@ -348,7 +348,7 @@
       .show();
     var options = '<option value="{value}">{text}</option>'.filledWithEach($.map(info.possible, function (f) {
       if (f === local.statusFieldName) {
-        return { value: f, text: 'Eligiblity Status' };
+        return { value: f, text: 'Eligibility Status' };
       }
       return { value: f, text: ExpandName(f) };
     }));

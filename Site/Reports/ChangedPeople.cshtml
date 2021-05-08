@@ -7,16 +7,19 @@
 @inherits RazorEngine.Templating.TemplateBase
 
 @{
-  var people = new PersonCacher().AllForThisElection.Where(p => p.CombinedInfo != p.CombinedInfoAtStart)
+  var people = new PersonCacher().AllForThisElection
+    .Where(p => p.CombinedInfo != p.CombinedInfoAtStart)
     .Select(p => new
     {
-      Change = p.CombinedInfoAtStart.HasContent() ? "Changed" : p.IneligibleReasonGuid == null ? "Added" : "New Spoiled",
+      Change = p.CombinedInfoAtStart.HasContent() ? "Changed" : "New",
       p.FirstName,
       p.LastName,
       p.OtherNames,
       p.OtherLastNames,
       p.OtherInfo,
       p.BahaiId,
+      p.CanVote,
+      p.CanReceiveVotes,
       InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
     })
     .OrderBy(p => p.Change)
@@ -79,7 +82,9 @@
         <td>Update</td>
         <td>Last Name</td>
         <td>First Name</td>
-        <td>Eligibility</td>
+        <td>Eligibility status</td>
+        <td>Can Vote</td>
+        <td>Can Be Voted For</td>
         <td>Other First Names</td>
         <td>Other Last Names</td>
         <td>Other Info</td>
@@ -94,6 +99,8 @@
           <td>@p.LastName</td>
           <td>@p.FirstName</td>
           <td>@p.InvalidReasonDesc</td>
+          <td>@Raw(p.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
+          <td>@Raw(p.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
           <td>@p.OtherNames</td>
           <td>@p.OtherLastNames</td>
           <td>@p.OtherInfo</td>

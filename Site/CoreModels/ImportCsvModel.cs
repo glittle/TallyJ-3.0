@@ -437,7 +437,7 @@ namespace TallyJ.CoreModels
                   var match = IneligibleReasonEnum.GetFor(value);
                   if (match != null)
                   {
-                    person.IneligibleReasonGuid = match;
+                    person.IneligibleReasonGuid = match.Value;
                   }
                   else
                   {

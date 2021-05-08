@@ -8,7 +8,7 @@
 @{
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
-    .Where(p => p.IneligibleReasonGuid == null)
+    // .Where(p => p.IneligibleReasonGuid == null)
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
