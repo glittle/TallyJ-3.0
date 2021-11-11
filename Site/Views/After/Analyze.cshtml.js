@@ -76,7 +76,8 @@
   };
 
   function disableManualIfAnalysisNotRun() {
-    if (!settings.info.ResultsManual || !settings.info.ResultsManual.C_RowId) {
+//    if (!settings.info.ResultsManual || !settings.info.ResultsManual.C_RowId) {
+    if (!settings.info.ResultsManual) {
       $('.btnSaveManualCounts, input.Manual').prop('disabled', true);
     } else {
       $('.btnSaveManualCounts, input.Manual').prop('disabled', false);
