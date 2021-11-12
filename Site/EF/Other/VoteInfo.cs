@@ -44,7 +44,7 @@ namespace TallyJ.EF
       }
       else
       {
-        PersonCanReceiveVotes = true;
+        PersonCanReceiveVotes = false;
       }
     }
 
