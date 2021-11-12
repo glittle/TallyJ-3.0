@@ -1,4 +1,5 @@
 using System.Linq;
+using TallyJ.Code;
 
 namespace TallyJ.CoreModels
 {
@@ -16,30 +17,23 @@ namespace TallyJ.CoreModels
       First = "";
       Last = "";
 
-      var split = text.Split(' ');
-      var numWords = split.Length;
-      if (numWords >= 2)
+      // likely   first last
+      //     or   last, first
+
+      if (text.Contains(","))
       {
-        // likely  first last
-        // or last, first
-        var name1 = split.First().Trim(',');
-        var name2 = split.Last().Trim(',');
-        if (text.Contains(","))
-        {
-          Last = name1;
-          if (numWords == 2)
-          {
-            First = name2;
-          }
-        }
-        else
-        {
-          First = name1;
-          if (numWords == 2)
-          {
-            Last = name2;
-          }
-        }
+        var split = text.Split(new[] { ',' }, 2);
+        Last = split[0].Trim();
+        First = split[1].Trim();
+      }
+      else
+      {
+        var split = text.Split(' ');
+        var numWords = split.Length;
+
+        // if > 2 words, cannot guess which are for first name or last name.  Default to last word --> Last
+        Last = split.Last();
+        First = split.Reverse().Skip(1).Reverse().JoinedAsString(" ");
       }
     }
 
