@@ -135,7 +135,7 @@ namespace Tests.BusinessTests
       EncryptionHelper.IsEncrypted("").ShouldEqual(false);
       EncryptionHelper.IsEncrypted(null).ShouldEqual(false);
 
-      EncryptionHelper.IsEncrypted(EncryptionHelper.EncryptionPrefix + "Not encrypted").ShouldEqual(false);
+      EncryptionHelper.IsEncrypted(EncryptionHelper.EncryptionPrefix + "Not encrypted").ShouldEqual(true); // the IsEncrypted only tests for the prefix... doesn't actually test the encryption
 
 
       var encrypted = EncryptionHelper.Encrypt("Hello", "salt");

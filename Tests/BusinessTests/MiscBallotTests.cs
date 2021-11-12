@@ -26,8 +26,26 @@ namespace Tests.BusinessTests
     {
       var text = "Last, de First";
       var v = new OnlineRawVote(text);
-      v.First.ShouldEqual("");
-      v.Last.ShouldEqual("");
+      v.First.ShouldEqual("de First");
+      v.Last.ShouldEqual("Last");
+      v.OtherInfo.ShouldEqual(text);
+    }
+    [TestMethod]
+    public void OnlineRawVote_Parse4()
+    {
+      var text = "John Smith, de First";
+      var v = new OnlineRawVote(text);
+      v.First.ShouldEqual("de First");
+      v.Last.ShouldEqual("John Smith");
+      v.OtherInfo.ShouldEqual(text);
+    }
+    [TestMethod]
+    public void OnlineRawVote_Parse5()
+    {
+      var text = "de First John Smith";
+      var v = new OnlineRawVote(text);
+      v.First.ShouldEqual("de First John");
+      v.Last.ShouldEqual("Smith");
       v.OtherInfo.ShouldEqual(text);
     }
   }

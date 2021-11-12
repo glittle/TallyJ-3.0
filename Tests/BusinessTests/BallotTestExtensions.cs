@@ -77,7 +77,8 @@ namespace Tests.BusinessTests
       Db.Vote.Add(vote);
       return vote;
     }
-    public static Vote ForTests(this Vote vote, Guid ineligibleReasonGuid, Ballot ballot, string status = VoteStatusCode.Ok)
+    public static Vote ForTests(this Vote vote, Ballot ballot, Guid ineligibleReasonGuid,
+      string status = VoteStatusCode.Ok)
     {
       vote.InvalidReasonGuid = ineligibleReasonGuid;
       vote.BallotGuid = ballot.BallotGuid;

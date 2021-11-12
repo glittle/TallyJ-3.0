@@ -50,6 +50,8 @@ namespace Tests.BusinessTests
         new Person {FirstName = "a3", }.ForTests(),
         new Person {FirstName = "a4", }.ForTests(),
         new Person {FirstName = "a5", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently}.ForTests(),
+        new Person {FirstName = "a6", IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial1_Older_Youth}.ForTests(),
+        new Person {FirstName = "a7", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Resides_elsewhere}.ForTests(),
       };
      
     }
@@ -106,7 +108,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.Custom1Ballots.ShouldEqual(0);
       resultSummaryFinal.Custom2Ballots.ShouldEqual(0);
       resultSummaryFinal.Custom3Ballots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
@@ -149,7 +151,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
@@ -192,13 +194,13 @@ namespace Tests.BusinessTests
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
     [TestMethod]
-    public void Ballot_TwoPeople_AllSpoiled()
+    public void Ballot_TwoNames_AllSpoiled()
     {
       new Election
       {
@@ -214,8 +216,8 @@ namespace Tests.BusinessTests
 
       var votes = new[]
       {
-        new Vote().ForTests(ballots[0], SamplePeople[0]).Status(IneligibleReasonEnum.Unidentifiable_Unknown_person),
-        new Vote().ForTests(ballots[0], SamplePeople[1]).Status(IneligibleReasonEnum.Unidentifiable_Unknown_person)
+        new Vote().ForTests(ballots[0], IneligibleReasonEnum.Unidentifiable_Unknown_person),
+        new Vote().ForTests(ballots[0], IneligibleReasonEnum.Unidentifiable_Unknown_person)
       };
 
       var model = new ElectionAnalyzerNormal(_fakes);//, election, votes, ballots, SamplePeople);
@@ -241,7 +243,107 @@ namespace Tests.BusinessTests
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+
+    [TestMethod]
+    public void Ballot_OlderYouth()
+    {
+      new Election
+      {
+        NumberToElect = 2,
+        NumberExtra = 0,
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
+      }.ForTests();
+
+      var ballots = new[]
+      {
+        new Ballot().ForTests()
+      };
+
+      var votes = new[]
+      {
+        new Vote().ForTests(ballots[0], IneligibleReasonEnum.IneligiblePartial1_Older_Youth),
+        new Vote().ForTests(ballots[0], SamplePeople[6])
+      };
+
+      var model = new ElectionAnalyzerNormal(_fakes);//, election, votes, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
+      results.Count.ShouldEqual(0);
+
+      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
+      votes[0].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
+      votes[1].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
+
+      //var spoiledCount = votes.Count(v => v.InvalidReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      //spoiledCount.ShouldEqual(2);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+
+    [TestMethod]
+    public void Ballot_TwoPeople_AllSpoiled()
+    {
+      new Election
+      {
+        NumberToElect = 2,
+        NumberExtra = 0,
+        // CanReceive = ElectionModel.CanVoteOrReceive.All
+      }.ForTests();
+
+      var ballots = new[]
+      {
+        new Ballot().ForTests()
+      };
+
+      var votes = new[]
+      {
+        new Vote().ForTests(ballots[0], SamplePeople[6]),
+        new Vote().ForTests(ballots[0], SamplePeople[7])
+      };
+
+      var model = new ElectionAnalyzerNormal(_fakes);//, election, votes, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
+      results.Count.ShouldEqual(0);
+
+      ballots[0].StatusCode.ShouldEqual(BallotStatusEnum.Ok);
+      votes[0].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
+      votes[1].StatusCode.ShouldEqual(VoteStatusCode.Spoiled);
+
+      //var spoiledCount = votes.Count(v => v.InvalidReasonGuid.HasValue || v.PersonIneligibleReasonGuid.HasValue || v.PersonCombinedInfo != v.PersonCombinedInfoInVote);
+      //spoiledCount.ShouldEqual(2);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(1);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
@@ -623,7 +725,7 @@ namespace Tests.BusinessTests
         new Vote().ForTests(ballots[0], SamplePeople[0]),
         new Vote().ForTests(ballots[0], SamplePeople[1]),
         new Vote().ForTests(ballots[1], SamplePeople[2]),
-        new Vote().ForTests(IneligibleReasonEnum.Unidentifiable_Unknown_person, ballots[1]),
+        new Vote().ForTests(ballots[1], IneligibleReasonEnum.Unidentifiable_Unknown_person),
       };
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
@@ -752,7 +854,7 @@ namespace Tests.BusinessTests
         new Vote().ForTests(ballots[0], SamplePeople[0]),
         new Vote().ForTests(ballots[0], SamplePeople[1]),
         new Vote().ForTests(ballots[1], SamplePeople[2]),
-        new Vote().ForTests(IneligibleReasonEnum.Unidentifiable_Unknown_person, ballots[1]),
+        new Vote().ForTests(ballots[1], IneligibleReasonEnum.Unidentifiable_Unknown_person),
       };
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
@@ -888,7 +990,7 @@ namespace Tests.BusinessTests
         new Vote().ForTests(ballots[1], SamplePeople[0]),
         new Vote().ForTests(ballots[1], SamplePeople[2]),
         new Vote().ForTests(ballots[2], SamplePeople[3]),
-        new Vote().ForTests(IneligibleReasonEnum.Ineligible_Other,ballots[2])
+        new Vote().ForTests(ballots[2], IneligibleReasonEnum.Ineligible_Other)
       };
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
@@ -1059,7 +1161,7 @@ namespace Tests.BusinessTests
       resultSummaryFinal.MailedInBallots.ShouldEqual(0);
       resultSummaryFinal.CalledInBallots.ShouldEqual(0);
       resultSummaryFinal.OnlineBallots.ShouldEqual(0);
-      resultSummaryFinal.NumEligibleToVote.ShouldEqual(5);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
       resultSummaryFinal.NumVoters.ShouldEqual(1);
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
