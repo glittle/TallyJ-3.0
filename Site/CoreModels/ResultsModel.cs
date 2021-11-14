@@ -318,6 +318,19 @@ namespace TallyJ.CoreModels
           }
           break;
 
+        case "VotesByNum":
+        case "VotesByName":
+          html = MvcViewRenderer.RenderRazorViewToString("~/Reports/{0}.cshtml".FilledWith(code));
+          if (html.HasNoContent())
+          {
+            return new { Status = "Unknown report" }.AsJsonResult();
+          }
+
+          summary = new ResultSummaryCacher(Db).AllForThisElection.SingleOrDefault(rs => rs.ResultType == ResultType.Final);
+          readyForReports = summary != null && summary.UseOnReports.AsBoolean() && electionStatus == ElectionTallyStatusEnum.Finalized;
+
+          break;
+
         case "": // not sure how this happens
           return new { Status = "Unknown report" }.AsJsonResult();
 

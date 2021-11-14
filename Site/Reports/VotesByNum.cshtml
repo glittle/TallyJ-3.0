@@ -87,7 +87,7 @@
   </div>
 </div>
 <script>
-  var list = [@String.Join(",", people.Where(p => p.Section!= ResultHelper.Section.Top).Select(p => p.VoteCount).Distinct().OrderByDescending(n => n).ToArray())];
+  var list = [@String.Join(",", people.Select(p => p.VoteCount).Distinct().OrderByDescending(n => n).ToArray())];
   $('#limitNum')
     .html('<option>{0}</option>'.filledWithEach(list))
     .val(localStorage.getItem('votesByNumLimit'))
