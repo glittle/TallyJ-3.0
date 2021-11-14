@@ -23,7 +23,7 @@
               PersonName = g.p.C_FullName,
               g.VoteCount,
               InvalidReasonDesc =
-                UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
+                g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate || g.p.IneligibleReasonGuid == IneligibleReasonEnum.IneligiblePartial2_Rights_removed
                 ? null
                   : IneligibleReasonEnum.DescriptionFor((g.p.IneligibleReasonGuid ?? g.v.InvalidReasonGuid).AsGuid()),
             })
