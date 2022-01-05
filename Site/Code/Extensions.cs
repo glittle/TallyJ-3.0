@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using NLog.LayoutRenderers.Wrappers;
 using RazorEngine.Text;
 using SendGrid.Helpers.Mail;
 using TallyJ.Code.Session;
@@ -428,6 +429,18 @@ namespace TallyJ.Code
         ? trimmed
         : trimmed.Substring(trimmed.Length - sizeToUse, sizeToUse);
       return VirtualPathUtility.ToAbsolute(contentFilePath) + "?v=" + shortVersion;
+    }
+
+    /// <summary>
+    /// Return just the first characters of the string. If maxLength is longer than the string, the whole string is returned.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="maxLength"></param>
+    /// <returns></returns>
+    public static string Left(this string input, int maxLength)
+    {
+      input = input ?? "";
+      return input.Length <= maxLength ? input : input.Substring(0, maxLength);
     }
 
     /// <summary>

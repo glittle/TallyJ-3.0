@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CsQuery.ExtensionMethods;
+using Newtonsoft.Json;
 using RazorEngine.Compilation.ImpromptuInterface;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -178,12 +179,14 @@ namespace TallyJ.Controllers
     {
       var electionGuid = UserSession.CurrentElectionGuid;
       var personGuid = UserSession.VoterInElectionPersonGuid;
+      var logHelper = new LogHelper();
 
       var onlineVotingInfo = Db.OnlineVotingInfo
         .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == personGuid);
 
       if (onlineVotingInfo == null)
       {
+        logHelper.Add("OnlineVotingInfo is null when saving pool", true);
         return new
         {
           Error = "Invalid request"
@@ -261,6 +264,7 @@ namespace TallyJ.Controllers
       if (currentElection.OnlineWhenOpen <= now && currentElection.OnlineWhenClose > now)
       {
         var onlineVoteHelper = new OnlineVoteHelper();
+        var logHelper = new LogHelper();
 
         if (!EncryptionHelper.IsEncrypted(onlineVotingInfo.ListPool))
         {
@@ -271,19 +275,47 @@ namespace TallyJ.Controllers
         if (locked)
         {
           // ensure we have enough votes
-          var votes = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo, out var errorMessage)?.Split(',').Length ?? 0;
+          var rawPool = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo, out var errorMessage);
+          if (rawPool == null)
+          {
+            logHelper.Add("LockPool but pool is empty. " + errorMessage, true);
+            return new
+            {
+              Error = "Pool is empty"
+            }.AsJsonResult();
+          }
+
           if (errorMessage.HasContent())
           {
+            logHelper.Add(errorMessage, true);
             return new
             {
               Error = errorMessage
             }.AsJsonResult();
           }
-          if (votes < currentElection.NumberToElect)
+
+          List<OnlineRawVote> completePool;
+          try
           {
+            completePool = JsonConvert.DeserializeObject<List<OnlineRawVote>>(rawPool);
+          }
+          catch (Exception e)
+          {
+            logHelper.Add("LockPool but pool has invalid JSON. " + e.GetBaseException().Message + "...  Start of pool: " + rawPool.Left(30), true);
             return new
             {
-              Error = "Too few votes"
+              Error = "Technical error in pool. Please edit and try again."
+            }.AsJsonResult();
+          }
+
+          var numVotes = completePool.Count;
+          if (numVotes < currentElection.NumberToElect)
+          {
+            var msg = $"Too few votes ({numVotes})";
+            logHelper.Add(msg + $" Required ({currentElection.NumberToElect})", true);
+            return new
+            {
+              Error = msg
             }.AsJsonResult();
           }
         }
@@ -296,13 +328,22 @@ namespace TallyJ.Controllers
 
         var personCacher = new PersonCacher(Db);
         var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == onlineVotingInfo.PersonGuid);
-        if (person == null || !person.CanVote.AsBoolean())
+        if (person == null)
         {
           return new
           {
             Error = "Invalid request (2)"
           }.AsJsonResult();
         }
+
+        if (!person.CanVote.AsBoolean())
+        {
+          return new
+          {
+            Error = "Cannot vote"
+          }.AsJsonResult();
+        }
+
         Db.Person.Attach(person);
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
@@ -316,7 +357,6 @@ namespace TallyJ.Controllers
         }
         else
         {
-          var logHelper = new LogHelper();
           if (locked)
           {
             person.VotingMethod = VotingMethodEnum.Online;

@@ -39,6 +39,22 @@ namespace Tests.FrameworkTests
       a.DefaultTo(1).ShouldEqual(1);
     }
 
+    [TestMethod]
+    public void Left_Test()
+    {
+      "".Left(0).ShouldEqual("");
+      "".Left(5).ShouldEqual("");
+
+      var a = "abcde";
+      a.Left(0).ShouldEqual("");
+      a.Left(5).ShouldEqual("abcde");
+      a.Left(500).ShouldEqual("abcde");
+
+      a = null;
+      a.Left(0).ShouldEqual("");
+      a.Left(10).ShouldEqual("");
+    }
+
 
     [TestMethod]
     public void HasNoContent_Test()
