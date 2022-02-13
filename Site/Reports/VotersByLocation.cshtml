@@ -190,6 +190,18 @@
           {
             <td class="method">@total.CalledIn @total.CalledIn.PercentInSpan(total.Voted, -1, true)</td>
           }
+          @if (showCustom1)
+          {
+            <td class="method">@total.Custom1 @total.Custom1.PercentInSpan(total.Voted, -1, true)</td>
+          }
+          @if (showCustom2)
+          {
+            <td class="method">@total.Custom2 @total.Custom2.PercentInSpan(total.Voted, -1, true)</td>
+          }
+          @if (showCustom3)
+          {
+            <td class="method">@total.Custom3 @total.Custom3.PercentInSpan(total.Voted, -1, true)</td>
+          }
           @if (showOnline)
           {
             <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>

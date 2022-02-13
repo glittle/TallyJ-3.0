@@ -24,6 +24,7 @@
     }
 
     $('.reportPanel').on('click', '.btnDownloadCsv', downloadCsv);
+
   };
 
   var warningMsg = '<p><strong>Warning</strong>: The election is not Finalized in TallyJ. This report may be incomplete and/or showing wrong information.</p>';
@@ -51,14 +52,18 @@
     }
     if (table.length) {
       lines.push(table.find('thead td, thead th')
-        .map(function (i, el) { return csvQuoted(el.innerText, cellSplitter); }).get().join(','));
-      table.find('tbody tr:visible').each(function (i, tr) {
-        lines.push($(tr).find('td').map(function (i, el) { return csvQuoted(el.innerText, cellSplitter); }).get()
-          .join(','));
-      });
+        .map(function (i, el) { return csvQuotedTd(el, cellSplitter); })
+        .get()
+        .join(','));
+      table.find('tbody tr:visible')
+        .each(function (i, tr) {
+          lines.push($(tr).find('td').map(function (i, el) { return csvQuotedTd(el, cellSplitter); })
+            .get()
+            .join(','));
+        });
     }
 
-    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\n'));
+    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\r\n'));
 
     var link = document.createElement('a');
     link.setAttribute('href', contents);
@@ -87,14 +92,33 @@
     return el.innerText;
   }
 
+  function csvQuotedTd(td) {
+    var result = '';
+    var childNodes = td.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+      var node = childNodes[i];
+      if (node.nodeName === 'BR') {
+        result += ' | ';
+      } else {
+        result += node.textContent;
+      }
+    }
+    return csvQuoted(result);
+  }
+
   function csvQuoted(s, splitter) {
     if (s && splitter) {
       return s.split(splitter).map(function (s2) { return csvQuoted(s2.trim()); }).join(',');
     }
 
-    var prefix = s.indexOf(',') === -1 ? '=' : '';
+    //    var value = s.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    //    var value = s.replace(/\s+/g, ' ').trim();
+    var value = s.trim();
 
-    var value = s.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    if (value.length > 250) {
+      value = chunkSubstr(value, 250).map(s => "\" & \"" + s).join('');
+    }
+    var prefix = s.indexOf(',') === -1 ? '=' : '';
 
     return !isNaN(value) || value.slice(-1) === '%' ? value : prefix + '"' + value + '"';
 
@@ -105,6 +129,17 @@
     //    return '"' + s + '"';
     //}
     //return s;
+  }
+
+  function chunkSubstr(str, size) {
+    var numChunks = Math.ceil(str.length / size);
+    var chunks = new Array(numChunks);
+
+    for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+      chunks[i] = str.substr(o, size);
+    }
+
+    return chunks;
   }
 
   function getReport(code, title) {
@@ -132,7 +167,11 @@
       local.reportHolder.prepend('<div class="status">Report may not be complete (Status: {ElectionStatusText})</div>'.filledWith(info));
     }
 
-    local.reportHolder.removeClass().addClass('Report' + codeTitle.code).fadeIn().html(info.Html);
+    local.reportHolder
+      .removeClass()
+      .addClass('Report' + codeTitle.code)
+      .fadeIn()
+      .html(info.Html.replace(/\x01/g, '\<br>'));
     //    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
     if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
       console.log(warningMsg);
@@ -140,6 +179,14 @@
     }
     $('#title').text(codeTitle.title);
     $('#titleDate').text(moment().format(reportsPage.T24 ? 'D MMM YYYY HH:mm' : 'D MMM YYYY hh:mm a'));
+    $(".sortable").tablesorter({
+      //      widgets: ['zebra', 'columns'],
+      headerTemplate: '{content}{icon}', // dropbox theme doesn't like a space between the content & icon
+      usNumberFormat: false,
+      sortReset: true,
+      sortRestart: true
+    });
+
   };
 
   var publicInterface = {

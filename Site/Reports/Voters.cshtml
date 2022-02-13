@@ -16,7 +16,10 @@
       p.VotingMethod,
       p.BahaiId,
       p.VotingLocationGuid,
-      p.RegistrationTime
+      p.RegistrationTime,
+      p.Teller1,
+      p.Teller2,
+      p.RegistrationLog
     });
 
   var locationModel = new LocationModel();
@@ -61,9 +64,9 @@
     width: 250px;
   }
 
-    .person.first {
-      margin-top: .5em;
-    }
+  .person.first {
+    margin-top: .5em;
+  }
 
   .first::first-letter {
     font-weight: bold;
@@ -73,17 +76,19 @@
   }
 </style>
 <div class="body">
-  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
   <div class="reportHead">
     <h1 id="title"></h1>
     <div class="byTitle">
       <div>@UserSession.CurrentElectionName</div>
       <div id="titleDate"></div>
     </div>
-  </div>  <p class="Comment">
+  </div>
+
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+  <p class="Comment">
     Shows all potential voters and how they voted.
   </p>
-  <table class="Voters">
+  <table class="Voters sortable">
     <thead>
       <tr>
         <td>Person</td>
@@ -94,29 +99,35 @@
           <td>Where</td>
         }
         <td>When</td>
+        <td>Teller at Keyboard</td>
+        <td>Teller Assisting</td>
+        <td>Details</td>
       </tr>
     </thead>
     <tbody>
       @foreach (var person in people)
       {
-      <tr>
-        <td class="name">@Raw(person.PersonName)</td>
-        <td class="id">@person.BahaiId</td>
-        <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
-        @if (hasMultipleLocations)
-        {
-          string locName;
-          if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
+        <tr>
+          <td class="name">@Raw(person.PersonName)</td>
+          <td class="id">@person.BahaiId</td>
+          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
+          @if (hasMultipleLocations)
           {
-            <td class="where"></td>
+            string locName;
+            if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
+            {
+              <td class="where"></td>
+            }
+            else
+            {
+              <td class="where">@locName</td>
+            }
           }
-          else
-          {
-            <td class="where">@locName</td>
-          }
-        }
-        <td class="when">@person.RegistrationTime</td>
-      </tr>
+          <td class="when">@person.RegistrationTime</td>
+          <td>@person.Teller1</td>
+          <td>@person.Teller2</td>
+          <td>@person.RegistrationLog.JoinedAsString("\x01")</td>
+        </tr>
       }
     </tbody>
   </table>

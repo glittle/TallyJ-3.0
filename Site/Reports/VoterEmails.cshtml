@@ -48,10 +48,10 @@
       text-decoration: line-through;
     }
 
-    thead {
-      display: table-header-group;
-      font-weight: bold;
-    }
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
 
   td {
     padding-left: 2px;
@@ -63,7 +63,6 @@
   }
 </style>
 <div class="body">
-  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
   <div class="reportHead">
     <h1 id="title"></h1>
     <div class="byTitle">
@@ -71,10 +70,11 @@
       <div id="titleDate"></div>
     </div>
   </div>
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
   <p class="Comment">
     All people with an email address or mobile phone number on file.
   </p>
-  <table class="Voters">
+  <table class="Voters sortable">
     <thead>
       <tr>
         <td>Person</td>

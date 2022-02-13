@@ -52,38 +52,41 @@
   <p class="Comment">
     Showing all who have a specific eligibility status for this election.
   </p>
-  <table class="Voters">
-    <tr class="person header">
-      <th class="name">Person</th>
-      <th class="method">Status</th>
-      <th class="vote">Can Vote</th>
-      <th class="vote">Can Be Voted For</th>
-    </tr>
+    <table class="Voters sortable">
+        <thead>
+        <tr class="person header">
+            <th class="name">Person</th>
+            <th class="method">Status</th>
+            <th class="vote">Can Vote</th>
+            <th class="vote">Can Be Voted For</th>
+        </tr>
+        </thead>
+        <tbody>
+          @foreach (var person in people)
+          {
+            var name = person.PersonName;
+            var first = name.ToUpper()[0];
+            var firstClass = "";
+            if (first != initial)
+            {
+              initial = first;
+              name = "<b>" + initial + "</b>" + name.Substring(1);
+              firstClass = "first";
+            }
+            //      var ineligible = "";
+            //      if (person.InvalidReasonDesc.HasContent())
+            //      {
+            //        ineligible = "ineligible";
+            //        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
+            //      }
 
-    @foreach (var person in people)
-    {
-      var name = person.PersonName;
-      var first = name.ToUpper()[0];
-      var firstClass = "";
-      if (first != initial)
-      {
-        initial = first;
-        name = "<b>" + initial + "</b>" + name.Substring(1);
-        firstClass = "first";
-      }
-      //      var ineligible = "";
-      //      if (person.InvalidReasonDesc.HasContent())
-      //      {
-      //        ineligible = "ineligible";
-      //        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
-      //      }
-
-      <tr class="person @firstClass">
-        <td class="name">@Raw(name)</td>
-        <td class="method">@person.InvalidReasonDesc</td>
-        <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
-        <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
-      </tr>
-    }
-  </table>
+            <tr class="person @firstClass">
+              <td class="name">@Raw(name)</td>
+              <td class="method">@person.InvalidReasonDesc</td>
+              <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
+              <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
+            </tr>
+          }
+        </tbody>
+    </table>
 </div>

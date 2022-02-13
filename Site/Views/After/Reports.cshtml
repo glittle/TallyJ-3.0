@@ -30,6 +30,7 @@
   { "SpoiledVotes", "Spoiled Votes"},
   { "BallotAlignment", "Ballot Alignment"},
   { "BallotsSame", "Duplicate Ballots"},
+  { "BallotsTellers", "Teller Ballot Entry"},
 
   { "AllCanReceive|Voter Reports", "Can Be Voted For"},
   { "ChangedPeople", "Updated People Records"},
@@ -41,6 +42,11 @@
   { "VoterEmails", onlineEnabled ? "Email & Phone List" : null},
   };
 }
+<link href="@ClientFile("~/Content/theme.default.min.css")" rel="stylesheet" />
+<link href="@ClientFile("~/Content/theme.dropbox.min.css")" rel="stylesheet" />
+<script src="@ClientFile("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
+<script src="@ClientFile("~/Scripts/jquery.tablesorter.widgets.min.js")" type="text/javascript"></script>
+
 <div class="reportsPage">
   <div class="chooser">
     <div>
