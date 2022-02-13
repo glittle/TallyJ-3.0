@@ -184,9 +184,10 @@ Vue.component('eventLog',
         };
 
         var last;
+        var niceName = 'report';
         switch (type) {
           case 'mainLog':
-
+            niceName = "general log";
             if (reload) {
               logInfo.log = [];
             }
@@ -201,9 +202,11 @@ Vue.component('eventLog',
             }
             break;
           case 'onlineVotingLog':
+            niceName = "online voting";
             logInfo.log = [];
             break;
           case 'electionList':
+            niceName = "elections list";
             logInfo.log = [];
             break;
         }
@@ -218,7 +221,7 @@ Vue.component('eventLog',
         CallAjax2(_url[type],
           form,
           {
-            busy: 'Getting {0} details...'.filledWith(type)
+            busy: 'Getting {0} details...'.filledWith(niceName)
           },
           function (info) {
             logInfo.loaded = true;
