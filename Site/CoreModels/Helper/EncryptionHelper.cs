@@ -136,7 +136,7 @@ namespace TallyJ.CoreModels.Helper
           // the first exception is the one we are interested in
           if (e1.Message.Contains("was not found in the key ring"))
           {
-            errorMessage = "Ballot unreadable. Please submit a fresh ballot.";
+            errorMessage = "The server has been changed... You must create your ballot again.";
           }
           else
           {

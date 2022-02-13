@@ -33,6 +33,17 @@ namespace TallyJ.CoreModels
 
       if (errorMessage.HasContent())
       {
+        // DecryptionError: The provided payload could not be decrypted. Refer to the inner exception for more information.
+        // (The key {8bcd2320-f17b-4831-a4b3-f24d74f50e5c} was not found in the key ring.)        
+
+        if (errorMessage.Contains("not found in the key ring"))
+        {
+          new LogHelper().Add("DecryptionError: " + errorMessage, true, UserSession.VoterId);
+
+          errorMessage = "The server has been changed. You must create your ballot again.";
+          return null;
+        }
+
         new LogHelper().Add("DecryptionError: " + errorMessage, true, UserSession.VoterId);
         return null;
       }
