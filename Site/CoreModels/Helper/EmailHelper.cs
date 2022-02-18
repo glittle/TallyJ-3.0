@@ -62,8 +62,8 @@ namespace TallyJ.CoreModels.Helper
       message.To.Add(new MailAddress(person.Email, person.C_FullNameFL));
 
       var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
-      message.From = htAddress;
-      message.Sender = htAddress;
+      // message.From = htAddress;
+      message.ReplyToList.Add(htAddress);
 
       var ok = SendEmail(message, html, out error);
 
@@ -198,8 +198,9 @@ namespace TallyJ.CoreModels.Helper
       message.To.Add(new MailAddress(email, p.C_FullNameFL));
 
       var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
-      message.From = htAddress;
-      message.Sender = htAddress;
+      // message.From = htAddress;
+      // message.Sender = htAddress;
+      message.ReplyToList.Add(htAddress);
 
       var ok = SendEmail(message, html, out error);
 
@@ -504,8 +505,9 @@ namespace TallyJ.CoreModels.Helper
           message.To.Add(new MailAddress(p.Email, p.PersonName));
 
           var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
-          message.From = htAddress;
-          message.Sender = htAddress;
+          // message.From = htAddress;
+          // message.Sender = htAddress;
+          message.ReplyToList.Add(htAddress);
 
           var ok = SendEmail(message, html, out var emailError);
 
@@ -569,10 +571,16 @@ namespace TallyJ.CoreModels.Helper
     /// <returns></returns>
     public bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
+      if (message.Sender == null)
+      {
+        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), "TallyJ System");
+      }
+
       if (message.From == null)
       {
-        message.From = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), "TallyJ System");
+        message.From = message.Sender;
       }
+
       message.Body = htmlBody;
       message.IsBodyHtml = true;
 
@@ -593,13 +601,22 @@ namespace TallyJ.CoreModels.Helper
 
     private bool SendEmailApi(string sendGridApiKey, MailMessage message, string htmlBody, out string errorMessage)
     {
+      // Sender is not used by SendGrid
       var msg = new SendGridMessage
       {
         From = message.From.AsSendGridEmailAddress(),
         Subject = message.Subject,
-        HtmlContent = htmlBody
+        HtmlContent = htmlBody,
       };
       msg.AddTos(message.To.Select(a => a.AsSendGridEmailAddress()).ToList());
+
+      if (message.ReplyToList.Count > 0)
+      {
+        var replyTo = message.ReplyToList.First().AsSendGridEmailAddress();
+
+        msg.ReplyTo = replyTo;
+        msg.From.Name = replyTo.Name + " via " + msg.From.Name;
+      }
 
       var sendGridClient = new SendGridClient(sendGridApiKey);
       var response = sendGridClient.SendEmailAsync(msg).Result;
