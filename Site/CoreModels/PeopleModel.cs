@@ -643,7 +643,7 @@ namespace TallyJ.CoreModels
       var format = UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt";
       if (includeDate)
       {
-        format = "MMM d -" + format;
+        format = "MMM d - " + format;
       }
       return p.RegistrationTime.HasValue
           ? p.RegistrationTime.Value.AddMilliseconds(0 - timeOffset).ToString(format)
