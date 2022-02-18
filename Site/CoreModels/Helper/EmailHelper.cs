@@ -615,7 +615,11 @@ namespace TallyJ.CoreModels.Helper
         var replyTo = message.ReplyToList.First().AsSendGridEmailAddress();
 
         msg.ReplyTo = replyTo;
-        msg.From.Name = replyTo.Name + " via " + msg.From.Name;
+
+        if (msg.From.Name != replyTo.Name)
+        {
+          msg.From.Name = replyTo.Name + " via " + msg.From.Name;
+        }
       }
 
       var sendGridClient = new SendGridClient(sendGridApiKey);
