@@ -1,0 +1,112 @@
+﻿@using TallyJ.Code.Enumerations
+@using TallyJ.Code.Session
+@using TallyJ.CoreModels
+@using TallyJ.EF
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var ballots = new BallotCacher().AllForThisElection;
+  var locations = new LocationCacher().AllForThisElection;
+  var votes = new VoteCacher().AllForThisElection;
+
+  var data = ballots
+      .OrderBy(b => b.ComputerCode)
+      .ThenBy(b => b.BallotNumAtComputer)
+      .Select(b =>
+      {
+        var location = locations.FirstOrDefault(l => l.LocationGuid == b.LocationGuid);
+        var locName = locations.Count > 1 && location != null ? location.Name : "";
+        var locId = location != null ? location.C_RowId : 0; // can't use ?.
+          var voteList = votes.Where(v => v.BallotGuid == b.BallotGuid).ToList();
+
+        return new
+        {
+          b.C_BallotCode,
+          Location = locName,
+          LocationId = locId,
+          BallotId = b.C_RowId,
+          b.StatusCode,
+          b.Teller1,
+          b.Teller2,
+          // voteOk = voteList.Count(v=>v.StatusCode == VoteStatusCode.Ok),
+          spoiledVotes = voteList.Count(v=>v.StatusCode != VoteStatusCode.Ok),
+        };
+      });
+}
+<style>
+    table.Ballots td {
+        border: 1px solid #ccc;
+        padding: 1px 3px 2px 5px;
+        vertical-align: top;
+    }
+
+    table.Ballots {
+        border-bottom-style: hidden;
+        border-collapse: collapse;
+        border-left-style: hidden;
+        border-right-style: hidden;
+        width: 100%;
+    }
+
+    table.Ballots td:first-child { white-space: nowrap; }
+
+    .Count {
+        float: right;
+        font-weight: bold;
+        padding: 0 5px;
+    }
+
+    .Ballot { margin-top: 3px; }
+
+    .Spoiled { color: red; }
+</style>
+<div class="body">
+    <div class="reportHead">
+        <h1 id="title"></h1>
+        <div class="byTitle">
+            <div>@UserSession.CurrentElectionName</div>
+            <div id="titleDate"></div>
+        </div>
+    </div>
+    <button class="btn btn-mini btnDownloadCsv" data-table=".Ballots" type="button" title="Download in CSV format for Excel">Export</button>
+
+    <p class="Comment">
+        This lists the ballots and the tellers who entered them into TallyJ.
+    </p>
+    <table class="Ballots sortable">
+        <thead>
+        <tr>
+            <th>Ballot</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Spoiled Votes</th>
+            <th>Teller at Keyboard</th>
+            <th>Teller Assisting</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ballot in data)
+        {
+            <tr class="Ballot">
+                <td>
+                    <a href="../Ballots?l=@ballot.LocationId&b=@ballot.BallotId" target="ballot">@ballot.C_BallotCode</a>
+                </td>
+                <td>
+                    @ballot.Location
+                </td>
+                <td class="@(ballot.StatusCode != BallotStatusEnum.Ok ? "Spoiled" : "")">
+                    @ballot.StatusCode
+                </td>
+                <td class="center">
+                    @(ballot.StatusCode == BallotStatusEnum.Ok && ballot.spoiledVotes > 0 ? ballot.spoiledVotes.ToString() : "-")
+                </td>
+                <td>
+                    @ballot.Teller1
+                </td>
+                <td>
+                    @ballot.Teller2
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

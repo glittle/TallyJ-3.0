@@ -30,14 +30,15 @@
   { "SpoiledVotes", "Spoiled Votes"},
   { "BallotAlignment", "Ballot Alignment"},
   { "BallotsSame", "Duplicate Ballots"},
-  { "BallotsTellers", "Teller Ballot Entry"},
+  { "BallotsSummary", "Ballots Summary"},
 
   { "AllCanReceive|Voter Reports", "Can Be Voted For"},
-  { "ChangedPeople", "Updated People Records"},
   { "Voters", showVoters ? "Participation" : null},
+  { "VotersOnline", showVoters && onlineEnabled ? "Voted Online" : null},
   { "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
   { "VotersByLocation", hasMultipleLocations ? "Registration by Venue" : null },
   { "VotersByLocationArea", hasMultipleLocations ? "Attendance by Venue" : null },
+  { "ChangedPeople", "Updated People Records"},
   { "AllNonEligible", "With Eligibility Status"},
   { "VoterEmails", onlineEnabled ? "Email & Phone List" : null},
   };

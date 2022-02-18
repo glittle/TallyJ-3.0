@@ -93,18 +93,38 @@
   }
 
   function csvQuotedTd(td) {
-    var result = '';
-    var childNodes = td.childNodes;
+    var result = [];
+
+    addChildren(td, result);
+
+    return csvQuoted(result.map(s => s.trim()).filter(s => s).join('|'));
+  }
+
+  function addChildren(node, result) {
+    var childNodes = node.childNodes;
     for (var i = 0; i < childNodes.length; i++) {
-      var node = childNodes[i];
-      if (node.nodeName === 'BR') {
-        result += ' | ';
-      } else {
-        result += node.textContent;
+      var child = childNodes[i];
+      if (child.childNodes.length) {
+        addChildren(child, result);
+        continue;
+      }
+      switch (child.nodeName) {
+        case 'BR':
+          result.push('');
+          //        result += ' | ';
+          break;
+        //      case 'DIV':
+        //        result += ' | ' + node.textContent;
+        //        break;
+        default:
+          if (child.textContent) {
+            result.push(...child.textContent.split('\n'));
+          }
+          break;
       }
     }
-    return csvQuoted(result);
   }
+
 
   function csvQuoted(s, splitter) {
     if (s && splitter) {
@@ -120,7 +140,10 @@
     }
     var prefix = s.indexOf(',') === -1 ? '=' : '';
 
-    return !isNaN(value) || value.slice(-1) === '%' ? value : prefix + '"' + value + '"';
+    return (!isNaN(value) && value === (+value).toString()) // a number without any formatting
+      || value.slice(-1) === '%'
+      || value === ''
+      ? value : prefix + '"' + value + '"';
 
     //var quote = false;
     //if (s.indexOf(',') !== -1) quote = true;
@@ -144,7 +167,7 @@
 
   function getReport(code, title) {
     local.reportLines = [];
-    local.reportHolder.html('<div class=getting>Getting report: ' + title + '</div>');
+    local.reportHolder.html('<h1 class=getting>' + title + ' (loading...)</h1>');
     $('#Status').hide();
     CallAjax2(publicInterface.controllerUrl + '/GetReportData', { code: code },
       {
@@ -174,6 +197,7 @@
       .html(info.Html.replace(/\x01/g, '\<br>'));
     //    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
     if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
+      // server must prepare "Ready" for any report that needs it
       console.log(warningMsg);
       $('#Status').html(warningMsg).show();
     }

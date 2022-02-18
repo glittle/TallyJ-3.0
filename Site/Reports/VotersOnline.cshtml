@@ -1,0 +1,156 @@
+﻿@using System.Web;
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Data
+@using TallyJ.Code.Session
+@using TallyJ.Code.UnityRelated
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var dbContext = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
+  var timeOffset = UserSession.TimeOffsetServerAhead;
+  var format = UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt";
+  var formatWithDay = "MMM d - " + format;
+
+  var now = DateTime.Now;
+  var recent = 30.minutes();
+
+  var people = new PersonCacher().AllForThisElection
+      .Join(dbContext.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
+          ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, ovi) =>
+              new { p, ovi })
+      .GroupJoin(dbContext.OnlineVoter.Where(ov => ov.VoterIdType == "E"), j => j.p.Email, ov => ov.VoterId, (j, ovList) => new { j.ovi, j.p, byEmail = ovList.FirstOrDefault() })
+      .GroupJoin(dbContext.OnlineVoter.Where(ov => ov.VoterIdType == "P"), j => j.p.Phone, ov => ov.VoterId, (j, ovList) => new { j.ovi, j.p, j.byEmail, byPhone = ovList.FirstOrDefault() })
+      .Select(j => new
+      {
+        j.p.C_RowId,
+        j.p.C_FullName,
+        j.p.VotingMethod,
+        j.p.Email,
+        j.p.Phone,
+        j.ovi,
+        j.byEmail,
+        j.byPhone
+      })
+      .ToList()
+      .OrderByDescending(j=>j.ovi.WhenStatus)
+      .ThenBy(j=>j.C_FullName)
+      .Select(j => new
+      {
+        PersonId = j.C_RowId,
+        j.C_FullName,
+        j.VotingMethod,
+        VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
+        j.ovi.Status,
+        j.ovi.WhenStatus,
+    // WhenStatus_Display = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.AddMilliseconds(0 - timeOffset).ToString(format),
+    WhenStatus_Tip = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay),
+        j.ovi.HistoryStatus,
+        j.Email,
+        j.Phone,
+        j.byEmail,
+        j.byPhone
+      });
+
+}
+<style>
+  b {
+    display: inline-block;
+  }
+
+  tr {
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+    tr:nth-child(even) {
+      background-color: #eee;
+    }
+
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
+
+  td {
+    padding-left: 2px;
+    padding-right: 6px;
+    white-space: normal;
+  }
+
+  .when {
+    font-size: 80%;
+      color: #999;
+  }
+
+  .recent {
+    color: red;
+  }
+
+  .notUsed {
+      color: #999;
+  }
+</style>
+<div class="body">
+  <div class="reportHead">
+    <h1 id="title"></h1>
+    <div class="byTitle">
+      <div>@UserSession.CurrentElectionName</div>
+      <div id="titleDate"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+  <p class="Comment">
+    Shows all voters who have connected to this election in the online voting site.
+    Activity in the last @recent.Minutes minutes is <span class="recent">highlighted</span>.
+  </p>
+  <table class="Voters sortable">
+    <thead>
+      <tr>
+        <th>Voter</th>
+        <th>Front Desk<br />Registration</th>
+        <th>Online Ballot<div class="when">(When)</div></th>
+        <th>Email<div class="when">(Last Login)</div></th>
+        <th>Phone<div class="when">(Last Login)</div></th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var person in people)
+      {
+        <tr>
+          <td>@person.C_FullName</td>
+          <td>@person.VotingMethod_Display</td>
+          <td>
+            @person.Status
+            @if (person.WhenStatus != null)
+            {
+              <div class="when @(now - person.WhenStatus < recent ? "recent" : "")">
+                @person.WhenStatus_Tip
+              </div>
+            }
+          </td>
+          <td class="@(person.byEmail==null ? "notUsed" : "used")">
+            @person.Email &nbsp;
+            @if (person.byEmail != null && person.byEmail.WhenLastLogin != null)
+            {
+              <div class="when @(now - person.byEmail.WhenLastLogin < recent ? "recent" : "")">
+                @person.byEmail.WhenLastLogin.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay)
+              </div>
+            }
+          </td>
+          <td class="@(person.byPhone==null ? "notUsed" : "used")">
+            @person.Phone &nbsp;
+            @if (person.byPhone != null && person.byPhone.WhenLastLogin != null)
+            {
+              <div class="when @(now - person.byPhone.WhenLastLogin < recent ? "recent" : "")">
+                @person.byPhone.WhenLastLogin.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay)
+              </div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

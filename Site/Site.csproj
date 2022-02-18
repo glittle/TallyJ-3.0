@@ -888,9 +888,6 @@
     <Content Include="Reports\ChangedPeople.cshtml" />
     <Content Include="AppDataSample\AppSettings.config" />
     <None Include="compilerconfig.json" />
-    <None Include="compilerconfig.json.defaults">
-      <DependentUpon>compilerconfig.json</DependentUpon>
-    </None>
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <Content Include="Content\manifest.json" />
     <None Include="packages.config" />
@@ -924,7 +921,8 @@
     <Content Include="Scripts\element-ui.css" />
     <Content Include="Scripts\element-ui.js" />
     <Content Include="Reports\BallotsImported.cshtml" />
-    <Content Include="Reports\BallotsTellers.cshtml" />
+    <Content Include="Reports\BallotsSummary.cshtml" />
+    <Content Include="Reports\VotersOnline.cshtml" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
