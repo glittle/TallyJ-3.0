@@ -57,7 +57,8 @@
   },
   {
     "outputFile": "Views/Public/Home.cshtml.css",
-    "inputFile": "Views/Public/Home.cshtml.less"
+    "inputFile": "Views/Public/Home.cshtml.less",
+    "sourceMap": true
   },
   {
     "outputFile": "Views/Setup/EditPerson.cshtml.css",

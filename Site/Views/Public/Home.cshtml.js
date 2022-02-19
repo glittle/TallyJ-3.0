@@ -3,7 +3,8 @@
     reconnectHubTimeout: null,
     hubReconnectionTime: 95000,
     warmupDone: false,
-    isBad: false
+    isBad: false,
+    vue: null
   };
 
   var isBadBrowser = function () {
@@ -50,7 +51,7 @@
 
     clearElectionRelatedStorageItems();
 
-    connectToPublicHub();
+    //connectToPublicHubToGetElectionList();
 
     //    if ($('.VoterLoginError').length) {
     //      startJoinClick(null, 'btnChooseVoter');
@@ -64,9 +65,14 @@
     if (window.location.search.indexOf('v=voter') !== -1) {
       $('#btnChooseVoter').click();
     }
+
+    setupVoterVue();
+
+    // for testing
+    startJoinClick(null, 'btnChooseVoter');
   };
 
-  var connectToPublicHub = function () {
+  var connectToPublicHubToGetElectionList = function () {
     var hub = $.connection.publicHubCore;
 
     hub.client.electionsListUpdated = function (listing) {
@@ -94,7 +100,7 @@
   };
 
   var refreshElectionList = function () {
-    connectToPublicHub();
+    connectToPublicHubToGetElectionList();
   };
 
   function selectDefaultElection() {
@@ -189,8 +195,132 @@
     PreparePage: preparePage,
     controllerUrl: '',
     dashBoardUrl: '',
-    local: local
+    local: local,
+    vote: false,
+    sms: false,
   };
+
+  function setupVoterVue() {
+    //    console.log('online', homeIndexPage.vote, publicInterface.vote, $("#voterVue"));
+    if (!homeIndexPage.vote) {
+      return;
+    }
+
+    local.vue = new Vue({
+      el: '#voterVue',
+      data: function () {
+        return {
+          mode: '',
+          code: '',
+          email: '',
+          phone: '',
+          sending: false,
+          sent: false,
+          status: '',
+          connectedToHub: false,
+          hubKey: ''
+        };
+      },
+      computed: {
+        okayToSend: function () {
+          return !!this[this.mode]; // something entered - should validate
+        },
+
+      },
+      watch: {
+      },
+      created: function () {
+      },
+      mounted: function () {
+        if (!homeIndexPage.vote) {
+          this.chooseMethod('email');
+        }
+      },
+      methods: {
+        chooseMethod: function (mode) {
+          this.mode = mode;
+          setTimeout(() => $('.voterLogin input').focus(), 0);
+        },
+        sendEmail: function () {
+          this.send('email', null, this.email);
+        },
+        sendPhone: function (method) {
+          this.send('phone', method, this.phone);
+        },
+        joinHub: function () {
+          var vue = this;
+          if (vue.connectedToHub) {
+            return;
+          }
+          vue.hubKey = Math.random().toString().slice(-5);
+
+          var hub = $.connection.voterCodeHubCore;
+
+          hub.client.setStatus = function (message) {
+            console.log('signalR: voterPersonalHub status', message);
+            vue.status = message;
+          };
+
+          hub.client.final = function (okay, message) {
+            console.log('signalR: voterPersonalHub final');
+            vue.status = message;
+            if (okay) {
+              // go to inner page
+            }
+          };
+
+          console.log('Joining voter hub');
+
+          startSignalR(function () {
+            CallAjaxHandler(publicInterface.controllerUrl + 'VoterCodeHub',
+              {
+                connId: site.signalrConnectionId,
+                key: vue.hubKey
+              },
+              function (info) {
+                vue.connectedToHub = true;
+              });
+          });
+
+        },
+        send: function (type, method, target) {
+          var vue = this;
+          this.joinHub();
+
+          setTimeout(() => {
+
+
+            this.status = 'A...';
+            this.sending = true;
+
+            // do the call
+            CallAjaxHandler(publicInterface.controllerUrl + 'GetCode',
+              {
+                type: type,
+                method: method,
+                target: target,
+                hubKey: vue.hubKey
+              }, function (info) {
+
+                vue.sent = true; //testing
+                vue.sending = false; // testing
+
+                if (info.Success) {
+                  // hub will update
+
+                } else {
+                  ShowStatusFailedMessage(info);
+                }
+              });
+
+          }, 100);
+
+
+        }
+      }
+    });
+
+  }
 
   return publicInterface;
 };

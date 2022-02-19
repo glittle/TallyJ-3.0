@@ -487,7 +487,9 @@
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
     <Compile Include="CoreModels\Helper\SmsHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
+    <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
     <Compile Include="CoreModels\Hubs\BallotImportHub.cs" />
+    <Compile Include="CoreModels\Hubs\VoterCodeHub.cs" />
     <Compile Include="CoreModels\ImportBallotsModel.cs" />
     <Compile Include="CoreModels\OnlineVoteHelper.cs" />
     <Compile Include="CoreModels\VoterAccountModels\AccountViewModels.cs" />
@@ -657,6 +659,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Content Include="Content\Site.min.css">
+      <DependentUpon>Site.css</DependentUpon>
+    </Content>
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -952,14 +957,26 @@
     <Content Include="Views\After\Analyze.cshtml.less">
       <DependentUpon>Analyze.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\Analyze.cshtml.min.css">
+      <DependentUpon>Analyze.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\After\Monitor.cshtml.css">
       <DependentUpon>Monitor.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Monitor.cshtml.min.css">
+      <DependentUpon>Monitor.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\After\Presenter.cshtml.css">
       <DependentUpon>Presenter.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\After\Presenter.cshtml.min.css">
+      <DependentUpon>Presenter.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\After\Reports.cshtml.css">
       <DependentUpon>Reports.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\After\Reports.cshtml.min.css">
+      <DependentUpon>Reports.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\After\ShowTies.cshtml.css">
       <DependentUpon>ShowTies.cshtml.less</DependentUpon>
@@ -967,14 +984,26 @@
     <Content Include="Views\After\ShowTies.cshtml.js">
       <DependentUpon>ShowTies.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\After\ShowTies.cshtml.min.css">
+      <DependentUpon>ShowTies.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\BallotNormal.cshtml.css">
       <DependentUpon>BallotNormal.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\BallotNormal.cshtml.min.css">
+      <DependentUpon>BallotNormal.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Ballots\BallotSingle.cshtml.css">
       <DependentUpon>BallotSingle.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\BallotSingle.cshtml.min.css">
+      <DependentUpon>BallotSingle.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Ballots\Reconcile.cshtml.css">
       <DependentUpon>Reconcile.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Ballots\Reconcile.cshtml.min.css">
+      <DependentUpon>Reconcile.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Ballots\SortBallots.cshtml.css">
       <DependentUpon>SortBallots.cshtml.less</DependentUpon>
@@ -982,11 +1011,17 @@
     <Content Include="Views\Ballots\SortBallots.cshtml.js">
       <DependentUpon>SortBallots.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Ballots\SortBallots.cshtml.min.css">
+      <DependentUpon>SortBallots.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Before\FrontDesk.cshtml.css">
       <DependentUpon>FrontDesk.cshtml.less</DependentUpon>
     </Content>
     <Content Include="Views\Before\FrontDesk.cshtml.less">
       <DependentUpon>FrontDesk.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Before\FrontDesk.cshtml.min.css">
+      <DependentUpon>FrontDesk.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Before\RollCall.cshtml.css">
       <DependentUpon>RollCall.cshtml.less</DependentUpon>
@@ -994,8 +1029,14 @@
     <Content Include="Views\Before\RollCall.cshtml.less">
       <DependentUpon>RollCall.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Before\RollCall.cshtml.min.css">
+      <DependentUpon>RollCall.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
       <DependentUpon>ChooseElection.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Dashboard\ChooseElection.cshtml.min.css">
+      <DependentUpon>ChooseElection.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
@@ -1003,11 +1044,20 @@
     <Content Include="Views\Dashboard\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Dashboard\Index.cshtml.min.css">
+      <DependentUpon>Index.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Public\Home.cshtml.css">
       <DependentUpon>Home.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Public\Home.cshtml.min.css">
+      <DependentUpon>Home.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\EditPerson.cshtml.css">
       <DependentUpon>EditPerson.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\EditPerson.cshtml.min.css">
+      <DependentUpon>EditPerson.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Setup\ImportBallots.cshtml.css">
       <DependentUpon>ImportBallots.cshtml.less</DependentUpon>
@@ -1015,8 +1065,14 @@
     <Content Include="Views\Setup\ImportBallots.cshtml.js">
       <DependentUpon>ImportBallots.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\ImportBallots.cshtml.min.css">
+      <DependentUpon>ImportBallots.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.css">
       <DependentUpon>ImportCsv.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\ImportCsv.cshtml.min.css">
+      <DependentUpon>ImportCsv.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Setup\Notify.cshtml.css">
       <DependentUpon>Notify.cshtml.less</DependentUpon>
@@ -1027,17 +1083,29 @@
     <Content Include="Views\Setup\Notify.cshtml.less">
       <DependentUpon>Notify.cshtml</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\Notify.cshtml.min.css">
+      <DependentUpon>Notify.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\People.cshtml.css">
       <DependentUpon>People.cshtml.less</DependentUpon>
     </Content>
+    <Content Include="Views\Setup\People.cshtml.min.css">
+      <DependentUpon>People.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\Setup.cshtml.css">
       <DependentUpon>Setup.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Setup\Setup.cshtml.min.css">
+      <DependentUpon>Setup.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\SysAdmin\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
     </Content>
     <Content Include="Views\SysAdmin\Index.cshtml.js">
       <DependentUpon>Index.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\SysAdmin\Index.cshtml.min.css">
+      <DependentUpon>Index.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Vote\VoteHome.cshtml.css">
       <DependentUpon>VoteHome.cshtml.less</DependentUpon>
@@ -1047,6 +1115,9 @@
     </Content>
     <Content Include="Views\Vote\VoteHome.cshtml.less">
       <DependentUpon>VoteHome.cshtml</DependentUpon>
+    </Content>
+    <Content Include="Views\Vote\VoteHome.cshtml.min.css">
+      <DependentUpon>VoteHome.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Xslt\FormatExport1.xslt" />
     <Content Include="Views\Public\Home.cshtml.less">

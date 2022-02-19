@@ -134,6 +134,18 @@ namespace TallyJ.Controllers
       return OpenElections();
     }
 
+    public JsonResult VoterCodeHub(string connId, string key)
+    {
+      new VoterCodeHub().Join(connId, key);
+      return null;
+    }
+
+    public JsonResult GetCode(string type, string method, string target, string hubKey)
+    {
+      var helper = new VoterCodeHelper();
+      return helper.GetCode(type, method, target, hubKey).AsJsonResult();
+    }
+
     public void JoinMainHub(string connId, string electionGuid)
     {
       // removed [Authorize]... just ignore if we don't like the call

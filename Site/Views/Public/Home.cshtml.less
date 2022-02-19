@@ -335,12 +335,12 @@ div.or {
       background-position-x: center;
       position: relative;
       margin: 0 2em;
+      border: 1px solid transparent;
+      border-radius: 6px;
 
-      a {
-        color: black;
-        display: block;
-        width: 100%;
-        height: 100%;
+      &:hover {
+        border-color: #999;
+        cursor: pointer;
       }
 
       span {
@@ -362,37 +362,96 @@ div.or {
     }
   }
 
-  .voterLogins {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0 10px;
-
-    > div {
-      border: 1px solid grey;
-      margin: 3px;
-      padding: 1em;
-      flex-grow: 1;
-      background-color: #faf7f3;
-      border-radius: 4px;
-    }
-
-    .voterOr {
-      flex-grow: 0;
-      padding: 2em 10px;
-      //border: none;
-      //border: 1px solid grey;
-      //border-top: none;
-      //border-bottom: none;
-    }
-  }
-
-  .voterEmail {
-    margin-bottom: 1em;
+  .voterLogin {
+    border-radius: 6px;
+    width: 250px;
+    max-width: 80vw;
+    margin: 10px auto;
+    padding: 20px;
 
     input {
       text-align: center;
+      font-size: 1.2em;
+      padding: 5px 4px 3px;
+      margin: 5px 0;
+    }
+
+    .example{
+      margin: 0 auto;
+      font-size: 90%;
+      color: #f8f8f8;
+    }
+
+    label, div {
+      color: #fff;
+      margin: 5px 0;
+    }
+
+    &.email {
+      background-color: #8dc63e;
+    }
+
+    &.sms {
+      background-color: #f6941e;
+    }
+
+    .status {
+      color: #fdfdfd;
     }
   }
+
+  .pendingCode {
+    border-radius: 6px;
+    width: 270px;
+    max-width: 80vw;
+    margin: -10px auto 20px;
+    padding: 10px;
+    background-color: #efeeef;
+    color: black;
+
+    input {
+      width: 5em;
+      text-align: center;
+      font-size: 1.2em;
+      padding: 5px 4px 3px;
+      margin: 5px 0;
+    }
+
+    label, div {
+      margin: 5px 0;
+    }
+  }
+  //  .voterLogins {
+  //    display: flex;
+  //    justify-content: space-between;
+  //    margin: 20px 0 10px;
+  //
+  //    > div {
+  //      border: 1px solid grey;
+  //      margin: 3px;
+  //      padding: 1em;
+  //      flex-grow: 1;
+  //      background-color: #faf7f3;
+  //      border-radius: 4px;
+  //    }
+  //
+  //    .voterOr {
+  //      flex-grow: 0;
+  //      padding: 2em 10px;
+  //      //border: none;
+  //      //border: 1px solid grey;
+  //      //border-top: none;
+  //      //border-bottom: none;
+  //    }
+  //  }
+  //
+  //  .voterEmail {
+  //    margin-bottom: 1em;
+  //
+  //    input {
+  //      text-align: center;
+  //    }
+  //  }
 
   div.direct {
     padding: 2em 1em 1em;
