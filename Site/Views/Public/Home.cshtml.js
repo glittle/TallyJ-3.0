@@ -218,7 +218,8 @@
           sent: false,
           status: '',
           connectedToHub: false,
-          hubKey: ''
+          hubKey: '',
+          showCodeInput: false
         };
       },
       computed: {
@@ -228,6 +229,11 @@
 
       },
       watch: {
+        phone(a, b) {
+          if (a) {
+            this.fixPhone();
+          }
+        }
       },
       created: function () {
       },
@@ -239,13 +245,37 @@
       methods: {
         chooseMethod: function (mode) {
           this.mode = mode;
+          this.joinHub();
           setTimeout(() => $('.voterLogin input').focus(), 0);
         },
+        //        var $phone = local.hostPanel.find('[data-name="Phone"]');
+        //    $phone.on('change paste', fixPhone);
+
+        fixPhone: function () {
+          var original = this.phone;
+          if (!original) {
+            return;
+          }
+          var text = original.replace(/[^\+\d]/g, '');
+          if (text.substr(0, 1) !== '+') {
+            if (text.length === 10) {
+              text = '1' + text;
+            }
+            text = '+' + text;
+          } else {
+            if (text.length === 11) {
+              text = '+1' + text.substr(1);
+            }
+          }
+          if (text !== original) {
+            this.phone = text;
+          }
+        },
         sendEmail: function () {
-          this.send('email', null, this.email);
+          this.issueCode('email', null, this.email);
         },
         sendPhone: function (method) {
-          this.send('phone', method, this.phone);
+          this.issueCode('phone', method, this.phone);
         },
         joinHub: function () {
           var vue = this;
@@ -283,39 +313,46 @@
           });
 
         },
-        send: function (type, method, target) {
+        issueCode: function (type, method, target) {
           var vue = this;
-          this.joinHub();
 
-          setTimeout(() => {
+          this.showCodeInput = true;
+          this.status = 'Preparing...';
 
+          // do the call
+          CallAjaxHandler(publicInterface.controllerUrl + 'IssueCode',
+            {
+              type: type,
+              method: method,
+              target: target,
+              hubKey: vue.hubKey
+            }, function (info) {
 
-            this.status = 'A...';
-            this.sending = true;
-
-            // do the call
-            CallAjaxHandler(publicInterface.controllerUrl + 'GetCode',
-              {
-                type: type,
-                method: method,
-                target: target,
-                hubKey: vue.hubKey
-              }, function (info) {
-
+              if (info.Success) {
+                // hub will update
                 vue.sent = true; //testing
                 vue.sending = false; // testing
 
-                if (info.Success) {
-                  // hub will update
+              } else {
+                vue.status = info.Message;
+              }
+            });
+        },
+        submitCode: function () {
+          var vue = this;
 
-                } else {
-                  ShowStatusFailedMessage(info);
-                }
-              });
+          // do the call
+          CallAjaxHandler(publicInterface.controllerUrl + 'LoginWithCode',
+            {
+              code: vue.code
+            }, function (info) {
+              if (info.Success) {
+                location.href = site.rootUrl + 'vote';
 
-          }, 100);
-
-
+              } else {
+                vue.status = info.Message;
+              }
+            });
         }
       }
     });

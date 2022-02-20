@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SendGrid;
@@ -43,6 +44,24 @@ namespace TallyJ.CoreModels.Helper
       LogHelper.Add($"Email: Voter test message sent", true);
 
       return ok;
+    }
+
+    public bool SendVerifyCodeToVoter(string email, string newCode, out string error)
+    {
+      var hostSite = SettingsHelper.Get("HostSite", "");
+
+      var html = GetEmailTemplate("VerifyCodeEmail").FilledWithObject(new
+      {
+        logo = hostSite + "/Images/LogoSideM.png",
+        newCode
+      });
+
+      var message = new MailMessage();
+      message.To.Add(email);
+
+      // not in an election... using system From email
+
+      return SendEmail(message, html, out error);
     }
 
     public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
@@ -689,6 +708,38 @@ namespace TallyJ.CoreModels.Helper
       }
 
       return false;
+    }
+
+    /// <summary>
+    /// A simple tester
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    public static bool IsValidEmail(string email)
+    {
+      var parts = email.Split('@');
+      if (parts.Length != 2)
+      {
+        return false;
+      }
+
+      if (parts[0].Length == 0)
+      {
+        return false;
+      }
+
+      var hostParts = parts[1].Split('.');
+      if (hostParts.Any(s => s.Length == 0))
+      {
+        return false;
+      }
+
+      if (hostParts.Last().Length == 1)
+      {
+        return false;
+      }
+
+      return true;
     }
 
     private class NameEmail

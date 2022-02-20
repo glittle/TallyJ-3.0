@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -18,11 +20,11 @@ using FeedbackResource = Twilio.Rest.Api.V2010.Account.Message.FeedbackResource;
 
 namespace TallyJ.CoreModels.Helper
 {
-  public class SmsHelper : MessageHelperBase
+  public class TwilioHelper : MessageHelperBase
   {
-    private Regex PhoneNumberChecker => new Regex(@"\+[0-9]{4,15}");
+    private static Regex PhoneNumberChecker => new Regex(@"\+[0-9]{4,15}");
 
-    public bool SendVoterTestMessage(string phone, out string error)
+    public bool SendVoterSmsTestMessage(string phone, out string error)
     {
       var hostSite = SettingsHelper.Get("HostSite", "");
 
@@ -37,6 +39,31 @@ namespace TallyJ.CoreModels.Helper
       LogHelper.Add($"Sms: Voter test message sent", true);
 
       return ok;
+    }
+
+    public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, out string error)
+    {
+      var text = GetSmsTemplate("VerifyCodeSms").FilledWithObject(new
+      {
+        newCode
+      });
+
+      // this voter is not in a specific election...
+
+      return SendSms(phone, text, null, out error, method);
+    }
+
+    public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, out string error)
+    {
+      var text = GetSmsTemplate("VerifyCodePhone")
+        .Replace("*", "      ") // more time
+        .FilledWithObject(new
+        {
+          shortCode = newCode.AddSpaces("; "),
+          longCode = newCode.AddSpaces("</Say><Pause></Pause><Say>")
+        });
+
+      return SendVoice(phone, text, null, out error);
     }
 
     public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
@@ -192,7 +219,7 @@ namespace TallyJ.CoreModels.Helper
 
       LogHelper.Add($"Sms: Sending to {numToSend} {numToSend.Plural("people", "person")} (see above)", true);
       var startTime = DateTime.Now;
-      
+
       phoneNumbersToSendTo.ForEach(p =>
       {
         var phoneNumber = p.Phone;
@@ -232,6 +259,10 @@ namespace TallyJ.CoreModels.Helper
       }.AsJsonResult();
     }
 
+    public static bool IsValidPhoneNumber(string phoneNumber)
+    {
+      return PhoneNumberChecker.IsMatch(phoneNumber);
+    }
 
     private string GetSmsTemplate(string emailTemplate)
     {
@@ -242,7 +273,16 @@ namespace TallyJ.CoreModels.Helper
       return File.ReadAllText(path);
     }
 
-    public bool SendSms(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage)
+    /// <summary>
+    /// Send via SMS or WhatsApp
+    /// </summary>
+    /// <param name="toPhoneNumber"></param>
+    /// <param name="messageText"></param>
+    /// <param name="personGuid"></param>
+    /// <param name="errorMessage"></param>
+    /// <param name="method">sms or whatsapp</param>
+    /// <returns></returns>
+    public bool SendSms(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -262,6 +302,22 @@ namespace TallyJ.CoreModels.Helper
         errorMessage = "Invalid phone number: " + toPhoneNumber;
         return false;
       }
+
+      if (method == "whatsapp")
+      {
+        fromNumber = SettingsHelper.Get("twilio-WhatsAppFromNumber", "");
+        if (fromNumber.HasNoContent())
+        {
+          errorMessage = "Server not configured for WhatsApp.";
+          return false;
+        }
+
+        messagingSid = "";// don't send via SID
+
+        fromNumber = "whatsapp:" + fromNumber;
+        toPhoneNumber = "whatsapp:" + toPhoneNumber;
+      }
+
 
       TwilioClient.Init(sid, token);
 
@@ -295,6 +351,8 @@ namespace TallyJ.CoreModels.Helper
 
         errorMessage = messageResource.ErrorMessage; // null if okay
 
+        UserSession.TwilioMsgId = messageResource.Sid;
+
         var dbContext = UserSession.GetNewDbContext;
         dbContext.SmsLog.Add(new SmsLog
         {
@@ -322,11 +380,153 @@ namespace TallyJ.CoreModels.Helper
       }
     }
 
-    private void SendTwilioConfirmation()
+
+    /// <summary>
+    /// Send via phone
+    /// </summary>
+    /// <param name="toPhoneNumber"></param>
+    /// <param name="messageText">Text. Should include <say></say></param>
+    /// <param name="personGuid"></param>
+    /// <param name="errorMessage"></param>
+    /// <param name="method">sms or whatsapp</param>
+    /// <returns></returns>
+    public bool SendVoice(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage)
     {
-      var messageSid = "X";
-      FeedbackResource.Create(pathMessageSid: messageSid, outcome: FeedbackResource.OutcomeEnum.Confirmed);
+      var sid = SettingsHelper.Get("twilio-SID", "");
+      var token = SettingsHelper.Get("twilio-Token", "");
+      var fromNumber = SettingsHelper.Get("twilio-FromNumber", "");
+
+      ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+      if (sid.HasNoContent() || token.HasNoContent())
+      {
+        errorMessage = "Server not configured for SMS.";
+        return false;
+      }
+
+      if (!PhoneNumberChecker.IsMatch(toPhoneNumber))
+      {
+        errorMessage = "Invalid phone number: " + toPhoneNumber;
+        return false;
+      }
+
+      if (fromNumber.HasNoContent())
+      {
+        errorMessage = "Server not configured for voice or SMS.";
+        return false;
+      }
+
+      var twiml = $"<Response>{messageText}</Response>";
+      // .Replace("<Say>", $"<Say language=\"{cultureHelper.CurrentCultureName}\">");
+
+      TwilioClient.Init(sid, token);
+
+      try
+      {
+        var callResource = CallResource.Create(
+          twiml: new Twiml(twiml),
+          to: new PhoneNumber(toPhoneNumber),
+          from: new PhoneNumber(fromNumber)
+        );
+
+        UserSession.TwilioMsgId = callResource.Sid;
+
+        var dbContext = UserSession.GetNewDbContext;
+        dbContext.SmsLog.Add(new SmsLog
+        {
+          SmsSid = callResource.Sid,
+          Phone = toPhoneNumber,
+          SentDate = DateTime.Now,
+          ElectionGuid = UserSession.CurrentElectionGuid,
+          PersonGuid = personGuid == Guid.Empty ? null : personGuid,
+          LastDate = DateTime.Now,
+          LastStatus = "voice"
+        });
+        dbContext.SaveChanges();
+
+        errorMessage = "";
+        return true;
+      }
+      catch (ApiException e)
+      {
+        if (e.Code > 0)
+        {
+          errorMessage = DecodeTwilioError(e.Code, e.Message);
+        }
+        else
+        {
+          errorMessage = $"Voice not available. ({e.Message})";
+        }
+        return false;
+      }
+      catch (Exception e)
+      {
+        errorMessage = e.GetBaseException().Message;
+        if (errorMessage.Contains("Unauthorized"))
+        {
+          errorMessage = "Configuration error. SMS not available.";
+        }
+        return false;
+      }
     }
+
+    public string CheckVoiceCallStatus()
+    {
+      var callSid = UserSession.TwilioMsgId;
+      if (callSid.HasNoContent())
+      {
+        return null;
+      }
+
+      //https://support.twilio.com/hc/en-us/articles/223132547-What-are-the-Possible-Call-Statuses-and-What-do-They-Mean-
+
+      var callResource = CallResource.Fetch(callSid);
+      return callResource.Status.ToString();
+    }
+
+    public void SendTwilioConfirmation()
+    {
+      var messageSid = UserSession.TwilioMsgId;
+      if (messageSid.HasContent())
+      {
+        try
+        {
+          var sid = SettingsHelper.Get("twilio-SID", "");
+          var token = SettingsHelper.Get("twilio-Token", "");
+          TwilioClient.Init(sid, token);
+
+          FeedbackResource.Create(pathMessageSid: messageSid, outcome: FeedbackResource.OutcomeEnum.Confirmed);
+        }
+        catch (Exception)
+        {
+          // ignore
+        }
+
+        UserSession.TwilioMsgId = null;
+      }
+    }
+
+
+
+    private static string DecodeTwilioError(int code, string message)
+    {
+      switch (code)
+      {
+        case 21608:
+          return "During testing, we can only send to pre-authorized phone numbers. Please contact Glen to get your phone number added.";
+
+        case 63015: // if using whatsapp
+          return "You first need to send a message in WhatsApp, as described above.";
+      }
+
+      if (message.Contains("Unauthorized"))
+      {
+        return "Configuration error. SMS not available.";
+      }
+
+      return $"Twilio {code}: {message}. SMS not available.";
+    }
+
 
     public class NamePhone
     {
@@ -352,6 +552,12 @@ namespace TallyJ.CoreModels.Helper
       log.Phone = to;
 
       dbContext.SaveChanges();
+    }
+
+    public string GetCallStatus(string sid)
+    {
+
+      return CallResource.Fetch(sid)?.Status.ToString();
     }
   }
 }

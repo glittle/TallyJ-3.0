@@ -20,7 +20,12 @@ namespace TallyJ.Code.Session
         public const string HasTies = "HasTies";
 
         public const string VoterLastLogin = "VoterLastLogin";
+        public const string VerifyCodeAttempts = "VerifyCodeAttempts";
+        public const string VerifyCodeAttemptsStart = "VerifyCodeAttemptsStart";
         public const string VoterLoginError = "VoterLoginError";
+        public const string TwilioMsgId = "TwilioMsgId";
+        public const string PendingVoterLogin = "PendingVoterLogin";
+
         public const string ActivePrincipal = "ActivePrincipal";
 
         public const string VoterInElectionPersonGuid = "VoterInElectionPersonGuid";

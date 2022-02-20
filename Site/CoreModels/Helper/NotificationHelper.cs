@@ -30,8 +30,8 @@ namespace TallyJ.CoreModels.Helper
       
       if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        var smsHelper = new SmsHelper();
-        return smsHelper.SendVoterTestMessage(UserSession.VoterId, out error);
+        var smsHelper = new TwilioHelper();
+        return smsHelper.SendVoterSmsTestMessage(UserSession.VoterId, out error);
       }
 
       error = "Invalid voter type: " + voterIdType; 
@@ -51,7 +51,7 @@ namespace TallyJ.CoreModels.Helper
       
       if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        var smsHelper = new SmsHelper();
+        var smsHelper = new TwilioHelper();
         notificationType = "text message";
         return smsHelper.SendWhenBallotSubmitted(person, election, out error);
       }

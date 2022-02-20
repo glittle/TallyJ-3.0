@@ -45,9 +45,9 @@ namespace TallyJ.EF
         public virtual DbSet<Vote> Vote { get; set; }
         public virtual DbSet<Election> Election { get; set; }
         public virtual DbSet<Person> Person { get; set; }
-        public virtual DbSet<OnlineVoter> OnlineVoter { get; set; }
         public virtual DbSet<OnlineVotingInfo> OnlineVotingInfo { get; set; }
         public virtual DbSet<C_Log> C_Log { get; set; }
         public virtual DbSet<SmsLog> SmsLog { get; set; }
+        public virtual DbSet<OnlineVoter> OnlineVoter { get; set; }
     }
 }

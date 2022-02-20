@@ -125,7 +125,7 @@ namespace TallyJ.Controllers
       //  "AccountSid"
       //  "From"
       //  "ApiVersion"
-      new SmsHelper().LogSmsStatus(smsSid, messageStatus, to, errorCode);
+      new TwilioHelper().LogSmsStatus(smsSid, messageStatus, to, errorCode);
     }
 
     public JsonResult PublicHub(string connId)
@@ -140,10 +140,16 @@ namespace TallyJ.Controllers
       return null;
     }
 
-    public JsonResult GetCode(string type, string method, string target, string hubKey)
+    public JsonResult IssueCode(string type, string method, string target, string hubKey)
     {
-      var helper = new VoterCodeHelper();
-      return helper.GetCode(type, method, target, hubKey).AsJsonResult();
+      var helper = new VoterCodeHelper(hubKey);
+      return helper.IssueCode(type, method, target).AsJsonResult();
+    }
+
+    public JsonResult LoginWithCode(string code, string hubKey)
+    {
+      var helper = new VoterCodeHelper(hubKey);
+      return helper.LoginWithCode(code).AsJsonResult();
     }
 
     public void JoinMainHub(string connId, string electionGuid)

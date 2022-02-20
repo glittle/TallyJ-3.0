@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
+using TallyJ.CoreModels.Helper;
 using Tests.Support;
 using Extensions = TallyJ.Code.Extensions;
 
@@ -402,6 +403,35 @@ namespace Tests.FrameworkTests
       s3.GetLinesAfterSkipping(1).ShouldEqual("234\r\n345");
       s3.GetLinesAfterSkipping(2).ShouldEqual("345");
       s3.GetLinesAfterSkipping(3).ShouldEqual("");
+
+    }
+
+    [TestMethod]
+    public void EmailTester_Test()
+    {
+      EmailHelper.IsValidEmail("").ShouldEqual(false);
+      EmailHelper.IsValidEmail("@").ShouldEqual(false);
+      EmailHelper.IsValidEmail(".").ShouldEqual(false);
+      EmailHelper.IsValidEmail("@x").ShouldEqual(false);
+      EmailHelper.IsValidEmail("@.").ShouldEqual(false);
+      EmailHelper.IsValidEmail("@.com").ShouldEqual(false);
+
+      EmailHelper.IsValidEmail("a@b.c").ShouldEqual(false);
+
+      EmailHelper.IsValidEmail("a@b.cc").ShouldEqual(true);
+    }
+
+    [TestMethod]
+    public void PhoneTester_Test()
+    {
+      // \+[0-9]{4,15}
+
+      TwilioHelper.IsValidPhoneNumber("").ShouldEqual(false);
+      TwilioHelper.IsValidPhoneNumber("1").ShouldEqual(false);
+      TwilioHelper.IsValidPhoneNumber("1234").ShouldEqual(false);
+      TwilioHelper.IsValidPhoneNumber("123456").ShouldEqual(false);
+
+      TwilioHelper.IsValidPhoneNumber("+123456").ShouldEqual(true);
 
     }
   }

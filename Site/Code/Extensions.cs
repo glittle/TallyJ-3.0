@@ -637,6 +637,11 @@ namespace TallyJ.Code
     //  return Regex.Replace(input, @"[^\w\.\'\- ]", "");
     //}
 
+    public static string CleanedForErrorMessages(this string input)
+    {
+      return HttpUtility.HtmlEncode(input ?? "");
+    }
+
     /// <Summary>Prepare to be embedded into a javascript string</Summary>
     public static string CleanedForJavascriptStrings(this string input)
     {
@@ -998,6 +1003,18 @@ namespace TallyJ.Code
         }
       }
       return newParts.Select(s => s).Reverse().JoinedAsString("\r\n");
+    }
+
+    /// <summary>
+    /// Split characters and add spaces between:  "1235" becomes "1 2 3 5"
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="space"></param>
+    /// <returns></returns>
+    public static string AddSpaces(this string input, string space = " ")
+    {
+      var chars = input.ToCharArray().Select(c => c.ToString());
+      return chars.JoinedAsString(space);
     }
   }
 }

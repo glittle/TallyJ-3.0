@@ -7,6 +7,10 @@ CREATE TABLE [dbo].[OnlineVoter] (
     [EmailCodes]     VARCHAR (25)   NULL,
     [Country]        NVARCHAR (50)  NULL,
     [OtherInfo]      NVARCHAR (200) NULL,
+    [VerifyCode] VARCHAR(15) NULL, 
+    [VerifyCodeDate] DATETIME2(0) NULL, 
+    [VerifyAttempts] INT NULL, 
+    [VerifyAttemptsStart] DATETIME2(0) NULL, 
     CONSTRAINT [PK_OnlineVoter] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
 

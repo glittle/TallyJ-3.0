@@ -263,7 +263,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SendSms(string list)
     {
-      return new SmsHelper().SendHeadTellerMessage(list);
+      return new TwilioHelper().SendHeadTellerMessage(list);
     }
 
     [ForAuthenticatedTeller]

@@ -974,7 +974,7 @@ namespace TallyJ.CoreModels
       var problems = new List<string>();
       var numBallotsCreated = 0;
       var emailHelper = new EmailHelper();
-      var smsHelper = new SmsHelper();
+      var smsHelper = new TwilioHelper();
       var logHelper = new LogHelper();
       var onlineVoteHelper = new OnlineVoteHelper();
 

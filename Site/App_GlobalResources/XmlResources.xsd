@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<xs:schema  xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="Global">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="String" type="StringType" />
+        <xs:element name="List" type="ListType" />
+        <xs:element name="Image" type="ImageType" />
+        <xs:element name="ImageCommon" type="ImageCommonType" />
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="GlobalRefList">
+      <xs:selector xpath="./*" />
+      <xs:field xpath="@Key" />
+      <!-- ensures that Keys are unique in Strings and Lists  -->
+    </xs:unique>
+  </xs:element>
+  <xs:element name="Local">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="String" type="StringType" />
+        <xs:element name="List" type="ListType" />
+        <xs:element name="Image" type="ImageType" />
+        <xs:element name="ImageCommon" type="ImageCommonType" />
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="LocalRefList">
+      <xs:selector xpath="./*" />
+      <xs:field xpath="@Key" />
+      <!-- ensures that Keys are unique  -->
+    </xs:unique>
+  </xs:element>
+  <!--
+Global Configurations
+-->
+  <xs:complexType name="ConfigurationType">
+    <xs:sequence>
+      <xs:element name="Site" type="SiteType" maxOccurs="unbounded">
+        <xs:unique name="SiteSettings">
+          <xs:selector xpath="./*" />
+          <xs:field xpath="@Key" />
+          <xs:field xpath="@Type" />
+          <!-- ensures that Keys are unique  -->
+        </xs:unique>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SiteType">
+    <xs:sequence>
+      <xs:element name="Setting" type="SettingType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" use="required" />
+    <xs:attribute name="Comment" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="SettingType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="Key" type="CodeToken" use="required" />
+        <xs:attribute name="Comments" type="xs:string" use="optional" />
+        <xs:attribute name="HasSubstitions" type="xs:boolean" use="optional" />
+        <xs:attribute name="Type" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:NMTOKEN">
+              <xs:enumeration value="Setting" />
+              <xs:enumeration value="SourceXml" />
+              <xs:enumeration value="Email" />
+              <xs:enumeration value="File" />
+              <xs:enumeration value="Folder" />
+              <xs:enumeration value="Url" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!--
+General Configuration
+-->
+  <xs:complexType name="StringType">
+    <xs:group ref="LanguageElements" />
+    <xs:attribute name="Key" type="CodeToken" use="required" />
+    <xs:attribute name="HasSubstitions" type="xs:boolean" use="optional" />
+    <xs:attribute name="Comments" type="xs:string" use="optional" />
+    <xs:attribute name="AvailableInJavaScript" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="true" />
+          <xs:enumeration value="true_expandOnServer" />
+          <xs:enumeration value="false" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ListType">
+    <xs:sequence>
+      <xs:element name="Item" type="ItemType" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="Key" type="CodeToken" use="required" />
+    <xs:attribute name="HasSubstitions" type="xs:boolean" use="optional" />
+    <xs:attribute name="Comments" type="xs:string" use="optional" />
+    <xs:attribute name="AvailableInJavaScript" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="true" />
+          <xs:enumeration value="true_expandOnServer" />
+          <xs:enumeration value="false" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ItemType">
+    <xs:group ref="LanguageElements" />
+    <xs:attribute name="Value" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ImageType">
+    <xs:group ref="LanguageElements" />
+    <xs:attribute name="Key" type="CodeToken" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ImageCommonType">
+    <xs:simpleContent>
+      <xs:extension base="TokenWithPath">
+        <xs:attribute name="Key" type="CodeToken" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!--
+Language definitions
+-->
+  <xs:group name="LanguageElements">
+    <xs:sequence>
+      <xs:element name="en-US" type="en-USType" />
+      <xs:element name="fr-CA" type="fr-CAType" />
+    </xs:sequence>
+  </xs:group>
+  <xs:complexType name="en-USType" mixed="true" final="#all">
+    <xs:sequence>
+      <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute ref="TranslationStatus" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="fr-CAType" mixed="true">
+    <xs:sequence>
+      <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute ref="TranslationStatus" use="required" />
+  </xs:complexType>
+  <xs:element name="vt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="if" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+common attributes
+-->
+  <xs:attribute name="TranslationStatus">
+    <xs:simpleType>
+      <xs:restriction base="xs:NMTOKEN">
+        <xs:enumeration value="NotStarted">
+          <!-- translation not started -->
+        </xs:enumeration>
+        <xs:enumeration value="Complete">
+          <!-- translation complete -->
+        </xs:enumeration>
+        <xs:enumeration value="ReviewRequired">
+          <!-- review required -->
+        </xs:enumeration>
+        <xs:enumeration value="Draft">
+          <!-- draft -->
+        </xs:enumeration>
+        <xs:enumeration value="CopyOfEnglish">
+          <!-- CopyOfEnglish -->
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+    <!--  used primarily for FR LangPara and Words. Can be reported on to indication which elements are not yet completely translated. -->
+  </xs:attribute>
+  <xs:simpleType name="CodeToken">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-zA-Z_][a-zA-Z0-9_]*" />
+    </xs:restriction>
+    <!-- no spaces allowed, and must start with a letter -->
+  </xs:simpleType>
+  <xs:simpleType name="TokenWithPath">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-zA-Z_/][a-zA-Z0-9_/\-]*[.a-zA-Z0-9]*" />
+    </xs:restriction>
+    <!-- no spaces allowed, and must start with a letter -->
+  </xs:simpleType>
+</xs:schema>

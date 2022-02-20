@@ -1,0 +1,8 @@
+﻿<say>
+Hello!*
+Here is the code you requested.*
+Please enter it on the website now.*
+The code is: {shortCode} .*
+Again, the code is: {longCode} .*
+Goodbye.
+</say>

@@ -22,5 +22,9 @@ namespace TallyJ.EF
         public string EmailCodes { get; set; }
         public string Country { get; set; }
         public string OtherInfo { get; set; }
+        public string VerifyCode { get; set; }
+        public Nullable<System.DateTime> VerifyCodeDate { get; set; }
+        public Nullable<int> VerifyAttempts { get; set; }
+        public Nullable<System.DateTime> VerifyAttemptsStart { get; set; }
     }
 }

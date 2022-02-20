@@ -92,6 +92,10 @@
           <Property Name="EmailCodes" Type="varchar" MaxLength="25" />
           <Property Name="Country" Type="nvarchar" MaxLength="50" />
           <Property Name="OtherInfo" Type="nvarchar" MaxLength="200" />
+          <Property Name="VerifyCode" Type="varchar" MaxLength="15" />
+          <Property Name="VerifyCodeDate" Type="datetime2" Precision="0" />
+          <Property Name="VerifyAttempts" Type="int" />
+          <Property Name="VerifyAttemptsStart" Type="datetime2" Precision="0" />
         </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
@@ -586,10 +590,10 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySet Name="Vote" EntityType="TallyJ2dModel.Vote" />
           <EntitySet Name="Election" EntityType="TallyJ2dModel.Election" />
           <EntitySet Name="Person" EntityType="TallyJ2dModel.Person" />
-          <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
           <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
           <EntitySet Name="C_Log" EntityType="TallyJ2dModel.C_Log" />
           <EntitySet Name="SmsLog" EntityType="TallyJ2dModel.SmsLog" />
+          <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -960,19 +964,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Phone" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="HasOnlineBallot" Type="Boolean" />
         </EntityType>
-        <EntityType Name="OnlineVoter">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="VoterId" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="VoterIdType" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="WhenRegistered" Type="DateTime" Precision="0" />
-          <Property Name="WhenLastLogin" Type="DateTime" Precision="0" />
-          <Property Name="EmailCodes" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="OtherInfo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -1014,6 +1005,23 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="LastStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="LastDate" Type="DateTime" Precision="7" />
           <Property Name="ErrorCode" Type="Int32" />
+        </EntityType>
+        <EntityType Name="OnlineVoter">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VoterId" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="VoterIdType" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="WhenRegistered" Type="DateTime" Precision="0" />
+          <Property Name="WhenLastLogin" Type="DateTime" Precision="0" />
+          <Property Name="EmailCodes" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OtherInfo" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="VerifyCode" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="VerifyCodeDate" Type="DateTime" Precision="0" />
+          <Property Name="VerifyAttempts" Type="Int32" />
+          <Property Name="VerifyAttemptsStart" Type="DateTime" Precision="0" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1352,20 +1360,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="OnlineVoter">
-            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVoter">
-              <MappingFragment StoreEntitySet="OnlineVoter">
-                <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="EmailCodes" ColumnName="EmailCodes" />
-                <ScalarProperty Name="WhenLastLogin" ColumnName="WhenLastLogin" />
-                <ScalarProperty Name="WhenRegistered" ColumnName="WhenRegistered" />
-                <ScalarProperty Name="VoterIdType" ColumnName="VoterIdType" />
-                <ScalarProperty Name="VoterId" ColumnName="VoterId" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="OnlineVotingInfo">
             <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVotingInfo">
               <MappingFragment StoreEntitySet="OnlineVotingInfo">
@@ -1407,6 +1401,24 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="SentDate" ColumnName="SentDate" />
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
                 <ScalarProperty Name="SmsSid" ColumnName="SmsSid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OnlineVoter">
+            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVoter">
+              <MappingFragment StoreEntitySet="OnlineVoter">
+                <ScalarProperty Name="VerifyAttemptsStart" ColumnName="VerifyAttemptsStart" />
+                <ScalarProperty Name="VerifyAttempts" ColumnName="VerifyAttempts" />
+                <ScalarProperty Name="VerifyCodeDate" ColumnName="VerifyCodeDate" />
+                <ScalarProperty Name="VerifyCode" ColumnName="VerifyCode" />
+                <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="EmailCodes" ColumnName="EmailCodes" />
+                <ScalarProperty Name="WhenLastLogin" ColumnName="WhenLastLogin" />
+                <ScalarProperty Name="WhenRegistered" ColumnName="WhenRegistered" />
+                <ScalarProperty Name="VoterIdType" ColumnName="VoterIdType" />
+                <ScalarProperty Name="VoterId" ColumnName="VoterId" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
               </MappingFragment>
             </EntityTypeMapping>

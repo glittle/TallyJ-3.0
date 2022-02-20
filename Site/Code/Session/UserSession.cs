@@ -251,7 +251,7 @@ namespace TallyJ.Code.Session
     public static bool IsAuthenticated => ActivePrincipal.Identity.IsAuthenticated;
 
     public static bool IsSysAdmin => ActivePrincipal.FindFirst("IsSysAdmin")?.Value == "true";
-    
+
     public static string UniqueId => ActivePrincipal.FindFirst("UniqueId")?.Value;
 
     public static string VoterId => ActivePrincipal.FindFirst("VoterId")?.Value;
@@ -484,6 +484,30 @@ namespace TallyJ.Code.Session
     {
       get { return SessionKey.TimeOffset.FromSession(0); }
       set { SessionKey.TimeOffset.SetInSession(value); }
+    }
+
+    public static int VerifyCodeAttempts
+    {
+      get { return SessionKey.VerifyCodeAttempts.FromSession(0); }
+      set { SessionKey.VerifyCodeAttempts.SetInSession(value); }
+    }
+
+    public static DateTime VerifyCodeAttemptsStart
+    {
+      get => SessionKey.VerifyCodeAttemptsStart.FromSession(DateTime.MinValue);
+      set => SessionKey.VerifyCodeAttemptsStart.SetInSession(value);
+    }
+
+    public static string TwilioMsgId
+    {
+      get => SessionKey.TwilioMsgId.FromSession("");
+      set => SessionKey.TwilioMsgId.SetInSession(value);
+    }
+
+    public static string PendingVoterLogin
+    {
+      get => SessionKey.PendingVoterLogin.FromSession("");
+      set => SessionKey.PendingVoterLogin.SetInSession(value);
     }
 
     public static string CurrentElectionStatusName

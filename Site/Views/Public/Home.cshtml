@@ -253,7 +253,7 @@
                 <label for="email">
                   Enter your email address:
                 </label>
-                <div class="example">name@example.com</div>
+                <div class="example">Example: name@example.com</div>
                 <input type="email" name="email" id="email"
                        v-model="email"
                        required autocomplete="email">
@@ -264,7 +264,7 @@
                   <label for="phone">
                       Enter your mobile phone number:
                   </label>
-                  <div class="example">+1-650-450-1212</div>
+                  <div class="example">Example: +16504501212</div>
                 <input type="tel" name="phone" id="phone"
                        v-model="phone"
                        required autocomplete="tel">
@@ -275,11 +275,14 @@
 
               </div>
 
-              <div v-if="sending || sent" class="pendingCode">
+              <div v-if="showCodeInput" class="pendingCode">
                 <div class="status" v-text="status"></div>
                 <div v-if="sent">
                   <div>Enter the code when you receive it:</div>
-                  <input type="tel" v-model="code" autocomplete="off" pattern="\d{6}" />
+                    <input type="tel" v-model="code" autocomplete="off" pattern="\d{6}" />
+                    <div>
+                        <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
+                    </div>
                 </div>
               </div>
               <div class="mustPreRegister">

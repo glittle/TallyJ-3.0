@@ -6,9 +6,11 @@ namespace TallyJ.Code.Enumerations
   {
     public static readonly VoterIdTypeEnum Email = new VoterIdTypeEnum("E", "Email Address", "email", "an email");
     public static readonly VoterIdTypeEnum Phone = new VoterIdTypeEnum("P", "Mobile Phone Number", "text message", "a text message");
+    public static readonly VoterIdTypeEnum _unknown = new VoterIdTypeEnum("X", "(Unknown)", "unknown", "unknown");
 
     static VoterIdTypeEnum()
     {
+      Add(_unknown);
       Add(Email);
       Add(Phone);
     }
@@ -28,6 +30,15 @@ namespace TallyJ.Code.Enumerations
     {
       var item = BaseItems.SingleOrDefault(i => i.Value == value);
       return item == null ? (defaultValue ?? value) : item.DisplayText;
+    }
+
+
+    /// <Summary>Find the status that matches this string.</Summary>
+    public static VoterIdTypeEnum Parse(string code)
+    {
+      if (code.HasNoContent()) return _unknown;
+      code = code.ToUpper();
+      return BaseItems.SingleOrDefault(i => code.StartsWith(i.Value)) ?? _unknown;
     }
 
     public static string MessageTypeFor(string value, string defaultValue = "")

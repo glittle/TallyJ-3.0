@@ -414,6 +414,7 @@
     <Compile Include="Code\Enumerations\VoterIdTypeEnum.cs" />
     <Compile Include="Code\ForSysAdminAttribute.cs" />
     <Compile Include="Code\OwinRelated\AspIdentity2Classes.cs" />
+    <Compile Include="Code\Resources\LangResourceHelper.cs" />
     <Compile Include="Code\SettingsHelper.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
@@ -485,9 +486,10 @@
     <Compile Include="CoreModels\Helper\EncryptionHelper.cs" />
     <Compile Include="CoreModels\Helper\NotificationHelper.cs" />
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
-    <Compile Include="CoreModels\Helper\SmsHelper.cs" />
+    <Compile Include="CoreModels\Helper\TwilioHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
+    <Compile Include="CoreModels\Helper\WhatsAppHelper.cs" />
     <Compile Include="CoreModels\Hubs\BallotImportHub.cs" />
     <Compile Include="CoreModels\Hubs\VoterCodeHub.cs" />
     <Compile Include="CoreModels\ImportBallotsModel.cs" />
@@ -659,6 +661,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Content Include="App_GlobalResources\Global.xml" />
     <Content Include="Content\Site.min.css">
       <DependentUpon>Site.css</DependentUpon>
     </Content>
@@ -882,16 +885,22 @@
     <Content Include="Images\voterEmail.png" />
     <Content Include="Images\voterSms.png" />
     <Content Include="Images\walk.png" />
+    <Content Include="MessageTemplates\Email\VerifyCodeEmail.html" />
     <Content Include="MessageTemplates\SMS\BallotProcessed.txt" />
     <Content Include="MessageTemplates\SMS\ElectionOpen.txt" />
     <Content Include="MessageTemplates\SMS\HeadTellerEmail.txt" />
     <Content Include="MessageTemplates\SMS\OnSubmit.txt" />
+    <Content Include="MessageTemplates\SMS\VerifyCodePhone.txt" />
+    <Content Include="MessageTemplates\SMS\VerifyCodeSms.txt" />
     <Content Include="MessageTemplates\SMS\TestSms.txt" />
     <Content Include="Reports\VotesByName.cshtml" />
     <Content Include="Reports\VotesByNum.cshtml" />
     <Content Include="Reports\Main.cshtml" />
     <Content Include="Reports\ChangedPeople.cshtml" />
     <Content Include="AppDataSample\AppSettings.config" />
+    <None Include="App_GlobalResources\XmlResources.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="compilerconfig.json" />
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <Content Include="Content\manifest.json" />
