@@ -117,6 +117,7 @@
 
 
     if (btnId === 'btnChooseJoin') {
+      connectToPublicHubToGetElectionList();
       $('.CenterPanel').addClass('chosen');
       $('.LoginPanel').hide();
       $('.VoterPanel').hide();
