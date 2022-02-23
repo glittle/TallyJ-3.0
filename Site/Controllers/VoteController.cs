@@ -490,8 +490,8 @@ namespace TallyJ.Controllers
 
     public JsonResult GetLoginHistory()
     {
-      var voterId = UserSession.VoterId;
-      if (voterId.HasNoContent())
+      var uniqueId = UserSession.UniqueId;
+      if (uniqueId.HasNoContent())
       {
         return new
         {
@@ -506,7 +506,7 @@ namespace TallyJ.Controllers
           log,
           ElectionName = eList.FirstOrDefault().Name ?? (log.ElectionGuid == null ? "" : "(removed)")
         })
-        .Where(j => j.log.VoterId == voterId)
+        .Where(j => j.log.VoterId == uniqueId)
         .Where(j => j.log.AsOf > ageCutoff)
         .Where(j => !j.log.Details.Contains("schema")) // hide error codes
         .OrderByDescending(j => j.log.AsOf)
