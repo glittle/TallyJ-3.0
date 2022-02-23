@@ -385,7 +385,7 @@ namespace TallyJ.CoreModels.Helper
     /// Send via phone
     /// </summary>
     /// <param name="toPhoneNumber"></param>
-    /// <param name="messageText">Text. Should include <say></say></param>
+    /// <param name="messageText">Text. Should include <Say></Say></param>
     /// <param name="personGuid"></param>
     /// <param name="errorMessage"></param>
     /// <param name="method">sms or whatsapp</param>
@@ -412,7 +412,7 @@ namespace TallyJ.CoreModels.Helper
 
       if (fromNumber.HasNoContent())
       {
-        errorMessage = "Server not configured for voice or SMS.";
+        errorMessage = "Server not configured for voice.";
         return false;
       }
 

@@ -8,7 +8,7 @@ body {
   overflow-y: scroll;
 }
 
-body.VoteIndex {
+body.VoteIndex, body.voteIndex {
   &.noCursor {
     #voterPage2 {
       .pool {
@@ -41,6 +41,12 @@ body.VoteIndex {
   cursor: default;
 }
 
+body.meditate {
+  header {
+    display: none;
+  }
+}
+
 .forMeditate {
   margin: -21px 0 7px 0;
   text-align: center;
@@ -55,14 +61,14 @@ body.VoteIndex {
 }
 
 #voterPage1.meditate, #voterPage2.meditate {
-  transition: opacity 1.5s;
+  //transition: opacity 1.5s;
   opacity: 0;
 }
 
 #voterPage1 {
   background-color: #f3f3f3; // rgba(255,255,255,0.6);
   padding: 6px;
-  transition: opacity 1s;
+  //transition: opacity 1s;
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.19), 0 3px 6px rgba(0, 0, 0, 0.23);
 
@@ -313,7 +319,7 @@ body.VoteIndex {
   }
 
   .quote {
-    font-style: italic;    
+    font-style: italic;
     margin: 1em 0 2em;
 
     cite {

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
-using System.Web.Mvc;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using TallyJ.Code;
@@ -18,7 +16,7 @@ using TallyJ.EF;
 namespace TallyJ.CoreModels.Helper
 {
   /// <summary>
-  /// Helper for Voter Login.  Generates and sends a code. Once entered, the voter is logged in.
+  ///   Helper for Voter Login.  Generates and sends a code. Once entered, the voter is logged in.
   /// </summary>
   public class VoterCodeHelper
   {
@@ -30,16 +28,16 @@ namespace TallyJ.CoreModels.Helper
     private readonly VoterCodeHub _voterCodeHub;
     private LogHelper _logHelper;
 
-    protected LogHelper LogHelper => _logHelper ?? (_logHelper = new LogHelper());
-
     public VoterCodeHelper(string hubKey)
     {
       _hubKey = hubKey;
       _voterCodeHub = new VoterCodeHub();
     }
 
+    protected LogHelper LogHelper => _logHelper ?? (_logHelper = new LogHelper());
+
     /// <summary>
-    /// Make and send the code
+    ///   Make and send the code
     /// </summary>
     /// <param name="type"></param>
     /// <param name="method"></param>
@@ -48,59 +46,47 @@ namespace TallyJ.CoreModels.Helper
     public object IssueCode(string type, string method, string target)
     {
       UserSession.PendingVoterLogin = null;
-      _voterCodeHub.SetStatus(_hubKey, "Creating a code for you...");
 
       var voterIdType = VoterIdTypeEnum.Parse(type);
       if (voterIdType == VoterIdTypeEnum._unknown)
-      {
         return new
         {
           Success = false,
           Message = "Unknown type: " + type.CleanedForErrorMessages()
         };
-      }
 
       // validate before we try to use
       var validMessage = "Unknown type";
       if (voterIdType == VoterIdTypeEnum.Email)
-      {
         validMessage = EmailHelper.IsValidEmail(target) ? "" : "Invalid email";
-      }
       else if (voterIdType == VoterIdTypeEnum.Phone)
-      {
         validMessage = TwilioHelper.IsValidPhoneNumber(target) ? "" : "Invalid phone number";
-      }
 
       if (validMessage.HasContent())
-      {
         return new
         {
           Success = false,
           Message = validMessage
         };
-      }
 
+      _voterCodeHub.SetStatus(_hubKey, "Preparing a code for you...");
 
       // check throttle limits
-        CheckSiteUsageThresholds(out var message);
+      CheckSiteUsageThresholds(out var message);
       if (message.HasContent())
-      {
         return new
         {
           Success = false,
           Message = message
         };
-      }
 
       var newCode = MakeAndSaveCode(voterIdType, target, out message);
       if (message.HasContent())
-      {
         return new
         {
           Success = false,
           Message = message
         };
-      }
 
       // send code
       var sent = false;
@@ -108,13 +94,9 @@ namespace TallyJ.CoreModels.Helper
       {
         sent = SendViaEmail(target, newCode, out message);
         if (message.HasContent())
-        {
           _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
-        }
         else
-        {
-          _voterCodeHub.SetStatus(_hubKey, "Code has been sent.");
-        }
+          _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
 
         method = type;
       }
@@ -128,21 +110,23 @@ namespace TallyJ.CoreModels.Helper
         }
         else
         {
-          if (method != "phone")
-          {
-            _voterCodeHub.SetStatus(_hubKey, "Code has been sent.");
-          }
+          if (method != "voice") _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
         }
       }
 
       if (sent)
       {
         UserSession.PendingVoterLogin = $"{voterIdType}\t{target}\t{method}";
+
+        return new
+        {
+          Success = true
+        };
       }
 
       return new
       {
-        Success = sent,
+        Success = false,
         Message = message
       };
     }
@@ -166,7 +150,8 @@ namespace TallyJ.CoreModels.Helper
           VerifyCode = newCode,
           VerifyCodeDate = now,
           VerifyAttempts = 1,
-          VerifyAttemptsStart = now
+          VerifyAttemptsStart = now,
+          WhenRegistered = now
         };
         db.OnlineVoter.Add(onlineVoter);
       }
@@ -236,10 +221,7 @@ namespace TallyJ.CoreModels.Helper
           return;
         }
 
-        if (attemptsStart == DateTime.MinValue)
-        {
-          UserSession.VerifyCodeAttemptsStart = now;
-        }
+        if (attemptsStart == DateTime.MinValue) UserSession.VerifyCodeAttemptsStart = now;
       }
 
       UserSession.VerifyCodeAttempts = attempts;
@@ -277,10 +259,7 @@ namespace TallyJ.CoreModels.Helper
 
         case "voice":
           twilioHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, out message);
-          if (message.HasNoContent())
-          {
-            MonitorCallStatus(twilioHelper);
-          }
+          if (message.HasNoContent()) MonitorCallStatus(twilioHelper);
 
           break;
 
@@ -297,10 +276,7 @@ namespace TallyJ.CoreModels.Helper
     {
       // stay and monitor status
       var sid = UserSession.TwilioMsgId;
-      if (sid.HasNoContent())
-      {
-        return;
-      }
+      if (sid.HasNoContent()) return;
 
       var activeStatusList = new[] { "queued", "initiated", "ringing", "in-progress" };
 
@@ -310,15 +286,11 @@ namespace TallyJ.CoreModels.Helper
         var status = twilioHelper.GetCallStatus(sid);
         var statusDisplay = new LangResourceHelper().GetFromList("CallStatus", status) ?? status;
 
-        _voterCodeHub.SetStatus(_hubKey, statusDisplay);
+        _voterCodeHub.SetStatus(_hubKey, "Call status: " + statusDisplay, status);
 
         tryAgain = activeStatusList.Contains(status);
 
-        if (tryAgain)
-        {
-          Thread.Sleep(1.seconds());
-        }
-
+        if (tryAgain) Thread.Sleep(1.seconds());
       } while (tryAgain);
     }
 
@@ -345,67 +317,75 @@ namespace TallyJ.CoreModels.Helper
       var parts = UserSession.PendingVoterLogin?.Split('\t');
 
       if (parts == null || parts.Length != 3)
-      {
         return new
         {
           Success = false,
           Message = "Unexpected call"
         };
-      }
 
       var voterIdType = parts[0];
-      var target = parts[1];
+      var voterId = parts[1];
       var method = parts[2];
       var db = UserSession.GetNewDbContext;
 
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == target && ov.VoterIdType == voterIdType);
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
       if (onlineVoter == null)
-      {
         return new
         {
           Success = false,
-          Message = "Unknown target: " + target.CleanedForErrorMessages()
+          Message = "Unknown target: " + voterId.CleanedForErrorMessages()
         };
-      }
 
       if (onlineVoter.VerifyCode == code)
       {
         // check if it was done in time
         var age = DateTime.Now - onlineVoter.VerifyCodeDate.GetValueOrDefault();
         if (age.TotalMinutes > EnterCodeWithinMinutes)
-        {
           // too late
           return new
           {
             Success = false,
             Message = "Code expired."
           };
-        }
 
         // login now!
-
+        var uniqueId = "V:" + voterId;
         var claims = new List<Claim>
         {
-          new Claim("UniqueID", "V:" + target),
-          new Claim("VoterId", target),
+          new Claim("UniqueID", uniqueId),
+          new Claim("VoterId", voterId),
           new Claim("VoterIdType", voterIdType),
-          new Claim("IsVoter", "True"),
+          new Claim("IsVoter", "true")
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
-        var authenticationProperties = new AuthenticationProperties()
+        var authenticationProperties = new AuthenticationProperties
         {
           AllowRefresh = true,
           IsPersistent = false,
-          ExpiresUtc = DateTime.UtcNow.AddDays(7)
+          ExpiresUtc = DateTime.UtcNow.AddHours(1)
         };
 
         HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
 
-        UserSession.RecordVoterLogin(UserSession.VoterId, UserSession.VoterIdType, method, null);
-
+        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+        UserSession.VoterLoginSource = method;
         UserSession.PendingVoterLogin = null;
+
+        // update the db
+        onlineVoter.WhenLastLogin = DateTime.Now;
+
+        onlineVoter.VerifyCode = null;
+        onlineVoter.VerifyAttempts = 0;
+
+        db.SaveChanges();
+
+        var logHelper = new LogHelper();
+
+        logHelper.Add($"Voter login via {method} {voterId}", true);
+
+        new VoterPersonalHub().Login(voterId); // in case same voterId is logged into a different computer
 
         return new
         {
@@ -413,7 +393,7 @@ namespace TallyJ.CoreModels.Helper
         };
       }
 
-      LogHelper.Add("Invalid voter signin code", true, target);
+      LogHelper.Add("Invalid voter signin code", true, voterId);
 
       return new
       {

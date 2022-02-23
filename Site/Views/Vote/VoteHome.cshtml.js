@@ -273,6 +273,7 @@ var vueOptions = {
     },
     toggleMeditate: function () {
       this.meditate = !this.meditate;
+      $('body').toggleClass('meditate', this.meditate);
     },
     getElectionList: function () {
       var vue = this;

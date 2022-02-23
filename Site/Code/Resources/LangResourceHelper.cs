@@ -15,13 +15,16 @@ namespace TallyJ.Code.Resources
   {
     public string GetFromList(string key, string value)
     {
-      var globalXml = new XmlHelper().GetCachedXmlFile(@"App_GlobalResources\Global.xml");
+      var globalXml = new XmlHelper().GetCachedXmlFile("App_GlobalResources/Global.xml");
 
-      var list = globalXml?.DocumentElement?.SelectSingleNode($"List[@key='{key}']");
+      var list = globalXml?.DocumentElement?.SelectSingleNode($"List[@Key='{key}']");
 
-      var item = list?.SelectSingleNode($"Item[@value='{value}']");
+      var item = list?.SelectSingleNode($"Item[@Value='{value}']");
 
-      return item?.InnerText;
+      // hard code to english for now
+      var text = item?.SelectSingleNode("en-US")?.InnerText;
+
+      return text;
     }
   }
 }

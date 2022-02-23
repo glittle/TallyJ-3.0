@@ -15,7 +15,6 @@ using TallyJ.CoreModels;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 
 namespace TallyJ.Code.Session
 {
@@ -253,10 +252,9 @@ namespace TallyJ.Code.Session
     public static bool IsSysAdmin => ActivePrincipal.FindFirst("IsSysAdmin")?.Value == "true";
 
     public static string UniqueId => ActivePrincipal.FindFirst("UniqueId")?.Value;
-
     public static string VoterId => ActivePrincipal.FindFirst("VoterId")?.Value;
     public static string VoterIdType => ActivePrincipal.FindFirst("VoterIdType")?.Value;
-    public static bool IsVoter => VoterId.HasContent();
+    public static bool IsVoter => ActivePrincipal.FindFirst("IsVoter")?.Value == "true";
 
     // public static string VoterEmail => ActivePrincipal.FindFirst("https://ns.tallyj.com/email")?.Value;
     // public static string VoterPhone => ActivePrincipal.FindFirst("https://ns.tallyj.com/phone")?.Value;
@@ -285,7 +283,7 @@ namespace TallyJ.Code.Session
       set => SessionKey.VoterLastLogin.SetInSession(value);
     }
 
-    public static void RecordVoterLogin(string voterId, string voterIdType, string source, string country)
+    public static void RecordVoterLogin_old(string voterId, string voterIdType, string source, string country)
     {
       var logHelper = new LogHelper();
 
@@ -329,10 +327,37 @@ namespace TallyJ.Code.Session
 
       VoterLoginSource = source;
 
-      logHelper.Add($"Voter login from {source}", true, voterId);
+      logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
 
       new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
     }
+
+    // public static void RecordVoterLogin(OnlineVoter onlineVoter, string voterId, string voterIdType, string source,
+    //   string country)
+    // {
+    //   var logHelper = new LogHelper();
+    //
+    //   var db = GetNewDbContext;
+    //   var now = DateTime.Now;
+    //
+    //     VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+    //
+    //   UserSession.PendingVoterLogin = null;
+    //
+    //   // reset the db
+    //   onlineVoter.WhenLastLogin = DateTime.Now;
+    //   onlineVoter.VerifyCode = null;
+    //   db.SaveChanges();
+    //
+    //   onlineVoter.WhenLastLogin = now;
+    //   db.SaveChanges();
+    //
+    //   VoterLoginSource = source;
+    //
+    //   logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
+    //
+    //   new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
+    // }
 
     public static Location CurrentLocation
     {

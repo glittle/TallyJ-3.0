@@ -38,13 +38,13 @@ namespace TallyJ.CoreModels
 
         if (errorMessage.Contains("not found in the key ring"))
         {
-          new LogHelper().Add("DecryptionError: " + errorMessage, true, UserSession.VoterId);
+          new LogHelper().Add("DecryptionError: " + errorMessage, true);
 
           errorMessage = "The server has been changed. You must create your ballot again.";
           return null;
         }
 
-        new LogHelper().Add("DecryptionError: " + errorMessage, true, UserSession.VoterId);
+        new LogHelper().Add("DecryptionError: " + errorMessage, true);
         return null;
       }
 

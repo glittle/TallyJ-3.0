@@ -42,6 +42,15 @@ namespace TallyJ.Code.Resources
       if (forceReload || doc == null)
       {
         //' don't have it yet... get it
+        if (path[1] != ':')
+        {
+          if (path[0] != '~')
+          {
+            path = "~/" + path;
+          }
+          path = HttpContext.Current.Server.MapPath(path);
+        }
+
         doc = GetXmlFile(path);
 
         if (doc == null)

@@ -142,7 +142,7 @@ namespace TallyJ.Controllers
       // HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie,
       //     DefaultAuthenticationTypes.ExternalCookie, "Auth0");
 
-      HttpContext.GetOwinContext().Authentication.SignOut("Auth0", 
+      HttpContext.GetOwinContext().Authentication.SignOut(
         DefaultAuthenticationTypes.ExternalCookie, 
         DefaultAuthenticationTypes.ApplicationCookie);
 

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNet.SignalR;
 using TallyJ.Code;
 using TallyJ.Code.Helpers;
@@ -15,20 +14,18 @@ namespace TallyJ.CoreModels.Hubs
     {
       get
       {
-        var emailOrPhone = UserSession.VoterId;
-        AssertAtRuntime.That(emailOrPhone.HasContent());
+        var voterId = UserSession.VoterId;
+        AssertAtRuntime.That(voterId.HasContent());
 
-        return "Voter" + emailOrPhone;
+        return "Voter" + voterId;
       }
     }
 
-    private IHubContext CoreHub
-    {
-      get { return _coreHub ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<VoterPersonalHubCore>()); }
-    }
+    private IHubContext CoreHub => _coreHub
+                                   ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<VoterPersonalHubCore>());
 
     /// <summary>
-    /// Join this connection into the hub
+    ///   Join this connection into the hub
     /// </summary>
     /// <param name="connectionId"></param>
     public void Join(string connectionId)
@@ -40,8 +37,8 @@ namespace TallyJ.CoreModels.Hubs
     {
       if (person != null)
       {
+        // 2022-02 how is this needed?
         if (person.Email.HasContent())
-        {
           CoreHub.Clients.Group("Voter" + person.Email).updateVoter(new
           {
             updateRegistration = true,
@@ -49,10 +46,8 @@ namespace TallyJ.CoreModels.Hubs
             person.RegistrationTime,
             person.ElectionGuid
           });
-        }
-      
+
         if (person.Phone.HasContent())
-        {
           CoreHub.Clients.Group("Voter" + person.Phone).updateVoter(new
           {
             updateRegistration = true,
@@ -60,13 +55,12 @@ namespace TallyJ.CoreModels.Hubs
             person.RegistrationTime,
             person.ElectionGuid
           });
-        }
       }
     }
 
-    public void Login(string emailOrPhone)
+    public void Login(string voterId)
     {
-      CoreHub.Clients.Group("Voter" + emailOrPhone).updateVoter(new
+      CoreHub.Clients.Group("Voter" + voterId).updateVoter(new
       {
         login = true
       });

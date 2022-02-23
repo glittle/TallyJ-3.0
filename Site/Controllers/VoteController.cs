@@ -374,7 +374,7 @@ namespace TallyJ.Controllers
             person.RegistrationLog = log;
 
             // logHelper.Add("Locked ballot");
-            logHelper.Add("Submitted Ballot", false, UserSession.VoterId);
+            logHelper.Add("Submitted Ballot");
 
 
             var notificationHelper = new NotificationHelper();
@@ -404,7 +404,7 @@ namespace TallyJ.Controllers
             person.RegistrationLog = log;
 
             // logHelper.Add("Unlocked ballot");
-            logHelper.Add("Recalled Ballot", false, UserSession.VoterId);
+            logHelper.Add("Recalled Ballot");
           }
         }
 

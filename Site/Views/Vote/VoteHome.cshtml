@@ -22,10 +22,10 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 <div class="forMeditate">
-  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Take time to meditate'"></button>
   <div v-if="meditate">
-    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Show suggested music in YouTube</a>
+    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">View suggested music in YouTube</a>
   </div>
+  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Take time to meditate'"></button>
 </div>
 <div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}">
   <div class="top">
@@ -41,7 +41,7 @@
     <p v-if="loading">Searching for your email address in available elections...</p>
 
     <p v-if="!loading">
-      If an upcoming election is not listed here, it may not exist in TallyJ or your email address is not registered in it. Please contact the head teller or primary contact for assistance.
+      If an upcoming election is not listed here, it may not exist in TallyJ or your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is not registered in it. Please contact the head teller or primary contact for assistance.
     </p>
 
   </div>
@@ -90,9 +90,10 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
+    <button class="float-right btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
+
     <div class="title">Settings for @UserSession.VoterId</div>
     <p class="emails">
-      <button class="btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
       @*<label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>*@
       <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when my ballot is processed.</label>
     </p>
@@ -268,8 +269,8 @@
 
       <p v-if="!pool.length">Use the left side of the page to find or enter a name to add...</p>
       @*<p v-if="!lockInVotes && pool.length">
-      Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
-    </p>*@
+          Sort this list to move {{numToElect === 1 ? 'someone into the top position' : ('people into any of the top ' + numToElect + ' positions')}} for use on your ballot.
+        </p>*@
 
       <div class="beforePool">
         My Ballot
@@ -308,8 +309,10 @@
 
       <div v-if="poolBeyondBallot.length && !savedLock">
         <p>Drag names into and out of your ballot and the pool of extras.</p>
-        <p>To sort the names using your keyboard, press <strong>Tab</strong> to focus,
-          <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.</p>
+        <p>
+          To sort the names using your keyboard, press <strong>Tab</strong> to focus,
+          <strong>Enter</strong> to select/deselect, and <strong>Up</strong> and <strong>Down</strong> arrows to move.
+        </p>
       </div>
 
       <div v-if="poolBeyondBallot.length && !savedLock" class="afterPool">
@@ -357,10 +360,10 @@
         Loading...
       </p>
       @*
-      not needed - if submitted, don't need paper version
-      <div class="printDiv">
-      <button class="btn" v-on:click="printBallot">Print Ballot</button>
-    </div>*@
+          not needed - if submitted, don't need paper version
+          <div class="printDiv">
+          <button class="btn" v-on:click="printBallot">Print Ballot</button>
+        </div>*@
     </div>
   </div>
 </div>

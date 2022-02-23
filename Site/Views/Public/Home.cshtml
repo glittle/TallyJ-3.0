@@ -16,6 +16,7 @@
   ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("vote", "homeIndexPage.vote={0};".FilledWith(SettingsHelper.HostSupportsOnlineElections.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("sms", "homeIndexPage.sms={0};".FilledWith(SettingsHelper.HostSupportsOnlineSmsLogin.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsapp={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
 }
 @section Metas {
   <link rel='canonical' href='https://www.tallyj.com/' />
@@ -186,7 +187,7 @@
   </section>
   @if (SettingsHelper.HostSupportsOnlineElections)
   {
-    <section class="featureBig VoterPanel @(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "")">
+    <section class="featureBig VoterPanel @(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsOnlineWhatsAppLogin ? "WhatsApp" : "")">
       <div class="closer">
         <img src="~/Images/close.png" alt="Close" class="closer">
       </div>
@@ -243,56 +244,64 @@
               </p>
               <div class="voterOptions">
                 <div class="voterEmail" v-on:click="chooseMethod('email')">
-                  <span>Using your Email address</span>
+                  <span>Using your email</span>
                 </div>
                 <div class="voterSms forSmsBlock" v-on:click="chooseMethod('phone')">
-                  <span>Using your mobile phone</span>
+                  <span>Using your phone</span>
                 </div>
               </div>
-              <div class="voterLogin email" v-show="mode==='email'">
-                <label for="email">
-                  Enter your email address:
-                </label>
-                <div class="example">Example: name@example.com</div>
-                <input type="email" name="email" id="email"
-                       v-model="email"
-                       required autocomplete="email">
-                <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email my code</button>
-              </div>
-
-              <div class="voterLogin sms" v-show="mode==='phone'">
-                  <label for="phone">
-                      Enter your mobile phone number:
+              <div class="voterLogin" :class="mode" v-if="mode">
+                <div v-show="mode==='email'">
+                  <label for="email">
+                    Enter your email address:
                   </label>
-                  <div class="example">Example: +16504501212</div>
-                <input type="tel" name="phone" id="phone"
-                       v-model="phone"
-                       required autocomplete="tel">
-                <div>Send my code via</div>
-                <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
-                <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
-                <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('whatsapp')">WhatsApp</button>
-
-              </div>
-
-              <div v-if="showCodeInput" class="pendingCode">
-                <div class="status" v-text="status"></div>
-                <div v-if="sent">
-                  <div>Enter the code when you receive it:</div>
-                    <input type="tel" v-model="code" autocomplete="off" pattern="\d{6}" />
+                  <div class="example">Example: name@example.com</div>
+                  <input type="email" name="email" id="email"
+                         v-model="email"
+                         placeholder="____&#64____.__"
+                         required autocomplete="email">
+                  <div>Send my code via</div>
+                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email</button>
+                </div>
+                <div v-show="mode==='phone'">
+                  <label for="phone">
+                    Enter your full phone number:
+                  </label>
+                  <div class="example">Example: +12025550103</div>
+                  <input type="tel" name="phone" id="phone"
+                         v-model="phone"
+                         placeholder="+__________"
+                         required autocomplete="tel">
+                  <div>Send my code via</div>
+                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
+                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
+                  @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
+                  {
+                    <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('whatsapp')">WhatsApp</button>
+                  }
+                </div>
+                <div v-if="showCodeInput" class="pendingCode">
+                  <div class="status" v-text="status"></div>
+                  <div v-if="sent">
+                    <div v-text="codePrompt"></div>
+                    <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
                     <div>
-                        <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
+                      <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
                     </div>
+                  </div>
                 </div>
               </div>
               <div class="mustPreRegister">
                 <p>
                   <strong>Please Note:</strong> You can sign in at any time, but the
-                  email address <span class="forSmsInline">or mobile phone number</span>
-                  you use here must match what you have registered with
-                  your local Assembly or convenor before you can vote!
+                  email address <span class="forSmsInline">or phone number</span>
+                  you use here must match what is registered in an election before
+                  you will be able to vote in it!
                 </p>
-                <p>Please contact your Assembly to confirm your information.</p>
+                <p>
+                  After logging in, if you don't find the election you are looking for,
+                  please contact your Assembly or convenor to confirm your information.
+                </p>
               </div>
 
             </div>
@@ -300,7 +309,7 @@
 
           <div>
             <p>
-              TallyJ uses Auth0 <span class="forSmsInline">and Twilio</span> to enable logins from anywhere on the planet!<br>
+              TallyJ uses SendGrid <span class="forSmsInline">and Twilio</span> to enable logins from anywhere on the planet!<br>
               <span class="forSmsInline">Please note that SMS messages may sometimes take a few minutes to be received.</span>
             </p>
             <p>By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.</p>

@@ -5,7 +5,7 @@ namespace TallyJ.Code.Enumerations
   public class VoterIdTypeEnum : BaseEnumeration<VoterIdTypeEnum, string>
   {
     public static readonly VoterIdTypeEnum Email = new VoterIdTypeEnum("E", "Email Address", "email", "an email");
-    public static readonly VoterIdTypeEnum Phone = new VoterIdTypeEnum("P", "Mobile Phone Number", "text message", "a text message");
+    public static readonly VoterIdTypeEnum Phone = new VoterIdTypeEnum("P", "Phone Number", "text message", "a text message");
     public static readonly VoterIdTypeEnum _unknown = new VoterIdTypeEnum("X", "(Unknown)", "unknown", "unknown");
 
     static VoterIdTypeEnum()

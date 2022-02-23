@@ -1,7 +1,8 @@
 ﻿[
   {
     "outputFile": "Content/Site.css",
-    "inputFile": "Content/Site.less"
+    "inputFile": "Content/Site.less",
+    "sourceMap": true
   },
   {
     "outputFile": "Views/After/Analyze.cshtml.css",

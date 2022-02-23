@@ -69,7 +69,7 @@
     setupVoterVue();
 
     // for testing
-    startJoinClick(null, 'btnChooseVoter');
+    //startJoinClick(null, 'btnChooseVoter');
   };
 
   var connectToPublicHubToGetElectionList = function () {
@@ -198,6 +198,7 @@
     local: local,
     vote: false,
     sms: false,
+    whatsapp: false,
   };
 
   function setupVoterVue() {
@@ -226,14 +227,22 @@
         okayToSend: function () {
           return !!this[this.mode]; // something entered - should validate
         },
-
+        codePrompt: function () {
+          return 'Enter the code when you receive it:'; // change for voice
+        }
       },
       watch: {
-        phone(a, b) {
-          if (a) {
-            this.fixPhone();
-          }
-        }
+//        phone(a, b) {
+//          if (a && a.length < (b || '').length) {
+//            this.fixPhone();
+//          }
+//        },
+//        callStatus(a, b) {
+//          console.log(a, b);
+//          if (a === 'ringing') {
+//            this.showCodeInput = true;
+//          }
+//        }
       },
       created: function () {
       },
@@ -251,31 +260,45 @@
         //        var $phone = local.hostPanel.find('[data-name="Phone"]');
         //    $phone.on('change paste', fixPhone);
 
-        fixPhone: function () {
-          var original = this.phone;
-          if (!original) {
-            return;
+        fixPhone: function (phone) {
+          if (!phone || phone.length < 3) {
+            return phone || '';
           }
-          var text = original.replace(/[^\+\d]/g, '');
+          var text = phone.replace(/[^\+\d]/g, '');
           if (text.substr(0, 1) !== '+') {
+            // +123
             if (text.length === 10) {
-              text = '1' + text;
-            }
-            text = '+' + text;
-          } else {
-            if (text.length === 11) {
-              text = '+1' + text.substr(1);
+              // USA 10 digits - add +1
+              text = '+1' + text;
+            } else {
+              text = '+' + text;
             }
           }
-          if (text !== original) {
-            this.phone = text;
-          }
+//          if (text.substr(0, 1) === '+') {
+//            // +123
+//            if (text.length === 11 && text.substr(2, 1) !== '1') {
+//              // + and 10 digits - remove the + and add +1
+//              text = '+1' + text.substr(1);
+//            }
+//          } else {
+//            if (text.length === 10) {
+//              // US 10 digits?
+//              text = '1' + text;
+//            }
+//            text = '+' + text;
+//          }
+          return text;
         },
         sendEmail: function () {
           this.issueCode('email', null, this.email);
         },
         sendPhone: function (method) {
-          this.issueCode('phone', method, this.phone);
+          var phone = this.fixPhone(this.phone);
+          if (phone.length < 3) {
+            return;
+          }
+          this.phone = phone;
+          this.issueCode('phone', method, phone);
         },
         joinHub: function () {
           var vue = this;
@@ -286,9 +309,13 @@
 
           var hub = $.connection.voterCodeHubCore;
 
-          hub.client.setStatus = function (message) {
-            console.log('signalR: voterPersonalHub status', message);
+          hub.client.setStatus = function (message, callStatus) {
+            console.log('signalR: voterPersonalHub status', message, callStatus);
             vue.status = message;
+            if (callStatus) {
+              vue.showCodeInput = true;
+              vue.sent = true;
+            }
           };
 
           hub.client.final = function (okay, message) {
@@ -315,8 +342,7 @@
         },
         issueCode: function (type, method, target) {
           var vue = this;
-
-          this.showCodeInput = true;
+          
           this.status = 'Preparing...';
 
           // do the call
@@ -327,11 +353,15 @@
               target: target,
               hubKey: vue.hubKey
             }, function (info) {
-
+              vue.showCodeInput = true;
               if (info.Success) {
                 // hub will update
+                console.log('issued');
+
+
                 vue.sent = true; //testing
                 vue.sending = false; // testing
+                setTimeout(() => $('.voterLogin code').focus(), 1000);
 
               } else {
                 vue.status = info.Message;
@@ -347,7 +377,7 @@
               code: vue.code
             }, function (info) {
               if (info.Success) {
-                location.href = site.rootUrl + 'vote';
+                location.href = site.rootUrl + 'Vote';
 
               } else {
                 vue.status = info.Message;

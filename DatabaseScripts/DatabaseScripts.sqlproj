@@ -172,6 +172,7 @@
     <Build Include="dbo\Tables\AspNetUserClaims.sql" />
     <Build Include="dbo\Tables\AspNetRoles.sql" />
     <Build Include="dbo\Tables\SmsLog.sql" />
+    <None Include="Change Scripts\Ver 3.3.0.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="DatabaseScripts.refactorlog" />

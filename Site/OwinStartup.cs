@@ -8,16 +8,12 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Facebook;
-using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.Notifications;
-using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.Web.Infrastructure;
 using Owin;
 using TallyJ.Code;
@@ -50,13 +46,14 @@ namespace TallyJ
       AntiForgeryConfig.UniqueClaimTypeIdentifier = "UniqueID";
 
       // auth0 - adapted from https://manage.auth0.com/dashboard/us/tallyj/applications/lDGuoI4pWDzNzzkjwmKq6w53alnXyKcw/quickstart/aspnet-owin
-      var auth0Domain = AppSettings["auth0-domain"];
-      var auth0ClientId = AppSettings["auth0-ClientId"];
-      var auth0ClientSecret = AppSettings["auth0-ClientSecret"];
-      var auth0RedirectUri = AppSettings["auth0-RedirectUri"];
-      var auth0PostLogoutRedirectUri = AppSettings["auth0-PostLogoutRedirectUri"];
+      // var auth0Domain = AppSettings["auth0-domain"];
+      // var auth0ClientId = AppSettings["auth0-ClientId"];
+      // var auth0ClientSecret = AppSettings["auth0-ClientSecret"];
+      // var auth0RedirectUri = AppSettings["auth0-RedirectUri"];
+      // var auth0PostLogoutRedirectUri = AppSettings["auth0-PostLogoutRedirectUri"];
 
-      app.UseKentorOwinCookieSaver();
+      // <package id="Kentor.OwinCookieSaver" version="1.1.1" targetFramework="net48" />
+      //app.UseKentorOwinCookieSaver();
       app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
       var useSecure = AppSettings["secure"].AsBoolean(true);
@@ -99,155 +96,155 @@ namespace TallyJ
         return;
       }
 
-      // Configure Auth0 authentication
-      app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
-      {
-        AuthenticationType = "Auth0",
-        Authority = $"https://{auth0Domain}",
-
-        ClientId = auth0ClientId,
-        ClientSecret = auth0ClientSecret,
-
-        RedirectUri = auth0RedirectUri,
-        PostLogoutRedirectUri = auth0PostLogoutRedirectUri,
-
-        ResponseType = OpenIdConnectResponseType.CodeIdToken,
-        Scope = "email phone",
-
-        TokenValidationParameters = new TokenValidationParameters
-        {
-          NameClaimType = "name",
-        },
-
-        Notifications = new OpenIdConnectAuthenticationNotifications
-        {
-          AuthorizationCodeReceived = delegate (AuthorizationCodeReceivedNotification notification)
-          {
-            var identity = notification.AuthenticationTicket.Identity;
-
-
-            var sourceClaim = identity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-            var source = sourceClaim?.Value.Split('|')[0] ?? "Auth0";
-
-            var country = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/country")?.Value;
-
-            var validLogin = false;
-
-            var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email");
-
-            if (emailClaim != null)
-            {
-              var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email_verified")?.Value.AsBoolean() ?? false;
-              if (validated)
-              {
-                identity.AddClaim(new Claim("UniqueID", "V:" + emailClaim.Value));
-                identity.AddClaim(new Claim("VoterId", emailClaim.Value));
-                identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Email));
-                identity.AddClaim(new Claim("IsVoter", "True"));
-               
-                validLogin = true;
-              }
-              else
-              {
-                // attempt to use unverified email?
-              }
-            }
-            else
-            {
-              var phoneClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone");
-              if (phoneClaim != null)
-              {
-                var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone_verified")?.Value.AsBoolean() ?? false;
-                if (validated)
-                {
-                  identity.AddClaim(new Claim("UniqueID", "V:" + phoneClaim.Value));
-                  identity.AddClaim(new Claim("VoterId", phoneClaim.Value));
-                  identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Phone));
-                  identity.AddClaim(new Claim("IsVoter", "True"));
-
-                  validLogin = true;
-                }
-                else
-                {
-                  // attempt to use unverified phone?
-                }
-              }
-            }
-
-            if (validLogin)
-            { 
-              notification.OwinContext.Authentication.SignIn(new AuthenticationProperties()
-              {
-                AllowRefresh = true,
-                IsPersistent = false,
-                ExpiresUtc = DateTime.UtcNow.AddHours(1)
-              }, identity);
-
-              // rely on UserSession values now available after the SignIn just above
-
-              UserSession.RecordVoterLogin(UserSession.VoterId, UserSession.VoterIdType, source, country);
-            }
-            else
-            {
-              notification.OwinContext.Authentication.SignOut("Auth0",
-                DefaultAuthenticationTypes.ExternalCookie,
-                DefaultAuthenticationTypes.ApplicationCookie);
-            }
-
-            return Task.FromResult(0);
-          },
-          MessageReceived = delegate (MessageReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
-          {
-            return Task.FromResult(0);
-          },
-          SecurityTokenReceived = delegate (SecurityTokenReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
-          {
-            return Task.FromResult(0);
-          },
-          SecurityTokenValidated = delegate (SecurityTokenValidatedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
-          {
-            return Task.FromResult(0);
-          },
-          TokenResponseReceived = delegate (TokenResponseReceivedNotification notification)
-          {
-            return Task.FromResult(0);
-          },
-          AuthenticationFailed = delegate (AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
-          {
-            return Task.FromResult(0);
-          },
-          RedirectToIdentityProvider = notification =>
-          {
-            var useSms = System.Web.HttpContext.Current.Items["CELL"].AsBoolean();
-
-            if (useSms)
-            {
-              notification.ProtocolMessage.LoginHint = "useSMS";
-            }
-
-            if (notification.ProtocolMessage.RequestType == OpenIdConnectRequestType.Logout)
-            {
-              var logoutUri = $"https://{auth0Domain}/v2/logout?client_id={auth0ClientId}";
-
-              var postLogoutUri = notification.ProtocolMessage.PostLogoutRedirectUri;
-              if (!string.IsNullOrEmpty(postLogoutUri))
-              {
-                if (postLogoutUri.StartsWith("/"))
-                {
-                  // transform to absolute
-                  var request = notification.Request;
-                  postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
-                }
-                logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
-              }
-
-              notification.Response.Redirect(logoutUri);
-              notification.HandleResponse();
-            }
-            return Task.FromResult(0);
-          }
-        }
-      });
+      // // Configure Auth0 authentication
+      // app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
+      // {
+      //   AuthenticationType = "Auth0",
+      //   Authority = $"https://{auth0Domain}",
+      //
+      //   ClientId = auth0ClientId,
+      //   ClientSecret = auth0ClientSecret,
+      //
+      //   RedirectUri = auth0RedirectUri,
+      //   PostLogoutRedirectUri = auth0PostLogoutRedirectUri,
+      //
+      //   ResponseType = OpenIdConnectResponseType.CodeIdToken,
+      //   Scope = "email phone",
+      //
+      //   TokenValidationParameters = new TokenValidationParameters
+      //   {
+      //     NameClaimType = "name",
+      //   },
+      //
+      //   Notifications = new OpenIdConnectAuthenticationNotifications
+      //   {
+      //     AuthorizationCodeReceived = delegate (AuthorizationCodeReceivedNotification notification)
+      //     {
+      //       var identity = notification.AuthenticationTicket.Identity;
+      //
+      //
+      //       var sourceClaim = identity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+      //       var source = sourceClaim?.Value.Split('|')[0] ?? "Auth0";
+      //
+      //       var country = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/country")?.Value;
+      //
+      //       var validLogin = false;
+      //
+      //       var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email");
+      //
+      //       if (emailClaim != null)
+      //       {
+      //         var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/email_verified")?.Value.AsBoolean() ?? false;
+      //         if (validated)
+      //         {
+      //           identity.AddClaim(new Claim("UniqueID", "V:" + emailClaim.Value));
+      //           identity.AddClaim(new Claim("VoterId", emailClaim.Value));
+      //           identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Email));
+      //           identity.AddClaim(new Claim("IsVoter", "True"));
+      //          
+      //           validLogin = true;
+      //         }
+      //         else
+      //         {
+      //           // attempt to use unverified email?
+      //         }
+      //       }
+      //       else
+      //       {
+      //         var phoneClaim = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone");
+      //         if (phoneClaim != null)
+      //         {
+      //           var validated = identity.Claims.FirstOrDefault(c => c.Type == "https://ns.tallyj.com/phone_verified")?.Value.AsBoolean() ?? false;
+      //           if (validated)
+      //           {
+      //             identity.AddClaim(new Claim("UniqueID", "V:" + phoneClaim.Value));
+      //             identity.AddClaim(new Claim("VoterId", phoneClaim.Value));
+      //             identity.AddClaim(new Claim("VoterIdType", VoterIdTypeEnum.Phone));
+      //             identity.AddClaim(new Claim("IsVoter", "True"));
+      //
+      //             validLogin = true;
+      //           }
+      //           else
+      //           {
+      //             // attempt to use unverified phone?
+      //           }
+      //         }
+      //       }
+      //
+      //       if (validLogin)
+      //       { 
+      //         notification.OwinContext.Authentication.SignIn(new AuthenticationProperties()
+      //         {
+      //           AllowRefresh = true,
+      //           IsPersistent = false,
+      //           ExpiresUtc = DateTime.UtcNow.AddHours(1)
+      //         }, identity);
+      //
+      //         // rely on UserSession values now available after the SignIn just above
+      //
+      //         UserSession.RecordVoterLogin_old(UserSession.VoterId, UserSession.VoterIdType, source, country);
+      //       }
+      //       else
+      //       {
+      //         notification.OwinContext.Authentication.SignOut("Auth0",
+      //           DefaultAuthenticationTypes.ExternalCookie,
+      //           DefaultAuthenticationTypes.ApplicationCookie);
+      //       }
+      //
+      //       return Task.FromResult(0);
+      //     },
+      //     MessageReceived = delegate (MessageReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+      //     {
+      //       return Task.FromResult(0);
+      //     },
+      //     SecurityTokenReceived = delegate (SecurityTokenReceivedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+      //     {
+      //       return Task.FromResult(0);
+      //     },
+      //     SecurityTokenValidated = delegate (SecurityTokenValidatedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+      //     {
+      //       return Task.FromResult(0);
+      //     },
+      //     TokenResponseReceived = delegate (TokenResponseReceivedNotification notification)
+      //     {
+      //       return Task.FromResult(0);
+      //     },
+      //     AuthenticationFailed = delegate (AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+      //     {
+      //       return Task.FromResult(0);
+      //     },
+      //     RedirectToIdentityProvider = notification =>
+      //     {
+      //       var useSms = System.Web.HttpContext.Current.Items["CELL"].AsBoolean();
+      //
+      //       if (useSms)
+      //       {
+      //         notification.ProtocolMessage.LoginHint = "useSMS";
+      //       }
+      //
+      //       if (notification.ProtocolMessage.RequestType == OpenIdConnectRequestType.Logout)
+      //       {
+      //         var logoutUri = $"https://{auth0Domain}/v2/logout?client_id={auth0ClientId}";
+      //
+      //         var postLogoutUri = notification.ProtocolMessage.PostLogoutRedirectUri;
+      //         if (!string.IsNullOrEmpty(postLogoutUri))
+      //         {
+      //           if (postLogoutUri.StartsWith("/"))
+      //           {
+      //             // transform to absolute
+      //             var request = notification.Request;
+      //             postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+      //           }
+      //           logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
+      //         }
+      //
+      //         notification.Response.Redirect(logoutUri);
+      //         notification.HandleResponse();
+      //       }
+      //       return Task.FromResult(0);
+      //     }
+      //   }
+      // });
 
 
 
@@ -324,7 +321,7 @@ namespace TallyJ
     //       }
     //       else
     //       {
-    //         //TODO - didn't get email... redirect to home page
+    //         // didn't get email... redirect to home page
     //       }
     //
     //       return Task.FromResult(0);

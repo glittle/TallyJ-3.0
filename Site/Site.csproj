@@ -128,9 +128,6 @@
     <Reference Include="FluentSecurity, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentSecurity.2.1.0\lib\net40\FluentSecurity.dll</HintPath>
     </Reference>
-    <Reference Include="Kentor.OwinCookieSaver, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kentor.OwinCookieSaver.1.1.1\lib\net452\Kentor.OwinCookieSaver.dll</HintPath>
-    </Reference>
     <Reference Include="Krystalware.SlickUpload">
       <HintPath>..\OtherSources\Krystalware.SlickUpload.dll</HintPath>
     </Reference>
@@ -148,9 +145,6 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.3\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -243,17 +237,8 @@
     <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.1.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Facebook, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.1.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.1.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.1.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OpenIdConnect, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.OpenIdConnect.4.1.1\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
@@ -715,6 +700,7 @@
     <Content Include="Images\icons\icon-144.png" />
     <Content Include="Images\icons\mstile-150x150.png" />
     <Content Include="Images\icons\safari-pinned-tab.svg" />
+    <Content Include="Images\voterPhone.png" />
     <Content Include="MessageTemplates\Email\HeadTellerEmail.html" />
     <Content Include="MessageTemplates\Email\GenericIdentityManagerEmail.html" />
     <Content Include="MessageTemplates\Email\ElectionOpen.html" />
@@ -883,7 +869,6 @@
     <Content Include="Images\pdf.png" />
     <Content Include="Images\social.png" />
     <Content Include="Images\voterEmail.png" />
-    <Content Include="Images\voterSms.png" />
     <Content Include="Images\walk.png" />
     <Content Include="MessageTemplates\Email\VerifyCodeEmail.html" />
     <Content Include="MessageTemplates\SMS\BallotProcessed.txt" />
@@ -1176,26 +1161,12 @@
     <Content Include="Views\Vote\VoteHome.cshtml" />
     <Content Include="Views\Shared\_LayoutVoter.cshtml" />
     <Content Include="Views\Public\Privacy.cshtml" />
-    <Content Include="Views\VoterAccount\ConfirmEmail.cshtml" />
-    <Content Include="Views\VoterAccount\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\VoterAccount\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\VoterAccount\ForgotPassword.cshtml" />
-    <Content Include="Views\VoterAccount\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\VoterAccount\Login.cshtml" />
-    <Content Include="Views\VoterAccount\Register.cshtml" />
-    <Content Include="Views\VoterAccount\ResetPassword.cshtml" />
-    <Content Include="Views\VoterAccount\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\VoterAccount\SendCode.cshtml" />
-    <Content Include="Views\VoterAccount\VerifyCode.cshtml" />
-    <Content Include="Views\VoterAccount\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Manage2\AddPhoneNumber.cshtml" />
     <Content Include="Views\Manage2\ChangePassword.cshtml" />
     <Content Include="Views\Manage2\Index.cshtml" />
     <Content Include="Views\Manage2\ManageLogins.cshtml" />
     <Content Include="Views\Manage2\SetPassword.cshtml" />
     <Content Include="Views\Manage2\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\VoterAccount\Lockout.cshtml" />
-    <Content Include="Views\VoterAccount\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_LayoutVoterAccount.cshtml" />
     <Content Include="Views\Manage2\_ViewStart.cshtml" />
     <Content Include="Views\After\Presenter.cshtml.less">
@@ -1206,7 +1177,6 @@
     <Content Include="Views\SysAdmin\Index.cshtml.less">
       <DependentUpon>Index.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\VoterAccount\Claims.cshtml" />
     <Content Include="Views\Setup\Notify.cshtml" />
     <Content Include="Scripts\jquery-3.5.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.5.1.min.map" />

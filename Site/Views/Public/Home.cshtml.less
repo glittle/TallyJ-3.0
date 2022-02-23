@@ -354,67 +354,68 @@ div.or {
     }
 
     .voterSms {
-      background-image: url(../../Images/voterSms.png?1);
+      background-image: url(../../Images/voterPhone.png?1);
     }
 
     .voterEmail {
-      background-image: url(../../Images/voterEmail.png?1);
+      background-image: url(../../Images/voterEmail.png?2);
     }
   }
 
   .voterLogin {
     border-radius: 6px;
-    width: 250px;
+    width: 300px;
     max-width: 80vw;
     margin: 10px auto;
     padding: 20px;
+    border-width: 8px;
+    border-style: solid;
+    background-color: #fff;
+
+    button {
+      margin: 5px 3px;
+    }
+
+    &.email {
+      border-color: #8dc63e;
+    }
+
+    &.phone {
+      border-color: #f6941e;
+    }
 
     input {
       text-align: center;
-      font-size: 1.2em;
+      font-size: 1.1em;
       padding: 5px 4px 3px;
       margin: 5px 0;
     }
 
-    .example{
-      margin: 0 auto;
+    .example {
+      margin: 2px auto;
       font-size: 90%;
-      color: #e8e8e8;
+      color: #999;
     }
 
     label, div {
-      color: #fff;
+      color: #333;
       margin: 5px 0;
-    }
-
-    &.email {
-      background-color: #8dc63e;
-    }
-
-    &.sms {
-      background-color: #f6941e;
-    }
-
-    .status {
-      color: #fdfdfd;
     }
   }
 
   .pendingCode {
-    border-radius: 6px;
-    width: 270px;
-    max-width: 80vw;
-    margin: -10px auto 20px;
-    padding: 10px;
-    background-color: #efeeef;
-    color: black;
-
     input {
       width: 5em;
       text-align: center;
-      font-size: 1.2em;
+      font-size: 1.1em;
       padding: 5px 4px 3px;
       margin: 5px 0;
+      letter-spacing: 1px;
+    }
+
+    .status{
+      font-weight: bold;
+      margin: 3px 0;
     }
 
     label, div {
