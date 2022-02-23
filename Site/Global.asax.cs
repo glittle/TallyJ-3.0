@@ -17,9 +17,6 @@ using System.Web.Profile;
 using System.Web.Routing;
 using System.Web.Services.Protocols;
 using FluentSecurity;
-using NLog;
-using NLog.Targets;
-//using StackExchange.Redis;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.Helpers;
@@ -108,8 +105,8 @@ namespace TallyJ
       RegisterDefaultRoute(RouteTable.Routes,
           siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
-      ConfigureNLog();
-      //ConfigureRedis();
+      // ConfigureNLog();
+      // ConfigureRedis();
     }
 
     //public ConfigurationOptions RedisConfigOpts { get; set; }
@@ -130,37 +127,37 @@ namespace TallyJ
     //    arg => new KeyValuePair<string, ConfigurationOptions>("UsingRedis", RedisConfigOpts);
     //}
 
-    private void ConfigureNLog()
-    {
-      // see https://github.com/nlog/nlog/wiki/Configuration-API
-      var config = LogManager.Configuration;
-      var target = config.FindTargetByName("logentries") as LogentriesTarget;
-      if (target != null)
-      {
-        var siteInfo = new SiteInfo();
-        var newKey = "";
-        if (siteInfo.CurrentEnvironment == "Dev")
-        {
-          try
-          {
-            newKey = File.ReadAllText(@"c:\AppHarborConfig.LogEntries.txt");
-          }
-          catch
-          {
-            // swallow this
-          }
-        }
-        else
-        {
-          newKey = ConfigurationManager.AppSettings["LOGENTRIES_ACCOUNT_KEY"];
-        }
-
-        if (newKey.HasContent())
-        {
-          target.Key = newKey;
-        }
-      }
-    }
+    // private void ConfigureNLog()
+    // {
+    //   // see https://github.com/nlog/nlog/wiki/Configuration-API
+    //   var config = LogManager.Configuration;
+    //   var target = config.FindTargetByName("logentries") as LogentriesTarget;
+    //   if (target != null)
+    //   {
+    //     var siteInfo = new SiteInfo();
+    //     var newKey = "";
+    //     if (siteInfo.CurrentEnvironment == "Dev")
+    //     {
+    //       try
+    //       {
+    //         newKey = File.ReadAllText(@"c:\AppHarborConfig.LogEntries.txt");
+    //       }
+    //       catch
+    //       {
+    //         // swallow this
+    //       }
+    //     }
+    //     else
+    //     {
+    //       newKey = ConfigurationManager.AppSettings["LOGENTRIES_ACCOUNT_KEY"];
+    //     }
+    //
+    //     if (newKey.HasContent())
+    //     {
+    //       target.Key = newKey;
+    //     }
+    //   }
+    // }
 
     private void Application_Error(object sender, EventArgs e)
     {
@@ -183,7 +180,7 @@ namespace TallyJ
       {
 
 
-        var logger = LogManager.GetCurrentClassLogger();
+        // var logger = LogManager.GetCurrentClassLogger();
         var mainMsg = mainException.GetAllMsgs("; ");
 
         if (mainMsg.Contains("dbo.Sessions")
@@ -220,7 +217,7 @@ namespace TallyJ
                 .Select(ve => "{0}: {1}".FilledWith(ve.PropertyName, ve.ErrorMessage))
                 .JoinedAsString("; "))
               .JoinedAsString("; ");
-            logger.Debug(msg);
+            // logger.Debug(msg);
             msgs.Add(msg);
           }
 
@@ -231,14 +228,14 @@ namespace TallyJ
             var list = new CompilerError[errors.Count];
             errors.CopyTo(list, 0);
             var msg = list.Select(err => "{0}".FilledWith(err.ErrorText)).JoinedAsString("; ");
-            logger.Debug(msg);
+            // logger.Debug(msg);
             msgs.Add(msg);
           }
 
           ex = ex.InnerException;
         }
 
-        logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
+        // logger.Fatal(mainException, "Env: {0}  Err: {1}".FilledWith(siteInfo.CurrentEnvironment, msgs.JoinedAsString("; ")));
 
         var sendToRemoteLog = true;
         string publicMessage = "Exception: {0}".FilledWith(msgs.JoinedAsString("\n"));

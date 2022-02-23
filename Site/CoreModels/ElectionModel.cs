@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Transactions;
 using System.Web.Mvc;
-using CsQuery.ExtensionMethods;
+// using CsQuery.ExtensionMethods;
 using Newtonsoft.Json;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -1023,7 +1023,7 @@ namespace TallyJ.CoreModels
               onlineBallotInfo.ovi.Status = OnlineBallotStatusEnum.Processed;
               onlineBallotInfo.ovi.WhenStatus = now;
               onlineBallotInfo.ovi.WhenBallotCreated = now;
-              onlineBallotInfo.ovi.HistoryStatus += ";{0}|{1}".FilledWith(onlineBallotInfo.ovi.Status, now.ToJSON());
+              onlineBallotInfo.ovi.HistoryStatus += $";{onlineBallotInfo.ovi.Status}|{now:s}";
 
               onlineBallotInfo.ovi.ListPool = null; // ballot created, so wipe out the original list
               onlineBallotInfo.ovi.PoolLocked = null;

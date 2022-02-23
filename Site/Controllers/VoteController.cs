@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using CsQuery.ExtensionMethods;
+// using CsQuery.ExtensionMethods;
 using Newtonsoft.Json;
 using RazorEngine.Compilation.ImpromptuInterface;
 using TallyJ.Code;
@@ -127,7 +127,7 @@ namespace TallyJ.Controllers
             PersonGuid = electionInfo.p.PersonGuid,
             Status = OnlineBallotStatusEnum.New,
             WhenStatus = now,
-            HistoryStatus = "New|{0}".FilledWith(now.ToJSON())
+            HistoryStatus = "New|{0}".FilledWith(now.ToString("s"))
           };
           Db.OnlineVotingInfo.Add(votingInfo);
           Db.SaveChanges();
@@ -323,7 +323,7 @@ namespace TallyJ.Controllers
         onlineVotingInfo.PoolLocked = locked;
 
         onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Submitted : OnlineBallotStatusEnum.Draft;
-        onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{now.ToJSON()}".FilledWith(onlineVotingInfo.Status, now.ToJSON());
+        onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{now:s}";
         onlineVotingInfo.WhenStatus = now;
 
         var personCacher = new PersonCacher(Db);
