@@ -260,7 +260,7 @@
                          v-model="email"
                          placeholder="____&#64____.__"
                          required autocomplete="email">
-                  <div>Send my code via</div>
+                  <div>Send me a login code via</div>
                   <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email</button>
                 </div>
                 <div v-show="mode==='phone'">
@@ -272,7 +272,7 @@
                          v-model="phone"
                          placeholder="+__________"
                          required autocomplete="tel">
-                  <div>Send my code via</div>
+                  <div>Send me a login code via</div>
                   <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
                   <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
                   @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
@@ -296,7 +296,7 @@
                   <strong>Please Note:</strong> You can sign in at any time, but the
                   email address <span class="forSmsInline">or phone number</span>
                   you use here must match what is registered in an election before
-                  you will be able to vote in it!
+                  you will be able to vote in that election!
                 </p>
                 <p>
                   After logging in, if you don't find the election you are looking for,
@@ -308,10 +308,6 @@
           </div>
 
           <div>
-            <p>
-              TallyJ uses SendGrid <span class="forSmsInline">and Twilio</span> to enable logins from anywhere on the planet!<br>
-              <span class="forSmsInline">Please note that SMS messages may sometimes take a few minutes to be received.</span>
-            </p>
             <p>By continuing, you agree to the <a target="privacy" href="@Url.Action("Privacy")">User Agreement and Privacy Policy</a>.</p>
           </div>
         </div>

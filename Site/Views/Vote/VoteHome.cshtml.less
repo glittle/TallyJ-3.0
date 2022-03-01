@@ -319,7 +319,8 @@ body.meditate {
   }
 
   .quote {
-    font-style: italic;
+    //font-style: italic;
+    color: darkblue;
     margin: 1em 0 2em;
 
     cite {
@@ -338,16 +339,15 @@ body.meditate {
   .nameListPlaceholder {
     margin: 10px 0px;
     box-shadow: 0 0 1px black;
-    height: 200px;
+    height: 120px;
     padding: 5px 5px;
     font-style: italic;
-    height: 254px; /* 200px + text */
   }
 
   #nameList {
     cursor: default;
-    margin: 10px 10px 10px 0;
-    height: 200px;
+    margin: 10px 0 10px 0;
+    height: 120px;
     overflow: auto;
     box-shadow: 0 0 1px black;
     padding-bottom: 1em;
@@ -489,10 +489,22 @@ body.meditate {
       &.poolHolder {
         margin-right: 10px;
       }
+
+      &.poolSide {
+        position: relative;
+        overflow: auto;
+
+        &.open {
+          > div {
+            height: 0;
+            min-height: 100%;
+          }
+        }
+      }
     }
 
     .searchBox {
-      width: 140px;
+      width: 110px;
     }
   }
 
@@ -580,7 +592,7 @@ body.meditate {
 
   .poolSide {
     max-width: 400px;
-    max-height: 75vh;
+    //max-height: 75vh;
     overflow: auto;
   }
 
@@ -747,16 +759,77 @@ body.meditate {
 }
 
 
+@media only screen and (min-width: 600px) {
+  .ifSmall {
+    display: none;
+  }
+}
+
 @media only screen and (max-width: 600px) {
+  .ifFull {
+    display: none;
+  }
+
+  .showFilled {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+
+
   #voterPage2 {
     .poolBuilder {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-areas: "top" "bottom";
+      grid-template-rows: auto auto;
+
+      > div.poolHolder {
+        margin-right: 0;
+      }
+
+      > div {
+        flex: auto;
+        padding: 0 .75em;
+        margin-bottom: 8px;
+        background-color: #fff;
+      }
+
+      div.poolSide {
+        grid-area: top;
+        max-width: none;
+        max-height: none;
+
+        &.open {
+          > div {
+            height: auto;
+            min-height: 0;
+          }
+        }
+
+        .pool {
+          max-height: 20vh;
+          overflow-y: auto;
+        }
+
+        &.showAllVotes {
+          .pool {
+            max-height: none;
+          }
+        }
+      }
     }
 
-    .poolSide {
-      max-width: none;
-      max-height: none;
+    .poolHolder {
+      grid-area: bottom;
+    }
+
+    #nameList {
+      max-height: 15vh;
+    }
+
+    .nameListPlaceholder {
+      max-height: 15vh;
     }
   }
 

@@ -152,10 +152,8 @@ div.closer {
 
 .featureBig {
   position: relative;
-  //width: 425px;
   min-height: 300px;
-  //margin: 5px auto;
-  padding: 10px 15px 5px 10px;
+  padding: 10px 10px 5px 10px;
   border: 1px solid grey;
   border-radius: 5px;
   text-align: center;
@@ -312,9 +310,9 @@ div.or {
 
   .mustPreRegister {
     //color: @tallyJError;
-    max-width: 70%;
+    max-width: 310px;
     background: white;
-    padding: .5em 1.5em;
+    padding: .5em 1em;
     display: inline-block;
     box-shadow: 0px 0 10px 0px rgba(50, 50, 50, 0.5);
     margin: 0 0 .5em 0;
@@ -364,8 +362,7 @@ div.or {
 
   .voterLogin {
     border-radius: 6px;
-    width: 300px;
-    max-width: 80vw;
+    max-width: 300px;
     margin: 10px auto;
     padding: 20px;
     border-width: 8px;
@@ -413,7 +410,7 @@ div.or {
       letter-spacing: 1px;
     }
 
-    .status{
+    .status {
       font-weight: bold;
       margin: 3px 0;
     }
@@ -631,14 +628,18 @@ section.CenterPanel {
 
 
 @media screen and (max-width: 500px) {
+  div.notes {
+    margin: 16px 1em;
+  }
+
   section.features.middle {
     margin: 0;
   }
 
   section.featureBig {
-    width: 90%;
+    width: 90vw;
     margin: 0 auto;
-    max-width: 390px;
+    max-width: none;
     min-width: 300px;
   }
 }

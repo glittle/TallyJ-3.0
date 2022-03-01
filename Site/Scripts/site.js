@@ -851,6 +851,7 @@ function HasErrors(data, jqXhr) {
     if (/\<\!DOCTYPE html\>/.test(data)) {
       // seem to have a complete web page!
       console.log('Error - ajax call got full page', data);
+      alert('Error encountered. Please reload to continue');
       //    top.location.reload();
       return true;
     }

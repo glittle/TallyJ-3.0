@@ -87,11 +87,12 @@ var vueOptions = {
       randomLast: '',
       randomOtherInfo: '',
       randomResult: '',
-      addRandomToList: false,
+      addRandomToList: true,
       clearingRandom: false,
       //      hasLocalId: false,
       meditate: false,
-      movingIntoTop: false
+      movingIntoTop: false,
+      showAllVotes: false
     };
   },
   computed: {
@@ -871,7 +872,7 @@ var vueOptions = {
       this.randomFirst = '';
       this.randomLast = '';
       this.randomOtherInfo = '';
-      this.addRandomToList = false;
+      this.addRandomToList = true;
 
       setTimeout(() => {
         this.clearingRandom = false;
