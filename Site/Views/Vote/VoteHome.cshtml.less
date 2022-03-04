@@ -34,7 +34,25 @@ body.VoteIndex, body.voteIndex {
     background-size: cover;
     background-position-x: center;
     color: #000;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: overlay;
   }
+}
+
+.main-content {
+  margin: 0;
+  left: 30px;
+  top: -1px;
+}
+
+section.content-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 30px 0 30px;
+
 }
 
 .site-title {
@@ -45,14 +63,22 @@ body.meditate {
   header {
     display: none;
   }
+
+  .forMeditate {
+    top: 3vh;
+  }
 }
 
 .forMeditate {
-  margin: -21px 0 7px 0;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
   text-align: center;
+  z-index: 1;
 
   div {
-    margin: 1em;
+    margin: 1.5em;
   }
 
   a {
@@ -60,15 +86,27 @@ body.meditate {
   }
 }
 
-#voterPage1.meditate, #voterPage2.meditate {
-  //transition: opacity 1.5s;
-  opacity: 0;
+.invisible {
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.voterPage {
+  margin-top: 50px;
+
+  &.meditate {
+    //transition: opacity 1.5s;
+    opacity: 0;
+  }
 }
 
 #voterPage1 {
   background-color: #f3f3f3; // rgba(255,255,255,0.6);
   padding: 6px;
-  //transition: opacity 1s;
+  margin-bottom: 2em;
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.19), 0 3px 6px rgba(0, 0, 0, 0.23);
 
@@ -262,15 +300,19 @@ body.meditate {
 
 
 #voterPage2 {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
   background-color: #f3f3f3; // rgba(255,255,255,0.6);
   padding: 6px;
+  //height: ~"calc(100% - 170px)";
   transition: opacity 1s;
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.19), 0 3px 6px rgba(0, 0, 0, 0.23);
+  margin-bottom: 2em;
 
   &.locked {
     max-width: 400px;
-    margin: 0 auto;
 
     div.onImage {
       display: grid;
@@ -366,7 +408,7 @@ body.meditate {
         background-color: rgba(0,255,0,0.2);
 
         &:after {
-          content: '(selected)';
+          content: '(added)';
           margin-left: 10px;
           font-size: 80%;
           font-style: italic;
@@ -477,6 +519,7 @@ body.meditate {
   }
 
   .poolBuilder {
+    flex-grow: 1;
     display: flex;
     justify-content: space-around;
     margin-top: -10px;
@@ -498,6 +541,10 @@ body.meditate {
           > div {
             height: 0;
             min-height: 100%;
+
+            > *:last-child {
+              padding-bottom: 2em;
+            }
           }
         }
       }
@@ -779,6 +826,8 @@ body.meditate {
 
 
   #voterPage2 {
+    height: auto;
+
     .poolBuilder {
       display: grid;
       grid-template-areas: "top" "bottom";

@@ -22,12 +22,12 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 <div class="forMeditate">
+  <button v-on:click="toggleMeditate" v-text="meditate ? 'Continue Voting' : 'Take time to meditate'"></button>
   <div v-if="meditate">
-    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">View suggested music in YouTube</a>
+    <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Listen to suggested music in YouTube Music...</a>
   </div>
-  <button v-on:click="toggleMeditate" v-text="meditate ? 'Resume' : 'Take time to meditate'"></button>
 </div>
-<div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}">
+<div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}" class="voterPage">
   <div class="top">
     <p>
       Welcome! Your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is
@@ -156,7 +156,7 @@
 
 </div>
 
-<div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}">
+<div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}" class="voterPage">
   <div class="onImage">
     <div>
       <h2>{{election.Name}}</h2>
@@ -212,7 +212,7 @@
       </div>
       <form v-if="useRandom && !useList || useRandom && addRandomToList" class="randomInput">
         <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>
-        <p v-if="useList && nameList.length && (randomFirst || randomLast)">Did this person show up in the list above? If so, please select that name!</p>
+        <p v-if="useList" class="invisible" :class="{visible: nameList.length && (randomFirst || randomLast)}">Did this person show up in the list above? If so, please select that name!</p>
         <div>
           <label>First name</label>
           <input v-model="randomFirst" maxlength="40" type="text" ref="firstInput" placeholder="First" v-on:keyup.enter="addRandomName" />

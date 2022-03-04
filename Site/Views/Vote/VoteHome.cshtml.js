@@ -457,7 +457,9 @@ var vueOptions = {
               vue.lockInVotes = locked;
               //              vue.setInputFocus();
 
-
+              if (list.length < 5) {
+                vue.showAll();
+              }
             });
 
             if (info.poolDecryptError) {
