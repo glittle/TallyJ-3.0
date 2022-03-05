@@ -11,6 +11,7 @@ using System.Xml;
 using System.Xml.Schema;
 using TallyJ.Code;
 using TallyJ.Code.Session;
+using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
@@ -154,9 +155,11 @@ namespace TallyJ.CoreModels.ExportImport
 
           LoadBallots();
 
-          LoadResultInfo();
+          LoadResultInfo(); 
           
           LoadOnlineVotingInfo();
+
+          // don't load history for whole electoin
 
           _hub.StatusUpdate("Running analysis...");
 
@@ -173,16 +176,16 @@ namespace TallyJ.CoreModels.ExportImport
         }
         catch (DbEntityValidationException ex)
         {
-          var msgs = new List<string>();
+          var msgList = new List<string>();
           foreach (var msg in ex.EntityValidationErrors.Where(v => !v.IsValid).Select(validationResult =>
             {
               var err = validationResult.ValidationErrors.First();
               return "{0}: {1}".FilledWith(err.PropertyName, err.ErrorMessage);
-            }).Where(msg => !msgs.Contains(msg)))
+            }).Where(msg => !msgList.Contains(msg)))
           {
-            msgs.Add(msg);
+            msgList.Add(msg);
           }
-          throw new LoaderException("Unable to save: " + msgs.JoinedAsString("; "));
+          throw new LoaderException("Unable to save: " + msgList.JoinedAsString("; "));
         }
 
         //        transaction.Complete();
@@ -204,7 +207,8 @@ namespace TallyJ.CoreModels.ExportImport
         = _electionGuid
           = Guid.NewGuid();
 
-      var newName = _election.Name;
+      var oldName = _election.Name;
+      var newName = oldName;
       var matchingNums = Db.Election
         .Where(e => e.Name == newName || e.Name.StartsWith(newName))
         .ToList()
@@ -236,6 +240,10 @@ namespace TallyJ.CoreModels.ExportImport
       };
       //Db.JoinElectionUser.Add(join);
       Db.BulkInsert(new[] { join });
+
+      var logger = new LogHelper(_electionGuid);
+      logger.Add("Loading election from file. Former name: " + oldName, true);
+
     }
 
     private void LoadTellers()
@@ -280,10 +288,9 @@ namespace TallyJ.CoreModels.ExportImport
 
     private void LoadOnlineVotingInfo()
     {
-      XmlNodeList nodes;
       try
       {
-        nodes = _xmlRoot.SelectNodes("t:onlineVoterInfo", _nsm);
+        var nodes = _xmlRoot.SelectNodes("t:onlineVoterInfo", _nsm);
         if (nodes != null)
         {
           var toLoad = new List<OnlineVotingInfo>();
@@ -354,7 +361,7 @@ namespace TallyJ.CoreModels.ExportImport
     private void LoadPeople()
     {
       var peopleXml = _xmlRoot.SelectNodes("t:person", _nsm);
-      var numToLoad = peopleXml.Count;
+      var numToLoad = peopleXml?.Count ?? 0;
 
       if (peopleXml == null || numToLoad == 0)
       {
@@ -462,8 +469,6 @@ namespace TallyJ.CoreModels.ExportImport
         _hub.StatusUpdate("Loaded {0} log entr{1}".FilledWith(logs.Count, logs.Count.Plural("ies", "y")));
       }
 
-      var logger = new LogHelper(_electionGuid);
-      logger.Add("Loaded election from file", true);
       //Db.SaveChanges();
     }
 
@@ -486,6 +491,9 @@ namespace TallyJ.CoreModels.ExportImport
       ballots.Add(ballot);
 
       ballotXml.CopyAttributeValuesTo(ballot);
+
+      ballotXml.CopyAttributeValueTo("TellerAtKeyboard", ballot, b => ballot.Teller1);
+      ballotXml.CopyAttributeValueTo("TellerAssisting", ballot, b => ballot.Teller2);
 
       ballot.BallotGuid = Guid.NewGuid();
       ballot.LocationGuid = locationGuid;
@@ -538,8 +546,13 @@ namespace TallyJ.CoreModels.ExportImport
           {
             var resultSummary = new ResultSummary();
             element.CopyAttributeValuesTo(resultSummary);
-            resultSummary.ElectionGuid = _electionGuid;
-            toLoad.Add(resultSummary);
+
+            // only load Manual Results
+            if (resultSummary.ResultType == ResultType.Manual)
+            {
+              resultSummary.ElectionGuid = _electionGuid;
+              toLoad.Add(resultSummary);
+            }
           }
           Db.BulkInsert(toLoad);
           _hub.StatusUpdate("Loaded {0} summar{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("ies", "y")));
@@ -564,7 +577,7 @@ namespace TallyJ.CoreModels.ExportImport
             toLoad.Add(resultTie);
           }
           Db.BulkInsert(toLoad);
-          _hub.StatusUpdate("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+          _hub.StatusUpdate("Loaded {0} tie{1}".FilledWith(toLoad.Count, toLoad.Count.Plural()));
         }
       }
       catch (Exception ex)
@@ -587,14 +600,14 @@ namespace TallyJ.CoreModels.ExportImport
             toLoad.Add(result);
           }
           Db.BulkInsert(toLoad);
-          _hub.StatusUpdate("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural("s")));
+          _hub.StatusUpdate("Loaded {0} result{1}".FilledWith(toLoad.Count, toLoad.Count.Plural()));
         }
 
 
       }
       catch (Exception ex)
       {
-        _hub.StatusUpdate("Failed to load some individual results and tie-break counts. Overall results will be recreated but tie-break informaion may be missing. (Error: {0})".FilledWith(ex.LastException().Message));
+        _hub.StatusUpdate("Failed to load some individual results and tie-break counts. Overall results will be recreated but tie-break information may be missing. (Error: {0})".FilledWith(ex.LastException().Message));
       }
     }
 
@@ -614,26 +627,27 @@ namespace TallyJ.CoreModels.ExportImport
     private void UpdateGuidFromMapping<T, T2>(T obj, Expression<Func<T, T2>> action, Guid fallBack)
     {
       var prop = ((MemberExpression)action.Body).Member as PropertyInfo;
-      var oldValue = prop.GetValue(obj, null) as Guid?;
 
-      if (oldValue.HasValue && oldValue.Value != Guid.Empty)
+      if (!(prop?.GetValue(obj, null) is Guid oldValue) || oldValue == Guid.Empty)
       {
-        var oldGuid = oldValue.Value;
-        if (_guidMap.ContainsKey(oldGuid))
-        {
-          var value = _guidMap[oldGuid];
-          prop.SetValue(obj, value, null);
-        }
-        else if (fallBack != Guid.Empty)
-        {
-          // incoming XML had a value, but we can't map it
-          // pre 2.3.6, Locations did not export their Guid, so the voting location was lost
-          prop.SetValue(obj, fallBack, null);
-        }
-        else
-        {
-          throw new LoaderException("Mapped Guid not found for {0}.{1}: {2}".FilledWith(obj.GetType().Name, prop.Name, oldGuid));
-        }
+        return;
+      }
+
+      var oldGuid = oldValue;
+      if (_guidMap.ContainsKey(oldGuid))
+      {
+        var value = _guidMap[oldGuid];
+        prop.SetValue(obj, value, null);
+      }
+      else if (fallBack != Guid.Empty)
+      {
+        // incoming XML had a value, but we can't map it
+        // pre 2.3.6, Locations did not export their Guid, so the voting location was lost
+        prop.SetValue(obj, fallBack, null);
+      }
+      else
+      {
+        throw new LoaderException("Mapped Guid not found for {0}.{1}: {2}".FilledWith(obj.GetType().Name, prop.Name, oldGuid));
       }
     }
 

@@ -14,7 +14,7 @@ namespace TallyJ.Code
 
       return new RedirectToRouteResult(new RouteValueDictionary(new
       {
-        action = "ChooseElection",
+        action = "ElectionList",
         controller = "Dashboard",
         area = ""
       }));

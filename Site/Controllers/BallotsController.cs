@@ -22,7 +22,7 @@ namespace TallyJ.Controllers
         var switched = new ComputerModel().MoveCurrentComputerIntoLocation(locationId);
         if (!switched)
         {
-          return RedirectToAction("ChooseElection", "Dashboard");
+          return RedirectToAction("ElectionList", "Dashboard");
         }
       }
 
