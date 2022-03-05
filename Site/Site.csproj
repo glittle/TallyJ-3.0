@@ -1010,11 +1010,11 @@
     <Content Include="Views\Before\RollCall.cshtml.min.css">
       <DependentUpon>RollCall.cshtml.css</DependentUpon>
     </Content>
-    <Content Include="Views\Dashboard\ChooseElection.cshtml.css">
-      <DependentUpon>ChooseElection.cshtml.less</DependentUpon>
+    <Content Include="Views\Dashboard\ElectionList.cshtml.css">
+      <DependentUpon>ElectionList.cshtml.less</DependentUpon>
     </Content>
-    <Content Include="Views\Dashboard\ChooseElection.cshtml.min.css">
-      <DependentUpon>ChooseElection.cshtml.css</DependentUpon>
+    <Content Include="Views\Dashboard\ElectionList.cshtml.min.css">
+      <DependentUpon>ElectionList.cshtml.css</DependentUpon>
     </Content>
     <Content Include="Views\Dashboard\Index.cshtml.css">
       <DependentUpon>Index.cshtml.less</DependentUpon>
@@ -1115,8 +1115,8 @@
     <Content Include="Views\Ballots\BallotNormal.cshtml.less">
       <DependentUpon>BallotNormal.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Dashboard\ChooseElection.cshtml.less">
-      <DependentUpon>ChooseElection.cshtml</DependentUpon>
+    <Content Include="Views\Dashboard\ElectionList.cshtml.less">
+      <DependentUpon>ElectionList.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Setup\ImportCsv.cshtml.less">
       <DependentUpon>ImportCsv.cshtml</DependentUpon>
@@ -1230,8 +1230,8 @@
     <Content Include="Views\Before\FrontDesk.cshtml.js">
       <DependentUpon>FrontDesk.cshtml</DependentUpon>
     </Content>
-    <Content Include="Views\Dashboard\ChooseElection.cshtml.js">
-      <DependentUpon>ChooseElection.cshtml</DependentUpon>
+    <Content Include="Views\Dashboard\ElectionList.cshtml.js">
+      <DependentUpon>ElectionList.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\menu.xml">
       <SubType>Designer</SubType>
@@ -1321,7 +1321,7 @@
     <Content Include="Views\Setup\People.cshtml" />
     <Content Include="Views\Public\Home.cshtml" />
     <Content Include="Views\Public\Install.cshtml" />
-    <Content Include="Views\Dashboard\ChooseElection.cshtml" />
+    <Content Include="Views\Dashboard\ElectionList.cshtml" />
     <Content Include="Views\Setup\ImportCsv.cshtml" />
     <Content Include="Views\Ballots\BallotSingle.cshtml" />
     <Content Include="Views\Before\RollCall.cshtml" />

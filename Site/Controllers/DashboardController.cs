@@ -17,14 +17,14 @@ namespace TallyJ.Controllers
       if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null)
       {
         return UserSession.IsKnownTeller
-                 ? RedirectToAction("ChooseElection")
+                 ? RedirectToAction("ElectionList")
                  : RedirectToAction("LogOff", "Account");
       }
 
       return View(new ElectionsListViewModel());
     }
 
-    public ActionResult ChooseElection()
+    public ActionResult ElectionList()
     {
       return View(new ElectionsListViewModel());
     }

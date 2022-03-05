@@ -69,7 +69,7 @@ namespace TallyJ.CoreModels.ExportImport
         location = ExportLocationBallotVote(locations, ballots, votes, logs),
         person = ExportPeople(people),
         reason = ExportReasons(),
-        //log = ExportLogs(logs)
+        log = ExportLogs(logs.Where(l => l.LocationGuid == null))
       };
 
       var exportName = $"{_election.DateOfElection.GetValueOrDefault(DateTime.Today):yyyy-MM-dd} {_election.Name}.TallyJ";
