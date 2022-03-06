@@ -1,6 +1,17 @@
 ﻿.Election {
-  border-bottom: 1px solid #ccc;
-  padding: 3px 0 4px 5px;
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+  box-shadow: #ccc 1px 1px;
+  padding: 3px 4px 4px 5px;
+  margin: 3px 0;
+  border-radius: 2px;
+}
+.Election .TopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.Election .BottomRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -11,16 +22,13 @@
 .Election.justloaded {
   background-color: #b2ffb2;
 }
-.Election.true .Detail {
+.Election.current .Detail {
   color: #8dc63e;
   font-weight: bold;
 }
-.Election.true .SelectLocation,
-.Election.true .Locations {
+.Election.current .SelectLocation,
+.Election.current .Locations {
   display: block;
-}
-.Election.SingleName .notSingle {
-  display: none;
 }
 .Election.IsFuture {
   color: #060;
@@ -91,12 +99,6 @@ button.active {
 .TestElection .onlineCurrentlyOpen {
   color: rgba(175, 95, 0, 0.75);
 }
-.Test {
-  display: none;
-}
-.TestElection .Test {
-  display: inline-block;
-}
 #file-uploader {
   display: inline-block;
   margin-left: 20px;
@@ -117,16 +119,32 @@ div.Comment {
   font-style: italic;
   margin: -10px 0 9px 0;
 }
+.NoneFound {
+  margin: 1em;
+}
 li.Comment {
   color: #666;
   font-size: 90%;
   font-style: italic;
 }
-#loadingLog {
+.h3button {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.currentElections {
+  min-height: 2em;
+}
+.oldElections {
+  margin-top: 2em;
+}
+.oldElections h3 {
+  margin: 0;
+}
+.loadingLog {
   background-color: white;
   margin: 5px 100px 0 50px;
   padding: 3px 10px;
-  display: none;
 }
 @media only screen and (max-width: 750px) {
   .buttons {

@@ -14,10 +14,11 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var list = MyElections()
-          .OrderBy(e => e.ShowAsTest.AsBoolean())
-          .ThenByDescending(e => e.DateOfElection)
-          .ThenBy(e => e.Name)
+        // .OrderBy(e => e.ShowAsTest.AsBoolean())
+        // .ThenByDescending(e => e.DateOfElection)
+        // .ThenBy(e => e.Name)
+
+        return MyElections()
           .Select(e => new
           {
             e.Name,
@@ -25,34 +26,19 @@ namespace TallyJ.CoreModels
             e.DateOfElection,
             e.ElectionType,
             e.ElectionMode,
-            TallyStatus = ElectionTallyStatusEnum.TextFor(e.TallyStatus, e.TallyStatus),
             e.ShowAsTest,
             e.IsSingleNameElection,
+            e.CanBeAvailableForGuestTellers,
             e.OnlineCurrentlyOpen,
-            e.OnlineWhenClose
+            e.OnlineWhenOpen,
+            e.OnlineWhenClose,
+            IsFuture = e.DateOfElection.HasValue && e.DateOfElection > DateTime.Today,
+            IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
+            Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
+            Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
+            IsTest = e.ShowAsTest.AsBoolean(),
+            TallyStatus = ElectionTallyStatusEnum.TextFor(e.TallyStatus, e.TallyStatus),
           }).ToList();
-
-        return list.Select(info =>
-                      {
-                        return new
-                        {
-                          info.Name,
-                          info.ElectionGuid,
-                          DateOfElection =
-                                    info.DateOfElection.HasValue
-                                        ? info.DateOfElection.AsString("yyyy-MMM-dd")
-                                        : "",
-                          IsFuture = info.DateOfElection.HasValue && info.DateOfElection > DateTime.Today,
-                          IsCurrent = info.ElectionGuid == UserSession.CurrentElectionGuid,
-                          Type = ElectionTypeEnum.TextFor(info.ElectionType).DefaultTo("?"),
-                          Mode = ElectionModeEnum.TextFor(info.ElectionMode).SurroundContentWith(" (", ")"),
-                          IsTest = info.ShowAsTest.AsBoolean(),
-                          info.IsSingleNameElection,
-                          info.OnlineCurrentlyOpen,
-                          info.OnlineWhenClose,
-                          info.TallyStatus
-                        };
-                      });
       }
     }
 

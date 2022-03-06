@@ -1,11 +1,24 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
 .Election {
-  border-bottom: 1px solid #ccc;
-  padding: 3px 0 4px 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+  box-shadow: #ccc 1px 1px;
+  padding: 3px 4px 4px 5px;
+  margin: 3px 0;
+  border-radius: 2px;
+
+  .TopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .BottomRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   &.deleting {
     background-color: rgb(255, 178, 178);
@@ -15,7 +28,7 @@
     background-color: rgb(178,255,178);
   }
 
-  &.true {
+  &.current { // currently logged into
     .Detail {
       color: #8dc63e;
       font-weight: bold;
@@ -24,12 +37,6 @@
     .SelectLocation,
     .Locations {
       display: block;
-    }
-  }
-
-  &.SingleName {
-    .notSingle {
-      display: none;
     }
   }
 
@@ -122,14 +129,6 @@ button.active {
   }
 }
 
-.Test {
-  display: none;
-}
-
-.TestElection .Test {
-  display: inline-block;
-}
-
 #fileName {
   //display: none;
 }
@@ -159,17 +158,38 @@ div.Comment {
   margin: -10px 0 9px 0;
 }
 
+.NoneFound{
+  margin: 1em;
+}
+
 li.Comment {
   color: #666;
   font-size: 90%;
   font-style: italic;
 }
 
-#loadingLog {
+.h3button {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.currentElections {
+  min-height: 2em;
+}
+
+.oldElections {
+  margin-top: 2em;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.loadingLog {
   background-color: white;
   margin: 5px 100px 0 50px;
   padding: 3px 10px;
-  display: none;
 }
 
 @media only screen and (max-width: 750px) {

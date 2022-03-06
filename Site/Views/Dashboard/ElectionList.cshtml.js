@@ -1,167 +1,284 @@
 ﻿var ElectionListPage = function () {
+  var settings = {
+    vue: null
+  };
+
   var publicInterface = {
     elections: [],
-    isGuest: false,
     electionsUrl: '',
     loadElectionUrl: '',
+    settings: settings,
     PreparePage: preparePage
   };
 
-
   function preparePage() {
-    $(document).on('click', '.btnSelectElection', null, selectElection);
 
-    showElections(publicInterface.elections);
+    settings.vue = new Vue({
+      el: '#electionListPage',
+      data: {
+        elections: [],
+        loaded: false,
+        exporting: '',
+        deleting: '',
+        loadingElection: false,
+        log: '',
+        tempLog: '',
+        hideOld: false
+      },
+      computed: {
+        oldElections() {
+          return this.elections.filter(e => e.old);
+        },
+        currentElections() {
+          return this.elections.filter(e => !e.old);
+        },
+        oldListBtnText() {
+          var n = this.oldElections.length;
+          return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
+        }
+      },
+      watch: {
 
-    getElectionCounts();
+      },
+      mounted() {
+        this.hideOld = GetFromStorage('hideOld', false);
 
-    if (!publicInterface.isGuest) {
-      //            $(document).on('click', '.btnCopyElection', null, copyElection);
-      $(document).on('click', '.btnExport', null, exportElection);
-      $(document).on('click', '.btnDelete', null, deleteElection);
-      $(document).on('click', '#btnLoad', null, loadElection);
-      $(document).on('click', '#file-uploader', null, loadElection2);
-      $(document).on('click', '#btnCreate', null, createElection);
-      $(document).on('change', '#loadFile', null, upload2);
+        this.showElections(publicInterface.elections);
 
-      $(document).on('click', '#btnUpload2', null, upload2);
+        if (!this.currentElections.length) {
+          // no current, show the old
+          this.hideOld = false;
+        }
 
-      connectToImportHub();
+        this.getElectionCounts();
+        this.connectToImportHub();
+      },
+      methods: {
+        toggleOldList() {
+          this.hideOld = !this.hideOld;
+          SetInStorage('hideOld', this.hideOld);
+        },
+        test(election) {
+          var vue = this;
+          debugger;
+        },
+        showElections(list) {
+          list.forEach(e => {
+            e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
+            e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
 
-    } else {
-      $('.btnExport, .btnDelete, #btnLoad, #btnCreate').hide();
-    }
+            e.date = moment(e.DateOfElection);
+            e.dateDisplay = e.DateOfElection ? e.date.format("YYYY-MMM-DD") : '(No date)';
+            e.dateSort = e.DateOfElection ? e.date.format("YYYY-MM-DD") : '0';
+
+            if (e.OnlineCurrentlyOpen) {
+              e.OnlineOpen = 'Online Voting Open. Closing '
+                + e.onlineClose.fromNow() + '.';
+            }
+            e.old = !e.OnlineOpen && e.date.isBefore() || !e.DateOfElection;
+            e.numBallots = '';
+            e.numVoters = '';
+          });
+
+          list.sort((a, b) => {
+            if (a.dateSort !== b.dateSort) {
+              return a.dateSort > b.dateSort ? -1 : 1;
+            }
+            return a.Name > b.Name ? 1 : -1;
+          });
+
+          this.elections = list;
+          this.loaded = true;
+        },
+        selectElection(election) {
+          var guid = election.ElectionGuid;
+          var form =
+          {
+            guid: guid,
+            oldComputerGuid: GetFromStorage('compcode_' + guid, null)
+          };
+
+          clearElectionRelatedStorageItems();
+
+          ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
+          CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
+
+        },
+        getElectionCounts() {
+          var vue = this;
+          CallAjaxHandler(publicInterface.countsUrl, null, function (info) {
+            info.forEach(function (election) {
+              var matched = vue.elections.find(e => e.ElectionGuid === election.guid);
+              if (matched) {
+                matched.numVoters = '- {0} name{1}'.filledWith(election.numPeople, Plural(election.numPeople));
+                matched.numBallots = '- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots));
+              } else {
+                console.log('unknown election', election);
+              }
+            });
+          });
+        },
+        connectToImportHub() {
+          var hub = $.connection.importHubCore;
+          var vue = this;
+
+          hub.client.loaderStatus = function (msg, isTemp) {
+            console.log(msg);
+            msg = msg.replace(/\n/g, '<br> &nbsp; ');
+            if (isTemp) {
+              vue.tempLog = msg;
+            } else {
+              vue.tempLog = '';
+              vue.log += `<div>${msg}</div>`;
+            }
+            window.scrollTo(0, document.body.scrollHeight);
+          };
+
+          startSignalR(function () {
+            console.log('Joining import hub');
+            CallAjaxHandler(electionListPage.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
+
+            });
+          });
+        },
+        deleteElection(election) {
+          var vue = this;
+          var name = election.Name;
+          var guid = election.ElectionGuid;
+
+          vue.deleting = guid;
+
+          if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
+            ResetStatusDisplay();
+            vue.deleting = '';
+            return;
+          }
+
+          var form =
+          {
+            guid: guid
+          };
+
+          CallAjax2(publicInterface.electionsUrl + '/DeleteElection', form,
+            {
+              busy: 'Deleting'
+            },
+            function (info) {
+              if (info.Deleted) {
+                var row = vue.$refs['e-' + guid];
+                $(row[0]).slideUp(1000, 0, function () {
+
+                  var i = vue.elections.findIndex(e => e.ElectionGuid === guid);
+                  vue.elections.splice(i, 1);
+
+                  ShowStatusDone('Deleted.');
+                });
+              } else {
+                ShowStatusFailed(info.Message);
+              }
+              vue.deleting = false;
+            });
+        },
+        createElection() {
+          // get the server to make an election, then go see it
+          CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
+            if (info.Success) {
+              location.href = site.rootUrl + 'Setup';
+              return;
+            }
+          });
+        },
+        exportElection(election) {
+          var vue = this;
+          var guid = election.ElectionGuid;
+
+          ShowStatusBusy("Preparing file...");
+
+          vue.exporting = guid;
+
+          var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
+          iframe.ready(function () {
+            setTimeout(function () {
+              ResetStatusDisplay();
+              vue.exporting = '';
+            }, 1000);
+          });
+        },
+        upload2() {
+          var $input = $('#loadFile');
+          if ($input.val() === '') {
+            return;
+          }
+          var vue = this;
+
+          ShowStatusBusy("Loading election...");
+
+          vue.loadingElection = true; // turn on, not turned off
+          vue.log = '';
+          vue.tempLog = 'Sending the file to the server...';
+
+          var form = $('#formLoadFile');
+          var frameId = 'tempUploadFrame';
+          var frame = $('#' + frameId);
+          if (!frame.length) {
+            $('body').append('<iframe id=' + frameId + ' name=' + frameId + ' style="display:none" />');
+            frame = $('#' + frameId);
+          }
+          form.attr({
+            target: frameId,
+            action: publicInterface.loadElectionUrl,
+            enctype: 'multipart/form-data',
+            method: 'post'
+          });
+
+          var frameObject = frame.on('load', function () {
+            frameObject.unbind('load');
+            $input.val(''); // blank out file name
+
+            var response = frameObject.contents().text();
+            var info;
+            try {
+              info = $.parseJSON(response);
+            } catch (e) {
+              info = { Success: false, Message: "Unexpected server message" };
+            }
+
+            if (info.Success) {
+              vue.showElections(info.Elections);
+              ShowStatusDone('Loaded');
+
+              var election = vue.elections.find(el => el.ElectionGuid === info.ElectionGuid);
+              if (election) {
+                setTimeout(() => {
+                  var row = vue.$refs['e-' + election.ElectionGuid];
+                  if (row) {
+                    scrollToMe(row[0]);
+                  }
+                }, 1000);
+              }
+            }
+            else {
+              ShowStatusFailed(info.Message);
+            }
+          });
+
+          form.submit();
+        }
+      }
+    });
+
+
+    //    $(document).on('click', '.btnSelectElection', null, selectElection);
+    //    $(document).on('click', '.btnExport', null, exportElection);
+    //    $(document).on('click', '.btnDelete', null, deleteElection);
+    //    $(document).on('click', '#btnLoad', null, loadElection);
+    //    $(document).on('click', '#file-uploader', null, loadElection2);
+    //    $(document).on('click', '#btnCreate', null, createElection);
+    //    $(document).on('change', '#loadFile', null, upload2);
+    //    $(document).on('click', '#btnUpload2', null, upload2);
   };
 
-  function connectToImportHub() {
-    var hub = $.connection.importHubCore;
 
-    hub.client.loaderStatus = function (msg, isTemp) {
-      msg = msg.replace(/\n/g, '<br> &nbsp; ');
-      if (isTemp) {
-        $('#tempLog').html(msg);
-      } else {
-        $('#tempLog').html('');
-        $('#log').append('<div>' + msg + '</div>');
-      }
-    };
-
-    startSignalR(function () {
-      console.log('Joining import hub');
-      CallAjaxHandler(electionListPage.importHubUrl, { connId: site.signalrConnectionId }, function (info) {
-
-      });
-    });
-  };
-
-
-
-  function upload2() {
-    var $input = $('#loadFile');
-    if ($input.val() === '') {
-      return;
-    }
-
-    ShowStatusBusy("Loading election...");
-
-    $('#loadingLog').show();
-    $('#log').html('');
-    $('#tempLog').html('Sending the file to the server...');
-
-    var form = $('#formLoadFile');
-    var frameId = 'tempUploadFrame';
-    var frame = $('#' + frameId);
-    if (!frame.length) {
-      $('body').append('<iframe id=' + frameId + ' name=' + frameId + ' style="display:none" />');
-      frame = $('#' + frameId);
-    }
-    form.attr({
-      target: frameId,
-      action: publicInterface.loadElectionUrl,
-      enctype: 'multipart/form-data',
-      method: 'post'
-    });
-
-    var frameObject = frame.on('load', function () {
-      frameObject.unbind('load');
-      $input.val(''); // blank out file name
-
-      var response = frameObject.contents().text();
-      var info;
-      try {
-        info = $.parseJSON(response);
-      } catch (e) {
-        info = { Success: false, Message: "Unexpected server message" };
-      }
-
-      if (info.Success) {
-        showElections(info.Elections);
-        ShowStatusDone('Loaded');
-
-        var newRow = $('div.Election[data-guid="{0}"]'.filledWith(info.ElectionGuid));
-        scrollToMe(newRow);
-      }
-      else {
-        ShowStatusFailed(info.Message);
-      }
-    });
-
-    form.submit();
-  };
-
-  function showElections(info) {
-    var electionTemplate = $('#electionListItem').text();
-    var locationTemplate = $('#locationSelectItem').text();
-
-    $.each(info, function () {
-      if (this.Locations) {
-        this.Locations = locationTemplate.filledWithEach(this.Locations);
-      }
-      this.TestClass = this.IsTest ? ' TestElection' : '';
-      this.RowClass = this.IsSingleNameElection ? ' SingleName' : '';
-      this.RowClass += this.IsFuture ? ' IsFuture' : '';
-      if (this.OnlineCurrentlyOpen) {
-        this.OnlineOpen = 'Online Voting Open. Closing ' + moment(this.OnlineWhenClose).fromNow() + '.';
-      }
-    });
-
-    $('#ElectionList').html(electionTemplate.filledWithEach(info));
-
-    if (publicInterface.isGuest) {
-      $('#ElectionList').find('.Detail button').each(function () {
-        $(this).prop('disabled', true);
-      });
-    }
-
-  };
-
-  function selectElection() {
-    if (publicInterface.isGuest) return;
-
-    var btn = $(this);
-    var row = btn.parents('.Election');
-    var guid = row.data('guid');
-    var form =
-    {
-      guid: guid,
-      oldComputerGuid: GetFromStorage('compcode_' + guid, null)
-    };
-
-    clearElectionRelatedStorageItems();
-
-    ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
-    CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
-  };
-
-  function getElectionCounts() {
-    CallAjaxHandler(publicInterface.countsUrl, null, function (info) {
-      info.forEach(function (election) {
-        var line = $('#el-' + election.guid);
-        line.find('.numVoters').text('- {0} name{1}'.filledWith(election.numPeople, Plural(election.numPeople)));
-        line.find('.numBallots').text('- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots)));
-      });
-    });
-  }
 
   function afterSelectElection(info) {
 
@@ -176,91 +293,8 @@
       ShowStatusFailed("Unable to select");
     }
   };
-  
-
-  function createElection() {
-    if (publicInterface.isGuest) return;
-
-    // get the server to make an election, then go see it
-    CallAjaxHandler(publicInterface.electionsUrl + '/CreateElection', null, function (info) {
-      if (info.Success) {
-        location.href = site.rootUrl + 'Setup';
-        return;
-      }
-    });
-  };
-
-  function exportElection() {
-    if (publicInterface.isGuest) return;
-
-    var btn = $(this);
-    var guid = btn.parents('.Election').data('guid');
-
-    ShowStatusBusy("Preparing file...");
-
-    //var oldText = btn.text();
-
-    btn.addClass('active');
-    var iframe = $('body').append('<iframe style="display:none" src="{0}/ExportElection?guid={1}"></iframe>'.filledWith(publicInterface.electionsUrl, guid));
-    iframe.ready(function () {
-      setTimeout(function () {
-        ResetStatusDisplay();
-        btn.removeClass('active');
-      }, 1000);
-    });
-  };
-
-  function deleteElection() {
-    if (publicInterface.isGuest) return;
 
 
-    var btn = $(this);
-    var row = btn.closest('.Election');
-    var name = row.find('.Detail').find('b').text();
-
-    btn.addClass('active');
-    row.addClass('deleting');
-
-    if (!confirm('Completely delete this election from TallyJ?\n\n  {0}\n\n'.filledWith(name))) {
-      btn.removeClass('active');
-      row.removeClass('deleting');
-      ResetStatusDisplay();
-      return;
-    }
-
-
-    var form =
-    {
-      guid: row.data('guid')
-    };
-
-    CallAjax2(publicInterface.electionsUrl + '/DeleteElection', form,
-      {
-        busy: 'Deleting'
-      },
-      function (info) {
-        btn.removeClass('active');
-        if (info.Deleted) {
-          row.slideUp(1000, 0, function () {
-            row.remove();
-            ShowStatusDone('Deleted.');
-          });
-        } else {
-          row.removeClass('deleting');
-          ShowStatusFailed(info.Message);
-        }
-      });
-  };
-
-  function loadElection() {
-    $('#fileName').show();
-  };
-
-  function loadElection2() {
-    var name = $('#fileName').val();
-    console.log(name);
-  };
-  
   function scrollToMe(nameDiv) {
     var target = $(nameDiv);
     target.addClass('justloaded');
@@ -274,13 +308,13 @@
         scrollTop: top + fudge
       }, time);
     } catch (e) {
-      // ignore error
+      // ignore error - may not work
       console.log(e.message);
     }
 
     setTimeout(function () {
       target.toggleClass('justloaded', 'slow');
-    }, 10000);
+    }, 15 * 1000);
   };
 
   return publicInterface;
@@ -289,6 +323,7 @@
 var electionListPage = ElectionListPage();
 
 $(function () {
+  ELEMENT.locale(ELEMENT.lang.en);
   electionListPage.PreparePage();
 });
 

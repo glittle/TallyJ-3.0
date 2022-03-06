@@ -24,6 +24,7 @@ namespace TallyJ.Controllers
       return View(new ElectionsListViewModel());
     }
 
+    [ForAuthenticatedTeller]
     public ActionResult ElectionList()
     {
       return View(new ElectionsListViewModel());
