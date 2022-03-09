@@ -144,8 +144,7 @@ namespace TallyJ.Controllers
     public JsonResult Upload()
     {
       var model = new ImportCsvModel();
-      int rowId;
-      var messages = model.ProcessUpload(out rowId);
+      var messages = model.ProcessUpload(out var rowId);
 
       return new
       {

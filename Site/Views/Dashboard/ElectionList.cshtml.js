@@ -32,6 +32,12 @@
         currentElections() {
           return this.elections.filter(e => !e.old);
         },
+        oldElectionGuids() {
+          return this.oldElections.map(e => e.ElectionGuid);
+        },
+        currentElectionGuids() {
+          return this.currentElections.map(e => e.ElectionGuid);
+        },
         oldListBtnText() {
           var n = this.oldElections.length;
           return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
@@ -50,7 +56,8 @@
           this.hideOld = false;
         }
 
-        this.getElectionCounts();
+        this.getMoreStatic();
+        this.getMoreLive();
         this.connectToImportHub();
       },
       methods: {
@@ -76,8 +83,14 @@
                 + e.onlineClose.fromNow() + '.';
             }
             e.old = !e.OnlineOpen && e.date.isBefore() || !e.DateOfElection;
-            e.numBallots = '';
             e.numVoters = '';
+            e.tellers = [];
+
+            e.numBallots = '';
+            e.onlineVoters = {};
+            e.lastLog = {};
+
+            e.openForTellers = e.CanBeAvailableForGuestTellers;
           });
 
           list.sort((a, b) => {
@@ -104,19 +117,48 @@
           CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
 
         },
-        getElectionCounts() {
+        getMoreStatic() {
+          // relative stable during an election
           var vue = this;
-          CallAjaxHandler(publicInterface.countsUrl, null, function (info) {
-            info.forEach(function (election) {
-              var matched = vue.elections.find(e => e.ElectionGuid === election.guid);
+          CallAjaxHandler(publicInterface.moreStaticUrl, null, function (info) {
+            info.forEach(function (incoming) {
+              var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
               if (matched) {
-                matched.numVoters = '- {0} name{1}'.filledWith(election.numPeople, Plural(election.numPeople));
-                matched.numBallots = '- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots));
+                matched.numVoters = '- {0} name{1}'.filledWith(incoming.numPeople, Plural(incoming.numPeople));
+                matched.tellers = incoming.tellers || [];
               } else {
-                console.log('unknown election', election);
+                console.log('unknown election', incoming);
               }
             });
           });
+        },
+        refreshLive() {
+          this.getMoreLive(this.currentElectionGuids);
+        },
+        getMoreLive(electionGuids) {
+          // dynamically changing during an election
+          var vue = this;
+          CallAjaxHandler(publicInterface.moreLiveUrl,
+            {
+              electionGuids: electionGuids
+            },
+            function (info) {
+              info.forEach(function (election) {
+                var matched = vue.elections.find(e => e.ElectionGuid === election.guid);
+                if (matched) {
+                  matched.numBallots = '- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots));
+
+                  matched.onlineVoters = election.onlineVoters || {};
+                  matched.lastLog = election.lastLog;
+                } else {
+                  console.log('unknown election', election);
+                }
+              });
+              if (electionGuids) {
+                ShowStatusDone('Refreshed');
+              }
+
+            });
         },
         connectToImportHub() {
           var hub = $.connection.importHubCore;

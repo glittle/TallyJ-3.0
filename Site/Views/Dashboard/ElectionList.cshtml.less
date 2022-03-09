@@ -11,7 +11,7 @@
   .TopRow {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .BottomRow {
@@ -29,48 +29,73 @@
   }
 
   &.current { // currently logged into
-    .Detail {
-      color: #8dc63e;
-      font-weight: bold;
-    }
-
-    .SelectLocation,
-    .Locations {
-      display: block;
-    }
+    border-width: 3px;
   }
-
-  &.IsFuture {
-    color: #060;
-  }
+  //&.IsFuture {
+  //  color: #060;
+  //}
 }
 
 
+.tellers {
+  border: 1px solid #83e0ff;
+  margin: 5px 5px 3px 15px;
+  background-color: lightblue;
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  font-size: 85%;
+  color: #000;
+  padding-right: 3px;
 
+  .tellerStatus {
+    padding: 0 0 0 4px;
+  }
 
-.numVoters, .numBallots, .status {
-  font-size: 80%;
+  .names {
+    background-color: white;
+    padding: 0 5px 0 4px;
+  }
+}
+
+.numVoters, .numBallots {
   white-space: nowrap;
-}
-
-.Locations .true button {
-  opacity: .5;
 }
 
 .Detail {
   position: relative;
   min-height: 21px;
 
-  i {
-    margin-left: 15px;
-    font-size: 80%;
-    font-style: normal;
-    white-space: nowrap;
+  .Detail1 {
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
   }
 
-  b {
-    white-space: nowrap;
+  .Detail2 {
+    margin: 5px 0 3px 15px;
+    font-size: 85%;
+    color: #444;
   }
+}
+
+.TopRight {
+}
+
+.Test {
+  background-color: #e85a55;
+}
+
+.Test, .NotTest {
+  padding: 3px 4px 2px 4px;
+  color: white;
+  font-size: 60%;
+  border-radius: 7px;
+}
+
+.NotTest {
+  background-color: #44c145;
 }
 
 .buttons {
@@ -94,23 +119,12 @@ button.active {
 }
 
 .Locations {
-  display: none;
   margin-left: 150px;
-}
-
-.SelectLocation {
-  margin-left: 120px;
-  display: none;
 }
 
 .onlineCurrentlyOpen {
   font-weight: bold;
   color: @tallyJOrangeText;
-}
-
-.Locations .true {
-  color: #8dc63e;
-  font-weight: bold;
 }
 
 .MakeNew {
@@ -121,13 +135,6 @@ button.active {
   margin-bottom: 14px;
 }
 
-.TestElection {
-  color: #aaa;
-
-  .onlineCurrentlyOpen {
-    color: rgba(175, 95, 0, 0.75);
-  }
-}
 
 #fileName {
   //display: none;
@@ -158,7 +165,7 @@ div.Comment {
   margin: -10px 0 9px 0;
 }
 
-.NoneFound{
+.NoneFound {
   margin: 1em;
 }
 

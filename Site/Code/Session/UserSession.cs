@@ -71,7 +71,7 @@ namespace TallyJ.Code.Session
       }
     }
 
-    private static bool UserGuidHasBeenLoaded
+    public static bool UserGuidHasBeenLoaded
     {
       get { return SessionKey.UserGuidRetrieved.FromSession(false); }
       set { CurrentContext.Session[SessionKey.UserGuidRetrieved] = value; }
@@ -480,7 +480,7 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        return UserSession.UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
+        return UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
       }
       set
       {
@@ -583,7 +583,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogin()
     {
-      //      CurrentContext.Session.Clear();
+      // CurrentContext.Session.Clear();
       // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
     }
 

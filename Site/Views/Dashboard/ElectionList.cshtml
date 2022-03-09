@@ -4,10 +4,12 @@
 @{
   ViewBag.Title = "Elections";
   ViewBag.Message = "Select or create an election";
+  ViewBag.HideMenus = "true";
 
   ContextItems.AddJavascriptForPage("electionListPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("electionListPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.countsUrl={0};".FilledWith(@Url.Action("ElectionCounts", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.moreStaticUrl={0};".FilledWith(@Url.Action("MoreInfoStatic", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.moreLiveUrl={0};".FilledWith(@Url.Action("MoreInfoLive", "Dashboard").QuotedForJavascript()));
   var electionsInfo = Model.MyElectionsInfo.ToList();
   ContextItems.AddJavascriptForPage("electionListPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
@@ -21,7 +23,10 @@
 <div id="electionListPage" v-cloak>
   @if (electionsInfo.Count > 0)
   {
-    <h3>Your Active and Future Elections</h3>
+    <div class="h3button">
+      <h3>Your Active and Future Elections</h3>
+      <button v-on:click="refreshLive">Refresh</button>
+    </div>
 
     <div class="currentElections">
       <span v-if="loaded && !currentElections.length" class="NoneFound">None found</span>
@@ -54,19 +59,37 @@
            deleting: e.ElectionGuid === deleting,
            }"
            :ref="'e-' + e.ElectionGuid">
-        <div class="TopRow" v-on:click="test(e)">
+        <div class="TopRow">
           <div class="Detail">
-            {{e.dateDisplay}}
-            <b>{{e.Name}}</b>
-            <span v-if="e.IsTest" class="Test">(TEST)</span>
-            <i>{{e.Type}} {{e.Mode}}</i>
-            <span class="numVoters" v-text="e.numVoters"></span>
-            <span v-if="!e.IsSingleNameElection"
-                  class="numBallots"
-                  v-text="e.numBallots">
-            </span>
-            <span class="status">- {{e.TallyStatus}}</span>
+            <div class="Detail1">
+              {{e.dateDisplay}}
+              <span v-if="e.IsTest" class="Test">TEST</span>
+              <span v-else class="NotTest">MAIN</span>
+              {{e.Name}}
+            </div>
+            <div class="Detail2">
+              <div>
+                <span>{{e.Type}} {{e.Mode}}</span>
+                <span class="numVoters" v-text="e.numVoters"></span>
+                <span v-if="!e.IsSingleNameElection"
+                      class="numBallots"
+                      v-text="e.numBallots">
+                </span>
+              </div>
+            </div>
+            <div class="tellers">
+              <span class="tellerStatus" :title="e.ElectionPasscode">
+                Tellers*
+                <el-checkbox v-model="e.openForTellers"></el-checkbox>
+              </span>
+              <span class="names">
+                ({{e.tellers.length}}): {{e.tellers.join(', ')}}
+              </span>
+            </div>
+
           </div>
+          <span class="TopRight" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</span>
+
         </div>
         <div class="BottomRow">
           <div class="onlineCurrentlyOpen">{{e.OnlineOpen}}</div>

@@ -72,7 +72,7 @@
             </p>
           </div>*@
       }
-      @if (UserSession.IsAuthenticated)
+      @if (UserSession.IsAuthenticated && ViewBag.HideMenus != "true")
       {
         //var publicInfo = UserSession.CurrentElection != null ? new PublicElectionLister().PublicElectionInfo(UserSession.CurrentElection.C_RowId) : null;
 

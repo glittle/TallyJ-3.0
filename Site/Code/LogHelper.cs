@@ -82,8 +82,10 @@ namespace TallyJ.Code
         return;
       }
 
-      var info = new NameValueCollection();
-      info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
+      var info = new NameValueCollection
+      {
+        ["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion)
+      };
       try
       {
         info["value2"] = UserSession.CurrentElectionName;

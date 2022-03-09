@@ -297,8 +297,7 @@ namespace TallyJ.EF
 
     private string GetExtraSetting(ExtraSettingKey setting)
     {
-      string value;
-      if (ExtraSettings.TryGetValue(setting, out value))
+      if (ExtraSettings.TryGetValue(setting, out var value))
       {
         return value;
       }

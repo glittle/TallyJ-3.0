@@ -30,8 +30,13 @@ namespace TallyJ.Controllers
       return View(new ElectionsListViewModel());
     }
 
-    public JsonResult ElectionCounts() {
-      return new ElectionsListViewModel().ElectionCounts().AsJsonResult();
+    [ForAuthenticatedTeller]
+    public JsonResult MoreInfoStatic() {
+      return new ElectionsListViewModel().MoreInfoStatic().AsJsonResult();
+    }
+    [ForAuthenticatedTeller]
+    public JsonResult MoreInfoLive() {
+      return new ElectionsListViewModel().MoreInfoLive().AsJsonResult();
     }
 
 

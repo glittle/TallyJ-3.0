@@ -50,7 +50,8 @@
   },
   {
     "outputFile": "Views/Dashboard/ElectionList.cshtml.css",
-    "inputFile": "Views/Dashboard/ElectionList.cshtml.less"
+    "inputFile": "Views/Dashboard/ElectionList.cshtml.less",
+    "sourceMap": true
   },
   {
     "outputFile": "Views/Dashboard/Index.cshtml.css",

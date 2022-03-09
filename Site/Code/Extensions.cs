@@ -238,17 +238,12 @@ namespace TallyJ.Code
 
     public static Guid AsGuid(this Guid? input)
     {
-      return input.HasValue ? input.Value : Guid.Empty;
+      return input ?? Guid.Empty;
     }
 
     public static Guid AsGuid(this string input)
     {
-      Guid guid;
-      if (Guid.TryParse(input, out guid))
-      {
-        return guid;
-      }
-      return Guid.Empty;
+      return Guid.TryParse(input, out var guid) ? guid : Guid.Empty;
     }
 
     public static HtmlString AsHtmlString(this DateTime input, string format = "d MMMM yyyy")

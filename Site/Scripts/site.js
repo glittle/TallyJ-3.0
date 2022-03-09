@@ -873,11 +873,11 @@ function HasErrors(data, jqXhr) {
       console.log(data);
       return true;
     }
-    if (/Error\:/.test(data)) {
-      ShowStatusFailed(
-        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
-      return true;
-    }
+//    if (/Error\:/.test(data)) {
+//      ShowStatusFailed(
+//        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
+//      return true;
+//    }
   }
 
   var jsonHeader = jqXhr.getResponseHeader('x-responded-json');

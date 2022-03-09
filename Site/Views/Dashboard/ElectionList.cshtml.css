@@ -9,7 +9,7 @@
 .Election .TopRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 .Election .BottomRow {
   display: flex;
@@ -22,38 +22,58 @@
 .Election.justloaded {
   background-color: #b2ffb2;
 }
-.Election.current .Detail {
-  color: #8dc63e;
-  font-weight: bold;
+.Election.current {
+  border-width: 3px;
 }
-.Election.current .SelectLocation,
-.Election.current .Locations {
-  display: block;
+.tellers {
+  border: 1px solid #83e0ff;
+  margin: 5px 5px 3px 15px;
+  background-color: lightblue;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 85%;
+  color: #000;
+  padding-right: 3px;
 }
-.Election.IsFuture {
-  color: #060;
+.tellers .tellerStatus {
+  padding: 0 0 0 4px;
+}
+.tellers .names {
+  background-color: white;
+  padding: 0 5px 0 4px;
 }
 .numVoters,
-.numBallots,
-.status {
-  font-size: 80%;
+.numBallots {
   white-space: nowrap;
-}
-.Locations .true button {
-  opacity: 0.5;
 }
 .Detail {
   position: relative;
   min-height: 21px;
 }
-.Detail i {
-  margin-left: 15px;
-  font-size: 80%;
-  font-style: normal;
-  white-space: nowrap;
+.Detail .Detail1 {
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
-.Detail b {
-  white-space: nowrap;
+.Detail .Detail2 {
+  margin: 5px 0 3px 15px;
+  font-size: 85%;
+  color: #444;
+}
+.Test {
+  background-color: #e85a55;
+}
+.Test,
+.NotTest {
+  padding: 3px 4px 2px 4px;
+  color: white;
+  font-size: 60%;
+  border-radius: 7px;
+}
+.NotTest {
+  background-color: #44c145;
 }
 .buttons {
   display: block;
@@ -72,32 +92,17 @@ button.active {
   background-color: greenyellow;
 }
 .Locations {
-  display: none;
   margin-left: 150px;
-}
-.SelectLocation {
-  margin-left: 120px;
-  display: none;
 }
 .onlineCurrentlyOpen {
   font-weight: bold;
   color: #af5f00;
-}
-.Locations .true {
-  color: #8dc63e;
-  font-weight: bold;
 }
 .MakeNew {
   margin-top: 25px;
 }
 .MakeNewList li {
   margin-bottom: 14px;
-}
-.TestElection {
-  color: #aaa;
-}
-.TestElection .onlineCurrentlyOpen {
-  color: rgba(175, 95, 0, 0.75);
 }
 #file-uploader {
   display: inline-block;
@@ -157,3 +162,4 @@ li.Comment {
     margin-top: 2px;
   }
 }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkVsZWN0aW9uTGlzdC5jc2h0bWwubGVzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFFQTtFQUNFLHlCQUFBO0VBQ0Esc0JBQUE7RUFDQSx3QkFBQTtFQUNBLHdCQUFBO0VBQ0EsYUFBQTtFQUNBLGtCQUFBOztBQU5GLFNBUUU7RUFDRSxhQUFBO0VBQ0EsOEJBQUE7RUFDQSx1QkFBQTs7QUFYSixTQWNFO0VBQ0UsYUFBQTtFQUNBLDhCQUFBO0VBQ0EsbUJBQUE7O0FBR0YsU0FBQztFQUNDLHlCQUFBOztBQUdGLFNBQUM7RUFDQyx5QkFBQTs7QUFHRixTQUFDO0VBQ0MsaUJBQUE7O0FBUUo7RUFDRSx5QkFBQTtFQUNBLHdCQUFBO0VBQ0EsMkJBQUE7RUFDQSxvQkFBQTtFQUNBLG1CQUFBO0VBQ0EsVUFBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0Esa0JBQUE7O0FBVEYsUUFXRTtFQUNFLGtCQUFBOztBQVpKLFFBZUU7RUFDRSx1QkFBQTtFQUNBLG9CQUFBOztBQUlKO0FBQVk7RUFDVixtQkFBQTs7QUFHRjtFQUNFLGtCQUFBO0VBQ0EsZ0JBQUE7O0FBRkYsT0FJRTtFQUNFLGdCQUFBO0VBQ0EsYUFBQTtFQUNBLG1CQUFBO0VBQ0EsVUFBQTs7QUFSSixPQVdFO0VBQ0Usc0JBQUE7RUFDQSxjQUFBO0VBQ0EsV0FBQTs7QUFPSjtFQUNFLHlCQUFBOztBQUdGO0FBQU87RUFDTCx3QkFBQTtFQUNBLFlBQUE7RUFDQSxjQUFBO0VBQ0Esa0JBQUE7O0FBR0Y7RUFDRSx5QkFBQTs7QUFHRjtFQUNFLGNBQUE7RUFDQSxnQkFBQTtFQUNBLG1CQUFBO0VBQ0EsY0FBQTs7QUFHRjtFQUNFLGtCQUFBOztBQUdGO0VBQ0UsaUJBQUE7RUFDQSxjQUFBOztBQUdGLE1BQU07RUFDSiw2QkFBQTs7QUFHRjtFQUNFLGtCQUFBOztBQUdGO0VBQ0UsaUJBQUE7RUFDQSxjQUFBOztBQUdGO0VBQ0UsZ0JBQUE7O0FBR0YsWUFBYTtFQUNYLG1CQUFBOztBQVFGO0VBQ0UscUJBQUE7RUFDQSxpQkFBQTs7QUFHRjtFQUNFLFlBQUE7O0FBR0Y7RUFDRSxTQUFBOztBQUdGLGFBQWM7RUFDWixjQUFBO0VBQ0Esb0JBQUE7O0FBR0YsR0FBRztFQUNELFdBQUE7RUFDQSxjQUFBO0VBQ0Esa0JBQUE7RUFDQSxxQkFBQTs7QUFHRjtFQUNFLFdBQUE7O0FBR0YsRUFBRTtFQUNBLFdBQUE7RUFDQSxjQUFBO0VBQ0Esa0JBQUE7O0FBR0Y7RUFDRSxhQUFBO0VBQ0EsbUJBQUE7RUFDQSxRQUFBOztBQUdGO0VBQ0UsZUFBQTs7QUFHRjtFQUNFLGVBQUE7O0FBREYsYUFHRTtFQUNFLFNBQUE7O0FBSUo7RUFDRSx1QkFBQTtFQUNBLHdCQUFBO0VBQ0EsaUJBQUE7O0FBR0Ysd0JBQTBDO0VBQ3hDO0lBQ0UsbUJBQUE7O0VBREYsUUFHRTtJQUNFLGVBQUE7O0VBSkosUUFPRTtJQUNFLGVBQUEifQ== */

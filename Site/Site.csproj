@@ -871,6 +871,7 @@
     <None Include="compilerconfig.json" />
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <Content Include="Content\manifest.json" />
+    <Content Include="compilerconfig.json.defaults" />
     <None Include="packages.config" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />

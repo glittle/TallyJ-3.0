@@ -19,30 +19,37 @@ namespace TallyJ.CoreModels
         // .ThenBy(e => e.Name)
 
         return MyElections()
-          .Select(e => new
+          .Select(e =>
           {
-            e.Name,
-            e.ElectionGuid,
-            e.DateOfElection,
-            e.ElectionType,
-            e.ElectionMode,
-            e.ShowAsTest,
-            e.IsSingleNameElection,
-            e.CanBeAvailableForGuestTellers,
-            e.OnlineCurrentlyOpen,
-            e.OnlineWhenOpen,
-            e.OnlineWhenClose,
-            IsFuture = e.DateOfElection.HasValue && e.DateOfElection > DateTime.Today,
-            IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
-            Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
-            Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
-            IsTest = e.ShowAsTest.AsBoolean(),
-            TallyStatus = ElectionTallyStatusEnum.TextFor(e.TallyStatus, e.TallyStatus),
+            return new
+            {
+              e.Name,
+              e.ElectionGuid,
+              e.DateOfElection,
+              e.ElectionType,
+              e.ElectionMode,
+              e.ShowAsTest,
+              e.IsSingleNameElection,
+              e.CanBeAvailableForGuestTellers,
+              e.OnlineCurrentlyOpen,
+              e.OnlineWhenOpen,
+              e.OnlineWhenClose,
+              e.EmailFromAddressWithDefault,
+              e.EmailFromNameWithDefault,
+              e.ElectionPasscode,
+              IsFuture = e.DateOfElection.HasValue && e.DateOfElection > DateTime.Today,
+              IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
+              Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
+              Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
+              IsTest = e.ShowAsTest.AsBoolean(),
+              TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
+              e.TallyStatus
+            };
           }).ToList();
       }
     }
 
-    public IEnumerable<object> ElectionCounts()
+    public IEnumerable<object> MoreInfoStatic()
     {
       var electionGuids = MyElections().Select(e => e.ElectionGuid).ToList();
 
@@ -51,26 +58,77 @@ namespace TallyJ.CoreModels
         .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
+      var tellerCounts = Db.Teller.Where(l => electionGuids.Contains(l.ElectionGuid))
+              .GroupBy(l => l.ElectionGuid)
+              .Select(g => new { ElectionGuid = g.Key, Tellers = g.OrderBy(l => l.C_RowId) })
+              .ToDictionary(g => g.ElectionGuid, g => g.Tellers.Select(t => t.Name));
+
+      return electionGuids.Select(guid =>
+      {
+        personCount.TryGetValue(guid, out int numPeople);
+        tellerCounts.TryGetValue(guid, out IEnumerable<string> tellers);
+
+        return new
+        {
+          guid,
+          numPeople,
+          tellers,
+        };
+      });
+    }
+
+    public IEnumerable<object> MoreInfoLive()
+    {
+      var electionGuids = MyElections().Select(e => e.ElectionGuid).ToList();
+
       var ballotCount = Db.Location.Where(p => electionGuids.Contains(p.ElectionGuid))
         .Join(Db.Ballot, l => l.LocationGuid, b => b.LocationGuid, (l, b) => new { l.ElectionGuid, b })
         .GroupBy(p => p.ElectionGuid)
         .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
+      var logEntries = Db.C_Log
+        // .Where(l => l.ElectionGuid != null)
+        .Where(l => electionGuids.Contains(l.ElectionGuid.Value))
+        .GroupBy(l => l.ElectionGuid)
+        .Select(g => new { ElectionGuid = g.Key, Last = g.OrderByDescending(l => l.C_RowId).FirstOrDefault() })
+        .ToDictionary(g => g.ElectionGuid, g => g.Last);
+
+      var onlineVoterCounts = Db.OnlineVotingInfo.Where(ovi => electionGuids.Contains(ovi.ElectionGuid))
+        .GroupBy(p => p.ElectionGuid)
+        .ToList()
+        .Select(g => new
+        {
+          ElectionGuid = g.Key,
+          Voters = g.GroupBy(v => v.Status)
+          .ToDictionary(gg => gg.Key,
+            gg =>
+              new OnlineVoterCount { Count = gg.Count(), AsOf = gg.Max(v => v.WhenStatus) })
+        })
+        .ToDictionary(g => g.ElectionGuid, g => g.Voters);
+
+
       return electionGuids.Select(guid =>
       {
-        personCount.TryGetValue(guid, out int pc);
-        ballotCount.TryGetValue(guid, out int bc);
+        ballotCount.TryGetValue(guid, out int numBallots);
+        logEntries.TryGetValue(guid, out C_Log lastLog);
+        onlineVoterCounts.TryGetValue(guid, out Dictionary<string, OnlineVoterCount> onlineVoters);
 
         return new
         {
           guid,
-          numPeople = pc,
-          numBallots = bc
+          numBallots,
+          lastLog,
+          onlineVoters
         };
       });
     }
 
+    private struct OnlineVoterCount
+    {
+      public int Count { get; set; }
+      public DateTime? AsOf { get; set; }
+    }
 
 
     private IEnumerable<Election> MyElections()

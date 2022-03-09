@@ -72,7 +72,7 @@ namespace TallyJ.Code
       return true;
     }
 
-    static DateTime _last = DateTime.Now;
+    // static DateTime _last = DateTime.Now;
     void LogTime(string msg = "")
     {
       //var now = DateTime.Now;
