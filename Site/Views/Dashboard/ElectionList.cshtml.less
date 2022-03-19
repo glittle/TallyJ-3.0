@@ -2,11 +2,15 @@
 
 #electionListPage {
   margin-top: 1em;
+
+  &.reloading {
+    opacity: 0.5;
+  }
 }
 
 .Election {
   display: grid;
-  grid-template-columns: 2fr 1fr .8fr;
+  grid-template-columns: 2fr auto 12em;
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
@@ -41,6 +45,7 @@
 
 .statusBlocks {
   display: flex;
+  padding: 5px 0 10px 0;
 
   .statusBlock {
     width: max(10vw, 90px);
@@ -51,8 +56,7 @@
     margin: 0 auto;
     width: 50%;
     aspect-ratio: 1 / 1;
-    border-radius: 100%;
-    //background-color: green;
+    border-radius: 50%;
     border: 1px solid #ddd;
 
     &.red {
@@ -64,9 +68,18 @@
     &.green {
       background-color: green;
       border-color: green;
+      //box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
+      //transform: scale(1);
+      //animation: active 1s infinite;
+
+      //&:before {
+      //  content: '|';
+      //  color: white;
+      //}
     }
 
     &.na {
+      animation: none;
     }
 
     &.future {
@@ -125,6 +138,10 @@
   }
 }
 
+.reloadAll {
+  float: right;
+  margin-top: -44px;
+}
 
 .el-icon-info {
   font-size: 120%;
@@ -150,8 +167,8 @@
   }
 
   div {
-    div:first-child {
-      margin-bottom: 2px;
+    div + div {
+      margin-top: 2px;
     }
   }
 }
@@ -360,5 +377,35 @@ li.Comment {
     .btn-group {
       margin-top: 2px;
     }
+  }
+}
+
+@keyframes active {
+  0% {
+    //transform: scale(0.98) rotate(0);
+    //transform: rotate(0);
+    opacity: 1;
+    //box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  25% {
+    //transform: rotate(.25turn);
+    //box-shadow: 0 0 0 3px rgba(0, 0, 0, 0);
+  }
+
+  50% {
+    //transform: rotate(.5turn);
+    opacity: .6;
+  }
+
+  75% {
+    //transform: rotate(.75turn);
+    //box-shadow: 0 0 0 3px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+    //transform: rotate(1turn);
+   // box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
 }

@@ -110,7 +110,7 @@ namespace TallyJ.CoreModels
         {
           ComputerGuid = Guid.NewGuid(),
           ComputerCode = "-",
-          ElectionGuid = Guid.NewGuid(),
+          ElectionGuid = Guid.Empty,
           AllMyElections = allMyElectionGuids,
           LastContact = DateTime.Now,
           AuthLevel = UserSession.AuthLevel,
@@ -230,7 +230,8 @@ namespace TallyJ.CoreModels
     // refresh computer and election info
     public void RefreshLastContact()
     {
-      if (UserSession.CurrentElectionGuid == Guid.Empty)
+      // if (UserSession.CurrentElectionGuid == Guid.Empty)
+      if (!UserSession.IsKnownTeller)
       {
         return;
       }

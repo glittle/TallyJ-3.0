@@ -42,10 +42,13 @@ namespace TallyJ.EF
         var maxAge = new TimeSpan(1, 0, 0); // 1 hour
         var now = DateTime.Now;
 
-        return CachedDict.Values
+        var activeComputers = CachedDict.Values
           .Where(comp => comp.AuthLevel == "Known"
-                   && comp.LastContact.HasValue 
-                   && (now - comp.LastContact.Value) < maxAge)
+                         && comp.LastContact.HasValue 
+                         && (now - comp.LastContact.Value) < maxAge)
+          .ToList();
+
+        return activeComputers
           .SelectMany(comp => comp.AllMyElections)
           .Distinct()
           .ToList();

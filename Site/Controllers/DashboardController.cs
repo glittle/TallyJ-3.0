@@ -38,7 +38,13 @@ namespace TallyJ.Controllers
         {
           new ComputerModel().GetTempComputerForMe();
         }
+        else
+        {
+          new ComputerCacher().UpdateComputer(currentComputer);
+        }
       }
+
+      new PublicHub().TellPublicAboutVisibleElections();
 
       return View(new ElectionsListViewModel());
     }
@@ -54,6 +60,15 @@ namespace TallyJ.Controllers
       return new ElectionsListViewModel().MoreInfoLive().AsJsonResult();
     }
 
+    [ForAuthenticatedTeller]
+    public JsonResult ReloadElection()
+    {
+      return new
+      {
+        Success = true,
+        elections = new ElectionsListViewModel().MyElectionsInfo
+      }.AsJsonResult();
+    }
 
     [ForAuthenticatedTeller]
     public JsonResult UpdateListingForElection(bool listOnPage, Guid electionGuid)
@@ -142,5 +157,6 @@ namespace TallyJ.Controllers
     {
       return new TellerModel().DeleteTeller(id).AsJsonResult();
     }
+
   }
 }

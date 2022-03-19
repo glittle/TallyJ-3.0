@@ -29,7 +29,7 @@ namespace TallyJ.CoreModels.Hubs
     public void Join(string connectionId, string key)
     {
       CoreHub.Groups.Add(connectionId, key);
-      SetStatus(key, "B...");
+      // SetStatus(key, "B...");
     }
   }
 

@@ -281,7 +281,6 @@
                   }
                 </div>
                 <div v-if="showCodeInput" class="pendingCode">
-                  <div class="status" v-text="status"></div>
                   <div v-if="sent">
                     <div v-text="codePrompt"></div>
                     <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
@@ -290,6 +289,7 @@
                     </div>
                   </div>
                 </div>
+                <div class="status" v-text="status"></div>
               </div>
               <div class="mustPreRegister">
                 <p>

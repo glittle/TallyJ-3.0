@@ -23,7 +23,8 @@
         loadingElection: false,
         log: '',
         tempLog: '',
-        hideOld: false
+        hideOld: false,
+        reloading: false,
       },
       computed: {
         oldElections() {
@@ -82,14 +83,16 @@
             e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
 
             e.date = moment(e.DateOfElection);
-            e.dateDisplay = e.DateOfElection ? e.date.format("YYYY-MMM-DD") : '(No date)';
+            e.dateDisplay = e.DateOfElection ? e.date.format("D MMM YYYY") : '(No date)';
             e.dateSort = e.DateOfElection ? e.date.format("YYYY-MM-DD") : '0';
 
             e.old = !e.OnlineCurrentlyOpen && e.date.isBefore() || !e.DateOfElection;
 
+            // more static info
             e.numVoters = '';
             e.tellers = [];
 
+            // more live info
             e.numBallots = '';
             e.onlineVoters = {};
             e.lastLog = {};
@@ -162,7 +165,7 @@
               info.forEach(function (election) {
                 var matched = vue.elections.find(e => e.ElectionGuid === election.guid);
                 if (matched) {
-                  matched.numBallots = '- {0} ballot{1}'.filledWith(election.numBallots, Plural(election.numBallots));
+                  matched.numBallots = '- {0} ballot{1} entered'.filledWith(election.numBallots, Plural(election.numBallots));
 
                   matched.onlineVoters = election.onlineVoters || {};
                   matched.lastLog = election.lastLog;
@@ -174,6 +177,25 @@
                 ShowStatusDone('Refreshed');
               }
 
+            });
+        },
+        reloadAll() {
+          var vue = this;
+          vue.reloading = true;
+          vue.loaded = false;
+          CallAjaxHandler(publicInterface.reloadAllUrl,
+            null,
+            function (info) {
+              if (info.Success) {
+                vue.showElections(info.elections);
+                vue.reloading = false;
+                vue.getMoreStatic();
+                vue.getMoreLive();
+              } else {
+                vue.reloading = false;
+
+                ShowStatusFailedMessage(info);
+              }
             });
         },
         connectToImportHub() {
@@ -399,12 +421,25 @@ Vue.component('election-detail',
         return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.format1) + this.e.onlineClose.fromNow() :
           '-';
       },
-//      onlineOpenTitle: function () {
-//        return this.e.OnlineWhenOpen ? this.e.onlineOpen.format(this.format2) : '-';
-//      },
-//      onlineCloseTitle: function () {
-//        return this.e.OnlineWhenClose ? this.e.onlineClose.format(this.format2) : '-';
-//      },
+      onlineVoteCounts: function () {
+        var statusCodes = Object.keys(this.e.onlineVoters);
+        statusCodes.sort();
+
+        return statusCodes.map(key => {
+          var statusCount = this.e.onlineVoters[key];
+          var when = moment(statusCount.AsOf);
+          return `${key}: ${statusCount.Count} as of ${when.fromNow()}`;
+        })
+          .map(s => `<div>${s}</div>`)
+          .join('');
+
+      }
+      //      onlineOpenTitle: function () {
+      //        return this.e.OnlineWhenOpen ? this.e.onlineOpen.format(this.format2) : '-';
+      //      },
+      //      onlineCloseTitle: function () {
+      //        return this.e.OnlineWhenClose ? this.e.onlineClose.format(this.format2) : '-';
+      //      },
     },
     watch: {
     },
@@ -419,7 +454,7 @@ Vue.component('election-detail',
 
         clearElectionRelatedStorageItems();
 
-        ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
+        ShowStatusBusy('Entering election...'); // will reload page so don't need to clear it
         CallAjaxHandler(electionListPage.electionsUrl + '/SelectElection', form, this.afterSelectElection);
 
       },

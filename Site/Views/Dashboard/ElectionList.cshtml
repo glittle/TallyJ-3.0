@@ -6,13 +6,14 @@
   ViewBag.Message = "Select or create an election";
   ViewBag.HideMenus = "true";
 
-  ContextItems.AddJavascriptForPage("electionListPage.electionsUrl={0};".FilledWith(@Url.Action("Index", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.loadElectionUrl={0};".FilledWith(@Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.moreStaticUrl={0};".FilledWith(@Url.Action("MoreInfoStatic", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.moreLiveUrl={0};".FilledWith(@Url.Action("MoreInfoLive", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.electionsUrl={0};".FilledWith(Url.Action("Index", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.loadElectionUrl={0};".FilledWith(Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.moreStaticUrl={0};".FilledWith(Url.Action("MoreInfoStatic", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.moreLiveUrl={0};".FilledWith(Url.Action("MoreInfoLive", "Dashboard").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.reloadAllUrl={0};".FilledWith(Url.Action("ReloadElection", "Dashboard").QuotedForJavascript()));
   var electionsInfo = Model.MyElectionsInfo.ToList();
   ContextItems.AddJavascriptForPage("electionListPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("electionListPage.updateListingUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 }
 @section featured {
@@ -21,12 +22,13 @@
   <h1>@ViewBag.Title.</h1>
   <h2>@ViewBag.Message</h2>
 </hgroup>
-<div id="electionListPage" v-cloak>
+<div id="electionListPage" v-cloak :class="{reloading: reloading}">
+  <button class="reloadAll" v-on:click="reloadAll">Reload All</button>
   @if (electionsInfo.Count > 0)
   {
     <div class="h3button">
       <h3>Your Active and Future Elections</h3>
-      <button v-on:click="refreshLive">Refresh</button>
+      <button v-on:click="refreshLive">Refresh Status</button>
     </div>
 
     <div class="currentElections">
@@ -142,6 +144,13 @@
         <div>
           <div v-html="onlineOpenText"></div>
           <div v-html="onlineCloseText"></div>
+        </div>
+      </div>
+
+      <div class="row onlineInfo" v-if="e.OnlineEnabled">
+        Online Ballots
+        <div>
+          <div v-html="onlineVoteCounts"></div>
         </div>
       </div>
     </div>

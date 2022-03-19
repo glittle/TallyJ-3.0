@@ -343,8 +343,9 @@
         },
         issueCode: function (type, method, target) {
           var vue = this;
-          
-          this.status = 'Preparing...';
+
+          this.sending = true;  
+          this.status = 'Sending...';
 
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'IssueCode',
@@ -355,11 +356,13 @@
               hubKey: vue.hubKey
             }, function (info) {
               vue.showCodeInput = true;
+              vue.sending = false;
+
               if (info.Success) {
                 // hub will update
                 console.log('issued');
 
-
+                vue.status = '';
                 vue.sent = true; //testing
                 vue.sending = false; // testing
                 setTimeout(() => $('.voterLogin code').focus(), 1000);
@@ -371,6 +374,7 @@
         },
         submitCode: function () {
           var vue = this;
+          vue.status = 'Checking code...';
 
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'LoginWithCode',
@@ -378,6 +382,7 @@
               code: vue.code
             }, function (info) {
               if (info.Success) {
+                vue.status = 'Success. Entering the site...';
                 location.href = site.rootUrl + 'Vote';
 
               } else {

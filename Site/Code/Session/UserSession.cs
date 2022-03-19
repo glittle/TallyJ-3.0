@@ -481,10 +481,9 @@ namespace TallyJ.Code.Session
     /// <Summary>If logged in with an account</Summary>
     public static bool IsKnownTeller
     {
-      get
-      {
-        return UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
-      }
+      get =>
+        // UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
+        SessionKey.IsKnownTeller.FromSession(false);
       set
       {
         SessionKey.IsKnownTeller.SetInSession(value);
@@ -622,15 +621,20 @@ namespace TallyJ.Code.Session
         var computerCacher = new ComputerCacher();
         computerCacher.UpdateComputer(computer);
 
-        var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
-        if (numKnownTellers == 0)
+        if (!movingToOtherElection)
         {
-          new ElectionModel().CloseElection();
+          new PublicHub().TellPublicAboutVisibleElections();
         }
-        else
-        {
-          new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
-        }
+
+        // var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
+        // if (numKnownTellers == 0)
+        // {
+        //   new ElectionModel().CloseElection();
+        // }
+        // else
+        // {
+        //   new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
+        // }
       }
 
 
