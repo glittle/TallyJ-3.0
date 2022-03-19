@@ -49,7 +49,7 @@ namespace TallyJ.CoreModels
       get
       {
         var currentElection = CurrentElection;
-        var rules = CurrentElectionModel.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
+        var rules = ElectionModel.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
 
         return new
         {

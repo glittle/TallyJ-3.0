@@ -60,6 +60,11 @@ namespace TallyJ.CoreModels
         UserSession.CurrentLocationGuid = locationGuid;
       }
 
+      var allMyElectionGuids = new ElectionsListViewModel()
+        .MyElections()
+        .Select(e => e.ElectionGuid)
+        .ToList();
+
       lock (ComputerModelLock)
       {
         var allComputersInThisElection = computerCacher.AllForThisElection;
@@ -71,7 +76,8 @@ namespace TallyJ.CoreModels
           {
             ComputerGuid = Guid.NewGuid(),
             ComputerCode = DetermineNextFreeComputerCode(allComputersInThisElection.Select(c => c.ComputerCode).Distinct().OrderBy(s => s)),
-            ElectionGuid = UserSession.CurrentElectionGuid
+            ElectionGuid = UserSession.CurrentElectionGuid,
+            AllMyElections = allMyElectionGuids
           };
           computerCacher.UpdateComputer(computer);
         }
@@ -80,6 +86,38 @@ namespace TallyJ.CoreModels
         computer.LocationGuid = locationGuid;
         computer.AuthLevel = UserSession.AuthLevel;
         computer.SessionId = HttpContext.Current.Session.SessionID;
+      }
+
+      UserSession.CurrentComputer = computer;
+
+      return computer;
+    }
+
+    public Computer GetTempComputerForMe()
+    {
+      Computer computer;
+
+      var computerCacher = new ComputerCacher();
+
+      var allMyElectionGuids = new ElectionsListViewModel()
+        .MyElections()
+        .Select(e => e.ElectionGuid)
+        .ToList();
+
+      lock (ComputerModelLock)
+      {
+        computer = new Computer
+        {
+          ComputerGuid = Guid.NewGuid(),
+          ComputerCode = "-",
+          ElectionGuid = Guid.NewGuid(),
+          AllMyElections = allMyElectionGuids,
+          LastContact = DateTime.Now,
+          AuthLevel = UserSession.AuthLevel,
+          SessionId = HttpContext.Current.Session.SessionID
+        };
+
+        computerCacher.UpdateComputer(computer);
       }
 
       UserSession.CurrentComputer = computer;

@@ -18,9 +18,9 @@ namespace TallyJ.CoreModels
 {
   public class ElectionModel : DataConnectedModel
   {
-    private static object LockObject = new object();
+    private static readonly object LockObject = new object();
 
-    public ElectionRules GetRules(string type, string mode)
+    public static ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
       {
@@ -204,19 +204,19 @@ namespace TallyJ.CoreModels
       return rules;
     }
 
-    /// <summary>
-    ///   Based on the 2 flags, get a default reason (may be null)
-    /// </summary>
-    /// <returns></returns>
+    // /// <summary>
+    // ///   Based on the 2 flags, get a default reason (may be null)
+    // /// </summary>
+    // /// <returns></returns>
     // public IneligibleReasonEnum GetDefaultIneligibleReason()
     // {
     //   return GetDefaultIneligibleReason(UserSession.CurrentElection);
     // }
 
-    /// <summary>
-    ///   Based on the 2 flags, get a default reason (may be null)
-    /// </summary>
-    /// <returns></returns>
+    // /// <summary>
+    // ///   Based on the 2 flags, get a default reason (may be null)
+    // /// </summary>
+    // /// <returns></returns>
     // public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
     // {
     //   if (election == null)
@@ -491,7 +491,7 @@ namespace TallyJ.CoreModels
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
-      // assign new computer code
+      // assign a new computer code (try to reuse a previous one if possible)
       var computerModel = new ComputerModel();
       computerModel.GetComputerForMe(oldComputerGuid);
 
@@ -725,6 +725,7 @@ namespace TallyJ.CoreModels
     {
       var info = new
       {
+        ElectionGuid = UserSession.CurrentElectionGuid,
         StateName = UserSession.CurrentElectionStatus,
         Online = UserSession.CurrentElection.OnlineCurrentlyOpen,
         Passcode = UserSession.CurrentElection.ElectionPasscode,

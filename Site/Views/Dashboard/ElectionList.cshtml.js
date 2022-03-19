@@ -59,8 +59,15 @@
         this.getMoreStatic();
         this.getMoreLive();
         this.connectToImportHub();
+
+        site.onbroadcast(site.broadcastCode.electionStatusChanged, this.electionStatusChanged);
+
       },
       methods: {
+        electionStatusChanged(ev, info) {
+          var election = this.elections.find(e => e.ElectionGuid === info.ElectionGuid);
+          console.log(election, info);
+        },
         toggleOldList() {
           this.hideOld = !this.hideOld;
           SetInStorage('hideOld', this.hideOld);
@@ -78,11 +85,8 @@
             e.dateDisplay = e.DateOfElection ? e.date.format("YYYY-MMM-DD") : '(No date)';
             e.dateSort = e.DateOfElection ? e.date.format("YYYY-MM-DD") : '0';
 
-            if (e.OnlineCurrentlyOpen) {
-              e.OnlineOpen = 'Online Voting Open. Closing '
-                + e.onlineClose.fromNow() + '.';
-            }
-            e.old = !e.OnlineOpen && e.date.isBefore() || !e.DateOfElection;
+            e.old = !e.OnlineCurrentlyOpen && e.date.isBefore() || !e.DateOfElection;
+
             e.numVoters = '';
             e.tellers = [];
 
@@ -90,7 +94,33 @@
             e.onlineVoters = {};
             e.lastLog = {};
 
+            // online voters
+            if (!e.OnlineEnabled) {
+              e.voterStatus = 'Not Used';
+              e.voterStatusCircleClass = 'na';
+              e.openCloseTime = '';
+            } else
+              if (e.OnlineCurrentlyOpen) {
+                e.voterStatus = 'Open. Closing';
+                e.voterStatusCircleClass = 'green';
+                e.openCloseTime = e.onlineClose.fromNow();
+              } else
+                if (e.onlineOpen.isAfter()) {
+                  e.voterStatus = 'will open';
+                  e.voterStatusCircleClass = 'future';
+                  e.openCloseTime = e.onlineOpen.fromNow();
+                } else
+                  if (e.onlineClose.isBefore()) {
+                    e.voterStatus = 'closed';
+                    e.voterStatusCircleClass = 'past';
+                    e.openCloseTime = e.onlineClose.fromNow();
+                  } else {
+                    e.voterStatus = '';
+                    e.voterStatusCircleClass = '';
+                  }
+
             e.openForTellers = e.CanBeAvailableForGuestTellers;
+            e.pendingOpenForTellers = e.openForTellers;
           });
 
           list.sort((a, b) => {
@@ -102,20 +132,6 @@
 
           this.elections = list;
           this.loaded = true;
-        },
-        selectElection(election) {
-          var guid = election.ElectionGuid;
-          var form =
-          {
-            guid: guid,
-            oldComputerGuid: GetFromStorage('compcode_' + guid, null)
-          };
-
-          clearElectionRelatedStorageItems();
-
-          ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
-          CallAjaxHandler(publicInterface.electionsUrl + '/SelectElection', form, afterSelectElection);
-
         },
         getMoreStatic() {
           // relative stable during an election
@@ -218,7 +234,7 @@
               } else {
                 ShowStatusFailed(info.Message);
               }
-              vue.deleting = false;
+              vue.deleting = '';
             });
         },
         createElection() {
@@ -322,19 +338,7 @@
 
 
 
-  function afterSelectElection(info) {
 
-    if (info.Selected) {
-      //TODO: store computer Guid
-      SetInStorage('compcode_' + info.ElectionGuid, info.CompGuid);
-
-      location.href = site.rootUrl + 'Dashboard';
-
-    }
-    else {
-      ShowStatusFailed("Unable to select");
-    }
-  };
 
 
   function scrollToMe(nameDiv) {
@@ -369,3 +373,97 @@ $(function () {
   electionListPage.PreparePage();
 });
 
+
+Vue.component('election-detail',
+  {
+    template: '#election-detail',
+    props: {
+      e: Object,
+      old: Boolean,
+      exporting: String,
+      deleting: String,
+    },
+    data: function () {
+      return {
+        format1: 'D MMM YYYY [at] HH:mm - ',
+        format2: 'D MMM YYYY',
+        showOtherButtons: false
+      }
+    },
+    computed: {
+      onlineOpenText: function () {
+        return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.format1) + this.e.onlineOpen.fromNow() :
+          '-';
+      },
+      onlineCloseText: function () {
+        return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.format1) + this.e.onlineClose.fromNow() :
+          '-';
+      },
+//      onlineOpenTitle: function () {
+//        return this.e.OnlineWhenOpen ? this.e.onlineOpen.format(this.format2) : '-';
+//      },
+//      onlineCloseTitle: function () {
+//        return this.e.OnlineWhenClose ? this.e.onlineClose.format(this.format2) : '-';
+//      },
+    },
+    watch: {
+    },
+    methods: {
+      selectElection(election) {
+        var guid = election.ElectionGuid;
+        var form =
+        {
+          guid: guid,
+          oldComputerGuid: GetFromStorage('compcode_' + guid, null)
+        };
+
+        clearElectionRelatedStorageItems();
+
+        ShowStatusBusy('Opening election...'); // will reload page so don't need to clear it
+        CallAjaxHandler(electionListPage.electionsUrl + '/SelectElection', form, this.afterSelectElection);
+
+      },
+      afterSelectElection(info) {
+
+        if (info.Selected) {
+          //TODO: store computer Guid
+          SetInStorage('compcode_' + info.ElectionGuid, info.CompGuid);
+
+          location.href = site.rootUrl + 'Dashboard';
+
+        }
+        else {
+          ShowStatusFailed("Unable to select");
+        }
+      },
+      deleteElection() {
+        this.$emit('delete', this.e);
+      },
+      exportElection() {
+        this.$emit('export', this.e);
+      },
+      updateListing() {
+        var vue = this;
+        var open = this.e.pendingOpenForTellers;
+        var form = {
+          listOnPage: open,
+          electionGuid: this.e.ElectionGuid
+        };
+        CallAjax2(electionListPage.updateListingUrl + '/UpdateListingForElection',
+          form,
+          {
+            busy: 'Changing Open Status'
+          },
+          function (info) {
+            if (info.Success) {
+              vue.e.openForTellers = info.IsOpen;
+              ShowStatusDone("Changed");
+            }
+            else {
+              vue.e.pendingOpenForTellers = !open;
+              ShowStatusFailedMessage(info);
+            }
+          });
+      },
+    }
+  });

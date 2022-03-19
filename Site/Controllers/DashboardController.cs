@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.ExportImport;
+using TallyJ.CoreModels.Hubs;
+using TallyJ.EF;
 
 namespace TallyJ.Controllers
 {
@@ -27,17 +31,90 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public ActionResult ElectionList()
     {
+      if (UserSession.CurrentElectionGuid == Guid.Empty)
+      {
+        var currentComputer = UserSession.CurrentComputer;
+        if (currentComputer == null)
+        {
+          new ComputerModel().GetTempComputerForMe();
+        }
+      }
+
       return View(new ElectionsListViewModel());
     }
 
     [ForAuthenticatedTeller]
-    public JsonResult MoreInfoStatic() {
+    public JsonResult MoreInfoStatic()
+    {
       return new ElectionsListViewModel().MoreInfoStatic().AsJsonResult();
     }
     [ForAuthenticatedTeller]
-    public JsonResult MoreInfoLive() {
+    public JsonResult MoreInfoLive()
+    {
       return new ElectionsListViewModel().MoreInfoLive().AsJsonResult();
     }
+
+
+    [ForAuthenticatedTeller]
+    public JsonResult UpdateListingForElection(bool listOnPage, Guid electionGuid)
+    {
+      // from the elections list page, when not "in" the election
+
+      // verify we have access
+      var election = new ElectionsListViewModel()
+        .MyElections()
+        .FirstOrDefault(e => e.ElectionGuid == electionGuid);
+
+      if (election == null)
+      {
+        return new
+        {
+        Success = false,
+          Message = "Unknown election"
+        }.AsJsonResult();
+      }
+
+      // update
+      if (UserSession.IsKnownTeller)
+      {
+        var electionCacher = new ElectionCacher(Db);
+
+        Db.Election.Attach(election);
+
+        election.ListForPublic = listOnPage;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
+
+        Db.SaveChanges();
+
+        electionCacher.UpdateItemAndSaveCache(election);
+
+        new PublicHub().TellPublicAboutVisibleElections();
+
+        var info = new
+        {
+          ElectionGuid = UserSession.CurrentElectionGuid,
+          StateName = election.TallyStatus.HasNoContent() ? ElectionTallyStatusEnum.NotStarted.ToString() : election.TallyStatus,
+          Online = election.OnlineCurrentlyOpen,
+          Passcode = election.ElectionPasscode,
+          Listed = election.ListedForPublicAsOf != null
+        };
+
+        new MainHub().StatusChangedForElection(electionGuid, info, info);
+
+        return new
+        {
+          Success = true,
+          IsOpen = listOnPage
+        }.AsJsonResult();
+      }
+
+      return new
+      {
+        Success = false
+      }.AsJsonResult();
+    }
+
+
 
 
     [HttpPost]

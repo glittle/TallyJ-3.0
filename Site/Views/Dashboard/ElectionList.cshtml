@@ -13,6 +13,7 @@
   var electionsInfo = Model.MyElectionsInfo.ToList();
   ContextItems.AddJavascriptForPage("electionListPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(@Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("electionListPage.updateListingUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 }
 @section featured {
 }
@@ -30,7 +31,14 @@
 
     <div class="currentElections">
       <span v-if="loaded && !currentElections.length" class="NoneFound">None found</span>
-      @Rows("currentElections")
+      <election-detail v-for="e in currentElections"
+                       :e="e"
+                       :ref="'e-' + e.ElectionGuid"
+                       :exporting="exporting"
+                       :deleting="deleting"
+                       v-on:delete="deleteElection"
+                       v-on:export="exportElection"
+                       :key="e.ElectionGuid"></election-detail>
     </div>
 
     <div v-if="oldElections.length"
@@ -41,81 +49,17 @@
       </div>
 
       <div v-if="!hideOld">
-        @Rows("oldElections")
+        <election-detail v-for="e in oldElections"
+                         :old="true"
+                         :e="e"
+                         :ref="'e-' + e.ElectionGuid"
+                         :exporting="exporting"
+                         :deleting="deleting"
+                         v-on:delete="deleteElection"
+                         v-on:export="exportElection"
+                         :key="e.ElectionGuid"></election-detail>
       </div>
     </div>
-
-
-    @helper Rows(string listName)
-    {
-      <div v-for="e in @listName"
-           class="Election"
-           :key="e.ElectionGuid"
-           :class="{
-           current: e.IsCurrent,
-           TestElection: e.IsTest,
-           SingleName: e.IsSingleNameElection,
-           IsFuture: e.IsFuture,
-           deleting: e.ElectionGuid === deleting,
-           }"
-           :ref="'e-' + e.ElectionGuid">
-        <div class="TopRow">
-          <div class="Detail">
-            <div class="Detail1">
-              {{e.dateDisplay}}
-              <span v-if="e.IsTest" class="Test">TEST</span>
-              <span v-else class="NotTest">MAIN</span>
-              {{e.Name}}
-            </div>
-            <div class="Detail2">
-              <div>
-                <span>{{e.Type}} {{e.Mode}}</span>
-                <span class="numVoters" v-text="e.numVoters"></span>
-                <span v-if="!e.IsSingleNameElection"
-                      class="numBallots"
-                      v-text="e.numBallots">
-                </span>
-              </div>
-            </div>
-            <div class="tellers">
-              <span class="tellerStatus" :title="e.ElectionPasscode">
-                Tellers*
-                <el-checkbox v-model="e.openForTellers"></el-checkbox>
-              </span>
-              <span class="names">
-                ({{e.tellers.length}}): {{e.tellers.join(', ')}}
-              </span>
-            </div>
-
-          </div>
-          <span class="TopRight" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</span>
-
-        </div>
-        <div class="BottomRow">
-          <div class="onlineCurrentlyOpen">{{e.OnlineOpen}}</div>
-          <div class="buttons">
-            <button v-on:click="selectElection(e)"
-                    class="btn btn-primary btnSelectElection">
-              View
-            </button>
-            <div class="btn-group">
-              <button v-on:click="exportElection(e)"
-                      :class="{active: exporting === e.ElectionGuid}"
-                      class="btn btn-info btn-mini btnExport"
-                      title="Export and download the complete election to a file on your computer">
-                Save to File
-              </button>
-              <button v-on:click="deleteElection(e)"
-                      :class="{active: deleting === e.ElectionGuid}"
-                      class="btn btn-danger btn-mini btnDelete"
-                      title="Delete the election from this system">
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    }
   }
   @if (UserSession.IsKnownTeller)
   {
@@ -154,3 +98,102 @@
   }
   <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
 </div>
+
+<template id="election-detail">
+  <div class="Election"
+       :key="e.ElectionGuid"
+       :class="{
+           current: e.IsCurrent,
+           TestElection: e.IsTest,
+           SingleName: e.IsSingleNameElection,
+           IsFuture: e.IsFuture,
+           deleting: e.ElectionGuid === deleting,
+           }">
+    <div class="electionDetail">
+      <div class="Detail1" :title="e.ElectionGuid">
+        {{e.Name}}
+        <span v-if="e.IsTest" class="Test">TEST</span>
+        <span v-else class="NotTest">MAIN</span>
+        {{e.dateDisplay}}
+      </div>
+      <div class="Detail2">
+        <div>
+          <span>{{e.Type}} {{e.Mode}}</span>
+          <span class="numVoters" v-text="e.numVoters"></span>
+          <span v-if="!e.IsSingleNameElection"
+                class="numBallots"
+                v-text="e.numBallots">
+          </span>
+        </div>
+      </div>
+
+      <div class="row tellers">
+        <span class="tellerStatus">
+          Tellers
+        </span>
+        <i class="el-icon-info" :title="'Access code: ' + e.ElectionPasscode"></i>
+        <span class="names">
+          ({{e.tellers.length}}) {{e.tellers.join(', ')}}
+        </span>
+      </div>
+
+      <div class="row onlineInfo" v-if="e.OnlineEnabled">
+        Online Voting
+        <div>
+          <div v-html="onlineOpenText"></div>
+          <div v-html="onlineCloseText"></div>
+        </div>
+      </div>
+    </div>
+    <div class="statusBlocks">
+      <div class="statusVoters statusBlock">
+        <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
+        <div class="statusLabel">
+          <div>Online Voting</div>
+          <div v-text="e.voterStatus"></div>
+          <div v-text="e.openCloseTime"></div>
+        </div>
+      </div>
+      <div class="statusTellers statusBlock">
+        <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
+        <div class="statusLabel">
+          <div>Tellers</div>
+          <el-switch v-model="e.pendingOpenForTellers" v-on:change="updateListing" title="Open/Close for tellers to join">
+          </el-switch>
+        </div>
+      </div>
+    </div>
+    <div class="rightSide">
+      <div class="tallyStatus" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</div>
+      <el-button v-on:click="selectElection(e)"
+                 type="primary"
+                 size="small"
+                 v-text="e.IsCurrent ? 'Return (Current Election)' : 'Enter'"
+                 class="btnSelectElection">
+      </el-button>
+      <div class="other">
+        <div class="otherToggle" v-on:click="showOtherButtons = !showOtherButtons">Other actions</div>
+        <div class="otherButtons" v-if="showOtherButtons">
+          <el-button v-on:click="exportElection"
+                     size="micro"
+                     type="info"
+                     :class="{active: exporting === e.ElectionGuid}"
+                     title="Export and download the complete election to a file on your computer">
+            Save to File
+          </el-button>
+          <el-button v-on:click="deleteElection"
+                     size="micro"
+                     type="warning"
+                     :class="{active: deleting === e.ElectionGuid}"
+                     title="Delete the election from this system">
+            Remove
+          </el-button>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+</template>

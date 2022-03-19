@@ -28,7 +28,7 @@
       <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="false" requireElection="false" role="*" desc="Welcome page"></page>
       <page title="Elections List" featureWhen="OnDash, General" controller="Dashboard" action="ElectionList" requireElection="false" role="known" desc="List your elections.  Choose, save, load and delete elections."></page>
       <page title="Sys Logs" controller="SysAdmin" action="Index" requireElection="false" role="sysAdmin" desc="View Sys Admin logs."></page>
-      <page title="Dashboard" featureWhen="OnDash, General" controller="Dashboard" action="Index" showOnDashboard="false" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
+      <page title="Dashboard" featureWhen="OnDash, General" controller="Dashboard" action="Index" showOnDashboard="false" showInOtherList="true" requireElection="true" role="*" desc="A listing of all the modules and pages in TallyJ"></page>
       <page title="Reference Materials" featureWhen="OnDash, General" controller="Public" action="Learning" requireElection="false" role="*" desc="Read more about Bahá’í elections, the job of tellers, and how TallyJ works."></page>
       <page title="Change my Password" featureWhen="OnDash, General" controller="Account" action="ChangePassword" requireElection="true" role="known" desc="Change your password"></page>
       <page title="Logout" featureWhen="OnDash, General" controller="Account" action="Logoff" showOnDashboard="true" requireElection="false" role="guest" desc="Log out of the site"></page>

@@ -443,9 +443,12 @@ namespace TallyJ.Code.Session
           return null;
         }
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
-        if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
+        if (currentComputer == null)
         {
-          return new ComputerModel().GetComputerForMe(Guid.Empty);
+            var computerModel = new ComputerModel();
+          return CurrentElectionGuid != Guid.Empty 
+            ? computerModel.GetComputerForMe(Guid.Empty) 
+            : computerModel.GetTempComputerForMe();
         }
 
         return currentComputer;

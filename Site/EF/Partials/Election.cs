@@ -53,7 +53,7 @@ namespace TallyJ.EF
       NumberExtra = 0;
       VotingMethods = "PDM";
 
-      var rules = new ElectionModel().GetRules(ElectionType, ElectionMode);
+      var rules = ElectionModel.GetRules(ElectionType, ElectionMode);
 
       // No longer used as rules. Each person has own status.
       // CanVote = rules.CanVote;  

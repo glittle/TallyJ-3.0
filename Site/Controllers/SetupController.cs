@@ -46,7 +46,7 @@ namespace TallyJ.Controllers
 
     public JsonResult DetermineRules(string type, string mode)
     {
-      return new ElectionModel().GetRules(type, mode).AsJsonResult();
+      return ElectionModel.GetRules(type, mode).AsJsonResult();
     }
 
     [ForAuthenticatedTeller]

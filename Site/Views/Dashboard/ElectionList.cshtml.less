@@ -1,24 +1,18 @@
 ﻿@import "../../Content/bootstrap/css/variables.less";
 
+#electionListPage {
+  margin-top: 1em;
+}
+
 .Election {
+  display: grid;
+  grid-template-columns: 2fr 1fr .8fr;
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
-  padding: 3px 4px 4px 5px;
-  margin: 3px 0;
+  padding: 3px 10px 6px 10px;
+  margin: 8px 0;
   border-radius: 2px;
-
-  .TopRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .BottomRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
 
   &.deleting {
     background-color: rgb(255, 178, 178);
@@ -29,7 +23,6 @@
   }
 
   &.current { // currently logged into
-    border-width: 3px;
   }
   //&.IsFuture {
   //  color: #060;
@@ -37,24 +30,129 @@
 }
 
 
-.tellers {
-  border: 1px solid #83e0ff;
-  margin: 5px 5px 3px 15px;
-  background-color: lightblue;
-  display: inline-flex;
-  align-items: center;
-  gap: .5em;
-  font-size: 85%;
-  color: #000;
-  padding-right: 3px;
 
-  .tellerStatus {
-    padding: 0 0 0 4px;
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.statusBlocks {
+  display: flex;
+
+  .statusBlock {
+    width: max(10vw, 90px);
+    text-align: center;
   }
 
-  .names {
-    background-color: white;
-    padding: 0 5px 0 4px;
+  .statusCircle {
+    margin: 0 auto;
+    width: 50%;
+    aspect-ratio: 1 / 1;
+    border-radius: 100%;
+    //background-color: green;
+    border: 1px solid #ddd;
+
+    &.red {
+      // put red first in the list
+      background-color: #ffe4e4;
+      border-color: #ffe4e4;
+    }
+
+    &.green {
+      background-color: green;
+      border-color: green;
+    }
+
+    &.na {
+    }
+
+    &.future {
+      background-color: orange;
+      border-color: orange;
+    }
+
+    &.past {
+      background-color: #ffe4e4;
+      border-color: #ffe4e4;
+    }
+  }
+
+  .statusLabel {
+    text-align: center;
+  }
+}
+
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  .tallyStatus {
+    font-weight: bold;
+    padding: .25em 0 .5em;
+  }
+
+  .other {
+    margin-top: 10px;
+    flex-grow: 2;
+
+    .otherButtons {
+      white-space: nowrap;
+      text-align: right;
+      padding: 4px 0 0;
+    }
+
+    .el-button--micro {
+      font-size: 11px;
+      border-radius: 2px;
+      padding: 3px 6px;
+    }
+
+    .el-button + .el-button {
+      margin-left: 2px;
+    }
+
+    .otherToggle {
+      cursor: pointer;
+      font-size: 85%;
+      text-align: right;
+    }
+  }
+}
+
+
+.el-icon-info {
+  font-size: 120%;
+  color: #409eff;
+}
+
+.row {
+  margin: 4px 0 0 15px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 1em;
+  font-size: 85%;
+  padding: 4px 7px 2px 4px;
+  border-radius: 2px;
+
+  &.tellers {
+    background-color: #d0dbe6;
+  }
+
+  &.onlineInfo {
+    background-color: #FCE1C1;
+  }
+
+  div {
+    div:first-child {
+      margin-bottom: 2px;
+    }
   }
 }
 
@@ -62,25 +160,80 @@
   white-space: nowrap;
 }
 
-.Detail {
-  position: relative;
-  min-height: 21px;
+.el-switch {
+  font-size: 1em;
+  margin: 2px 10px;
+  @space: 3px;
 
-  .Detail1 {
-    font-size: 1.1em;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
+  .el-switch__core {
+    background-color: red;
+
+    &:after {
+      content: '\21fd'; // left
+      text-align: center;
+      line-height: 16px;
+      color: red;
+    }
   }
 
-  .Detail2 {
-    margin: 5px 0 3px 15px;
-    font-size: 85%;
-    color: #444;
+  &.is-checked {
+    .el-switch__core {
+      background-color: green;
+
+      &:after {
+        content: '\21fe'; // right
+        color: green;
+      }
+    }
+  }
+
+  .el-switch__label {
+    font-size: 1em;
+    color: #999;
+
+    &.el-switch__label--right {
+      margin-left: @space;
+
+      &.is-active {
+        color: green;
+        font-weight: bold;
+      }
+    }
+
+    &.el-switch__label--left {
+      margin-right: @space;
+
+      &.is-active {
+        color: red;
+        font-weight: bold;
+      }
+    }
+
+
+    * {
+      font-size: 1em;
+    }
   }
 }
 
-.TopRight {
+.Detail1 {
+  margin: 6px 0 9px 0;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.Detail2 {
+  margin: 5px 0 3px 15px;
+  font-size: 85%;
+  color: #444;
+}
+
+.noOnline {
+  color: #666;
+  font-size: 80%;
+  margin: -5px 0 0 15px;
 }
 
 .Test {
@@ -98,15 +251,11 @@
   background-color: #44c145;
 }
 
-.buttons {
-  display: block;
-  margin-left: 5px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
 
 .btnSelectElection {
-  margin-right: 15px;
+  // margin-right: 15px;
+  //font-size: 13px;
+  margin: 3px 0 3px 20px;
 }
 
 #btnCreate {
@@ -123,8 +272,8 @@ button.active {
 }
 
 .onlineCurrentlyOpen {
-  font-weight: bold;
-  color: @tallyJOrangeText;
+  // font-weight: bold;
+  // color: @tallyJOrangeText;
 }
 
 .MakeNew {
@@ -179,7 +328,12 @@ li.Comment {
   display: flex;
   align-items: center;
   gap: 1em;
+
+  h3 {
+    margin: 0;
+  }
 }
+
 
 .currentElections {
   min-height: 2em;
@@ -187,10 +341,6 @@ li.Comment {
 
 .oldElections {
   margin-top: 2em;
-
-  h3 {
-    margin: 0;
-  }
 }
 
 .loadingLog {

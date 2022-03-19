@@ -37,6 +37,7 @@ namespace TallyJ.CoreModels
               e.EmailFromAddressWithDefault,
               e.EmailFromNameWithDefault,
               e.ElectionPasscode,
+              e.OnlineEnabled,
               IsFuture = e.DateOfElection.HasValue && e.DateOfElection > DateTime.Today,
               IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
               Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
@@ -131,7 +132,7 @@ namespace TallyJ.CoreModels
     }
 
 
-    private IEnumerable<Election> MyElections()
+    public IEnumerable<Election> MyElections()
     {
       if (UserSession.IsKnownTeller)
       {

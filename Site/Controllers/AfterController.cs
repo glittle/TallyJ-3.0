@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
+using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
 namespace TallyJ.Controllers
@@ -88,12 +91,12 @@ namespace TallyJ.Controllers
     {
       return new ElectionModel().UpdateListOnPageJson(listOnPage);
     }
-    
-//    [ForAuthenticatedTeller]
-//    public JsonResult CloseOnline(int minutes, bool est)
-//    {
-//      return new ElectionModel().CloseOnline(minutes, est);
-//    }
+
+    //    [ForAuthenticatedTeller]
+    //    public JsonResult CloseOnline(int minutes, bool est)
+    //    {
+    //      return new ElectionModel().CloseOnline(minutes, est);
+    //    }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveOnlineClose(DateTime when, bool est)
