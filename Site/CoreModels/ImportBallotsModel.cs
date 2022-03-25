@@ -411,7 +411,7 @@ namespace TallyJ.CoreModels
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person, true),
+              peopleModel.ShowRegistrationTime(person),
               VotingMethodEnum.TextFor(person.VotingMethod)
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;

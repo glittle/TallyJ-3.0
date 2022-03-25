@@ -32,13 +32,13 @@ namespace TallyJ.CoreModels
               e.IsSingleNameElection,
               e.CanBeAvailableForGuestTellers,
               e.OnlineCurrentlyOpen,
-              e.OnlineWhenOpen,
-              e.OnlineWhenClose,
+              OnlineWhenOpen = e.OnlineWhenOpen.FromSql(),
+              OnlineWhenClose = e.OnlineWhenClose.FromSql(),
               e.EmailFromAddressWithDefault,
               e.EmailFromNameWithDefault,
               e.ElectionPasscode,
               e.OnlineEnabled,
-              IsFuture = e.DateOfElection.HasValue && e.DateOfElection > DateTime.Today,
+              IsFuture = e.DateOfElection.HasValue && e.DateOfElection.FromSql() > DateTime.UtcNow,
               IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
               Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
               Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
@@ -56,7 +56,7 @@ namespace TallyJ.CoreModels
 
       var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
         .GroupBy(p => p.ElectionGuid)
-        .Select(g => new { ElectionGuid = g.Key, Num = g.Count() })
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => p.CanVote.Value) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
       var tellerCounts = Db.Teller.Where(l => electionGuids.Contains(l.ElectionGuid))
@@ -109,18 +109,26 @@ namespace TallyJ.CoreModels
         .ToDictionary(g => g.ElectionGuid, g => g.Voters);
 
 
+      var registeredCounts = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
+        .GroupBy(p => p.ElectionGuid)
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => !string.IsNullOrEmpty(p.VotingMethod)) })
+        .ToDictionary(g => g.ElectionGuid, g => g.Num);
+
+
       return electionGuids.Select(guid =>
       {
         ballotCount.TryGetValue(guid, out int numBallots);
         logEntries.TryGetValue(guid, out C_Log lastLog);
         onlineVoterCounts.TryGetValue(guid, out Dictionary<string, OnlineVoterCount> onlineVoters);
+        registeredCounts.TryGetValue(guid, out int numRegistered);
 
         return new
         {
           guid,
           numBallots,
+          onlineVoters,
+          numRegistered,
           lastLog,
-          onlineVoters
         };
       });
     }

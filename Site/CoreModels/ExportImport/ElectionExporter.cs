@@ -97,8 +97,8 @@ namespace TallyJ.CoreModels.ExportImport
           ovi.PersonGuid,
           ovi.PoolLocked,
           ovi.Status,
-          WhenStatus = ovi.WhenStatus?.ToString("o"),
-          WhenBallotCreated = ovi.WhenBallotCreated?.ToString("o"),
+          WhenStatus = ovi.WhenStatus.FromSql()?.ToString("o"),
+          WhenBallotCreated = ovi.WhenBallotCreated.FromSql()?.ToString("o"),
           // ovi.ListPool, --> do not export the pool!
           ovi.HistoryStatus,
         }).ToList();
@@ -122,7 +122,7 @@ namespace TallyJ.CoreModels.ExportImport
         .ToList()
         .Select(l => new
         {
-          AsOf = l.AsOf.ToString("o"),
+          AsOf = l.AsOf.FromSql().ToString("o"),
           //l.LocationGuid,
           l.ComputerCode,
           l.Details,
@@ -313,7 +313,7 @@ namespace TallyJ.CoreModels.ExportImport
         election.TallyStatus,
         election.ElectionType,
         election.ElectionMode,
-        DateOfElection = election.DateOfElection.AsString("o").Split('T')[0],
+        DateOfElection = election.DateOfElection.FromSql().AsString("u").Split(' ')[0],
         election.NumberToElect,
         election.NumberExtra,
         election.Name,
@@ -329,8 +329,8 @@ namespace TallyJ.CoreModels.ExportImport
         election.ElectionGuid,
         election.BallotProcessRaw,
         ShowFullReport = election.ShowFullReport.OnlyIfTrue(),
-        election.OnlineWhenOpen,
-        election.OnlineWhenClose,
+        OnlineWhenOpen = election.OnlineWhenOpen.FromSql(),
+        OnlineWhenClose = election.OnlineWhenClose.FromSql(),
         election.OnlineCloseIsEstimate,
       };
     }

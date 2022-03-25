@@ -20,6 +20,7 @@ namespace TallyJ.Controllers
     {
       if (UserSession.CurrentElectionGuid == Guid.Empty || UserSession.CurrentElection == null)
       {
+        // no current election
         return UserSession.IsKnownTeller
                  ? RedirectToAction("ElectionList")
                  : RedirectToAction("LogOff", "Account");
@@ -97,7 +98,7 @@ namespace TallyJ.Controllers
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.UtcNow : null;
 
         Db.SaveChanges();
 
@@ -105,9 +106,14 @@ namespace TallyJ.Controllers
 
         new PublicHub().TellPublicAboutVisibleElections();
 
+        if (!listOnPage)
+        {
+          new MainHub().CloseOutGuestTellers(electionGuid);
+        }
+
         var info = new
         {
-          ElectionGuid = UserSession.CurrentElectionGuid,
+          ElectionGuid = electionGuid,
           StateName = election.TallyStatus.HasNoContent() ? ElectionTallyStatusEnum.NotStarted.ToString() : election.TallyStatus,
           Online = election.OnlineCurrentlyOpen,
           Passcode = election.ElectionPasscode,

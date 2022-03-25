@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNet.SignalR;
+using TallyJ.Code;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 
@@ -38,6 +40,29 @@ namespace TallyJ.CoreModels.Hubs
       new ComputerModel().RefreshLastContact();
     }
 
+    /// <summary>
+    ///   Join this connection into the hub
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="electionGuidList">Comma sep list of guids</param>
+    public void JoinAll(string connectionId, string electionGuidList)
+    {
+      if (!UserSession.IsKnownTeller)
+      {
+        return;
+      }
+
+      var guids = electionGuidList.SplitWithString(",").Select(s => s.AsGuid()).ToList();
+      foreach (var guid in guids)
+      {
+        var group = $"Main{guid}Known";
+
+        CoreHub.Groups.Add(connectionId, group);
+      }
+
+      new ComputerModel().RefreshLastContact();
+    }
+
     public void StatusChanged(object infoForKnown, object infoForGuest)
     {
       CoreHub.Clients.Group(HubNameForCurrentElection + "Known").statusChanged(infoForKnown);
@@ -54,6 +79,10 @@ namespace TallyJ.CoreModels.Hubs
     public void CloseOutGuestTellers()
     {
       CoreHub.Clients.Group(HubNameForCurrentElection + "Guest").electionClosed();
+    }
+    public void CloseOutGuestTellers(Guid electionGuid)
+    {
+      CoreHub.Clients.Group($"Main{electionGuid}Guest").electionClosed();
     }
   }
 

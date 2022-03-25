@@ -280,21 +280,30 @@
   function extendVoter(voter) {
     var timeTemplate = monitorPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
+    voter.WhenStatus_Display = voter.WhenStatus
+      ? '<span>Online</span> ' + moment(voter.WhenStatus).format(timeTemplate) : '';
+    voter.WhenStatus_Sort = voter.WhenStatus ? moment(voter.WhenStatus).toISOString() : '';
+    voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
+    voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : !voter.VotingMethod ? 'none' : '';
+
     var history = (voter.HistoryStatus || '')
       .split(';')
       .filter(function (x) { return x; })
       .map(function (x) {
         var parts = x.split('|');
         var when = parts.length > 1 ? parts[1].replace(/[\\"]/g, '') : '';
-        return '{0} at {1}'.filledWith(parts[0], moment(when).format(timeTemplate));
+        return `${moment(when).format(timeTemplate)} - ${parts[0]}`;
       });
-    voter.WhenStatus_Display = voter.WhenStatus ? moment(voter.WhenStatus).format(timeTemplate) : '';
-    voter.WhenStatus_Sort = voter.WhenStatus ? moment(voter.WhenStatus).toISOString() : '';
-    voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
-    voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : '';
-    voter.History_Display = history.length ? history[history.length - 1] : '-';
+
     voter.History_Tip = '\n' + history.join('\n');
     voter.HasHistory_Tip = history.length > 0;
+    //    voter.History_Display = history.length ?  history[history.length - 1] : '-';
+
+    var registrationLog = voter.RegistrationLog || [];
+    voter.Registration_Tip = registrationLog.length ? '\n' + registrationLog.join('\n') : '\n(not yet submitted or registered)';
+    voter.Registration_Display = registrationLog.length
+      ? '<span>Front Desk</span>' + registrationLog[registrationLog.length - 1] : '-';
+
     if (!voter.Status) {
       if (!voter.votesReady) {
         voter.Status = '-';
@@ -533,7 +542,7 @@
 
           return classes.filter(s => s).join(' ');
         },
-        sortChange: function(info) {
+        sortChange: function (info) {
           var dir = info.order;
           var sortBy = info.prop || info.column.sortBy;
           SetInStorage(storageKey.OVSort, sortBy);

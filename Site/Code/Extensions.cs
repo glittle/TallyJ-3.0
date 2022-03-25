@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using RazorEngine.Text;
 using SendGrid.Helpers.Mail;
+using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
 using TallyJ.CoreModels.VoterAccountModels;
@@ -670,15 +671,25 @@ namespace TallyJ.Code
     public static JsonResult AsJsonResult(this object input,
       JsonRequestBehavior behavior = JsonRequestBehavior.DenyGet)
     {
-      var jsonResult = new JsonResult
+      var custom = new NewtonSoftBasedJsonResult
       {
-        ContentType = "text/plain",
         // allow client full control over reading response (don't send as JSON type)
+        ContentType = "text/plain",
         Data = input,
         JsonRequestBehavior = behavior,
-        MaxJsonLength = int.MaxValue
+        MaxJsonLength = int.MaxValue,
       };
-      return jsonResult;
+      return custom;
+      //
+      // var jsonResult = new JsonResult
+      // {
+      //   ContentType = "text/plain",
+      //   // allow client full control over reading response (don't send as JSON type)
+      //   Data = input,
+      //   JsonRequestBehavior = behavior,
+      //   MaxJsonLength = int.MaxValue
+      // };
+      // return jsonResult;
     }
 
     public static TimeSpan seconds(this int input)
@@ -870,6 +881,20 @@ namespace TallyJ.Code
     public static DateTime ChopToMinute(this DateTime input)
     {
       return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, 0);
+    }
+
+    /// <summary>
+    /// Mark this date as a UTC time
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static DateTime FromSql(this DateTime input)
+    {
+      return DateTime.SpecifyKind(input, DateTimeKind.Utc);
+    }
+    public static DateTime? FromSql(this DateTime? input)
+    {
+      return input?.FromSql();
     }
 
     // public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)

@@ -110,6 +110,7 @@
            SingleName: e.IsSingleNameElection,
            IsFuture: e.IsFuture,
            deleting: e.ElectionGuid === deleting,
+           noOnline: !e.OnlineEnabled
            }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
@@ -122,6 +123,7 @@
         <div>
           <span>{{e.Type}} {{e.Mode}}</span>
           <span class="numVoters" v-text="e.numVoters"></span>
+          <span class="numVoters" v-text="e.registered"></span>
           <span v-if="!e.IsSingleNameElection"
                 class="numBallots"
                 v-text="e.numBallots">
@@ -169,6 +171,7 @@
           <div>Tellers</div>
           <el-switch v-model="e.pendingOpenForTellers" v-on:change="updateListing" title="Open/Close for tellers to join">
           </el-switch>
+          <div v-html="e.openForTellers ? 'Open' : 'Closed'"></div>
         </div>
       </div>
     </div>

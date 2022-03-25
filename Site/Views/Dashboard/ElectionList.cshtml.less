@@ -10,7 +10,7 @@
 
 .Election {
   display: grid;
-  grid-template-columns: 2fr auto 12em;
+  grid-template-columns: 2fr auto 13em;
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
@@ -28,9 +28,16 @@
 
   &.current { // currently logged into
   }
-  //&.IsFuture {
-  //  color: #060;
-  //}
+
+  &.noOnline {
+    .statusVoters {
+      color: #999;
+    }
+  }
+
+  &.tie-break {
+    margin: -6px 0 0 30px;
+  }
 }
 
 
@@ -45,10 +52,10 @@
 
 .statusBlocks {
   display: flex;
-  padding: 5px 0 10px 0;
+  padding: 5px 0 10px 10px;
 
   .statusBlock {
-    width: max(10vw, 90px);
+    width: 90px;
     text-align: center;
   }
 
@@ -71,7 +78,6 @@
       //box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
       //transform: scale(1);
       //animation: active 1s infinite;
-
       //&:before {
       //  content: '|';
       //  color: white;
@@ -149,13 +155,13 @@
 }
 
 .row {
-  margin: 4px 0 0 15px;
+  margin: 0 0 6px 15px;
   display: flex;
   align-items: center;
   width: fit-content;
   gap: 1em;
   font-size: 85%;
-  padding: 4px 7px 2px 4px;
+  padding: 4px 8px 2px 4px;
   border-radius: 2px;
 
   &.tellers {
@@ -186,7 +192,7 @@
     background-color: red;
 
     &:after {
-      content: '\21fd'; // left
+      //content: '\21fd'; // left
       text-align: center;
       line-height: 16px;
       color: red;
@@ -198,7 +204,7 @@
       background-color: green;
 
       &:after {
-        content: '\21fe'; // right
+        //content: '\21fe'; // right
         color: green;
       }
     }
@@ -245,12 +251,6 @@
   margin: 5px 0 3px 15px;
   font-size: 85%;
   color: #444;
-}
-
-.noOnline {
-  color: #666;
-  font-size: 80%;
-  margin: -5px 0 0 15px;
 }
 
 .Test {
@@ -406,6 +406,6 @@ li.Comment {
   100% {
     opacity: 1;
     //transform: rotate(1turn);
-   // box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    // box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
 }

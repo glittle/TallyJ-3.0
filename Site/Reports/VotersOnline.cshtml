@@ -45,7 +45,7 @@
         j.ovi.Status,
         j.ovi.WhenStatus,
     // WhenStatus_Display = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.AddMilliseconds(0 - timeOffset).ToString(format),
-    WhenStatus_Tip = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay),
+    WhenStatus_Tip = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.FromSql().ToString(formatWithDay), // .AddMilliseconds(0 - timeOffset),
         j.ovi.HistoryStatus,
         j.Email,
         j.Phone,

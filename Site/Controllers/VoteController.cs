@@ -80,7 +80,7 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
-      var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
 
       // get voting info
       var votingInfo = Db.OnlineVotingInfo
@@ -111,7 +111,7 @@ namespace TallyJ.Controllers
       //   }
       // }
 
-      if (electionInfo.e.OnlineWhenOpen <= now && electionInfo.e.OnlineWhenClose > now)
+      if (electionInfo.e.OnlineWhenOpen.FromSql() <= utcNow && electionInfo.e.OnlineWhenClose.FromSql() > utcNow)
       {
         // put election in session
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
@@ -126,8 +126,8 @@ namespace TallyJ.Controllers
             ElectionGuid = electionInfo.e.ElectionGuid,
             PersonGuid = electionInfo.p.PersonGuid,
             Status = OnlineBallotStatusEnum.New,
-            WhenStatus = now,
-            HistoryStatus = "New|{0}".FilledWith(now.ToString("s"))
+            WhenStatus = utcNow,
+            HistoryStatus = "New|{0}".FilledWith(utcNow.ToString("u"))
           };
           Db.OnlineVotingInfo.Add(votingInfo);
           Db.SaveChanges();
@@ -200,6 +200,7 @@ namespace TallyJ.Controllers
       }
 
       var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
       if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
       {
 
@@ -212,7 +213,7 @@ namespace TallyJ.Controllers
 
         new OnlineVoteHelper().SetListPoolEncrypted(onlineVotingInfo, pool);
 
-        onlineVotingInfo.WhenStatus = now;
+        onlineVotingInfo.WhenStatus = utcNow;
 
         Db.SaveChanges();
 
@@ -260,8 +261,8 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
-      var now = DateTime.Now;
-      if (currentElection.OnlineWhenOpen <= now && currentElection.OnlineWhenClose > now)
+      var utcNow = DateTime.UtcNow;
+      if (currentElection.OnlineWhenOpen.FromSql() <= utcNow && currentElection.OnlineWhenClose.FromSql() > utcNow)
       {
         var onlineVoteHelper = new OnlineVoteHelper();
         var logHelper = new LogHelper();
@@ -323,8 +324,8 @@ namespace TallyJ.Controllers
         onlineVotingInfo.PoolLocked = locked;
 
         onlineVotingInfo.Status = locked ? OnlineBallotStatusEnum.Submitted : OnlineBallotStatusEnum.Draft;
-        onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{now:s}";
-        onlineVotingInfo.WhenStatus = now;
+        onlineVotingInfo.HistoryStatus += $";{onlineVotingInfo.Status} ({UserSession.VoterLoginSource})|{utcNow:u}";
+        onlineVotingInfo.WhenStatus = utcNow;
 
         var personCacher = new PersonCacher(Db);
         var person = personCacher.AllForThisElection.SingleOrDefault(p => p.PersonGuid == onlineVotingInfo.PersonGuid);
@@ -360,14 +361,14 @@ namespace TallyJ.Controllers
           if (locked)
           {
             person.VotingMethod = VotingMethodEnum.Online;
-            person.RegistrationTime = now;
+            person.RegistrationTime = utcNow;
             person.VotingLocationGuid = new LocationModel().GetOnlineLocation().LocationGuid;
             person.EnvNum = null;
 
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person, true),
+              peopleModel.ShowRegistrationTime(person),
               UserSession.VoterLoginSource,
               VotingMethodEnum.TextFor(person.VotingMethod),
             }.JoinedAsString("; ", true));
@@ -394,10 +395,10 @@ namespace TallyJ.Controllers
             votingMethodRemoved = true;
 
             var log = person.RegistrationLog;
-            person.RegistrationTime = now; // set time so that the log will have it
+            person.RegistrationTime = utcNow; // set time so that the log will have it
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person, true),
+              peopleModel.ShowRegistrationTime(person),
               "Cancel Online",
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible
@@ -460,7 +461,7 @@ namespace TallyJ.Controllers
           j.e.DateOfElection,
           j.e.EmailFromAddress,
           j.e.EmailFromName,
-          j.e.OnlineWhenOpen,
+          j.e.OnlineWhenOpen, //TODO UTC??
           j.e.OnlineWhenClose,
           j.e.OnlineCloseIsEstimate,
           //          j.e.TallyStatus,
@@ -511,9 +512,10 @@ namespace TallyJ.Controllers
         .Where(j => !j.log.Details.Contains("schema")) // hide error codes
         .OrderByDescending(j => j.log.AsOf)
         .Take(19)
+        .ToList()
         .Select(j => new
         {
-          j.log.AsOf,
+          AsOf = j.log.AsOf.FromSql(),
           j.ElectionName,
           j.log.Details,
         });

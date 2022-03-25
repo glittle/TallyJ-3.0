@@ -76,41 +76,65 @@ table {
   }
 
   tr, tr:hover {
+    border-top: 1px solid red;
+
     &.method_Online {
       .votingMethod {
-        background-color: #b7ff95;
+        background-color: #b7ff95 !important;
       }
     }
 
     &.method_other {
       .votingMethod {
-        background-color: #ffc195;
+        background-color: #ffc195 !important;
       }
     }
 
     &.ballot_Submitted {
       .onlineStatus {
-        background-color: #409eff;
+        background-color: #409eff !important;
         color: #fff;
       }
     }
 
     &.ballot_Processed {
       .onlineStatus {
-        background-color: #b7ff95;
+        background-color: #b7ff95 !important;
       }
     }
 
     &.ballot_Draft {
       .onlineStatus {
-        background-color: #ffc195;
+        background-color: #ffc195 !important;
+      }
+    }
+
+    &.ballot_none {
+      .onlineStatus {
+        background-color: #f6941e !important;
       }
     }
 
     &.ballot_ {
-      .onlineStatus,
       .votingMethod {
-        background-color: #ff6666;
+      }
+
+      .onlineStatus {
+        text-decoration: line-through;
+        background-color: #ff6666 !important;
+      }
+    }
+  }
+
+  .when {
+    font-size: 80%;
+    line-height: 1.4;
+
+    span {
+      color: #999;
+
+      &:after {
+        content: ":";
       }
     }
   }
@@ -356,6 +380,7 @@ table.compList thead th {
   .accept {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin: 1em 0;
     background-color: #fff;
     padding: 5px 10px;

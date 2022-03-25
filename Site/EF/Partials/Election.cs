@@ -213,12 +213,12 @@ namespace TallyJ.EF
     {
       get
       {
-        var now = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
         return OnlineWhenOpen.HasValue
                && OnlineWhenClose.HasValue
-               && OnlineWhenOpen.Value < now
+               && OnlineWhenOpen.Value.FromSql() < utcNow
                && OnlineWhenOpen.Value < OnlineWhenClose.Value
-               && OnlineWhenClose.Value > now;
+               && OnlineWhenClose.Value.FromSql() > utcNow;
       }
     }
 

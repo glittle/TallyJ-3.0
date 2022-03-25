@@ -345,7 +345,7 @@ var vueOptions = {
       var person = info.person;
 
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
-
+      
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
@@ -357,7 +357,6 @@ var vueOptions = {
         person.WhenStatus_Display = null;
         person.BallotStatus = '-';
       }
-
 
       this.updateStatus(info);
     },
@@ -383,7 +382,7 @@ var vueOptions = {
 
       info.canVote = info.person.Status !== 'Processed';
       var recent = moment().subtract(36, 'h');
-
+      debugger;
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
 

@@ -79,6 +79,7 @@ namespace TallyJ.EF
     const char ArraySplit = '|'; // for when the value is an array or List<string>
 
     private Dictionary<ExtraSettingKey, string> _extraDict;
+
     private Dictionary<ExtraSettingKey, string> ExtraSettings
     {
       get

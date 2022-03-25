@@ -16,6 +16,7 @@
     if (typeof Symbol === "undefined") return 'Symbol';
 
     var msg = '';
+
     try {
       eval('let x = 1');
     } catch (e) {
@@ -84,7 +85,7 @@
     startSignalR(function () {
       console.log('Joining public hub');
       CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function (info) {
-        showElections(info.html);
+        showElections(info?.html);
       });
     });
   };
@@ -291,7 +292,11 @@
           return text;
         },
         sendEmail: function () {
-          this.issueCode('email', null, this.email);
+          var email = this.email.trim();
+          if (!email) {
+            return;
+          }
+          this.issueCode('email', null, email);
         },
         sendPhone: function (method) {
           var phone = this.fixPhone(this.phone);

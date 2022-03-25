@@ -55,6 +55,10 @@
         if (!this.currentElections.length) {
           // no current, show the old
           this.hideOld = false;
+        } else {
+          debugger
+          var electionGuidList = this.currentElections.map(e => e.ElectionGuid).join(',');
+          connectToElectionHub(electionGuidList);
         }
 
         this.getMoreStatic();
@@ -94,12 +98,14 @@
 
             // more live info
             e.numBallots = '';
+            e.registered = '';
+            e.numRegistered = 0;
             e.onlineVoters = {};
             e.lastLog = {};
 
             // online voters
             if (!e.OnlineEnabled) {
-              e.voterStatus = 'Not Used';
+              e.voterStatus = 'not used';
               e.voterStatusCircleClass = 'na';
               e.openCloseTime = '';
             } else
@@ -143,8 +149,9 @@
             info.forEach(function (incoming) {
               var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
               if (matched) {
-                matched.numVoters = '- {0} name{1}'.filledWith(incoming.numPeople, Plural(incoming.numPeople));
                 matched.tellers = incoming.tellers || [];
+                matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople); //, Plural(incoming.numPeople));
+                matched.registered = '- {0} registered'.filledWith(incoming.numRegistered); //, Plural(incoming.numPeople));
               } else {
                 console.log('unknown election', incoming);
               }

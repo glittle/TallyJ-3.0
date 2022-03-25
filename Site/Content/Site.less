@@ -940,9 +940,28 @@ a.twitter {
   }
 }
 
+.el-table__header {
+  th.el-table__cell {
+    .cell {
+      display: inline-flex;
+      align-items: center;
+      line-height: normal;
+      padding-left: 4px;
+    }
 
+    &.is-right {
+      .cell {
+        justify-content: flex-end;
+      }
+    }
 
-
+    &.is-center {
+      .cell {
+        justify-content: center;
+      }
+    }
+  }
+}
 //#statusDisplay, #statusDisplay2 {
 //  color: #000;
 //  background-color: #ccffbe;

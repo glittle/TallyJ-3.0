@@ -571,6 +571,8 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static string DateLogFormat => "yyyy MMM d, " + (UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt");
+
     public static string FinalizedNoChangesMessage = "Election is Finalized. No further changes allowed!";
 
     public static string GetCurrentTeller(int num)
@@ -601,7 +603,7 @@ namespace TallyJ.Code.Session
         owinContext.Authentication.SignOut();
       }
 
-      LeaveElection(false);
+      LeaveElection(true);
 
       CurrentContext.Session.Clear();
 
@@ -611,8 +613,8 @@ namespace TallyJ.Code.Session
     /// <summary>
     ///   Leave this election... remove computer record, close election
     /// </summary>
-    /// <param name="movingToOtherElection"></param>
-    public static void LeaveElection(bool movingToOtherElection)
+    /// <param name="loggingOut"></param>
+    public static void LeaveElection(bool loggingOut)
     {
       var computer = CurrentComputer;
       if (computer != null && computer.AuthLevel == "Known")
@@ -621,16 +623,17 @@ namespace TallyJ.Code.Session
         var computerCacher = new ComputerCacher();
         computerCacher.UpdateComputer(computer);
 
-        if (!movingToOtherElection)
+        if (!loggingOut)
         {
+          new ComputerModel().GetTempComputerForMe();
           new PublicHub().TellPublicAboutVisibleElections();
         }
 
-        // var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
-        // if (numKnownTellers == 0)
-        // {
-        //   new ElectionModel().CloseElection();
-        // }
+        var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
+        if (numKnownTellers == 0)
+        {
+          new ElectionModel().CloseElection();
+        }
         // else
         // {
         //   new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
@@ -638,7 +641,7 @@ namespace TallyJ.Code.Session
       }
 
 
-      if (movingToOtherElection)
+      if (!loggingOut)
       {
         ResetWhenSwitchingElections();
       }
@@ -666,7 +669,7 @@ namespace TallyJ.Code.Session
 
       session.Remove(SessionKey.CurrentBallotFilter);
       session.Remove(SessionKey.CurrentBallotId);
-      session.Remove(SessionKey.CurrentComputer);
+      // session.Remove(SessionKey.CurrentComputer);
       session.Remove(SessionKey.CurrentElectionGuid);
       session.Remove(SessionKey.CurrentLocationGuid);
       session.Remove(SessionKey.CurrentTeller + "1");
