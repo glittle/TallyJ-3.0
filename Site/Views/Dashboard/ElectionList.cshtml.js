@@ -56,7 +56,6 @@
           // no current, show the old
           this.hideOld = false;
         } else {
-          debugger
           var electionGuidList = this.currentElections.map(e => e.ElectionGuid).join(',');
           connectToElectionHub(electionGuidList);
         }
