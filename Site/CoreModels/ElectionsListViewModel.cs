@@ -64,16 +64,53 @@ namespace TallyJ.CoreModels
               .Select(g => new { ElectionGuid = g.Key, Tellers = g.OrderBy(l => l.C_RowId) })
               .ToDictionary(g => g.ElectionGuid, g => g.Tellers.Select(t => t.Name));
 
+      var knownUsers = Db.JoinElectionUser.Where(jeu => electionGuids.Contains(jeu.ElectionGuid))
+        .Join(Db.Users, j => j.UserId, u => u.UserId, (j, u) => new { j, u, u.LastActivityDate })
+        .GroupJoin(Db.Memberships, j => j.u.UserId, j => j.UserId, (j, mList) => new { j, Email = mList.FirstOrDefault().Email })
+        .Select(j => new
+        {
+          j.j.j.ElectionGuid,
+          j.j.LastActivityDate,
+          j.j.j.Role,
+          j.j.j.InviteWhen,
+          j.j.j.InviteEmail,
+          j.j.j.C_RowId,
+          j.Email,
+          j.j.u.UserId,
+          j.j.u.UserName,
+        })
+        .ToList()
+        .GroupBy(l => l.ElectionGuid)
+        .Select(g => new
+        {
+          ElectionGuid = g.Key,
+          Users = g.OrderBy(u => u.Role).ThenBy(u => u.UserName).Select(u => (object)new
+          {
+            u.Role,
+            InviteWhen = u.InviteWhen.FromSql(),
+            u.InviteEmail,
+            u.C_RowId,
+            u.Email,
+            u.UserName,
+            LastActivityDate = u.UserId == Guid.Empty ? (DateTime?)null : u.LastActivityDate.FromSql(),
+            isCurrentUser = u.UserId == UserSession.UserGuid
+          })
+        })
+        .ToDictionary(g => g.ElectionGuid, g => g.Users);
+
+
       return electionGuids.Select(guid =>
       {
         personCount.TryGetValue(guid, out int numPeople);
         tellerCounts.TryGetValue(guid, out IEnumerable<string> tellers);
+        knownUsers.TryGetValue(guid, out IEnumerable<object> users);
 
         return new
         {
           guid,
           numPeople,
           tellers,
+          users
         };
       });
     }

@@ -583,11 +583,11 @@ namespace TallyJ.Code.Session
       CurrentContext.Session[SessionKey.CurrentTeller + num] = name;
     }
 
-    public static void ProcessLogin()
-    {
-      // CurrentContext.Session.Clear();
-      // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
-    }
+    // public static void ProcessLogin()
+    // {
+    //   // CurrentContext.Session.Clear();
+    //   // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
+    // }
 
     public static void ProcessLogout()
     {

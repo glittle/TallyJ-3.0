@@ -25,6 +25,8 @@
         tempLog: '',
         hideOld: false,
         reloading: false,
+        format1: 'YYYY MMM D [at] HH:mm',
+        format2: 'YYYY MMM D',
       },
       computed: {
         oldElections() {
@@ -85,15 +87,18 @@
             e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
             e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
 
-            e.date = moment(e.DateOfElection);
-            e.dateDisplay = e.DateOfElection ? e.date.format("D MMM YYYY") : '(No date)';
-            e.dateSort = e.DateOfElection ? e.date.format("YYYY-MM-DD") : '0';
+            var d = moment(e.DateOfElection);
+            e.dateDisplay = e.DateOfElection ? (d.format(this.format1) + ' - ') : '(No date)';
+            e.dateSort = e.DateOfElection ? d.toISOString() : '0';
 
-            e.old = !e.OnlineCurrentlyOpen && e.date.isBefore() || !e.DateOfElection;
+            e.old = !e.OnlineCurrentlyOpen && d.isBefore() || !e.DateOfElection;
 
             // more static info
             e.numVoters = '';
             e.tellers = [];
+            e.users = [];
+            e.showUsers = false;
+            e.inEdit = false;
 
             // more live info
             e.numBallots = '';
@@ -149,6 +154,8 @@
               var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
               if (matched) {
                 matched.tellers = incoming.tellers || [];
+                matched.users = vue.extendUsers(incoming.users);
+                matched.showUsers = matched.users.length > 1;
                 matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople); //, Plural(incoming.numPeople));
                 matched.registered = '- {0} registered'.filledWith(incoming.numRegistered); //, Plural(incoming.numPeople));
               } else {
@@ -156,6 +163,18 @@
               }
             });
           });
+        },
+        extendUsers(users) {
+          if (!users) return [];
+          users.forEach(u => {
+            u.lastActivityDate = u.LastActivityDate ? moment(u.LastActivityDate).format(this.format1) : '';
+            u.inviteWhen = u.InviteWhen ? moment(u.InviteWhen).format(this.format1) : '';
+            if (!u.Role) {
+              u.Role = 'Owner';
+            }
+            u.selected = false;
+          });
+          return users;
         },
         refreshLive() {
           this.getMoreLive(this.currentElectionGuids);
@@ -413,12 +432,25 @@ Vue.component('election-detail',
     },
     data: function () {
       return {
-        format1: 'D MMM YYYY [at] HH:mm - ',
-        format2: 'D MMM YYYY',
-        showOtherButtons: false
+        format1: 'YYYY MMM D [at] HH:mm',
+        format2: 'YYYY MMM D',
+        showOtherButtons: false,
+        form: {
+          email: '',
+        },
+        rules: {
+          email: [
+            {
+              required: true, trigger: 'blur'
+            }
+          ]
+        }
       }
     },
     computed: {
+      selectedUser: function() {
+        return this.e.users.find(u => u.selected);
+      },
       onlineOpenText: function () {
         return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.format1) + this.e.onlineOpen.fromNow() :
           '-';
@@ -506,5 +538,19 @@ Vue.component('election-detail',
             }
           });
       },
+      selectUser(user) {
+        user.selected = true;
+        this.form.email = user.InviteEmail;
+      },
+      processForm() {
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
     }
   });

@@ -233,6 +233,8 @@
           <Property Name="ElectionGuid" Type="uniqueidentifier" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Role" Type="varchar" MaxLength="10" />
+          <Property Name="InviteEmail" Type="nvarchar" MaxLength="150" />
+          <Property Name="InviteWhen" Type="datetime2" Precision="0" />
         </EntityType>
         <EntityType Name="Location">
           <Key>
@@ -632,6 +634,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
           <Property Name="UserId" Type="Guid" Nullable="false" />
           <Property Name="Role" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="InviteEmail" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="InviteWhen" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
@@ -1063,6 +1067,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="JoinElectionUser">
             <EntityTypeMapping TypeName="TallyJ2dModel.JoinElectionUser">
               <MappingFragment StoreEntitySet="JoinElectionUser">
+                <ScalarProperty Name="InviteWhen" ColumnName="InviteWhen" />
+                <ScalarProperty Name="InviteEmail" ColumnName="InviteEmail" />
                 <ScalarProperty Name="Role" ColumnName="Role" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />

@@ -32,8 +32,9 @@ namespace TallyJ.CoreModels.ExportImport
       var electionName = target.Name;
 
       var user = Db.Users.SingleOrDefault(u => u.UserName == UserSession.LoginId);
-      if (user == null || !Db.JoinElectionUser.Any(j => j.ElectionGuid == _electionGuid && j.UserId == user.UserId))
+      if (user == null || !Db.JoinElectionUser.Any(j => j.ElectionGuid == _electionGuid && j.UserId == user.UserId && j.Role == null))
       {
+        // Role == null indicates main owner of the election
         return new
         {
           Deleted = false,

@@ -101,6 +101,8 @@
   <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
 </div>
 
+
+
 <template id="election-detail">
   <div class="Election"
        :key="e.ElectionGuid"
@@ -202,9 +204,40 @@
           </el-button>
         </div>
       </div>
+      <div class="showUsers">
+        <button class="btn btn-mini" v-on:click="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide Users': 'Show/Add Users') + ' (' + (e.users.length) + ')'"></button>
+      </div>
     </div>
 
+    <div class="users" v-if="e.showUsers">
+        <el-table :data="e.users"
+                  size="mini"
+                  data-key="C_RowId">
+            <el-table-column label="UserName" prop="UserName" sortable width="100"></el-table-column>
+            <el-table-column label="Email" prop="Email" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="Role" prop="Role" sortable width="80"></el-table-column>
+            <el-table-column label="Invited" prop="InviteEmail" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="When Invited" prop="inviteWhen" sortable></el-table-column>
+            <el-table-column label="Last activity" prop="lastActivityDate" sortable></el-table-column>
+            <el-table-column label="Action" width="80" align="center">
+                <template slot-scope="scope">
+                    <button class="btn btn-mini" 
+                            v-if="!scope.row.isCurrentUser"
+                            :disabled="scope.row.selected" 
+                            v-on:click="selectUser(scope.row)">Edit</button>
+                </template>
+            </el-table-column>
+        </el-table>
 
+      <el-form :model="form" ref="form" label-width="120px" v-if="selectedUser">
+          <el-form-item label="Email Address">
+              <el-input v-model="form.email" type="email"></el-input>
+          </el-form-item>
+          <el-form-item>
+              <el-button type="primary" size="mini" v-on:click="processForm">Create</el-button>
+          </el-form-item>
+      </el-form>
+    </div>
 
 
   </div>

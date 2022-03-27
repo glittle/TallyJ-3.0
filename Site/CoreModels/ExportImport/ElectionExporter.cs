@@ -79,6 +79,7 @@ namespace TallyJ.CoreModels.ExportImport
 
     private IList ExportUsers(IQueryable<Users> users)
     {
+      //TODO - include Role?
       return users.OrderBy(u => u.UserName)
         .ToList()
         .Select(u => new
