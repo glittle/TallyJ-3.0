@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using RazorEngine.Text;
 using SendGrid.Helpers.Mail;
 using TallyJ.Code.Helpers;
@@ -60,7 +61,7 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"> </param>
     /// <returns> </returns>
-    [DebuggerStepThrough]
+   // [DebuggerStepThrough]
     public static HtmlString AsRawHtml(this string input)
     {
       return new HtmlString(input);
@@ -74,6 +75,16 @@ namespace TallyJ.Code
     public static MvcHtmlString AsRawMvcHtml(this string input)
     {
       return new MvcHtmlString(input);
+    }
+
+    /// <summary>
+    /// A way to embed JSON data in a RazorEngineService compiled page
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static string AsBase64(this string input)
+    {
+      return Convert.ToBase64String(Encoding.GetEncoding(28591).GetBytes(input));
     }
 
     /// <summary>

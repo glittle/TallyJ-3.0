@@ -92,6 +92,12 @@ div.chooser {
   box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
 }
 
+.loading{
+  display: block;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
 .btnDownloadCsv {
   float: right;
   margin: 6px -5px 0 10px;
@@ -194,10 +200,16 @@ table.resultInfo {
   }
 }
 
-
-
 .btnPrint {
   margin-bottom: 10px;
+}
+
+.el-table--mini .el-table__cell {
+  padding: 0;
+
+  .cell {
+    line-height: normal;
+  }
 }
 
 @media screen and (max-width: 750px) {

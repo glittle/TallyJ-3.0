@@ -378,11 +378,12 @@ var vueOptions = {
       this.elections.forEach(this.updateStatus);
     },
     updateStatus: function (info) {
+      // refresh the status of each election
       info.openNow = false;
 
       info.canVote = info.person.Status !== 'Processed';
       var recent = moment().subtract(36, 'h');
-      debugger;
+
       if (info.OnlineWhenOpen && info.OnlineWhenClose) {
         this.keepStatusCurrent = true; // found one that is online
 

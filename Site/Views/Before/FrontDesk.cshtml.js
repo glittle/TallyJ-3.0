@@ -14,10 +14,22 @@
     lastLetterIndex: -1,
     pageSize: 100,
     afterList: null,
-    lineTemplate: null
+    lineTemplate: null,
+    timeTemplate: ''
   };
-  var preparePage = function () {
+
+  var publicInterface = {
+    controllerUrl: '',
+    lastRowVersion: 0,
+    initial: [],
+    electionGuid: null,
+    PreparePage: preparePage,
+    local: local
+  };
+
+  function preparePage() {
     local.lineTemplate = document.getElementById('frontDeskLineTemplate').innerText;
+    local.timeTemplate = frontDeskPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
     connectToFrontDeskHub();
     startGettingPeople();
@@ -64,7 +76,7 @@
     resetSearch();
   };
 
-  var connectToFrontDeskHub = function () {
+  function connectToFrontDeskHub() {
     $.connection().logging = true;
     var hub = $.connection.frontDeskHubCore;
 
@@ -86,13 +98,13 @@
 
   };
 
-  var resetFilterByStatus = function () {
+  function resetFilterByStatus() {
     $('.Voter').removeClass('filterHidden');
     $('.Counts div').removeClass('filtering');
     local.lastStatusFilter = '';
   };
 
-  var filterByStatus = function (btn) {
+  function filterByStatus(btn) {
     if (btn.hasClass('filtering')) {
       resetFilterByStatus();
       return;
@@ -151,7 +163,7 @@
     $('.Counts .Other i').text($('.Voter.VM-').length);
   }
 
-  var searchChanged = function (ev) {
+  function searchChanged(ev) {
     if (local.currentSearch === ev.target.value) {
       return;
     }
@@ -167,7 +179,7 @@
     applyFilter();
   }
 
-  var processKey = function (ev) {
+  function processKey(ev) {
     var letter, key = ev.which;
     if (ev.altKey) return;
     if (ev.ctrlKey) return;
@@ -336,7 +348,7 @@
     return $('#Main').hasClass('InSelection');
   }
 
-  var activateSelection = function () {
+  function activateSelection() {
     var current = $('.Voter.Selection');
     if (!current.length) {
       return;
@@ -344,7 +356,8 @@
     $('#selectorTip').css('top', current.offset().top - local.headerSpace - 44);
     $('#Main').addClass('InSelection');
   }
-  var moveSelector = function (delta) {
+
+  function moveSelector(delta) {
     if (inSelectionMode() || !local.currentSearch) {
       return;
     }
@@ -367,7 +380,7 @@
       }
     }
   }
-  var setSelection = function (el, move) {
+  function setSelection(el, move) {
     $('.Voter.Selection').removeClass('Selection');
     if (move) {
 
@@ -383,7 +396,7 @@
     }
   }
 
-  var scrollToMe = function (el, after) {
+  function scrollToMe(el, after) {
 
     var top = el.offset().top;
     var gap = 40;
@@ -407,7 +420,7 @@
   };
 
 
-  var resetSearch = function () {
+  function resetSearch() {
     //clearTimeout(local.timer);
     local.matches.length = 0;
     local.focusedOnMatches = false;
@@ -422,7 +435,8 @@
     local.currentTop = 0;
     $('#search').val('').focus();
   };
-  var handleKeyWhileFocused = function (ev) {
+
+  function handleKeyWhileFocused(ev) {
     if (!local.focusedOnMatches || local.matches.length === 0) return;
 
     ev.preventDefault();
@@ -472,7 +486,7 @@
     }
   };
 
-  var applyFilter = function () {
+  function applyFilter() {
     if (!local.currentSearch) {
       resetSearch();
       return;
@@ -482,7 +496,7 @@
     focusOnMatches();
   };
 
-  var focusOnMatches = function () {
+  function focusOnMatches() {
     $('.Voter').removeClass('KeyMatch Focused Selection');
     if (!local.matches.length) {
       local.focusedOnMatches = false;
@@ -504,7 +518,7 @@
     }, 0);
   };
 
-  var hideUnMatched = function (hide) {
+  function hideUnMatched(hide) {
     if (hide) {
       $('.Voter').removeClass('hidden').not('.KeyMatch').addClass('hidden');
       if (!local.currentSearch) {
@@ -525,7 +539,7 @@
     if (!person) {
       return;
     }
-    
+
     if (person.OnlineProcessed || person.Imported) {
       // teller may have used keyboard to change (mouse is blocked)
       return;
@@ -595,7 +609,7 @@
     });
   };
 
-  var startGettingPeople = function () {
+  function startGettingPeople() {
     CallAjax2(publicInterface.controllerUrl + '/PeopleForFrontDesk', {},
       {
         busy: 'Getting names'
@@ -608,29 +622,43 @@
 
   }
 
-  var fillList = function () {
+  function fillList() {
     var html = [];
     $.each(publicInterface.initial, function () {
-      //      console.log(this)
+      extendPerson(this);
       html.push(local.lineTemplate.filledWith(this));
     });
     $('#Main').prepend(html.join(''));
   }
 
-  //  function extendPerson(p) {
-  //    if (p.HasOnline) {
-  //      p.extraClass = 'HasOnline';
-  //    }
-  //    return p;
-  //  }
+  function extendPerson(p) {
+    var when = p.RegistrationTime ? moment(p.RegistrationTime).format(local.timeTemplate) : null;
 
-  var updatePeople = function (info, pid) {
+    var log = p.Log.map(l => {
+      var parts = l.split(';').map(s => s.trim());
+      var time = parts[0];
+      if (time.length > 6 && time[4] === '-') {
+        parts[0] = moment(time).format(local.timeTemplate);
+      }
+      return parts.join('; ');
+    });
+
+    p.VotedAt = [
+      when,
+      p.VotedAt
+    ].filter(s => s).join('; ') 
+      + (log.length > 1 ? `<span class=LogIcon title="${log.join('\n')}"></span>` : '');
+  }
+
+  function updatePeople(info, pid) {
     ResetStatusDisplay();
     var current = $('.Voter.Selection').attr('id');
     if (info) {
       if (info.PersonLines) {
         var someHidden = false;
         $.each(info.PersonLines, function (i, person) {
+          extendPerson(person);
+
           var selector = '#P' + person.PersonId;
           var row = $(selector);
           var hidden = local.currentSearch && !row.hasClass('KeyMatch');
@@ -644,14 +672,8 @@
             extraClasses.push('hidden');
             someHidden = true;
           }
-          //
-          //          if (person.HasOnline) {
-          ////          console.log(person);
-          //            extraClasses.push('HasOnline');
-          //          }
 
           person.extraClass = extraClasses.join(' ');
-          person.DisplayLog = '';
 
           if (person.CanVote) {
             if (row.length) {
@@ -689,7 +711,7 @@
 
   function insertNewPerson(person) {
     var newName = person.NameLower;
-    //console.log('new', newName);
+    extendPerson(person);
     var added = false;
     $('div.Voter').each(function (i, el) {
       var row = $(el);
@@ -708,14 +730,6 @@
     }
   }
 
-  var publicInterface = {
-    controllerUrl: '',
-    lastRowVersion: 0,
-    initial: [],
-    electionGuid: null,
-    PreparePage: preparePage,
-    local: local
-  };
   return publicInterface;
 };
 

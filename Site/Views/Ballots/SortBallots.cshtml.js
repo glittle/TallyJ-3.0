@@ -106,7 +106,7 @@
   }
 
   var extend2 = function (ballot) {
-    ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<span title="{Tellers}" class=\'ui-icon ui-icon-person\'></span>'.filledWith(ballot);
+    ballot.TellerIcon = ballot.Tellers == '?' ? '' : '<i title="{Tellers}" class=\'el-icon-user-solid\'></i>'.filledWith(ballot);
     ballot.EnvInfo = '<b data-num="{EnvNum}">{EnvNum}</b>'.filledWith(ballot);
     return ballot;
   }

@@ -571,8 +571,6 @@ namespace TallyJ.Code.Session
       }
     }
 
-    public static string DateLogFormat => "yyyy MMM d, " + (UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt");
-
     public static string FinalizedNoChangesMessage = "Election is Finalized. No further changes allowed!";
 
     public static string GetCurrentTeller(int num)

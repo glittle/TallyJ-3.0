@@ -411,7 +411,7 @@ namespace TallyJ.CoreModels
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person),
+              person.RegistrationTime.FromSql().AsString("o"),
               VotingMethodEnum.TextFor(person.VotingMethod)
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
@@ -639,7 +639,7 @@ namespace TallyJ.CoreModels
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          peopleModel.ShowRegistrationTime(person),
+          person.RegistrationTime.FromSql().AsString("o"),
           "Imports Removed",
         }.JoinedAsString("; ", true));
         person.RegistrationLog = log;

@@ -50,15 +50,18 @@ namespace TallyJ.Controllers
         );
       }
 
-      var logLines = query1
+      var list = query1
         .OrderByDescending(j => j.l.C_RowId)
         .Take(numToShow)
+        .ToList();
+
+      var logLines = list
         .Select(j => new
         {
           j.l.C_RowId,
           AsOf = j.l.AsOf.FromSql(),
           j.l.Details,
-          ElectionName = j.e.Name,
+          ElectionName = j.e?.Name,
           j.l.HostAndVersion,
           //          isVoter = j.l.VoterEmail == null ? null : "Voter",
           j.l.VoterId,

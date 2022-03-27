@@ -368,7 +368,7 @@ namespace TallyJ.Controllers
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person),
+              person.RegistrationTime.FromSql().AsString("o"),
               UserSession.VoterLoginSource,
               VotingMethodEnum.TextFor(person.VotingMethod),
             }.JoinedAsString("; ", true));
@@ -398,7 +398,7 @@ namespace TallyJ.Controllers
             person.RegistrationTime = utcNow; // set time so that the log will have it
             log.Add(new[]
             {
-              peopleModel.ShowRegistrationTime(person),
+              person.RegistrationTime.FromSql().AsString("o"),
               "Cancel Online",
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible

@@ -4,11 +4,13 @@
     templatesRaw: null,
     currentTitle: '',
     reportLines: [],
-    reportHolder: null
+    reportHolder: null,
+    reportVue: null,
   };
 
   var preparePage = function () {
     local.reportHolder = $('#report');
+    local.timeTemplate = reportsPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
     window.addEventListener("hashchange", function () {
       $('.chooser a').removeClass('selected');
@@ -134,11 +136,17 @@
     //    var value = s.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
     //    var value = s.replace(/\s+/g, ' ').trim();
     var value = s.trim();
-
-    if (value.length > 250) {
-      value = chunkSubstr(value, 250).map(s => "\" & \"" + s).join('');
+    if (!value) {
+      return '';
     }
-    var prefix = s.indexOf(',') === -1 ? '=' : '';
+
+
+//    if (value.length > 230) { // max is 250, but use 230
+//      value = chunkSubstr(value, 230).join('" & "');
+//    }
+//    value = value.split(',').join('","');
+
+    var prefix = ''; //s.indexOf(',') === -1 || chunked ? '=' : '';
 
     return (!isNaN(value) && value === (+value).toString()) // a number without any formatting
       || value.slice(-1) === '%'
@@ -156,24 +164,24 @@
 
   function chunkSubstr(str, size) {
     var numChunks = Math.ceil(str.length / size);
-    var chunks = new Array(numChunks);
-
+    var chunks = [];
     for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
-      chunks[i] = str.substr(o, size);
+      chunks.push(str.substr(o, size));
     }
 
     return chunks;
   }
 
   function getReport(code, title) {
-    local.reportLines = [];
-    local.reportHolder.html('<h1 class=getting>' + title + ' (loading...)</h1>');
-    $('#Status').hide();
     CallAjax2(publicInterface.controllerUrl + '/GetReportData', { code: code },
       {
         busy: 'Getting report'
       },
       showInfo, { code: code, title: title });
+    local.reportLines = [];
+    local.reportHolder.html('<h1 class=getting>' + title + '<span class=loading>(loading...)</span></h1>');
+    $('#Status').hide();
+    publicInterface.vueMixin = null;
   }
 
   function showInfo(info, codeTitle) {
@@ -195,6 +203,11 @@
       .addClass('Report' + codeTitle.code)
       .fadeIn()
       .html(info.Html.replace(/\x01/g, '\<br>'));
+
+    if (publicInterface.vueMixin) {
+      buildWithVue();
+    }
+
     //    console.log('warn', info.Ready, $('div.body.WarnIfNotFinalized').length);
     if (!info.Ready && $('div.body.WarnIfNotFinalized').length) {
       // server must prepare "Ready" for any report that needs it
@@ -202,7 +215,7 @@
       $('#Status').html(warningMsg).show();
     }
     $('#title').text(codeTitle.title);
-    $('#titleDate').text(moment().format(reportsPage.T24 ? 'D MMM YYYY HH:mm' : 'D MMM YYYY hh:mm a'));
+    $('#titleDate').text(moment().format(local.timeTemplate));
     $(".sortable").tablesorter({
       //      widgets: ['zebra', 'columns'],
       headerTemplate: '{content}{icon}', // dropbox theme doesn't like a space between the content & icon
@@ -210,12 +223,40 @@
       sortReset: true,
       sortRestart: true
     });
-
   };
+
+  function buildWithVue() {
+    report.vue = new Vue({
+      el: '#vueBody',
+      mixins: [publicInterface.vueMixin],
+      data: {
+      },
+      computed: {
+        timeTemplate() {
+          return local.timeTemplate;
+        }
+      },
+      watch: {
+      },
+      created: function () {
+      },
+      mounted: function () {
+        this.extendRows();
+      },
+      methods: {
+        extendRows() {
+          if (this.rows && this.extendRow) {
+            this.rows.forEach(this.extendRow);
+          }
+        }
+      }
+    });
+  }
 
   var publicInterface = {
     controllerUrl: '',
     local: local,
+    vueMixin: null,
     PreparePage: preparePage
   };
 

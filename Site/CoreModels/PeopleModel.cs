@@ -431,9 +431,9 @@ namespace TallyJ.CoreModels
           PersonId = p.C_RowId,
           C_FullName = p.FullName,
           VotedAt = hasMultipleLocations ? LocationName(p.VotingLocationGuid) : null,
-          When = ShowRegistrationTime(p),
-          p.RegistrationTime,
-          Log = FormatRegistrationLog(p),
+          // When = p.RegistrationTime.FromSql().AsString("o"),
+          RegistrationTime = p.RegistrationTime.FromSql(),
+          Log = p.RegistrationLog,
           p.EnvNum,
           Tellers = ShowTellers(p)
         })
@@ -466,9 +466,8 @@ namespace TallyJ.CoreModels
           PersonId = p.C_RowId,
           C_FullName = p.FullName,
           VotedAt = LocationName(p.VotingLocationGuid),
-          When = ShowRegistrationTime(p),
-          p.RegistrationTime,
-          Log = FormatRegistrationLog(p),
+          RegistrationTime = p.RegistrationTime.FromSql(),
+          Log = p.RegistrationLog,
           p.VotingMethod,
           EnvNum = ShowEnvNum(p),
           Tellers = ShowTellers(p)
@@ -532,13 +531,13 @@ namespace TallyJ.CoreModels
           NameLower = (p.FullName + p.BahaiId).WithoutDiacritics(true).ReplacePunctuation(' ')
             .Replace(" ", "").Replace("\"", "\\\""),
           p.Area,
+          RegistrationTime = p.RegistrationTime.FromSql(),
           VotedAt = new[]
                     {
-                      ShowRegistrationTime(p),
                       ShowTellers(p),
                       hasMultipleLocations ? LocationName(p.VotingLocationGuid) : ""
-                    }.JoinedAsString("; ", true)
-                    + FormatRegistrationLog(p),
+                    }.JoinedAsString("; ", true),
+          Log = p.RegistrationLog,
           p.VotingMethod,
           InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
           DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
@@ -592,19 +591,6 @@ namespace TallyJ.CoreModels
       return names.JoinedAsString(", ", true);
     }
 
-    public string ShowRegistrationTime(Person p)
-    {
-      if (!p.RegistrationTime.HasValue)
-      {
-        return "";
-      }
-
-      // var timeOffset = UserSession.TimeOffsetServerAhead;
-      // return time.AddMilliseconds(0 - timeOffset).ToString(format);
-
-      return p.RegistrationTime.FromSql().AsString(UserSession.DateLogFormat);
-    }
-
     public JsonResult RegisterVotingMethod(int personId, string voteType, bool forceDeselect, int locationId)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
@@ -647,6 +633,8 @@ namespace TallyJ.CoreModels
       var votingMethodRemoved = false;
       Guid? oldVoteLocationGuid = null;
       Guid? newVoteLocationGuid = null;
+      var utcNow = DateTime.UtcNow;
+
       if (person.VotingMethod == voteType || forceDeselect || !person.CanVote.AsBoolean())
       {
         oldVoteLocationGuid = person.VotingLocationGuid;
@@ -654,13 +642,13 @@ namespace TallyJ.CoreModels
         // it is already set this way...turn if off
         person.VotingMethod = null;
         person.VotingLocationGuid = null;
-        person.RegistrationTime = DateTime.UtcNow;
+        person.RegistrationTime = utcNow;
         votingMethodRemoved = true;
 
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          ShowRegistrationTime(person),
+          person.RegistrationTime.FromSql().AsString("o"),
           "De-selected",
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
@@ -674,14 +662,14 @@ namespace TallyJ.CoreModels
         oldVoteLocationGuid = person.VotingLocationGuid;
 
         person.VotingLocationGuid = UserSession.CurrentLocationGuid;
-        person.RegistrationTime = DateTime.Now;
+        person.RegistrationTime = utcNow;
 
         newVoteLocationGuid = person.VotingLocationGuid;
 
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          ShowRegistrationTime(person),
+          person.RegistrationTime.FromSql().AsString("o"),
           VotingMethodEnum.TextFor(person.VotingMethod),
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null

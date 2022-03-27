@@ -1,4 +1,5 @@
 ﻿@using System.Web;
+@using Newtonsoft.Json
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code
 @using TallyJ.Code.Session
@@ -6,13 +7,18 @@
 @using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
+  var locationModel = new LocationModel();
+
+  var hasMultipleLocations = locationModel.HasMultipleLocations;
+  var locations = locationModel.GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.Name);
+
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanVote.HasValue && p.CanVote.Value)
     // .Where(p => p.IneligibleReasonGuid == null)
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
-      PersonName = p.FullName,
+      p.FullName,
       p.VotingMethod,
       p.BahaiId,
       p.VotingLocationGuid,
@@ -20,12 +26,22 @@
       p.Teller1,
       p.Teller2,
       p.RegistrationLog
-    });
+    })
+  .ToList()
+  .Select(p => new
+  {
+    PersonName = p.FullName,
+    VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod).DefaultTo("-"),
+    p.BahaiId,
+    p.VotingLocationGuid,
+//cation = locations.TryGetValue(p.VotingLocationGuid.AsGuid(), out var locName) ? locName : null,
+Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.VotingLocationGuid.AsGuid()] : null,
+    p.RegistrationTime,
+    p.Teller1,
+    p.Teller2,
+    p.RegistrationLog
+  });
 
-  var locationModel = new LocationModel();
-
-  var hasMultipleLocations = locationModel.HasMultipleLocations;
-  var locations = locationModel.GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.Name);
 }
 <style>
   b {
@@ -72,10 +88,8 @@
     font-weight: bold;
   }
 
-  .method {
-  }
 </style>
-<div class="body">
+<div class="body" id="vueBody">
   <div class="reportHead">
     <h1 id="title"></h1>
     <div class="byTitle">
@@ -84,11 +98,11 @@
     </div>
   </div>
 
-  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+  <button class="btn btn-mini btnDownloadCsv" data-table=".el-table" type="button" title="Download in CSV format for Excel">Export</button>
   <p class="Comment">
     Shows all potential voters and how they voted.
   </p>
-  <table class="Voters sortable">
+  @*<table class="Voters sortable">
     <thead>
       <tr>
         <td>Person</td>
@@ -130,5 +144,55 @@
         </tr>
       }
     </tbody>
-  </table>
+  </table>*@
+  <el-table :data="rows" 
+            row-key="BahaiId" 
+            style="width: 100%"
+            size="mini">
+    <el-table-column label="Person" prop="PersonName" sortable></el-table-column>
+    <el-table-column label="Id" prop="BahaiId" sortable show-overflow-tooltip></el-table-column>
+    <el-table-column label="How" prop="VotingMethod" sortable></el-table-column>
+    @if (hasMultipleLocations)
+    {
+      <el-table-column label="Where" prop="Location" sortable></el-table-column>
+    }
+    <el-table-column label="When" prop="when" sortable sort-by="whenSort"></el-table-column>
+    <el-table-column label="Teller at Keyboard" prop="Teller1" sortable></el-table-column>
+    <el-table-column label="Teller assisting" prop="Teller2" sortable></el-table-column>
+    <el-table-column width="180" label="Log">
+        <template slot-scope="scope">
+            <div v-html="scope.row.log"></div>
+        </template>
+
+    </el-table-column>
+
+  </el-table>
 </div>
+<script>
+  reportsPage.vueMixin = {
+    data: {
+        rows: JSON.parse(atob('@JsonConvert.SerializeObject(people).AsBase64()'))
+    },
+    methods: {
+      extendRow(row) {
+        var reg = row.RegistrationTime;
+        if(reg) {
+            var m = moment(row.RegistrationTime);
+            row.when = m.format(this.timeTemplate);
+            row.whenSort = m.toISOString();
+        }
+        var log = row.RegistrationLog;
+        if (log) {
+            row.log = log.map(l => {
+                var parts = l.split(';').map(s => s.trim());
+                var time = parts[0];
+                if (time.length > 6 && time[4] === '-') {
+                    parts[0] = moment(time).format(this.timeTemplate);
+                }
+                return parts.join('; ');
+            }).join('<br>');
+        }
+      }
+    }
+  }
+</script>

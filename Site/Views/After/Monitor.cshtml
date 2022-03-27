@@ -232,17 +232,18 @@
           <el-table-column label="Voter" prop="C_FullName" width="170" sortable show-overflow-tooltip></el-table-column>
           <el-table-column label="Email" prop="Email" width="150" sortable show-overflow-tooltip></el-table-column>
           <el-table-column label="Phone" prop="Phone" width="130" sortable show-overflow-tooltip></el-table-column>
+
           <el-table-column label="Online Ballot"
                            align="center"
-                           width="140"
+                           width="130"
                            class-name="onlineStatus"
                            sort-by="Status"
                            sortable>
             <template slot-scope="scope">
               <div>
                 {{scope.row.Status}}
-                <span class="ui-icon ui-icon-info History"
-                      :class="'History' + scope.row.HasHistory_Tip"
+                <span class="LogIcon"
+                      :class="['History' + scope.row.HasHistory_Tip]"
                       :title="'Online Ballot History: ' + scope.row.History_Tip"></span>
               </div>
             </template>
@@ -257,8 +258,8 @@
             <template slot-scope="scope">
               <div>
                 {{scope.row.VotingMethod_Display}}
-                <span class="ui-icon ui-icon-info History"
-                      :class="'History' + scope.row.Registration_Tip"
+                <span class="LogIcon"
+                      :class="['History' + scope.row.Registration_Tip]"
                       :title="'Front Desk Registration History: ' + scope.row.Registration_Tip"></span>
               </div>
             </template>

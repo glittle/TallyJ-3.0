@@ -25,6 +25,7 @@
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
   //ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("frontDeskPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
 
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
