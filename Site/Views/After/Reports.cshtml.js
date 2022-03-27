@@ -8,7 +8,14 @@
     reportVue: null,
   };
 
-  var preparePage = function () {
+  var publicInterface = {
+    controllerUrl: '',
+    local: local,
+    vueMixin: null,
+    PreparePage: preparePage
+  };
+
+  function preparePage () {
     local.reportHolder = $('#report');
     local.timeTemplate = reportsPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
@@ -34,9 +41,9 @@
   function downloadCsv(ev) {
     var btn = $(ev.target);
     var lines = [
-      '="Election",' + csvQuoted(reportsPage.electionTitle),
+      'Election,' + csvQuoted(reportsPage.electionTitle),
       'Report,"' + local.currentTitle + '"',
-      'Date,"' + new Date().toLocaleString() + '"',
+      'Date,"' + moment().format(local.timeTemplate) + '"',
       ''
     ];
 
@@ -133,43 +140,17 @@
       return s.split(splitter).map(function (s2) { return csvQuoted(s2.trim()); }).join(',');
     }
 
-    //    var value = s.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-    //    var value = s.replace(/\s+/g, ' ').trim();
     var value = s.trim();
     if (!value) {
       return '';
     }
 
+    value = value.split('"').join('""');
 
-//    if (value.length > 230) { // max is 250, but use 230
-//      value = chunkSubstr(value, 230).join('" & "');
-//    }
-//    value = value.split(',').join('","');
+    var isNum = (!isNaN(value) && value === (+value).toString()) // a number without any formatting
+      || value.slice(-1) === '%';
 
-    var prefix = ''; //s.indexOf(',') === -1 || chunked ? '=' : '';
-
-    return (!isNaN(value) && value === (+value).toString()) // a number without any formatting
-      || value.slice(-1) === '%'
-      || value === ''
-      ? value : prefix + '"' + value + '"';
-
-    //var quote = false;
-    //if (s.indexOf(',') !== -1) quote = true;
-    //if (s.indexOf('\n') !== -1) quote = true;
-    //if (quote) {
-    //    return '"' + s + '"';
-    //}
-    //return s;
-  }
-
-  function chunkSubstr(str, size) {
-    var numChunks = Math.ceil(str.length / size);
-    var chunks = [];
-    for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
-      chunks.push(str.substr(o, size));
-    }
-
-    return chunks;
+    return isNum ? value : '"' + value + '"';
   }
 
   function getReport(code, title) {
@@ -179,7 +160,7 @@
       },
       showInfo, { code: code, title: title });
     local.reportLines = [];
-    local.reportHolder.html('<h1 class=getting>' + title + '<span class=loading>(loading...)</span></h1>');
+    local.reportHolder.html('<h1 class=getting>' + title + '<span class=loading><i class="el-icon-loading"></i> Getting Report...</span></h1>');
     $('#Status').hide();
     publicInterface.vueMixin = null;
   }
@@ -252,13 +233,6 @@
       }
     });
   }
-
-  var publicInterface = {
-    controllerUrl: '',
-    local: local,
-    vueMixin: null,
-    PreparePage: preparePage
-  };
 
   return publicInterface;
 };

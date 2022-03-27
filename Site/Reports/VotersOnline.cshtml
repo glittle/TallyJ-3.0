@@ -1,4 +1,5 @@
 ﻿@using System.Web;
+@using Newtonsoft.Json
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code
 @using TallyJ.Code.Data
@@ -9,11 +10,6 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var dbContext = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
-  var timeOffset = UserSession.TimeOffsetServerAhead;
-  var format = UserSession.CurrentElection.T24 ? "HH:mm" : "h:mm tt";
-  var formatWithDay = "MMM d - " + format;
-
-  var now = DateTime.Now;
   var recent = 30.minutes();
 
   var people = new PersonCacher().AllForThisElection
@@ -34,31 +30,24 @@
         j.byPhone
       })
       .ToList()
-      .OrderByDescending(j=>j.ovi.WhenStatus)
-      .ThenBy(j=>j.C_FullName)
+      .OrderByDescending(j => j.ovi.WhenStatus)
+      .ThenBy(j => j.C_FullName)
       .Select(j => new
       {
         PersonId = j.C_RowId,
         j.C_FullName,
-        j.VotingMethod,
         VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
         j.ovi.Status,
-        j.ovi.WhenStatus,
-    // WhenStatus_Display = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.AddMilliseconds(0 - timeOffset).ToString(format),
-    WhenStatus_Tip = j.ovi.WhenStatus == null ? "" : j.ovi.WhenStatus.Value.FromSql().ToString(formatWithDay), // .AddMilliseconds(0 - timeOffset),
-        j.ovi.HistoryStatus,
+        WhenStatus = j.ovi.WhenStatus.FromSql(),
         j.Email,
+        // cannot use merge conditional syntax
+        WhenEmail = (j.byEmail != null ? j.byEmail.WhenRegistered : null).FromSql(),
         j.Phone,
-        j.byEmail,
-        j.byPhone
+        WhenPhone = (j.byPhone != null ? j.byPhone.WhenRegistered : null).FromSql()
       });
 
 }
 <style>
-  b {
-    display: inline-block;
-  }
-
   tr {
     -moz-page-break-inside: avoid;
     page-break-inside: avoid;
@@ -81,7 +70,7 @@
 
   .when {
     font-size: 80%;
-      color: #999;
+    color: #999;
   }
 
   .recent {
@@ -89,10 +78,10 @@
   }
 
   .notUsed {
-      color: #999;
+    color: #999;
   }
 </style>
-<div class="body">
+<div class="body" id="vueBody">
   <div class="reportHead">
     <h1 id="title"></h1>
     <div class="byTitle">
@@ -101,56 +90,118 @@
     </div>
   </div>
 
-  <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
+  <button class="btn btn-mini btnDownloadCsv" data-table=".el-table" type="button" title="Download in CSV format for Excel">Export</button>
   <p class="Comment">
     Shows all voters who have connected to this election in the online voting site.
     Activity in the last @recent.Minutes minutes is <span class="recent">highlighted</span>.
   </p>
-  <table class="Voters sortable">
-    <thead>
-      <tr>
-        <th>Voter</th>
-        <th>Front Desk<br />Registration</th>
-        <th>Online Ballot<div class="when">(When)</div></th>
-        <th>Email<div class="when">(Last Login)</div></th>
-        <th>Phone<div class="when">(Last Login)</div></th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach (var person in people)
-      {
-        <tr>
-          <td>@person.C_FullName</td>
-          <td>@person.VotingMethod_Display</td>
-          <td>
-            @person.Status
-            @if (person.WhenStatus != null)
-            {
-              <div class="when @(now - person.WhenStatus < recent ? "recent" : "")">
-                @person.WhenStatus_Tip
-              </div>
-            }
-          </td>
-          <td class="@(person.byEmail==null ? "notUsed" : "used")">
-            @person.Email &nbsp;
-            @if (person.byEmail != null && person.byEmail.WhenLastLogin != null)
-            {
-              <div class="when @(now - person.byEmail.WhenLastLogin < recent ? "recent" : "")">
-                @person.byEmail.WhenLastLogin.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay)
-              </div>
-            }
-          </td>
-          <td class="@(person.byPhone==null ? "notUsed" : "used")">
-            @person.Phone &nbsp;
-            @if (person.byPhone != null && person.byPhone.WhenLastLogin != null)
-            {
-              <div class="when @(now - person.byPhone.WhenLastLogin < recent ? "recent" : "")">
-                @person.byPhone.WhenLastLogin.Value.AddMilliseconds(0 - timeOffset).ToString(formatWithDay)
-              </div>
-            }
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+
+  <el-table :data="rows"
+            row-key="PersonId"
+            style="width: 100%"
+            size="mini">
+
+    <el-table-column label="Voter" prop="C_FullName" sortable></el-table-column>
+
+    <el-table-column prop="VotingMethod_Display" sortable>
+      <template slot="header" slot-scope="scope">
+        Front Desk
+        <br />Registration
+      </template>
+    </el-table-column>
+
+    <el-table-column sortable sort-by="['Status', 'whenStatusSort']'">
+      <template slot="header" slot-scope="scope">
+        <div>
+          Online Ballot
+          <div class="when">(When)</div>
+        </div>
+      </template>
+      <template slot-scope="scope">
+        {{scope.row.Status}}
+        <div v-if="scope.row.whenStatus" :class="['when', scope.row.whenStatusRecent ? 'recent' : '']">
+          {{scope.row.whenStatus}}
+        </div>
+      </template>
+    </el-table-column>
+
+    <el-table-column sortable sort-by="Email">
+      <template slot="header" slot-scope="scope">
+        <div>
+          Email
+          <div class="when">(Last Login)</div>
+        </div>
+      </template>
+      <template slot-scope="scope">
+        {{scope.row.Email}}
+        <div v-if="scope.row.whenEmail" :class="['when', scope.row.whenEmailRecent ? 'recent' : '']">
+          {{scope.row.whenEmail}}
+        </div>
+      </template>
+    </el-table-column>
+
+    <el-table-column sortable sort-by="Phone">
+      <template slot="header" slot-scope="scope">
+        <div>
+          Phone
+          <div class="when">(Last Login)</div>
+        </div>
+      </template>
+      <template slot-scope="scope">
+        {{scope.row.Phone}}
+        <div v-if="scope.row.whenPhone" :class="['when', scope.row.whenPhoneRecent ? 'recent' : '']">
+          {{scope.row.whenPhone}}
+        </div>
+      </template>
+    </el-table-column>
+
+  </el-table>
 </div>
+<script>
+    reportsPage.vueMixin = {
+        data: {
+            rows: JSON.parse(atob('@JsonConvert.SerializeObject(people).AsBase64()'))
+      },
+        computed: {
+            recent() {
+                return moment().subtract(@recent.Minutes, 'm');
+            }
+        },
+        methods: {
+          extendRow(row) {
+
+            var whenStatus = row.WhenStatus;
+            if(whenStatus) {
+                var whenStatusM = moment(whenStatus);
+                if (whenStatusM.isAfter(this.recent)) {
+                    row.whenStatusRecent = true;
+                }
+              row.whenStatus = whenStatusM.format(this.timeTemplate);
+              row.whenStatusSort = whenStatusM.toISOString();
+            }
+
+            var whenEmail = row.WhenEmail;
+            if(whenEmail) {
+                var whenEmailM = moment(whenEmail);
+                if (whenEmailM.isAfter(this.recent)) {
+                    row.whenEmailRecent = true;
+                }
+                row.whenEmail = whenEmailM.format(this.timeTemplate);
+                row.whenEmailSort = whenEmailM.toISOString();
+            }
+
+            var whenPhone = row.WhenPhone;
+            if(whenPhone) {
+                var whenPhoneM = moment(whenPhone);
+                if (whenPhoneM.isAfter(this.recent)) {
+                    row.whenPhoneRecent = true;
+                }
+                row.whenPhone = whenPhoneM.format(this.timeTemplate);
+                row.whenPhoneSort = whenPhoneM.toISOString();
+            }
+
+
+          }
+        }
+    }
+</script>
