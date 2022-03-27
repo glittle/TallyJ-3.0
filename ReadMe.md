@@ -15,7 +15,7 @@ cast their ballot in any election they are a part of.
 When **tallying** ballots, all names on the ballots are typed
 into one or more computers by tellers, and on-screen reports provide instant results.
 
-Can be accessed for free on the web (https://v3.tallyj.com), or installed locally with IIS and SQL.
+Can be accessed for free on the web (https://tallyj.com), or installed locally with IIS and SQL.
 
 See more info at: https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view
 
