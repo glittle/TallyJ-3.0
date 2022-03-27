@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TallyJ.CoreModels;
 
 namespace TallyJ.EF
@@ -10,6 +11,7 @@ namespace TallyJ.EF
     public Guid ComputerGuid { get; set; }
     public Guid LocationGuid { get; set; }
     public Guid ElectionGuid { get; set; }
+    public List<Guid> AllMyElections { get; set; }
 
     // also stored in one user's session
     public string ComputerCode { get; set; }

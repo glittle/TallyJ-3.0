@@ -213,7 +213,8 @@
 
         @if (UserSession.IsKnownTeller)
         {
-          <el-button :type="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots ? '' : 'primary'"
+          <el-button @*:type="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots ? '' : 'primary'"*@
+                     type="primary"
                      v-on:click="processReadyBallots"
                      :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots">
             Process Online Ballots that are Submitted
@@ -231,81 +232,55 @@
           <el-table-column label="Voter" prop="C_FullName" width="170" sortable show-overflow-tooltip></el-table-column>
           <el-table-column label="Email" prop="Email" width="150" sortable show-overflow-tooltip></el-table-column>
           <el-table-column label="Phone" prop="Phone" width="130" sortable show-overflow-tooltip></el-table-column>
-          <el-table-column label="Front Desk"
-                           prop="VotingMethod_Display"
+
+          <el-table-column label="Online Ballot"
+                           align="center"
+                           width="130"
+                           class-name="onlineStatus"
+                           sort-by="Status"
+                           sortable>
+            <template slot-scope="scope">
+              <div>
+                {{scope.row.Status}}
+                <span class="LogIcon"
+                      :class="['History' + scope.row.HasHistory_Tip]"
+                      :title="'Online Ballot History: ' + scope.row.History_Tip"></span>
+              </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="Front Desk Registration"
+                           align="center"
                            width="120"
                            class-name="votingMethod"
-                           sortable></el-table-column>
-          <el-table-column label="Online Ballot"
-                           prop="Status"
-                           width="140"
-                           class-name="onlineStatus"
-                           sortable></el-table-column>
+                           sort-by="VotingMethod_Display"
+                           sortable>
+            <template slot-scope="scope">
+              <div>
+                {{scope.row.VotingMethod_Display}}
+                <span class="LogIcon"
+                      :class="['History' + scope.row.Registration_Tip]"
+                      :title="'Front Desk Registration History: ' + scope.row.Registration_Tip"></span>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column label="When"
-                           align="right"
                            min-width="160"
                            sort-by="WhenStatus_Sort"
                            sortable>
             <template slot-scope="scope">
               <div>
-                {{scope.row.WhenStatus_Display}}
-                <span class="ui-icon ui-icon-info History"
-                      :class="'History' + scope.row.HasHistory_Tip"
-                      :title="'Full History: ' + scope.row.History_Tip"></span>
+                <div class="when"
+                     v-html="scope.row.WhenStatus_Display"></div>
+                <div class="when"
+                     v-html="scope.row.Registration_Display"></div>
               </div>
             </template>
           </el-table-column>
         </el-table>
-
-
-        @*<table class="OnlineBallots">
-            <thead>
-              <tr>
-                <th>
-                  Voter Name
-                </th>
-                <th>
-                  Voter Email / Phone
-                </th>
-                <th>
-                  Voting Method<br />on Front Desk
-                </th>
-                <th>
-                  Online Ballot<br />Status
-                </th>
-                <th>
-                  When
-                </th>
-              </tr>
-            </thead>
-            <tbody id="onlineBallotsBody" class="Hidden tbody">
-              <tr>
-                <td class="OnlineName">
-                  {C_FullName}
-                </td>
-                <td class="OnlineName">
-                  {^EmailPhone}
-                </td>
-                <td class="method_{VoteMethodClass}">
-                  {VotingMethod_Display}
-                </td>
-                <td class="row{StatusClass}">
-                  {Status}
-                </td>
-                <td>
-                  {WhenStatus_Display}
-                  <span class="ui-icon ui-icon-info History History{HasHistory_Tip}" title="Full History:{History_Tip}"></span>
-                </td>
-              </tr>
-            </tbody>
-          </table>*@
       </div>
     </div>
   }
-  @*else
-  {
-    <p class="noOnlineVoting">(Online voting is not enabled for this election.)</p>
-  }*@
 }
 
 

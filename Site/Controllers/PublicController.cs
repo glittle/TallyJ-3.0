@@ -160,12 +160,26 @@ namespace TallyJ.Controllers
       {
         return;
       }
-      if (electionGuid.AsGuid() == Guid.Empty)
+
+      var guid = electionGuid.AsGuid();
+      if (guid != UserSession.CurrentElectionGuid)
       {
         return;
       }
 
       new MainHub().Join(connId);
+    }
+
+    public void JoinMainHubAll(string connId, string electionGuidList)
+    {
+      // removed [Authorize]... just ignore if we don't like the call
+
+      if (!UserSession.IsKnownTeller)
+      {
+        return;
+      }
+
+      new MainHub().JoinAll(connId, electionGuidList);
     }
 
   }

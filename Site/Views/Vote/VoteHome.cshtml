@@ -250,8 +250,8 @@
           You are registered as having voted: <strong>{{registration}}</strong>.
         </p>
         <div v-if="registration && registration !== 'Online'">
-          <p><span class="OtherRegistration">This online ballot below WILL NOT be used because you are registered as voting {{registration}}.</span> </p>
-          <p>If that is not correct, please contact the head teller or primary contact for this election before the election is closed.</p>
+          <p><span class="OtherRegistration">This online ballot below WILL NOT be used because tellers have registered you as voting {{registration}}.</span> </p>
+          <p>If that is not correct, please contact the head teller or primary contact for this election before the election is closed!</p>
         </div>
         <p v-if="registration === 'Online' && lockInVotes">
           Your ballot will be processed when the head teller closes online voting and

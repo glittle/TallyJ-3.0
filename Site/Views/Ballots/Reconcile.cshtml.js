@@ -8,11 +8,14 @@
     hasLocations: false,
     ballotMethods: [],
     sortSelector: '',
-    envelopeTemplate: ''
+    envelopeTemplate: '',
+    timeTemplate: ''
   };
 
   var preparePage = function () {
     connectToFrontDeskHub();
+
+    local.timeTemplate = reconcilePage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
     var ddlLocations = $('#ddlTopLocation');
     local.hasLocations = ddlLocations.is(':visible');
@@ -73,10 +76,12 @@
     if (!list.length) {
       return;
     }
-    var ballotList = local.envelopeTemplate.filledWithEach(extend(list));
+
+    var ballotList = local.envelopeTemplate.filledWithEach(extendList(list));
     $('#lists').append(
       '<div class="removedBallots VMG VMG-X"><div class=VmgHead><h3>De-selected: {0}'.filledWith(list.length)
-      + ' <span class="ui-icon ui-icon-info" id="qTipUn"></span>{^2}</h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'.filledWith(ballotList, local.sortSelector, local.hasLocations ? ' <span class=allLoc>(All Locations)</span>' : ''));
+      + ' <span class="ui-icon ui-icon-info" id="qTipUn"></span>{^2}</h3>{^1}</div><div class="Names oldEnv">{^0}</div></div>'
+        .filledWith(ballotList, local.sortSelector, local.hasLocations ? ' <span class=allLoc>(All Locations)</span>' : ''));
 
     $('.VMG-X select option[value="Time"]').remove();
 
@@ -107,14 +112,6 @@
   };
 
 
-  function extend2(ballot) {
-    if (ballot.RegistrationTime) {
-      var time = new Date(parseInt(ballot.RegistrationTime.substr(6)));
-      ballot.FullTime = time.toString();
-      ballot.SortTime = time.getTime();
-    }
-    return ballot;
-  }
 
   function updateSort(method) {
     //console.log('sort', method);
@@ -134,6 +131,7 @@
     local.ballotMethods = [];
 
     var method;
+    extendList(ballots);
 
     for (var i = 0; i < ballots.length; i++) {
       var ballot = ballots[i];
@@ -145,7 +143,7 @@
         local.ballotMethods.push(method);
       }
 
-      list.push(extend2(ballot));
+      list.push(ballot);
     }
 
 
@@ -226,15 +224,30 @@
     }
   };
 
-  function extend(ballots) {
+  function extendList(ballots) {
     if (!ballots) return null;
-    var newBallots = [];
-    $.each(ballots, function () {
-      this.Method = this.VotingMethod == 'P' ? reconcilePage.inPersonName : this.VotingMethod;
-      newBallots.push(extend2(this));
+
+    ballots.forEach(ballot => {
+      var when = ballot.reg_M = ballot.RegistrationTime ? moment(ballot.RegistrationTime) : null;
+
+      ballot.Method = ballot.VotingMethod == 'P' ? reconcilePage.inPersonName : ballot.VotingMethod;
+      ballot.When = when ? when.format(local.timeTemplate) : '';
+      ballot.SortTime = when ? when.toISOString() : '';
+
+      var log = ballot.Log.map(l => {
+        var parts = l.split(';').map(s => s.trim());
+        var time = parts[0];
+        if (time.length > 6 && time[4] === '-') {
+          parts[0] = moment(time).format(local.timeTemplate);
+        }
+        return parts.join('; ');
+      });
+      ballot.LogDisplay = log.length > 1 ? `<span class=LogIcon title="${log.join('\n')}"></span>` : '';
     });
-    return newBallots;
+    return ballots;
   };
+
+
 
   var sortSection = function (ev) {
     var select = $(ev.target);

@@ -16,6 +16,7 @@
     if (typeof Symbol === "undefined") return 'Symbol';
 
     var msg = '';
+
     try {
       eval('let x = 1');
     } catch (e) {
@@ -84,7 +85,7 @@
     startSignalR(function () {
       console.log('Joining public hub');
       CallAjaxHandler(publicInterface.controllerUrl + 'PublicHub', { connId: site.signalrConnectionId }, function (info) {
-        showElections(info.html);
+        showElections(info?.html);
       });
     });
   };
@@ -291,7 +292,11 @@
           return text;
         },
         sendEmail: function () {
-          this.issueCode('email', null, this.email);
+          var email = this.email.trim();
+          if (!email) {
+            return;
+          }
+          this.issueCode('email', null, email);
         },
         sendPhone: function (method) {
           var phone = this.fixPhone(this.phone);
@@ -343,8 +348,9 @@
         },
         issueCode: function (type, method, target) {
           var vue = this;
-          
-          this.status = 'Preparing...';
+
+          this.sending = true;  
+          this.status = 'Sending...';
 
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'IssueCode',
@@ -355,11 +361,13 @@
               hubKey: vue.hubKey
             }, function (info) {
               vue.showCodeInput = true;
+              vue.sending = false;
+
               if (info.Success) {
                 // hub will update
                 console.log('issued');
 
-
+                vue.status = '';
                 vue.sent = true; //testing
                 vue.sending = false; // testing
                 setTimeout(() => $('.voterLogin code').focus(), 1000);
@@ -371,6 +379,7 @@
         },
         submitCode: function () {
           var vue = this;
+          vue.status = 'Checking code...';
 
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'LoginWithCode',
@@ -378,6 +387,7 @@
               code: vue.code
             }, function (info) {
               if (info.Success) {
+                vue.status = 'Success. Entering the site...';
                 location.href = site.rootUrl + 'Vote';
 
               } else {

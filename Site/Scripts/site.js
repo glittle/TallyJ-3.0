@@ -154,8 +154,7 @@ function clearElectionRelatedStorageItems() {
       }
     }
   }
-  localStorage.removeItem('locationKnown');
-
+  // localStorage.removeItem('locationKnown');
 };
 
 function scrollIntoView(element, blockWhere) {
@@ -174,7 +173,7 @@ function scrollIntoView(element, blockWhere) {
   });
 }
 
-var connectToElectionHub = function () {
+var connectToElectionHub = function (electionGuidList) {
   var hub = $.connection.mainHubCore;
 
   hub.client.statusChanged = function (info) {
@@ -195,9 +194,16 @@ var connectToElectionHub = function () {
   };
 
   startSignalR(function () {
-    console.log('Joining main hub');
-    CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub',
-      { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
+    if (electionGuidList) {
+      console.log('Joining main hub for known elections');
+      CallAjaxHandler(site.rootUrl + 'Public/JoinMainHubAll',
+        { connId: site.signalrConnectionId, electionGuidList: electionGuidList });
+
+    } else {
+      console.log('Joining main hub');
+      CallAjaxHandler(site.rootUrl + 'Public/JoinMainHub',
+        { connId: site.signalrConnectionId, electionGuid: site.electionGuid });
+    }
   });
 };
 
@@ -873,11 +879,11 @@ function HasErrors(data, jqXhr) {
       console.log(data);
       return true;
     }
-    if (/Error\:/.test(data)) {
-      ShowStatusFailed(
-        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
-      return true;
-    }
+//    if (/Error\:/.test(data)) {
+//      ShowStatusFailed(
+//        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
+//      return true;
+//    }
   }
 
   var jsonHeader = jqXhr.getResponseHeader('x-responded-json');

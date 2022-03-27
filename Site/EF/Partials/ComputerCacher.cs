@@ -36,17 +36,20 @@ namespace TallyJ.EF
     /// List of Guids of all Elections that have Known tellers
     /// </summary>
     public List<Guid> ElectionGuidsOfActiveComputers
-    {
+    { 
       get
       {
         var maxAge = new TimeSpan(1, 0, 0); // 1 hour
         var now = DateTime.Now;
 
-        return CachedDict.Values
+        var activeComputers = CachedDict.Values
           .Where(comp => comp.AuthLevel == "Known"
-                   && comp.LastContact.HasValue 
-                   && (now - comp.LastContact.Value) < maxAge)
-          .Select(comp => comp.ElectionGuid)
+                         && comp.LastContact.HasValue 
+                         && (now - comp.LastContact.Value) < maxAge)
+          .ToList();
+
+        return activeComputers
+          .SelectMany(comp => comp.AllMyElections)
           .Distinct()
           .ToList();
       }

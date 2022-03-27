@@ -46,7 +46,7 @@ namespace TallyJ.Controllers
 
     public JsonResult DetermineRules(string type, string mode)
     {
-      return new ElectionModel().GetRules(type, mode).AsJsonResult();
+      return ElectionModel.GetRules(type, mode).AsJsonResult();
     }
 
     [ForAuthenticatedTeller]
@@ -144,8 +144,7 @@ namespace TallyJ.Controllers
     public JsonResult Upload()
     {
       var model = new ImportCsvModel();
-      int rowId;
-      var messages = model.ProcessUpload(out rowId);
+      var messages = model.ProcessUpload(out var rowId);
 
       return new
       {

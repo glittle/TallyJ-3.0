@@ -1,0 +1,411 @@
+﻿@import "../../Content/bootstrap/css/variables.less";
+
+#electionListPage {
+  margin-top: 1em;
+
+  &.reloading {
+    opacity: 0.5;
+  }
+}
+
+.Election {
+  display: grid;
+  grid-template-columns: 2fr auto 13em;
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+  box-shadow: #ccc 1px 1px;
+  padding: 3px 10px 6px 10px;
+  margin: 8px 0;
+  border-radius: 2px;
+
+  &.deleting {
+    background-color: rgb(255, 178, 178);
+  }
+
+  &.justloaded {
+    background-color: rgb(178,255,178);
+  }
+
+  &.current { // currently logged into
+  }
+
+  &.noOnline {
+    .statusVoters {
+      color: #999;
+    }
+  }
+
+  &.tie-break {
+    margin: -6px 0 0 30px;
+  }
+}
+
+
+
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.statusBlocks {
+  display: flex;
+  padding: 5px 0 10px 10px;
+
+  .statusBlock {
+    width: 90px;
+    text-align: center;
+  }
+
+  .statusCircle {
+    margin: 0 auto;
+    width: 50%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+
+    &.red {
+      // put red first in the list
+      background-color: #ffe4e4;
+      border-color: #ffe4e4;
+    }
+
+    &.green {
+      background-color: green;
+      border-color: green;
+      //box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
+      //transform: scale(1);
+      //animation: active 1s infinite;
+      //&:before {
+      //  content: '|';
+      //  color: white;
+      //}
+    }
+
+    &.na {
+      animation: none;
+    }
+
+    &.future {
+      background-color: orange;
+      border-color: orange;
+    }
+
+    &.past {
+      background-color: #ffe4e4;
+      border-color: #ffe4e4;
+    }
+  }
+
+  .statusLabel {
+    text-align: center;
+  }
+}
+
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  .tallyStatus {
+    font-weight: bold;
+    padding: .25em 0 .5em;
+  }
+
+  .other {
+    margin-top: 10px;
+    flex-grow: 2;
+
+    .otherButtons {
+      white-space: nowrap;
+      text-align: right;
+      padding: 4px 0 0;
+    }
+
+    .el-button--micro {
+      font-size: 11px;
+      border-radius: 2px;
+      padding: 3px 6px;
+    }
+
+    .el-button + .el-button {
+      margin-left: 2px;
+    }
+
+    .otherToggle {
+      cursor: pointer;
+      font-size: 85%;
+      text-align: right;
+    }
+  }
+}
+
+.reloadAll {
+  float: right;
+  margin-top: -44px;
+}
+
+.el-icon-s-opportunity {
+  font-size: 120%;
+  color: #409eff;
+}
+
+.row {
+  margin: 0 0 6px 15px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 1em;
+  font-size: 85%;
+  padding: 4px 8px 2px 4px;
+  border-radius: 2px;
+
+  &.tellers {
+    background-color: #d0dbe6;
+  }
+
+  &.onlineInfo {
+    background-color: #FCE1C1;
+  }
+
+  div {
+    div + div {
+      margin-top: 2px;
+    }
+  }
+}
+
+.numVoters, .numBallots {
+  white-space: nowrap;
+}
+
+.el-switch {
+  font-size: 1em;
+  margin: 2px 10px;
+  @space: 3px;
+
+  .el-switch__core {
+    background-color: red;
+
+    &:after {
+      //content: '\21fd'; // left
+      text-align: center;
+      line-height: 16px;
+      color: red;
+    }
+  }
+
+  &.is-checked {
+    .el-switch__core {
+      background-color: green;
+
+      &:after {
+        //content: '\21fe'; // right
+        color: green;
+      }
+    }
+  }
+
+  .el-switch__label {
+    font-size: 1em;
+    color: #999;
+
+    &.el-switch__label--right {
+      margin-left: @space;
+
+      &.is-active {
+        color: green;
+        font-weight: bold;
+      }
+    }
+
+    &.el-switch__label--left {
+      margin-right: @space;
+
+      &.is-active {
+        color: red;
+        font-weight: bold;
+      }
+    }
+
+
+    * {
+      font-size: 1em;
+    }
+  }
+}
+
+.Detail1 {
+  margin: 6px 0 9px 0;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.Detail2 {
+  margin: 5px 0 3px 15px;
+  font-size: 85%;
+  color: #444;
+}
+
+.Test {
+  background-color: #e85a55;
+}
+
+.Test, .NotTest {
+  padding: 3px 4px 2px 4px;
+  color: white;
+  font-size: 60%;
+  border-radius: 7px;
+}
+
+.NotTest {
+  background-color: #44c145;
+}
+
+
+.btnSelectElection {
+  // margin-right: 15px;
+  //font-size: 13px;
+  margin: 3px 0 3px 20px;
+}
+
+#btnCreate {
+  margin-left: 37px;
+  display: block;
+}
+
+button.active {
+  background-color: greenyellow;
+}
+
+.Locations {
+  margin-left: 150px;
+}
+
+.onlineCurrentlyOpen {
+  // font-weight: bold;
+  // color: @tallyJOrangeText;
+}
+
+.MakeNew {
+  margin-top: 25px;
+}
+
+.MakeNewList li {
+  margin-bottom: 14px;
+}
+
+
+#fileName {
+  //display: none;
+}
+
+#file-uploader {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+#form2 {
+  float: right;
+}
+
+#formLoadFile {
+  margin: 0;
+}
+
+#formLoadFile input {
+  display: block;
+  margin: 3px 0 0 37px;
+}
+
+div.Comment {
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
+  margin: -10px 0 9px 0;
+}
+
+.NoneFound {
+  margin: 1em;
+}
+
+li.Comment {
+  color: #666;
+  font-size: 90%;
+  font-style: italic;
+}
+
+.h3button {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+
+.currentElections {
+  min-height: 2em;
+}
+
+.oldElections {
+  margin-top: 2em;
+}
+
+.loadingLog {
+  background-color: white;
+  margin: 5px 100px 0 50px;
+  padding: 3px 10px;
+}
+
+@media only screen and (max-width: 750px) {
+  .buttons {
+    white-space: normal;
+
+    .btnSelectElection {
+      margin-right: 0;
+    }
+
+    .btn-group {
+      margin-top: 2px;
+    }
+  }
+}
+
+@keyframes active {
+  0% {
+    //transform: scale(0.98) rotate(0);
+    //transform: rotate(0);
+    opacity: 1;
+    //box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  25% {
+    //transform: rotate(.25turn);
+    //box-shadow: 0 0 0 3px rgba(0, 0, 0, 0);
+  }
+
+  50% {
+    //transform: rotate(.5turn);
+    opacity: .6;
+  }
+
+  75% {
+    //transform: rotate(.75turn);
+    //box-shadow: 0 0 0 3px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+    //transform: rotate(1turn);
+    // box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}

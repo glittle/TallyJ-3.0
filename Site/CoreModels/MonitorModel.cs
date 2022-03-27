@@ -37,27 +37,32 @@ namespace TallyJ.CoreModels
                 new { p, ovi })
             .Select(j => new
             {
-              j.p.C_RowId,
-              j.p.C_FullName,
-              j.p.VotingMethod,
-              j.p.Email,
-              j.p.Phone,
+              // j.p.C_RowId,
+              // j.p.C_FullName,
+              // j.p.VotingMethod,
+              // j.p.Email,
+              // j.p.Phone,
+              // j.p.CombinedSoundCodes,
+              j.p,
               j.ovi,
             })
             .ToList()
             .Select(j => new
             {
-              PersonId = j.C_RowId,
-              j.C_FullName,
-              j.VotingMethod,
+              PersonId = j.p.C_RowId,
+              j.p.C_FullName,
+              j.p.VotingMethod,
               j.ovi.Status,
-              j.ovi.WhenStatus,
+              WhenStatus = j.ovi.WhenStatus.FromSql(),
               j.ovi.HistoryStatus,
+              j.p.RegistrationLog,
+              RegistrationTime = j.p.RegistrationTime.FromSql(),
               votesReady = j.ovi.PoolLocked.GetValueOrDefault(),
-              VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
-              j.Email,
-              j.Phone
+              VotingMethod_Display = VotingMethodEnum.TextFor(j.p.VotingMethod).DefaultTo("-"),
+              j.p.Email,
+              j.p.Phone
             })
+            .ToList()
           : null;
 
         var locationResult = locations

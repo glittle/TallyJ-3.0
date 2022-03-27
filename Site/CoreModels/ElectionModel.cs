@@ -18,9 +18,9 @@ namespace TallyJ.CoreModels
 {
   public class ElectionModel : DataConnectedModel
   {
-    private static object LockObject = new object();
+    private static readonly object LockObject = new object();
 
-    public ElectionRules GetRules(string type, string mode)
+    public static ElectionRules GetRules(string type, string mode)
     {
       var rules = new ElectionRules
       {
@@ -204,19 +204,19 @@ namespace TallyJ.CoreModels
       return rules;
     }
 
-    /// <summary>
-    ///   Based on the 2 flags, get a default reason (may be null)
-    /// </summary>
-    /// <returns></returns>
+    // /// <summary>
+    // ///   Based on the 2 flags, get a default reason (may be null)
+    // /// </summary>
+    // /// <returns></returns>
     // public IneligibleReasonEnum GetDefaultIneligibleReason()
     // {
     //   return GetDefaultIneligibleReason(UserSession.CurrentElection);
     // }
 
-    /// <summary>
-    ///   Based on the 2 flags, get a default reason (may be null)
-    /// </summary>
-    /// <returns></returns>
+    // /// <summary>
+    // ///   Based on the 2 flags, get a default reason (may be null)
+    // /// </summary>
+    // /// <returns></returns>
     // public static IneligibleReasonEnum GetDefaultIneligibleReason(Election election)
     // {
     //   if (election == null)
@@ -354,7 +354,7 @@ namespace TallyJ.CoreModels
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
       {
         // just turned on
-        election.ListedForPublicAsOf = DateTime.Now;
+        election.ListedForPublicAsOf = DateTime.UtcNow;
       }
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
@@ -445,7 +445,7 @@ namespace TallyJ.CoreModels
         .UpdateVoters(new
         {
           changed = true,
-          election.OnlineWhenClose,
+          election.OnlineWhenClose, //TODO UTC??
           election.OnlineWhenOpen,
           election.OnlineCloseIsEstimate,
           election.OnlineSelectionProcess
@@ -486,12 +486,12 @@ namespace TallyJ.CoreModels
 
 
       // switch this the whole environment to use this election
-      UserSession.LeaveElection(true);
+      UserSession.LeaveElection(false);
 
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
-      // assign new computer code
+      // assign a new computer code (try to reuse a previous one if possible)
       var computerModel = new ComputerModel();
       computerModel.GetComputerForMe(oldComputerGuid);
 
@@ -725,6 +725,7 @@ namespace TallyJ.CoreModels
     {
       var info = new
       {
+        ElectionGuid = UserSession.CurrentElectionGuid,
         StateName = UserSession.CurrentElectionStatus,
         Online = UserSession.CurrentElection.OnlineCurrentlyOpen,
         Passcode = UserSession.CurrentElection.ElectionPasscode,
@@ -831,7 +832,7 @@ namespace TallyJ.CoreModels
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.Now : null;
+        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.UtcNow : null;
 
         Db.SaveChanges();
 
@@ -1012,6 +1013,7 @@ namespace TallyJ.CoreModels
 
         var ballotCreated = false;
 
+        var utcNow = DateTime.UtcNow;
 
         using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
         {
@@ -1021,9 +1023,9 @@ namespace TallyJ.CoreModels
             if (ballotCreated)
             {
               onlineBallotInfo.ovi.Status = OnlineBallotStatusEnum.Processed;
-              onlineBallotInfo.ovi.WhenStatus = now;
-              onlineBallotInfo.ovi.WhenBallotCreated = now;
-              onlineBallotInfo.ovi.HistoryStatus += $";{onlineBallotInfo.ovi.Status}|{now:s}";
+              onlineBallotInfo.ovi.WhenStatus = utcNow;
+              onlineBallotInfo.ovi.WhenBallotCreated = utcNow;
+              onlineBallotInfo.ovi.HistoryStatus += $";{onlineBallotInfo.ovi.Status}|{utcNow:u}";
 
               onlineBallotInfo.ovi.ListPool = null; // ballot created, so wipe out the original list
               onlineBallotInfo.ovi.PoolLocked = null;

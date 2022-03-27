@@ -13,7 +13,7 @@ namespace TallyJ.Code
 {
   public interface ILogHelper
   {
-    void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null);
+    void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null, bool includeLocation = false);
   }
 
   public class LogHelper : ILogHelper
@@ -29,7 +29,14 @@ namespace TallyJ.Code
     {
     }
 
-    public void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null)
+    /// <summary>
+    /// Add to the log
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="alsoSendToRemoteLog"></param>
+    /// <param name="voterId"></param>
+    /// <param name="includeLocation">Most log entries do not need a location</param>
+    public void Add(string message, bool alsoSendToRemoteLog = false, string voterId = null, bool includeLocation = false)
     {
       try
       {
@@ -45,7 +52,7 @@ namespace TallyJ.Code
         {
           ElectionGuid = _electionGuid.AsNullableGuid(),
           ComputerCode = UserSession.CurrentComputerCode.DefaultTo(null),
-          LocationGuid = UserSession.CurrentLocationGuid.AsNullableGuid(),
+          LocationGuid = includeLocation ? UserSession.CurrentLocationGuid.AsNullableGuid() : null,
           VoterId = voterId,
           Details = message,
           HostAndVersion = HostAndVersion
@@ -75,8 +82,10 @@ namespace TallyJ.Code
         return;
       }
 
-      var info = new NameValueCollection();
-      info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
+      var info = new NameValueCollection
+      {
+        ["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion)
+      };
       try
       {
         info["value2"] = UserSession.CurrentElectionName;
@@ -112,7 +121,7 @@ namespace TallyJ.Code
     private void AddToLog(C_Log logItem)
     {
       var db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
-      logItem.AsOf = DateTime.Now;
+      logItem.AsOf = DateTime.UtcNow;
       db.C_Log.Add(logItem);
       db.SaveChanges();
     }

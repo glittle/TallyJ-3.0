@@ -345,7 +345,7 @@ var vueOptions = {
       var person = info.person;
 
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
-
+      
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
@@ -357,7 +357,6 @@ var vueOptions = {
         person.WhenStatus_Display = null;
         person.BallotStatus = '-';
       }
-
 
       this.updateStatus(info);
     },
@@ -379,6 +378,7 @@ var vueOptions = {
       this.elections.forEach(this.updateStatus);
     },
     updateStatus: function (info) {
+      // refresh the status of each election
       info.openNow = false;
 
       info.canVote = info.person.Status !== 'Processed';

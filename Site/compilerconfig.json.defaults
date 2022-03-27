@@ -1,0 +1,7 @@
+﻿{
+  "compilers": {
+    "less": {
+      "sourceMap": true
+    }
+  }
+}

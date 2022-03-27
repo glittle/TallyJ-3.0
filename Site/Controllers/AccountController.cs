@@ -80,6 +80,8 @@ namespace TallyJ.Controllers
     [HttpPost]
     public ActionResult LogOn(LogOnModelV1 model, string returnUrl)
     {
+      UserSession.UserGuidHasBeenLoaded = false;
+
       if (ModelState.IsValid)
       {
         if (Membership.ValidateUser(model.UserName, model.PasswordV1))
@@ -97,6 +99,8 @@ namespace TallyJ.Controllers
                         new Claim("UniqueID", "A:" + model.UserName),
                         new Claim("IsKnownTeller", "true"),
                     };
+
+          UserSession.IsKnownTeller = true;
 
           if (membershipUser?.Comment == "SysAdmin")
           {
@@ -217,9 +221,8 @@ namespace TallyJ.Controllers
       if (ModelState.IsValid)
       {
         // Attempt to register the user
-        MembershipCreateStatus createStatus;
         Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null,
-            out createStatus);
+            out var createStatus);
 
         if (createStatus == MembershipCreateStatus.Success)
         {

@@ -397,7 +397,8 @@ namespace TallyJ.CoreModels.Helper
 
       return new
       {
-        Success = false
+        Success = false,
+        Message = "Invalid code."
       };
     }
   }

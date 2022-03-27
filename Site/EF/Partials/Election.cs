@@ -53,7 +53,7 @@ namespace TallyJ.EF
       NumberExtra = 0;
       VotingMethods = "PDM";
 
-      var rules = new ElectionModel().GetRules(ElectionType, ElectionMode);
+      var rules = ElectionModel.GetRules(ElectionType, ElectionMode);
 
       // No longer used as rules. Each person has own status.
       // CanVote = rules.CanVote;  
@@ -213,12 +213,12 @@ namespace TallyJ.EF
     {
       get
       {
-        var now = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
         return OnlineWhenOpen.HasValue
                && OnlineWhenClose.HasValue
-               && OnlineWhenOpen.Value < now
+               && OnlineWhenOpen.Value.FromSql() < utcNow
                && OnlineWhenOpen.Value < OnlineWhenClose.Value
-               && OnlineWhenClose.Value > now;
+               && OnlineWhenClose.Value.FromSql() > utcNow;
       }
     }
 
@@ -297,8 +297,7 @@ namespace TallyJ.EF
 
     private string GetExtraSetting(ExtraSettingKey setting)
     {
-      string value;
-      if (ExtraSettings.TryGetValue(setting, out value))
+      if (ExtraSettings.TryGetValue(setting, out var value))
       {
         return value;
       }

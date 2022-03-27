@@ -464,6 +464,29 @@ body.BP-None {
   color: #ade65e;
   z-index: 1;
 }
+
+.LogIcon {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 0 0 4px;
+  background-color: #8bb6e2;
+  border-radius: 10%;
+  cursor: help;
+  position: relative;
+
+  &:after {
+    content: "≡";
+    color: white;
+    font-size: 10px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    line-height: 10px;
+    text-align: center;
+  }
+}
+
 /* login  
 ----------------------------------------------------------* /
 #login
@@ -940,9 +963,35 @@ a.twitter {
   }
 }
 
+.el-table {
+  .cell {
+    word-break: normal;
+    padding: 1px 3px;
+  }
+}
 
+.el-table__header {
+  th.el-table__cell {
+    .cell {
+      display: inline-flex;
+      align-items: center;
+      line-height: normal;
+      padding-left: 4px;
+    }
 
+    &.is-right {
+      .cell {
+        justify-content: flex-end;
+      }
+    }
 
+    &.is-center {
+      .cell {
+        justify-content: center;
+      }
+    }
+  }
+}
 //#statusDisplay, #statusDisplay2 {
 //  color: #000;
 //  background-color: #ccffbe;

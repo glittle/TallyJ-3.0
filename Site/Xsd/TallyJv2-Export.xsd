@@ -40,23 +40,24 @@
             <xs:attribute name="NumBallotsEntered" type="xs:nonNegativeInteger" use="optional" />
 
             <xs:attribute name="InPersonBallots" type="xs:nonNegativeInteger" use="optional" />
-            <xs:attribute name="EnvelopesInPerson" type="xs:nonNegativeInteger" use="optional" />
-
             <xs:attribute name="DroppedOffBallots" type="xs:nonNegativeInteger" use="optional" />
-            <xs:attribute name="EnvelopesDroppedOff" type="xs:nonNegativeInteger" use="optional" />
-
             <xs:attribute name="MailedInBallots" type="xs:nonNegativeInteger" use="optional" />
-            <xs:attribute name="EnvelopesMailedIn" type="xs:nonNegativeInteger" use="optional" />
-
             <xs:attribute name="CalledInBallots" type="xs:nonNegativeInteger" use="optional" />
-            <xs:attribute name="EnvelopesCalledIn" type="xs:nonNegativeInteger" use="optional" />
-
             <xs:attribute name="OnlineBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="ImportedBallots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="Custom1Ballots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="Custom2Ballots" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="Custom3Ballots" type="xs:nonNegativeInteger" use="optional" />
+
+            <xs:attribute name="EnvelopesInPerson" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesDroppedOff" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesMailedIn" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesCalledIn" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="EnvelopesOnline" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesImported" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesCustom1" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesCustom2" type="xs:nonNegativeInteger" use="optional" />
+            <xs:attribute name="EnvelopesCustom3" type="xs:nonNegativeInteger" use="optional" />
 
             <xs:attribute name="BallotsNeedingReview" type="xs:nonNegativeInteger" use="optional" />
             <xs:attribute name="SpoiledBallots" type="xs:nonNegativeInteger" use="optional" />

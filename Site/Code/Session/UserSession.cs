@@ -71,7 +71,7 @@ namespace TallyJ.Code.Session
       }
     }
 
-    private static bool UserGuidHasBeenLoaded
+    public static bool UserGuidHasBeenLoaded
     {
       get { return SessionKey.UserGuidRetrieved.FromSession(false); }
       set { CurrentContext.Session[SessionKey.UserGuidRetrieved] = value; }
@@ -443,9 +443,12 @@ namespace TallyJ.Code.Session
           return null;
         }
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
-        if (currentComputer == null && CurrentElectionGuid != Guid.Empty)
+        if (currentComputer == null)
         {
-          return new ComputerModel().GetComputerForMe(Guid.Empty);
+            var computerModel = new ComputerModel();
+          return CurrentElectionGuid != Guid.Empty 
+            ? computerModel.GetComputerForMe(Guid.Empty) 
+            : computerModel.GetTempComputerForMe();
         }
 
         return currentComputer;
@@ -478,10 +481,9 @@ namespace TallyJ.Code.Session
     /// <Summary>If logged in with an account</Summary>
     public static bool IsKnownTeller
     {
-      get
-      {
-        return UserSession.UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
-      }
+      get =>
+        // UserGuid != Guid.Empty && SessionKey.IsKnownTeller.FromSession(false);
+        SessionKey.IsKnownTeller.FromSession(false);
       set
       {
         SessionKey.IsKnownTeller.SetInSession(value);
@@ -583,7 +585,7 @@ namespace TallyJ.Code.Session
 
     public static void ProcessLogin()
     {
-      //      CurrentContext.Session.Clear();
+      // CurrentContext.Session.Clear();
       // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
     }
 
@@ -599,7 +601,7 @@ namespace TallyJ.Code.Session
         owinContext.Authentication.SignOut();
       }
 
-      LeaveElection(false);
+      LeaveElection(true);
 
       CurrentContext.Session.Clear();
 
@@ -609,8 +611,8 @@ namespace TallyJ.Code.Session
     /// <summary>
     ///   Leave this election... remove computer record, close election
     /// </summary>
-    /// <param name="movingToOtherElection"></param>
-    public static void LeaveElection(bool movingToOtherElection)
+    /// <param name="loggingOut"></param>
+    public static void LeaveElection(bool loggingOut)
     {
       var computer = CurrentComputer;
       if (computer != null && computer.AuthLevel == "Known")
@@ -619,19 +621,25 @@ namespace TallyJ.Code.Session
         var computerCacher = new ComputerCacher();
         computerCacher.UpdateComputer(computer);
 
+        if (!loggingOut)
+        {
+          new ComputerModel().GetTempComputerForMe();
+          new PublicHub().TellPublicAboutVisibleElections();
+        }
+
         var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
         if (numKnownTellers == 0)
         {
           new ElectionModel().CloseElection();
         }
-        else
-        {
-          new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
-        }
+        // else
+        // {
+        //   new PublicHub().TellPublicAboutVisibleElections(); // in case the name, or ListForPublic, etc. has changed
+        // }
       }
 
 
-      if (movingToOtherElection)
+      if (!loggingOut)
       {
         ResetWhenSwitchingElections();
       }
@@ -659,7 +667,7 @@ namespace TallyJ.Code.Session
 
       session.Remove(SessionKey.CurrentBallotFilter);
       session.Remove(SessionKey.CurrentBallotId);
-      session.Remove(SessionKey.CurrentComputer);
+      // session.Remove(SessionKey.CurrentComputer);
       session.Remove(SessionKey.CurrentElectionGuid);
       session.Remove(SessionKey.CurrentLocationGuid);
       session.Remove(SessionKey.CurrentTeller + "1");

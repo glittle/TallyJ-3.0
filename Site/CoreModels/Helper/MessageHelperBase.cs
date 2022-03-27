@@ -144,9 +144,10 @@ namespace TallyJ.CoreModels.Helper
         .Where(l => lastLogId == 0 || l.C_RowId < lastLogId)
         .OrderByDescending(l => l.AsOf)
         .Take(pageSize)
+        .ToList()
         .Select(l => new ContactLogDto
         {
-          When = l.AsOf,
+          When = l.AsOf.FromSql(),
           Details = l.Details,
           RowId = l.C_RowId
         })

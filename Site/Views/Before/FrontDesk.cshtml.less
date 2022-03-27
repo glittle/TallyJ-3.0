@@ -232,7 +232,7 @@ p {
   clear: both;
   padding: 3px 0;
   .Online {
-    opacity: 0.25;
+    opacity: 0.5;
 
     &.Hastrue {
       opacity: 1;
@@ -263,12 +263,16 @@ p {
       &.Imported {
         opacity: 1;
       }
+
+      &.Online.Hastrue.Cantrue{
+        opacity: .5;
+      }
     }
   }
 
   .Imported-false {
     .Imported {
-      opacity: 0.25;
+      opacity: 0.05;
       pointer-events: none;
     }
   }
@@ -324,13 +328,8 @@ p {
   }
 }
 
-.Log {
-  display: inline-block;
-  width: .8em;
-  height: .8em;
+.LogIcon {
   background-color: green;
-  border-radius: 50%;
-  cursor: help;
 }
 
 #body {

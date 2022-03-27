@@ -46,7 +46,7 @@
   </header>
 
   <div id="body" v-cloak>
-    @if (Request.Browser.Browser == "IE" && Request.Browser.MajorVersion < 9)
+    @if (Request.Browser.Browser == "IE")
     {
       <div style="margin: 50px auto; padding: 50px; color: red">Sorry, older versions of Internet Explorer are not supported!  Please use Chrome or Firefox.</div>
     }

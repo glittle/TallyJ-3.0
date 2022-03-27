@@ -82,5 +82,12 @@ namespace TallyJ.Code.Enumerations
       var item = BaseItems.SingleOrDefault(i => i.Value == status);
       return item == null ? (defaultText.HasContent() ? defaultText : NotStarted) : item.DisplayText;
     }
+
+
+    /// <Summary>Find the status that matches this string. If not found, default to something... use Review needed.</Summary>
+    public static ElectionTallyStatusEnum Parse(string code)
+    {
+      return BaseItems.SingleOrDefault(i => i.Value == code) ?? NotStarted;
+    }
   }
 }

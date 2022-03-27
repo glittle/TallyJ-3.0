@@ -49,8 +49,9 @@
     "inputFile": "Views/Before/RollCall.cshtml.less"
   },
   {
-    "outputFile": "Views/Dashboard/ChooseElection.cshtml.css",
-    "inputFile": "Views/Dashboard/ChooseElection.cshtml.less"
+    "outputFile": "Views/Dashboard/ElectionList.cshtml.css",
+    "inputFile": "Views/Dashboard/ElectionList.cshtml.less",
+    "sourceMap": true
   },
   {
     "outputFile": "Views/Dashboard/Index.cshtml.css",

@@ -19,12 +19,14 @@ namespace TallyJ.Code.Helpers
         return "";
       }
 
-      pathToView = pathToView.Replace("~", "");
+      // pathToView = pathToView.Replace("~", "");
 
       if (config == null || ConfigurationManager.AppSettings["Environment"] == "Dev")
       { // always reload in dev mode
-        config = new TemplateServiceConfiguration();
-        config.TemplateManager = new ResolvePathTemplateManager(new[] { HostingEnvironment.MapPath("~") });
+        config = new TemplateServiceConfiguration
+        {
+          TemplateManager = new ResolvePathTemplateManager(new[] { HostingEnvironment.MapPath("~") }),
+        };
       }
       var razor = RazorEngineService.Create(config);
 

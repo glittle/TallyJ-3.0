@@ -723,26 +723,12 @@ body.meditate {
       }
 
       &.inTop {
-        //font-weight: bold;
-        // &:before, &:after {
-        //   content: " ";
-        //   height: 108%;
-        //   position: absolute;
-        //   top: -2px;
-        //   width: 10px;
-        // }
-        //
-        // &:before {
-        //   box-shadow: -10px 0 10px -10px inset;
-        //   left: -10px;
-        // }
-        //
-        // &:after {
-        //   box-shadow: 10px 0 10px -10px inset;
-        //   right: -10px;
-        // }
         background-color: @top;
         transition: background-color 2s linear;
+
+        &.empty {
+          background-color: #ffe9e9;
+        }
       }
 
       &.startTop {
@@ -761,6 +747,7 @@ body.meditate {
       }
 
       &.inOther {
+        background-color: #f2f2f2;
         color: #666;
       }
 

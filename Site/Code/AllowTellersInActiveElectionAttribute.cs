@@ -47,7 +47,8 @@ namespace TallyJ.Code
         db.Election.Attach(currentElection);
         LogTime("attach");
 
-        currentElection.ListedForPublicAsOf = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
+        currentElection.ListedForPublicAsOf = utcNow;
 
         LogTime("listed");
         var electionCacher = new ElectionCacher(db);
@@ -57,7 +58,7 @@ namespace TallyJ.Code
         LogTime("update cache");
 
         if (currentElection.ListForPublic.AsBoolean() &&
-            (DateTime.Now - currentElection.ListedForPublicAsOf.GetValueOrDefault(DateTime.Now.AddMinutes(-60))).TotalMinutes > delayTime.TotalMinutes)
+            (utcNow - currentElection.ListedForPublicAsOf.FromSql().GetValueOrDefault(utcNow.AddMinutes(-60))).TotalMinutes > delayTime.TotalMinutes)
         {
 
           db.SaveChanges();
@@ -72,7 +73,7 @@ namespace TallyJ.Code
       return true;
     }
 
-    static DateTime _last = DateTime.Now;
+    // static DateTime _last = DateTime.Now;
     void LogTime(string msg = "")
     {
       //var now = DateTime.Now;

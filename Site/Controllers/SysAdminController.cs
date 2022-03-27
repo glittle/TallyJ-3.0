@@ -22,7 +22,7 @@ namespace TallyJ.Controllers
       var dbContext = Db;
 
       var query1 = dbContext.C_Log
-        .GroupJoin(dbContext.Election, l => l.ElectionGuid, e => e.ElectionGuid, (l, eList) => new {l, e = eList.FirstOrDefault()});
+        .GroupJoin(dbContext.Election, l => l.ElectionGuid, e => e.ElectionGuid, (l, eList) => new { l, e = eList.FirstOrDefault() });
 
       if (lastRowId != 0)
       {
@@ -31,9 +31,9 @@ namespace TallyJ.Controllers
 
       if (fromDate.HasValue && toDate.HasValue)
       {
-        query1 = query1.Where(j => j.l.AsOf >= fromDate.Value && j.l.AsOf <= toDate.Value);
+        query1 = query1.Where(j => j.l.AsOf.FromSql() >= fromDate.Value && j.l.AsOf.FromSql() <= toDate.Value);
       }
-      
+
       if (searchText.HasContent())
       {
         searchText = $"%{searchText}%";
@@ -50,15 +50,18 @@ namespace TallyJ.Controllers
         );
       }
 
-      var logLines = query1
+      var list = query1
         .OrderByDescending(j => j.l.C_RowId)
         .Take(numToShow)
+        .ToList();
+
+      var logLines = list
         .Select(j => new
         {
           j.l.C_RowId,
-          j.l.AsOf,
+          AsOf = j.l.AsOf.FromSql(),
           j.l.Details,
-          ElectionName = j.e.Name,
+          ElectionName = j.e?.Name,
           j.l.HostAndVersion,
           //          isVoter = j.l.VoterEmail == null ? null : "Voter",
           j.l.VoterId,
@@ -102,7 +105,23 @@ namespace TallyJ.Controllers
           Processed = j.oviList.Count(ovi => ovi.Status == OnlineBallotStatusEnum.Processed.Value),
           First = j.oviList.Min(ovi => ovi.WhenStatus),
           MostRecent = j.oviList.Max(ovi => ovi.WhenStatus)
-        }).ToList();
+        })
+        .ToList()
+        .Select(x => new
+        {
+          x.Name,
+          x.Convenor,
+          x.Email,
+          x.TallyStatus,
+          OnlineWhenOpen = x.OnlineWhenOpen.FromSql(),
+          OnlineWhenClose = x.OnlineWhenClose.FromSql(),
+          x.NumberToElect,
+          x.Activated,
+          x.Submitted,
+          x.Processed,
+          x.First,
+          x.MostRecent
+        });
 
       return new
       {
@@ -137,19 +156,20 @@ namespace TallyJ.Controllers
             l.ElectionGuid,
             b.BallotGuid
           })
-          .GroupJoin(dbContext.Vote, j=>j.BallotGuid, v=>v.BallotGuid, (j, vList) =>
-          new {
-            j.ElectionGuid,
-            SingleNameCount = vList.Sum(v=>v.SingleNameElectionCount),
-          }) ,
+          .GroupJoin(dbContext.Vote, j => j.BallotGuid, v => v.BallotGuid, (j, vList) =>
+              new
+              {
+                j.ElectionGuid,
+                SingleNameCount = vList.Sum(v => v.SingleNameElectionCount),
+              }),
           j => j.e.ElectionGuid, lb => lb.ElectionGuid, (j, lbList) => new
           {
             j.e,
             j.NumPeople,
             j.NumOnline,
             j.Email,
-            NumBallots = j.e.NumberToElect==1 && j.e.NumberExtra == 0 
-              ? lbList.Sum(l => l.SingleNameCount) 
+            NumBallots = j.e.NumberToElect == 1 && j.e.NumberExtra == 0
+              ? lbList.Sum(l => l.SingleNameCount)
               : lbList.Count()
           })
         .GroupJoin(dbContext.C_Log, j => j.e.ElectionGuid, l => l.ElectionGuid, (j, lList) => new
@@ -180,7 +200,7 @@ namespace TallyJ.Controllers
           j.NumOnline,
           j.NumBallots,
           j.NumPeople,
-          j.RecentActivity
+          RecentActivity = j.RecentActivity.FromSql()
         }).ToList();
 
       return new

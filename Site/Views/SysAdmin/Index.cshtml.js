@@ -314,10 +314,13 @@ Vue.component('eventLog',
         this.extendDate(item, 'DateOfElection', 'YYYY MMM DD');
       },
       extendDate: function (obj, name, format) {
-        var raw = obj[name] || '';
-        if (raw === '/Date(-62135571600000)/') { // DateTime.MinValue
+        var raw = obj[name];
+        if (!raw || raw === '/Date(-62135571600000)/') { // DateTime.MinValue
           obj[name + '_Date'] = null;
-          obj[name + '_M'] = {};
+          obj[name + '_M'] = {
+            isAfter: function() { return false; },
+            isBefore: function() { return false; },
+        };
           obj[name + '_Display'] = '';
           return;
         }

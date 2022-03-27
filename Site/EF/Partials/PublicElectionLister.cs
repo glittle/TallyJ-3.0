@@ -96,24 +96,28 @@ namespace TallyJ.EF
     public string RefreshAndGetListOfAvailableElections()
     {
       const string template = "<option value=\"{0}\">{1} {2}</option>";
+      const string noneOpen = "(No elections are currently open for tellers.)";
 
       var activeElectionGuids = new ComputerCacher().ElectionGuidsOfActiveComputers;
-
       if (activeElectionGuids.Count == 0)
       {
-        return template.FilledWith(0, "(No elections are active right now.)", "");
+        return template.FilledWith(0, noneOpen, "");
       }
 
-      //TODO - does this hit the DB every time??
-      var elections = Db.Election
-        .Where(e => activeElectionGuids.Contains(e.ElectionGuid)
-                    && e.ListForPublic.HasValue
-                    && e.ListForPublic.Value
-                    && e.ElectionPasscode != null)
+      //TODO - use election cacher?
+      var electionsInfo = Db.Election
+        .Where(e => activeElectionGuids.Contains(e.ElectionGuid))
+        .ToList()
+        .Where(e => e.CanBeAvailableForGuestTellers)
         .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
         .ToList();
 
-      return elections
+      if (electionsInfo.Count == 0)
+      {
+        return template.FilledWith(0, noneOpen, "");
+      }
+
+      return electionsInfo
         .OrderBy(e => e.Name)
         .Select(e => template.FilledWith(e.ElectionGuid, e.Name, e.Convenor.SurroundContentWith("(", ")")))
         .JoinedAsString();
