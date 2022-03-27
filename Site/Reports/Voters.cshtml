@@ -40,7 +40,8 @@ Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.Vo
     p.Teller1,
     p.Teller2,
     p.RegistrationLog
-  });
+  })
+      .ToList();
 
 }
 <style>
@@ -87,7 +88,6 @@ Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.Vo
   .first::first-letter {
     font-weight: bold;
   }
-
 </style>
 <div class="body" id="vueBody">
   <div class="reportHead">
@@ -100,53 +100,53 @@ Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.Vo
 
   <button class="btn btn-mini btnDownloadCsv" data-table=".el-table" type="button" title="Download in CSV format for Excel">Export</button>
   <p class="Comment">
-    Shows all potential voters (@people.length) and how they voted.
+    Shows all potential voters (@people.Count) and how they voted.
   </p>
   @*<table class="Voters sortable">
-    <thead>
-      <tr>
-        <td>Person</td>
-        <td>Id</td>
-        <td>How</td>
-        @if (hasMultipleLocations)
-        {
-          <td>Where</td>
-        }
-        <td>When</td>
-        <td>Teller at Keyboard</td>
-        <td>Teller Assisting</td>
-        <td>Details</td>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach (var person in people)
-      {
+      <thead>
         <tr>
-          <td class="name">@Raw(person.PersonName)</td>
-          <td class="id">@person.BahaiId</td>
-          <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
+          <td>Person</td>
+          <td>Id</td>
+          <td>How</td>
           @if (hasMultipleLocations)
           {
-            string locName;
-            if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
-            {
-              <td class="where"></td>
-            }
-            else
-            {
-              <td class="where">@locName</td>
-            }
+            <td>Where</td>
           }
-          <td class="when">@person.RegistrationTime</td>
-          <td>@person.Teller1</td>
-          <td>@person.Teller2</td>
-          <td>@person.RegistrationLog.JoinedAsString("\x01")</td>
+          <td>When</td>
+          <td>Teller at Keyboard</td>
+          <td>Teller Assisting</td>
+          <td>Details</td>
         </tr>
-      }
-    </tbody>
-  </table>*@
-  <el-table :data="rows" 
-            row-key="BahaiId" 
+      </thead>
+      <tbody>
+        @foreach (var person in people)
+        {
+          <tr>
+            <td class="name">@Raw(person.PersonName)</td>
+            <td class="id">@person.BahaiId</td>
+            <td class="method">@VotingMethodEnum.TextFor(person.VotingMethod).DefaultTo("-")</td>
+            @if (hasMultipleLocations)
+            {
+              string locName;
+              if (!locations.TryGetValue(person.VotingLocationGuid.AsGuid(), out locName))
+              {
+                <td class="where"></td>
+              }
+              else
+              {
+                <td class="where">@locName</td>
+              }
+            }
+            <td class="when">@person.RegistrationTime</td>
+            <td>@person.Teller1</td>
+            <td>@person.Teller2</td>
+            <td>@person.RegistrationLog.JoinedAsString("\x01")</td>
+          </tr>
+        }
+      </tbody>
+    </table>*@
+  <el-table :data="rows"
+            row-key="BahaiId"
             style="width: 100%"
             size="mini">
     <el-table-column label="Person" prop="PersonName" sortable></el-table-column>
@@ -160,9 +160,9 @@ Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.Vo
     <el-table-column label="Teller at Keyboard" prop="Teller1" sortable></el-table-column>
     <el-table-column label="Teller assisting" prop="Teller2" sortable></el-table-column>
     <el-table-column width="180" label="Log">
-        <template slot-scope="scope">
-            <div v-html="scope.row.log"></div>
-        </template>
+      <template slot-scope="scope">
+        <div v-html="scope.row.log"></div>
+      </template>
 
     </el-table-column>
 
