@@ -514,7 +514,6 @@ contact the Assembly as soon as possible!</p>
 var notifyPage = NotifyPage();
 
 $(function () {
-  ELEMENT.locale(ELEMENT.lang.en);
   notifyPage.PreparePage();
 });
 

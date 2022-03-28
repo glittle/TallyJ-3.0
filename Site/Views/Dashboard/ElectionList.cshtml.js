@@ -25,6 +25,8 @@
         tempLog: '',
         hideOld: false,
         reloading: false,
+        formatDateTime: 'YYYY MMM D [at] HH:mm',
+        formatDateOnly: 'YYYY MMM D',
       },
       computed: {
         oldElections() {
@@ -85,15 +87,18 @@
             e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
             e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
 
-            e.date = moment(e.DateOfElection);
-            e.dateDisplay = e.DateOfElection ? e.date.format("D MMM YYYY") : '(No date)';
-            e.dateSort = e.DateOfElection ? e.date.format("YYYY-MM-DD") : '0';
+            var d = moment(e.DateOfElection);
+            e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
+            e.dateSort = e.DateOfElection ? d.toISOString() : '0';
 
-            e.old = !e.OnlineCurrentlyOpen && e.date.isBefore() || !e.DateOfElection;
+            e.old = !e.OnlineCurrentlyOpen && d.isBefore() || !e.DateOfElection;
 
             // more static info
             e.numVoters = '';
             e.tellers = [];
+            e.users = [];
+            e.showUsers = false;
+            e.inEdit = false;
 
             // more live info
             e.numBallots = '';
@@ -144,11 +149,21 @@
         getMoreStatic() {
           // relative stable during an election
           var vue = this;
-          CallAjaxHandler(publicInterface.moreStaticUrl, null, function (info) {
+          CallAjax2(publicInterface.moreStaticUrl,
+            null,
+            {
+              busy: 'Loading Details'
+            },
+            function (info) {
             info.forEach(function (incoming) {
               var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
               if (matched) {
                 matched.tellers = incoming.tellers || [];
+                matched.users = vue.extendUsers(incoming.users);
+
+                matched.isOwner = matched.users.findIndex(u => u.isCurrentUser && u.Role === 'Owner') !== -1;
+
+                matched.showUsers = matched.users.length > 1 && matched.isOwner;
                 matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople); //, Plural(incoming.numPeople));
                 matched.registered = '- {0} registered'.filledWith(incoming.numRegistered); //, Plural(incoming.numPeople));
               } else {
@@ -157,15 +172,30 @@
             });
           });
         },
+        extendUsers(users) {
+          if (!users) return [];
+          users.forEach(u => {
+            u.lastActivityDate = u.LastActivityDate ? moment(u.LastActivityDate).format(this.formatDateTime) : '';
+            u.inviteWhen = u.InviteWhen ? moment(u.InviteWhen).format(this.formatDateTime) : '';
+            if (!u.Role) {
+              u.Role = 'Owner';
+            }
+            u.selected = false;
+          });
+          return users;
+        },
         refreshLive() {
           this.getMoreLive(this.currentElectionGuids);
         },
         getMoreLive(electionGuids) {
           // dynamically changing during an election
           var vue = this;
-          CallAjaxHandler(publicInterface.moreLiveUrl,
+          CallAjax2(publicInterface.moreLiveUrl,
             {
               electionGuids: electionGuids
+            },
+            {
+              busy: 'Loading Statuses'
             },
             function (info) {
               info.forEach(function (election) {
@@ -189,8 +219,11 @@
           var vue = this;
           vue.reloading = true;
           vue.loaded = false;
-          CallAjaxHandler(publicInterface.reloadAllUrl,
+          CallAjax2(publicInterface.reloadAllUrl,
             null,
+            {
+              busy: 'Loading List'
+            },
             function (info) {
               if (info.Success) {
                 vue.showElections(info.elections);
@@ -413,18 +446,42 @@ Vue.component('election-detail',
     },
     data: function () {
       return {
-        format1: 'D MMM YYYY [at] HH:mm - ',
-        format2: 'D MMM YYYY',
-        showOtherButtons: false
+        formatDateTime: 'YYYY MMM D [at] HH:mm',
+        formatDateOnly: 'YYYY MMM D',
+        showOtherButtons: false,
+        addingNew: false,
+        addingNow: false,
+        form: {
+          email: '',
+          invited: false,
+        },
+        rules: {
+          email: [
+            {
+              required: true,
+              trigger: 'blur',
+              type: 'email'
+            }
+          ]
+        }
       }
     },
     computed: {
+      showForm: function() {
+        return this.addingNew || !!this.selectedUser;
+      },
+      users: function() {
+        return this.e.users;
+      },
+      selectedUser: function() {
+        return this.users.find(u => u.selected);
+      },
       onlineOpenText: function () {
-        return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.format1) + this.e.onlineOpen.fromNow() :
+        return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + this.e.onlineOpen.fromNow() :
           '-';
       },
       onlineCloseText: function () {
-        return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.format1) + this.e.onlineClose.fromNow() :
+        return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.formatDateTime) + this.e.onlineClose.fromNow() :
           '-';
       },
       onlineVoteCounts: function () {
@@ -506,5 +563,120 @@ Vue.component('election-detail',
             }
           });
       },
+      selectUser(user) {
+        this.addingNew = false;
+        this.users.forEach(u => u.selected = false);
+        user.selected = true;
+        this.form.email = user.InviteEmail;
+        this.form.invited = !!user.inviteWhen;
+      },
+      openForAdd() {
+        this.users.forEach(u => u.selected = false);
+        this.form.email = '';
+        this.form.invited = false;
+        this.addingNew = true;
+      },
+      closeForm() {
+        this.addingNew = false;
+        if (this.selectedUser) {
+          this.selectedUser.selected = false;
+        }
+      },
+      processForm() {
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            this.addUser();
+          } else {
+            return false;
+          }
+        });
+      },
+      addUser() {
+        // this.form.invited = !this.form.invited;
+        var vue = this;
+        var email = this.form.email;
+
+        // ensure it is not a duplicate
+        var dup = this.users.find(u => u.Email === email || u.InviteEmail === email);
+        if (dup) {
+          // todo give message
+          return;
+        }
+
+        this.addingNow = true;
+
+        var form = {
+          email: email,
+          election: this.e.ElectionGuid
+        }
+        CallAjax2(electionListPage.updateListingUrl + '/AddFullTeller',
+          form,
+          {
+            busy: 'Adding'
+          },
+          function (info) {
+            if (info.Success) {
+
+              var u = info.user;
+              u.lastActivityDate = u.LastActivityDate ? moment(u.LastActivityDate).format(vue.formatDateTime) : '';
+              u.inviteWhen = u.InviteWhen ? moment(u.InviteWhen).format(vue.formatDateTime) : '';
+              u.selected = true;
+
+              vue.users.push(u);
+
+              ShowStatusDone("Added");
+            }
+            else {
+              ShowStatusFailedMessage(info);
+            }
+            vue.addingNow = false;
+            vue.addingNew = false;
+          });
+      },
+      removeUser() {
+        var vue = this;
+        var user = this.selectedUser;
+        var form = {
+          email: user.Email,
+          joinId: user.C_RowId
+        }
+        CallAjax2(electionListPage.updateListingUrl + '/RemoveFullTeller',
+          form,
+          {
+            busy: 'Removing'
+          },
+          function (info) {
+            if (info.Success) {
+              var i = vue.users.findIndex(u => u.C_RowId === form.joinId);
+              if (i !== -1) {
+                vue.users.splice(i, 1);
+              }
+              ShowStatusDone("Removed");
+            }
+            else {
+              ShowStatusFailedMessage(info);
+            }
+          });
+      },
+      sendInvitation() {
+        var vue = this;
+        var user = this.selectedUser;
+        var form = {
+          joinId: user.C_RowId
+        }
+        CallAjax2(electionListPage.updateListingUrl + '/SendInvitation',
+          form,
+          {
+            busy: 'Sending'
+          },
+          function (info) {
+            if (info.Success) {
+              ShowStatusDone("Email sent");
+            }
+            else {
+              ShowStatusFailedMessage(info);
+            }
+          });
+      }
     }
   });

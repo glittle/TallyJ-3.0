@@ -11,12 +11,30 @@
 .Election {
   display: grid;
   grid-template-columns: 2fr auto 13em;
+  grid-template-rows: auto;
+  grid-template-areas: "details status action" "users users users";
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
   padding: 3px 10px 6px 10px;
   margin: 8px 0;
   border-radius: 2px;
+
+  .electionDetail {
+    grid-area: details;
+  }
+
+  .statusBlocks {
+    grid-area: status;
+  }
+
+  .rightSide {
+    grid-area: action;
+  }
+
+  .users {
+    grid-area: users;
+  }
 
   &.deleting {
     background-color: rgb(255, 178, 178);
@@ -40,8 +58,32 @@
   }
 }
 
+.users {
+  border-top: 1px solid #ddd;
+  margin: 3px 0 0 15px;
+}
 
+.userForm {
+  .el-input {
+    width: 20em;
 
+    input {
+      padding: 3px 5px;
+    }
+  }
+}
+
+.addNew {
+  margin-top: 5px;
+}
+
+.el-table--mini .el-table__cell {
+  padding: 2px 1px;
+
+  .cell {
+    line-height: normal;
+  }
+}
 
 .row {
   display: flex;

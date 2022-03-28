@@ -91,7 +91,7 @@ namespace TallyJ.Controllers
           var membershipUser = Membership.GetUser(model.UserName);
           var email = membershipUser?.Email;
 
-          UserSession.ProcessLogin();
+          // UserSession.ProcessLogin();
 
           var claims = new List<Claim>
                     {
@@ -101,6 +101,7 @@ namespace TallyJ.Controllers
                     };
 
           UserSession.IsKnownTeller = true;
+          UserSession.AdminAccountEmail = email;
 
           if (membershipUser?.Comment == "SysAdmin")
           {
@@ -246,7 +247,7 @@ namespace TallyJ.Controllers
           System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
 
           //                    FormsAuthentication.SetAuthCookie(model.UserName, true);
-          UserSession.ProcessLogin();
+          // UserSession.ProcessLogin();
           UserSession.IsKnownTeller = true;
 
           return RedirectToAction("Index", "Dashboard");

@@ -18,5 +18,7 @@ namespace TallyJ.EF
         public System.Guid ElectionGuid { get; set; }
         public System.Guid UserId { get; set; }
         public string Role { get; set; }
+        public string InviteEmail { get; set; }
+        public Nullable<System.DateTime> InviteWhen { get; set; }
     }
 }

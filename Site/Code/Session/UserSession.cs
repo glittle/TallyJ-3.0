@@ -473,6 +473,12 @@ namespace TallyJ.Code.Session
       set { SessionKey.IsGuestTeller.SetInSession(value); }
     }
 
+    public static string AdminAccountEmail
+    {
+      get { return SessionKey.AdminAccountEmail.FromSession(""); }
+      set { SessionKey.AdminAccountEmail.SetInSession(value); }
+    }
+
     public static string AuthLevel
     {
       get { return IsKnownTeller ? "Known" : IsGuestTeller ? "Guest" : "None"; }
@@ -583,11 +589,11 @@ namespace TallyJ.Code.Session
       CurrentContext.Session[SessionKey.CurrentTeller + num] = name;
     }
 
-    public static void ProcessLogin()
-    {
-      // CurrentContext.Session.Clear();
-      // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
-    }
+    // public static void ProcessLogin()
+    // {
+    //   // CurrentContext.Session.Clear();
+    //   // UserSession.CurrentComputerCode = new ComputerModel().CreateComputerRecordForMe();
+    // }
 
     public static void ProcessLogout()
     {

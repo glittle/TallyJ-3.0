@@ -10,44 +10,57 @@ namespace TallyJ.CoreModels
 {
   public class ElectionsListViewModel : DataConnectedModel
   {
-    public IEnumerable<object> MyElectionsInfo
-    {
-      get
-      {
-        // .OrderBy(e => e.ShowAsTest.AsBoolean())
-        // .ThenByDescending(e => e.DateOfElection)
-        // .ThenBy(e => e.Name)
+    public IEnumerable<object> GetMyElectionsInfo(bool checkIfAddedToNew = false) {
 
-        return MyElections()
-          .Select(e =>
-          {
-            return new
-            {
-              e.Name,
-              e.ElectionGuid,
-              e.DateOfElection,
-              e.ElectionType,
-              e.ElectionMode,
-              e.ShowAsTest,
-              e.IsSingleNameElection,
-              e.CanBeAvailableForGuestTellers,
-              e.OnlineCurrentlyOpen,
-              OnlineWhenOpen = e.OnlineWhenOpen.FromSql(),
-              OnlineWhenClose = e.OnlineWhenClose.FromSql(),
-              e.EmailFromAddressWithDefault,
-              e.EmailFromNameWithDefault,
-              e.ElectionPasscode,
-              e.OnlineEnabled,
-              IsFuture = e.DateOfElection.HasValue && e.DateOfElection.FromSql() > DateTime.UtcNow,
-              IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
-              Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
-              Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
-              IsTest = e.ShowAsTest.AsBoolean(),
-              TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
-              e.TallyStatus
-            };
-          }).ToList();
+      if (checkIfAddedToNew && UserSession.IsKnownTeller)
+      {
+        CheckIfAddedToNew();
       }
+
+      return MyElections()
+        .Select(e => new
+        {
+          e.Name,
+          e.ElectionGuid,
+          e.DateOfElection,
+          e.ElectionType,
+          e.ElectionMode,
+          e.ShowAsTest,
+          e.IsSingleNameElection,
+          e.CanBeAvailableForGuestTellers,
+          e.OnlineCurrentlyOpen,
+          OnlineWhenOpen = e.OnlineWhenOpen.FromSql(),
+          OnlineWhenClose = e.OnlineWhenClose.FromSql(),
+          e.EmailFromAddressWithDefault,
+          e.EmailFromNameWithDefault,
+          e.ElectionPasscode,
+          e.OnlineEnabled,
+          IsFuture = e.DateOfElection.HasValue && e.DateOfElection.FromSql() > DateTime.UtcNow,
+          IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
+          Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
+          Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
+          IsTest = e.ShowAsTest.AsBoolean(),
+          TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
+          e.TallyStatus
+        });
+    }
+
+    private void CheckIfAddedToNew()
+    {
+      // find any unclaimed ones with my email address
+      var email = UserSession.AdminAccountEmail;
+
+      var pendingInvitations = Db.JoinElectionUser
+        .Where(u => u.UserId == Guid.Empty && u.InviteEmail == email);
+
+      // claim them!
+      foreach (var pendingInvitation in pendingInvitations)
+      {
+        pendingInvitation.UserId = UserSession.UserGuid;
+        new LogHelper(pendingInvitation.ElectionGuid).Add($"Activated full teller invitation - {email}", true);
+      }
+
+      Db.SaveChanges();
     }
 
     public IEnumerable<object> MoreInfoStatic()
@@ -64,16 +77,53 @@ namespace TallyJ.CoreModels
               .Select(g => new { ElectionGuid = g.Key, Tellers = g.OrderBy(l => l.C_RowId) })
               .ToDictionary(g => g.ElectionGuid, g => g.Tellers.Select(t => t.Name));
 
+      var knownUsers = Db.JoinElectionUser.Where(jeu => electionGuids.Contains(jeu.ElectionGuid))
+        .Join(Db.Users, j => j.UserId, u => u.UserId, (j, u) => new { j, u, u.LastActivityDate })
+        .GroupJoin(Db.Memberships, j => j.u.UserId, j => j.UserId, (j, mList) => new { j, Email = mList.FirstOrDefault().Email })
+        .Select(j => new
+        {
+          j.j.j.ElectionGuid,
+          j.j.LastActivityDate,
+          j.j.j.Role,
+          j.j.j.InviteWhen,
+          j.j.j.InviteEmail,
+          j.j.j.C_RowId,
+          j.Email,
+          j.j.u.UserId,
+          j.j.u.UserName,
+        })
+        .ToList()
+        .GroupBy(l => l.ElectionGuid)
+        .Select(g => new
+        {
+          ElectionGuid = g.Key,
+          Users = g.OrderBy(u => u.Role).ThenBy(u => u.UserName).Select(u => (object)new
+          {
+            u.Role,
+            InviteWhen = u.InviteWhen.FromSql(),
+            u.InviteEmail,
+            u.C_RowId,
+            u.Email,
+            u.UserName,
+            LastActivityDate = u.UserId == Guid.Empty ? (DateTime?)null : u.LastActivityDate.FromSql(),
+            isCurrentUser = u.UserId == UserSession.UserGuid
+          })
+        })
+        .ToDictionary(g => g.ElectionGuid, g => g.Users);
+
+
       return electionGuids.Select(guid =>
       {
         personCount.TryGetValue(guid, out int numPeople);
         tellerCounts.TryGetValue(guid, out IEnumerable<string> tellers);
+        knownUsers.TryGetValue(guid, out IEnumerable<object> users);
 
         return new
         {
           guid,
           numPeople,
           tellers,
+          users
         };
       });
     }
