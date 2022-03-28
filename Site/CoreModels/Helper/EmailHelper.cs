@@ -360,7 +360,7 @@ namespace TallyJ.CoreModels.Helper
       {
         message.To.Add(new MailAddress(email));
 
-        var htAddress = new MailAddress(adminAccountEmail);
+        var htAddress = new MailAddress(adminAccountEmail.DefaultTo(election.EmailFromAddressWithDefault));
         message.ReplyToList.Add(htAddress);
 
         message.CC.Add(htAddress);
@@ -449,7 +449,11 @@ namespace TallyJ.CoreModels.Helper
         HtmlContent = htmlBody,
       };
       msg.AddTos(message.To.Select(a => a.AsSendGridEmailAddress()).ToList());
-      msg.AddCcs(message.CC.Select(a => a.AsSendGridEmailAddress()).ToList());
+
+      if (message.CC.Any())
+      {
+        msg.AddCcs(message.CC.Select(a => a.AsSendGridEmailAddress()).ToList());
+      }
 
       if (message.ReplyToList.Count > 0)
       {
