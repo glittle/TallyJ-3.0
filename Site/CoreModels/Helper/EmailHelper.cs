@@ -230,186 +230,6 @@ namespace TallyJ.CoreModels.Helper
 
       return ok;
     }
-    //
-    // public string SendWhenOpened(Election currentElection = null, bool automated = false)
-    // {
-    //   var db = UserSession.GetNewDbContext;
-    //   var now = DateTime.Now;
-    //   var hostSite = SettingsHelper.Get("HostSite", "");
-    //   var electionGuid = currentElection?.ElectionGuid;
-    //   var allElections = currentElection == null;
-    //
-    //   var electionList = db.Election
-    //     // elections that are open but have not been announced
-    //     .Where(e => allElections || e.ElectionGuid == electionGuid)
-    //     .Where(e => e.OnlineWhenOpen < now
-    //                 && e.OnlineAnnounced == null
-    //                 && e.OnlineWhenClose > now)
-    //     .GroupJoin(
-    //       // get list of voters who want to be notified by email when their election opens
-    //       db.OnlineVotingInfo
-    //         .Where(ovi => !ovi.NotifiedAboutOpening.Value)
-    //         .Join(db.Person, ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
-    //         .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), j => j.p.Email, ov => ov.VoterId, (j, ov) => new { j.ovi, emailOv = ov, j.p })
-    //         .Join(db.OnlineVoter.Where(ov => ov.EmailCodes.Contains("o")), j => j.p.Phone, ov => ov.VoterId, (j, ov) => new { j.ovi, phoneOv = ov, j.emailOv, j.p })
-    //       , e => e.ElectionGuid, jv => jv.ovi.ElectionGuid, (election, oviList) => new { election, oviList })
-    //     .Select(g => new
-    //     {
-    //       g.election,
-    //       peopleEmail = g.oviList.Where(jOvi => jOvi.emailOv != null).Select(jOvi => new
-    //       {
-    //         jOvi.p.Email,
-    //         jOvi.p.C_FullNameFL,
-    //         jOvi.ovi
-    //       }),
-    //       peopleSms = g.oviList.Where(jOvi => jOvi.phoneOv != null).Select(jOvi => new
-    //       {
-    //         jOvi.p.Phone,
-    //         jOvi.p.C_FullNameFL,
-    //         jOvi.ovi
-    //       })
-    //
-    //     })
-    //     .ToList();
-    //
-    //   var allMsgs = new List<string>();
-    //   var smsHelper = new SmsHelper();
-    //
-    //   electionList.ForEach(electionInfo =>
-    //   {
-    //     var election = electionInfo.election;
-    //
-    //     var electionName = election.Name;
-    //     var electionType = ElectionTypeEnum.TextFor(election.ElectionType);
-    //     //        var isEstimate = electionInfo.election.OnlineCloseIsEstimate;
-    //     var whenClosed = election.OnlineWhenClose.GetValueOrDefault();
-    //     var whenClosedUtc = whenClosed.ToUniversalTime();
-    //     var remainingTime = whenClosed - now;
-    //     var howLong = "";
-    //     if (remainingTime.Days > 1)
-    //     {
-    //       howLong = remainingTime.Days + " days";
-    //     }
-    //     else
-    //     {
-    //       howLong = remainingTime.Hours + " hours";
-    //     }
-    //
-    //     var numSent = 0;
-    //     var errors = new List<string>();
-    //
-    //     electionInfo.peopleEmail.ToList().ForEach(voter =>
-    //     {
-    //       var html = GetEmailTemplate("ElectionOpen").FilledWithObject(new
-    //       {
-    //         hostSite,
-    //         logo = hostSite + "/Images/LogoSideM.png",
-    //         voter.Email,
-    //         personName = voter.C_FullNameFL,
-    //         electionName,
-    //         electionType,
-    //         whenClosedDay = whenClosedUtc.ToString("d MMM"),
-    //         whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
-    //         howLong,
-    //       });
-    //
-    //       var message = new MailMessage();
-    //       message.To.Add(new MailAddress(voter.Email, voter.C_FullNameFL));
-    //
-    //       if (election.EmailFromAddress.HasContent())
-    //       {
-    //         message.From = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
-    //       }
-    //
-    //       var ok = SendEmail(message, html, out var emailError);
-    //
-    //       if (ok)
-    //       {
-    //         numSent++;
-    //       }
-    //       else
-    //       {
-    //         errors.Add(emailError);
-    //       }
-    //
-    //       // regardless if the email went or not, record it
-    //       voter.ovi.NotifiedAboutOpening = true;
-    //     });
-    //
-    //     electionInfo.peopleSms.ToList().ForEach(voter =>
-    //     {
-    //       var html = GetEmailTemplate("SmsElectionOpen").FilledWithObject(new
-    //       {
-    //         hostSite,
-    //         voter.Phone,
-    //         personName = voter.C_FullNameFL,
-    //         electionName,
-    //         electionType,
-    //         whenClosedDay = whenClosedUtc.ToString("d MMM"),
-    //         whenClosedTime = whenClosedUtc.ToString("h:mm tt"),
-    //         howLong,
-    //       });
-    //
-    //       var ok = smsHelper.SendWhenOpened(voter.Phone, voter.C_FullNameFL, html, out var smsError);
-    //
-    //       if (ok)
-    //       {
-    //         numSent++;
-    //       }
-    //       else
-    //       {
-    //         errors.Add(smsError);
-    //       }
-    //
-    //       // regardless if the email went or not, record it
-    //       voter.ovi.NotifiedAboutOpening = true;
-    //     });
-    //
-    //     var msg = $"Email: Election #{election.C_RowId} {(automated ? "automatically " : "")}announced to {numSent} {(numSent == 1 ? "person" : "people")}";
-    //
-    //     if (errors.Count > 0)
-    //     {
-    //       msg += $" {errors.Count} failed to send.";
-    //     }
-    //
-    //
-    //     election.OnlineAnnounced = now;
-    //
-    //     if (currentElection != null)
-    //     {
-    //       currentElection.OnlineAnnounced = now;
-    //     }
-    //
-    //     db.SaveChanges();
-    //
-    //     allMsgs.Add(msg);
-    //
-    //     // after adding the message to allMsgs, add more details for the log
-    //     if (errors.Count > 0)
-    //     {
-    //       msg += $" First error: {errors[0]}";
-    //     }
-    //
-    //     LogHelper.Add(msg, true);
-    //
-    //   });
-    //
-    //   var numElections = electionList.Count;
-    //
-    //   // return the messages for the Azure logs (or any random anonymous caller)
-    //
-    //   if (numElections == 0)
-    //   {
-    //     return "Nothing at " + now;
-    //   }
-    //
-    //   return allMsgs.JoinedAsString("\r\n");
-    // }
-
-    // public JsonResult DoScheduled()
-    // {
-    //   return SendWhenOpened(null, true).AsJsonResult();
-    // }
 
     ///  <summary>
     ///  requested by the head teller
@@ -420,18 +240,6 @@ namespace TallyJ.CoreModels.Helper
     {
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
 
-      // var htEmailCode = emailCode.AsEnum(HtEmailCodes._unknown_);
-
-      // if (htEmailCode == HtEmailCodes._unknown_)
-      // {
-      //   return new
-      //   {
-      //     Success = false,
-      //     Status = "Invalid request"
-      //   }.AsJsonResult();
-      // }
-
-
       var db = UserSession.GetNewDbContext;
       var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
@@ -439,21 +247,6 @@ namespace TallyJ.CoreModels.Helper
       var election = UserSession.CurrentElection;
 
       var peopleToSendTo = new List<NameEmail>();
-
-      // switch (htEmailCode)
-      // {
-      //   case HtEmailCodes.Test:
-      //     peopleToSendTo.Add(new NameEmail
-      //     {
-      //       Email = election.EmailFromAddressWithDefault, 
-      //       PersonName = election.EmailFromNameWithDefault,
-      //       FirstName = "(voter's first name)",
-      //       VoterContact = election.EmailFromAddressWithDefault
-      //     });
-      //     break;
-      //
-      //   case HtEmailCodes.Intro:
-
 
       var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
 
@@ -469,30 +262,7 @@ namespace TallyJ.CoreModels.Helper
           VoterContact = p.Email
         })
         );
-      //     break;
-      //
-      //   default:
-      //     // not possible
-      //     return null;
-      // }
 
-
-      // var whenOpen = election.OnlineWhenOpen.GetValueOrDefault();
-      // var whenOpenUtc = whenOpen.ToUniversalTime();
-      // var openIsFuture = whenOpen - now > 0.minutes();
-      //
-      // var whenClosed = election.OnlineWhenClose.GetValueOrDefault();
-      // var whenClosedUtc = whenClosed.ToUniversalTime();
-      // var remainingTime = whenClosed - now;
-      // var howLong = "";
-      // if (remainingTime.Days > 1)
-      // {
-      //   howLong = remainingTime.Days + " days";
-      // }
-      // else
-      // {
-      //   howLong = remainingTime.Hours + " hours";
-      // }
 
       var numEmails = 0;
       var errors = new List<string>();
@@ -561,6 +331,57 @@ namespace TallyJ.CoreModels.Helper
       }.AsJsonResult();
     }
 
+
+    ///  <summary>
+    ///  Send notice to new full teller
+    ///  </summary>
+    ///  <param name="election"></param>
+    ///  <param name="email"></param>
+    ///  <returns></returns>
+    public JsonResult SendFullTellerInvitation(Election election, string email)
+    {
+      var hostSite = SettingsHelper.Get("HostSite", "");
+      var adminAccountEmail = UserSession.AdminAccountEmail;
+
+      var html = GetEmailTemplate("FullTellerInvitation").FilledWithObject(new
+      {
+        hostSite,
+        logo = hostSite + "/Images/LogoSideM.png",
+        election.EmailFromName,
+        election.Name,
+        email,
+        adminAccountEmail
+      });
+
+      var message = new MailMessage();
+      var ok = false;
+      string emailError;
+      try
+      {
+        message.To.Add(new MailAddress(email));
+
+        var htAddress = new MailAddress(adminAccountEmail);
+        message.ReplyToList.Add(htAddress);
+
+        message.CC.Add(htAddress);
+
+        ok = SendEmail(message, html, out emailError);
+      }
+      catch (Exception e)
+      {
+        emailError = e.Message;
+        LogHelper.Add(e.Message, true);
+      }
+
+      return new
+      {
+        Success = ok,
+        Message = emailError
+      }.AsJsonResult();
+    }
+
+
+
     private string GetEmailTemplate(string emailTemplate)
     {
       var path = $"{AppDomain.CurrentDomain.BaseDirectory}/MessageTemplates/Email/{emailTemplate}.html";
@@ -628,6 +449,7 @@ namespace TallyJ.CoreModels.Helper
         HtmlContent = htmlBody,
       };
       msg.AddTos(message.To.Select(a => a.AsSendGridEmailAddress()).ToList());
+      msg.AddCcs(message.CC.Select(a => a.AsSendGridEmailAddress()).ToList());
 
       if (message.ReplyToList.Count > 0)
       {

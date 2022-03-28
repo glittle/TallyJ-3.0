@@ -682,7 +682,7 @@ namespace TallyJ.CoreModels.ExportImport
       /// <Summary>Success!</Summary>
       public LoadResult(Guid electionGuid)
       {
-        Elections = new ElectionsListViewModel().MyElectionsInfo;
+        Elections = new ElectionsListViewModel().GetMyElectionsInfo();
         ElectionGuid = electionGuid;
         Success = true;
       }

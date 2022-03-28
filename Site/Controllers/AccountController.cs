@@ -101,6 +101,7 @@ namespace TallyJ.Controllers
                     };
 
           UserSession.IsKnownTeller = true;
+          UserSession.AdminAccountEmail = email;
 
           if (membershipUser?.Comment == "SysAdmin")
           {

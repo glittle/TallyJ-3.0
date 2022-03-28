@@ -672,8 +672,8 @@ namespace TallyJ.CoreModels
       var join = new JoinElectionUser
       {
         ElectionGuid = election.ElectionGuid,
-        UserId = UserSession.UserGuid
-        // leave role empty for Main head teller
+        UserId = UserSession.UserGuid,
+        Role = null  // leave role empty for owner/Main head teller
       };
       Db.JoinElectionUser.Add(join);
 
