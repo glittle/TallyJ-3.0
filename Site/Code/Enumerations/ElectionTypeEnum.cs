@@ -8,6 +8,8 @@ namespace TallyJ.Code.Enumerations
   public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
   {
     public static readonly ElectionTypeEnum Lsa = new ElectionTypeEnum("LSA", "Local Spiritual Assembly");
+    public static readonly ElectionTypeEnum Lsa1 = new ElectionTypeEnum("LSA1", "Local Spiritual Assembly (Two-Stage) Local Unit");
+    public static readonly ElectionTypeEnum Lsa2 = new ElectionTypeEnum("LSA2", "Local Spiritual Assembly (Two-Stage) Final");
     public static readonly ElectionTypeEnum Nsa = new ElectionTypeEnum("NSA", "National Spiritual Assembly");
     public static readonly ElectionTypeEnum Con = new ElectionTypeEnum("Con", "Unit Convention");
     public static readonly ElectionTypeEnum Reg = new ElectionTypeEnum("Reg", "Regional Council");
@@ -16,6 +18,8 @@ namespace TallyJ.Code.Enumerations
     static ElectionTypeEnum()
     {
       Add(Lsa);
+      Add(Lsa1);
+      Add(Lsa2);
       Add(Nsa);
       Add(Con);
       Add(Reg);

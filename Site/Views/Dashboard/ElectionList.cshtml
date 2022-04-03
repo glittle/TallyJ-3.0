@@ -94,13 +94,13 @@
   {
     <p>Sorry, no elections found. Please Log Out and try again.</p>
   }
-  <p>Logged in account: @UserSession.LoginId (@UserSession.AdminAccountEmail)</p>
 
   @if (UserSession.IsSysAdmin)
   {
     <p>@Html.ActionLink("Sys Admin", "Index", "SysAdmin")</p>
   }
   <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
+  <p>Logged in account: @UserSession.LoginId (@UserSession.AdminAccountEmail)</p>
 </div>
 
 

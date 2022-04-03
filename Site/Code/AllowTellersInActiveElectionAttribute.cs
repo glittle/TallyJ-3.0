@@ -58,7 +58,7 @@ namespace TallyJ.Code
         LogTime("update cache");
 
         if (currentElection.ListForPublic.AsBoolean() &&
-            (utcNow - currentElection.ListedForPublicAsOf.FromSql().GetValueOrDefault(utcNow.AddMinutes(-60))).TotalMinutes > delayTime.TotalMinutes)
+            (utcNow - currentElection.ListedForPublicAsOf.AsUtc().GetValueOrDefault(utcNow.AddMinutes(-60))).TotalMinutes > delayTime.TotalMinutes)
         {
 
           db.SaveChanges();

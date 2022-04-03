@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using TallyJ.Code;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels.Hubs;
 
@@ -40,12 +41,12 @@ namespace TallyJ.EF
       get
       {
         var maxAge = new TimeSpan(1, 0, 0); // 1 hour
-        var now = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
 
         var activeComputers = CachedDict.Values
           .Where(comp => comp.AuthLevel == "Known"
                          && comp.LastContact.HasValue 
-                         && (now - comp.LastContact.Value) < maxAge)
+                         && utcNow - comp.LastContact.Value.AsUtc() < maxAge)
           .ToList();
 
         return activeComputers
@@ -90,12 +91,9 @@ namespace TallyJ.EF
         return;
       }
 
-      computer.LastContact = DateTime.Now;
+      computer.LastContact = DateTime.UtcNow;
 
-      CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) =>
-      {
-        return computer;
-      });
+      CachedDict.AddOrUpdate(computer.ComputerGuid, computer, (i, existingComputer) => computer);
 
       //if (computer.AuthLevel == "Known")
       //{

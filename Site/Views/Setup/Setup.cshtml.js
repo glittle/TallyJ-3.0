@@ -10,6 +10,20 @@
     vue: null
   };
 
+  var publicInterface = {
+    controllerUrl: '',
+    hasBallots: false,
+    hasOnlineBallots: false,
+    Election: null,
+    Locations: null,
+    settings: settings,
+    initialRules: function (type, mode, info) {
+      var combined = type + '.' + mode;
+      cachedRules[combined] = info;
+    },
+    PreparePage: preparePage
+  };
+
 
   function preparePage() {
 
@@ -41,7 +55,7 @@
             this.election.OnlineWhenClose &&
             this.election.OnlineWhenOpen < this.election.OnlineWhenClose;
         },
-        showImported: function() {
+        showImported: function () {
           return this.votingMethodsArray.includes('I');
         },
         closeIsPast: function () {
@@ -114,11 +128,10 @@
       },
       created: function () {
         //        this.useOnline = !!this.election.OnlineWhenOpen;
-        this.useOnline = false;
         if (this.election.OnlineWhenOpen || this.election.OnlineWhenClose) {
           this.useOnline = true;
-          this.election.OnlineWhenOpen = this.election.OnlineWhenOpen.parseJsonDate().toISOString();
-          this.election.OnlineWhenClose = this.election.OnlineWhenClose.parseJsonDate().toISOString();
+          this.election.OnlineWhenOpen = this.election.OnlineWhenOpen ? moment.utc(this.election.OnlineWhenOpen).toISOString(true) : '';
+          this.election.OnlineWhenClose = this.election.OnlineWhenClose ? moment.utc(this.election.OnlineWhenClose).toISOString(true) : '';
         }
       },
       mounted: function () {
@@ -145,13 +158,13 @@
         site.qTips.push({ selector: '#qTipName', title: 'Election Name', text: 'This is shown at the top of each page, included in some reports, and shown in the list of active elections on the Home page when desired.' });
         site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
         site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
-        //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: yyyy-mm-dd' });
+        //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: YYYY-MM-DD' });
         site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
         site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
         site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
         site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });
-        site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
-        site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dicated by the type of election and can be adjusted per person.' });
+        site.qTips.push({ selector: '#qTipCanVote', title: 'Who can vote', text: 'Either "everyone" or "named" individuals. This is dictated by the type of election and can be adjusted per person.' });
+        site.qTips.push({ selector: '#qTipCanReceive', title: 'Who can be voted for?', text: 'Either "everyone" or "named" individuals. This is dictated by the type of election and can be adjusted per person.' });
         //site.qTips.push({ selector: '#qTipUpdate', title: 'Update', text: 'This only needs to be clicked if the type of election has been changed.  This does not alter any data entered in the election.' });
         site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
         site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
@@ -163,7 +176,8 @@
         site.qTips.push({ selector: '#qTipReset', title: 'Reset', text: 'Everyone is updated automatically if the election type is changed. Click to set everyone now. After resetting, apply special eligibility as needed. (Be sure to Save changes before using Reset.)' });
         site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
         site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
-        site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibilty of each delegate.' });
+        site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibility of each delegate.' });
+        site.qTips.push({ selector: '#qTipNoteLSA2', title: 'Second Stage Local Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibility of each delegate.' });
         site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
         //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
@@ -198,7 +212,7 @@
 
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
-      $('.showGlory13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
+      $('.showGlory13').toggle(($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
@@ -235,17 +249,12 @@
     $('#txtDate').on('change', getBadiDate);
 
     $('#txtDate').attr('type', 'date');
-    //  if (Modernizr.inputtypes.date) {
-    //} else {
-    //  //$("#txtDate").datepicker({});  //datepicker ui is all messed up.. better to not use it :(
-    //  $('#txtDateTip').show();
-    //}
 
     applyValues(publicInterface.Election);
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
-    $('.showGlory13').toggle($('#ddlType').val() == 'LSA' && $('#ddlMode').val() === 'N');
+    $('.showGlory13').toggle(($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N');
     //$('#txtName').focus();
 
 
@@ -267,7 +276,7 @@
     settings.dateKnown = true;
     var dateStr = $('#txtDate').val();
     var dateParts = dateStr.split('-');
-    if (dateStr.length != 10 || dateParts.length != 3) {
+    if (dateStr.length !== 10 || dateParts.length !== 3) {
       return; // expecting 2020-04-21
     }
     settings.isGlory13 = null;
@@ -314,17 +323,17 @@
 
     //    console.log(di);
 
-    // found 1st Ridvan for an LSA election?
+    // found 1st Ridván for an LSA election?
     $('.badiDateName').removeClass('isGlory13');
     var found = !!settings.isGlory13;
     if (found) {
       settings.isGlory13.addClass('isGlory13');
     }
-    $('.showGlory13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
+    $('.showGlory13').toggleClass('missing', ($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N' && !found);
   }
 
   function showBadiInfo(di, target, intro) {
-    if (di.bMonth == 2 && di.bDay == 13 && $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N') {
+    if (di.bMonth === 2 && di.bDay === 13 && ($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N') {
       settings.isGlory13 = target;
     }
 
@@ -338,7 +347,7 @@
     //            $('#tellersList').html('[None]');
     //            return;
     //        }
-    if (tellers == null || tellers.length == 0) {
+    if (tellers == null || tellers.length === 0) {
       return;
     }
     $('#tellersList').html(settings.tellerTemplate.filledWithEach(tellers));
@@ -446,7 +455,7 @@
       function (info) {
         if (info.Success) {
           ShowStatusDone(info.Status);
-          if (info.Id == 0) {
+          if (info.Id === 0) {
             // removed
             input.parent().remove();
 
@@ -456,7 +465,7 @@
             // setupLocationSortable();
           } else {
             input.val(info.Text);
-            if (info.Id != form.id) {
+            if (info.Id !== form.id) {
               input.data('id', info.Id);
             }
           }
@@ -505,15 +514,15 @@
       var value = election[input.data('name')] || '';
       switch (input.attr('type')) {
         case 'date':
-          var dateString = ('' + value).parseJsonDateForInput();
+          var dateString = value ? moment(value).format('YYYY-MM-DD') : ''; // ('' + value).parseJsonDateForInput();
           input.val(dateString);
           break;
         case 'checkbox':
           input.prop('checked', value);
           break;
         default:
-          if (input.attr('id') == 'txtDate') {
-            value = ('' + value).parseJsonDateForInput();
+          if (input.attr('id') === 'txtDate' && value) {
+            value = moment(value).toISOString(true);
           }
           input.val(value);
           break;
@@ -570,6 +579,7 @@
       OnlineSelectionProcess: election.OnlineSelectionProcess,
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
+      RandomizeVotersList: election.RandomizeVotersList,
       VotingMethods: votingMethods,
       CustomMethods: customs
     };
@@ -580,6 +590,9 @@
       switch (input.attr('type')) {
         case 'checkbox':
           value = input.prop('checked');
+          break;
+        case 'date':
+          value = moment(input.val()).toISOString();
           break;
         default:
           value = input.val();
@@ -632,20 +645,22 @@
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
-    if (type === 'Con') {
+    if (type === 'Con' || type === 'LSA1') {
       if (mode === "B") {
         mode = "N";
         $("#ddlMode").val("N");
       }
       $("#modeB").attr("disabled", "disabled");
-    }
-    else {
+    } else {
       $("#modeB").removeAttr("disabled");
     }
 
     var classes = [];
     if (type === 'NSA') {
       classes.push('NoteN');
+    }
+    if (type === 'LSA2') {
+      classes.push('NoteLSA2');
     }
     if (mode === 'B') {
       classes.push('NoteB');
@@ -675,17 +690,16 @@
     var setRule = function (target, locked, value) {
       target.prop('disabled', locked);
       target.data('disabled', locked);
-      if (locked) {
+      if (locked || !publicInterface.Election || !publicInterface.Election.DateOfElection) {
         target.val(value);
       }
     };
 
     setRule($('#txtNames'), info.NumLocked, info.Num);
     setRule($('#txtExtras'), info.ExtraLocked, info.Extra);
-    //    setRule($('#ddlCanVote'), info.CanVoteLocked, info.CanVote);
-    //    setRule($('#ddlCanReceive'), info.CanReceiveLocked, info.CanReceive);
 
     var lockedAfterBallots = publicInterface.hasBallots || publicInterface.hasOnlineBallots;
+
     // core
     $('.electionDetail select, .electionDetail input[type=number]').each(function () {
       var input = $(this);
@@ -712,20 +726,6 @@
     cachedRules[combined] = info;
   }
 
-  var publicInterface = {
-    controllerUrl: '',
-    hasBallots: false,
-    hasOnlineBallots: false,
-    Election: null,
-    Locations: null,
-    settings: settings,
-    initialRules: function (type, mode, info) {
-      var combined = type + '.' + mode;
-      cachedRules[combined] = info;
-    },
-    PreparePage: preparePage
-  };
-
   return publicInterface;
 };
 
@@ -735,34 +735,35 @@ $(function () {
   setupIndexPage.PreparePage();
 });
 
-var YesNo = Vue.component('yes-no', {
-  template: '#yes-no',
-  props: {
-    value: Boolean,
-    disabled: Boolean,
-    yes: {
-      type: String,
-      default: 'Yes'
+var YesNo = Vue.component('yes-no',
+  {
+    template: '#yes-no',
+    props: {
+      value: Boolean,
+      disabled: Boolean,
+      yes: {
+        type: String,
+        default: 'Yes'
+      },
+      no: {
+        type: String,
+        default: 'No'
+      }
     },
-    no: {
-      type: String,
-      default: 'No'
-    }
-  },
-  data: function () {
-    return {
-      yesNo: this.value ? 'Y' : 'N'
-    }
-  },
-  watch: {
-    value: function (a) {
-      this.yesNo = a ? 'Y' : 'N'
+    data: function () {
+      return {
+        yesNo: this.value ? 'Y' : 'N'
+      }
     },
-    yesNo: function (a) {
-      this.$emit('input', a === 'Y')
+    watch: {
+      value: function (a) {
+        this.yesNo = a ? 'Y' : 'N';
+      },
+      yesNo: function (a) {
+        this.$emit('input', a === 'Y');
+      }
     }
-  }
-})
+  });
 
 
 var EnvMode = Vue.component('env-mode', {
@@ -777,7 +778,7 @@ var EnvMode = Vue.component('env-mode', {
   },
   watch: {
     mode: function (a) {
-      this.$emit('input', this.mode)
+      this.$emit('input', this.mode);
     }
   }
 })

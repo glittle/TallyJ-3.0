@@ -66,7 +66,7 @@ namespace TallyJ.CoreModels
         Contents = new byte[fileSize],
         FileSize = fileSize,
         OriginalFileName = name,
-        UploadTime = DateTime.Now,
+        UploadTime = DateTime.UtcNow,
         FileType = FileTypeCsv,
         ProcessingStatus = "Uploaded"
       };

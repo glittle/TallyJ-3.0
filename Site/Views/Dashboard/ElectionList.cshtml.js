@@ -164,8 +164,8 @@
                 matched.isOwner = matched.users.findIndex(u => u.isCurrentUser && u.Role === 'Owner') !== -1;
 
                 matched.showUsers = matched.users.length > 1 && matched.isOwner;
-                matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople); //, Plural(incoming.numPeople));
-                matched.registered = '- {0} registered'.filledWith(incoming.numRegistered); //, Plural(incoming.numPeople));
+                matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople || 0); //, Plural(incoming.numPeople));
+                matched.registered = '- {0} registered'.filledWith(incoming.numRegistered || 0); //, Plural(incoming.numPeople));
               } else {
                 console.log('unknown election', incoming);
               }
@@ -477,11 +477,11 @@ Vue.component('election-detail',
         return this.users.find(u => u.selected);
       },
       onlineOpenText: function () {
-        return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + this.e.onlineOpen.fromNow() :
+        return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + ' - ' + this.e.onlineOpen.fromNow() :
           '-';
       },
       onlineCloseText: function () {
-        return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.formatDateTime) + this.e.onlineClose.fromNow() :
+        return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.formatDateTime) + ' - ' + this.e.onlineClose.fromNow() :
           '-';
       },
       onlineVoteCounts: function () {

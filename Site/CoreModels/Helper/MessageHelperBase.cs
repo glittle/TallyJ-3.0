@@ -147,14 +147,14 @@ namespace TallyJ.CoreModels.Helper
         .ToList()
         .Select(l => new ContactLogDto
         {
-          When = l.AsOf.FromSql(),
+          When = l.AsOf.AsUtc(),
           Details = l.Details,
           RowId = l.C_RowId
         })
         .ToList();
 
-      var dateOldest = logEntries.Any() ? logEntries.Min(l => l.When) : DateTime.Now;
-      var dateRecent = DateTime.Now;// logEntries.Max(l => l.When);
+      var dateOldest = logEntries.Any() ? logEntries.Min(l => l.When) : DateTime.UtcNow;
+      var dateRecent = DateTime.UtcNow;// logEntries.Max(l => l.When);
 
       var smsLog = dbContext.SmsLog
         .Where(sms => sms.ElectionGuid == electionGuid)

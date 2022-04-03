@@ -241,7 +241,6 @@ namespace TallyJ.CoreModels.Helper
       // TODO - consider batching and put all emails in BCC.  Limit may be 1000/email. 
 
       var db = UserSession.GetNewDbContext;
-      var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
 
       var election = UserSession.CurrentElection;

@@ -31,7 +31,7 @@ namespace TallyJ.Controllers
 
       if (fromDate.HasValue && toDate.HasValue)
       {
-        query1 = query1.Where(j => j.l.AsOf.FromSql() >= fromDate.Value && j.l.AsOf.FromSql() <= toDate.Value);
+        query1 = query1.Where(j => j.l.AsOf.AsUtc() >= fromDate.Value && j.l.AsOf.AsUtc() <= toDate.Value);
       }
 
       if (searchText.HasContent())
@@ -59,7 +59,7 @@ namespace TallyJ.Controllers
         .Select(j => new
         {
           j.l.C_RowId,
-          AsOf = j.l.AsOf.FromSql(),
+          AsOf = j.l.AsOf.AsUtc(),
           j.l.Details,
           ElectionName = j.e?.Name,
           j.l.HostAndVersion,
@@ -80,22 +80,24 @@ namespace TallyJ.Controllers
       var dbContext = Db;
 
       var logLines = dbContext.Election
-        .Join(dbContext.JoinElectionUser, e => e.ElectionGuid, jeu => jeu.ElectionGuid, (e, jeu) => new { e, jeu.UserId })
-        .Join(dbContext.Memberships, j => j.UserId, m => m.UserId, (j, m) => new { j.e, m.Email })
+        .GroupJoin(dbContext.JoinElectionUser
+            .Join(dbContext.Memberships, j => j.UserId, m => m.UserId, (j, m) => new { j.ElectionGuid, m.Email, j.Role })
+          , e => e.ElectionGuid, jeu => jeu.ElectionGuid, (e, jeuList) => new { e, adminEmails = jeuList.Select(x => new { x.Email, x.Role }) })
         .GroupJoin(dbContext.OnlineVotingInfo, j => j.e.ElectionGuid, ovi => ovi.ElectionGuid, (j, oviList) => new
         {
           j.e,
-          j.Email,
+          j.adminEmails,
           oviList
         })
-        .Where(j => j.oviList.Any())
+        //.Where(j => j.oviList.Any())
+        .Where(j => j.e.OnlineWhenOpen != null)
         .OrderByDescending(j => j.e.OnlineWhenClose)
         .Take(numToShow)
         .Select(j => new
         {
           j.e.Name,
           j.e.Convenor,
-          j.Email,
+          j.adminEmails,
           j.e.TallyStatus,
           j.e.OnlineWhenOpen,
           j.e.OnlineWhenClose,
@@ -111,16 +113,16 @@ namespace TallyJ.Controllers
         {
           x.Name,
           x.Convenor,
-          x.Email,
+          Email = x.adminEmails.Select(ae => $"{ae.Email} [{ae.Role.DefaultTo("Owner")}]").JoinedAsString(", "),
           x.TallyStatus,
-          OnlineWhenOpen = x.OnlineWhenOpen.FromSql(),
-          OnlineWhenClose = x.OnlineWhenClose.FromSql(),
+          OnlineWhenOpen = x.OnlineWhenOpen.AsUtc(),
+          OnlineWhenClose = x.OnlineWhenClose.AsUtc(),
           x.NumberToElect,
           x.Activated,
           x.Submitted,
           x.Processed,
-          x.First,
-          x.MostRecent
+          First = x.First.AsUtc(),
+          MostRecent = x.MostRecent.AsUtc()
         });
 
       return new
@@ -135,18 +137,19 @@ namespace TallyJ.Controllers
       var dbContext = Db;
 
       var logLines = dbContext.Election
-        .Join(dbContext.JoinElectionUser, e => e.ElectionGuid, jeu => jeu.ElectionGuid, (e, jeu) => new { e, jeu.UserId })
-        .Join(dbContext.Memberships, j => j.UserId, m => m.UserId, (j, m) => new { j.e, m.Email })
+        .GroupJoin(dbContext.JoinElectionUser
+            .Join(dbContext.Memberships, j => j.UserId, m => m.UserId, (j, m) => new { j.ElectionGuid, m.Email, j.Role })
+          , e => e.ElectionGuid, jeu => jeu.ElectionGuid, (e, jeuList) => new { e, adminEmails = jeuList.Select(x => new { x.Email, x.Role }) })
         .GroupJoin(dbContext.OnlineVotingInfo, j => j.e.ElectionGuid, ovi => ovi.ElectionGuid, (j, oviList) => new
         {
           j.e,
-          j.Email,
+          j.adminEmails,
           NumOnline = oviList.Count()
         })
         .GroupJoin(dbContext.Person, j => j.e.ElectionGuid, j => j.ElectionGuid, (j, pList) => new
         {
           j.e,
-          j.Email,
+          j.adminEmails,
           j.NumOnline,
           NumPeople = pList.Count()
         })
@@ -167,7 +170,7 @@ namespace TallyJ.Controllers
             j.e,
             j.NumPeople,
             j.NumOnline,
-            j.Email,
+            j.adminEmails,
             NumBallots = j.e.NumberToElect == 1 && j.e.NumberExtra == 0
               ? lbList.Sum(l => l.SingleNameCount)
               : lbList.Count()
@@ -175,7 +178,7 @@ namespace TallyJ.Controllers
         .GroupJoin(dbContext.C_Log, j => j.e.ElectionGuid, l => l.ElectionGuid, (j, lList) => new
         {
           j.e,
-          j.Email,
+          j.adminEmails,
           j.NumPeople,
           j.NumOnline,
           j.NumBallots,
@@ -190,8 +193,8 @@ namespace TallyJ.Controllers
           j.e.C_RowId,
           j.e.Name,
           j.e.Convenor,
-          j.e.DateOfElection,
-          j.Email,
+          DateOfElection = j.e.DateOfElection.AsUtc(),
+          Email = j.adminEmails.Select(ae=>$"{ae.Email} [{ae.Role.DefaultTo("Owner")}]").JoinedAsString(", "),
           j.e.ElectionType,
           j.e.ElectionMode,
           j.e.ShowAsTest,
@@ -200,7 +203,7 @@ namespace TallyJ.Controllers
           j.NumOnline,
           j.NumBallots,
           j.NumPeople,
-          RecentActivity = j.RecentActivity.FromSql()
+          RecentActivity = j.RecentActivity.AsUtc()
         }).ToList();
 
       return new

@@ -99,7 +99,7 @@ namespace TallyJ.CoreModels
         Contents = new byte[fileSize],
         FileSize = fileSize,
         OriginalFileName = name,
-        UploadTime = DateTime.Now,
+        UploadTime = DateTime.UtcNow,
         FileType = FileTypeXml,
         ProcessingStatus = "Uploaded"
       };
@@ -348,10 +348,10 @@ namespace TallyJ.CoreModels
       if (importedElectionInfo.ImportErrors.Any() || !importedElectionInfo.Ballots.Any() ||
           !importedElectionInfo.Voters.Any()) return ElectionPreviewInfo(importedElectionInfo);
 
-      var result = new List<string>();
+      // var result = new List<string>();
 
       // update election configuration
-      var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
       var election = UserSession.CurrentElection;
 
       if (election.TallyStatus == ElectionTallyStatusEnum.Finalized.Value)
@@ -405,13 +405,13 @@ namespace TallyJ.CoreModels
             dbContext.Person.Attach(person);
             person.VotingMethod = VotingMethodEnum.Imported.Value;
             person.VotingLocationGuid = importLocation.LocationGuid;
-            person.RegistrationTime = now;
+            person.RegistrationTime = utcNow;
             person.EnvNum = null;
 
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              person.RegistrationTime.FromSql().AsString("o"),
+              person.RegistrationTime.AsUtc().AsString("o"),
               VotingMethodEnum.TextFor(person.VotingMethod)
             }.JoinedAsString("; ", true));
             person.RegistrationLog = log;
@@ -634,12 +634,12 @@ namespace TallyJ.CoreModels
         Db.Person.Attach(person);
         person.VotingMethod = null;
         person.VotingLocationGuid = null;
-        person.RegistrationTime = DateTime.Now;
+        person.RegistrationTime = DateTime.UtcNow;
 
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.FromSql().AsString("o"),
+          person.RegistrationTime.AsUtc().AsString("o"),
           "Imports Removed",
         }.JoinedAsString("; ", true));
         person.RegistrationLog = log;

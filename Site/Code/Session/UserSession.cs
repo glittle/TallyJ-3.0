@@ -304,7 +304,7 @@ namespace TallyJ.Code.Session
 
       var db = GetNewDbContext;
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
-      var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
 
       if (onlineVoter == null)
       {
@@ -312,7 +312,7 @@ namespace TallyJ.Code.Session
         {
           VoterId = voterId,
           VoterIdType = voterIdType,
-          WhenRegistered = now,
+          WhenRegistered = utcNow,
           Country = country
         };
         db.OnlineVoter.Add(onlineVoter);
@@ -322,7 +322,7 @@ namespace TallyJ.Code.Session
         VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
       }
 
-      onlineVoter.WhenLastLogin = now;
+      onlineVoter.WhenLastLogin = utcNow;
       db.SaveChanges();
 
       VoterLoginSource = source;

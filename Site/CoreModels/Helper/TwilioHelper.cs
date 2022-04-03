@@ -142,7 +142,6 @@ namespace TallyJ.CoreModels.Helper
       //
 
       var db = UserSession.GetNewDbContext;
-      var now = DateTime.Now;
       var hostSite = SettingsHelper.Get("HostSite", "");
 
       var election = UserSession.CurrentElection;
@@ -354,14 +353,15 @@ namespace TallyJ.CoreModels.Helper
         UserSession.TwilioMsgId = messageResource.Sid;
 
         var dbContext = UserSession.GetNewDbContext;
+        var utcNow = DateTime.UtcNow;
         dbContext.SmsLog.Add(new SmsLog
         {
           SmsSid = messageResource.Sid,
           Phone = toPhoneNumber,
-          SentDate = DateTime.Now,
+          SentDate = utcNow,
           ElectionGuid = UserSession.CurrentElectionGuid,
           PersonGuid = personGuid == Guid.Empty ? null : personGuid,
-          LastDate = DateTime.Now,
+          LastDate = utcNow,
           LastStatus = "submitted"
         });
         dbContext.SaveChanges();
@@ -432,14 +432,15 @@ namespace TallyJ.CoreModels.Helper
         UserSession.TwilioMsgId = callResource.Sid;
 
         var dbContext = UserSession.GetNewDbContext;
+        var utcNow = DateTime.UtcNow;
         dbContext.SmsLog.Add(new SmsLog
         {
           SmsSid = callResource.Sid,
           Phone = toPhoneNumber,
-          SentDate = DateTime.Now,
+          SentDate = utcNow,
           ElectionGuid = UserSession.CurrentElectionGuid,
           PersonGuid = personGuid == Guid.Empty ? null : personGuid,
-          LastDate = DateTime.Now,
+          LastDate = utcNow,
           LastStatus = "voice"
         });
         dbContext.SaveChanges();
@@ -548,7 +549,7 @@ namespace TallyJ.CoreModels.Helper
 
       log.LastStatus = messageStatus;
       log.ErrorCode = errorCode;
-      log.LastDate = DateTime.Now;
+      log.LastDate = DateTime.UtcNow;
       log.Phone = to;
 
       dbContext.SaveChanges();

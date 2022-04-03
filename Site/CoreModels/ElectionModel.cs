@@ -65,6 +65,7 @@ namespace TallyJ.CoreModels
           break;
 
         case "NSA":
+        case "LSA2":
           // rules.CanVote = CanVoteOrReceive.NamedPeople; // delegates
           // rules.CanVoteLocked = true;
 
@@ -76,12 +77,10 @@ namespace TallyJ.CoreModels
             case ElectionMode.Normal:
               rules.Num = 9;
               rules.NumLocked = true;
-              // rules.CanReceive = CanVoteOrReceive.All;
               break;
             case ElectionMode.TieBreak:
               rules.Num = 1;
               rules.NumLocked = false;
-              // rules.CanReceive = CanVoteOrReceive.NamedPeople;
               break;
             case ElectionMode.ByElection:
               rules.Num = 1;
@@ -95,6 +94,7 @@ namespace TallyJ.CoreModels
           break;
 
         case "Con":
+        case "LSA1":
           // rules.CanVote = CanVoteOrReceive.All;
           // rules.CanVoteLocked = true;
 
@@ -104,8 +104,17 @@ namespace TallyJ.CoreModels
               rules.Num = 5;
               rules.NumLocked = false;
 
-              rules.Extra = 3;
-              rules.ExtraLocked = false;
+              if (type == "Con")
+              {
+                rules.Extra = 3;
+                rules.ExtraLocked = false;
+              }
+              else
+              {
+                // LSA Unit has no extra (to be confirmed)
+                rules.Extra = 0;
+                rules.ExtraLocked = true;
+              }
 
               // rules.CanReceive = CanVoteOrReceive.All;
               break;
@@ -134,7 +143,7 @@ namespace TallyJ.CoreModels
           switch (mode)
           {
             case ElectionMode.Normal:
-              rules.Num = 9;
+              rules.Num = 7;
               rules.NumLocked = false;
 
               rules.Extra = 7;
@@ -339,6 +348,7 @@ namespace TallyJ.CoreModels
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
         election.OnlineSelectionProcess,
+        election.RandomizeVotersList,
         election.EmailFromAddress,
         election.EmailFromName,
         election.VotingMethods,
@@ -358,6 +368,10 @@ namespace TallyJ.CoreModels
       }
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
+
+      // election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null; --> the local day (no time)
+      election.OnlineWhenOpen = election.OnlineWhenOpen.HasValue ? election.OnlineWhenOpen.Value.ToUniversalTime() : (DateTime?)null;
+      election.OnlineWhenClose = election.OnlineWhenClose.HasValue ? election.OnlineWhenClose.Value.ToUniversalTime() : (DateTime?)null;
 
       var coreSettingsChanged = currentMode != election.ElectionMode
                                 || currentType != election.ElectionType
@@ -906,7 +920,7 @@ namespace TallyJ.CoreModels
       // create ballot
       // change status to Processed
 
-      var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
       var election = UserSession.CurrentElection;
       var numToElect = election.NumberToElect.AsInt(0);
 
@@ -932,7 +946,7 @@ namespace TallyJ.CoreModels
       }
 
       // ensure it has a close time in the past
-      if (!election.OnlineWhenClose.HasValue || election.OnlineWhenClose.Value > now)
+      if (!election.OnlineWhenClose.HasValue || election.OnlineWhenClose.Value.AsUtc() > utcNow)
       {
         return new
         {
@@ -1013,8 +1027,6 @@ namespace TallyJ.CoreModels
         }
 
         var ballotCreated = false;
-
-        var utcNow = DateTime.UtcNow;
 
         using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
         {

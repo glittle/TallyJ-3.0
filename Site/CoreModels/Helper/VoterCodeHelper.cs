@@ -139,7 +139,7 @@ namespace TallyJ.CoreModels.Helper
       // find or make this OnlineVoter record
       var db = UserSession.GetNewDbContext;
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == target && ov.VoterIdType == voterIdType);
-      var now = DateTime.Now;
+      var utcNow = DateTime.UtcNow;
 
       if (onlineVoter == null)
       {
@@ -148,24 +148,24 @@ namespace TallyJ.CoreModels.Helper
           VoterId = target,
           VoterIdType = voterIdType,
           VerifyCode = newCode,
-          VerifyCodeDate = now,
+          VerifyCodeDate = utcNow,
           VerifyAttempts = 1,
-          VerifyAttemptsStart = now,
-          WhenRegistered = now
+          VerifyAttemptsStart = utcNow,
+          WhenRegistered = utcNow
         };
         db.OnlineVoter.Add(onlineVoter);
       }
       else
       {
-        var verifyAttemptsStart = onlineVoter.VerifyAttemptsStart;
+        var verifyAttemptsStart = onlineVoter.VerifyAttemptsStart.AsUtc();
         var attempts = onlineVoter.VerifyAttempts.GetValueOrDefault();
 
-        var fromDate = DateTime.Now.AddMinutes(0 - UserAttemptMinutes);
+        var fromDate = utcNow.AddMinutes(0 - UserAttemptMinutes);
 
         if (verifyAttemptsStart < fromDate)
         {
           attempts = 0; // reset
-          onlineVoter.VerifyAttemptsStart = now;
+          onlineVoter.VerifyAttemptsStart = utcNow;
         }
 
         if (attempts >= UserAttemptMax)
@@ -177,9 +177,9 @@ namespace TallyJ.CoreModels.Helper
         //TODO - ensure not being hit too often
 
         onlineVoter.VerifyCode = newCode;
-        onlineVoter.VerifyCodeDate = now;
+        onlineVoter.VerifyCodeDate = utcNow;
         onlineVoter.VerifyAttempts = attempts + 1;
-        onlineVoter.VerifyAttemptsStart = now;
+        onlineVoter.VerifyAttemptsStart = utcNow;
       }
 
       db.SaveChanges();
@@ -196,8 +196,8 @@ namespace TallyJ.CoreModels.Helper
 
       var dbContext = UserSession.GetNewDbContext;
 
-      var now = DateTime.Now;
-      var fromDate = now.AddHours(0 - siteHours);
+      var utcNow = DateTime.UtcNow;
+      var fromDate = utcNow.AddHours(0 - siteHours); //TODO UTC?
 
       var usageCount = dbContext.C_Log
         .Where(l => l.AsOf > fromDate)
@@ -215,13 +215,13 @@ namespace TallyJ.CoreModels.Helper
       {
         var attemptsStart = UserSession.VerifyCodeAttemptsStart;
 
-        if (now - attemptsStart < UserAttemptMinutes.minutes())
+        if (utcNow - attemptsStart < UserAttemptMinutes.minutes())
         {
           message = "Too many attempts.";
           return;
         }
 
-        if (attemptsStart == DateTime.MinValue) UserSession.VerifyCodeAttemptsStart = now;
+        if (attemptsStart == DateTime.MinValue) UserSession.VerifyCodeAttemptsStart = utcNow;
       }
 
       UserSession.VerifyCodeAttempts = attempts;
@@ -360,11 +360,12 @@ namespace TallyJ.CoreModels.Helper
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
+        var utcNow = DateTime.UtcNow;
         var authenticationProperties = new AuthenticationProperties
         {
           AllowRefresh = true,
           IsPersistent = false,
-          ExpiresUtc = DateTime.UtcNow.AddHours(1)
+          ExpiresUtc = utcNow.AddHours(1)
         };
 
         HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
@@ -374,7 +375,7 @@ namespace TallyJ.CoreModels.Helper
         UserSession.PendingVoterLogin = null;
 
         // update the db
-        onlineVoter.WhenLastLogin = DateTime.Now;
+        onlineVoter.WhenLastLogin = utcNow;
 
         onlineVoter.VerifyCode = null;
         onlineVoter.VerifyAttempts = 0;

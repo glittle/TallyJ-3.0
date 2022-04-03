@@ -38,12 +38,12 @@
         j.C_FullName,
         VotingMethod_Display = VotingMethodEnum.TextFor(j.VotingMethod).DefaultTo("-"),
         j.ovi.Status,
-        WhenStatus = j.ovi.WhenStatus.FromSql(),
+        WhenStatus = j.ovi.WhenStatus.AsUtc(),
         j.Email,
         // cannot use merge conditional syntax
-        WhenEmail = (j.byEmail != null ? j.byEmail.WhenRegistered : null).FromSql(),
+        WhenEmail = (j.byEmail != null ? j.byEmail.WhenRegistered : null).AsUtc(),
         j.Phone,
-        WhenPhone = (j.byPhone != null ? j.byPhone.WhenRegistered : null).FromSql()
+        WhenPhone = (j.byPhone != null ? j.byPhone.WhenRegistered : null).AsUtc()
       });
 
 }

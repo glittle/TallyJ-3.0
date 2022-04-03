@@ -7,17 +7,6 @@ namespace TallyJ.Code.Helpers
 {
   public class NewtonSoftBasedJsonResult : JsonResult
   {
-    public NewtonSoftBasedJsonResult()
-    {
-      Settings = new JsonSerializerSettings
-      {
-        ReferenceLoopHandling = ReferenceLoopHandling.Error,
-        DateTimeZoneHandling = DateTimeZoneHandling.Utc
-      };
-    }
-
-    public JsonSerializerSettings Settings { get; set; }
-
     // override and use NewtonSoft
     public override void ExecuteResult(ControllerContext context)
     {
@@ -45,12 +34,18 @@ namespace TallyJ.Code.Helpers
         return;
       }
 
-      var scriptSerializer = JsonSerializer.Create(Settings);
-      using (var sw = new StringWriter())
+      response.Write(JsonConvert.SerializeObject(Data, Formatting.None, new JsonSerializerSettings
       {
-        scriptSerializer.Serialize(sw, Data);
-        response.Write(sw.ToString());
-      }
+        ReferenceLoopHandling = ReferenceLoopHandling.Error,
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+      }));
+
+      // var scriptSerializer = JsonSerializer.Create(Settings);
+      // using (var sw = new StringWriter())
+      // {
+      //   scriptSerializer.Serialize(sw, Data);
+      //   response.Write(sw.ToString());
+      // }
     }
   }
 }

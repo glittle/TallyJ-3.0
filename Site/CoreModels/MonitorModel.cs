@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
     {
       get
       {
-        var now = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
 
         var ballots = new BallotCacher(Db).AllForThisElection;
         var currentElection = UserSession.CurrentElection;
@@ -53,10 +53,10 @@ namespace TallyJ.CoreModels
               j.p.C_FullName,
               j.p.VotingMethod,
               j.ovi.Status,
-              WhenStatus = j.ovi.WhenStatus.FromSql(),
+              WhenStatus = j.ovi.WhenStatus.AsUtc(),
               j.ovi.HistoryStatus,
               j.p.RegistrationLog,
-              RegistrationTime = j.p.RegistrationTime.FromSql(),
+              RegistrationTime = j.p.RegistrationTime.AsUtc(),
               votesReady = j.ovi.PoolLocked.GetValueOrDefault(),
               VotingMethod_Display = VotingMethodEnum.TextFor(j.p.VotingMethod).DefaultTo("-"),
               j.p.Email,
@@ -89,7 +89,7 @@ namespace TallyJ.CoreModels
                   .Select(c => new
                   {
                     Tellers = c.GetTellerNames().DefaultTo("(not set)"),
-                    SecondsOld = c.LastContact.HasValue ? ((now - c.LastContact.Value).TotalSeconds).ToString("0") : "",
+                    SecondsOld = c.LastContact.HasValue ? ((utcNow - c.LastContact.Value.AsUtc()).TotalSeconds).ToString("0") : "",
                   })
               })
           })

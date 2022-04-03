@@ -81,6 +81,7 @@
         <span id="VariationNotice">
           Special Notes:
           <span class="ui-icon ui-icon-info" id="qTipNoteN"></span>
+          <span class="ui-icon ui-icon-info" id="qTipNoteLSA2"></span>
           <span class="ui-icon ui-icon-info" id="qTipNoteT"></span>
           <span class="ui-icon ui-icon-info" id="qTipNoteB"></span>
         </span>
@@ -337,16 +338,16 @@
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">
-      <th>
-        Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
-      </th>
-      <td>
-        <yes-no v-model="election.UseCallInButton"></yes-no>
-      </td>
-      <td>
-        Are you set up to accept ballots by telephone?
-      </td>
-    </tr>*@
+        <th>
+          Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
+        </th>
+        <td>
+          <yes-no v-model="election.UseCallInButton"></yes-no>
+        </td>
+        <td>
+          Are you set up to accept ballots by telephone?
+        </td>
+      </tr>*@
     <tr v-if="usingBallotProcess">
       <th>
         Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
@@ -457,7 +458,7 @@
         <tr class="explainLock">
           <td colspan="3">
             <span class="explain">
-              Ballots have been processed so you cannot disable Online Voting. 
+              Ballots have been processed so you cannot disable Online Voting.
               You can change the Closing time to prevent receiving more ballots.
               <span v-if="election.OnlineSelectionProcess !== 'B'">
                 Name Selection can be changed to "Both" if desired.
@@ -528,6 +529,17 @@
           </td>
         </tr>
 
+        <tr v-if="election.OnlineSelectionProcess === 'B' || election.OnlineSelectionProcess === 'L'">
+          <th>
+            Scrambled List?
+          </th>
+          <td>
+            <yes-no v-model="election.RandomizeVotersList"></yes-no>
+          </td>
+          <td>
+            When voters see the list, should it be scrambled so that it is not in alphabetical order? Each voter will get a uniquely sorted list.
+          </td>
+        </tr>
         <tr>
           <th>
             Open Voting at

@@ -324,11 +324,11 @@ Vue.component('eventLog',
           obj[name + '_Display'] = '';
           return;
         }
-        if (!raw.getTime) {
-          obj[name + '_Date'] = raw.substring(1, 6) === 'Date(' ? raw.parseJsonDate() : null;
-        }
-        obj[name + '_M'] = raw ? moment(raw) : {};
-        obj[name + '_Display'] = raw ? moment(raw).format(format || 'MMMM D, YYYY') : '';
+        var m = moment(raw);
+
+        obj[name + '_M'] = m;
+        obj[name + '_Date'] = m.toDate();
+        obj[name + '_Display'] = m.format(format || 'MMMM D, YYYY');
       },
       rowClassNames: function (report, lineItem, i) {
         var classes = [];

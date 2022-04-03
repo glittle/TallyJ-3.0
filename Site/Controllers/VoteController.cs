@@ -111,7 +111,7 @@ namespace TallyJ.Controllers
       //   }
       // }
 
-      if (electionInfo.e.OnlineWhenOpen.FromSql() <= utcNow && electionInfo.e.OnlineWhenClose.FromSql() > utcNow)
+      if (electionInfo.e.OnlineWhenOpen.AsUtc() <= utcNow && electionInfo.e.OnlineWhenClose.AsUtc() > utcNow)
       {
         // put election in session
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
@@ -147,6 +147,7 @@ namespace TallyJ.Controllers
           voterName = electionInfo.p.C_FullName,
           electionInfo.e.NumberToElect,
           OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
+          electionInfo.e.RandomizeVotersList,
           registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
           votingInfo,
           poolDecryptError
@@ -199,11 +200,10 @@ namespace TallyJ.Controllers
         pool = "[]";
       }
 
-      var now = DateTime.Now;
+      // var now = DateTime.Now;
       var utcNow = DateTime.UtcNow;
-      if (UserSession.CurrentElection.OnlineWhenOpen <= now && UserSession.CurrentElection.OnlineWhenClose > now)
+      if (UserSession.CurrentElection.OnlineWhenOpen <= utcNow && UserSession.CurrentElection.OnlineWhenClose > utcNow)
       {
-
         // pool is JSON string
         var newStatus = pool == "[]" ? OnlineBallotStatusEnum.New : OnlineBallotStatusEnum.Draft;
         if (newStatus != onlineVotingInfo.Status)
@@ -262,7 +262,7 @@ namespace TallyJ.Controllers
       }
 
       var utcNow = DateTime.UtcNow;
-      if (currentElection.OnlineWhenOpen.FromSql() <= utcNow && currentElection.OnlineWhenClose.FromSql() > utcNow)
+      if (currentElection.OnlineWhenOpen.AsUtc() <= utcNow && currentElection.OnlineWhenClose.AsUtc() > utcNow)
       {
         var onlineVoteHelper = new OnlineVoteHelper();
         var logHelper = new LogHelper();
@@ -368,7 +368,7 @@ namespace TallyJ.Controllers
             var log = person.RegistrationLog;
             log.Add(new[]
             {
-              person.RegistrationTime.FromSql().AsString("o"),
+              person.RegistrationTime.AsUtc().AsString("o"),
               UserSession.VoterLoginSource,
               VotingMethodEnum.TextFor(person.VotingMethod),
             }.JoinedAsString("; ", true));
@@ -398,7 +398,7 @@ namespace TallyJ.Controllers
             person.RegistrationTime = utcNow; // set time so that the log will have it
             log.Add(new[]
             {
-              person.RegistrationTime.FromSql().AsString("o"),
+              person.RegistrationTime.AsUtc().AsString("o"),
               "Cancel Online",
             }.JoinedAsString("; ", true));
             person.RegistrationTime = null; // don't keep it visible
@@ -515,7 +515,7 @@ namespace TallyJ.Controllers
         .ToList()
         .Select(j => new
         {
-          AsOf = j.log.AsOf.FromSql(),
+          AsOf = j.log.AsOf.AsUtc(),
           j.ElectionName,
           j.log.Details,
         });

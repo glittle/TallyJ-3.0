@@ -60,7 +60,7 @@ namespace TallyJ.CoreModels
                        Contents = buffer,
                        FileSize = contentLength,
                        OriginalFileName = file.ClientName,
-                       UploadTime = DateTime.Now,
+                       UploadTime = DateTime.UtcNow,
                        ProcessingStatus = "Imported"
                      };
 

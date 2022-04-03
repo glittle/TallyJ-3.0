@@ -155,7 +155,7 @@ namespace TallyJ.Controllers
       Response.Cookies.Add(new HttpCookie(".AspNet.Cookies")
       {
         Secure = AppSettings["secure"].AsBoolean(true),
-        Expires = DateTime.Now.AddDays(-7)
+        Expires = DateTime.Now.AddDays(-99)
       });
 
       UserSession.ProcessLogout();

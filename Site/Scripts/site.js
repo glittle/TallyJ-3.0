@@ -69,8 +69,6 @@ function Onload() {
     ELEMENT.locale(ELEMENT.lang.en);
   }
 
-  // site.timeOffset = site.serverTime.parseJsonDate() - new Date();
-
   if (site.electionGuid) {
     connectToElectionHub();
   }
@@ -1044,28 +1042,29 @@ function CallAjaxHandler(handlerUrl,
 }
 
 
-String.prototype.parseJsonDate = function () {
-  if (this == '') return null;
-  var num = /\((.+)\)/.exec(this)[1];
-  return new Date(+num);
-
-  //Date(1072940400000)/
-  //Date(1654149600000)/
-  //Date(165414960000)/
-  //Date(-1566496800000)/
-};
-
-String.prototype.parseJsonDateForInput = function () {
-  if (this == '') return '';
-  var d = this.parseJsonDate();
-  // counteract UTC time...
-  d.setTime(d.getTime() + d.getTimezoneOffset() * 60 * 1000);
-
-  var day = ("0" + d.getDate()).slice(-2);
-  var month = ("0" + (d.getMonth() + 1)).slice(-2);
-  var date = d.getFullYear() + "-" + (month) + "-" + (day);
-  return date;
-};
+//String.prototype.parseJsonDate = function () {
+//  if (this == '') return null;
+//  return moment(this).toDate();
+////  var num = /\((.+)\)/.exec(this)[1];
+////  return new Date(+num);
+//
+//  //Date(1072940400000)/
+//  //Date(1654149600000)/
+//  //Date(165414960000)/
+//  //Date(-1566496800000)/
+//};
+//
+//String.prototype.parseJsonDateForInput = function () {
+//  if (this == '') return '';
+//  var d = this.parseJsonDate();
+//  // counteract UTC time...
+//  d.setTime(d.getTime() + d.getTimezoneOffset() * 60 * 1000);
+//
+//  var day = ("0" + d.getDate()).slice(-2);
+//  var month = ("0" + (d.getMonth() + 1)).slice(-2);
+//  var date = d.getFullYear() + "-" + (month) + "-" + (day);
+//  return date;
+//};
 
 function JsonParse(json) {
   if (json == '') return null;

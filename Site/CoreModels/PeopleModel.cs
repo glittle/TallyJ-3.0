@@ -432,7 +432,7 @@ namespace TallyJ.CoreModels
           C_FullName = p.FullName,
           VotedAt = hasMultipleLocations ? LocationName(p.VotingLocationGuid) : null,
           // When = p.RegistrationTime.FromSql().AsString("o"),
-          RegistrationTime = p.RegistrationTime.FromSql(),
+          RegistrationTime = p.RegistrationTime.AsUtc(),
           Log = p.RegistrationLog,
           p.EnvNum,
           Tellers = ShowTellers(p)
@@ -466,7 +466,7 @@ namespace TallyJ.CoreModels
           PersonId = p.C_RowId,
           C_FullName = p.FullName,
           VotedAt = LocationName(p.VotingLocationGuid),
-          RegistrationTime = p.RegistrationTime.FromSql(),
+          RegistrationTime = p.RegistrationTime.AsUtc(),
           Log = p.RegistrationLog,
           p.VotingMethod,
           EnvNum = ShowEnvNum(p),
@@ -531,7 +531,7 @@ namespace TallyJ.CoreModels
           NameLower = (p.FullName + p.BahaiId).WithoutDiacritics(true).ReplacePunctuation(' ')
             .Replace(" ", "").Replace("\"", "\\\""),
           p.Area,
-          RegistrationTime = p.RegistrationTime.FromSql(),
+          RegistrationTime = p.RegistrationTime.AsUtc(),
           VotedAt = new[]
                     {
                       ShowTellers(p),
@@ -648,7 +648,7 @@ namespace TallyJ.CoreModels
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.FromSql().AsString("o"),
+          person.RegistrationTime.AsUtc().AsString("o"),
           "De-selected",
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
@@ -669,7 +669,7 @@ namespace TallyJ.CoreModels
         var log = person.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.FromSql().AsString("o"),
+          person.RegistrationTime.AsUtc().AsString("o"),
           VotingMethodEnum.TextFor(person.VotingMethod),
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null

@@ -68,7 +68,7 @@ VoteCount = rList.Count()
   g.VoteCount,
 //g.name,
 InvalidReasonDesc =
-UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa && g.Reason == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
+(UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Nsa || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.Lsa2) && g.Reason == IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate
   ? null : IneligibleReasonEnum.DescriptionFor(g.Reason.AsGuid()),
 })
 .Where(r => r.InvalidReasonDesc.HasContent())

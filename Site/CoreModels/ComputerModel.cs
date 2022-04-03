@@ -82,7 +82,7 @@ namespace TallyJ.CoreModels
           computerCacher.UpdateComputer(computer);
         }
 
-        computer.LastContact = DateTime.Now;
+        computer.LastContact = DateTime.UtcNow;
         computer.LocationGuid = locationGuid;
         computer.AuthLevel = UserSession.AuthLevel;
         computer.SessionId = HttpContext.Current.Session.SessionID;
@@ -112,7 +112,7 @@ namespace TallyJ.CoreModels
           ComputerCode = "-",
           ElectionGuid = Guid.Empty,
           AllMyElections = allMyElectionGuids,
-          LastContact = DateTime.Now,
+          LastContact = DateTime.UtcNow,
           AuthLevel = UserSession.AuthLevel,
           SessionId = HttpContext.Current.Session.SessionID
         };

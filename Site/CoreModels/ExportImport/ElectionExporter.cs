@@ -52,7 +52,7 @@ namespace TallyJ.CoreModels.ExportImport
 
       var blob = new
       {
-        Exported = DateTime.Now.ToString("o"),
+        Exported = DateTime.UtcNow.ToString("o"),
         ByUser = UserSession.MemberName,
         UserEmail = UserSession.MemberEmail,
         Server = site.ServerName,
@@ -98,8 +98,8 @@ namespace TallyJ.CoreModels.ExportImport
           ovi.PersonGuid,
           ovi.PoolLocked,
           ovi.Status,
-          WhenStatus = ovi.WhenStatus.FromSql()?.ToString("o"),
-          WhenBallotCreated = ovi.WhenBallotCreated.FromSql()?.ToString("o"),
+          WhenStatus = ovi.WhenStatus.AsUtc()?.ToString("o"),
+          WhenBallotCreated = ovi.WhenBallotCreated.AsUtc()?.ToString("o"),
           // ovi.ListPool, --> do not export the pool!
           ovi.HistoryStatus,
         }).ToList();
@@ -123,7 +123,7 @@ namespace TallyJ.CoreModels.ExportImport
         .ToList()
         .Select(l => new
         {
-          AsOf = l.AsOf.FromSql().ToString("o"),
+          AsOf = l.AsOf.AsUtc().ToString("o"),
           //l.LocationGuid,
           l.ComputerCode,
           l.Details,
@@ -314,7 +314,7 @@ namespace TallyJ.CoreModels.ExportImport
         election.TallyStatus,
         election.ElectionType,
         election.ElectionMode,
-        DateOfElection = election.DateOfElection.FromSql().AsString("u").Split(' ')[0],
+        DateOfElection = election.DateOfElection.AsUtc().AsString("u").Split(' ')[0],
         election.NumberToElect,
         election.NumberExtra,
         election.Name,
@@ -330,8 +330,8 @@ namespace TallyJ.CoreModels.ExportImport
         election.ElectionGuid,
         election.BallotProcessRaw,
         ShowFullReport = election.ShowFullReport.OnlyIfTrue(),
-        OnlineWhenOpen = election.OnlineWhenOpen.FromSql(),
-        OnlineWhenClose = election.OnlineWhenClose.FromSql(),
+        OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
+        OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
         election.OnlineCloseIsEstimate,
       };
     }

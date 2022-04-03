@@ -230,7 +230,7 @@
           return !!this[this.mode]; // something entered - should validate
         },
         codePrompt: function () {
-          return 'Enter the code when you receive it:'; // change for voice
+          return 'The code was sent. Please enter it below:'; // change for voice?
         }
       },
       watch: {

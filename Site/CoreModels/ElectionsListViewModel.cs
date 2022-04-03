@@ -29,13 +29,13 @@ namespace TallyJ.CoreModels
           e.IsSingleNameElection,
           e.CanBeAvailableForGuestTellers,
           e.OnlineCurrentlyOpen,
-          OnlineWhenOpen = e.OnlineWhenOpen.FromSql(),
-          OnlineWhenClose = e.OnlineWhenClose.FromSql(),
+          OnlineWhenOpen = e.OnlineWhenOpen.AsUtc(),
+          OnlineWhenClose = e.OnlineWhenClose.AsUtc(),
           e.EmailFromAddressWithDefault,
           e.EmailFromNameWithDefault,
           e.ElectionPasscode,
           e.OnlineEnabled,
-          IsFuture = e.DateOfElection.HasValue && e.DateOfElection.FromSql() > DateTime.UtcNow,
+          IsFuture = e.DateOfElection.HasValue && e.DateOfElection.AsUtc() > DateTime.UtcNow,
           IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
           Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
           Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
@@ -100,12 +100,12 @@ namespace TallyJ.CoreModels
           Users = g.OrderBy(u => u.Role).ThenBy(u => u.UserName).Select(u => (object)new
           {
             u.Role,
-            InviteWhen = u.InviteWhen.FromSql(),
+            InviteWhen = u.InviteWhen.AsUtc(),
             u.InviteEmail,
             u.C_RowId,
             u.Email,
             u.UserName,
-            LastActivityDate = u.UserId == Guid.Empty ? (DateTime?)null : u.LastActivityDate.FromSql(),
+            LastActivityDate = u.UserId == Guid.Empty ? (DateTime?)null : u.LastActivityDate.AsUtc(),
             isCurrentUser = u.UserId == UserSession.UserGuid
           })
         })

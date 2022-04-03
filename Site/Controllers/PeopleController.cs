@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -87,8 +88,16 @@ namespace TallyJ.Controllers
       
       var rnd = new Random();
 
-      var allForThisElection = new PersonCacher(Db).AllForThisElection;
+      var useRandom = currentElection.RandomizeVotersList;
 
+      var query = new PersonCacher(Db).AllForThisElection.AsQueryable();
+      if (!useRandom)
+      {
+        query = query.OrderBy(p => p.FullName);
+      }
+
+      var allForThisElection = query.ToList();
+      var nonRandom = 1;
       var maxRnd = allForThisElection.Count * 100;
 
       return new
@@ -120,7 +129,7 @@ namespace TallyJ.Controllers
               IRG = descriptionFor,
               p.OtherInfo,
               p.Area,
-              sort = rnd.Next(maxRnd)
+              sort = useRandom ? rnd.Next(maxRnd) : nonRandom++
             };
           })
           .OrderBy(p=> p.sort)

@@ -23,6 +23,17 @@ namespace TallyJ.Code
 {
   public static class Extensions
   {
+    private static readonly JsonSerializerSettings _jsonSerializerSettings;
+
+    static Extensions()
+    {
+      _jsonSerializerSettings = new JsonSerializerSettings
+      {
+        ReferenceLoopHandling = ReferenceLoopHandling.Error,
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+      };
+    }
+
     /// <summary>
     ///   Not IsNullOrEmpty
     /// </summary>
@@ -667,10 +678,12 @@ namespace TallyJ.Code
     /// <returns> </returns>
     public static string SerializedAsJsonString(this object input)
     {
-      return new JavaScriptSerializer
-      {
-        MaxJsonLength = int.MaxValue
-      }.Serialize(input);
+      return JsonConvert.SerializeObject(input, Formatting.None, _jsonSerializerSettings);
+      //
+      // return new JavaScriptSerializer
+      // {
+      //   MaxJsonLength = int.MaxValue
+      // }.Serialize(input);
     }
 
     /// <summary>
@@ -899,13 +912,27 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static DateTime FromSql(this DateTime input)
+    public static DateTime AsUtc(this DateTime input)
     {
       return DateTime.SpecifyKind(input, DateTimeKind.Utc);
     }
-    public static DateTime? FromSql(this DateTime? input)
+    public static DateTime? AsUtc(this DateTime? input)
     {
-      return input?.FromSql();
+      return input?.AsUtc();
+    }
+
+    /// <summary>
+    /// Mark this date as a local time
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static DateTime IsLocal(this DateTime input)
+    {
+      return DateTime.SpecifyKind(input, DateTimeKind.Local);
+    }
+    public static DateTime? IsLocal(this DateTime? input)
+    {
+      return input?.IsLocal();
     }
 
     // public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)

@@ -160,7 +160,7 @@
         <tr>
           <th v-on:click="sort('Name', $event)">Election</th>
           <th v-on:click="sort('Convenor', $event)">Convenor</th>
-          <th v-on:click="sort('Email')">Admin Email</th>
+          <th v-on:click="sort('Email')">Admin Email(s)</th>
           <th v-on:click="sort('NumberToElect')">Ballot Size</th>
           <th v-on:click="sort('TallyStatus')">Tally Status</th>
           <th v-on:click="sort('Activated')">Logged In</th>
@@ -215,12 +215,13 @@
       <table>
         <thead>
           <tr>
+            <th></th>
             <th v-on:click="sort('DateOfElection_Date')">Date</th>
             <th v-on:click="sort('RecentActivity_Date')">Recent Activity</th>
             <th v-on:click="sort('ShowAsTest')">Test?</th>
             <th v-on:click="sort('Name')">Election</th>
             <th v-on:click="sort('Convenor')">Convenor</th>
-            <th v-on:click="sort('Email')">Email</th>
+            <th v-on:click="sort('Email')">Admin Email(s)</th>
             <th v-on:click="sort('ElectionType')">Type</th>
             <th v-on:click="sort('TallyStatus')">Status</th>
             <th v-on:click="sort('NumberToElect')">Ballot Size</th>
@@ -231,6 +232,7 @@
         </thead>
         <tbody v-for="r in logInfo.electionList.log" :key="r.C_RowId">
           <tr :class="rowClassNames('electionList', r)">
+            <td>{{r.C_RowId}}</td>
             <td>{{r.DateOfElection_Display}}</td>
             <td>{{r.RecentActivity_Display}}</td>
             <td>{{r.ShowAsTest ? 'Test' : ''}}</td>

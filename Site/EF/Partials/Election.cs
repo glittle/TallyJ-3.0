@@ -69,6 +69,7 @@ namespace TallyJ.EF
       BP, // Ballot Process?
       Env, // Envelope Mode
       T24, // use 24 hour time?
+      RV, // randomize voters list displayed for voters
     }
 
     public string EmailFromAddressWithDefault => EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
@@ -188,6 +189,19 @@ namespace TallyJ.EF
       get { return GetExtraSetting(ExtraSettingKey.T24).AsBoolean(); }
       set { SetExtraSetting(ExtraSettingKey.T24, value ? "1" : "0"); }
     }
+
+    /// <summary>
+    /// Should the voters list be shown in random order?
+    /// </summary>
+    /// <remarks>
+    /// Defaults to true for backwards compatibility
+    /// This is a "fake" column. 
+    /// </remarks>
+    public bool RandomizeVotersList
+    {
+      get { return GetExtraSetting(ExtraSettingKey.RV).AsBoolean(true); }
+      set { SetExtraSetting(ExtraSettingKey.RV, value ? "1" : "0"); }
+    }
     //public string Test2
     //{
     //  // Replace this when a second fake field is created!
@@ -216,9 +230,9 @@ namespace TallyJ.EF
         var utcNow = DateTime.UtcNow;
         return OnlineWhenOpen.HasValue
                && OnlineWhenClose.HasValue
-               && OnlineWhenOpen.Value.FromSql() < utcNow
+               && OnlineWhenOpen.Value.AsUtc() < utcNow
                && OnlineWhenOpen.Value < OnlineWhenClose.Value
-               && OnlineWhenClose.Value.FromSql() > utcNow;
+               && OnlineWhenClose.Value.AsUtc() > utcNow;
       }
     }
 
