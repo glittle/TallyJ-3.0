@@ -217,9 +217,12 @@
           code: '',
           email: '',
           phone: '',
+          phoneMethod: '',
           sending: false,
           sent: false,
           status: '',
+          voiceStatus: '',
+          voiceCallDone: false,
           connectedToHub: false,
           hubKey: '',
           showCodeInput: false
@@ -230,21 +233,21 @@
           return !!this[this.mode]; // something entered - should validate
         },
         codePrompt: function () {
-          return 'The code was sent. Please enter it below:'; // change for voice?
+          return this.phoneMethod === 'voice' ? (this.voiceCallDone ? 'Call completed' : 'Calling your phone...') : 'The code was sent. Please enter it below:'; // change for voice?
         }
       },
       watch: {
-//        phone(a, b) {
-//          if (a && a.length < (b || '').length) {
-//            this.fixPhone();
-//          }
-//        },
-//        callStatus(a, b) {
-//          console.log(a, b);
-//          if (a === 'ringing') {
-//            this.showCodeInput = true;
-//          }
-//        }
+        //        phone(a, b) {
+        //          if (a && a.length < (b || '').length) {
+        //            this.fixPhone();
+        //          }
+        //        },
+        //        callStatus(a, b) {
+        //          console.log(a, b);
+        //          if (a === 'ringing') {
+        //            this.showCodeInput = true;
+        //          }
+        //        }
       },
       created: function () {
       },
@@ -276,19 +279,19 @@
               text = '+' + text;
             }
           }
-//          if (text.substr(0, 1) === '+') {
-//            // +123
-//            if (text.length === 11 && text.substr(2, 1) !== '1') {
-//              // + and 10 digits - remove the + and add +1
-//              text = '+1' + text.substr(1);
-//            }
-//          } else {
-//            if (text.length === 10) {
-//              // US 10 digits?
-//              text = '1' + text;
-//            }
-//            text = '+' + text;
-//          }
+          //          if (text.substr(0, 1) === '+') {
+          //            // +123
+          //            if (text.length === 11 && text.substr(2, 1) !== '1') {
+          //              // + and 10 digits - remove the + and add +1
+          //              text = '+1' + text.substr(1);
+          //            }
+          //          } else {
+          //            if (text.length === 10) {
+          //              // US 10 digits?
+          //              text = '1' + text;
+          //            }
+          //            text = '+' + text;
+          //          }
           return text;
         },
         sendEmail: function () {
@@ -304,6 +307,7 @@
             return;
           }
           this.phone = phone;
+          this.phoneMethod = method;
           this.issueCode('phone', method, phone);
         },
         joinHub: function () {
@@ -315,12 +319,21 @@
 
           var hub = $.connection.voterCodeHubCore;
 
-          hub.client.setStatus = function (message, callStatus) {
-            console.log('signalR: voterPersonalHub status', message, callStatus);
-            vue.status = message;
-            if (callStatus) {
+          hub.client.setStatus = function (message, voiceCallStatus) {
+            console.log('signalR: voterPersonalHub status', message, voiceCallStatus);
+            if (voiceCallStatus) {
+              if (voiceCallStatus === 'completed') {
+                vue.voiceStatus = '';
+                vue.status = 'Call completed';
+                vue.voiceCallDone = true;
+              } else {
+                vue.voiceStatus = message;
+              }
               vue.showCodeInput = true;
               vue.sent = true;
+            } else {
+              vue.status = message;
+              vue.voiceStatus = '';
             }
           };
 
@@ -349,7 +362,7 @@
         issueCode: function (type, method, target) {
           var vue = this;
 
-          this.sending = true;  
+          this.sending = true;
           this.status = 'Sending...';
 
           // do the call

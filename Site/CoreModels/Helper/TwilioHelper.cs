@@ -65,6 +65,7 @@ namespace TallyJ.CoreModels.Helper
 
       return SendVoice(phone, text, null, out error);
     }
+    
 
     public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
     {
@@ -458,6 +459,8 @@ namespace TallyJ.CoreModels.Helper
         {
           errorMessage = $"Voice not available. ({e.Message})";
         }
+        UserSession.TwilioMsgId = null;
+
         return false;
       }
       catch (Exception e)
@@ -467,22 +470,14 @@ namespace TallyJ.CoreModels.Helper
         {
           errorMessage = "Configuration error. SMS not available.";
         }
+        UserSession.TwilioMsgId = null;
         return false;
       }
     }
 
-    public string CheckVoiceCallStatus()
+    public string GetCallStatus(string sid)
     {
-      var callSid = UserSession.TwilioMsgId;
-      if (callSid.HasNoContent())
-      {
-        return null;
-      }
-
-      //https://support.twilio.com/hc/en-us/articles/223132547-What-are-the-Possible-Call-Statuses-and-What-do-They-Mean-
-
-      var callResource = CallResource.Fetch(callSid);
-      return callResource.Status.ToString();
+      return CallResource.Fetch(sid)?.Status.ToString();
     }
 
     public void SendTwilioConfirmation()
@@ -555,10 +550,5 @@ namespace TallyJ.CoreModels.Helper
       dbContext.SaveChanges();
     }
 
-    public string GetCallStatus(string sid)
-    {
-
-      return CallResource.Fetch(sid)?.Status.ToString();
-    }
   }
 }

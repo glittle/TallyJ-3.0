@@ -306,7 +306,7 @@ Vue.component('eventLog',
       extendOnlineVotingLogLine: function (item) {
         this.extendDate(item, 'OnlineWhenOpen', 'YYYY MMM DD, h:mm a');
         this.extendDate(item, 'OnlineWhenClose', 'YYYY MMM DD, h:mm a');
-        this.extendDate(item, 'First', 'YYYY MMM DD');
+        this.extendDate(item, 'First', 'YYYY MMM DD, h:mm a');
         this.extendDate(item, 'MostRecent', 'YYYY MMM DD, h:mm a');
       },
       extendElectionListLine: function (item) {

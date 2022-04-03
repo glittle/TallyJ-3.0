@@ -36,14 +36,14 @@
     <div class="centerbuttons">
       @if (SettingsHelper.HostSupportsOnlineElections)
       {
-        <div class="centerL" title="Vote online in an election.">
-          <button class="btn btn-warning" id="btnChooseVoter" accesskey="V">Vote Online</button>
-          <p>Vote in an election.</p>
+        <div class="centerFull" title="Vote online in an election.">
+          <button class="btn btn-warning btn-large" id="btnChooseVoter" accesskey="V">Vote Online</button>
+          <p>For individuals voting in an election.</p>
         </div>
       }
       <div class="centerL" title="Assist with an election.">
-        <button class="btn btn-primary" id="btnChooseJoin" accesskey="A">Assist as a Teller</button>
-        <p>Join an election as a teller to assist in registering voters and tallying ballots.</p>
+        <button class="btn btn-primary" id="btnChooseJoin" accesskey="L">Login as a Teller</button>
+        <p>For tellers who have an access code to assist in registering voters and tallying ballots.</p>
       </div>
 
     </div>
@@ -51,7 +51,7 @@
       <div title="Go to TallyJ for Officers...">
         <a class="btn"
            href="https://officers.tallyj.com/" target="officers"
-           accesskey="O">Elect Officers</a>
+           accesskey="E">Elect Officers</a>
         <p>For Assemblies and committees to elect<br />their own officers at their first meeting.</p>
       </div>
       <div class="centerR">
@@ -283,6 +283,7 @@
                 <div v-if="showCodeInput" class="pendingCode">
                   <div v-if="sent">
                     <div v-text="codePrompt"></div>
+                    <div class="status" v-text="voiceStatus" v-if="voiceStatus"></div>
                     <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
                     <div>
                       <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
@@ -345,56 +346,30 @@
 }
 
 <div class="notes">
-  <p>
-    TallyJ is ready for use! Please send feedback to
-    <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little+tallyj@gmail.com")">@SettingsHelper.Get("TechSupportContactName", "Glen Little")</a> and refer to the
-    <a title="View document"
-       href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view"
-       target="gdoc">Status and Feedback</a> document for current updates!
-  </p><p>
-    Please note that TallyJ requires a current browser, such as Chrome, Edge or Firefox.
-  </p>
+    <p>
+        Please send feedback to
+        <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little+tallyj@gmail.com")">@SettingsHelper.Get("TechSupportContactName", "Glen Little")</a> and refer to the
+        <a title="View document"
+           href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view"
+           target="gdoc">Status and Feedback</a> document for current updates!
+    </p>
+    <p>
+        Please note that TallyJ requires a current browser, such as Chrome, Edge or Firefox.
+    </p>
+    <p class="links">
+        <a href="@Url.Action("About")" title="Want to know more about the TallyJ tool?">
+            About TallyJ
+        </a>
+        <a href="@Url.Action("Learning")" title="Read more about Bahá’í elections and the job of tellers.">
+            Reference Materials
+        </a>
+        <a href="@Url.Action("Privacy")" title="Voter's Privacy Policy and User Agreement.">
+            Policies & Agreements
+        </a>
+
+    </p>
 </div>
 
-<section class="features bottom">
-  <a href="@Url.Action("About")">
-    <section class="feature">
-      <h2>About TallyJ</h2>
-      <p>
-        Want to know more about the TallyJ tool?
-      </p>
-    </section>
-  </a><a href="@Url.Action("Learning")">
-    <section class="feature">
-      <h2>Reference Materials</h2>
-      <p>
-        Read more about Bahá’í elections and the job of tellers.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Privacy")">
-    <section class="feature">
-      <h2>Policies & Agreements</h2>
-      <p>
-        Voter's Privacy Policy and User Agreement.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Contact")">
-    <section class="feature">
-      <h2>Contact</h2>
-      <p>
-        How to get in contact.
-      </p>
-    </section>
-  </a><a href="@Url.Action("Install")">
-    <section class="feature">
-      <h2>Install for Local Use?</h2>
-      <p>
-        No access to the Internet when and where you will need to
-        use TallyJ?
-      </p>
-    </section>
-  </a>
-</section>
 <div class="Summary">
   TallyJ - the tool to assist tellers during Bah&aacute;'&iacute; elections
 </div>

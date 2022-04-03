@@ -526,10 +526,16 @@ fieldset input[type="password"] {
   margin-top: 10px;
 }
 
-.bottom {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+.links {
+
+  a {
+    padding: 0 10px;
+  }
+}
+
+button.btn.btn-large, input[type="submit"].btn.btn-large{
+  padding: 20px 35px;
+  font-size: 20px;
 }
 
 section.features {
@@ -598,20 +604,24 @@ section.CenterPanel {
   padding: 2px 5px 1px;
 }
 
-
 .centerbuttons {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: start;
   margin: 0.5em;
 
   > div {
-    margin: .5em 0;
+    margin: 1em 0;
     padding: 10px 20px;
     text-align: center;
     box-sizing: border-box;
-    flex: 1 1 50%;
+    flex: 0 0 50%;
+
+    &.centerFull {
+      flex: 0 0 100%;
+    }
   }
 
   h1,

@@ -13,9 +13,9 @@ namespace TallyJ.CoreModels.Hubs
 
     private IHubContext CoreHub => _coreHub ?? (_coreHub = GlobalHost.ConnectionManager.GetHubContext<VoterCodeHubCore>());
 
-    public void SetStatus(string key, string message, string callStatusCode = null)
+    public void SetStatus(string key, string message, string voiceCallStatusCode = null)
     {
-      CoreHub.Clients.Group(key).setStatus(message, callStatusCode);
+      CoreHub.Clients.Group(key).setStatus(message, voiceCallStatusCode);
     }
 
     public void Final(string key, bool okay, string message)

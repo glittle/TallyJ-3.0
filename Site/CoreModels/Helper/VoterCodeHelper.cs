@@ -286,7 +286,7 @@ namespace TallyJ.CoreModels.Helper
         var status = twilioHelper.GetCallStatus(sid);
         var statusDisplay = new LangResourceHelper().GetFromList("CallStatus", status) ?? status;
 
-        _voterCodeHub.SetStatus(_hubKey, "Call status: " + statusDisplay, status);
+        _voterCodeHub.SetStatus(_hubKey, statusDisplay, status);
 
         tryAgain = activeStatusList.Contains(status);
 
