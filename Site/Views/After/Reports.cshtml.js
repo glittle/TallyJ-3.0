@@ -154,6 +154,7 @@
   }
 
   function getReport(code, title) {
+    document.title = 'TallyJ Report - ' + title;
     CallAjax2(publicInterface.controllerUrl + '/GetReportData', { code: code },
       {
         busy: 'Getting report'
