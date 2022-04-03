@@ -484,6 +484,9 @@ Vue.component('election-detail',
         return this.e.OnlineWhenClose ? 'Close: ' + this.e.onlineClose.format(this.formatDateTime) + ' - ' + this.e.onlineClose.fromNow() :
           '-';
       },
+      tellerToggleTitle: function () {
+        return this.e.ElectionPasscode ? 'Open/Close for Tellers' : 'A passcode must be set before tellers can join.';
+      },
       onlineVoteCounts: function () {
         var statusCodes = Object.keys(this.e.onlineVoters);
         statusCodes.sort();

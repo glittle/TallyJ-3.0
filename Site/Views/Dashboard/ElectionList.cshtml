@@ -59,7 +59,7 @@
                          :deleting="deleting"
                          v-on:delete="deleteElection"
                          v-on:export="exportElection"
-                         :key="e.ElectionGuid"></election-detail>
+                         :key="e.C_RowId"></election-detail>
       </div>
     </div>
   }
@@ -171,9 +171,11 @@
       </div>
       <div class="statusTellers statusBlock">
         <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
-        <div class="statusLabel">
+        <div class="statusLabel" :title="tellerToggleTitle">
           <div>Tellers</div>
-          <el-switch v-model="e.pendingOpenForTellers" v-on:change="updateListing" title="Open/Close for tellers to join">
+          <el-switch v-model="e.pendingOpenForTellers"
+                     :disabled="!e.ElectionPasscode"
+                     v-on:change="updateListing">
           </el-switch>
           <div v-html="e.openForTellers ? 'Open' : 'Closed'"></div>
         </div>
@@ -250,26 +252,27 @@
           <el-input :disabled="!addingNew" v-model="form.email"></el-input>
         </el-form-item>
         <div>
-            <p>A "full" teller has all the technical capabilities to completely manage the election. 
-                You, as the owner, can use this to add additional or local head tellers or technical assistants.
-                The new full teller will need to register for an admin account using exactly the same email address as entered here.
-                </p>
+          <p>
+            A "full" teller has all the technical capabilities to completely manage the election.
+            You, as the owner, can use this to add additional or local head tellers or technical assistants.
+            The new full teller will need to register for an admin account using exactly the same email address as entered here.
+          </p>
           <p>Regular "guest" tellers join via the "Assist as a Teller" option and do not have their own password and should NOT be added here.</p>
         </div>
         <el-form-item>
-            <el-button :disabled="!addingNew" 
-                       type="primary" 
-                       size="mini" 
-                       v-on:click="processForm">Grant access to this Election</el-button>
+          <el-button :disabled="!addingNew"
+                     type="primary"
+                     size="mini"
+                     v-on:click="processForm">Grant access to this Election</el-button>
 
-            <el-button v-if="selectedUser && selectedUser.InviteEmail" 
-                       type="primary" 
-                       size="mini" 
-                       v-on:click="sendInvitation">Send Email Notification</el-button>
+          <el-button v-if="selectedUser && selectedUser.InviteEmail"
+                     type="primary"
+                     size="mini"
+                     v-on:click="sendInvitation">Send Email Notification</el-button>
 
-            <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election." 
-                           v-if="!addingNew"
-                           confirm-button-text='Yes, remove them'
+          <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election."
+                         v-if="!addingNew"
+                         confirm-button-text='Yes, remove them'
                          v-on:confirm="removeUser">
             <el-button slot="reference" type="warning" size="mini">Remove from this Election</el-button>
           </el-popconfirm>
@@ -280,13 +283,12 @@
         </el-form-item>
       </el-form>
 
-        <el-button 
-            v-if="e.isOwner"
-            type="primary" 
-            plain 
-            class="addNew" 
-            size="mini" 
-            v-on:click="openForAdd">Add new Full Teller</el-button>
+      <el-button v-if="e.isOwner"
+                 type="primary"
+                 plain
+                 class="addNew"
+                 size="mini"
+                 v-on:click="openForAdd">Add new Full Teller</el-button>
 
     </div>
 
