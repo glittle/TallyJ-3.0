@@ -471,9 +471,9 @@ namespace TallyJ.Controllers
             name = j.p.C_FullName,
             j.p.VotingMethod,
             RegistrationTime = j.p.RegistrationTime.AsUtc(),
-            j.ovi.PoolLocked,
-            j.ovi.Status,
-            WhenStatus = j.ovi.WhenStatus.AsUtc()
+            j.ovi?.PoolLocked,
+            j.ovi?.Status,
+            WhenStatus = j.ovi?.WhenStatus.AsUtc()
           }
         })
         .ToList();
