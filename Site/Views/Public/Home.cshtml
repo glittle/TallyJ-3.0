@@ -250,48 +250,49 @@
                   <span>Using your phone</span>
                 </div>
               </div>
-              <div class="voterLogin" :class="mode" v-if="mode">
-                <div v-show="mode==='email'">
-                  <label for="email">
-                    Enter your email address:
-                  </label>
-                  <div class="example">Example: name@example.com</div>
-                  <input type="email" name="email" id="email"
-                         v-model="email"
-                         placeholder="____&#64____.__"
-                         required autocomplete="email">
-                  <div>Send me a login code via</div>
-                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email</button>
-                </div>
-                <div v-show="mode==='phone'">
-                  <label for="phone">
-                    Enter your full phone number:
-                  </label>
-                  <div class="example">Example: +12025550103</div>
-                  <input type="tel" name="phone" id="phone"
-                         v-model="phone"
-                         placeholder="+__________"
-                         required autocomplete="tel">
-                  <div>Send me a login code via</div>
-                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
-                  <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
-                  @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
-                  {
-                    <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('whatsapp')">WhatsApp</button>
-                  }
-                </div>
-                <div v-if="showCodeInput" class="pendingCode">
-                  <div v-if="sent">
-                    <div v-text="codePrompt"></div>
-                    <div class="status" v-text="voiceStatus" v-if="voiceStatus"></div>
-                    <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
-                    <div>
-                      <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
+                <div class="voterLogin" :class="mode" v-if="mode">
+                    <div v-show="mode==='email'">
+                        <label for="email">
+                            Enter your email address:
+                        </label>
+                        <div class="example">Example: name@example.com</div>
+                        <input type="email" name="email" id="email"
+                               v-model="email"
+                               placeholder="____&#64____.__"
+                               required autocomplete="email">
+                        <div>Send me a login code via</div>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email</button>
                     </div>
-                  </div>
+                    <div v-show="mode==='phone'">
+                        <label for="phone">
+                            Enter your full phone number:
+                        </label>
+                        <div class="example">Example: +12025550103</div>
+                        <input type="tel" name="phone" id="phone"
+                               v-model="phone"
+                               placeholder="+__________"
+                               required autocomplete="tel">
+                        <div>Send me a login code via</div>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
+                        @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
+                        {
+                            <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('whatsapp')">WhatsApp</button>
+                        }
+                    </div>
+                    <div v-if="showCodeInput" class="pendingCode">
+                        <div v-if="sent">
+                            <div v-text="codePrompt"></div>
+                            <div class="status" v-text="voiceStatus" v-if="voiceStatus"></div>
+                            <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
+                            <div>
+                                <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="status" v-text="status"></div>
                 </div>
-                <div class="status" v-text="status"></div>
-              </div>
+                <div class="afterLogin"></div>
               <div class="mustPreRegister">
                 <p>
                   <strong>Please Note:</strong> You can sign in at any time, but the

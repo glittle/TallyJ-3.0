@@ -383,7 +383,10 @@
                 vue.status = '';
                 vue.sent = true; //testing
                 vue.sending = false; // testing
-                setTimeout(() => $('.voterLogin code').focus(), 1000);
+                setTimeout(() => {
+                  $('.voterLogin .pendingCode input').focus();
+                  $('.afterLogin')[0].scrollIntoView({ block: "end", inline: "nearest" });
+                }, 100);
 
               } else {
                 vue.status = info.Message;
