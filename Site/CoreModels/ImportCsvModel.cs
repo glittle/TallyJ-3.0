@@ -1,4 +1,3 @@
-using LumenWorks.Framework.IO.Csv;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using CsvReader;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -184,7 +184,7 @@ namespace TallyJ.CoreModels
       }
 
       var textReader = new StringReader(fileString);
-      var csv = new CsvReader(textReader, true)
+      var csv = new CsvReader.CsvReader(textReader, true)
       {
         MissingFieldAction = MissingFieldAction.ReplaceByEmpty
       };
@@ -306,8 +306,11 @@ namespace TallyJ.CoreModels
         numFirstRowsToSkip = 0;
       }
 
+      // for some files, CRLF is seen as two lines
+      fileString = fileString.Replace("\r\n", "\r");
+
       var textReader = new StringReader(fileString);
-      var csv = new CsvReader(textReader, true, ',', '"', '"', '#', ValueTrimmingOptions.All, 4096, null)
+      var csv = new CsvReader.CsvReader(textReader, true, ',', '"', '"', '#', ValueTrimmingOptions.All, 4096, null)
       {
         // had to provide all parameters in order to set ValueTrimmingOption.All
         SkipEmptyLines = false,

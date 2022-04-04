@@ -9,6 +9,12 @@
     timeTemplate: ''
   };
 
+  var publicInterface = {
+    controllerUrl: '',
+    PreparePage: preparePage,
+    previousFiles: []
+  };
+
   function copyReason(ev) {
     var node = ev.target;
     var txt = '';
@@ -28,7 +34,7 @@
     window.prompt("Copy this text and use it in the CSV data file!", txt);
   }
 
-  var staticSetup = function () {
+  function staticSetup() {
     $('#importResults').hide();
 
     local.timeTemplate = importCsvPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
@@ -238,7 +244,7 @@
       showMessage: function (message) { ShowStatusFailed(message); }
     });
   };
-  var getUploadsList = function () {
+  function getUploadsList() {
     CallAjaxHandler(publicInterface.controllerUrl + '/GetUploadList', null, function (info) {
       if (info.previousFiles) {
         showUploads(info);
@@ -260,7 +266,7 @@
       });
 
   };
-  var showStatusReasons = function () {
+  function showStatusReasons() {
     var html = [];
     html.push('<dt>Can Vote and be Voted For</dt>');
     html.push('<dd>Eligible</dd>');
@@ -268,7 +274,7 @@
     var group = '';
     for (var i = 0; i < importCsvPage.statusNames.length; i++) {
       var item = importCsvPage.statusNames[i];
-      if (group != item.Group) {
+      if (group !== item.Group) {
         group = item.Group;
         html.push('<dt>{0}</dt>'.filledWith(group));
       }
@@ -300,7 +306,7 @@
     $('#fieldSelector').children().each(function () {
       var div = $(this);
       var select = div.find('select');
-      if (select.length == 0) {
+      if (select.length === 0) {
         return;
       }
       //            // if other has same value, reset the other
@@ -380,7 +386,7 @@
     showSelectorsStatus();
   };
 
-  var showUploads = function (info) {
+  function showUploads(info) {
     var list;
     if (typeof info !== 'undefined') {
       list = extendUploadList(info.previousFiles);
@@ -403,7 +409,7 @@
     }
     showActiveFileName();
   };
-  var extendUploadList = function (list) {
+  function extendUploadList(list) {
     $.each(list, function () {
       this.UploadTimeExt = this.UploadTime ? moment(this.UploadTime).format(local.timeTemplate) : '';
       this.RowClass = this.C_RowId == local.activeFileRowId ? 'Active' : 'NotActive';
@@ -430,19 +436,19 @@
     }
     showActiveFileName();
   };
-  var getFieldsInfoIfNeeded = function () {
+  function getFieldsInfoIfNeeded() {
     //if (activeUploadFileRow().children().eq(1).text().trim() == 'Uploaded') {
     getFieldsInfo();
     //}
   };
-  var showActiveFileName = function () {
+  function showActiveFileName() {
     var row = activeUploadFileRow();
     $('#activeFileName').text(row.length == 0 ? 'the CSV file' : '"' + row.children().eq(2).text().trim() + '"');
   };
-  var activeUploadFileRow = function () {
+  function activeUploadFileRow() {
     return local.uploadListBody.find('tr[data-rowid={0}]'.filledWith(local.activeFileRowId));
   };
-  var preparePage = function () {
+  function preparePage() {
     staticSetup();
     local.activeFileRowId = GetFromStorage('ActiveUploadRowId', 0);
 
@@ -458,7 +464,7 @@
     }
   };
 
-  var connectToImportHub = function () {
+  function connectToImportHub() {
     var hub = $.connection.importHubCore;
 
     hub.client.importInfo = function (lines, people) {
@@ -477,12 +483,6 @@
   };
 
 
-
-  var publicInterface = {
-    controllerUrl: '',
-    PreparePage: preparePage,
-    previousFiles: []
-  };
   return publicInterface;
 };
 

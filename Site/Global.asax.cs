@@ -65,12 +65,10 @@ namespace TallyJ
 
             configuration.For<PublicController>().Ignore();
             configuration.For<AccountController>().Ignore();
-            configuration.For<VoterAccountController>().Ignore();
 
             configuration.For<AfterController>().AddPolicy(new RequireElectionPolicy());
 
             configuration.For<BallotsController>().AddPolicy(new RequireElectionPolicy());
-            //configuration.For<BallotsController>().AddPolicy(new RequireLocationPolicy());
 
             configuration.For<BeforeController>().AddPolicy(new RequireElectionPolicy());
 

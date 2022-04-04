@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -10,9 +9,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using TallyJ.Code;
 using TallyJ.Code.Session;
-using TallyJ.Controllers.LoginHelpers;
 using TallyJ.CoreModels;
-using TallyJ.CoreModels.VoterAccountModels;
 using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.Controllers
@@ -20,7 +17,6 @@ namespace TallyJ.Controllers
   //[Authorize]
   public class AccountController : Controller
   {
-
     // GET: /Account/LogOn
 
     [AllowAnonymous]
@@ -32,7 +28,7 @@ namespace TallyJ.Controllers
     public void IdentitySignout()
     {
       HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie,
-          DefaultAuthenticationTypes.ExternalCookie);
+        DefaultAuthenticationTypes.ExternalCookie);
     }
 
     // [AllowAnonymous]
@@ -94,27 +90,24 @@ namespace TallyJ.Controllers
           // UserSession.ProcessLogin();
 
           var claims = new List<Claim>
-                    {
-                        new Claim("UserName", model.UserName),
-                        new Claim("UniqueID", "A:" + model.UserName),
-                        new Claim("IsKnownTeller", "true"),
-                    };
+          {
+            new Claim("UserName", model.UserName),
+            new Claim("UniqueID", "A:" + model.UserName),
+            new Claim("IsKnownTeller", "true")
+          };
 
           UserSession.IsKnownTeller = true;
           UserSession.AdminAccountEmail = email;
 
-          if (membershipUser?.Comment == "SysAdmin")
-          {
-            claims.Add(new Claim("IsSysAdmin", "true"));
-          }
+          if (membershipUser?.Comment == "SysAdmin") claims.Add(new Claim("IsSysAdmin", "true"));
 
           var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
-          var authenticationProperties = new AuthenticationProperties()
+          var authenticationProperties = new AuthenticationProperties
           {
             AllowRefresh = true,
             IsPersistent = false,
-            ExpiresUtc = DateTime.UtcNow.AddDays(7),
+            ExpiresUtc = DateTime.UtcNow.AddDays(7)
           };
 
           System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
@@ -123,10 +116,7 @@ namespace TallyJ.Controllers
 
           UserSession.IsKnownTeller = true;
 
-          if (Url.IsLocalUrl(returnUrl))
-          {
-            return Redirect(returnUrl);
-          }
+          if (Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
 
           return RedirectToAction("Index", "Dashboard");
         }
@@ -144,11 +134,8 @@ namespace TallyJ.Controllers
     [AllowAnonymous]
     public ActionResult LogOff()
     {
-      // HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie,
-      //     DefaultAuthenticationTypes.ExternalCookie, "Auth0");
-
       HttpContext.GetOwinContext().Authentication.SignOut(
-        DefaultAuthenticationTypes.ExternalCookie, 
+        DefaultAuthenticationTypes.ExternalCookie,
         DefaultAuthenticationTypes.ApplicationCookie);
 
       // ensure that the cookie is gone!
@@ -223,21 +210,21 @@ namespace TallyJ.Controllers
       {
         // Attempt to register the user
         Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null,
-            out var createStatus);
+          out var createStatus);
 
         if (createStatus == MembershipCreateStatus.Success)
         {
           var claims = new List<Claim>
-                    {
-                        new Claim("UserName", model.UserName),
-                        new Claim("UniqueID", "A:" + model.UserName),
+          {
+            new Claim("UserName", model.UserName),
+            new Claim("UniqueID", "A:" + model.UserName),
 //                        new Claim("Email", model.Email),
-                        new Claim("IsKnownTeller", "true"),
-                    };
+            new Claim("IsKnownTeller", "true")
+          };
 
           var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
 
-          var authenticationProperties = new AuthenticationProperties()
+          var authenticationProperties = new AuthenticationProperties
           {
             AllowRefresh = true,
             IsPersistent = false,
@@ -252,10 +239,8 @@ namespace TallyJ.Controllers
 
           return RedirectToAction("Index", "Dashboard");
         }
-        else
-        {
-          ModelState.AddModelError("", ErrorCodeToString(createStatus));
-        }
+
+        ModelState.AddModelError("", ErrorCodeToString(createStatus));
       }
 
       // If we got this far, something failed, redisplay form
@@ -284,7 +269,7 @@ namespace TallyJ.Controllers
         bool changePasswordSucceeded;
         try
         {
-          var currentUser = Membership.GetUser(UserSession.LoginId, userIsOnline: true);
+          var currentUser = Membership.GetUser(UserSession.LoginId, true);
           changePasswordSucceeded = currentUser.ChangePassword(model.OldPassword, model.NewPassword);
         }
         catch (Exception)
@@ -293,13 +278,8 @@ namespace TallyJ.Controllers
         }
 
         if (changePasswordSucceeded)
-        {
           return RedirectToAction("ChangePasswordSuccess");
-        }
-        else
-        {
-          ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-        }
+        ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
       }
 
       // If we got this far, something failed, redisplay form
@@ -323,11 +303,9 @@ namespace TallyJ.Controllers
         ViewBag.FormAction = "Json" + actionName;
         return PartialView();
       }
-      else
-      {
-        ViewBag.FormAction = actionName;
-        return View();
-      }
+
+      ViewBag.FormAction = actionName;
+      return View();
     }
 
     //        private IEnumerable<string> GetErrorsFromModelState()
@@ -349,7 +327,7 @@ namespace TallyJ.Controllers
 
         case MembershipCreateStatus.DuplicateEmail:
           return
-              "A user name for that e-mail address already exists. Please enter a different e-mail address.";
+            "A user name for that e-mail address already exists. Please enter a different e-mail address.";
 
         case MembershipCreateStatus.InvalidPassword:
           return "The password provided is invalid. Please enter a valid password value.";
@@ -368,15 +346,15 @@ namespace TallyJ.Controllers
 
         case MembershipCreateStatus.ProviderError:
           return
-              "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
 
         case MembershipCreateStatus.UserRejected:
           return
-              "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
 
         default:
           return
-              "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
       }
     }
 
