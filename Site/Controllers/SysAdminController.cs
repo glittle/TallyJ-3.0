@@ -31,7 +31,9 @@ namespace TallyJ.Controllers
 
       if (fromDate.HasValue && toDate.HasValue)
       {
-        query1 = query1.Where(j => j.l.AsOf.AsUtc() >= fromDate.Value && j.l.AsOf.AsUtc() <= toDate.Value);
+        var from = fromDate.Value.AsUtc();
+        var to = toDate.Value.AsUtc();
+        query1 = query1.Where(j => j.l.AsOf >= from && j.l.AsOf <= to);
       }
 
       if (searchText.HasContent())
