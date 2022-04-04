@@ -104,7 +104,7 @@ namespace TallyJ.CoreModels
         {
           vi.C_RowId,
           vi.FileSize,
-          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
+          UploadTime = vi.UploadTime.HasValue ? vi.UploadTime.AsUtc() : null,
           vi.FileType,
           vi.ProcessingStatus,
           vi.OriginalFileName,

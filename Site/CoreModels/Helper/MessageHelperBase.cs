@@ -153,13 +153,13 @@ namespace TallyJ.CoreModels.Helper
         })
         .ToList();
 
-      var dateOldest = logEntries.Any() ? logEntries.Min(l => l.When) : DateTime.UtcNow;
-      var dateRecent = DateTime.UtcNow;// logEntries.Max(l => l.When);
+      var dateOldestUtc = logEntries.Any() ? logEntries.Min(l => l.When) : DateTime.UtcNow;
+      var dateRecentUtc = DateTime.UtcNow;// logEntries.Max(l => l.When);
 
       var smsLog = dbContext.SmsLog
         .Where(sms => sms.ElectionGuid == electionGuid)
         .GroupJoin(dbContext.Person.Where(p => p.ElectionGuid == electionGuid), sms => sms.PersonGuid, p => p.PersonGuid, (sms, pList) => new { sms, Name = pList.Select(p => p.C_FullNameFL).FirstOrDefault() })
-        .Where(j => j.sms.SentDate >= dateOldest && j.sms.SentDate <= dateRecent)
+        .Where(j => j.sms.SentDate >= dateOldestUtc && j.sms.SentDate <= dateRecentUtc)
         .ToList();
 
       var twilioErrorCodes = new Dictionary<int, string>
@@ -183,7 +183,7 @@ namespace TallyJ.CoreModels.Helper
 
           return new ContactLogDto
           {
-            When = l.sms.LastDate ?? l.sms.SentDate,
+            When = l.sms.LastDate ?? l.sms.SentDate.AsUtc(),
             Phone = l.sms.Phone,
             Name = l.Name,
             Details = $"{l.sms.LastStatus}{errMsg}",

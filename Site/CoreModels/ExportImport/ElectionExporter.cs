@@ -72,7 +72,8 @@ namespace TallyJ.CoreModels.ExportImport
         log = ExportLogs(logs.Where(l => l.LocationGuid == null))
       };
 
-      var exportName = $"{_election.DateOfElection.GetValueOrDefault(DateTime.Today):yyyy-MM-dd} {_election.Name}.TallyJ";
+      var date = _election.DateOfElection.HasValue ? _election.DateOfElection.Value.AsUtc().ToString("yyyy-MM-dd") : "NoDate";
+      var exportName = $"{date} {_election.Name}.TallyJ";
 
       return new Exporter(blob, "TallyJ2", exportName);
     }
@@ -85,7 +86,7 @@ namespace TallyJ.CoreModels.ExportImport
         .Select(u => new
         {
           u.UserName,
-          LastActivityDate = u.LastActivityDate.ToString("o")
+          LastActivityDate = u.LastActivityDate.AsUtc().ToString("o")
         }).ToList();
     }
 
@@ -156,7 +157,7 @@ namespace TallyJ.CoreModels.ExportImport
           p.IneligibleReasonGuid,
           p.VotingMethod,
           p.EnvNum,
-          RegistrationTime = p.RegistrationTime.AsString("o").OnlyIfHasContent(),
+          RegistrationTime = p.RegistrationTime.AsUtc().AsString("o").OnlyIfHasContent(),
           p.CombinedSoundCodes, // now used for extra fake columns
           p.VotingLocationGuid,
           TellerAtKeyboard = p.Teller1,

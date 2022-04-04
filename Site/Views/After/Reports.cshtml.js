@@ -15,7 +15,7 @@
     PreparePage: preparePage
   };
 
-  function preparePage () {
+  function preparePage() {
     local.reportHolder = $('#report');
     local.timeTemplate = reportsPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
@@ -72,7 +72,9 @@
         });
     }
 
-    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\r\n'));
+    //    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\r\n'));
+    var crlf = '\r\n';
+    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + lines.join(crlf) + crlf;
 
     var link = document.createElement('a');
     link.setAttribute('href', contents);
@@ -145,12 +147,13 @@
       return '';
     }
 
-    value = value.split('"').join('""');
+    value = value.split('"').join('""'); //double any quotes
 
-    var isNum = (!isNaN(value) && value === (+value).toString()) // a number without any formatting
-      || value.slice(-1) === '%';
+//    var isNum = (!isNaN(value) && value === (+value).toString()) // a number without any formatting
+//      || value.slice(-1) === '%';
 
-    return isNum ? value : '"' + value + '"';
+    //    return isNum ? value : '"' + value + '"';
+    return '"' + value + '"';
   }
 
   function getReport(code, title) {

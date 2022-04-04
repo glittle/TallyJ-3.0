@@ -43,7 +43,7 @@ namespace TallyJ.CoreModels.Hubs
           {
             updateRegistration = true,
             person.VotingMethod,
-            person.RegistrationTime,
+            RegistrationTime = person.RegistrationTime.AsUtc(),
             person.ElectionGuid
           });
 
@@ -52,7 +52,7 @@ namespace TallyJ.CoreModels.Hubs
           {
             updateRegistration = true,
             person.VotingMethod,
-            person.RegistrationTime,
+            RegistrationTime = person.RegistrationTime.AsUtc(),
             person.ElectionGuid
           });
       }

@@ -750,26 +750,6 @@ namespace TallyJ.CoreModels
       new MainHub().StatusChanged(info, info);
     }
 
-    //    public IEnumerable<Election> VisibleElections()
-    //    {
-    //      // this is first hit on the database on the home page... need special logging
-    //      try
-    //      {
-    //        var electionsWithCode =
-    //          Db.Election.Where(e => e.ElectionPasscode != null && e.ElectionPasscode != "").ToList();
-    //        return
-    //          electionsWithCode.Where(
-    //            e => e.ListForPublic.AsBoolean() && DateTime.Now - e.ListedForPublicAsOf <= 5.minutes());
-    //      }
-    //      catch (Exception e)
-    //      {
-    //        var logger = LogManager.GetCurrentClassLogger();
-    //        logger.ErrorException("Reading VisibleElections", e);
-    //
-    //        return new List<Election>();
-    //      }
-    //    }
-
     public JsonResult SetTallyStatusJson(string status)
     {
       var summary =

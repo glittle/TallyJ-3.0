@@ -5,7 +5,8 @@
     uploader: null,
     uploadList: [],
     activeFileRowId: 0,
-    statusFieldName: 'IneligibleReasonGuid'
+    statusFieldName: 'IneligibleReasonGuid',
+    timeTemplate: ''
   };
 
   function copyReason(ev) {
@@ -30,6 +31,7 @@
   var staticSetup = function () {
     $('#importResults').hide();
 
+    local.timeTemplate = importCsvPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
     local.uploadListBody = $('#uploadListBody');
     local.uploadListTemplate = local.uploadListBody.html();
 
@@ -403,7 +405,7 @@
   };
   var extendUploadList = function (list) {
     $.each(list, function () {
-      this.UploadTimeExt = FormatDate(this.UploadTime, null, null, true);
+      this.UploadTimeExt = this.UploadTime ? moment(this.UploadTime).format(local.timeTemplate) : '';
       this.RowClass = this.C_RowId == local.activeFileRowId ? 'Active' : 'NotActive';
       this.ProcessingStatusAndSteps = this.ProcessingStatus;
     });

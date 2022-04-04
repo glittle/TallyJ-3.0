@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels
         {
           e.Name,
           e.ElectionGuid,
-          e.DateOfElection,
+          DateOfElection = e.DateOfElection.AsUtc(),
           e.ElectionType,
           e.ElectionMode,
           e.ShowAsTest,
@@ -154,7 +154,7 @@ namespace TallyJ.CoreModels
           Voters = g.GroupBy(v => v.Status)
           .ToDictionary(gg => gg.Key,
             gg =>
-              new OnlineVoterCount { Count = gg.Count(), AsOf = gg.Max(v => v.WhenStatus) })
+              new OnlineVoterCount { Count = gg.Count(), AsOf = gg.Max(v => v.WhenStatus).AsUtc() })
         })
         .ToDictionary(g => g.ElectionGuid, g => g.Voters);
 

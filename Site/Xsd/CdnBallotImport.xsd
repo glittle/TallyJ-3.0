@@ -43,6 +43,7 @@
       <xs:attribute name="guid" type="xs:string" use="required" />
       <xs:attribute name="timestamp" type="xs:string" use="required" />
       <xs:attribute name="locality" type="xs:string" use="required" />
+      <xs:attribute name="localunit" type="xs:string" use="optional" />
     </xs:complexType>
   </xs:element>
 </xs:schema>

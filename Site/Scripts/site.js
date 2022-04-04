@@ -1409,90 +1409,90 @@ function GetValue(sNum) {
   var nNum = Number(sNum);
   return nNum;
 }
-
-function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustForServerTimeOffset) {
-  // MMM = JAN
-  // MMMM = JANUARY
-  if (('' + dateObj).substring(0, 5) === '/Date') {
-    dateObj = dateObj.parseJsonDate();
-  }
-  if (dateObj == null || isNaN(dateObj) || dateObj === 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
-    return '';
-  }
-
-  var date = new Date(dateObj);
-  if (isNaN(date)) {
-    return '[Invalid Date]';
-  }
-  if (!doNotAdjustForServerTimeOffset) {
-    console.log('time offset', site.timeOffset);
-    console.log('time original', date.toString());
-    date = new Date(date.getTime() + site.timeOffset);
-    console.log('time after', date.toString());
-  }
-
-  if (!format) {
-    format = 'YYYY-MM-DD';
-  }
-
-  var months = 'January February March April May June July August September October November December'.split(' ');
-  var days = 'Sun Mon Tue Wed Thu Fri Sat'.split(' ');
-
-  var dayValue = date.getDate();
-  var monthValue = date.getMonth();
-  var yearValue = date.getFullYear();
-  var hourValue = date.getHours();
-  var minuteValue = date.getMinutes();
-  var result = '';
-
-  switch (format) {
-    case 'MMM D, YYYY':
-      result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
-      break;
-
-    case 'D MMM YYYY':
-      var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
-      if (site.languageCode === 'FR' && forDisplayOnly && +dayValue === 1) {
-        returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
-      }
-      result = returnVal;
-      break;
-
-    case 'DDD, D MMM YYYY':
-      result = days[date.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
-      break;
-
-    case 'YYYY-MM-DD':
-      var monthNum = monthValue + 1;
-      result = yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
-      break;
-
-    case 'MMM YYYY':
-      result = months[monthValue].substring(0, 3) + ' ' + yearValue;
-      break;
-
-    case 'MMMM YYYY':
-      result = months[monthValue] + ' ' + yearValue;
-      break;
-
-    case 'MM/DD/YYYY':
-      var monthVal = monthValue + 1;
-      var monthStr = ('0' + monthVal).slice(-2);
-      var dayStr = ('0' + dayValue).slice(-2);
-      result = monthStr + '/' + dayStr + '/' + yearValue;
-      break;
-
-    default:
-      result = '';
-      break;
-  }
-
-  if (includeHrMin) {
-    result += ' {0}:{1}'.filledWith(hourValue.as2digitString(), minuteValue.as2digitString());
-  }
-
-  return result;
-}
+//
+//function FormatDate(dateObj, format, forDisplayOnly, includeHrMin, doNotAdjustForServerTimeOffset) {
+//  // MMM = JAN
+//  // MMMM = JANUARY
+//  if (('' + dateObj).substring(0, 5) === '/Date') {
+//    dateObj = dateObj.parseJsonDate();
+//  }
+//  if (dateObj == null || isNaN(dateObj) || dateObj === 'NaN' || dateObj === '01/01/0001' || dateObj === '') {
+//    return '';
+//  }
+//
+//  var date = new Date(dateObj);
+//  if (isNaN(date)) {
+//    return '[Invalid Date]';
+//  }
+//  if (!doNotAdjustForServerTimeOffset) {
+//    console.log('time offset', site.timeOffset);
+//    console.log('time original', date.toString());
+//    date = new Date(date.getTime() + site.timeOffset);
+//    console.log('time after', date.toString());
+//  }
+//
+//  if (!format) {
+//    format = 'YYYY-MM-DD';
+//  }
+//
+//  var months = 'January February March April May June July August September October November December'.split(' ');
+//  var days = 'Sun Mon Tue Wed Thu Fri Sat'.split(' ');
+//
+//  var dayValue = date.getDate();
+//  var monthValue = date.getMonth();
+//  var yearValue = date.getFullYear();
+//  var hourValue = date.getHours();
+//  var minuteValue = date.getMinutes();
+//  var result = '';
+//
+//  switch (format) {
+//    case 'MMM D, YYYY':
+//      result = months[monthValue].substring(0, 3) + ' ' + dayValue + ', ' + yearValue;
+//      break;
+//
+//    case 'D MMM YYYY':
+//      var returnVal = dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+//      if (site.languageCode === 'FR' && forDisplayOnly && +dayValue === 1) {
+//        returnVal = returnVal.replace('1', '1<sup>{0}</sup>'.filledWith('er'));
+//      }
+//      result = returnVal;
+//      break;
+//
+//    case 'DDD, D MMM YYYY':
+//      result = days[date.getDay()] + ', ' + dayValue + ' ' + months[monthValue].substring(0, 3) + ' ' + yearValue;
+//      break;
+//
+//    case 'YYYY-MM-DD':
+//      var monthNum = monthValue + 1;
+//      result = yearValue + '-' + (monthNum < 10 ? '0' : '') + monthNum + '-' + (dayValue < 10 ? '0' : '') + dayValue;
+//      break;
+//
+//    case 'MMM YYYY':
+//      result = months[monthValue].substring(0, 3) + ' ' + yearValue;
+//      break;
+//
+//    case 'MMMM YYYY':
+//      result = months[monthValue] + ' ' + yearValue;
+//      break;
+//
+//    case 'MM/DD/YYYY':
+//      var monthVal = monthValue + 1;
+//      var monthStr = ('0' + monthVal).slice(-2);
+//      var dayStr = ('0' + dayValue).slice(-2);
+//      result = monthStr + '/' + dayStr + '/' + yearValue;
+//      break;
+//
+//    default:
+//      result = '';
+//      break;
+//  }
+//
+//  if (includeHrMin) {
+//    result += ' {0}:{1}'.filledWith(hourValue.as2digitString(), minuteValue.as2digitString());
+//  }
+//
+//  return result;
+//}
 
 Number.prototype.as2digitString = function () {
   return ('00' + this).substr(-2);

@@ -7,6 +7,7 @@
   ContextItems.AddJavascriptForPage("controllerUrl", "importCsvPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("previous", "importCsvPage.previousFiles={0};".FilledWith(Model.PreviousUploads().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("statusNames", "importCsvPage.statusNames={0};".FilledWith(IneligibleReasonEnum.ReasonNamesForImportPage().SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("importCsvPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
   ViewBag.Title = "Import Names";
 }
 <script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>

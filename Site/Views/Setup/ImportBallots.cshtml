@@ -7,6 +7,7 @@
   ContextItems.AddJavascriptForPage("importHubUrl", "importBallotsPage.ballotImportHubUrl={0};".FilledWith(@Url.Action("JoinBallotImportHub", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("controllerUrl", "importBallotsPage.controllerUrl={0};".FilledWith(@Url.Action("Index", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("previous", "importBallotsPage.previousFiles={0};".FilledWith(Model.PreviousUploads().SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("importBallotsPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
   ViewBag.Title = "Import Ballots from External Source";
 }
 <script src="@Url.Content("~/Scripts/fileuploader.js")" type="text/javascript"></script>
@@ -157,6 +158,9 @@
         <p>
           Election locality: {{previewInfo.locality}}
         </p>
+        <p v-if="previewInfo.localunit">
+          Local Unit: {{previewInfo.localunit}}
+        </p>
         <p>
           Number of Ballots included: {{previewInfo.numBallots}}
         </p>
@@ -212,7 +216,7 @@
       </div>
     </div>
 
-   
+
     <h2>
       Step 4 <span>Import the Voters and Ballots</span>
     </h2>

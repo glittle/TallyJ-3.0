@@ -319,7 +319,7 @@ namespace TallyJ.Code.Session
       }
       else
       {
-        VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+        VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
       }
 
       onlineVoter.WhenLastLogin = utcNow;

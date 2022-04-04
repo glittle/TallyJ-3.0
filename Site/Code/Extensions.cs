@@ -275,17 +275,17 @@ namespace TallyJ.Code
       {
         return "".AsRawHtml();
       }
-      return input.ToString(format).AsRawHtml();
+      return input.AsUtc().ToString(format).AsRawHtml();
     }
 
     public static HtmlString AsHtmlString(this DateTime? input, string format = "d MMMM yyyy")
     {
-      return input.HasValue ? input.Value.AsHtmlString(format) : "".AsRawHtml();
+      return input.HasValue ? input.Value.AsUtc().AsHtmlString(format) : "".AsRawHtml();
     }
 
     public static string AsString(this DateTime? input, string format = "d MMMM yyyy")
     {
-      return input.HasValue ? input.Value.ToString(format) : "";
+      return input.HasValue ? input.Value.AsUtc().ToString(format) : "";
     }
 
     public static Guid? AsNullableGuid(this Guid input)
@@ -921,19 +921,19 @@ namespace TallyJ.Code
       return input?.AsUtc();
     }
 
-    /// <summary>
-    /// Mark this date as a local time
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static DateTime IsLocal(this DateTime input)
-    {
-      return DateTime.SpecifyKind(input, DateTimeKind.Local);
-    }
-    public static DateTime? IsLocal(this DateTime? input)
-    {
-      return input?.IsLocal();
-    }
+    // /// <summary>
+    // /// Mark this date as a local time
+    // /// </summary>
+    // /// <param name="input"></param>
+    // /// <returns></returns>
+    // public static DateTime AsLocal(this DateTime input)
+    // {
+    //   return DateTime.SpecifyKind(input, DateTimeKind.Local);
+    // }
+    // public static DateTime? AsLocal(this DateTime? input)
+    // {
+    //   return input?.AsLocal();
+    // }
 
     // public static LoginViewModel AsLogOnModel(this LogOnModelV1 input)
     // {

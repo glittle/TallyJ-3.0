@@ -34,9 +34,8 @@
     VotingMethod = VotingMethodEnum.TextFor(p.VotingMethod).DefaultTo("-"),
     p.BahaiId,
     p.VotingLocationGuid,
-//cation = locations.TryGetValue(p.VotingLocationGuid.AsGuid(), out var locName) ? locName : null,
-Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.VotingLocationGuid.AsGuid()] : null,
-    p.RegistrationTime,
+    Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.VotingLocationGuid.AsGuid()] : null,
+    RegistrationTime = p.RegistrationTime.AsUtc(),
     p.Teller1,
     p.Teller2,
     p.RegistrationLog

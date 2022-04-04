@@ -349,7 +349,7 @@ var vueOptions = {
       
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
-        person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY hh:mm a');
+        person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY h:mm a');
 
         person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
 

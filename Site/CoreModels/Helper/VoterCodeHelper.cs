@@ -197,7 +197,7 @@ namespace TallyJ.CoreModels.Helper
       var dbContext = UserSession.GetNewDbContext;
 
       var utcNow = DateTime.UtcNow;
-      var fromDate = utcNow.AddHours(0 - siteHours); //TODO UTC?
+      var fromDate = utcNow.AddHours(0 - siteHours);
 
       var usageCount = dbContext.C_Log
         .Where(l => l.AsOf > fromDate)
@@ -339,7 +339,7 @@ namespace TallyJ.CoreModels.Helper
       if (onlineVoter.VerifyCode == code)
       {
         // check if it was done in time
-        var age = DateTime.Now - onlineVoter.VerifyCodeDate.GetValueOrDefault();
+        var age = DateTime.UtcNow - onlineVoter.VerifyCodeDate.GetValueOrDefault().AsUtc();
         if (age.TotalMinutes > EnterCodeWithinMinutes)
           // too late
           return new
@@ -370,7 +370,7 @@ namespace TallyJ.CoreModels.Helper
 
         HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
 
-        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.GetValueOrDefault(DateTime.MinValue);
+        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
         UserSession.VoterLoginSource = method;
         UserSession.PendingVoterLogin = null;
 

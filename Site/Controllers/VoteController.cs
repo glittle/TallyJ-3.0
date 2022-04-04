@@ -422,8 +422,8 @@ namespace TallyJ.Controllers
           notificationType,
           person.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
-          person.RegistrationTime,
-          onlineVotingInfo.WhenStatus,
+          RegistrationTime = person.RegistrationTime.AsUtc(),
+          WhenStatus = onlineVotingInfo.WhenStatus.AsUtc(),
           onlineVotingInfo.PoolLocked
         }.AsJsonResult();
       }
@@ -452,27 +452,28 @@ namespace TallyJ.Controllers
         .OrderByDescending(j => j.e.OnlineWhenClose)
         .ThenByDescending(j => j.e.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
+        .ToList()
         .Select(j => new
         {
           id = j.e.ElectionGuid,
           j.e.Name,
           j.e.Convenor,
           j.e.ElectionType,
-          j.e.DateOfElection,
+          DateOfElection = j.e.DateOfElection.AsUtc(),
           j.e.EmailFromAddress,
           j.e.EmailFromName,
-          j.e.OnlineWhenOpen, //TODO UTC??
-          j.e.OnlineWhenClose,
+          OnlineWhenOpen = j.e.OnlineWhenOpen.AsUtc(),
+          OnlineWhenClose = j.e.OnlineWhenClose.AsUtc(),
           j.e.OnlineCloseIsEstimate,
           //          j.e.TallyStatus,
           person = new
           {
             name = j.p.C_FullName,
             j.p.VotingMethod,
-            j.p.RegistrationTime,
+            RegistrationTime = j.p.RegistrationTime.AsUtc(),
             j.ovi.PoolLocked,
             j.ovi.Status,
-            j.ovi.WhenStatus
+            WhenStatus = j.ovi.WhenStatus.AsUtc()
           }
         });
 
@@ -500,7 +501,7 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
-      var ageCutoff = DateTime.Today.Subtract(TimeSpan.FromDays(14));
+      var ageCutoff = DateTime.Today.Subtract(TimeSpan.FromDays(14)); // don't bother with UTC here
       var list = Db.C_Log
         .GroupJoin(Db.Election, log => log.ElectionGuid, e => e.ElectionGuid, (log, eList) => new
         {

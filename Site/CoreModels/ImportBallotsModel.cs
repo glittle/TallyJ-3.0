@@ -43,7 +43,7 @@ namespace TallyJ.CoreModels
         {
           vi.C_RowId,
           vi.FileSize,
-          UploadTime = vi.UploadTime.GetValueOrDefault().AddMilliseconds(0 - timeOffset),
+          UploadTime = vi.UploadTime.HasValue ? vi.UploadTime.AsUtc() : null,
           vi.ProcessingStatus,
           vi.OriginalFileName,
           CodePageName = vi.CodePage == null ? null : Encoding.GetEncoding(vi.CodePage.Value).EncodingName,
@@ -169,6 +169,7 @@ namespace TallyJ.CoreModels
         numBallots = electionInfo.Ballots.Count,
         voters = electionInfo.Voters.OrderBy(v => v.lastname).ThenBy(v => v.firstname),
         electionInfo.locality,
+        electionInfo.localunit,
         electionInfo.ImportErrors,
         electionInfo.AlreadyLoaded,
         electionInfo.HasUnregistered
@@ -694,6 +695,7 @@ namespace TallyJ.CoreModels
 
       public DateTime timestamp { get; set; }
       public string locality { get; set; }
+      public string localunit { get; set; }
       public List<Voter> Voters { get; set; }
       public List<IncomingBallot> Ballots { get; set; }
       public List<string> ImportErrors { get; set; }
