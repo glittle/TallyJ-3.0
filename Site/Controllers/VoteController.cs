@@ -475,10 +475,11 @@ namespace TallyJ.Controllers
             j.ovi.Status,
             WhenStatus = j.ovi.WhenStatus.AsUtc()
           }
-        });
+        })
+        .ToList();
 
       // piggyback and get other info too
-      var emailCodes = Db.OnlineVoter.Single(ov => ov.VoterId == voterId).EmailCodes;
+      var emailCodes = Db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId)?.EmailCodes;
       // var hasLocalId = Db.AspNetUsers.Any(u => u.Email == voterId);
 
       return new
