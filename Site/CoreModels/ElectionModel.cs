@@ -369,7 +369,7 @@ namespace TallyJ.CoreModels
 
       var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
-      // election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null; --> the local day (no time)
+      election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null;
       election.OnlineWhenOpen = election.OnlineWhenOpen.HasValue ? election.OnlineWhenOpen.Value.ToUniversalTime() : (DateTime?)null;
       election.OnlineWhenClose = election.OnlineWhenClose.HasValue ? election.OnlineWhenClose.Value.ToUniversalTime() : (DateTime?)null;
 
