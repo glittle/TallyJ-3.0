@@ -55,10 +55,8 @@
       <thead>
         <tr>
           <th class="ename">Election</th>
-          <th class="contact">Primary Contact</th>
           <th class="online">Online Voting</th>
-          @*<th class="pname">Your Name in the Election</th>*@
-          <th class="vmethod">Voting details</th>
+          <th class="vmethod">Your Ballot</th>
           <th class="vtime">Ballot status</th>
         </tr>
       </thead>
@@ -67,13 +65,16 @@
           <td class="ename">
             <div class="n">{{e.Name}}</div>
             <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
+            <div class="contact">
+              Contact
+              <span v-if="e.EmailFromName && !e.EmailFromAddress">{{e.EmailFromName}}</span>
+              <a v-if="e.EmailFromAddress && e.EmailFromName" :href="e.EmailFromAddress">{{e.EmailFromName}}</a>
+              <span v-if="!e.EmailFromAddress && !e.EmailFromName">(Not set)</span>
+              for technical support
+            </div>
             <div class="t">{{e.Type_Display}}</div>
           </td>
-          <td class="contact">
-            <div class="n" v-if="e.EmailFromName">{{e.EmailFromName}}</div>
-            <div class="c" v-if="e.EmailFromAddress">{{e.EmailFromAddress}}</div>
-            <div class="c" v-if="!e.EmailFromAddress && !e.EmailFromName">(Not set)</div>
-          </td>
+
           <td class="online center" v-html="e.Status_Display"></td>
           @*<td class="pname" v-text="e.person.name"></td>*@
           <td class="vmethod center">
@@ -112,8 +113,8 @@
 
     <p>
       For your review and security, here is your recent activity (with the most recent first).
-      If something looks wrong, please stop using TallyJ and contact
-      @SettingsHelper.Get("TechSupportContactName", "Glen Little") (<a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little+tallyj@gmail.com")">@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")</a>) with details.
+      If something looks wrong, please stop using TallyJ and send details to
+      <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")">technical support</a><span>.</span>
       <button class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
     </p>
     <p v-if="loadingLoginHistory">Loading...</p>
@@ -212,7 +213,6 @@
       </div>
       <form v-if="useRandom && !useList || useRandom && addRandomToList" class="randomInput">
         <p>Add a new person<span v-if="useList"> (that can't be found by searching)</span> to your pool for this election.</p>
-        <p v-if="useList" class="invisible" :class="{visible: nameList.length && (randomFirst || randomLast)}">Did this person show up in the list above? If so, please select that name!</p>
         <div>
           <label>First name</label>
           <input v-model="randomFirst" maxlength="40" type="text" ref="firstInput" placeholder="First" v-on:keyup.enter="addRandomName" />
@@ -228,9 +228,14 @@
             Use this if the name may not be enough. But remember, your vote is anonymous so do not reference yourself in this description!
           </div>
         </div>
+        <p v-if="useList && nameList.length && (randomFirst || randomLast)"
+           class="existing"
+           @*class="invisible"
+             :class="{visible: nameList.length && (randomFirst || randomLast)}"*@>Does this person show in the list above? If so, please select that name!</p>
         <div>
-          <button class="btn" v-on:click="addRandomName" type="button" :disabled="!canAddRandom">Add Person</button>
+          <button class="btn" v-on:click="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
           <span class="randomResult">{{randomResult}}</span>
+          <button class="btn btn-mini clearRandom" v-on:click="clearRandom" type="button" v-if="randomInputCount>0">Clear</button>
         </div>
       </form>
       <p tabindex="0" class="quote">
@@ -299,12 +304,13 @@
             <div v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-            <span role="button"
-                  class="removeFromPool"
-                  v-if="!p.empty"
-                  v-on:click="removeFromPool(p)"
-                  aria-label="Delete"
-                  v-bind:title="'Remove' + (p.Id < 0 ? ' and forget' : '')"></span>
+            <button class="removeFromPool btn"
+                    v-if="!p.empty"
+                    v-on:click="removeFromPool(p)"
+                    aria-label="Delete"
+                    v-bind:title="'Remove' + (p.Id < 0 ? ' and forget' : '')">
+              ✗
+            </button>
           </div>
 
         </draggable>
@@ -340,12 +346,13 @@
             <div v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-            <span role="button"
-                  class="removeFromPool"
-                  v-if="!p.empty"
-                  v-on:click="removeFromPool(p)"
-                  aria-label="Delete"
-                  v-bind:title="'Delete from the pool' + (p.Id < 0 ? ' and forget' : '')"></span>
+            <button class="removeFromPool btn"
+                    v-if="!p.empty"
+                    v-on:click="removeFromPool(p)"
+                    aria-label="Delete"
+                    v-bind:title="'Remove from the pool' + (p.Id < 0 ? ' and forget' : '')">
+              ✗
+            </button>
           </div>
 
         </draggable>

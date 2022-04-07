@@ -255,7 +255,7 @@ var startSignalR = function (callBack, showReconnectMsg) {
     $.connection.hub.connectionSlow(function () {
       console.log('slow');
       if (site.reconnectMsg) ResetStatusDisplay(site.reconnectMsg);
-      site.reconnectMsg = ShowStatusBusy('The connection to the server is slow... please wait...');
+      site.reconnectMsg = ShowStatusBusy('The connection to the server is slow...');
     });
     $.connection.hub.reconnecting(function () {
       console.log('reconnecting');

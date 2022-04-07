@@ -97,8 +97,8 @@ var vueOptions = {
     };
   },
   computed: {
-    canAddRandom: function () {
-      return [this.randomFirst, this.randomLast, this.randomOtherInfo].filter(function (s) { return s.trim() }).length > 1;
+    randomInputCount: function () {
+      return [this.randomFirst, this.randomLast, this.randomOtherInfo].filter(function (s) { return s.trim() }).length;
     },
     lastInTop: function () {
       return this.numToElect - 1;
@@ -346,7 +346,7 @@ var vueOptions = {
       var person = info.person;
 
       person.VotingMethod_Display = voterHome.voteMethods[person.VotingMethod] || person.VotingMethod || '';
-      
+
       if (person.WhenStatus) {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY h:mm a');
@@ -448,7 +448,7 @@ var vueOptions = {
             vue.registration = info.registration;
             vue.selectionProcess = info.OnlineSelectionProcess;
             vue.randomize = info.RandomizeVotersList,
-            vue.voterName = info.voterName;
+              vue.voterName = info.voterName;
 
             voterHome.peopleHelper.Prepare(function () {
               var list = JSON.parse(info.votingInfo.ListPool || '[]');
@@ -799,12 +799,22 @@ var vueOptions = {
       return s.replace(/[<>&]/g, '');
     },
     searchForRandom: function () {
-      console.log('searching', this.clearingRandom)
+      //      console.log('searching', this.clearingRandom)
       if (!this.clearingRandom) {
         this.searchText = [this.randomFirst, this.randomLast].join(' ');
       }
     },
+    clearRandom: function () {
+      this.randomFirst = '';
+      this.randomLast = '';
+      this.randomOtherInfo = '';
+      this.$refs.firstInput.focus();
+    },
     addRandomName: function () {
+      if (this.randomInputCount < 2) {
+        // turn on button after one input, but only accept with two inputs
+        return;
+      }
       var nextFakeId = this.pool
         .filter(function (p) { return p.Id <= 0; })
         .reduce(function (acc, p) {

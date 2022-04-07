@@ -53,7 +53,6 @@ section.content-wrapper {
   display: flex;
   flex-direction: column;
   padding: 0 30px 0 30px;
-
 }
 
 .site-title {
@@ -165,24 +164,35 @@ body.meditate {
       padding: 3px 7px;
     }
 
-    .ename, .contact {
+    .ename {
       background-color: @band1;
 
       .n {
+        color: #000;
       }
 
       .c {
-        color: #999;
+        color: #666;
         font-size: 90%;
         margin-left: 10px;
         padding: 3px 0 2px 0;
       }
 
       .t {
-        color: #bbb;
+        color: #999;
         //font-style: italic;
         font-size: 80%;
-        margin-left: 10px;
+        margin: 2px 0 2px 10px;
+      }
+
+      .contact {
+        color: #999;
+        font-size: 80%;
+        margin: 2px 0 2px 10px;
+
+        a {
+          color: #999;
+        }
       }
     }
     //.pname {
@@ -241,6 +251,12 @@ body.meditate {
     td {
       background-color: #cbd5f7;
       vertical-align: top;
+
+      &.details {
+        max-width: 50vw;
+        white-space: pre;
+        overflow: auto;
+      }
     }
 
     .nowrap {
@@ -470,6 +486,15 @@ body.meditate {
 
     input {
       padding: 1px 3px;
+    }
+
+    .existing {
+      color: green;
+      font-weight: bold;
+    }
+
+    .clearRandom {
+      float: right;
     }
 
     .randomOtherInfo {
@@ -773,14 +798,11 @@ body.meditate {
       }
 
       .removeFromPool {
-        padding: 0 5px 0 10px;
+        padding: 0 3px;
         color: #9c3838;
-        cursor: pointer;
-        font-weight: bold;
-
-        &:before {
-          content: '✗';
-        }
+        font-size: 90%;
+        line-height: 110%;
+        margin: 0 2px 0 0;
       }
 
       &.random {
