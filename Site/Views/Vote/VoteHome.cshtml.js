@@ -92,7 +92,7 @@ var vueOptions = {
       //      hasLocalId: false,
       meditate: false,
       movingIntoTop: false,
-      showAllVotes: false,
+      showAllVotes: true,
       randomize: true
     };
   },
@@ -803,6 +803,10 @@ var vueOptions = {
       if (!this.clearingRandom) {
         this.searchText = [this.randomFirst, this.randomLast].join(' ');
       }
+
+      setTimeout(function() {
+        $('.btnAddPerson')[0].scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
     },
     clearRandom: function () {
       this.randomFirst = '';

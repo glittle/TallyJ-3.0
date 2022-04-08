@@ -22,7 +22,7 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 <div class="forMeditate">
-  <button v-on:click="toggleMeditate" v-text="meditate ? 'Continue Voting' : 'Take time to meditate'"></button>
+  <button type="button" v-on:click="toggleMeditate" v-text="meditate ? 'Continue Voting' : 'Take time to meditate'"></button>
   <div v-if="meditate">
     <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Listen to suggested music in YouTube Music...</a>
   </div>
@@ -80,7 +80,7 @@
           <td class="vmethod center">
             <div title="Registered Voting Method">{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
-              <button class="btn btn-primary" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
+              <button type="button" class="btn btn-primary" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
             </div>
             <div class="pname" v-text="e.person.name"></div>
           </td>
@@ -91,7 +91,7 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
-    <button class="float-right btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
+    <button type="button" class="float-right btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
 
     <div class="title">Settings for @UserSession.VoterId</div>
     <p class="emails">
@@ -115,7 +115,7 @@
       For your review and security, here is your recent activity (with the most recent first).
       If something looks wrong, please stop using TallyJ and send details to
       <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")">technical support</a><span>.</span>
-      <button class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
+      <button type="button" class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
     </p>
     <p v-if="loadingLoginHistory">Loading...</p>
     <p v-if="!loadingLoginHistory && !loginHistory.length">Nothing found.</p>
@@ -167,11 +167,11 @@
 
     <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
 
-    <button class="btn returnBtn" v-on:click="closeBallot">Return</button>
+    <button type="button" class="btn returnBtn" v-on:click="closeBallot">Return</button>
   </div>
   <div class="poolBuilder">
     <div v-if="!savedLock" class="poolHolder">
-      <h2>Add to your Pool</h2>
+      <h2>Add to your Ballot/Pool</h2>
       <div v-if="useList">
         <p id="searchInfo">
           Search for individuals that you believe to be qualified to serve.
@@ -188,8 +188,8 @@
                    v-model="searchText"
                    v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
-          <button v-on:click="showAll">Show All</button>
-          <button accesskey="C" v-on:click="resetSearch">Clear</button>
+          <button type="button" v-on:click="showAll">Show All</button>
+          <button type="button" accesskey="C" v-on:click="resetSearch">Clear</button>
         </div>
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
@@ -233,7 +233,7 @@
            @*class="invisible"
              :class="{visible: nameList.length && (randomFirst || randomLast)}"*@>Does this person show in the list above? If so, please select that name!</p>
         <div>
-          <button class="btn" v-on:click="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
+          <button class="btn btnAddPerson" v-on:click="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
           <span class="randomResult">{{randomResult}}</span>
           <button class="btn btn-mini clearRandom" v-on:click="clearRandom" type="button" v-if="randomInputCount>0">Clear</button>
         </div>
@@ -268,8 +268,8 @@
 
         <p class="lockInBtns" v-if="canLockIn || canUnlock">
           <span v-if="canUnlock">Submitted</span>
-          <button class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
-          <button class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
+          <button type="button" class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
+          <button type="button" class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
           <span v-if="canLockIn" class="unlocked">(not yet submitted)</span>
         </p>
         <p v-if="pool.length < numToElect">Please add {{numToElect}} {{plural(numToElect,'people','person')}} before submitting your ballot.</p>
@@ -304,7 +304,8 @@
             <div v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-            <button class="removeFromPool btn"
+            <button type="button"
+                    class="removeFromPool btn"
                     v-if="!p.empty"
                     v-on:click="removeFromPool(p)"
                     aria-label="Delete"
@@ -314,7 +315,10 @@
           </div>
 
         </draggable>
-
+        <p class="ifSmall showFilled">
+            <button type="button" v-on:click="showAllVotes = !showAllVotes" v-text="showAllVotes ? 'Reduce view size' : 'Show all'"></button>
+            <span v-if="!showAllVotes" class="showFilled">Filled {{poolInCoreBallot.length}} of {{numToElect}} spaces.</span>
+        </p>
         <div v-if="poolBeyondBallot.length && !savedLock">
           <p>Drag names into and out of your ballot and the pool of others.</p>
           <p class="ifFull">
@@ -346,7 +350,8 @@
             <div v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
-            <button class="removeFromPool btn"
+            <button type="button"
+                    class="removeFromPool btn"
                     v-if="!p.empty"
                     v-on:click="removeFromPool(p)"
                     aria-label="Delete"
@@ -359,10 +364,7 @@
 
 
 
-        <p class="ifSmall showFilled">
-          <button v-on:click="showAllVotes = !showAllVotes">Show all</button>
-          <span v-if="!showAllVotes" class="showFilled">Filled {{poolInCoreBallot.length}} of {{numToElect}} spaces.</span>
-        </p>
+        
         <p v-if="!lockInVotes && pool.length">
           Please note that when your ballot is processed by the tellers, this entire list of names will be removed from TallyJ.
         </p>
