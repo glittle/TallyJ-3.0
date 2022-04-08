@@ -246,7 +246,7 @@
                 <div class="voterEmail" v-on:click="chooseMethod('email')">
                   <span>Using your email</span>
                 </div>
-                <div class="voterSms forSmsBlock" v-on:click="chooseMethod('phone')">
+                <div class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
                   <span>Using your phone</span>
                 </div>
               </div>
@@ -261,7 +261,7 @@
                                placeholder="____&#64____.__"
                                required autocomplete="email">
                         <div>Send me a login code via</div>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendEmail()">Email</button>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendEmail()">Email</button>
                     </div>
                     <div v-show="mode==='phone'">
                         <label for="phone">
@@ -273,11 +273,11 @@
                                placeholder="+__________"
                                required autocomplete="tel">
                         <div>Send me a login code via</div>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('sms')">SMS</button>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('voice')">Voice</button>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
+                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
                         @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
                         {
-                            <button class="btn" :disabled="sending || !okayToSend" v-on:click="sendPhone('whatsapp')">WhatsApp</button>
+                            <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
                         }
                     </div>
                     <div v-if="showCodeInput" class="pendingCode">
@@ -286,7 +286,7 @@
                             <div class="status" v-text="voiceStatus" v-if="voiceStatus"></div>
                             <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
                             <div>
-                                <button class="btn" :disabled="code.length != 6" v-on:click="submitCode">Login</button>
+                                <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Login</button>
                             </div>
                         </div>
                     </div>

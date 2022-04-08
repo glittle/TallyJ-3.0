@@ -22,7 +22,7 @@
   var x = this.Context.GetOwinContext().Authentication;
 }
 <div class="forMeditate">
-  <button type="button" v-on:click="toggleMeditate" v-text="meditate ? 'Continue Voting' : 'Take time to meditate'"></button>
+  <button type="button" v-on:click.passive="toggleMeditate" v-text="meditate ? 'Continue Voting' : 'Take time to meditate'"></button>
   <div v-if="meditate">
     <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Listen to suggested music in YouTube Music...</a>
   </div>
@@ -80,7 +80,7 @@
           <td class="vmethod center">
             <div title="Registered Voting Method">{{e.person.VotingMethod_Display}}</div>
             <div v-if="e.openNow && e.canVote">
-              <button type="button" class="btn btn-primary" accesskey="P" v-on:click="prepareBallot(e)">Prepare my Ballot</button>
+              <button type="button" class="btn btn-primary" accesskey="P" v-on:click.passive="prepareBallot(e)">Prepare my Ballot</button>
             </div>
             <div class="pname" v-text="e.person.name"></div>
           </td>
@@ -91,7 +91,7 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
-    <button type="button" class="float-right btn btn-mini" v-on:click="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
+    <button type="button" class="float-right btn btn-mini" v-on:click.passive="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
 
     <div class="title">Settings for @UserSession.VoterId</div>
     <p class="emails">
@@ -115,7 +115,7 @@
       For your review and security, here is your recent activity (with the most recent first).
       If something looks wrong, please stop using TallyJ and send details to
       <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")">technical support</a><span>.</span>
-      <button type="button" class="btn btn-mini" v-on:click="getLoginHistory">Refresh</button>
+      <button type="button" class="btn btn-mini" v-on:click.passive="getLoginHistory">Refresh</button>
     </p>
     <p v-if="loadingLoginHistory">Loading...</p>
     <p v-if="!loadingLoginHistory && !loginHistory.length">Nothing found.</p>
@@ -167,7 +167,7 @@
 
     <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
 
-    <button type="button" class="btn returnBtn" v-on:click="closeBallot">Return</button>
+    <button type="button" class="btn returnBtn" v-on:click.passive="closeBallot">Return</button>
   </div>
   <div class="poolBuilder">
     <div v-if="!savedLock" class="poolHolder">
@@ -188,8 +188,8 @@
                    v-model="searchText"
                    v-on:keydown="keyDownInSearch" class="searchBox" />
           </label>
-          <button type="button" v-on:click="showAll">Show All</button>
-          <button type="button" accesskey="C" v-on:click="resetSearch">Clear</button>
+          <button type="button" v-on:click.passive="showAll">Show All</button>
+          <button type="button" accesskey="C" v-on:click.passive="resetSearch">Clear</button>
         </div>
 
         <div v-show="!nameList.length" class="nameListPlaceholder">
@@ -201,7 +201,7 @@
               v-bind:key="p.Id"
               :id="'P' + p.Id"
               v-html="p.HtmlName"
-              v-on:click="addToPool(p)"
+              v-on:click.passive="addToPool(p)"
               v-bind:class="[p.classesList.join(' '), searchResultRow === i ? 'selectResult' : '',  p.CanReceiveVotes ? 'Ok' : 'Ineligible', p.inPool ? 'inPool' : 'notInPool']"
               aria-atomic="true">
           </li>
@@ -233,9 +233,9 @@
            @*class="invisible"
              :class="{visible: nameList.length && (randomFirst || randomLast)}"*@>Does this person show in the list above? If so, please select that name!</p>
         <div>
-          <button class="btn btnAddPerson" v-on:click="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
+          <button class="btn btnAddPerson" v-on:click.passive="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
           <span class="randomResult">{{randomResult}}</span>
-          <button class="btn btn-mini clearRandom" v-on:click="clearRandom" type="button" v-if="randomInputCount>0">Clear</button>
+          <button class="btn btn-mini clearRandom" v-on:click.passive="clearRandom" type="button" v-if="randomInputCount>0">Clear</button>
         </div>
       </form>
       <p tabindex="0" class="quote">
@@ -268,8 +268,8 @@
 
         <p class="lockInBtns" v-if="canLockIn || canUnlock">
           <span v-if="canUnlock">Submitted</span>
-          <button type="button" class="btn btn-primary" accesskey="L" v-on:click="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
-          <button type="button" class="btn" accesskey="L" v-on:click="lockIn(false)" v-if="canUnlock">Change my ballot</button>
+          <button type="button" class="btn btn-primary" accesskey="L" v-on:click.passive="lockIn(true)" v-if="canLockIn">Submit my ballot</button>
+          <button type="button" class="btn" accesskey="L" v-on:click.passive="lockIn(false)" v-if="canUnlock">Change my ballot</button>
           <span v-if="canLockIn" class="unlocked">(not yet submitted)</span>
         </p>
         <p v-if="pool.length < numToElect">Please add {{numToElect}} {{plural(numToElect,'people','person')}} before submitting your ballot.</p>
@@ -288,6 +288,7 @@
                    :class="{movingIntoTop: movingIntoTop}"
                    id="pool1"
                    group="pool"
+                   handle=".ui-draggable-handle"
                    v-model="poolInCoreBallot"
                    v-on:change="poolChangedCore"
                    v-on:end="movingDone"
@@ -301,13 +302,13 @@
                v-bind:ref="'p' + p.Id"
                v-bind:class="p.classes">
             <span class="num">{{p.index + 1}}</span>
-            <div v-html="p.Name"></div>
+            <div class="ui-draggable-handle" v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
             <button type="button"
                     class="removeFromPool btn"
                     v-if="!p.empty"
-                    v-on:click="removeFromPool(p)"
+                    v-on:click.passive="removeFromPool(p)"
                     aria-label="Delete"
                     v-bind:title="'Remove' + (p.Id < 0 ? ' and forget' : '')">
               ✗
@@ -316,7 +317,7 @@
 
         </draggable>
         <p class="ifSmall showFilled">
-            <button type="button" v-on:click="showAllVotes = !showAllVotes" v-text="showAllVotes ? 'Reduce view size' : 'Show all'"></button>
+            <button type="button" v-on:click.passive="showAllVotes = !showAllVotes" v-text="showAllVotes ? 'Reduce view size' : 'Show all'"></button>
             <span v-if="!showAllVotes" class="showFilled">Filled {{poolInCoreBallot.length}} of {{numToElect}} spaces.</span>
         </p>
         <div v-if="poolBeyondBallot.length && !savedLock">
@@ -334,6 +335,7 @@
         <draggable class="pool"
                    id="pool2"
                    group="pool"
+                   handle=".ui-draggable-handle"
                    v-model="poolBeyondBallot"
                    v-on:change="poolChangedBeyond"
                    v-on:end="movingDone"
@@ -347,13 +349,13 @@
                v-bind:ref="'p' + p.Id"
                v-bind:class="p.classes">
             <span class="num"></span>
-            <div v-html="p.Name"></div>
+            <div class="ui-draggable-handle" v-html="p.Name"></div>
             <u v-if="p.Area && p.Id > 0" v-text="p.Area"></u>
             <u v-if="p.OtherInfo && p.Id < 0" v-text="p.OtherInfo"></u>
             <button type="button"
                     class="removeFromPool btn"
                     v-if="!p.empty"
-                    v-on:click="removeFromPool(p)"
+                    v-on:click.passive="removeFromPool(p)"
                     aria-label="Delete"
                     v-bind:title="'Remove from the pool' + (p.Id < 0 ? ' and forget' : '')">
               ✗
