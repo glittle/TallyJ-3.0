@@ -44,7 +44,7 @@
 
 @*<link rel="manifest" href="@ClientFile("~/Content/manifest.json")">*@
 
-@if (Request.Url.Host != "localhost")
+@*@if (Request.Url.Host != "localhost")
 {
   <script type="text/javascript">
     (function (i, s, o, g, r, a, m) {
@@ -58,5 +58,5 @@
     ga('create', 'UA-1312528-6', 'www.tallyj.com');
     ga('send', 'pageview');
   </script>
-}
+}*@
 @ContextItems.GetJavascriptForPage()
