@@ -27,7 +27,7 @@
     <a href="https://music.youtube.com/watch?v=wgUhwR1_2Jo&list=PLVjUPCyfyKZ_zkW0krZtj2dTTPllZ81ow" target="music">Listen to suggested music in YouTube Music...</a>
   </div>
 </div>
-<div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}" class="voterPage">
+<div id="voterPage1" v-if="activePage === 1" :class="{meditate: meditate}" class="voterPage" v-cloak>
   <div class="top">
     <p>
       Welcome! Your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is
@@ -41,7 +41,7 @@
     <p v-if="loading">Searching for your email address in available elections...</p>
 
     <p v-if="!loading">
-      If an upcoming election is not listed here, it may not exist in TallyJ or your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is not registered in it. Please contact the head teller or primary contact for assistance.
+      If an upcoming election is not listed here, it may not exist in TallyJ or your @VoterIdTypeEnum.TextFor(UserSession.VoterIdType).ToLower() is not registered in it. Please contact the head teller of the election for assistance.
     </p>
 
   </div>
@@ -56,8 +56,7 @@
         <tr>
           <th class="ename">Election</th>
           <th class="online">Online Voting</th>
-          <th class="vmethod">Your Ballot</th>
-          <th class="vtime">Ballot status</th>
+          <th class="vtime">Your Name and Ballot</th>
         </tr>
       </thead>
       <tbody>
@@ -65,26 +64,24 @@
           <td class="ename">
             <div class="n">{{e.Name}}</div>
             <div class="c">{{e.Date_Display}} - {{e.Convenor}}</div>
-            <div class="contact">
-              Contact
-              <span v-if="e.EmailFromName && !e.EmailFromAddress">{{e.EmailFromName}}</span>
-              <a v-if="e.EmailFromAddress && e.EmailFromName" :href="e.EmailFromAddress">{{e.EmailFromName}}</a>
-              <span v-if="!e.EmailFromAddress && !e.EmailFromName">(Not set)</span>
-              for technical support
-            </div>
             <div class="t">{{e.Type_Display}}</div>
+            <div class="contact" v-if="e.EmailFromAddress">
+              <a :href="'mailto:' + e.EmailFromAddress">Email for assistance</a>
+            </div>
           </td>
 
-          <td class="online center" v-html="e.Status_Display"></td>
-          @*<td class="pname" v-text="e.person.name"></td>*@
-          <td class="vmethod center">
-            <div title="Registered Voting Method">{{e.person.VotingMethod_Display}}</div>
-            <div v-if="e.openNow && e.canVote">
-              <button type="button" class="btn btn-primary" accesskey="P" v-on:click.passive="prepareBallot(e)">Prepare my Ballot</button>
-            </div>
-            <div class="pname" v-text="e.person.name"></div>
+          <td class="online center">
+            <div v-html="e.Status_Display"></div>
+            <button v-if="e.openNow && e.canVote" type="button" class="btn btn-primary prepareBtn" accesskey="P" v-on:click.passive="prepareBallot(e)">Prepare my Ballot</button>
           </td>
-          <td class="vtime center" v-bind:class="e.person.Status" v-html="e.person.BallotStatus"></td>
+          <td class="vtime center" v-bind:class="e.person.Status">
+            <div class="pname" v-text="e.person.name"></div>
+            <div class="reg" title="Registered Voting Method">Registered: {{e.person.VotingMethod_Display || '-'}}</div>
+            <div class="binfo">
+              <div v-html="e.person.BallotStatus"></div>
+              <div class="btime" v-html="e.person.BallotTime"></div>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -113,8 +110,7 @@
 
     <p>
       For your review and security, here is your recent activity (with the most recent first).
-      If something looks wrong, please stop using TallyJ and send details to
-      <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")">technical support</a><span>.</span>
+
       <button type="button" class="btn btn-mini" v-on:click.passive="getLoginHistory">Refresh</button>
     </p>
     <p v-if="loadingLoginHistory">Loading...</p>
@@ -139,7 +135,10 @@
         </tbody>
       </table>
     </div>
-
+    <p class="comment">
+      If something looks wrong, please stop using TallyJ and send details to your head teller and/or to
+      <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail", "glen.little+tallyj@gmail.com")">global technical support</a><span>.</span>
+    </p>
   </div>
 
   <div class="quotes">
@@ -157,12 +156,11 @@
 
 </div>
 
-<div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}" class="voterPage">
+<div id="voterPage2" v-if="activePage === 2" :class="{locked: savedLock, meditate: meditate}" class="voterPage" v-cloak>
   <div class="onImage">
     <div>
-      <h2>{{election.Name}}</h2>
+      <div class="electionName">{{election.Name}}</div>
       <div class="voterName">{{voterName}}</div>
-
     </div>
 
     <div class="electionStatus" :class="election.classes" v-html="election.Status_Display"></div>
@@ -255,8 +253,8 @@
           You are registered as having voted: <strong>{{registration}}</strong>.
         </p>
         <div v-if="registration && registration !== 'Online'">
-          <p><span class="OtherRegistration">This online ballot below WILL NOT be used because tellers have registered you as voting {{registration}}.</span> </p>
-          <p>If that is not correct, please contact the head teller or primary contact for this election before the election is closed!</p>
+          <p><span class="OtherRegistration">This online ballot below WILL NOT be used because tellers have registered you as voting: {{registration}}.</span> </p>
+          <p>If that is not correct, please contact the head teller for this election before the election is closed!</p>
         </div>
         <p v-if="registration === 'Online' && lockInVotes">
           Your ballot will be processed when the head teller closes online voting and
@@ -317,8 +315,8 @@
 
         </draggable>
         <p class="ifSmall showFilled">
-            <button type="button" v-on:click.passive="showAllVotes = !showAllVotes" v-text="showAllVotes ? 'Reduce view size' : 'Show all'"></button>
-            <span v-if="!showAllVotes" class="showFilled">Filled {{poolInCoreBallot.length}} of {{numToElect}} spaces.</span>
+          <button type="button" v-on:click.passive="showAllVotes = !showAllVotes" v-text="showAllVotes ? 'Reduce view size' : 'Show all'"></button>
+          <span v-if="!showAllVotes" class="showFilled">Filled {{poolInCoreBallot.length}} of {{numToElect}} spaces.</span>
         </p>
         <div v-if="poolBeyondBallot.length && !savedLock">
           <p>Drag names into and out of your ballot and the pool of others.</p>
@@ -366,7 +364,7 @@
 
 
 
-        
+
         <p v-if="!lockInVotes && pool.length">
           Please note that when your ballot is processed by the tellers, this entire list of names will be removed from TallyJ.
         </p>

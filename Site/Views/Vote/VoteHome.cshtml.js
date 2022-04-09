@@ -351,12 +351,14 @@ var vueOptions = {
         person.WhenStatus_M = moment(person.WhenStatus);
         person.WhenStatus_Display = person.WhenStatus_M.format('D MMM YYYY h:mm a');
 
-        person.BallotStatus = '{0}<br>{1}'.filledWith(person.Status, person.WhenStatus_Display);
+        person.BallotStatus = person.Status;
+        person.BallotTime = person.WhenStatus_Display;
 
       } else {
         person.WhenStatus_M = null;
         person.WhenStatus_Display = null;
         person.BallotStatus = '-';
+        person.BallotTime = '-';
       }
 
       this.updateStatus(info);
