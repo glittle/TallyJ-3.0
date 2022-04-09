@@ -378,7 +378,7 @@
             <div v-for="loc in locations">
               <input :data-id="loc.C_RowId" type=text v-model="loc.Name">
               <span class="ui-icon ui-icon-arrow-2-n-s" v-if="numLocations > 1" title="Drag to sort"></span>
-              <span class="ui-icon ui-icon-trash" v-if="numLocations > 1" title="Delete this location" v-on:click="removeLocation($event.target)"></span>
+              <span class="ui-icon ui-icon-trash" v-if="numLocations > 1" title="Delete this location" v-on:click.passive="removeLocation($event.target)"></span>
               <span class="warning" v-if="!loc.Name">Name required</span>
             </div>
           </div>
@@ -550,7 +550,7 @@
           </td>
           <td>
             When should voters be able to access this election and start working on their online ballot?
-            <a class="setTime btn btn-mini" v-on:click="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
+            <a class="setTime btn btn-mini" v-on:click.passive="election.OnlineWhenOpen = new Date().toISOString()">Set to now.</a>
           </td>
         </tr>
         <tr>

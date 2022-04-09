@@ -46,7 +46,7 @@
     so the online portion of the election would need to closed sometime on or before that date.
   </p>
 
-  <p>To start with sample messages, click: <button class="btn btn-mini" v-on:click="loadSamples">Get Sample Messages</button></p>
+  <p>To start with sample messages, click: <button class="btn btn-mini" v-on:click.passive="loadSamples">Get Sample Messages</button></p>
 
   <div class="emailBySms">
     <h2 class="ehead">Email</h2>
@@ -69,7 +69,7 @@
         <span>(as set on the "Configure this Election" page).</span>
       </p>
 
-      <el-button size="small" :type="emailChanged ? 'primary' : ''" v-on:click="saveEmail">
+      <el-button size="small" :type="emailChanged ? 'primary' : ''" v-on:click.passive="saveEmail">
         Save Email Changes
       </el-button>
 
@@ -94,7 +94,7 @@
         <span class="forSmsInline">SMS messages will be sent from TallyJ's SMS account.</span>
       </p>
 
-      <el-button size="small" :type="smsChanged ? 'primary' : ''" v-on:click="saveSms">
+      <el-button size="small" :type="smsChanged ? 'primary' : ''" v-on:click.passive="saveSms">
         Save SMS Changes
       </el-button>
 
@@ -108,7 +108,7 @@
         <el-button size="small"
                    @*:class="[pendingEmail ? 'pending' : '', pendingEmail ? 'btn-warning' : 'btn-primary']"*@
                    :type="enableEmailSend ? 'primary' : ''"
-                   v-on:click="sendEmail(true)"
+                   v-on:click.passive="sendEmail(true)"
                    :disabled="!enableEmailSend">
           Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}{{ pendingEmail ? '':'...'}}
         </el-button>
@@ -128,7 +128,7 @@
       <div class="bottom">
         <el-button size="small"
                    :type="enableSmsSend  ? 'primary' : ''"
-                   v-on:click="sendSms(true)"
+                   v-on:click.passive="sendSms(true)"
                    :disabled="!enableSmsSend">
           Send the SMS message to {{numWithPhones}} voter{{plural(numWithPhones)}}{{ pendingSms ? '':'...'}}
         </el-button>
@@ -150,20 +150,20 @@
       </div>
       <div class="selections">
         <span>
-          <button class="btn btn-mini" v-on:click="selectAll" title="All people in the election">All</button>
-          <button class="btn btn-mini" v-on:click="select('none')" title="Clear checkboxes">None</button>
+          <button class="btn btn-mini" v-on:click.passive="selectAll" title="All people in the election">All</button>
+          <button class="btn btn-mini" v-on:click.passive="select('none')" title="Clear checkboxes">None</button>
         </span>
         <span>
-          <button class="btn btn-mini" v-on:click="select('notVoted')" title="Not voted">Not Voted</button>
-          <button class="btn btn-mini" v-on:click="select('votedOnline')" title="Has finished voting online">Voted Online</button>
-          <button class="btn btn-mini" v-on:click="select('onlineUnfinished')" title="Has created an online ballot but not yet submitted it">Unfinished Online Ballot</button>
+          <button class="btn btn-mini" v-on:click.passive="select('notVoted')" title="Not voted">Not Voted</button>
+          <button class="btn btn-mini" v-on:click.passive="select('votedOnline')" title="Has finished voting online">Voted Online</button>
+          <button class="btn btn-mini" v-on:click.passive="select('onlineUnfinished')" title="Has created an online ballot but not yet submitted it">Unfinished Online Ballot</button>
         </span>
         <span>
-          <button class="btn btn-mini" v-on:click="select('emailOnly')" title="Only Email on file">Only has Email</button>
-          <button class="btn btn-mini" v-on:click="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
+          <button class="btn btn-mini" v-on:click.passive="select('emailOnly')" title="Only Email on file">Only has Email</button>
+          <button class="btn btn-mini" v-on:click.passive="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
         </span>
         <span>
-          <button class="btn btn-mini" v-on:click="refresh">Refresh List</button>
+          <button class="btn btn-mini" v-on:click.passive="refresh">Refresh List</button>
         </span>
       </div>
     </div>
@@ -220,8 +220,8 @@
   <div class="sideBySide">
     <h3>Recent Message Log</h3>
     <span>
-      <button class="btn btn-mini" v-on:click="downloadCompleteLog">Download Complete Log</button>
-      <button class="btn btn-mini" v-on:click="getContactLog(0)">Refresh Log</button>
+      <button class="btn btn-mini" v-on:click.passive="downloadCompleteLog">Download Complete Log</button>
+      <button class="btn btn-mini" v-on:click.passive="getContactLog(0)">Refresh Log</button>
     </span>
   </div>
   <div class="emailHistoryHost" :class="{loadingLog:loadingLog}">
@@ -243,7 +243,7 @@
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-mini" v-on:click="getMoreLog">Get More</button>
+    <button class="btn btn-mini" v-on:click.passive="getMoreLog">Get More</button>
   </div>
 
 

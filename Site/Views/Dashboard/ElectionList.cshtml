@@ -23,12 +23,12 @@
   <h2>@ViewBag.Message</h2>
 </hgroup>
 <div id="electionListPage" v-cloak :class="{reloading: reloading}">
-  <button class="reloadAll" v-on:click="reloadAll">Reload All</button>
+  <button class="reloadAll" v-on:click.passive="reloadAll">Reload All</button>
   @if (electionsInfo.Count > 0)
   {
     <div class="h3button">
       <h3>Your Active and Future Elections</h3>
-      <button v-on:click="refreshLive">Refresh Status</button>
+      <button v-on:click.passive="refreshLive">Refresh Status</button>
     </div>
 
     <div class="currentElections">
@@ -47,7 +47,7 @@
          class="oldElections">
       <div class="h3button">
         <h3 v-if="!hideOld">Other Elections</h3>
-        <button v-on:click="toggleOldList" v-text="oldListBtnText"></button>
+        <button v-on:click.passive="toggleOldList" v-text="oldListBtnText"></button>
       </div>
 
       <div v-if="!hideOld">
@@ -70,7 +70,7 @@
       <li>
         Start a new election:
         <button type="button" class="btn  btn-primary"
-                v-on:click="createElection"
+                v-on:click.passive="createElection"
                 id="btnCreate">
           New Election
         </button>
@@ -183,23 +183,23 @@
     </div>
     <div class="rightSide">
       <div class="tallyStatus" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</div>
-      <el-button v-on:click="selectElection(e)"
+      <el-button v-on:click.passive="selectElection(e)"
                  type="primary"
                  size="small"
                  v-text="e.IsCurrent ? 'Return (Current Election)' : 'Enter'"
                  class="btnSelectElection">
       </el-button>
       <div class="other">
-        <div class="otherToggle" v-on:click="showOtherButtons = !showOtherButtons">Save or Remove</div>
+        <div class="otherToggle" v-on:click.passive="showOtherButtons = !showOtherButtons">Save or Remove</div>
         <div class="otherButtons" v-if="showOtherButtons">
-          <el-button v-on:click="exportElection"
+          <el-button v-on:click.passive="exportElection"
                      size="micro"
                      type="info"
                      :class="{active: exporting === e.ElectionGuid}"
                      title="Export and download the complete election to a file on your computer">
             Save to File
           </el-button>
-          <el-button v-on:click="deleteElection"
+          <el-button v-on:click.passive="deleteElection"
                      size="micro"
                      type="warning"
                      :class="{active: deleting === e.ElectionGuid}"
@@ -209,7 +209,7 @@
         </div>
       </div>
       <div class="showUsers">
-        <button class="btn btn-mini" v-on:click="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' + (e.isOwner ? '/Add' : ''))) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>
+        <button class="btn btn-mini" v-on:click.passive="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' + (e.isOwner ? '/Add' : ''))) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>
       </div>
     </div>
 
@@ -228,7 +228,7 @@
             <button class="btn btn-mini"
                     v-if="e.isOwner && !scope.row.isCurrentUser"
                     :disabled="!!scope.row.selected"
-                    v-on:click="selectUser(scope.row)">
+                    v-on:click.passive="selectUser(scope.row)">
               Edit
             </button>
           </template>
@@ -263,12 +263,12 @@
           <el-button :disabled="!addingNew"
                      type="primary"
                      size="mini"
-                     v-on:click="processForm">Invite to this Election</el-button>
+                     v-on:click.passive="processForm">Invite to this Election</el-button>
 
           <el-button v-if="selectedUser && selectedUser.InviteEmail"
                      type="primary"
                      size="mini"
-                     v-on:click="sendInvitation">Resend Email Notification</el-button>
+                     v-on:click.passive="sendInvitation">Resend Email Notification</el-button>
 
           <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election."
                          v-if="!addingNew"
@@ -278,7 +278,7 @@
           </el-popconfirm>
 
 
-          <el-button size="mini" v-on:click="closeForm">Close</el-button>
+          <el-button size="mini" v-on:click.passive="closeForm">Close</el-button>
 
         </el-form-item>
       </el-form>
@@ -288,7 +288,7 @@
                  plain
                  class="addNew"
                  size="mini"
-                 v-on:click="openForAdd">Add new Full Teller</el-button>
+                 v-on:click.passive="openForAdd">Add new Full Teller</el-button>
 
     </div>
 

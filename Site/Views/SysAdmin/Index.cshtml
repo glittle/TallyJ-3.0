@@ -6,9 +6,9 @@
 <div id="LogView">
   <div class="Header">
     <div class="reportSelector">
-      <button v-on:click="showReport('mainLog')" class="btn" :class="{'btn-success': report==='mainLog'}">General Log</button>
-      <button v-on:click="showReport('onlineVotingLog')" class="btn" :class="{'btn-success': report==='onlineVotingLog'}">Online Voting</button>
-      <button v-on:click="showReport('electionList')" class="btn" :class="{'btn-success': report==='electionList'}">Elections List</button>
+      <button v-on:click.passive="showReport('mainLog')" class="btn" :class="{'btn-success': report==='mainLog'}">General Log</button>
+      <button v-on:click.passive="showReport('onlineVotingLog')" class="btn" :class="{'btn-success': report==='onlineVotingLog'}">Online Voting</button>
+      <button v-on:click.passive="showReport('electionList')" class="btn" :class="{'btn-success': report==='electionList'}">Elections List</button>
       <a href="Dashboard">Home</a>
     </div>
 
@@ -44,7 +44,7 @@
   
     @*<div>
 
-      <button v-on:click="searchText=''; getLog(report, true)">Refresh</button>
+      <button v-on:click.passive="searchText=''; getLog(report, true)">Refresh</button>
       <select v-model="numToShow" v-on:change="refresh">
         <option value="10">10</option>
         <option value="25">25</option>
@@ -83,7 +83,7 @@
                    :value="n"></el-option>
       </el-select>
 
-      <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+      <el-button icon="el-icon-search" type="primary" size="small" v-on:click.passive="getLog(report, true)">Search</el-button>
 
     </div>
 
@@ -108,7 +108,7 @@
           <td>
             <button class="btn btn-mini"
                     v-if="r.hasFullDetails"
-                    v-on:click="r.showFullDetails = !r.showFullDetails"
+                    v-on:click.passive="r.showFullDetails = !r.showFullDetails"
                     v-text="'Details'"></button>
             {{r.shortDetails}}
           </td>
@@ -130,7 +130,7 @@
                  :value="n"></el-option>
     </el-select>
 
-    <el-button icon="el-icon-bottom" size="small" type="primary" v-on:click="getLog('mainLog', false)">Get More</el-button>
+    <el-button icon="el-icon-bottom" size="small" type="primary" v-on:click.passive="getLog('mainLog', false)">Get More</el-button>
     <span>{{logInfo.mainLog.received}} lines just added.</span>
 
   </div>
@@ -147,7 +147,7 @@
                       end-placeholder="End date">
       </el-date-picker>
 
-      <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+      <el-button icon="el-icon-search" type="primary" size="small" v-on:click.passive="getLog(report, true)">Search</el-button>
 
       <span>
         Sorting: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
@@ -158,18 +158,18 @@
     <table>
       <thead>
         <tr>
-          <th v-on:click="sort('Name', $event)">Election</th>
-          <th v-on:click="sort('Convenor', $event)">Convenor</th>
-          <th v-on:click="sort('Email')">Admin Email(s)</th>
-          <th v-on:click="sort('NumberToElect')">Ballot Size</th>
-          <th v-on:click="sort('TallyStatus')">Tally Status</th>
-          <th v-on:click="sort('Activated')">Logged In</th>
-          <th v-on:click="sort('Submitted')">Pending</th>
-          <th v-on:click="sort('Processed')">Processed</th>
-          <th v-on:click="sort('OnlineWhenOpen_Date')">Open Date</th>
-          <th v-on:click="sort('First_Date')">First Activity</th>
-          <th v-on:click="sort('MostRecent_Date')">Most Recent</th>
-          <th v-on:click="sort('OnlineWhenClose_Date')">Close Date</th>
+          <th v-on:click.passive="sort('Name', $event)">Election</th>
+          <th v-on:click.passive="sort('Convenor', $event)">Convenor</th>
+          <th v-on:click.passive="sort('Email')">Admin Email(s)</th>
+          <th v-on:click.passive="sort('NumberToElect')">Ballot Size</th>
+          <th v-on:click.passive="sort('TallyStatus')">Tally Status</th>
+          <th v-on:click.passive="sort('Activated')">Logged In</th>
+          <th v-on:click.passive="sort('Submitted')">Pending</th>
+          <th v-on:click.passive="sort('Processed')">Processed</th>
+          <th v-on:click.passive="sort('OnlineWhenOpen_Date')">Open Date</th>
+          <th v-on:click.passive="sort('First_Date')">First Activity</th>
+          <th v-on:click.passive="sort('MostRecent_Date')">Most Recent</th>
+          <th v-on:click.passive="sort('OnlineWhenClose_Date')">Close Date</th>
         </tr>
       </thead>
       <tbody v-for="r in logInfo.onlineVotingLog.log" :key="r.C_RowId">
@@ -204,7 +204,7 @@
                         start-placeholder="Start date"
                         end-placeholder="End date">
         </el-date-picker>
-        <el-button icon="el-icon-search" type="primary" size="small" v-on:click="getLog(report, true)">Search</el-button>
+        <el-button icon="el-icon-search" type="primary" size="small" v-on:click.passive="getLog(report, true)">Search</el-button>
 
         <span>
           Sorting: {{currentSort || '(pick column)'}} {{lastSort ? '&#x2191' : '&#x2193'}}
@@ -216,18 +216,18 @@
         <thead>
           <tr>
             <th></th>
-            <th v-on:click="sort('DateOfElection_Date')">Date</th>
-            <th v-on:click="sort('RecentActivity_Date')">Recent Activity</th>
-            <th v-on:click="sort('ShowAsTest')">Test?</th>
-            <th v-on:click="sort('Name')">Election</th>
-            <th v-on:click="sort('Convenor')">Convenor</th>
-            <th v-on:click="sort('Email')">Admin Email(s)</th>
-            <th v-on:click="sort('ElectionType')">Type</th>
-            <th v-on:click="sort('TallyStatus')">Status</th>
-            <th v-on:click="sort('NumberToElect')">Ballot Size</th>
-            <th v-on:click="sort('NumPeople')">People</th>
-            <th v-on:click="sort('NumOnline')">Online</th>
-            <th v-on:click="sort('NumBallots')">Ballots</th>
+            <th v-on:click.passive="sort('DateOfElection_Date')">Date</th>
+            <th v-on:click.passive="sort('RecentActivity_Date')">Recent Activity</th>
+            <th v-on:click.passive="sort('ShowAsTest')">Test?</th>
+            <th v-on:click.passive="sort('Name')">Election</th>
+            <th v-on:click.passive="sort('Convenor')">Convenor</th>
+            <th v-on:click.passive="sort('Email')">Admin Email(s)</th>
+            <th v-on:click.passive="sort('ElectionType')">Type</th>
+            <th v-on:click.passive="sort('TallyStatus')">Status</th>
+            <th v-on:click.passive="sort('NumberToElect')">Ballot Size</th>
+            <th v-on:click.passive="sort('NumPeople')">People</th>
+            <th v-on:click.passive="sort('NumOnline')">Online</th>
+            <th v-on:click.passive="sort('NumBallots')">Ballots</th>
           </tr>
         </thead>
         <tbody v-for="r in logInfo.electionList.log" :key="r.C_RowId">

@@ -149,7 +149,7 @@
       Step 3 <span>Preview the Contents</span>
       <el-button size="small"
                  v-if="activeFileRowId"
-                 v-on:click="getPreviewInfo">Refresh</el-button>
+                 v-on:click.passive="getPreviewInfo">Refresh</el-button>
     </h2>
 
     <div class="preview" v-if="activeFileRowId && previewInfo.voters">
@@ -225,7 +225,7 @@
         When you click "Import Now" the ballots will be loaded into TallyJ and the people listed above will be marked on the Front Desk as having voted in the external system.
       </p>
       <div class="importDiv">
-        <el-button type="primary" v-on:click="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length) || importing">
+        <el-button type="primary" v-on:click.passive="importNow" :disabled="!!(previewInfo.ImportErrors && previewInfo.ImportErrors.length) || importing">
           Import now
         </el-button>
         <div id="loadingLog">
@@ -240,7 +240,7 @@
       <p v-if="enableRemove" class="error">
         Caution: this will remove the ballots even if tellers have made changes to them!
       </p>
-      <el-button type="warning" size="small" v-on:click="removeImportedInfo" :disabled="!enableRemove || removing">Remove Imported Ballots</el-button>
+      <el-button type="warning" size="small" v-on:click.passive="removeImportedInfo" :disabled="!enableRemove || removing">Remove Imported Ballots</el-button>
       <p><el-checkbox v-model="enableRemove">Enable the 'Remove Imported Ballots' button</el-checkbox></p>
     </div>
   </div>
