@@ -23,6 +23,7 @@
         loadingElection: false,
         log: '',
         tempLog: '',
+        showTest: true,
         hideOld: false,
         reloading: false,
         formatDateTime: 'YYYY MMM D [at] HH:mm',
@@ -33,7 +34,7 @@
           return this.elections.filter(e => e.old);
         },
         currentElections() {
-          return this.elections.filter(e => !e.old);
+          return this.elections; // .filter(e => this.showTest || !e.IsTest);
         },
         oldElectionGuids() {
           return this.oldElections.map(e => e.ElectionGuid);
@@ -91,7 +92,10 @@
             e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
             e.dateSort = e.DateOfElection ? d.toISOString() : '0';
 
-            e.old = !e.OnlineCurrentlyOpen && d.isBefore() || !e.DateOfElection;
+            //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
+            e.old = false; //!isCurrent;
+            // OnlineCurrentlyOpen
+            //            e.old = !e.DateOfElection || !e.OnlineCurrentlyOpen || d.isBefore(moment(), 'day');
 
             // more static info
             e.numVoters = '';
@@ -155,22 +159,22 @@
               busy: 'Loading Details'
             },
             function (info) {
-            info.forEach(function (incoming) {
-              var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
-              if (matched) {
-                matched.tellers = incoming.tellers || [];
-                matched.users = vue.extendUsers(incoming.users);
+              info.forEach(function (incoming) {
+                var matched = vue.elections.find(e => e.ElectionGuid === incoming.guid);
+                if (matched) {
+                  matched.tellers = incoming.tellers || [];
+                  matched.users = vue.extendUsers(incoming.users);
 
-                matched.isOwner = matched.users.findIndex(u => u.isCurrentUser && u.Role === 'Owner') !== -1;
+                  matched.isOwner = matched.users.findIndex(u => u.isCurrentUser && u.Role === 'Owner') !== -1;
 
-                matched.showUsers = matched.users.length > 1 && matched.isOwner;
-                matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople || 0); //, Plural(incoming.numPeople));
-                matched.registered = '- {0} registered'.filledWith(incoming.numRegistered || 0); //, Plural(incoming.numPeople));
-              } else {
-                console.log('unknown election', incoming);
-              }
+                  matched.showUsers = matched.users.length > 1 && matched.isOwner;
+                  matched.numVoters = '- {0} can vote'.filledWith(incoming.numPeople || 0); //, Plural(incoming.numPeople));
+                  matched.registered = '- {0} registered'.filledWith(incoming.numRegistered || 0); //, Plural(incoming.numPeople));
+                } else {
+                  console.log('unknown election', incoming);
+                }
+              });
             });
-          });
         },
         extendUsers(users) {
           if (!users) return [];
@@ -441,6 +445,7 @@ Vue.component('election-detail',
     props: {
       e: Object,
       old: Boolean,
+      test: Boolean,
       exporting: String,
       deleting: String,
     },
@@ -467,13 +472,13 @@ Vue.component('election-detail',
       }
     },
     computed: {
-      showForm: function() {
+      showForm: function () {
         return this.addingNew || !!this.selectedUser;
       },
-      users: function() {
+      users: function () {
         return this.e.users;
       },
-      selectedUser: function() {
+      selectedUser: function () {
         return this.users.find(u => u.selected);
       },
       onlineOpenText: function () {
@@ -578,7 +583,7 @@ Vue.component('election-detail',
         this.form.email = '';
         this.form.invited = false;
         this.addingNew = true;
-        setTimeout(function() {
+        setTimeout(function () {
           $('.addNew')[0].scrollIntoView({ behavior: 'smooth', block: 'end' });
         }, 0);
       },

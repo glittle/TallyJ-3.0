@@ -546,7 +546,9 @@
             Open Voting at
           </th>
           <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
-            <datetime input-id="whenOpen" v-model="election.OnlineWhenOpen" v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+              <datetime input-id="whenOpen" v-model="election.OnlineWhenOpen" 
+                        placeholder="Opening Time"
+                        v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
             <div class="voteWhenOpen">{{showFrom(election.OnlineWhenOpen)}}</div>
           </td>
           <td>
@@ -559,7 +561,9 @@
             Close Voting at
           </th>
           <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
-            <datetime input-id="whenClose" v-model="election.OnlineWhenClose" v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+              <datetime input-id="whenClose" v-model="election.OnlineWhenClose"
+                        placeholder="Closing Time"
+                        v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
             <div class="voteWhenClosed" v-if="election.OnlineWhenClose" v-bind:class="{closed: closeIsPast }">{{showFrom(election.OnlineWhenClose)}}</div>
           </td>
           <td>

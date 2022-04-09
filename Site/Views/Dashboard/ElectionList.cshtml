@@ -27,8 +27,15 @@
   @if (electionsInfo.Count > 0)
   {
     <div class="h3button">
-      <h3>Your Active and Future Elections</h3>
-      <button v-on:click.passive="refreshLive">Refresh Status</button>
+      <h3>Your Elections</h3>
+        <button v-on:click.passive="refreshLive">Refresh Status</button>
+        @*<el-switch v-model="showTest"
+                   class="showTest"
+        active-text="Show Test Elections"
+        Zactive-color="#ff4949"
+        inactive-text="Hide Test Elections"
+        Zinactive-color="#13ce66"
+                   ></el-switch>*@
     </div>
 
     <div class="currentElections">
@@ -43,7 +50,7 @@
                        :key="e.ElectionGuid"></election-detail>
     </div>
 
-    <div v-if="oldElections.length"
+    @*<div v-if="oldElections.length"
          class="oldElections">
       <div class="h3button">
         <h3 v-if="!hideOld">Other Elections</h3>
@@ -61,7 +68,7 @@
                          v-on:export="exportElection"
                          :key="e.C_RowId"></election-detail>
       </div>
-    </div>
+    </div>*@
   }
   @if (UserSession.IsKnownTeller)
   {
@@ -118,10 +125,10 @@
            }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
-        {{e.Name}}
+        {{e.dateDisplay}}
         <span v-if="e.IsTest" class="Test">TEST</span>
         <span v-else class="NotTest">MAIN</span>
-        {{e.dateDisplay}}
+        {{e.Name}}
       </div>
       <div class="Detail2">
         <div>

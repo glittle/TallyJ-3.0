@@ -252,6 +252,7 @@
         busy: 'Changing Open Status'
       },
       function () {
+        ShowStatusDone('Saved');
         updatePasscodeDisplay(form.listOnPage, site.passcodeRaw);
       });
   };

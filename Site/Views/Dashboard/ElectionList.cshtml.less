@@ -185,7 +185,8 @@
       padding: 1px;
       background-color: #fcfcfc;
       box-shadow: 0 0 1px grey;
-      &:hover{
+
+      &:hover {
         background-color: #f1f1f1;
       }
     }
@@ -231,58 +232,60 @@
   white-space: nowrap;
 }
 
-.el-switch {
-  font-size: 1em;
-  margin: 2px 10px;
-  @space: 3px;
+.statusBlock {
+  .el-switch {
+    font-size: 1em;
+    margin: 2px 10px;
+    @space: 3px;
 
-  .el-switch__core {
-    background-color: red;
-
-    &:after {
-      //content: '\21fd'; // left
-      text-align: center;
-      line-height: 16px;
-      color: red;
-    }
-  }
-
-  &.is-checked {
     .el-switch__core {
-      background-color: green;
+      background-color: red;
 
       &:after {
-        //content: '\21fe'; // right
-        color: green;
-      }
-    }
-  }
-
-  .el-switch__label {
-    font-size: 1em;
-    color: #999;
-
-    &.el-switch__label--right {
-      margin-left: @space;
-
-      &.is-active {
-        color: green;
-        font-weight: bold;
-      }
-    }
-
-    &.el-switch__label--left {
-      margin-right: @space;
-
-      &.is-active {
+        //content: '\21fd'; // left
+        text-align: center;
+        line-height: 16px;
         color: red;
-        font-weight: bold;
       }
     }
 
+    &.is-checked {
+      .el-switch__core {
+        background-color: green;
 
-    * {
+        &:after {
+          //content: '\21fe'; // right
+          color: green;
+        }
+      }
+    }
+
+    .el-switch__label {
       font-size: 1em;
+      color: #999;
+
+      &.el-switch__label--right {
+        margin-left: @space;
+
+        &.is-active {
+          color: green;
+          font-weight: bold;
+        }
+      }
+
+      &.el-switch__label--left {
+        margin-right: @space;
+
+        &.is-active {
+          color: red;
+          font-weight: bold;
+        }
+      }
+
+
+      * {
+        font-size: 1em;
+      }
     }
   }
 }
