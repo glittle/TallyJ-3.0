@@ -238,6 +238,7 @@ var startSignalR = function (callBack, showReconnectMsg) {
       .start()
       .done(function () {
         if (showReconnectMsg) {
+          if (site.reconnectMsg) ResetStatusDisplay(site.reconnectMsg);
           ShowStatusDone('Reconnected!');
         }
         // console.log('signalR client connected', $.connection.hub.id);

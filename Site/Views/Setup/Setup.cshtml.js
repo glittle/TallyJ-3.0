@@ -625,10 +625,13 @@
           $('.btnSave').removeClass('btn-primary');
           vue.isSaveNeeded = false;
 
-          var isClosed = moment(form.OnlineWhenClose).isBefore();
-          $('body').toggleClass('OnlineOpen', !isClosed);
-          $('body').toggleClass('OnlineClosed', isClosed);
-
+          if (form.OnlineWhenClose) {
+            var isClosed = moment(form.OnlineWhenClose).isBefore();
+            $('body').toggleClass('OnlineOpen', !isClosed);
+            $('body').toggleClass('OnlineClosed', isClosed);
+          } else {
+            $('body').removeClass('OnlineClosed, OnlineOpen');
+          }
           ShowStatusDone(info.Status);
         } else {
           ShowStatusFailed(info.Status);
