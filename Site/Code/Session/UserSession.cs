@@ -85,10 +85,9 @@ namespace TallyJ.Code.Session
         {
           var user = GetNewDbContext.Users.SingleOrDefault(u => u.UserName == LoginId);
 
-          UserGuidHasBeenLoaded = true;
-
           if (user != null)
           {
+            UserGuidHasBeenLoaded = true;
             CurrentContext.Session[SessionKey.CurrentUserGuid] = user.UserId;
           }
         }
@@ -445,9 +444,9 @@ namespace TallyJ.Code.Session
         var currentComputer = SessionKey.CurrentComputer.FromSession<Computer>(null);
         if (currentComputer == null)
         {
-            var computerModel = new ComputerModel();
-          return CurrentElectionGuid != Guid.Empty 
-            ? computerModel.GetComputerForMe(Guid.Empty) 
+          var computerModel = new ComputerModel();
+          return CurrentElectionGuid != Guid.Empty
+            ? computerModel.GetComputerForMe(Guid.Empty)
             : computerModel.GetTempComputerForMe();
         }
 

@@ -10,7 +10,8 @@ namespace TallyJ.CoreModels
 {
   public class ElectionsListViewModel : DataConnectedModel
   {
-    public IEnumerable<object> GetMyElectionsInfo(bool checkIfAddedToNew = false) {
+    public IEnumerable<object> GetMyElectionsInfo(bool checkIfAddedToNew = false)
+    {
 
       if (checkIfAddedToNew && UserSession.IsKnownTeller)
       {
@@ -45,11 +46,15 @@ namespace TallyJ.CoreModels
         });
     }
 
-    private void CheckIfAddedToNew()
+    public void CheckIfAddedToNew()
     {
       // find any unclaimed ones with my email address
       var email = UserSession.AdminAccountEmail;
-
+      if (email.HasNoContent())
+      {
+        return;
+      }
+          
       var pendingInvitations = Db.JoinElectionUser
         .Where(u => u.UserId == Guid.Empty && u.InviteEmail == email);
 
@@ -192,9 +197,10 @@ namespace TallyJ.CoreModels
 
     public IEnumerable<Election> MyElections()
     {
-      if (UserSession.IsKnownTeller)
+      var userGuid = UserSession.UserGuid;
+
+      if (UserSession.IsKnownTeller && userGuid != Guid.Empty) // double check userGuid
       {
-        var userGuid = UserSession.UserGuid;
         return Db.Election
           .SelectMany(e => Db.JoinElectionUser.Where(j => j.UserId == userGuid),
             (e, j) => new { e, j })

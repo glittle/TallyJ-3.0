@@ -176,7 +176,7 @@
           @if (UserSession.IsKnownTeller)
           {
             <div v-if="!isClosed" class="expected">
-              Show as <yes-no v-on:click="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
+              Show as <yes-no v-on:click.passive="saveClose" yes="Expected" no="Firm" v-model="election.OnlineCloseIsEstimate"></yes-no>
             </div>
           }
         </div>
@@ -198,10 +198,10 @@
         @if (UserSession.IsKnownTeller)
         {
           <div class="votingMisc">
-            <el-button size="small" v-if="isClosed" v-on:click="closeOnline(5)">Open for 5 minutes</el-button>
-            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline(30, true)">Schedule close in 30 minutes</el-button>
-            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline(5, false)">Schedule close in 5 minutes</el-button>
-            <el-button size="small" v-if="!isClosed" v-on:click="closeOnline()">Close now</el-button>
+            <el-button size="small" v-if="isClosed" v-on:click.passive="closeOnline(5)">Open for 5 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click.passive="closeOnline(30, true)">Schedule close in 30 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click.passive="closeOnline(5, false)">Schedule close in 5 minutes</el-button>
+            <el-button size="small" v-if="!isClosed" v-on:click.passive="closeOnline()">Close now</el-button>
           </div>
         }
 
@@ -215,7 +215,7 @@
         {
           <el-button @*:type="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots ? '' : 'primary'"*@
                      type="primary"
-                     v-on:click="processReadyBallots"
+                     v-on:click.passive="processReadyBallots"
                      :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots">
             Process Online Ballots that are Submitted
           </el-button>

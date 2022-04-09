@@ -100,7 +100,7 @@
     <p>@Html.ActionLink("Sys Admin", "Index", "SysAdmin")</p>
   }
   <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
-  <p>Logged in account: @UserSession.LoginId (@UserSession.AdminAccountEmail)</p>
+  <p>Logged in account: <span title="@UserSession.UserGuid">@UserSession.LoginId</span> (@UserSession.AdminAccountEmail)</p>
 </div>
 
 
@@ -190,7 +190,7 @@
                  class="btnSelectElection">
       </el-button>
       <div class="other">
-        <div class="otherToggle" v-on:click="showOtherButtons = !showOtherButtons">Save or Remove...</div>
+        <div class="otherToggle" v-on:click="showOtherButtons = !showOtherButtons">Save or Remove</div>
         <div class="otherButtons" v-if="showOtherButtons">
           <el-button v-on:click="exportElection"
                      size="micro"
@@ -263,12 +263,12 @@
           <el-button :disabled="!addingNew"
                      type="primary"
                      size="mini"
-                     v-on:click="processForm">Grant access to this Election</el-button>
+                     v-on:click="processForm">Invite to this Election</el-button>
 
           <el-button v-if="selectedUser && selectedUser.InviteEmail"
                      type="primary"
                      size="mini"
-                     v-on:click="sendInvitation">Send Email Notification</el-button>
+                     v-on:click="sendInvitation">Resend Email Notification</el-button>
 
           <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election."
                          v-if="!addingNew"

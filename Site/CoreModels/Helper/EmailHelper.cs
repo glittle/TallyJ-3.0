@@ -460,7 +460,7 @@ namespace TallyJ.CoreModels.Helper
 
         msg.ReplyTo = replyTo;
 
-        if (msg.From.Name != replyTo.Name)
+        if (msg.From.Name != replyTo.Name && replyTo.Name.HasContent())
         {
           msg.From.Name = replyTo.Name + " via " + msg.From.Name;
         }

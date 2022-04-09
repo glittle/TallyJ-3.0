@@ -42,7 +42,7 @@
         </div>
       }
       <div class="centerL" title="Assist with an election.">
-        <button class="btn btn-primary" id="btnChooseJoin" accesskey="L">Login as a Teller</button>
+        <button class="btn btn-primary" id="btnChooseJoin" accesskey="J">Join as a Teller</button>
         <p>For tellers who have an access code to assist in registering voters and tallying ballots.</p>
       </div>
 
@@ -243,7 +243,7 @@
                 <a href="https://docs.google.com/document/d/1tTzu69HekctCeZ1quwvCAXxI40xNV5L6147AmOLrudA/view" target="voter1">Voter's Guide</a>.
               </p>
               <div class="voterOptions">
-                <div class="voterEmail" v-on:click="chooseMethod('email')">
+                <div class="voterEmail" v-on:click.passive="chooseMethod('email')">
                   <span>Using your email</span>
                 </div>
                 <div class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">

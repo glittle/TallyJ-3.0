@@ -114,8 +114,6 @@ namespace TallyJ.Controllers
 
           new LogHelper().Add("Admin Logged In - {0} ({1})".FilledWith(model.UserName, email), true);
 
-          UserSession.IsKnownTeller = true;
-
           if (Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
 
           return RedirectToAction("Index", "Dashboard");
@@ -209,20 +207,24 @@ namespace TallyJ.Controllers
       if (ModelState.IsValid)
       {
         // Attempt to register the user
-        Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null,
+        var membershipUser = Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null,
           out var createStatus);
 
         if (createStatus == MembershipCreateStatus.Success)
         {
+          var email = membershipUser?.Email;
+         
           var claims = new List<Claim>
           {
             new Claim("UserName", model.UserName),
             new Claim("UniqueID", "A:" + model.UserName),
-//                        new Claim("Email", model.Email),
             new Claim("IsKnownTeller", "true")
           };
 
-          var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ExternalCookie);
+          UserSession.IsKnownTeller = true;
+          UserSession.AdminAccountEmail = email;
+
+          var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
 
           var authenticationProperties = new AuthenticationProperties
           {
@@ -233,9 +235,9 @@ namespace TallyJ.Controllers
 
           System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
 
-          //                    FormsAuthentication.SetAuthCookie(model.UserName, true);
-          // UserSession.ProcessLogin();
-          UserSession.IsKnownTeller = true;
+          new LogHelper().Add("Admin Registered - {0} ({1})".FilledWith(model.UserName, email), true);
+
+          new ElectionsListViewModel().CheckIfAddedToNew();
 
           return RedirectToAction("Index", "Dashboard");
         }

@@ -21,7 +21,7 @@ var StatusDisplay = function () {
             '<i v-if="m.type===\'busy\'" class="el-icon-loading"></i>' +
            '<span class=msg v-html="m.msgText + (m.count > 1 ? \' (\' + m.count + \' times)\' : \'\')"></span>' +
            '<span class=close v-if="m.type===\'error\'">' +
-            '<i v-on:click="reset(m)" class="el-icon-circle-close" title="Dismiss this message"></i>' +
+            '<i v-on:click.passive="reset(m)" class="el-icon-circle-close" title="Dismiss this message"></i>' +
            '</span>' +
           '</div>' +
          '</div>' +

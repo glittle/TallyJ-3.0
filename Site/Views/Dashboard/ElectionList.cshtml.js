@@ -578,6 +578,9 @@ Vue.component('election-detail',
         this.form.email = '';
         this.form.invited = false;
         this.addingNew = true;
+        setTimeout(function() {
+          $('.addNew')[0].scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 0);
       },
       closeForm() {
         this.addingNew = false;
@@ -628,6 +631,8 @@ Vue.component('election-detail',
               vue.users.push(u);
 
               ShowStatusDone("Added");
+
+              vue.sendInvitation();
             }
             else {
               ShowStatusFailedMessage(info);
@@ -670,7 +675,7 @@ Vue.component('election-detail',
         CallAjax2(electionListPage.updateListingUrl + '/SendInvitation',
           form,
           {
-            busy: 'Sending'
+            busy: 'Sending Email'
           },
           function (info) {
             if (info.Success) {
