@@ -231,7 +231,7 @@ namespace TallyJ.EF
         return OnlineWhenOpen.HasValue
                && OnlineWhenClose.HasValue
                && OnlineWhenOpen.Value.AsUtc() < utcNow
-               && OnlineWhenOpen.Value < OnlineWhenClose.Value
+               && OnlineWhenOpen.Value < OnlineWhenClose.Value // don't need UTC on this line
                && OnlineWhenClose.Value.AsUtc() > utcNow;
       }
     }

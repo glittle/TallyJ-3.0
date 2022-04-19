@@ -120,8 +120,8 @@ namespace TallyJ.CoreModels
             OnlineInfo = SettingsHelper.HostSupportsOnlineElections
               ? new
               {
-                currentElection.OnlineWhenOpen,
-                currentElection.OnlineWhenClose,
+                OnlineWhenClose = currentElection.OnlineWhenClose.AsUtc(),
+                OnlineWhenOpen = currentElection.OnlineWhenOpen.AsUtc(),
                 currentElection.OnlineCloseIsEstimate,
               }
               : null,

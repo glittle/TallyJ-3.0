@@ -397,14 +397,18 @@ var vueOptions = {
           // future
           info.Status_Display = 'Will open ' + info.OnlineWhenOpen_M.fromNow();
           info.classes = ['onlineFuture'];
+          info.StatusTitle = info.OnlineWhenOpen_M.format('llll');
         } else if (info.OnlineWhenClose_M.isBefore(recent)) {
           // old past
           info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
           info.classes = ['onlineOld'];
+          info.StatusTitle = info.OnlineWhenClose_M.format('llll');
         } else if (info.OnlineWhenClose_M.isBefore()) {
           // recent past
           info.Status_Display = 'Closed ' + info.OnlineWhenClose_M.fromNow();
           info.classes = ['onlinePast'];
+          info.StatusTitle = info.OnlineWhenClose_M.format('llll');
+
         } else if (info.OnlineWhenOpen_M.isBefore() && info.OnlineWhenClose_M.isAfter()) {
           // now
           var minutes = info.OnlineWhenClose_M.diff(moment(), 'm');
@@ -422,6 +426,7 @@ var vueOptions = {
           }
           //          s.push('.');
           info.Status_Display = s.join('');
+          info.StatusTitle = info.OnlineWhenClose_M.format('llll');
         }
       } else {
         info.Status_Display = 'No online voting';

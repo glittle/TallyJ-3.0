@@ -533,11 +533,12 @@
           CallAjax2(publicInterface.controllerUrl + '/SaveOnlineClose',
             form,
             {
-              busy: 'Adjusting close time'
+              busy: 'Saving closing date/time'
             },
             function (info) {
               if (info.success) {
-                vue.CloseTime = vue.election.OnlineWhenClose = info.OnlineWhenClose.parseJsonDate().toISOString();
+                ShowStatusDone('Closing date/time saved');
+                vue.CloseTime = vue.election.OnlineWhenClose = moment(info.OnlineWhenClose).toISOString();
                 vue.election.OnlineCloseIsEstimate = info.OnlineCloseIsEstimate;
                 vue.checkStatus();
               }

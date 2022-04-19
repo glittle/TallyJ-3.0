@@ -69,7 +69,7 @@ namespace TallyJ.CoreModels.Helper
         onlineInfo = SettingsHelper.HostSupportsOnlineElections
           ? new
           {
-            currentElection.OnlineWhenClose,
+            OnlineWhenClose = currentElection.OnlineWhenClose.AsUtc(),
           }
           : null,
         people,

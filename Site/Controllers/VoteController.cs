@@ -202,7 +202,8 @@ namespace TallyJ.Controllers
 
       // var now = DateTime.Now;
       var utcNow = DateTime.UtcNow;
-      if (UserSession.CurrentElection.OnlineWhenOpen <= utcNow && UserSession.CurrentElection.OnlineWhenClose > utcNow)
+      if (UserSession.CurrentElection.OnlineWhenOpen.AsUtc() <= utcNow 
+          && UserSession.CurrentElection.OnlineWhenClose.AsUtc() > utcNow)
       {
         // pool is JSON string
         var newStatus = pool == "[]" ? OnlineBallotStatusEnum.New : OnlineBallotStatusEnum.Draft;

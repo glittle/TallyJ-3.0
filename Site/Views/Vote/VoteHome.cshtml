@@ -71,7 +71,7 @@
           </td>
 
           <td class="online center">
-            <div v-html="e.Status_Display"></div>
+            <div v-html="e.Status_Display" :title="e.StatusTitle"></div>
             <button v-if="e.openNow && e.canVote" type="button" class="btn btn-primary prepareBtn" accesskey="P" v-on:click.passive="prepareBallot(e)">Prepare my Ballot</button>
           </td>
           <td class="vtime center" v-bind:class="e.person.Status">

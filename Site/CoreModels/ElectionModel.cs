@@ -459,16 +459,16 @@ namespace TallyJ.CoreModels
         .UpdateVoters(new
         {
           changed = true,
-          election.OnlineWhenClose, //TODO UTC??
-          election.OnlineWhenOpen,
+          OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
+          OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
           election.OnlineCloseIsEstimate,
           election.OnlineSelectionProcess
         });
       new FrontDeskHub()
         .UpdateOnlineElection(new
         {
-          election.OnlineWhenClose,
-          election.OnlineWhenOpen,
+          OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
+          OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
           election.OnlineCloseIsEstimate,
         });
 
@@ -1115,7 +1115,7 @@ namespace TallyJ.CoreModels
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
 
-      election.OnlineWhenClose = when;
+      election.OnlineWhenClose = when.ToUniversalTime();
       election.OnlineCloseIsEstimate = est;
 
       // var sendEmail = false;
@@ -1132,15 +1132,15 @@ namespace TallyJ.CoreModels
       new AllVotersHub()
         .UpdateVoters(new
         {
-          election.OnlineWhenClose,
-          election.OnlineWhenOpen,
+          OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
+          OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
           election.OnlineCloseIsEstimate,
         });
       new FrontDeskHub()
         .UpdateOnlineElection(new
         {
-          election.OnlineWhenClose,
-          election.OnlineWhenOpen,
+          OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
+          OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
           election.OnlineCloseIsEstimate,
         });
 
