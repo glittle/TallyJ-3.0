@@ -100,7 +100,7 @@ namespace TallyJ.Controllers
         Db.Election.Attach(election);
 
         election.ListForPublic = listOnPage;
-        election.ListedForPublicAsOf = listOnPage ? (DateTime?)DateTime.UtcNow : null;
+        election.ListedForPublicAsOf = listOnPage ? DateTime.UtcNow : null;
 
         Db.SaveChanges();
 

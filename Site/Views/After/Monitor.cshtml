@@ -219,6 +219,9 @@
                      :disabled="!(onlineToProcess && OnlineWhenClose_M.isBefore()) || processingReadyBallots">
             Process Online Ballots that are Submitted
           </el-button>
+          <p v-if="showProcessingNote">
+            If a ballot cannot be processed, the voter can be unregistered on the Front Desk.
+          </p>
         }
       </div>
 

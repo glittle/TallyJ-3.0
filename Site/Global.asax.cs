@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Web;
 using System.Web.Configuration;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Profile;
 using System.Web.Routing;
@@ -35,7 +36,7 @@ namespace TallyJ
   public class MvcApplication : HttpApplication
   {
     //public static ConfigurationOptions ConfigOpts { get; set; }
-    public static DateTime LastRunOfScheduled;
+    public static DateTime TestStartTime;
 
     protected void Application_Start()
     {
@@ -88,7 +89,7 @@ namespace TallyJ
 
       RegisterGlobalFilters(GlobalFilters.Filters);
       RegisterGeneralRoutes(RouteTable.Routes);
-
+      TestStartTime = DateTime.UtcNow;
     }
 
     private void SetupEnvironment()
@@ -298,6 +299,25 @@ namespace TallyJ
       }
     }
 
+
+    public void Application_End()
+    {
+      var shutdownReason = HostingEnvironment.ShutdownReason;
+      // using EventLog eventLog = new EventLog("Application") { Source = "WebSites" };
+      // initialize in powershell on webserver:  New-EventLog -LogName Application -Source WebSites
+      var message = new[]
+      {
+        $"Website shut down: {shutdownReason}.",
+        // "",
+        // $"Site: {HostingEnvironment.SiteName}",
+        // $"Application: {HostingEnvironment.ApplicationVirtualPath}",
+        $"Ran for {DateTime.UtcNow - TestStartTime:hh\\:mm\\:ss}"
+      }.JoinedAsString(" ");
+
+      new LogHelper().SendToRemoteLog(message, true);
+
+      // eventLog.WriteEntry(message, EventLogEntryType.Warning);
+    }
 
 
     private void FixUpConnectionString()

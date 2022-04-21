@@ -96,7 +96,8 @@
       return;
     }
     select.html(html);
-    select.attr('size', select[0].children.length + 2);
+    var size = select[0].children.length + 2;
+    select.attr('size', Math.min(size, 9));
     selectDefaultElection();
   };
 
