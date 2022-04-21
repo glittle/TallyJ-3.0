@@ -44,7 +44,7 @@ namespace TallyJ.EF
         var utcNow = DateTime.UtcNow;
 
         var activeComputers = CachedDict.Values
-          .Where(comp => comp.AuthLevel == "Known"
+          .Where(comp => (comp.AuthLevel == "Known" || comp.AuthLevel == "Left")
                          && comp.LastContact.HasValue 
                          && utcNow - comp.LastContact.Value.AsUtc() < maxAge)
           .ToList();

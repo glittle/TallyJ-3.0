@@ -72,9 +72,9 @@ namespace TallyJ.Code
     }
 
     private string HostAndVersion =>
-        $"{Environment.MachineName} / {HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.Url.Host} / {UserSession.SiteVersion}";
+        $"{Environment.MachineName} / {HttpContext.Current?.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current?.Request.Url.Host} / {UserSession.SiteVersion}";
 
-    public void SendToRemoteLog(string message)
+    public void SendToRemoteLog(string message, bool systemLevel = false)
     {
       var iftttKey = ConfigurationManager.AppSettings["iftttKey"].DefaultTo("");
       if (iftttKey.HasNoContent())
@@ -82,10 +82,16 @@ namespace TallyJ.Code
         return;
       }
 
-      var info = new NameValueCollection
+      var info = new NameValueCollection();
+      if (systemLevel)
       {
-        ["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion)
-      };
+        info["value1"] = HostAndVersion;
+      }
+      else
+      {
+        info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
+      }
+
       try
       {
         info["value2"] = UserSession.CurrentElectionName;
@@ -105,16 +111,14 @@ namespace TallyJ.Code
 
       var url = "https://maker.ifttt.com/trigger/{0}/with/key/{1}".FilledWith("TallyJ", iftttKey);
 
-      using (var client = new WebClientWithTimeout(1000))
+      using var client = new WebClientWithTimeout(1000);
+      try
       {
-        try
-        {
-          var response = client.UploadValues(url, info);
-        }
-        catch (Exception)
-        {
-          // ignore if we can't send to remote log
-        }
+        client.UploadValues(url, info);
+      }
+      catch (Exception)
+      {
+        // ignore if we can't send to remote log
       }
     }
 

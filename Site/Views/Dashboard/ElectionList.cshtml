@@ -28,14 +28,16 @@
   {
     <div class="h3button">
       <h3>Your Elections</h3>
-        <button v-on:click.passive="refreshLive">Refresh Status</button>
+        <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
         @*<el-switch v-model="showTest"
                    class="showTest"
         active-text="Show Test Elections"
-        Zactive-color="#ff4949"
+        active-color="#ff4949"
         inactive-text="Hide Test Elections"
-        Zinactive-color="#13ce66"
+        inactive-color="#13ce66"
                    ></el-switch>*@
+        <div class="topNum">{{numForVoting}} open for voting</div>
+        <div class="topNum">{{numForTellers}} open for tellers<span class="ui-icon ui-icon-info" id="qTipTellers"></span></div>
     </div>
 
     <div class="currentElections">
@@ -125,10 +127,10 @@
            }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
-        {{e.dateDisplay}}
+        <span class="dateDisplay">{{e.dateDisplay}}</span>
         <span v-if="e.IsTest" class="Test">TEST</span>
         <span v-else class="NotTest">MAIN</span>
-        {{e.Name}}
+        {{e.nameDisplay}}
       </div>
       <div class="Detail2">
         <div>
@@ -160,7 +162,7 @@
         </div>
       </div>
 
-      <div class="row onlineInfo" v-if="e.OnlineEnabled">
+      <div class="row ballotInfo" v-if="e.OnlineEnabled">
         Online Ballots
         <div>
           <div v-html="onlineVoteCounts"></div>

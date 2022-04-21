@@ -26,6 +26,7 @@
 
   .statusBlocks {
     grid-area: status;
+    justify-self: end;
   }
 
   .rightSide {
@@ -61,6 +62,7 @@
 .users {
   border-top: 1px solid #ddd;
   margin: 3px 0 0 15px;
+  overflow: auto;
 }
 
 .userForm {
@@ -221,6 +223,10 @@
     background-color: #FCE1C1;
   }
 
+  &.ballotInfo {
+    background-color: #fdefdd;
+  }
+
   div {
     div + div {
       margin-top: 2px;
@@ -287,6 +293,14 @@
         font-size: 1em;
       }
     }
+  }
+}
+
+.topNum {
+  margin: 0 1em 0 3em;
+
+  & + .topNum {
+    margin: 0;
   }
 }
 
@@ -417,7 +431,18 @@ li.Comment {
   padding: 3px 10px;
 }
 
+.dateDisplay {
+  white-space: nowrap;
+}
+
 @media only screen and (max-width: 750px) {
+  .Election {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "details details" 
+      "status action" 
+      "users users";
+  }
+
   .buttons {
     white-space: normal;
 

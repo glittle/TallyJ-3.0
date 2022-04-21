@@ -24,6 +24,7 @@ namespace TallyJ.CoreModels
           e.Name,
           e.ElectionGuid,
           DateOfElection = e.DateOfElection.AsUtc(),
+          e.Convenor,
           e.ElectionType,
           e.ElectionMode,
           e.ShowAsTest,

@@ -416,6 +416,7 @@
         T24: false,
         dummy: 0,
         processingReadyBallots: false,
+        showProcessingNote: false,
         onlineBallots: []
       },
       computed: {
@@ -562,6 +563,7 @@
         },
         processReadyBallots: function () {
           var vue = this;
+          vue.showProcessingNote = false;
           this.processingReadyBallots = true;
           CallAjax2(publicInterface.controllerUrl + '/ProcessOnlineBallots',
             null,
@@ -578,6 +580,7 @@
               } else {
                 var msg = info.Message || info.problems.join('<br>');
                 ShowStatusFailed(msg);
+                vue.showProcessingNote = true;
               }
             });
 

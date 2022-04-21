@@ -12,6 +12,7 @@
   };
 
   function preparePage() {
+    site.qTips.push({ selector: '#qTipTellers', title: 'Open for Tellers', text: 'If an election is open for tellers, it will remain open for up to one hour after the head teller leaves.' });
 
     settings.vue = new Vue({
       el: '#electionListPage',
@@ -32,6 +33,12 @@
       computed: {
         oldElections() {
           return this.elections.filter(e => e.old);
+        },
+        numForVoting() {
+          return this.elections.filter(e => e.OnlineCurrentlyOpen).length;
+        },
+        numForTellers() {
+          return this.elections.filter(e => e.openForTellers).length;
         },
         currentElections() {
           return this.elections; // .filter(e => this.showTest || !e.IsTest);
@@ -81,7 +88,6 @@
         },
         test(election) {
           var vue = this;
-          debugger;
         },
         showElections(list) {
           list.forEach(e => {
@@ -91,6 +97,7 @@
             var d = moment(e.DateOfElection);
             e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
             e.dateSort = e.DateOfElection ? d.toISOString() : '0';
+            e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
 
             //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
             e.old = false; //!isCurrent;

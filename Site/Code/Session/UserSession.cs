@@ -228,7 +228,7 @@ namespace TallyJ.Code.Session
 
         try
         {
-          var owinPrincipal = HttpContext.Current.GetOwinContext().Authentication.AuthenticationResponseGrant?.Principal;
+          var owinPrincipal = HttpContext.Current?.GetOwinContext().Authentication.AuthenticationResponseGrant?.Principal;
           if (owinPrincipal != null && owinPrincipal.Identity.IsAuthenticated)
           {
             return owinPrincipal;
