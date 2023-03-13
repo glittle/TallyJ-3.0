@@ -23,6 +23,7 @@ namespace TallyJ.Code.Enumerations
 
     public static readonly IneligibleReasonEnum Ineligible_Deceased = new IneligibleReasonEnum("D227534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Deceased");
     public static readonly IneligibleReasonEnum Ineligible_Moved_elsewhere_recently = new IneligibleReasonEnum("CF27534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Moved elsewhere recently");
+    public static readonly IneligibleReasonEnum Ineligible_Not_in_this_local_unit = new IneligibleReasonEnum("2add3a15-ec2d-437c-916f-7c581e693baa", GroupName.Ineligible, "Not in this local unit");
     public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not a registered Bahá'í");
     public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("32e44592-a7d8-408a-b169-8871800f62aa", GroupName.Ineligible, "Under 18 years old");
     public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Other");
@@ -55,6 +56,7 @@ namespace TallyJ.Code.Enumerations
       Add(Ineligible_Not_Adult);
       Add(Ineligible_Resides_elsewhere);
       Add(Ineligible_Moved_elsewhere_recently);
+      Add(Ineligible_Not_in_this_local_unit);
       Add(Ineligible_Deceased);
       Add(Ineligible_NotDelegate_OnOther);
       Add(Ineligible_Non_Bahai);
