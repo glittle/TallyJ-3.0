@@ -17,7 +17,7 @@ namespace TallyJ.EF
     Unknown, // not defined yet
     None, // do not use any Gathering Ballots
     Roll, // roll call
-    RegV, // register, vote, collect after
+    // RegV, // register, vote, collect after
     RegC, // register, collect together
   }
 

@@ -292,6 +292,12 @@ namespace TallyJ.CoreModels
           var person = matched[0];
 
           incomingVoter.PersonGuid = person.PersonGuid;
+
+          // only get the method if not Registered
+          if (person.VotingMethod != null && person.VotingMethod != VotingMethodEnum.Registered.Value)
+          {
+            incomingVoter.ImportBlocked = true;
+          }
           incomingVoter.VotingMethod = VotingMethodEnum.TextFor(person.VotingMethod);
 
           if (!person.CanVote.GetValueOrDefault())
@@ -305,7 +311,7 @@ namespace TallyJ.CoreModels
         }
       }
 
-      var numAlreadyVoted = electionInfo.Voters.Count(v => v.VotingMethod.HasContent());
+      var numAlreadyVoted = electionInfo.Voters.Count(v => v.ImportBlocked);
       if (numAlreadyVoted > 0)
         electionInfo.ImportErrors.Add(
           $"{numAlreadyVoted.Plural("Some people have", "A person has")} already voted. You must change their registration on the Front Desk, if appropriate.");
@@ -709,8 +715,10 @@ namespace TallyJ.CoreModels
       public string bahaiid { get; set; }
       public string firstname { get; set; }
       public string lastname { get; set; }
+      // additonal attributes not in the XML
       public Guid PersonGuid { get; set; }
       public string VotingMethod { get; set; }
+      public bool ImportBlocked { get; set; }
     }
 
     [Serializable]

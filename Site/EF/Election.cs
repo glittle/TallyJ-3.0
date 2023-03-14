@@ -51,5 +51,6 @@ namespace TallyJ.EF
         public string EmailSubject { get; set; }
         public string CustomMethods { get; set; }
         public string VotingMethods { get; set; }
+        public string Flags { get; set; }
     }
 }
