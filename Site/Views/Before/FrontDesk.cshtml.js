@@ -163,7 +163,9 @@
     sumUp('Custom2');
     sumUp('Custom3');
 
-
+    (publicInterface.flags || '').split('|').forEach(f => {
+      sumUp('flag-' + f, true);
+    });
 
     $('.Counts .Total i').text(total);
     $('.Counts .Other i').text($('.Voter.VM-').length);
