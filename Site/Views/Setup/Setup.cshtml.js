@@ -124,8 +124,8 @@
           }
         },
         flags: function (a, b) {
-          if (a.filter(s => s.includes('<')).length) {
-            ShowStatusFailed('Cannot use < in checklist items');
+          if (a.some(str => /[^a-zA-Z]/.test(str))) {
+            ShowStatusFailed('Checklist items must only be single words');
             this.flags = this.election.Flags.split('|');;
             return;
           }

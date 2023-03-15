@@ -294,7 +294,7 @@ namespace TallyJ.CoreModels
           incomingVoter.PersonGuid = person.PersonGuid;
 
           // only get the method if not Registered
-          if (person.VotingMethod != null && person.VotingMethod != VotingMethodEnum.Registered.Value)
+          if (person.VotingMethod != null)
           {
             incomingVoter.ImportBlocked = true;
           }

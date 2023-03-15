@@ -24,7 +24,8 @@
     initial: [],
     electionGuid: null,
     PreparePage: preparePage,
-    local: local
+    local: local,
+    flags: '',
   };
 
   function preparePage() {
@@ -144,10 +145,12 @@
 
   function updateTotals() {
     var total = 0;
-    var sumUp = function (name) {
+    var sumUp = function (name, excludeFromTotal) {
       var num = $('.Voter .{0}.True, .Voter .{0}.true'.filledWith(name)).length;
-      total += num;
       $('.Counts .{0} i'.filledWith(name)).text(num);
+      if (!excludeFromTotal) {
+        total += num;
+      }
     }
     sumUp('Online');
     sumUp('Imported');
@@ -159,6 +162,9 @@
     sumUp('Custom1');
     sumUp('Custom2');
     sumUp('Custom3');
+
+
+
     $('.Counts .Total i').text(total);
     $('.Counts .Other i').text($('.Voter.VM-').length);
   }
@@ -581,7 +587,10 @@
     if (!person) {
       return;
     }
-    if (person.OnlineProcessed) {
+
+    var isFlag = btnType.startsWith('flag-');
+
+    if (person.OnlineProcessed && !isFlag) {
       // teller may have used keyboard to change (mouse is blocked)
       return;
     }
@@ -599,7 +608,9 @@
       form.forceDeselect = true;
     }
 
-    CallAjaxHandler(publicInterface.controllerUrl + '/VotingMethod', form, function (info) {
+    var url = publicInterface.controllerUrl + (isFlag ? '/SetFlag' : '/VotingMethod');
+
+    CallAjaxHandler(url, form, function (info) {
       if (info.Message) {
         ShowStatusFailed(info.Message);
         if (btn) {
@@ -643,10 +654,16 @@
       return parts.join('; ');
     });
 
+    if (p.flags) {
+      p.flags.forEach(f => {
+        p['flag-' + f] = true;
+      });
+    }
+
     p.VotedAt = [
       when,
       p.VotedAt
-    ].filter(s => s).join('; ') 
+    ].filter(s => s).join('; ')
       + (log.length > 1 ? `<span class=LogIcon title="${log.join('\n')}"></span>` : '');
   }
 

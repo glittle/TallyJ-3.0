@@ -26,6 +26,7 @@
   //ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("frontDeskPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("flags", "frontDeskPage.flags={0};".FilledWith(currentElection.Flags.QuotedForJavascript()));
 
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
@@ -140,6 +141,14 @@
   <span class="Other">
     Other <i>0</i>
   </span>
+  @foreach (var f in currentElection.FlagsList)
+  {
+    <div class="Flag flag-@f" data-status="flag-@f" title="Click to filter the list">
+      @f
+      <i>0</i>
+    </div>
+  }
+
 </div>
 <div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
@@ -192,6 +201,10 @@
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
     {
       <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
+    }
+    @foreach (var flag in currentElection.FlagsList)
+    {
+      <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
     }
     <b>{FullName}</b>
     <p>{BahaiId}</p>

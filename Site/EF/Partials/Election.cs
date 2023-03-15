@@ -160,6 +160,7 @@ namespace TallyJ.EF
     public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
     public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
 
+    public List<string> FlagsList => Flags.DefaultTo("").SplitWithString("|").ToList();
     //public List<VotingMethodEnum> VotingMethods
     //{
     //  get
