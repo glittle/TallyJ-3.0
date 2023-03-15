@@ -910,6 +910,7 @@
     <Content Include="Reports\BallotsImported.cshtml" />
     <Content Include="Reports\BallotsSummary.cshtml" />
     <Content Include="Reports\VotersOnline.cshtml" />
+    <Content Include="Reports\Flags.cshtml" />
     <None Include="Scripts\jquery-3.6.3.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.3.js" />
     <Content Include="Scripts\jquery-3.6.3.min.js" />

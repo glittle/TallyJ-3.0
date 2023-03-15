@@ -699,7 +699,7 @@ namespace TallyJ.CoreModels
       return true.AsJsonResult();
     }
 
-    public JsonResult SetFlags(int personId, string flag, bool forceDeselect, int locationId)
+    public JsonResult SetFlag(int personId, string flag, bool forceDeselect, int locationId)
     {
       var locationModel = new LocationModel();
 
@@ -739,7 +739,7 @@ namespace TallyJ.CoreModels
         log.Add(new[]
         {
           utcNow.AsString("o"),
-          "De-selected " + incomingFlag,
+          "Removed " + incomingFlag,
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));
@@ -756,7 +756,7 @@ namespace TallyJ.CoreModels
         log.Add(new[]
         {
           utcNow.AsString("o"),
-          person.Flags,
+          "Set " + incomingFlag,
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));

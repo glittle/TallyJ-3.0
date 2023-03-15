@@ -202,12 +202,17 @@
     {
       <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
     }
-    @foreach (var flag in currentElection.FlagsList)
-    {
-      <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
-    }
     <b>{FullName}</b>
     <p>{BahaiId}</p>
+    @if (currentElection.FlagsList.Count > 0)
+    {
+        <div class="flags">
+        @foreach (var flag in currentElection.FlagsList)
+        {
+            <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
+        }
+      </div>
+    }
     <u title="Lives in">{Area}</u>
     <i>{^VotedAt}</i>
   </div>
