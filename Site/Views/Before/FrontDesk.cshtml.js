@@ -548,7 +548,10 @@
       return;
     }
 
-    if (person.OnlineProcessed || person.Imported) {
+    var btnType = btn.data('vm');
+    var isFlag = btnType.startsWith('flag-');
+
+    if ((person.OnlineProcessed || person.Imported) && !isFlag) {
       // teller may have used keyboard to change (mouse is blocked)
       return;
     }
@@ -566,17 +569,6 @@
 
     setSelection(row, false);
 
-    var btnType = btn.data('vm');
-    //      classes.contains('InPerson') ? 'P'
-    //        : classes.contains('DroppedOff') ? 'D'
-    //          : classes.contains('Online') ? 'O'
-    //            : classes.contains('CalledIn') ? 'C'
-    //              : classes.contains('MailedIn') ? 'M'
-    //                : classes.contains('Registered') ? 'R'
-    //                  : classes.contains('Custom1') ? '1'
-    //                    : classes.contains('Custom2') ? '2'
-    //                      : classes.contains('Custom3') ? '3'
-    //                        : '?';
 
     saveBtnClick(pid, btnType, btn, forceDeselect, person);
   };
