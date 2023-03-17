@@ -45,6 +45,8 @@
         custom1: '',
         custom2: '',
         custom3: '',
+        flags: [],
+        flagsPre: '',
         dummy: 1
       },
       computed: {
@@ -120,6 +122,18 @@
             this.election.OnlineSelectionProcess = null;
             this.votingMethodsArray = this.votingMethodsArray.filter(s => s !== 'O');
           }
+        },
+        flags: function (a, b) {
+          if (a.some(str => /[^a-zA-Z]/.test(str))) {
+            ShowStatusFailed('Checklist items must only be single words');
+            this.flags = this.election.Flags.split('|');;
+            return;
+          }
+          var newFlags = a.join('|');
+          if (newFlags !== this.election.Flags) {
+            this.election.Flags = newFlags;
+            this.saveNeeded();
+          }
         }
         //locations: function (a, b) {
         //  console.log('watch', a, b);
@@ -143,6 +157,11 @@
 
         var s = this.election.VotingMethods;
         this.votingMethodsArray = s ? s.split('') : [];
+
+        this.flags = this.election.Flags?.split('|');
+        if (this.flags.length < 2) {
+          this.flags.length = 2;
+        }
 
         this.useOnline = !!(this.election.OnlineWhenOpen || this.election.OnlineWhenClose); // do again, to set useOnline correctly
 
@@ -169,7 +188,7 @@
         site.qTips.push({ selector: '#qTipShow', title: 'Allow Tellers Access?', text: 'If checked, this election is listed on the TallyJ home page so that other tellers can join in.  Even if turned on, the election will only appear when you, or a registered teller, is logged in and active.' });
         site.qTips.push({ selector: '#qTipShowCalled', title: 'Show "Called In"?', text: 'Are you accepting ballot by phone?' });
         site.qTips.push({ selector: '#qTipAccess', title: 'Access Code', text: 'This is a "pass phrase" that tellers need to supply to join the election.  It can be up to 50 letters long, and can include spaces.  You can change it here any time.  If this is empty, no other teller will be able to join.' });
-        site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations, sub-units or polling stations, add names for each location here.' });
+        site.qTips.push({ selector: '#qTipLocation', title: 'Locations', text: 'If this election is being held simultaneously in multiple locations or polling stations, add names for each location here.' });
         site.qTips.push({ selector: '#qTipTellers', title: 'Tellers', text: 'When tellers are using computers for entering ballots or at the Front Desk, they should select their name near the top of that screen. These names can be informal, first names, and will not be included in printed reports.' });
         site.qTips.push({ selector: '#qTipPreBallot', title: 'Pre-Ballot', text: 'If you will not be using the Front Desk and Roll Call pages, only using TallyJ to input the ballots collected, you can hide those pages.' });
         site.qTips.push({ selector: '#qTipMask', title: 'Mask Voting Method', text: 'In the Roll Call, and final Tellers\' Report, show "Envelope" instead of "Mailed In", "Dropped Off" or "Called In."' });
@@ -186,6 +205,12 @@
         removeLocation: function (domIcon) {
           var input = $(domIcon).closest('div').find('input');
           locationChanged(input, true);
+        },
+        addFlag() {
+          this.flags.push('');
+        },
+        removeFlag(index) {
+          this.flags.splice(index, 1);
         },
         replaceBodyBpClass: function (process) {
           var list = window.document.body.classList;
@@ -563,6 +588,7 @@
     //    if (vue.useOnline && !votingMethods.includes('O')) {
     //      votingMethods += 'O';
     //    }
+    var flags = election.Flags.split('|').filter(s => s).join('|'); // remove any empties
 
     var form = {
       C_RowId: election.C_RowId,
@@ -581,7 +607,8 @@
       EmailFromAddress: election.EmailFromAddress,
       RandomizeVotersList: election.RandomizeVotersList,
       VotingMethods: votingMethods,
-      CustomMethods: customs
+      CustomMethods: customs,
+      Flags: flags,
     };
 
     $(':input[data-name]').each(function () {
@@ -613,6 +640,8 @@
       function (info) {
         if (info.success) {
           if (info.Election) {
+            vue.flags = info.Election.Flags.split('|');
+
             applyValues(info.Election);
             $('.CurrentElectionName').text(info.displayName);
             site.passcodeRaw =

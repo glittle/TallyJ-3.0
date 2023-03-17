@@ -44,6 +44,11 @@ namespace TallyJ.Controllers
       return new PeopleModel().RegisterVotingMethod(id, type, forceDeselect, loc);
     }
 
+    public JsonResult SetFlag(int id, string type, int loc = 0, bool forceDeselect = false)
+    {
+      return new PeopleModel().SetFlag(id, type, forceDeselect, loc);
+    }
+
     public void JoinFrontDeskHub(string connId)
     {
       new FrontDeskHub().Join(connId);

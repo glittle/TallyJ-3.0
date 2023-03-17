@@ -16,9 +16,9 @@
 
   switch (ballotProcessEnum)
   {
-    case BallotProcessEnum.RegV:
-      inPersonName = "Ballot Received";
-      break;
+    // case BallotProcessEnum.RegV:
+    //   inPersonName = "Ballot Received";
+    //   break;
   }
 
   ContextItems.AddJavascriptForPage("url", "frontDeskPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
@@ -26,6 +26,7 @@
   //ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("frontDeskPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("flags", "frontDeskPage.flags={0};".FilledWith(currentElection.Flags.QuotedForJavascript()));
 
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
@@ -42,12 +43,12 @@
             the Roll Call is done.
           </li>
           break;
-        case BallotProcessEnum.RegV:
+        @*case BallotProcessEnum.RegV:
           <li>
             Mark people as "Registered" as they arrive at the election venue if they intend to stay and cast their own ballot. When
             they return to a teller to deposit their ballot, mark them as "@inPersonName"
           </li>
-          break;
+          break;*@
         case BallotProcessEnum.RegC:
           <li>
             Mark people as "@inPersonName" when they register with a teller and deposit their ballot.
@@ -119,13 +120,13 @@
       <i>0</i>
     </div>
   }
-  @if (ballotProcessEnum == BallotProcessEnum.RegV)
-  {
-    <div class="Registered" data-status="Registered" title="Click to filter the list">
-      Registered
-      <i>0</i>
-    </div>
-  }
+  @*@if (ballotProcessEnum == BallotProcessEnum.RegV)
+    {
+      <div class="Registered" data-status="Registered" title="Click to filter the list">
+        Registered
+        <i>0</i>
+      </div>
+    }*@
   @if (currentElection.VotingMethodsContains("P"))
   {
     <div class="InPerson" data-status="InPerson" title="Click to filter the list">
@@ -140,6 +141,14 @@
   <span class="Other">
     Other <i>0</i>
   </span>
+  @foreach (var f in currentElection.FlagsList)
+  {
+    <div class="Flag flag-@f" data-status="flag-@f" title="Click to filter the list">
+      @f
+      <i>0</i>
+    </div>
+  }
+
 </div>
 <div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
@@ -183,18 +192,27 @@
       <div data-vm="@VotingMethodEnum.Custom3.Value" class="Btn Custom3 {Custom3}">@currentElection.Custom3Name</div>
     }
     <div class="Env">{EnvNum}</div>
-    @switch (ballotProcessEnum)
-    {
-      case BallotProcessEnum.RegV:
-        <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
-        break;
-    }
+    @*@switch (ballotProcessEnum)
+      {
+        case BallotProcessEnum.RegV:
+          <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
+          break;
+      }*@
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
     {
       <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
     }
     <b>{FullName}</b>
     <p>{BahaiId}</p>
+    @if (currentElection.FlagsList.Count > 0)
+    {
+        <div class="flags">
+        @foreach (var flag in currentElection.FlagsList)
+        {
+            <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
+        }
+      </div>
+    }
     <u title="Lives in">{Area}</u>
     <i>{^VotedAt}</i>
   </div>

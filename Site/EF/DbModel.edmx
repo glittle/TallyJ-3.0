@@ -205,6 +205,7 @@
           <Property Name="EmailSubject" Type="nvarchar" MaxLength="250" />
           <Property Name="CustomMethods" Type="nvarchar" MaxLength="50" />
           <Property Name="VotingMethods" Type="varchar" MaxLength="10" />
+          <Property Name="Flags" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="ImportFile">
           <Key>
@@ -296,6 +297,8 @@
           <Property Name="Email" Type="nvarchar" MaxLength="250" />
           <Property Name="Phone" Type="varchar" MaxLength="25" />
           <Property Name="HasOnlineBallot" Type="bit" />
+          <Property Name="Flags" Type="varchar" MaxLength="100" />
+          <Property Name="UnitName" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Result">
           <Key>
@@ -932,6 +935,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="EmailSubject" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="CustomMethods" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="VotingMethods" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Flags" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
@@ -967,6 +971,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="Phone" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="HasOnlineBallot" Type="Boolean" />
+          <Property Name="Flags" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UnitName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
@@ -1290,6 +1296,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Election">
             <EntityTypeMapping TypeName="TallyJ2dModel.Election">
               <MappingFragment StoreEntitySet="Election">
+                <ScalarProperty Name="Flags" ColumnName="Flags" />
                 <ScalarProperty Name="VotingMethods" ColumnName="VotingMethods" />
                 <ScalarProperty Name="CustomMethods" ColumnName="CustomMethods" />
                 <ScalarProperty Name="EmailSubject" ColumnName="EmailSubject" />
@@ -1333,6 +1340,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <EntitySetMapping Name="Person">
             <EntityTypeMapping TypeName="TallyJ2dModel.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="UnitName" ColumnName="UnitName" />
+                <ScalarProperty Name="Flags" ColumnName="Flags" />
                 <ScalarProperty Name="HasOnlineBallot" ColumnName="HasOnlineBallot" />
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

@@ -1,0 +1,213 @@
+﻿@using System.Web;
+@using Newtonsoft.Json
+@using TallyJ.Code.Enumerations
+@using TallyJ.Code
+@using TallyJ.Code.Session
+@using TallyJ.EF
+@using TallyJ.CoreModels
+@inherits RazorEngine.Templating.TemplateBase
+@{
+  var locationModel = new LocationModel();
+
+  var hasMultipleLocations = locationModel.HasMultipleLocations;
+  var locations = locationModel.GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.Name);
+  var currentElection = UserSession.CurrentElection;
+
+  var flags = currentElection.FlagsList;
+
+  var people = new PersonCacher().AllForThisElection
+      .OrderBy(p => p.FullName)
+      .Select(p => new
+      {
+        p.C_RowId,
+        p.FullName,
+        p.VotingLocationGuid,
+        Flags = p.Flags ?? ""
+      })
+      .ToList()
+      .Select(p => new
+      {
+        p.C_RowId,
+        PersonName = p.FullName,
+        p.VotingLocationGuid,
+        Location = locations.ContainsKey(p.VotingLocationGuid.AsGuid()) ? locations[p.VotingLocationGuid.AsGuid()] : null,
+        Flags = p.Flags.SplitWithString("|").ToList()
+      })
+      .ToList();
+
+}
+<style>
+  b {
+    display: inline-block;
+  }
+
+  tr {
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+    tr:nth-child(even) {
+      background-color: #eee;
+    }
+
+  thead {
+    display: table-header-group;
+    font-weight: bold;
+  }
+
+  td {
+    padding-left: 2px;
+    padding-right: 6px;
+    white-space: normal;
+  }
+
+  .id {
+    white-space: nowrap;
+  }
+
+  .person {
+    position: relative;
+  }
+
+  .name {
+    width: 250px;
+  }
+
+  .person.first {
+    margin-top: .5em;
+  }
+
+  .first::first-letter {
+    font-weight: bold;
+  }
+
+  .filters {
+    margin: -5px 0 10px -1px;
+  }
+
+    .filters td, .filters th {
+      vertical-align: top;
+    }
+
+    .filters label {
+      font-size: 90%;
+    }
+</style>
+<div class="body" id="vueBody">
+  <div class="reportHead">
+    <h1 id="title"></h1>
+    <div class="byTitle">
+      <div>@UserSession.CurrentElectionName</div>
+      <div id="titleDate"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-mini btnDownloadCsv" data-table=".el-table" type="button" title="Download in CSV format for Excel">Export</button>
+  <p class="Comment">
+      Select the checklist items to show.
+      </p>
+  <div class="Comment">
+    <table class="filters">
+      @foreach (var f in flags)
+      {
+        <tr>
+          @if (f == flags[0])
+          {
+            <td rowspan="10">Filters:</td>
+          }
+          <td>@f</td>
+          <td>
+            <el-checkbox v-model="@Raw("filter." + f + ".Y")">Yes</el-checkbox>
+            <el-checkbox v-model="@Raw("filter." + f + ".N")">No</el-checkbox>
+          </td>
+          @if (f == flags[0])
+          {
+              <td rowspan="10"> &nbsp; Showing {{rows.length}}.</td>
+          }
+        </tr>
+      }
+    </table>
+  </div>
+  <el-table :data="rows"
+            row-key="C_RowId"
+            style="width: 100%"
+            size="mini">
+    <el-table-column label="Person" prop="PersonName" sortable></el-table-column>
+    @if (hasMultipleLocations)
+    {
+      <el-table-column label="Where" prop="Location" sortable></el-table-column>
+    }
+    @foreach (var f in flags)
+    {
+      <el-table-column label="@f" v-if="!hideColumn.includes('@f')" sortable align="center">
+        <template slot-scope="scope">
+          <div v-html="scope.row.Flags.includes('@f') ? 'Yes' : 'No'"></div>
+        </template>
+      </el-table-column>
+    }
+  </el-table>
+</div>
+<script>
+  var _flags = [
+    @{
+        foreach (var f in flags)
+        {
+            @Raw(string.Format("'{0}',", f))
+        }
+    }
+  ];
+  reportsPage.vueMixin = {
+    data: {
+      rowsInner: JSON.parse(atob('@JsonConvert.SerializeObject(people).AsBase64()')),
+      filter:{
+          @foreach (var f in flags)
+          {
+              @Raw(f + ": {Y:true, N:true},")
+          }
+      }
+    },
+    computed: {
+        showAll () { return [
+            @foreach (var f in flags)
+            {
+                @Raw(string.Format("this.filter.{0}.Y && this.filter.{0}.N ? '{0}' : null,", f))
+            }]},
+      hideColumn() {return [
+            @foreach (var f in flags)
+            {
+                @Raw(string.Format("!this.filter.{0}.Y && !this.filter.{0}.N ? '{0}' : null,", f))
+            }]},
+      onlyY() {return [
+            @foreach (var f in flags)
+            {
+                @Raw(string.Format("this.filter.{0}.Y && !this.filter.{0}.N ? '{0}' : null,", f))
+            }]},
+      onlyN() {return [
+            @foreach (var f in flags)
+            {
+                @Raw(string.Format("!this.filter.{0}.Y && this.filter.{0}.N ? '{0}' : null,", f))
+            }]},
+
+      rows() {
+        //        console.log(this.showAll, this.hideColumn, this.onlyY, this.onlyN);
+        // ignore showAll and hideColumn
+
+        return this.rowsInner.filter(r => {
+        for(var f of _flags)
+        {
+            if (this.onlyY.includes(f) && !r.Flags.includes(f)) {
+                return false;
+            }
+
+            if (this.onlyN.includes(f) && r.Flags.includes(f)) {
+                return false;
+            }
+        }
+
+          return true;
+        });
+      }
+    }
+  }
+
+</script>

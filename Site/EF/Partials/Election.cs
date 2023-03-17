@@ -17,7 +17,7 @@ namespace TallyJ.EF
     Unknown, // not defined yet
     None, // do not use any Gathering Ballots
     Roll, // roll call
-    RegV, // register, vote, collect after
+    // RegV, // register, vote, collect after
     RegC, // register, collect together
   }
 
@@ -160,6 +160,7 @@ namespace TallyJ.EF
     public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
     public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
 
+    public List<string> FlagsList => Flags.DefaultTo("").SplitWithString("|").ToList();
     //public List<VotingMethodEnum> VotingMethods
     //{
     //  get

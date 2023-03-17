@@ -353,6 +353,7 @@ namespace TallyJ.CoreModels
         election.EmailFromName,
         election.VotingMethods,
         election.CustomMethods,
+        election.Flags
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
 
       // if (election.ElectionType == ElectionTypeEnum.Oth)

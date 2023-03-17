@@ -44,5 +44,7 @@ namespace TallyJ.EF
         public string Email { get; set; }
         public string Phone { get; set; }
         public Nullable<bool> HasOnlineBallot { get; set; }
+        public string Flags { get; set; }
+        public string UnitName { get; set; }
     }
 }

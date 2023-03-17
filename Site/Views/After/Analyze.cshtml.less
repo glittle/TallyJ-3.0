@@ -341,7 +341,7 @@ h2 {
 
 input.TieBreakCount {
   width: 40px;
-  margin-right: 15px;
+  margin-right: 10px;
   display: inline-block;
   text-align: right;
 }
@@ -462,6 +462,23 @@ span.Calc.changed {
 
 .MainHolder {
   display: none;
+}
+
+.btnSaveTieCounts {
+  margin: 3px 0 10px 5px;
+}
+
+.tieList {
+  margin-left: 5px;
+
+  div {
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      background-color: #f5f4f5;
+    }
+  }
 }
 
 @media screen and (max-width: 750px) {

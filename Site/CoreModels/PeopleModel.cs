@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using CsQuery;
 using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -456,7 +457,6 @@ namespace TallyJ.CoreModels
         .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
         .Where(p => p.VotingMethod != VotingMethodEnum.Online)
         .Where(p => p.VotingMethod != VotingMethodEnum.Imported)
-        .Where(p => p.VotingMethod != VotingMethodEnum.Registered)
         .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
         .ToList()
         .OrderBy(p => p.VotingMethod)
@@ -553,12 +553,13 @@ namespace TallyJ.CoreModels
                         (p.VotingMethod == VotingMethodEnum.Online || p.Email.HasContent() ||
                          p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
           OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
-          Registered = p.VotingMethod == VotingMethodEnum.Registered,
+          // Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
           p.CanVote,
           p.CanReceiveVotes, // for ballot entry page
           p.IneligibleReasonGuid, // for ballot entry page
-          p.BahaiId
+          p.BahaiId,
+          flags = p.Flags.SplitWithString("|")
         });
     }
 
@@ -676,8 +677,8 @@ namespace TallyJ.CoreModels
         }.JoinedAsString("; ", true));
         person.RegistrationLog = log;
 
-        // make number for every method except Registered
-        var needEnvNum = person.EnvNum == null && voteType != VotingMethodEnum.Registered;
+        // make number for every method
+        var needEnvNum = person.EnvNum == null;
 
         if (needEnvNum) person.EnvNum = new ElectionModel().GetNextEnvelopeNumber();
       }
@@ -692,6 +693,78 @@ namespace TallyJ.CoreModels
       //      }
 
       UpdateLocationCounts(newVoteLocationGuid, oldVoteLocationGuid, personCacher);
+
+      Db.SaveChanges();
+
+      return true.AsJsonResult();
+    }
+
+    public JsonResult SetFlag(int personId, string flag, bool forceDeselect, int locationId)
+    {
+      var locationModel = new LocationModel();
+
+      var hasMultiplePhysicalLocations = locationModel.HasMultiplePhysicalLocations;
+
+      if (hasMultiplePhysicalLocations && UserSession.CurrentLocation == null)
+        return new { Message = "Must select your location first!" }.AsJsonResult();
+
+      if (UserSession.CurrentLocation.C_RowId != locationId)
+        new ComputerModel().MoveCurrentComputerIntoLocation(locationId);
+
+      if (UserSession.GetCurrentTeller(1).HasNoContent())
+        return new { Message = "Must select \"Teller at Keyboard\" first!" }.AsJsonResult();
+
+      var personCacher = new PersonCacher(Db);
+      var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+      if (person == null) return new { Message = "Unknown person" }.AsJsonResult();
+
+      Db.Person.Attach(person);
+
+      person.Teller1 = UserSession.GetCurrentTeller(1);
+      person.Teller2 = UserSession.GetCurrentTeller(2);
+
+      var utcNow = DateTime.UtcNow;
+
+      var allowedFlags = UserSession.CurrentElection.FlagsList;
+      var currentFlags = person.Flags.DefaultTo("").Split('|').ToList();
+
+      var incomingFlag = flag.Substring(5);
+
+      if (currentFlags.Contains(incomingFlag) || forceDeselect)
+      {
+        // it is already set this way...turn if off
+        person.Flags = currentFlags.Where(f => f != incomingFlag).JoinedAsString("|");
+
+        var log = person.RegistrationLog;
+        log.Add(new[]
+        {
+          utcNow.AsString("o"),
+          "Removed " + incomingFlag,
+          ShowTellers(person),
+          hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
+        }.JoinedAsString("; ", true));
+        person.RegistrationLog = log;
+      }
+      else
+      {
+        currentFlags.Add(incomingFlag);
+        person.Flags = currentFlags.JoinedAsString("|");
+
+        person.VotingLocationGuid = UserSession.CurrentLocationGuid;
+
+        var log = person.RegistrationLog;
+        log.Add(new[]
+        {
+          utcNow.AsString("o"),
+          "Set " + incomingFlag,
+          ShowTellers(person),
+          hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
+        }.JoinedAsString("; ", true));
+        person.RegistrationLog = log;
+      }
+      personCacher.UpdateItemAndSaveCache(person);
+
+      UpdateFrontDeskListing(person);
 
       Db.SaveChanges();
 

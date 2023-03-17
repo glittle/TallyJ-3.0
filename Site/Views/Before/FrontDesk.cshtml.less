@@ -5,7 +5,7 @@ body {
 }
 
 .content-wrapper {
-  max-width: 1200px;
+  max-width: none;
 }
 
 p {
@@ -34,7 +34,7 @@ p {
     &.true, &.True {
       background-color: #9bff9b;
 
-      &.Registered {
+      &.Flag {
         background-color: #9bfffe;
       }
 
@@ -134,6 +134,11 @@ p {
   }
 }
 
+.flags {
+  float: right;
+  margin: 3px 0 0 5px;
+}
+
 .Btn {
   display: inline-block;
   padding: 2px 4px 3px;
@@ -143,6 +148,17 @@ p {
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
+
+  &.Flag {
+    border-radius: 1em;
+    font-size: 75%;
+    border-color: #4b77a2;
+    color: #4b77a2;
+  }
+}
+
+.Btn.InPerson + .Btn.Flag {
+  margin-left: 25px;
 }
 
 .Env {
@@ -167,6 +183,10 @@ p {
     padding: 3px 4px 2px;
     vertical-align: middle;
     color: #999;
+
+    &.Other {
+      margin-right: 10px;
+    }
   }
 
   div {
@@ -195,6 +215,14 @@ p {
       &.Total {
         color: @tallyJGreenText;
       }
+    }
+
+    &.Flag {
+      border-radius: 1em;
+      font-size: 10.5px;
+      border-color: #4b77a2;
+      color: #4b77a2;
+      padding: 1px 5px;
     }
   }
 
@@ -231,6 +259,7 @@ p {
   overflow: auto;
   clear: both;
   padding: 3px 0;
+
   .Online {
     opacity: 0.5;
 
@@ -264,7 +293,7 @@ p {
         opacity: 1;
       }
 
-      &.Online.Hastrue.Cantrue{
+      &.Online.Hastrue.Cantrue {
         opacity: .5;
       }
     }

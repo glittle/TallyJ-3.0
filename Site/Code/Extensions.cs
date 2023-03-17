@@ -288,6 +288,11 @@ namespace TallyJ.Code
       return input.HasValue ? input.Value.AsUtc().ToString(format) : "";
     }
 
+    public static string AsString(this DateTime input, string format = "d MMMM yyyy")
+    {
+      return input != DateTime.MinValue ? input.AsUtc().ToString(format) : "";
+    }
+
     public static Guid? AsNullableGuid(this Guid input)
     {
       if (input == Guid.Empty) return null;

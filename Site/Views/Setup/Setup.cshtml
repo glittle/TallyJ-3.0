@@ -250,44 +250,43 @@
     </tr>
     <tr v-if="usingBallotProcess">
       <th>
-        Process for gathering ballots<br>using the Front Desk
+        Use "Roll Call"?
       </th>
       <td colspan="2" class="processOptions">
         <table>
           <tr>
-            <th>A</th>
+            <th>Yes</th>
             <td>
               <input type="radio" value="Roll" title="Roll" v-model="election.BallotProcessRaw" name="rollCall" id="process1" />
             </td>
             <td>
               <label for="process1">
-                As voters arrive, validate their identity at tellers' stations and mark them as <strong>In Person</strong>.
-                <br>
+                As voters arrive at the election, validate their identity at tellers' stations and mark them as <strong>In Person</strong>.
                 Later, project the <strong>Roll Call</strong> and have people publicly deposit their ballots when their name is displayed.
               </label>
             </td>
           </tr>
+          @*<tr>
+              <th>B</th>
+              <td>
+                <input type="radio" value="RegV" title="RegV" v-model="election.BallotProcessRaw" name="rollCall" id="process2" />
+              </td>
+              <td>
+                <label for="process2">
+                  As voters arrive, use a Checklist item (below) to record that they have arrived. This is optional.
+                  <br>
+                  Later, accept ballots at tellers' stations and mark them as <strong>In Person</strong>.
+                </label>
+              </td>
+            </tr>*@
           <tr>
-            <th>B</th>
-            <td>
-              <input type="radio" value="RegV" title="RegV" v-model="election.BallotProcessRaw" name="rollCall" id="process2" />
-            </td>
-            <td>
-              <label for="process2">
-                As voters arrive, validate their identity at tellers' stations and mark them as <strong>Registered</strong>.
-                <br>
-                Later, accept ballots at tellers' stations and mark them as <strong>Received</strong>.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <th>C</th>
+            <th>No</th>
             <td>
               <input type="radio" value="RegC" title="RegC" v-model="election.BallotProcessRaw" name="rollCall" id="process3" />
             </td>
             <td>
               <label for="process3">
-                When voters come to a tellers' station, validate their identity,
+                When voters come to a tellers' station with their ballot, validate their identity,
                 then accept their ballot and mark them as <strong>In Person</strong>.
               </label>
             </td>
@@ -399,9 +398,33 @@
       </td>
       <td></td>
     </tr>
+    <tr v-if="usingBallotProcess">
+      <th>
+        Checklist Items
+      </th>
+      <td>
+        <div class="flags">
+          <div v-for="(f,i) in flags" :key="i">
+            <el-input size="small"
+                      v-model="flags[i]"
+                      :maxlength="25"></el-input>
+            <i class="el-icon-delete" v-on:click="removeFlag(i)"></i>
+          </div>
+
+          <el-button size="mini" class="add" v-on:click="addFlag">Add Another</el-button>
+        </div>
+      </td>
+      <td>
+        <p>You can add items here that will be shown on the Front Desk and can be turned on or off for each person. Only single words can be used. Sample uses: </p>
+        <ul>
+          <li>Attending - <em>Are they at the election? (regardless of voting method)</em></li>
+          <li>Lunch - <em>Have they purchased a lunch ticket?</em></li>
+        </ul>
+      </td>
+    </tr>
     <tr>
       <th>
-        From Name
+        Email From Name
       </th>
       <td>
         <input type="text" v-model="election.EmailFromName" v-on:change="saveNeeded">
@@ -413,7 +436,7 @@
     </tr>
     <tr>
       <th>
-        From Email Address
+        Email From Address
       </th>
       <td>
         <input type="email" v-model="election.EmailFromAddress" v-on:change="saveNeeded">
@@ -546,9 +569,9 @@
             Open Voting at
           </th>
           <td v-bind:class="{needOnlineDates: !election.OnlineWhenOpen}">
-              <datetime input-id="whenOpen" v-model="election.OnlineWhenOpen" 
-                        placeholder="Opening Time"
-                        v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+            <datetime input-id="whenOpen" v-model="election.OnlineWhenOpen"
+                      placeholder="Opening Time"
+                      v-on:change="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
             <div class="voteWhenOpen">{{showFrom(election.OnlineWhenOpen)}}</div>
           </td>
           <td>
@@ -561,9 +584,9 @@
             Close Voting at
           </th>
           <td v-bind:class="{needOnlineDates: !election.OnlineWhenClose}">
-              <datetime input-id="whenClose" v-model="election.OnlineWhenClose"
-                        placeholder="Closing Time"
-                        v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
+            <datetime input-id="whenClose" v-model="election.OnlineWhenClose"
+                      placeholder="Closing Time"
+                      v-on:input="saveNeeded" type="datetime" :minute-step="10" :use12-hour="election.T24"></datetime>
             <div class="voteWhenClosed" v-if="election.OnlineWhenClose" v-bind:class="{closed: closeIsPast }">{{showFrom(election.OnlineWhenClose)}}</div>
           </td>
           <td>

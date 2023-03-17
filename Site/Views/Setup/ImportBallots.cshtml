@@ -178,7 +178,7 @@
           <tr v-for="s in previewInfo.voters" :key="s.bahaiid">
             <td>{{s.lastname}}, {{s.firstname}}</td>
             <td>
-              <span :class="previewInfo.AlreadyLoaded ? '' : 'alreadyVoted'" v-if="s.VotingMethod">
+              <span :class="previewInfo.AlreadyLoaded ? '' : (s.ImportBlocked ? 'alreadyVoted' : 'nonBlocking')" v-if="s.VotingMethod">
                 {{s.VotingMethod}}
               </span>
               <span v-else>-</span>

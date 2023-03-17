@@ -24,7 +24,6 @@
       Custom2 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
       Custom3 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.Count(p => p.VotingMethod == VotingMethodEnum.Online.ToString()),
-      Registered = g.Count(p => p.VotingMethod == VotingMethodEnum.Registered.ToString()),
     })
     .ToList();
 
@@ -40,7 +39,6 @@
     Custom2 = areas.Sum(a => a.Custom2),
     Custom3 = areas.Sum(a => a.Custom3),
     Online = areas.Sum(a => a.Online),
-    //Registered = areas.Sum(a => a.Registered),
   };
   var showCalledIn = total.CalledIn.AsInt() > 0;
   var showCustom1 = total.Custom1.AsInt() > 0;
@@ -94,7 +92,7 @@
     </div>
   </div>
   <p class="Comment">
-    Showing the areas of those registered on the Front Desk.
+    Showing the areas of those with a vote method recorded on the Front Desk.
   </p>
   <table class="Areas">
     <thead>
