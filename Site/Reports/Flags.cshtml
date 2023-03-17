@@ -139,7 +139,7 @@
     }
     @foreach (var f in flags)
     {
-      <el-table-column label="@f" v-if="!hideColumn.includes('@f')" sortable align="center">
+      <el-table-column label="@f" v-if="!hideColumn.includes('@f')" align="center">
         <template slot-scope="scope">
           <div v-html="scope.row.Flags.includes('@f') ? 'Yes' : 'No'"></div>
         </template>

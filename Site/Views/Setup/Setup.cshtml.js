@@ -124,6 +124,8 @@
           }
         },
         flags: function (a, b) {
+          if (!this.isMounted) return;
+
           if (a.some(str => /[^a-zA-Z]/.test(str))) {
             ShowStatusFailed('Checklist items must only be single words');
             this.flags = this.election.Flags.split('|');;
@@ -153,15 +155,17 @@
         this.usingBallotProcess =
           bp === 'Unknown' || !bp ? null
             : bp === 'None' ? false : true;
+
         this.isMounted = true;
 
-        var s = this.election.VotingMethods;
-        this.votingMethodsArray = s ? s.split('') : [];
-
-        this.flags = this.election.Flags?.split('|');
+        this.flags = this.election.Flags?.split('|') || [];
         if (this.flags.length < 2) {
           this.flags.length = 2;
         }
+        this.election.Flags = this.flags.join('|');
+
+        var s = this.election.VotingMethods;
+        this.votingMethodsArray = s ? s.split('') : [];
 
         this.useOnline = !!(this.election.OnlineWhenOpen || this.election.OnlineWhenClose); // do again, to set useOnline correctly
 
@@ -639,20 +643,29 @@
       },
       function (info) {
         if (info.success) {
+          vue.isMounted = false;
           if (info.Election) {
-            vue.flags = info.Election.Flags.split('|');
+
+            vue.flags = info.Election.Flags?.split('|') || [];
+            if (vue.flags.length < 2) {
+              vue.flags.length = 2;
+            }
+            vue.election.Flags = vue.flags.join('|');
+
 
             applyValues(info.Election);
             $('.CurrentElectionName').text(info.displayName);
             site.passcodeRaw =
               site.passcode = info.Election.ElectionPasscode;
             updatePasscodeDisplay(info.Election.ListForPublic, info.Election.ElectionPasscode);
+
           }
 
           publicInterface.defaultFromAddress = info.defaultFromAddress;
 
           $('.btnSave').removeClass('btn-primary');
           vue.isSaveNeeded = false;
+          vue.isMounted = true;
 
           if (form.OnlineWhenClose) {
             var isClosed = moment(form.OnlineWhenClose).isBefore();
