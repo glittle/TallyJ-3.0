@@ -29,9 +29,13 @@
     [Email]                NVARCHAR (250)   NULL,
     [Phone]                VARCHAR (25)     NULL,
     [HasOnlineBallot]      BIT              NULL,
+    [Flags]                VARCHAR (100)    NULL,
+    [UnitName]             VARCHAR (100)    NULL,
     CONSTRAINT [PK_Person] PRIMARY KEY CLUSTERED ([_RowId] ASC),
     CONSTRAINT [FK_Person_Election] FOREIGN KEY ([ElectionGuid]) REFERENCES [tj].[Election] ([ElectionGuid]) ON DELETE CASCADE
 );
+
+
 
 
 
