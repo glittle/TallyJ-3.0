@@ -635,7 +635,7 @@ namespace TallyJ.Code.Session
         var numKnownTellers = computerCacher.ElectionGuidsOfActiveComputers.Count;
         if (numKnownTellers == 0)
         {
-          new ElectionModel().CloseElection();
+          new ElectionHelper().CloseElection();
         }
         // else
         // {

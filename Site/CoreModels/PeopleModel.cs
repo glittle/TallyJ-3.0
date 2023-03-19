@@ -680,7 +680,7 @@ namespace TallyJ.CoreModels
         // make number for every method
         var needEnvNum = person.EnvNum == null;
 
-        if (needEnvNum) person.EnvNum = new ElectionModel().GetNextEnvelopeNumber();
+        if (needEnvNum) person.EnvNum = new ElectionHelper().GetNextEnvelopeNumber();
       }
 
       personCacher.UpdateItemAndSaveCache(person);

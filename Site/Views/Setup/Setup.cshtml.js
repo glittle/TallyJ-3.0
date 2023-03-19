@@ -144,6 +144,7 @@
       },
       created: function () {
         //        this.useOnline = !!this.election.OnlineWhenOpen;
+        if (!this.election.Model) this.election.Model = 'N'; // default to Normal
         if (this.election.OnlineWhenOpen || this.election.OnlineWhenClose) {
           this.useOnline = true;
           this.election.OnlineWhenOpen = this.election.OnlineWhenOpen ? moment.utc(this.election.OnlineWhenOpen).toISOString(true) : '';
@@ -183,6 +184,7 @@
         site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
         //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: YYYY-MM-DD' });
         site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
+        site.qTips.push({ selector: '#qTipModel', title: 'Election Model', text: 'Most elections use the "Normal" model. To set up a local two-stage election, use "Central for Local Units".' });
         site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
         site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
         site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });

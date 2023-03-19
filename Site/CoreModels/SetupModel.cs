@@ -10,7 +10,7 @@ namespace TallyJ.CoreModels
   public class SetupModel : DataConnectedModel
   {
     private Election _election;
-    private ElectionModel _electionModel;
+    private ElectionHelper _electionHelper;
 
     public int NumberOfPeople
     {
@@ -39,9 +39,9 @@ namespace TallyJ.CoreModels
       get { return _election ?? (_election = UserSession.CurrentElection); }
     }
 
-    public ElectionModel CurrentElectionModel
+    public ElectionHelper CurrentElectionHelper
     {
-      get { return _electionModel ?? (_electionModel = new ElectionModel()); }
+      get { return _electionHelper ?? (_electionHelper = new ElectionHelper()); }
     }
 
     public object RulesForCurrentElection
@@ -49,7 +49,7 @@ namespace TallyJ.CoreModels
       get
       {
         var currentElection = CurrentElection;
-        var rules = ElectionModel.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
+        var rules = ElectionHelper.GetRules(currentElection.ElectionType, currentElection.ElectionMode);
 
         return new
         {

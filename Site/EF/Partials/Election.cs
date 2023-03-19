@@ -43,17 +43,19 @@ namespace TallyJ.EF
   {
     public Election()
     {
-      Convenor = "[Convener]"; // correct spelling is Convener. DB field name is wrong.
+      // default settings
       ElectionGuid = Guid.NewGuid();
       Name = "[New Election]";
-      ElectionType = "LSA";
-      ElectionMode = ElectionModeEnum.Normal;
-      TallyStatus = ElectionTallyStatusEnum.NotStarted;
+      Model = ElectionModelEnum.Normal.ToString();
+      ElectionType = ElectionTypeEnum.Lsa.ToString();
+      ElectionMode = ElectionModeEnum.Normal.ToString();
+      TallyStatus = ElectionTallyStatusEnum.NotStarted.ToString();
+      Convenor = "[Convener]"; // correct spelling is Convener. DB field name is wrong.
       NumberToElect = 9;
       NumberExtra = 0;
       VotingMethods = "PDM";
 
-      var rules = ElectionModel.GetRules(ElectionType, ElectionMode);
+      var rules = ElectionHelper.GetRules(ElectionType, ElectionMode);
 
       // No longer used as rules. Each person has own status.
       // CanVote = rules.CanVote;  

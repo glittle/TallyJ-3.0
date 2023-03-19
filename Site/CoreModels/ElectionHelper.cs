@@ -16,7 +16,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
-  public class ElectionModel : DataConnectedModel
+  public class ElectionHelper : DataConnectedModel
   {
     private static readonly object LockObject = new object();
 
@@ -353,7 +353,8 @@ namespace TallyJ.CoreModels
         election.EmailFromName,
         election.VotingMethods,
         election.CustomMethods,
-        election.Flags
+        election.Flags,
+        election.Model,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
 
       // if (election.ElectionType == ElectionTypeEnum.Oth)

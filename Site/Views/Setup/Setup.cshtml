@@ -51,7 +51,19 @@
     </ol>
   </div>
   <table class="Demographics">
-    <tr class="electionDetail T">
+      <tr class="electionDetail T">
+          <th>
+              Election Model<span class="ui-icon ui-icon-info" id="qTipModel"></span>
+          </th>
+          <td>
+              <select id="ddlType" data-name="Model">
+                  @ElectionModelEnum.ForHtmlSelect()
+              </select>
+              <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
+              <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
+          </td>
+      </tr>
+      <tr class="electionDetail">
       <th>
         Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
       </th>
@@ -59,8 +71,6 @@
         <select id="ddlType" data-name="ElectionType">
           @ElectionTypeEnum.ForHtmlSelect()
         </select>
-        <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
-        <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
       </td>
     </tr>
     <tr class="electionDetail">
@@ -141,13 +151,15 @@
       <td>
         <div class="nameInfo">
           <input type="text" id="txtName" data-name="Name">
-          <span>Displayed for tellers and voters. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
+          <span>Displayed for tellers and voters and on some reports. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
         </div>
       </td>
     </tr>
     <tr>
       <th>
-        Date of Election<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+          <span v-if="election.Model==='P'">Approximate Date of Unit Elections</span>
+          <span v-else>Date of Election</span>
+          <span class="ui-icon ui-icon-info" id="qTipDate"></span>
       </th>
       <td>
         <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">

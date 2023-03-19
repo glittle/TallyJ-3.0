@@ -52,5 +52,11 @@ namespace TallyJ.EF
         public string CustomMethods { get; set; }
         public string VotingMethods { get; set; }
         public string Flags { get; set; }
+        public Nullable<System.Guid> ParentElectionGuid { get; set; }
+        public Nullable<System.Guid> PeopleElectionGuid { get; set; }
+        public string Model { get; set; }
+        public Nullable<int> ParentTieBreakGroup { get; set; }
+        public string UnitName { get; set; }
+        public string TieBreakPersonGuids { get; set; }
     }
 }

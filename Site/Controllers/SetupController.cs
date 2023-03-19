@@ -35,18 +35,18 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SaveElection(Election election)
     {
-      return new ElectionModel().SaveElection(election);
+      return new ElectionHelper().SaveElection(election);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveNotification(string emailSubject, string emailText, string smsText)
     {
-      return new ElectionModel().SaveNotification(emailSubject, emailText, smsText);
+      return new ElectionHelper().SaveNotification(emailSubject, emailText, smsText);
     }
 
     public JsonResult DetermineRules(string type, string mode)
     {
-      return ElectionModel.GetRules(type, mode).AsJsonResult();
+      return ElectionHelper.GetRules(type, mode).AsJsonResult();
     }
 
     [ForAuthenticatedTeller]

@@ -105,7 +105,7 @@ namespace TallyJ.CoreModels
       var readyForReports = ResultSummaryFinal.UseOnReports.AsBoolean();
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized && !readyForReports)
       {
-        new ElectionModel().SetTallyStatus(ElectionTallyStatusEnum.Tallying);
+        new ElectionHelper().SetTallyStatus(ElectionTallyStatusEnum.Tallying);
       }
 
       _hub.StatusUpdate("Saving");
