@@ -501,7 +501,7 @@ namespace TallyJ.Code
     ///   For an enumeration of strings, join them. Each item has itemLeft and itemRight added.
     /// </summary>
     public static string JoinedAsString(this IEnumerable<string> list, string separator, string itemLeft,
-      string itemRight, bool skipBlanks)
+      string itemRight, bool skipBlanks = false)
     {
       List<string> list2 = null;
       return list == null || (list2 = list.ToList()).Count() == 0

@@ -1,6 +1,6 @@
 ﻿@using TallyJ.Code.Enumerations
-@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.EF
 @model ResultsModel
 @{
   ViewBag.Title = "Reports";
@@ -13,77 +13,92 @@
   ContextItems.AddJavascriptForPage("reportsPage.T24={0};".FilledWith(currentElection.T24.SerializedAsJsonString()));
 
   var ballotProcessEnum = currentElection.BallotProcess;
-  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
+  var showVoters = ballotProcessEnum != BallotProcessEnum.None;
   var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
   var firstHeader = false;
   var onlineEnabled = currentElection.OnlineEnabled;
+  var isControlCentre = currentElection.ElectionType == ElectionTypeEnum.LSAC;
 
-  var reports = new Dictionary<string, string>
-{
-  { "SimpleResults|Ballot Reports", "Main Election Report"},
-  { "VotesByNum", "Tellers' Report, by Votes"},
-  { "VotesByName", "Tellers' Report, by Name"},
-  { "Ballots", "Ballots (All for Review)"},
-  { "BallotsOnline", onlineEnabled ? "Ballots (Online Only)" : null},
-  { "BallotsImported", currentElection.VotingMethodsContains(VotingMethodEnum.Imported) ? "Ballots (Imported Only)" : null},
-  { "BallotsTied", "Ballots (For Tied)"},
-  { "SpoiledVotes", "Spoiled Votes"},
-  { "BallotAlignment", "Ballot Alignment"},
-  { "BallotsSame", "Duplicate Ballots"},
-  { "BallotsSummary", "Ballots Summary"},
+  var reportsBallots = new Dictionary<string, string>
+    {
+        { "Ballot Reports", "" },
+        { "SimpleResults", "Main Election Report" },
+        { "VotesByNum", "Tellers' Report, by Votes" },
+        { "VotesByName", "Tellers' Report, by Name" },
+        { "Ballots", "Ballots (All for Review)" },
+        { "BallotsOnline", onlineEnabled ? "Ballots (Online Only)" : null },
+        { "BallotsImported", currentElection.VotingMethodsContains(VotingMethodEnum.Imported) ? "Ballots (Imported Only)" : null },
+        { "BallotsTied", "Ballots (For Tied)" },
+        { "SpoiledVotes", "Spoiled Votes" },
+        { "BallotAlignment", "Ballot Alignment" },
+        { "BallotsSame", "Duplicate Ballots" },
+        { "BallotsSummary", "Ballots Summary" }
+    };
 
-  { "AllCanReceive|Voter Reports", "Can Be Voted For"},
-  { "Voters", showVoters ? "Participation" : null}, 
-  { "Flags", "Attendance Checklists"},
-  { "VotersOnline", showVoters && onlineEnabled ? "Voted Online" : null},
-  { "VotersByArea", showVoters ? "Eligible and Voted by Area" : null},
-  { "VotersByLocation", hasMultipleLocations ? "Voting Method by Venue" : null },
-  { "VotersByLocationArea", hasMultipleLocations ? "Attendance by Venue" : null },
-  { "ChangedPeople", "Updated People Records"},
-  { "AllNonEligible", "With Eligibility Status"},
-  { "VoterEmails", onlineEnabled ? "Email & Phone List" : null},
-  };
+  var reportsVoters = new Dictionary<string, string>
+    {
+        { "Voter Reports", "" },
+        { "AllCanReceive", "Can Be Voted For" },
+        { "Voters", showVoters ? "Participation" : null },
+        { "Flags", "Attendance Checklists" },
+        { "VotersOnline", showVoters && onlineEnabled ? "Voted Online" : null },
+        { "VotersByArea", showVoters ? "Eligible and Voted by Area" : null },
+        { "VotersByLocation", hasMultipleLocations ? "Voting Method by Venue" : null },
+        { "VotersByLocationArea", hasMultipleLocations ? "Attendance by Venue" : null },
+        { "ChangedPeople", "Updated People Records" },
+        { "AllNonEligible", "With Eligibility Status" },
+        { "VoterEmails", onlineEnabled ? "Email & Phone List" : null }
+    };
+
+
+  var reports = isControlCentre
+      ? reportsVoters
+      : reportsBallots.Concat(reportsVoters).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 }
-<link href="@ClientFile("~/Content/theme.default.min.css")" rel="stylesheet" />
-<link href="@ClientFile("~/Content/theme.dropbox.min.css")" rel="stylesheet" />
+<link href="@ClientFile("~/Content/theme.default.min.css")" rel="stylesheet"/>
+<link href="@ClientFile("~/Content/theme.dropbox.min.css")" rel="stylesheet"/>
 <script src="@ClientFile("~/Scripts/jquery.tablesorter.min.js")" type="text/javascript"></script>
 <script src="@ClientFile("~/Scripts/jquery.tablesorter.widgets.min.js")" type="text/javascript"></script>
 
 <div class="reportsPage">
-  <div class="chooser">
-    <div>
-      @foreach (var r in reports)
-      {
-        if (r.Value.HasNoContent())
-        {
-          continue;
-        }
-        var keyParts = r.Key.Split('|');
-        var href = keyParts[0];
-        if (keyParts.Length == 2)
-        {
-          if (firstHeader)
-          {
-            @("</ul></div><div>".AsRawHtml())
-          }
-          @("<h2>{0}</h2><ul>".FilledWith(keyParts[1]).AsRawHtml())
+    <div class="chooser">
+        <div>
+            @foreach (var r in reports)
+            {
+                if (r.Value == null)
+                {
+                    continue;
+                }
+                // var keyParts = r.Key.Split('|');
+                // var href = keyParts[0];
+                var href = r.Key;
+                if (r.Value == "")
+                {
+                    if (firstHeader)
+                    {
+                        @("</ul></div><div>".AsRawHtml())
+                    }
+                    @("<h2>{0}</h2><ul>".FilledWith(r.Key).AsRawHtml())
 
-          firstHeader = true;
-        }
-        <li><a href='#@href'>@r.Value</a></li>
-      }
-      @("</ul>".AsRawHtml())
+                    firstHeader = true;
+                    continue;
+                }
+                <li>
+                    <a href='#@href'>@r.Value</a>
+                </li>
+            }
+            @("</ul>".AsRawHtml())
+        </div>
+        <div class="lastCol">
+            <button type="button" onclick="window.print()" class="btn btn-info btnPrint">Print (Ctrl+P)</button>
+            <p class="Comment ">Some browsers, such as Chrome, can create a PDF copy of the report when printing.</p>
+        </div>
     </div>
-    <div class="lastCol">
-      <button type="button" onclick="window.print()" class="btn btn-info btnPrint">Print (Ctrl+P)</button>
-      <p class="Comment ">Some browsers, such as Chrome, can create a PDF copy of the report when printing.</p>
+    <div class="reportPanel">
+        <div id="Status">
+            Please select a report...
+        </div>
+        <div id="report">
+        </div>
     </div>
-  </div>
-  <div class="reportPanel">
-    <div id="Status">
-      Please select a report...
-    </div>
-    <div id="report">
-    </div>
-  </div>
 </div>

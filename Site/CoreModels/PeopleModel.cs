@@ -43,9 +43,9 @@ namespace TallyJ.CoreModels
       _election = election;
     }
 
-    private Election CurrentElection => _election ?? (_election = UserSession.CurrentElection);
+    private Election PeopleElection => _election ?? (_election = UserSession.PeopleElection);
 
-    private Guid CurrentElectionGuid => CurrentElection == null ? Guid.Empty : CurrentElection.ElectionGuid;
+    private Guid PeopleElectionGuid => PeopleElection == null ? Guid.Empty : PeopleElection.ElectionGuid;
 
     private IEnumerable<Location> Locations => _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
 
@@ -111,12 +111,9 @@ namespace TallyJ.CoreModels
     public void EnsureFlagsAreRight(List<Person> people, IStatusUpdateHub hub, Action<DbAction, Person> personSaver)
     {
       hub.StatusUpdate("Reviewing people", true);
-      var currentElectionGuid = UserSession.CurrentElectionGuid;
+      var peopleElectionGuid = UserSession.CurrentElectionGuid;
 
-      // var defaultCanVote = UserSession.CurrentElection.CanVote == "A";
-      // var defaultCanReceiveVotes = UserSession.CurrentElection.CanReceive == "A";
-
-      var numDone = 0;
+      var numDone = 0; 
       foreach (var person in people)
       {
         var changesMade = false;
@@ -124,7 +121,7 @@ namespace TallyJ.CoreModels
         numDone++;
         if (numDone % 10 == 0) hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone), true);
 
-        if (currentElectionGuid != person.ElectionGuid)
+        if (peopleElectionGuid != person.ElectionGuid)
           hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullName);
 
         var matchedReason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
@@ -235,8 +232,8 @@ namespace TallyJ.CoreModels
           Error = "Unknown person"
         }.AsJsonResult();
 
-      //var whoCanVote = CurrentElection.CanVote;
-      //var whoCanReceiveVotes = CurrentElection.CanReceive;
+      //var whoCanVote = PeopleElection.CanVote;
+      //var whoCanReceiveVotes = PeopleElection.CanReceive;
       var voteCacher = new VoteCacher(Db);
       var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
 
@@ -289,7 +286,7 @@ namespace TallyJ.CoreModels
         personInDatastore = new Person
         {
           PersonGuid = Guid.NewGuid(),
-          ElectionGuid = CurrentElectionGuid
+          ElectionGuid = PeopleElectionGuid
         };
 
         Db.Person.Add(personInDatastore);
@@ -337,14 +334,14 @@ namespace TallyJ.CoreModels
       if (ApplyVoteReasonFlags(personInDatastore)) changed = true;
 
       // const string all = ElectionModel.CanVoteOrReceive.All;
-      // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(CurrentElection.CanReceive == all);
+      // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(PeopleElection.CanReceive == all);
       // if (personInDatastore.CanReceiveVotes != canReceiveVotes)
       // {
       //   personInDatastore.CanReceiveVotes = canReceiveVotes;
       //   changed = true;
       // }
       //
-      // var canVote = personFromInput.CanVote.AsBoolean(CurrentElection.CanVote == all);
+      // var canVote = personFromInput.CanVote.AsBoolean(PeopleElection.CanVote == all);
       // if (personInDatastore.CanVote != canVote)
       // {
       //   personInDatastore.CanVote = canVote;
@@ -509,7 +506,7 @@ namespace TallyJ.CoreModels
       var peopleCount = people.Count;
       if (peopleCount == 0) return new List<object>();
       var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
-      var useOnline = UserSession.CurrentElection.OnlineEnabled;
+      var useOnline = UserSession.PeopleElection.OnlineEnabled;
       var firstPersonGuid = people[0].PersonGuid;
 
       var onlineProcessed = Db.OnlineVotingInfo
@@ -725,7 +722,7 @@ namespace TallyJ.CoreModels
 
       var utcNow = DateTime.UtcNow;
 
-      var allowedFlags = UserSession.CurrentElection.FlagsList;
+      var allowedFlags = UserSession.PeopleElection.FlagsList;
       var currentFlags = person.Flags.DefaultTo("").Split('|').ToList();
 
       var incomingFlag = flag.Substring(5);
@@ -858,7 +855,7 @@ namespace TallyJ.CoreModels
 
     public JsonResult DeleteAllPeople()
     {
-      var hasOnline = Db.OnlineVotingInfo.Any(p => p.ElectionGuid == CurrentElectionGuid && p.ListPool != null);
+      var hasOnline = Db.OnlineVotingInfo.Any(p => p.ElectionGuid == PeopleElectionGuid && p.ListPool != null);
       if (hasOnline)
         return new
         {
@@ -872,14 +869,14 @@ namespace TallyJ.CoreModels
         int newRows;
         do
         {
-          newRows = Db.Person.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
+          newRows = Db.Person.Where(p => p.ElectionGuid == PeopleElectionGuid).Take(500).Delete();
           rows += newRows;
         } while (newRows > 0);
 
         int oviRows;
         do
         {
-          oviRows = Db.OnlineVotingInfo.Where(p => p.ElectionGuid == CurrentElectionGuid).Take(500).Delete();
+          oviRows = Db.OnlineVotingInfo.Where(p => p.ElectionGuid == PeopleElectionGuid).Take(500).Delete();
         } while (oviRows > 0);
       }
       catch (Exception)

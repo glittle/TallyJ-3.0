@@ -44,6 +44,7 @@
     <xs:attribute name="featureWhen" type="xs:string" use="optional" />
     <xs:attribute name="requireElection" type="xs:boolean" use="required" />
     <xs:attribute name="requireProcess" type="xs:string" use="optional" />
+    <xs:attribute name="hideForTypes" type="xs:string" use="optional" />
     <xs:attribute name="showOnDashboard" type="xs:boolean" use="optional" />
     <xs:attribute name="showInOtherList" type="xs:boolean" use="optional" />
     <xs:attribute name="showLocationSelector" type="xs:boolean" use="optional" />
