@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
@@ -136,7 +137,7 @@ namespace TallyJ.Code.Session
         // check temp cache for page rendering
         //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
         var election = ItemKey.CurrentElection.FromPageItems<Election>(null);
-        if (election != null)
+        if (election != null && CurrentElectionGuid == election.ElectionGuid)
         {
           return election;
         }
@@ -165,6 +166,77 @@ namespace TallyJ.Code.Session
             // save for next use in this same rendering
             //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
             ItemKey.CurrentElection.SetInPageItems(election);
+          }
+        }
+
+        return election;
+      }
+    }
+
+
+    /// <Summary>Stored as Guid in session</Summary>
+    public static Guid PeopleElectionGuid
+    {
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.PeopleElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
+      set
+      {
+        SessionKey.PeopleElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
+        ItemKey.PeopleElection.SetInPageItems<Election>(null);
+      }
+    }
+
+
+    /// <summary>
+    ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also
+    ///   sets the CurrentElectionGuid into Session.
+    /// </summary>
+    public static Election PeopleElection
+    {
+      get
+      {
+        // check temp cache for page rendering
+        //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        var election = ItemKey.PeopleElection.FromPageItems<Election>(null);
+        if (election != null)
+        {
+          return election;
+        }
+
+        var electionGuid = PeopleElectionGuid;
+        var hasElection = electionGuid.HasContent();
+
+        if (hasElection)
+        {
+          var cacher = new ElectionCacher();
+          //TODO check for other uses of AllForThisElection
+          election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+          if (election != null)
+          {
+            // occasionally, when changing elections, the cacher has the old election...need to flush it
+            cacher.DropThisCache();
+            election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+          }
+
+          // even if have valid guid, may be null if election was just deleted
+          if (election == null)
+          {
+            PeopleElectionGuid = Guid.Empty;
+          }
+          else
+          {
+            // save for next use in this same rendering
+            //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
+            ItemKey.PeopleElection.SetInPageItems(election);
           }
         }
 
@@ -540,6 +612,12 @@ namespace TallyJ.Code.Session
     {
       get => SessionKey.PendingVoterLogin.FromSession("");
       set => SessionKey.PendingVoterLogin.SetInSession(value);
+    }
+
+    public static List<string> UnitNames
+    {
+      get => SessionKey.UnitNames.FromSession(new List<string>());
+      set => SessionKey.UnitNames.SetInSession(value);
     }
 
     public static string CurrentElectionStatusName

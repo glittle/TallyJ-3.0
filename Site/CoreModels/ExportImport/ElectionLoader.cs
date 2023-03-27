@@ -397,6 +397,7 @@ namespace TallyJ.CoreModels.ExportImport
       people.Add(person);
       personXml.CopyAttributeValuesTo(person);
 
+      // old version 
       personXml.CopyAttributeValueTo("TellerAtKeyboard", person, p => person.Teller1);
       personXml.CopyAttributeValueTo("TellerAssisting", person, p => person.Teller2);
 

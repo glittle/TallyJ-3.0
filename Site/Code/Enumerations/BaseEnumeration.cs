@@ -101,6 +101,8 @@ namespace TallyJ.Code.Enumerations
       return Value.ToString();
     }
 
+    public string QuotedForJavascript => $"'{Value}'";
+
     #endregion
 
     public static implicit operator string(BaseEnumeration<TSelf, TValue> self)

@@ -19,33 +19,9 @@ namespace TallyJ.CoreModels
       }
 
       return MyElections()
-        .Select(e => new
-        {
-          e.Name,
-          e.ElectionGuid,
-          DateOfElection = e.DateOfElection.AsUtc(),
-          e.Convenor,
-          e.ElectionType,
-          e.ElectionMode,
-          e.ShowAsTest,
-          e.IsSingleNameElection,
-          e.CanBeAvailableForGuestTellers,
-          e.OnlineCurrentlyOpen,
-          OnlineWhenOpen = e.OnlineWhenOpen.AsUtc(),
-          OnlineWhenClose = e.OnlineWhenClose.AsUtc(),
-          e.EmailFromAddressWithDefault,
-          e.EmailFromNameWithDefault,
-          e.ElectionPasscode,
-          e.OnlineEnabled,
-          IsFuture = e.DateOfElection.HasValue && e.DateOfElection.AsUtc() > DateTime.UtcNow,
-          IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
-          Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
-          Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
-          IsTest = e.ShowAsTest.AsBoolean(),
-          TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
-          e.TallyStatus
-        });
+        .Select(ElectionHelper.ElectionDto);
     }
+
 
     public void CheckIfAddedToNew()
     {

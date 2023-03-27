@@ -46,5 +46,6 @@ namespace TallyJ.EF
         public Nullable<bool> HasOnlineBallot { get; set; }
         public string Flags { get; set; }
         public string UnitName { get; set; }
+        public string KioskCode { get; set; }
     }
 }

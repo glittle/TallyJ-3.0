@@ -208,6 +208,7 @@ namespace TallyJ.Code.Resources
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
       if (hasElection && hidePreBallotPages && node.GetAttribute("isPreBallot") == "true") return false;
+      if (hasElection && node.GetAttribute("hideForTypes").SplitWithString(",").Contains(_currentElection.ElectionType)) return false;
 
       var requireProcess = node.GetAttribute("requireProcess");
       if (requireProcess.HasContent())
@@ -267,7 +268,7 @@ namespace TallyJ.Code.Resources
               .SurroundContentWith(
                 "<span id=menu{0} class='{0} {1} items'>{2}".FilledWith(
                   tallyStatus,
-                  UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden",
+                  UserSession.IsFeatured(tallyStatus, UserSession.CurrentElection) ? "" : " Hidden",  
                   UserSession.IsKnownTeller ? $"<a class=SetThis id=setThis{tallyStatus} data-state='{tallyStatus}'>► Move all tellers to this state ◄</a>" : ""), "</span>")
             ).ToList();
 

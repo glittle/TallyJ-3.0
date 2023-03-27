@@ -83,6 +83,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult UpdateElectionShowAll(bool showAll)
     {
+      // is this used anymore?
       return new ElectionHelper().UpdateElectionShowAllJson(showAll);
     }
 

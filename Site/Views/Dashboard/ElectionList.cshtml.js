@@ -13,11 +13,13 @@
 
   function preparePage() {
     site.qTips.push({ selector: '#qTipTellers', title: 'Open for Tellers', text: 'If an election is open for tellers, it will remain open for up to one hour after the head teller leaves.' });
+    site.qTips.push({ selector: '#qTipAdd', title: 'Adding Unit Elections', text: 'List the units to be added, one per line. On each line, specify the number of people to elect (which can be changed later).' });
 
     settings.vue = new Vue({
       el: '#electionListPage',
       data: {
         elections: [],
+        topList: [],
         loaded: false,
         exporting: '',
         deleting: '',
@@ -25,48 +27,45 @@
         log: '',
         tempLog: '',
         showTest: true,
-        hideOld: false,
+        //        hideOld: false,
         reloading: false,
         formatDateTime: 'YYYY MMM D [at] HH:mm',
         formatDateOnly: 'YYYY MMM D',
       },
       computed: {
-        oldElections() {
-          return this.elections.filter(e => e.old);
-        },
+        //        oldElections() {
+        //          return this.elections.filter(e => e.old);
+        //        },
         numForVoting() {
           return this.elections.filter(e => e.OnlineCurrentlyOpen).length;
         },
         numForTellers() {
           return this.elections.filter(e => e.openForTellers).length;
         },
-        currentElections() {
-          return this.elections; // .filter(e => this.showTest || !e.IsTest);
+        //        currentElections() {
+        //          return this.elections; // .filter(e => this.showTest || !e.IsTest);
+        //        },
+        //        oldElectionGuids() {
+        //          return this.oldElections.map(e => e.ElectionGuid);
+        //        },
+        electionGuids() {
+          return this.elections.map(e => e.ElectionGuid);
         },
-        oldElectionGuids() {
-          return this.oldElections.map(e => e.ElectionGuid);
-        },
-        currentElectionGuids() {
-          return this.currentElections.map(e => e.ElectionGuid);
-        },
-        oldListBtnText() {
-          var n = this.oldElections.length;
-          return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
-        }
+        //        oldListBtnText() {
+        //          var n = this.oldElections.length;
+        //          return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
+        //        }
       },
       watch: {
 
       },
       mounted() {
-        this.hideOld = GetFromStorage('hideOld', false);
+        //        this.hideOld = GetFromStorage('hideOld', false);
 
         this.showElections(publicInterface.elections);
 
-        if (!this.currentElections.length) {
-          // no current, show the old
-          this.hideOld = false;
-        } else {
-          var electionGuidList = this.currentElections.map(e => e.ElectionGuid).join(',');
+        if (this.elections.length) {
+          var electionGuidList = this.elections.map(e => e.ElectionGuid).join(',');
           connectToElectionHub(electionGuidList);
         }
 
@@ -76,78 +75,129 @@
 
         site.onbroadcast(site.broadcastCode.electionStatusChanged, this.electionStatusChanged);
 
+        this.$root.$on('delete', this.deleteElection);
+        this.$root.$on('export', this.exportElection);
       },
       methods: {
         electionStatusChanged(ev, info) {
           var election = this.elections.find(e => e.ElectionGuid === info.ElectionGuid);
           console.log(election, info);
         },
-        toggleOldList() {
-          this.hideOld = !this.hideOld;
-          SetInStorage('hideOld', this.hideOld);
-        },
-        test(election) {
-          var vue = this;
+        //        toggleOldList() {
+        //          this.hideOld = !this.hideOld;
+        //          SetInStorage('hideOld', this.hideOld);
+        //        },
+        extendElection(e) {
+          e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
+          e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
+
+          var d = moment(e.DateOfElection);
+          e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
+          e.dateSort = e.DateOfElection ? d.toISOString() : '0';
+          e.nameDisplay = e.ElectionType !== 'LSAU'
+            ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
+            : e.UnitName;
+
+          //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
+          e.old = false; //!isCurrent;
+          // OnlineCurrentlyOpen
+          //            e.old = !e.DateOfElection || !e.OnlineCurrentlyOpen || d.isBefore(moment(), 'day');
+
+          // more static info
+          e.numVoters = '';
+          e.numToElect = e.ElectionType !== 'LSAC' ? 'Elect ' + e.NumberToElect : '';
+
+          e.tellers = [];
+          e.users = [];
+          e.showUsers = false;
+          e.inEdit = false;
+
+          e.isTop = !e.ParentElectionGuid;
+          e.childElections = [];
+          e.addedToParent = false;
+
+          // more live info
+          e.numBallots = '';
+          e.registered = '';
+          e.numRegistered = 0;
+          e.onlineVoters = {};
+          e.lastLog = {};
+
+          // online voters
+          if (!e.OnlineEnabled) {
+            e.voterStatus = 'not used';
+            e.voterStatusCircleClass = 'na';
+            e.openCloseTime = '';
+          } else
+            if (e.OnlineCurrentlyOpen) {
+              e.voterStatus = 'Open. Closing';
+              e.voterStatusCircleClass = 'green';
+              e.openCloseTime = e.onlineClose.fromNow();
+            } else
+              if (e.onlineOpen.isAfter()) {
+                e.voterStatus = 'will open';
+                e.voterStatusCircleClass = 'future';
+                e.openCloseTime = e.onlineOpen.fromNow();
+              } else
+                if (e.onlineClose.isBefore()) {
+                  e.voterStatus = 'closed';
+                  e.voterStatusCircleClass = 'past';
+                  e.openCloseTime = e.onlineClose.fromNow();
+                } else {
+                  e.voterStatus = '';
+                  e.voterStatusCircleClass = '';
+                }
+
+          e.openForTellers = e.CanBeAvailableForGuestTellers;
+          e.pendingOpenForTellers = e.openForTellers;
+
+          return e;
         },
         showElections(list) {
           list.forEach(e => {
-            e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
-            e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
-
-            var d = moment(e.DateOfElection);
-            e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
-            e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-            e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
-
-            //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
-            e.old = false; //!isCurrent;
-            // OnlineCurrentlyOpen
-            //            e.old = !e.DateOfElection || !e.OnlineCurrentlyOpen || d.isBefore(moment(), 'day');
-
-            // more static info
-            e.numVoters = '';
-            e.tellers = [];
-            e.users = [];
-            e.showUsers = false;
-            e.inEdit = false;
-
-            // more live info
-            e.numBallots = '';
-            e.registered = '';
-            e.numRegistered = 0;
-            e.onlineVoters = {};
-            e.lastLog = {};
-
-            // online voters
-            if (!e.OnlineEnabled) {
-              e.voterStatus = 'not used';
-              e.voterStatusCircleClass = 'na';
-              e.openCloseTime = '';
-            } else
-              if (e.OnlineCurrentlyOpen) {
-                e.voterStatus = 'Open. Closing';
-                e.voterStatusCircleClass = 'green';
-                e.openCloseTime = e.onlineClose.fromNow();
-              } else
-                if (e.onlineOpen.isAfter()) {
-                  e.voterStatus = 'will open';
-                  e.voterStatusCircleClass = 'future';
-                  e.openCloseTime = e.onlineOpen.fromNow();
-                } else
-                  if (e.onlineClose.isBefore()) {
-                    e.voterStatus = 'closed';
-                    e.voterStatusCircleClass = 'past';
-                    e.openCloseTime = e.onlineClose.fromNow();
-                  } else {
-                    e.voterStatus = '';
-                    e.voterStatusCircleClass = '';
-                  }
-
-            e.openForTellers = e.CanBeAvailableForGuestTellers;
-            e.pendingOpenForTellers = e.openForTellers;
+            this.extendElection(e);
           });
 
-          list.sort((a, b) => {
+          // move sub elections to their parents
+          var topList = list.filter(e => e.isTop);
+
+          var fnAddChildren = (e) => {
+            e.childElections = list.filter(c => c.ParentElectionGuid === e.ElectionGuid);
+            e.childElections.forEach(c => {
+              c.addedToParent = true;
+              // append their children
+              fnAddChildren(c);
+            });
+
+            e.childElections.sort((a, b) => {
+              if (a.dateSort !== b.dateSort) {
+                return a.dateSort > b.dateSort ? -1 : 1;
+              }
+              return a.Name > b.Name ? 1 : -1;
+            });
+          };
+
+          topList.forEach(e => {
+            fnAddChildren(e);
+
+            if (e.ElectionType === 'LSAC') {
+              // sum up childElections into NumToElect
+              e.numToElect = 'Total to Elect ' + e.childElections.reduce((a, c) => a + c.NumberToElect, 0);
+            }
+          });
+
+          // add the non-top ones that are not added to a parent
+          var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
+          orphanList.forEach(e => {
+            // adjust their name to show the parent's name as well
+            e.nameDisplay = e.Name;
+          });
+
+          // add the orphans to the topList
+          topList = topList.concat(orphanList);
+
+          // sort by date, then name
+          topList.sort((a, b) => {
             if (a.dateSort !== b.dateSort) {
               return a.dateSort > b.dateSort ? -1 : 1;
             }
@@ -155,6 +205,7 @@
           });
 
           this.elections = list;
+          this.topList = topList;
           this.loaded = true;
         },
         getMoreStatic() {
@@ -196,7 +247,7 @@
           return users;
         },
         refreshLive() {
-          this.getMoreLive(this.currentElectionGuids);
+          this.getMoreLive(this.electionGuids);
         },
         getMoreLive(electionGuids) {
           // dynamically changing during an election
@@ -295,19 +346,27 @@
             },
             function (info) {
               if (info.Deleted) {
-                var row = vue.$refs['e-' + guid];
-                $(row[0]).slideUp(1000, 0, function () {
-
-                  var i = vue.elections.findIndex(e => e.ElectionGuid === guid);
-                  vue.elections.splice(i, 1);
-
-                  ShowStatusDone('Deleted.');
+                $(`#${guid}`).slideUp(1000, 0, function () {
+                  debugger;
+                  vue.removeElection(vue.elections, guid);
                 });
               } else {
                 ShowStatusFailed(info.Message);
               }
               vue.deleting = '';
             });
+        },
+        removeElection(elections, guid) {
+          // remove from any childElection list
+          elections.forEach(e => {
+            this.removeElection(e.childElections, guid);
+          });
+
+          // remove from this list
+          var i = elections.findIndex(c => c.ElectionGuid === guid);
+          if (i !== -1) {
+            elections.splice(i, 1);
+          }
         },
         createElection() {
           // get the server to make an election, then go see it
@@ -461,6 +520,7 @@ Vue.component('election-detail',
         formatDateTime: 'YYYY MMM D [at] HH:mm',
         formatDateOnly: 'YYYY MMM D',
         showOtherButtons: false,
+        newChildren: '',
         addingNew: false,
         addingNow: false,
         form: {
@@ -487,6 +547,12 @@ Vue.component('election-detail',
       },
       selectedUser: function () {
         return this.users.find(u => u.selected);
+      },
+      isLsaUnit: function () {
+        return this.e.ElectionType === 'LSAU';
+      },
+      isLsaCentral: function () {
+        return this.e.ElectionType === 'LSAC';
       },
       onlineOpenText: function () {
         return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + ' - ' + this.e.onlineOpen.fromNow() :
@@ -549,11 +615,58 @@ Vue.component('election-detail',
           ShowStatusFailed("Unable to select");
         }
       },
+      addUnitElections() {
+        // check for invalid letters
+        if (/[;<]/.test(this.newChildren)) {
+          ShowStatusFailed('Cannot include ; or < in names');
+          return;
+        }
+
+        // clean up the names; each needs , N to indicate number to elect
+        // x, 3\n y,2
+        var unitsInfo = this.newChildren
+          .split('\n')
+          .map(n => n.trim())
+          .filter(n => n && n.includes(','))
+          .map(s => {
+            var x = s.split(',');
+            return { name: x[0], num: +x[1] };
+          });
+
+        if (!unitsInfo.length) {
+          return;
+        }
+        //        if (unitsInfo.filter(a => a.length !== 2)) {
+        //          ShowStatusFailed('Must include a count for each unit');
+        //          return;
+        //        }
+
+        var vue = this;
+
+        CallAjax2(electionListPage.electionsUrl + '/CreateUnitElection',
+          {
+            parentElectionGuid: vue.e.ElectionGuid,
+            unitsInfo: JSON.stringify(unitsInfo)
+          },
+          {
+            busy: 'Creating unit election' + Plural(unitsInfo.length)
+          },
+          function (info) {
+            if (info.Success) {
+              // add all the info.elections to the childElections list
+              info.elections.forEach(e => {
+                var election = electionListPage.settings.vue.extendElection(e);
+                electionListPage.settings.vue.elections.push(election);
+                vue.e.childElections.push(election);
+              });
+            }
+          });
+      },
       deleteElection() {
-        this.$emit('delete', this.e);
+        this.$root.$emit('delete', this.e,);
       },
       exportElection() {
-        this.$emit('export', this.e);
+        this.$root.$emit('export', this.e);
       },
       updateListing() {
         var vue = this;

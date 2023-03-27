@@ -11,18 +11,18 @@
     </group>
     <group title="Voting" state="NamesReady" longtitle="Gathering Ballots - Registration and Voting" showTitleInPage="false">
       <page title="Front Desk" featureWhen="NamesReady" showTellerSelector="true" showLocationSelector="true" controller="Before" action="FrontDesk" requireElection="true" role="guest" desc="Welcome voters to the election venue. Record who is participating in the election." isPreBallot="true"></page>
-      <page title="Sort Envelopes" featureWhen="NamesReady" requireProcess="Roll" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true"></page>
-      <page title="Roll Call" class="Projector" featureWhen="NamesReady" requireProcess="Roll" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true"></page>
-      <page title="Count Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true"></page>
+      <page title="Sort Envelopes" featureWhen="NamesReady" requireProcess="Roll" controller="Ballots" showLocationSelector="true" action="SortBallots" requireElection="true" role="guest" desc="Show sorted list of ballot envelopes received." isPreBallot="true" hideForTypes="LSAC"></page>
+      <page title="Roll Call" class="Projector" featureWhen="NamesReady" requireProcess="Roll" controller="Before" action="RollCall" requireElection="true" role="guest" desc="Display the names of those who are voting." isPreBallot="true" hideForTypes="LSAC"></page>
+      <page title="Count Envelopes" featureWhen="NamesReady" controller="Ballots" showLocationSelector="true" action="Reconcile" requireElection="true" role="guest" desc="Review the number of ballot envelopes received from each source." isPreBallot="true" hideForTypes="LSAC"></page>
     </group>
     <group title="Tallying" state="Tallying" longtitle="Processing Ballots - Tallying and Analyzing" showTitleInPage="false">
-      <page title="Monitor Progress" featureWhen="Tallying" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
-      <page title="Enter Ballots" featureWhen="Tallying" showTellerSelector="true" showLocationSelectorWithOnline="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
-      <page title="Import External Ballots" featureWhen="Tallying" controller="Setup" action="ImportBallots" requireElection="true" role="known" desc="Import ballots collected via an external source or method."></page>
-      <page title="Analyze Ballots" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
+      <page title="Monitor Progress" hideForTypes="LSAC" featureWhen="Tallying" controller="After" action="Monitor" requireElection="true" role="guest" desc="Centrally monitor progress of tellers."></page>
+      <page title="Enter Ballots" hideForTypes="LSAC" featureWhen="Tallying" showTellerSelector="true" showLocationSelectorWithOnline="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
+      <page title="Import External Ballots" hideForTypes="LSAC" featureWhen="Tallying" controller="Setup" action="ImportBallots" requireElection="true" role="known" desc="Import ballots collected via an external source or method."></page>
+      <page title="Analyze Ballots" hideForTypes="LSAC" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
       <page title="View Reports" featureWhen="Tallying,Finalized" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
-      <page title="Display Tie-Breaks" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
-      <page title="Display Tellers' Report" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
+      <page title="Display Tie-Breaks" hideForTypes="LSAC" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
+      <page title="Display Tellers' Report" hideForTypes="LSAC" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
     </group>
     <group title="general" state="" longtitle="Other Pages" showTitleInPage="false">
       <page title="Welcome Page" featureWhen="OnDash" controller="Public" action="Index" showOnDashboard="false" requireElection="false" role="*" desc="Welcome page"></page>

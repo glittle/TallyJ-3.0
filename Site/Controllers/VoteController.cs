@@ -49,6 +49,8 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
+      // for two-stage elections, this will be the 'central' election guid
+
       // confirm that this person is in the election
       var personQuery = Db.Person.Where(p => p.ElectionGuid == electionGuid);
 
@@ -202,7 +204,7 @@ namespace TallyJ.Controllers
 
       // var now = DateTime.Now;
       var utcNow = DateTime.UtcNow;
-      if (UserSession.CurrentElection.OnlineWhenOpen.AsUtc() <= utcNow 
+      if (UserSession.CurrentElection.OnlineWhenOpen.AsUtc() <= utcNow
           && UserSession.CurrentElection.OnlineWhenClose.AsUtc() > utcNow)
       {
         // pool is JSON string
@@ -447,35 +449,48 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
+        // find this person
         .Where(p => (p.Email == voterId || p.Phone == voterId) && p.CanVote == true)
-        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
-        .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
-        .OrderByDescending(j => j.e.OnlineWhenClose)
-        .ThenByDescending(j => j.e.DateOfElection)
+        // and the elections they are in
+        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid,
+          (p, e) => new { p, e })
+        // and if there is a unit LSAU election that they are in
+        .GroupJoin(Db.Election, j => j.e.PeopleElectionGuid, e => e.ElectionGuid,
+          (j, peList) => new { j.p, j.e, 
+            pe = peList.FirstOrDefault(e => e.ElectionType == ElectionTypeEnum.LSAU & e.UnitName != null && e.UnitName == j.p.UnitName) })
+        .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid,
+          (g, oviList) => new { g.p, g.e, g.pe, ovi = oviList.FirstOrDefault() })
+        .OrderByDescending(j => j.pe.OnlineWhenClose)
+        .ThenByDescending(j => j.pe.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
         .ToList()
-        .Select(j => new
+        .Select(j =>
         {
-          id = j.e.ElectionGuid,
-          j.e.Name,
-          j.e.Convenor,
-          j.e.ElectionType,
-          DateOfElection = j.e.DateOfElection.AsUtc(),
-          j.e.EmailFromAddress,
-          j.e.EmailFromName,
-          OnlineWhenOpen = j.e.OnlineWhenOpen.AsUtc(),
-          OnlineWhenClose = j.e.OnlineWhenClose.AsUtc(),
-          j.e.OnlineCloseIsEstimate,
-          //          j.e.TallyStatus,
-          person = new
+          var focusElection = j.pe ?? j.e;
+          return new
           {
-            name = j.p.C_FullName,
-            j.p.VotingMethod,
-            RegistrationTime = j.p.RegistrationTime.AsUtc(),
-            j.ovi?.PoolLocked,
-            j.ovi?.Status,
-            WhenStatus = j.ovi?.WhenStatus.AsUtc()
-          }
+            id = j.e.ElectionGuid, // parent if showing a unit election 
+            focusElection.Name,
+            focusElection.Convenor,
+            focusElection.ElectionType,
+            focusElection.UnitName, //TODO show this
+            DateOfElection = focusElection.DateOfElection.AsUtc(),
+            focusElection.EmailFromAddress,
+            focusElection.EmailFromName,
+            OnlineWhenOpen = focusElection.OnlineWhenOpen.AsUtc(),
+            OnlineWhenClose = focusElection.OnlineWhenClose.AsUtc(),
+            focusElection.OnlineCloseIsEstimate,
+            //          j.e.TallyStatus,
+            person = new
+            {
+              name = j.p.C_FullName,
+              j.p.VotingMethod,
+              RegistrationTime = j.p.RegistrationTime.AsUtc(),
+              j.ovi?.PoolLocked,
+              j.ovi?.Status,
+              WhenStatus = j.ovi?.WhenStatus.AsUtc()
+            }
+          };
         })
         .ToList();
 
