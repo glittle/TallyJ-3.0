@@ -35,7 +35,13 @@
         Local Electoral Unit
       </td>
       <td>
-        <input type="text" data-name="UnitName" maxlength="50" class="text50" />
+        <select data-name="UnitName" class="UnitName">
+          <option value="">[Select Unit]</option>
+          @foreach (var o in UserSession.UnitNames)
+          {
+            <option value="@o">@o</option>
+          }
+        </select>
         <span class="ui-icon ui-icon-info" id="qTipUnit"></span>
       </td>
     </tr>

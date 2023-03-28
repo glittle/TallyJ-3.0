@@ -43,6 +43,18 @@ namespace Tests.BusinessTests
       new Location().ForTests();
       return election;
     }
+    public static Election ForTestsPersonElection(this Election election)
+    {
+      election.ElectionGuid = _electionGuid;
+
+      Db.Election.Add(election);
+      ItemKey.CurrentPeopleElection.SetInPageItems(election);
+
+      UserSession.PeopleElectionGuid = election.ElectionGuid;
+
+      new Location().ForTests();
+      return election;
+    }
     public static void ForTests(this Location location)
     {
       _locationGuid = location.LocationGuid = Guid.NewGuid();

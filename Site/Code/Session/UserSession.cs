@@ -191,7 +191,7 @@ namespace TallyJ.Code.Session
         SessionKey.PeopleElectionGuid.SetInSession(value);
 
         // reset so we don't use data we just loaded
-        ItemKey.PeopleElection.SetInPageItems<Election>(null);
+        ItemKey.CurrentPeopleElection.SetInPageItems<Election>(null);
       }
     }
 
@@ -200,22 +200,21 @@ namespace TallyJ.Code.Session
     ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also
     ///   sets the CurrentElectionGuid into Session.
     /// </summary>
-    public static Election PeopleElection
+    public static Election CurrentPeopleElection
     {
       get
       {
         // check temp cache for page rendering
         //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
-        var election = ItemKey.PeopleElection.FromPageItems<Election>(null);
+        var election = ItemKey.CurrentPeopleElection.FromPageItems<Election>(null);
         if (election != null)
         {
           return election;
         }
 
         var electionGuid = PeopleElectionGuid;
-        var hasElection = electionGuid.HasContent();
 
-        if (hasElection)
+        if (electionGuid.HasContent())
         {
           var cacher = new ElectionCacher();
           //TODO check for other uses of AllForThisElection
@@ -236,7 +235,7 @@ namespace TallyJ.Code.Session
           {
             // save for next use in this same rendering
             //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
-            ItemKey.PeopleElection.SetInPageItems(election);
+            ItemKey.CurrentPeopleElection.SetInPageItems(election);
           }
         }
 
@@ -639,6 +638,30 @@ namespace TallyJ.Code.Session
         return election == null || election.TallyStatus.HasNoContent()
           ? ElectionTallyStatusEnum.NotStarted
           : election.TallyStatus;
+      }
+    }
+
+    /// <summary>
+    /// People election or self.  If we get person records from a different election
+    /// </summary>
+    public static Guid CurrentPeopleElectionGuid
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election.PeopleElectionGuid ?? election.ElectionGuid;
+      }
+    }
+
+    /// <summary>
+    /// Parent or self
+    /// </summary>
+    public static Guid CurrentParentElectionGuid
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election.ParentElectionGuid ?? election.ElectionGuid;
       }
     }
 

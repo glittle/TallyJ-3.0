@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using CsQuery;
 using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -43,15 +42,15 @@ namespace TallyJ.CoreModels
       _election = election;
     }
 
-    private Election PeopleElection => _election ?? (_election = UserSession.PeopleElection);
+    private Election PeopleElection => _election ??= UserSession.CurrentPeopleElection;
 
-    private Guid PeopleElectionGuid => PeopleElection == null ? Guid.Empty : PeopleElection.ElectionGuid;
+    private Guid PeopleElectionGuid => PeopleElection?.ElectionGuid ?? Guid.Empty;
 
-    private IEnumerable<Location> Locations => _locations ?? (_locations = new LocationCacher(Db).AllForThisElection);
+    private IEnumerable<Location> Locations => _locations ??= new LocationCacher(Db).AllForThisElection;
 
-    private List<Person> PeopleInElection => _people ?? (_people = new PersonCacher(Db).AllForThisElection);
+    private List<Person> PeopleInElection => _people ??= new PersonCacher(Db).AllForThisElection;
 
-    private int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count();
+    private int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
     public List<Person> PeopleWhoCanVote() //, bool includeIneligible = true
     {
@@ -324,14 +323,16 @@ namespace TallyJ.CoreModels
         personFromInput.OtherNames,
         personFromInput.Area,
         personFromInput.Email,
-        personFromInput.Phone
+        personFromInput.Phone,
+        personFromInput.UnitName
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
-      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
+      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) 
+                || changed 
+                || ApplyVoteReasonFlags(personInDatastore);
 
       // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
-      if (ApplyVoteReasonFlags(personInDatastore)) changed = true;
 
       // const string all = ElectionModel.CanVoteOrReceive.All;
       // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(PeopleElection.CanReceive == all);
@@ -391,7 +392,7 @@ namespace TallyJ.CoreModels
       {
         Status = "Saved",
         Person = PersonForEdit(personInDatastore),
-        OnFile = persons.Count(),
+        OnFile = persons.Count,
         Eligible = persons.Count(p => p.IneligibleReasonGuid == null) //TODO? split to: can vote, can receive votes
       }.AsJsonResult();
     }
@@ -506,7 +507,7 @@ namespace TallyJ.CoreModels
       var peopleCount = people.Count;
       if (peopleCount == 0) return new List<object>();
       var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
-      var useOnline = UserSession.PeopleElection.OnlineEnabled;
+      var useOnline = UserSession.CurrentPeopleElection.OnlineEnabled;
       var firstPersonGuid = people[0].PersonGuid;
 
       var onlineProcessed = Db.OnlineVotingInfo
@@ -629,7 +630,7 @@ namespace TallyJ.CoreModels
       person.Teller2 = UserSession.GetCurrentTeller(2);
 
       var votingMethodRemoved = false;
-      Guid? oldVoteLocationGuid = null;
+      Guid? oldVoteLocationGuid;
       Guid? newVoteLocationGuid = null;
       var utcNow = DateTime.UtcNow;
 
@@ -722,7 +723,7 @@ namespace TallyJ.CoreModels
 
       var utcNow = DateTime.UtcNow;
 
-      var allowedFlags = UserSession.PeopleElection.FlagsList;
+      var allowedFlags = UserSession.CurrentPeopleElection.FlagsList;
       var currentFlags = person.Flags.DefaultTo("").Split('|').ToList();
 
       var incomingFlag = flag.Substring(5);
@@ -813,8 +814,6 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///   Update listing for everyone updated since this version
     /// </summary>
-    /// <param name="lastRowVersion"></param>
-    /// <param name="votingMethodRemoved"></param>
     /// <summary>
     ///   Update listing for just one person
     /// </summary>
@@ -840,11 +839,10 @@ namespace TallyJ.CoreModels
       new VoterPersonalHub().Update(person);
 
       var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed
-      long newStamp;
       var rollCallModel = new RollCallModel();
       var rollCallInfo = new
       {
-        changed = rollCallModel.GetMorePeople(oldestStamp, out newStamp),
+        changed = rollCallModel.GetMorePeople(oldestStamp, out var newStamp),
         removedId = votingMethodRemoved ? person.C_RowId : 0,
         newStamp
       };

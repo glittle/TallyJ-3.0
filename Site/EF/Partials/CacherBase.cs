@@ -11,25 +11,25 @@ namespace TallyJ.EF
   public abstract class CacherBase
   {
     private Guid _currentElectionGuid;
+    private Guid _currentPeopleElectionGuid;
     protected abstract object LockCacheBaseObject { get; }
 
-    public Guid CurrentElectionGuid
-    {
-      get
-      {
-        return _currentElectionGuid != Guid.Empty
-          ? _currentElectionGuid
-          : (_currentElectionGuid = UserSession.CurrentElectionGuid);
-      }
-    }
+    public Guid CurrentElectionGuid =>
+      _currentElectionGuid != Guid.Empty
+        ? _currentElectionGuid
+        : (_currentElectionGuid = UserSession.CurrentElectionGuid);
 
+    public Guid CurrentPeopleElectionGuid =>
+      _currentPeopleElectionGuid != Guid.Empty
+        ? _currentPeopleElectionGuid
+        : (_currentPeopleElectionGuid = UserSession.CurrentPeopleElectionGuid);
   }
 
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching
   {
     private const int CacheMinutes = 30; // long enough for a reasonable gap in usage
 
-    public CacherBase(ITallyJDbContext dbContext)
+    protected CacherBase(ITallyJDbContext dbContext)
     {
       CurrentDb = dbContext;
     }
@@ -37,10 +37,7 @@ namespace TallyJ.EF
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
-    protected virtual string CacheKeyRaw
-    {
-      get { return typeof(T).Name + CurrentElectionGuid; }
-    }
+    protected virtual string CacheKeyRaw => typeof(T).Name + CurrentElectionGuid + CurrentPeopleElectionGuid;
 
     protected ITallyJDbContext CurrentDb { get; set; }
 
@@ -58,14 +55,12 @@ namespace TallyJ.EF
     {
       get
       {
-        var db = CurrentDb;
-
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
         {
           allForThisElection = MainQuery()
             .FromCache(CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)),
-              new[] { CacheKeyRaw, CurrentElectionGuid.ToString() }).ToList();
+              new[] { CacheKeyRaw, CurrentElectionGuid.ToString(), CurrentPeopleElectionGuid.ToString() }).ToList();
         }
 
         return allForThisElection;
@@ -152,7 +147,7 @@ namespace TallyJ.EF
     public void ReplaceEntireCache(List<T> listFromCache)
     {
       var key = new CacheKey(MainQuery().GetCacheKey(),
-        new[] { CacheKeyRaw, CurrentElectionGuid.ToString() });
+        new[] { CacheKeyRaw, CurrentElectionGuid.ToString(), CurrentPeopleElectionGuid.ToString() });
 
       CacheManager.Current.Set(key, listFromCache, CachePolicy.WithSlidingExpiration(TimeSpan.FromMinutes(CacheMinutes)));
 

@@ -161,6 +161,14 @@
       }
       form[input.data('name')] = value;
     });
+    debugger 
+
+//    var selects = local.hostPanel.find('select[data-name]');
+//    selects.each(function () {
+//      var select = $(this);
+//      var value = select.val();
+//      form[select.data('name')] = value;
+//    });
 
     var errors = [];
 
@@ -184,21 +192,21 @@
         busy: 'Saving'
       },
       function (info) {
-      if (info.Message) {
-        ShowStatusFailed(info.Message);
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          if (info.Person) {
+            applyValues(null, info.Person, true);
+          }
+          return;
+        }
         if (info.Person) {
           applyValues(null, info.Person, true);
-        }
-        return;
-      }
-      if (info.Person) {
-        applyValues(null, info.Person, true);
-        startEdit();
+          startEdit();
 
-        site.broadcast(site.broadcastCode.personSaved, info);
-      }
-      ShowStatusDone(info.Status);
-    });
+          site.broadcast(site.broadcastCode.personSaved, info);
+        }
+        ShowStatusDone(info.Status);
+      });
   };
 
   //function deletePerson() {

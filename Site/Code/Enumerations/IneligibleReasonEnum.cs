@@ -56,7 +56,7 @@ namespace TallyJ.Code.Enumerations
       Add(Ineligible_Not_Adult);
       Add(Ineligible_Resides_elsewhere);
       Add(Ineligible_Moved_elsewhere_recently);
-      Add(Ineligible_Not_in_this_local_unit);
+      Add(Ineligible_Not_in_this_local_unit); // for two-stage elections
       Add(Ineligible_Deceased);
       Add(Ineligible_NotDelegate_OnOther);
       Add(Ineligible_Non_Bahai);

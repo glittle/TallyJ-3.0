@@ -7,7 +7,7 @@ namespace TallyJ.EF
   {
     public override IQueryable<Person> MainQuery()
     {
-      return CurrentDb.Person.Where(p => p.ElectionGuid == CurrentElectionGuid);
+      return CurrentDb.Person.Where(p => p.ElectionGuid == CurrentPeopleElectionGuid);
     }
   
     protected override void ItemChanged()
@@ -24,13 +24,6 @@ namespace TallyJ.EF
     }
 
 
-    protected override object LockCacheBaseObject
-    {
-      get
-      {
-        return _lockObject ?? (_lockObject = new object());
-      }
-    }
-
+    protected override object LockCacheBaseObject => _lockObject ??= new object();
   }
 }

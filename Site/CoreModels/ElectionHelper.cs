@@ -508,10 +508,14 @@ namespace TallyJ.CoreModels
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
       // if a LSAC, get the unit names
-      if (UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC.ToString())
+      if (UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU
+          || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC)
       {
+        var peopleElectionGuid = UserSession.CurrentElection.PeopleElectionGuid;
+        var electionType = ElectionTypeEnum.LSAU.ToString();
+
         UserSession.UnitNames = Db.Election
-          .Where(e => e.ParentElectionGuid == wantedElectionGuid && e.ElectionType == ElectionTypeEnum.LSAU.ToString())
+          .Where(e => e.ParentElectionGuid == peopleElectionGuid && e.ElectionType == electionType)
           .Select(e=>e.UnitName)
           .OrderBy(s=>s)
           .ToList();
