@@ -49,7 +49,7 @@ namespace TallyJ.Controllers
           p.Area,
           p.Email,
           p.Phone,
-          V = (p.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.CanVote.AsBoolean() ? "1" : "0"),
+          V = (p.CanReceiveVotesInElection.AsBoolean() ? "1" : "0") + (p.CanVoteInElection.AsBoolean() ? "1" : "0"),
           IRG = p.IneligibleReasonGuid,
           NumVotes = isSingleNameElection
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
@@ -110,7 +110,7 @@ namespace TallyJ.Controllers
 
             if (irg != null)
             {
-              if (p.CanReceiveVotes.GetValueOrDefault())
+              if (p.CanReceiveVotesInElection.GetValueOrDefault())
               {
                 // if they can receive votes, ignore any other status they may have (e.g. not a delegate)
                 irg = null;

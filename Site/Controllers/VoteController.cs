@@ -340,7 +340,7 @@ namespace TallyJ.Controllers
           }.AsJsonResult();
         }
 
-        if (!person.CanVote.AsBoolean())
+        if (!person.CanVoteInElection.AsBoolean())
         {
           return new
           {
@@ -450,7 +450,7 @@ namespace TallyJ.Controllers
 
       var list = Db.Person
         // find this person
-        .Where(p => (p.Email == voterId || p.Phone == voterId) && p.CanVote == true)
+        .Where(p => (p.Email == voterId || p.Phone == voterId) && p.CanVoteInElection == true)
         // and the elections they are in
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid,
           (p, e) => new { p, e })

@@ -33,7 +33,7 @@ namespace Tests.BusinessTests
       _electionGuid = Guid.NewGuid();
 
       SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      BallotTestHelper.SaveElectionGuidForTests(_electionGuid);
+      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
       SessionKey.CurrentComputer.SetInSession(new Computer
       {
@@ -71,11 +71,8 @@ namespace Tests.BusinessTests
         new Ballot().ForTests()
       };
 
-      var votes = new[]
-      {
-        new Vote().ForTests(ballots[0], SamplePeople[0]),
-        new Vote().ForTests(ballots[0], SamplePeople[1])
-      };
+      new Vote().ForTests(ballots[0], SamplePeople[0]);
+      new Vote().ForTests(ballots[0], SamplePeople[1]);
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 

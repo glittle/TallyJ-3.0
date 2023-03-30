@@ -377,7 +377,7 @@ namespace TallyJ.CoreModels
         {
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+          vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid;
           //          VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
           //            person.CanReceiveVotes);
         }
@@ -704,7 +704,7 @@ namespace TallyJ.CoreModels
             PersonGuid = person.PersonGuid,
             PersonCombinedInfo = person.CombinedInfo,
             SingleNameElectionCount = 1, // okay if set for normal election too
-            InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid
+            InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid
           };
         }
         else
@@ -734,7 +734,7 @@ namespace TallyJ.CoreModels
             vote.StatusCode = VoteStatusCode.Ok;
             vote.PersonGuid = person.PersonGuid;
             vote.PersonCombinedInfo = person.CombinedInfo;
-            vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+            vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid;
           }
         }
 

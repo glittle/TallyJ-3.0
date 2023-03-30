@@ -56,7 +56,7 @@ namespace TallyJ.Code.Enumerations
     {
       var text = item.DisplayText;
 
-      var currentElection = UserSession.CurrentElection;
+      var currentElection = UserSession.CurrentPeopleElection;
       if (currentElection == null)
       {
         return text;

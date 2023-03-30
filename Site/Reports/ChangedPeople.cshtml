@@ -17,9 +17,7 @@
       p.OtherNames,
       p.OtherLastNames,
       p.OtherInfo,
-      p.BahaiId,
-      p.CanVote,
-      p.CanReceiveVotes,
+      p.BahaiId, CanVote = p.CanVoteInElection, CanReceiveVotes = p.CanReceiveVotesInElection,
       InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
     })
     .OrderBy(p => p.Change)

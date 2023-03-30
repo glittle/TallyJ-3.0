@@ -152,8 +152,8 @@ namespace TallyJ.CoreModels.ExportImport
           p.CombinedSoundCodes, // now used for extra fake columns
           p.CombinedInfoAtStart,
           p.AgeGroup,
-          CanVote = p.CanVote.OnlyIfFalse(),
-          CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
+          CanVote = p.CanVoteInElection.OnlyIfFalse(),
+          CanReceiveVotes = p.CanReceiveVotesInElection.OnlyIfFalse(),
           p.IneligibleReasonGuid,
           RegistrationTime = p.RegistrationTime.AsUtc().AsString("o").OnlyIfHasContent(),
           p.VotingLocationGuid,

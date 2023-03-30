@@ -7,7 +7,7 @@ namespace TallyJ.EF
   {
     public override IQueryable<Election> MainQuery()
     {
-      return CurrentDb.Election.Where(p => p.ElectionGuid == CurrentElectionGuid);
+      return CurrentDb.Election.Where(p => p.ElectionGuid == CurrentElectionGuid);// || p.ElectionGuid == CurrentPeopleElectionGuid);
     }
 
     /// <summary>

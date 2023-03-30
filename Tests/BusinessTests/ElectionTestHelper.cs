@@ -13,7 +13,7 @@ using TallyJ.EF;
 namespace Tests.BusinessTests
 {
 
-  static class BallotTestHelper
+  static class ElectionTestHelper
   {
     static int _rowId = 1;
     static Guid _locationGuid;
@@ -34,11 +34,14 @@ namespace Tests.BusinessTests
     public static Election ForTests(this Election election)
     {
       election.ElectionGuid = _electionGuid;
+      election.C_RowId = 1;
 
       Db.Election.Add(election);
       ItemKey.CurrentElection.SetInPageItems(election);
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
+
+      ItemKey.CurrentElection.SetInPageItems(election);
 
       new Location().ForTests();
       return election;
@@ -68,8 +71,8 @@ namespace Tests.BusinessTests
     {
       person.PersonGuid = Guid.NewGuid();
       person.CombinedInfo = "abc";
-      person.CanVote = true;
-      person.CanReceiveVotes = true;
+      person.CanVoteInElection = true;
+      person.CanReceiveVotesInElection = true;
       person.C_RowId = _rowId++;
       person.ElectionGuid = _electionGuid;
 

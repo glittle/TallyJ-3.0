@@ -300,7 +300,7 @@ namespace TallyJ.CoreModels
           }
           incomingVoter.VotingMethod = VotingMethodEnum.TextFor(person.VotingMethod);
 
-          if (!person.CanVote.GetValueOrDefault())
+          if (!person.CanVoteInElection.GetValueOrDefault())
             electionInfo.ImportErrors.Add($"{person.FullNameFL} is not permitted to vote.");
         }
         else
@@ -601,7 +601,7 @@ namespace TallyJ.CoreModels
           vote.StatusCode = VoteStatusCode.Ok;
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.CanReceiveVotes.AsBoolean(true) ? null : person.IneligibleReasonGuid; // status code will be updated later if this is set
+          vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid; // status code will be updated later if this is set
         }
 
         db.Vote.Add(vote);

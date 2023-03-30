@@ -20,7 +20,7 @@
       press Enter when their name is highlighted. Use the Up and Down keys to move through
       the list of matched names.
     </li>
-    @if (UserSession.CurrentElection.ElectionMode == ElectionModeEnum.Tie)
+    @if (UserSession.CurrentElection.ElectionType== ElectionTypeEnum.Tie)
     {
       <li>For this tie-break election, those tied should have a status of "Eligible to vote and be voted for" and everyone else "Tie-break: Not tied"</li>
     }

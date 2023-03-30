@@ -51,7 +51,7 @@ namespace TallyJ.CoreModels
 
       var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
         .GroupBy(p => p.ElectionGuid)
-        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => p.CanVote.Value) })
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => p.CanVoteInElection.Value) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
       var tellerCounts = Db.Teller.Where(l => electionGuids.Contains(l.ElectionGuid))

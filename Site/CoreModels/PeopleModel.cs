@@ -56,7 +56,7 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-          .Where(p => p.CanVote.AsBoolean())
+          .Where(p => p.CanVoteInElection.AsBoolean())
           .ToList();
       }
     }
@@ -189,30 +189,30 @@ namespace TallyJ.CoreModels
       if (reason == null)
       {
         // no reason, so set to true
-        if (!person.CanVote.GetValueOrDefault())
+        if (!person.CanVoteInElection.GetValueOrDefault())
         {
-          person.CanVote = true;
+          person.CanVoteInElection = true;
           changed = true;
         }
 
-        if (!person.CanReceiveVotes.GetValueOrDefault())
+        if (!person.CanReceiveVotesInElection.GetValueOrDefault())
         {
-          person.CanReceiveVotes = true;
+          person.CanReceiveVotesInElection = true;
           changed = true;
         }
       }
       else
       {
         // update to match what this reason implies
-        if (person.CanVote != reason.CanVote)
+        if (person.CanVoteInElection != reason.CanVote)
         {
-          person.CanVote = reason.CanVote;
+          person.CanVoteInElection = reason.CanVote;
           changed = true;
         }
 
-        if (person.CanReceiveVotes != reason.CanReceiveVotes)
+        if (person.CanReceiveVotesInElection != reason.CanReceiveVotes)
         {
-          person.CanReceiveVotes = reason.CanReceiveVotes;
+          person.CanReceiveVotesInElection = reason.CanReceiveVotes;
           changed = true;
         }
       }
@@ -250,8 +250,8 @@ namespace TallyJ.CoreModels
         person.C_RowId,
         //person.AgeGroup,
         person.BahaiId,
-        person.CanReceiveVotes,
-        person.CanVote,
+        CanReceiveVotes = person.CanReceiveVotesInElection,
+        CanVote = person.CanVoteInElection,
         person.FirstName,
         person.IneligibleReasonGuid,
         person.LastName,
@@ -553,8 +553,8 @@ namespace TallyJ.CoreModels
           OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
           // Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
-          p.CanVote,
-          p.CanReceiveVotes, // for ballot entry page
+          CanVote = p.CanVoteInElection,
+          CanReceiveVotes = p.CanReceiveVotesInElection, // for ballot entry page
           p.IneligibleReasonGuid, // for ballot entry page
           p.BahaiId,
           flags = p.Flags.SplitWithString("|")
@@ -634,7 +634,7 @@ namespace TallyJ.CoreModels
       Guid? newVoteLocationGuid = null;
       var utcNow = DateTime.UtcNow;
 
-      if (person.VotingMethod == voteType || forceDeselect || !person.CanVote.AsBoolean())
+      if (person.VotingMethod == voteType || forceDeselect || !person.CanVoteInElection.AsBoolean())
       {
         oldVoteLocationGuid = person.VotingLocationGuid;
 

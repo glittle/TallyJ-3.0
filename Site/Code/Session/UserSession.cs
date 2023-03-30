@@ -135,7 +135,6 @@ namespace TallyJ.Code.Session
       get
       {
         // check temp cache for page rendering
-        //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
         var election = ItemKey.CurrentElection.FromPageItems<Election>(null);
         if (election != null && CurrentElectionGuid == election.ElectionGuid)
         {
@@ -148,12 +147,12 @@ namespace TallyJ.Code.Session
         if (hasElection)
         {
           var cacher = new ElectionCacher();
-          election = cacher.AllForThisElection.FirstOrDefault();
-          if (election != null && election.ElectionGuid != currentElectionGuid)
+          election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == currentElectionGuid);
+          if (election != null)
           {
             // occasionally, when changing elections, the cacher has the old election...need to flush it
             cacher.DropThisCache();
-            election = cacher.AllForThisElection.FirstOrDefault();
+            election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == currentElectionGuid);
           }
 
           // even if have valid guid, may be null if election was just deleted
@@ -173,6 +172,27 @@ namespace TallyJ.Code.Session
       }
     }
 
+    public static string CurrentElectionStatusName
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election == null
+          ? ElectionTallyStatusEnum.NotStarted
+          : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+      }
+    }
+
+    public static string CurrentElectionStatus
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election == null || election.TallyStatus.HasNoContent()
+          ? ElectionTallyStatusEnum.NotStarted
+          : election.TallyStatus;
+      }
+    }
 
     /// <Summary>Stored as Guid in session</Summary>
     public static Guid PeopleElectionGuid
@@ -240,6 +260,30 @@ namespace TallyJ.Code.Session
         }
 
         return election;
+      }
+    }
+
+    /// <summary>
+    /// People election or this election.
+    /// </summary>
+    public static Guid CurrentPeopleElectionGuid
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election.PeopleElectionGuid ?? election.ElectionGuid;
+      }
+    }
+
+    /// <summary>
+    /// Parent or self
+    /// </summary>
+    public static Guid CurrentParentElectionGuid
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election.ParentElectionGuid ?? election.ElectionGuid;
       }
     }
 
@@ -619,51 +663,6 @@ namespace TallyJ.Code.Session
       set => SessionKey.UnitNames.SetInSession(value);
     }
 
-    public static string CurrentElectionStatusName
-    {
-      get
-      {
-        var election = CurrentElection;
-        return election == null
-          ? ElectionTallyStatusEnum.NotStarted
-          : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
-      }
-    }
-
-    public static string CurrentElectionStatus
-    {
-      get
-      {
-        var election = CurrentElection;
-        return election == null || election.TallyStatus.HasNoContent()
-          ? ElectionTallyStatusEnum.NotStarted
-          : election.TallyStatus;
-      }
-    }
-
-    /// <summary>
-    /// People election or self.  If we get person records from a different election
-    /// </summary>
-    public static Guid CurrentPeopleElectionGuid
-    {
-      get
-      {
-        var election = CurrentElection;
-        return election.PeopleElectionGuid ?? election.ElectionGuid;
-      }
-    }
-
-    /// <summary>
-    /// Parent or self
-    /// </summary>
-    public static Guid CurrentParentElectionGuid
-    {
-      get
-      {
-        var election = CurrentElection;
-        return election.ParentElectionGuid ?? election.ElectionGuid;
-      }
-    }
 
     public static string SiteVersion
     {

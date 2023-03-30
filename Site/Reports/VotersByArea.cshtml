@@ -8,7 +8,7 @@
 @{
   var election = UserSession.CurrentElection;
   var areas = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
+    .Where(p => p.CanVoteInElection.HasValue && p.CanVoteInElection.Value)
     .GroupBy(p => p.Area)
     .OrderBy(g => g.Key)
     .Select(g => new
