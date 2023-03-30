@@ -161,14 +161,6 @@
       }
       form[input.data('name')] = value;
     });
-    debugger 
-
-//    var selects = local.hostPanel.find('select[data-name]');
-//    selects.each(function () {
-//      var select = $(this);
-//      var value = select.val();
-//      form[select.data('name')] = value;
-//    });
 
     var errors = [];
 

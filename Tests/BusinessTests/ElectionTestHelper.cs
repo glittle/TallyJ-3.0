@@ -34,6 +34,7 @@ namespace Tests.BusinessTests
     public static Election ForTests(this Election election)
     {
       election.ElectionGuid = _electionGuid;
+      election.PeopleElectionGuid = _electionGuid;
       election.C_RowId = 1;
 
       Db.Election.Add(election);
@@ -41,19 +42,17 @@ namespace Tests.BusinessTests
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
 
-      ItemKey.CurrentElection.SetInPageItems(election);
-
       new Location().ForTests();
       return election;
     }
     public static Election ForTestsPersonElection(this Election election)
     {
       election.ElectionGuid = _electionGuid;
+      election.PeopleElectionGuid = _electionGuid;
+      election.C_RowId = 2;
 
       Db.Election.Add(election);
       ItemKey.CurrentPeopleElection.SetInPageItems(election);
-
-      UserSession.PeopleElectionGuid = election.ElectionGuid;
 
       new Location().ForTests();
       return election;

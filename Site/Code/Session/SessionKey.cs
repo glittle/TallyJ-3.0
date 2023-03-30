@@ -8,7 +8,6 @@ namespace TallyJ.Code.Session
         public const string CurrentLocationGuid = "LocationGuid";
         public const string CurrentBallotFilter = "BallotFilter";
         public const string CurrentElectionGuid = "ElectionGuid";
-        public const string PeopleElectionGuid = "PeopleGuid";
         public const string CurrentTeller = "CurrentTeller";
 
         public const string IsGuestTeller = "IsGuestTeller";

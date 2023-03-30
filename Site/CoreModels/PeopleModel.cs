@@ -28,7 +28,7 @@ namespace TallyJ.CoreModels
 
     private const int NotSet = -1;
     private const int WantAllLocations = -2;
-    private Election _election;
+    private Election _peopleElection;
 
     private List<Location> _locations;
     private List<Person> _people;
@@ -37,14 +37,14 @@ namespace TallyJ.CoreModels
     {
     }
 
-    public PeopleModel(Election election)
+    public PeopleModel(Election peopleElection)
     {
-      _election = election;
+      _peopleElection = peopleElection;
     }
 
-    private Election PeopleElection => _election ??= UserSession.CurrentPeopleElection;
+    private Election PeopleElection => _peopleElection ??= UserSession.CurrentPeopleElection;
 
-    private Guid PeopleElectionGuid => PeopleElection?.ElectionGuid ?? Guid.Empty;
+    private Guid PeopleElectionGuid => PeopleElection.ElectionGuid;
 
     private IEnumerable<Location> Locations => _locations ??= new LocationCacher(Db).AllForThisElection;
 
@@ -261,7 +261,8 @@ namespace TallyJ.CoreModels
         person.Area,
         person.Email,
         person.Phone,
-        person.C_FullName
+        person.C_FullName,
+        person.UnitName
       };
     }
 

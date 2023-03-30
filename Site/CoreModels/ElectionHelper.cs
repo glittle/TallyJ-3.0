@@ -511,7 +511,7 @@ namespace TallyJ.CoreModels
       if (UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU
           || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC)
       {
-        var peopleElectionGuid = UserSession.CurrentElection.PeopleElectionGuid;
+        var peopleElectionGuid = UserSession.CurrentPeopleElectionGuid;
         var electionType = ElectionTypeEnum.LSAU.ToString();
 
         UserSession.UnitNames = Db.Election
@@ -697,6 +697,7 @@ namespace TallyJ.CoreModels
         NumberToElect = rules.Num,
         NumberExtra = rules.Extra,
       };
+      election.PeopleElectionGuid = election.ElectionGuid;
 
       Db.Election.Add(election);
       Db.SaveChanges();

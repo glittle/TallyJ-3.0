@@ -240,11 +240,6 @@ namespace TallyJ.EF
           .Contains(b.LocationGuid)).Delete();
     }
 
-    /// <summary>
-    /// The election where the people records are stored
-    /// </summary>
-    public Guid PeopleSourceElectionGuid=> PeopleElectionGuid ?? ElectionGuid;
-
     public long RowVersionInt
     {
       get

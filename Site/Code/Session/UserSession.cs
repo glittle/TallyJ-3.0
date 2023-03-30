@@ -194,27 +194,6 @@ namespace TallyJ.Code.Session
       }
     }
 
-    /// <Summary>Stored as Guid in session</Summary>
-    public static Guid PeopleElectionGuid
-    {
-      get
-      {
-        if (CurrentContext.Session.IsAvailable)
-        {
-          return SessionKey.PeopleElectionGuid.FromSession(Guid.Empty);
-        }
-
-        return Guid.Empty;
-      }
-      set
-      {
-        SessionKey.PeopleElectionGuid.SetInSession(value);
-
-        // reset so we don't use data we just loaded
-        ItemKey.CurrentPeopleElection.SetInPageItems<Election>(null);
-      }
-    }
-
 
     /// <summary>
     ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also
@@ -232,7 +211,7 @@ namespace TallyJ.Code.Session
           return election;
         }
 
-        var electionGuid = PeopleElectionGuid;
+        var electionGuid = CurrentPeopleElectionGuid;
 
         if (electionGuid.HasContent())
         {
@@ -249,7 +228,7 @@ namespace TallyJ.Code.Session
           // even if have valid guid, may be null if election was just deleted
           if (election == null)
           {
-            PeopleElectionGuid = Guid.Empty;
+            // CurrentPeopleElectionGuid = Guid.Empty;
           }
           else
           {
@@ -264,16 +243,9 @@ namespace TallyJ.Code.Session
     }
 
     /// <summary>
-    /// People election or this election.
+    /// People election guid.
     /// </summary>
-    public static Guid CurrentPeopleElectionGuid
-    {
-      get
-      {
-        var election = CurrentElection;
-        return election.PeopleElectionGuid ?? election.ElectionGuid;
-      }
-    }
+    public static Guid CurrentPeopleElectionGuid => CurrentElection.PeopleElectionGuid;
 
     /// <summary>
     /// Parent or self

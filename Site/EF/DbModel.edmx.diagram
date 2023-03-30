@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="49b1c53870eb4c749b980a852410fa65" Name="Diagram1" ZoomLevel="75">
+      <Diagram DiagramId="49b1c53870eb4c749b980a852410fa65" Name="Diagram1" ZoomLevel="30">
         <EntityTypeShape EntityType="TallyJ2dModel.Users" Width="1.5" PointX="0.75" PointY="9.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.ImportFile" Width="1.5" PointX="5.75" PointY="6.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.JoinElectionUser" Width="1.5" PointX="3" PointY="7.125" />
