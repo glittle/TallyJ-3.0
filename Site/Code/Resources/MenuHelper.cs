@@ -207,8 +207,19 @@ namespace TallyJ.Code.Resources
 
       // false tests
       if (!hasElection && node.GetAttribute("requireElection") == "true") return false;
-      if (hasElection && hidePreBallotPages && node.GetAttribute("isPreBallot") == "true") return false;
-      if (hasElection && node.GetAttribute("hideForTypes").SplitWithString(",").Contains(_currentElection.ElectionType)) return false;
+
+      if (hasElection)
+      {
+        if (hidePreBallotPages && node.GetAttribute("isPreBallot") == "true") return false;
+        if (node.GetAttribute("hideForTypes").SplitWithString(",").Contains(_currentElection.ElectionType)) return false;
+
+        var onlyFor = node.GetAttribute("onlyForTypes");
+        if (onlyFor.HasContent())
+        {
+          if (!onlyFor.SplitWithString(",").Contains(_currentElection.ElectionType)) return false;
+        }
+      }
+
 
       var requireProcess = node.GetAttribute("requireProcess");
       if (requireProcess.HasContent())

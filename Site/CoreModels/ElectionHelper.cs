@@ -506,10 +506,14 @@ namespace TallyJ.CoreModels
 
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
+      
 
       // if a LSAC, get the unit names
-      if (UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU
-          || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC)
+      var currentElection = UserSession.CurrentElection;
+      UserSession.CurrentPeopleElectionGuid = currentElection.PeopleElectionGuid;
+      UserSession.CurrentParentElectionGuid = currentElection.ParentElectionGuid ?? Guid.Empty;
+
+      if (currentElection.IsLsaCU)
       {
         var peopleElectionGuid = UserSession.CurrentPeopleElectionGuid;
         var electionType = ElectionTypeEnum.LSAU.ToString();
@@ -702,6 +706,8 @@ namespace TallyJ.CoreModels
       Db.Election.Add(election);
       Db.SaveChanges();
       UserSession.CurrentElectionGuid = election.ElectionGuid;
+      UserSession.CurrentPeopleElectionGuid = election.PeopleElectionGuid;
+      UserSession.CurrentParentElectionGuid = Guid.Empty;
 
       //      new ElectionStatusSharer().SetStateFor(election);
 

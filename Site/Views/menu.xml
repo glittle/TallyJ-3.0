@@ -20,7 +20,10 @@
       <page title="Enter Ballots" hideForTypes="LSAC" featureWhen="Tallying" showTellerSelector="true" showLocationSelectorWithOnline="true" controller="Ballots" action="Index" requireElection="true" role="guest" desc="Type in the names found on ballots."></page>
       <page title="Import External Ballots" hideForTypes="LSAC" featureWhen="Tallying" controller="Setup" action="ImportBallots" requireElection="true" role="known" desc="Import ballots collected via an external source or method."></page>
       <page title="Analyze Ballots" hideForTypes="LSAC" featureWhen="Tallying,Finalized" controller="After" action="Analyze" requireElection="true" role="known" desc="Review results, checking for ties."></page>
-      <page title="View Reports" featureWhen="Tallying,Finalized" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
+      
+      <page title="View Reports" hideForTypes="LSAC" featureWhen="Tallying,Finalized" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
+      <page title="View Reports" onlyForTypes="LSAC" featureWhen="Tallying" controller="After" action="Reports" requireElection="true" role="guest" desc="Generate election reports."></page>
+
       <page title="Display Tie-Breaks" hideForTypes="LSAC" featureWhen="Tallying" class="Projector" controller="After" action="ShowTies" requireElection="true" role="guest" desc="Show tie-break information." hasTies="true"></page>
       <page title="Display Tellers' Report" hideForTypes="LSAC" featureWhen="Finalized" class="Projector" controller="After" action="Presenter" requireElection="true" role="guest" desc="Display results of the election."></page>
     </group>

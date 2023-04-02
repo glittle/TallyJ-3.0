@@ -32,9 +32,14 @@ namespace TallyJ.CoreModels
 
     private List<Location> _locations;
     private List<Person> _people;
+    private readonly string _unit;
 
     public PeopleModel()
     {
+    }
+    public PeopleModel(string unit)
+    {
+      _unit = unit;
     }
 
     public PeopleModel(Election peopleElection)
@@ -112,7 +117,7 @@ namespace TallyJ.CoreModels
       hub.StatusUpdate("Reviewing people", true);
       var peopleElectionGuid = UserSession.CurrentElectionGuid;
 
-      var numDone = 0; 
+      var numDone = 0;
       foreach (var person in people)
       {
         var changesMade = false;
@@ -329,26 +334,8 @@ namespace TallyJ.CoreModels
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
 
-      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) 
-                || changed 
-                || ApplyVoteReasonFlags(personInDatastore);
-
-      // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
-
-      // const string all = ElectionModel.CanVoteOrReceive.All;
-      // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(PeopleElection.CanReceive == all);
-      // if (personInDatastore.CanReceiveVotes != canReceiveVotes)
-      // {
-      //   personInDatastore.CanReceiveVotes = canReceiveVotes;
-      //   changed = true;
-      // }
-      //
-      // var canVote = personFromInput.CanVote.AsBoolean(PeopleElection.CanVote == all);
-      // if (personInDatastore.CanVote != canVote)
-      // {
-      //   personInDatastore.CanVote = canVote;
-      //   changed = true;
-      // }
+      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
+      changed = ApplyVoteReasonFlags(personInDatastore) || changed;
 
       if (changed)
       {
@@ -558,6 +545,7 @@ namespace TallyJ.CoreModels
           CanReceiveVotes = p.CanReceiveVotesInElection, // for ballot entry page
           p.IneligibleReasonGuid, // for ballot entry page
           p.BahaiId,
+          p.UnitName,
           flags = p.Flags.SplitWithString("|")
         });
     }

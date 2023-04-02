@@ -193,11 +193,11 @@
     }
     <div class="Env">{EnvNum}</div>
     @*@switch (ballotProcessEnum)
-      {
-        case BallotProcessEnum.RegV:
-          <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
-          break;
-      }*@
+    {
+      case BallotProcessEnum.RegV:
+        <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
+        break;
+    }*@
     @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
     {
       <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
@@ -206,14 +206,15 @@
     <p>{BahaiId}</p>
     @if (currentPeopleElection.FlagsList.Count > 0)
     {
-        <div class="flags">
+      <div class="flags">
         @foreach (var flag in currentPeopleElection.FlagsList)
         {
-            <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
+          <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
         }
       </div>
     }
     <u title="Lives in">{Area}</u>
     <i>{^VotedAt}</i>
+    <em title="Electoral Unit">{UnitName}</em>
   </div>
 </script>

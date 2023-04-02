@@ -54,6 +54,14 @@ namespace TallyJ.EF
     public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
 
 
+    public bool IsLsaC => ElectionType == ElectionTypeEnum.LSAC.Value;
+    public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
+    
+    /// <summary>
+    /// Either LSAC or LSAU
+    /// </summary>
+    public bool IsLsaCU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAC.Value;
+
     /// <summary>
     /// This is a "fake" column that is embedded into the OwnerLoginId column
     /// </summary>

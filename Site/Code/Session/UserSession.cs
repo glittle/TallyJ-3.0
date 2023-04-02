@@ -122,7 +122,13 @@ namespace TallyJ.Code.Session
 
         // reset so we don't use data we just loaded
         ItemKey.CurrentElection.SetInPageItems<Election>(null);
-        //        HttpContext.Current.Items[ItemKey.CurrentElection] = null;
+
+        if (value == Guid.Empty)
+        {
+          // clear out these as well
+          CurrentPeopleElectionGuid = value;
+          CurrentParentElectionGuid = value;
+        }
       }
     }
 
@@ -245,7 +251,26 @@ namespace TallyJ.Code.Session
     /// <summary>
     /// People election guid.
     /// </summary>
-    public static Guid CurrentPeopleElectionGuid => CurrentElection.PeopleElectionGuid;
+    public static Guid CurrentPeopleElectionGuid
+    {
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentPeopleElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
+      set
+      {
+        SessionKey.CurrentPeopleElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
+        ItemKey.CurrentElection.SetInPageItems<Election>(null);
+      }
+
+    }
 
     /// <summary>
     /// Parent or self
@@ -254,8 +279,19 @@ namespace TallyJ.Code.Session
     {
       get
       {
-        var election = CurrentElection;
-        return election.ParentElectionGuid ?? election.ElectionGuid;
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentParentElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
+      set
+      {
+        SessionKey.CurrentParentElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
+        ItemKey.CurrentElection.SetInPageItems<Election>(null);
       }
     }
 

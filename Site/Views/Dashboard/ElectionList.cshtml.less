@@ -9,7 +9,6 @@
 }
 
 .Election {
-  width: 100%;
   display: grid;
   grid-template-columns: 1fr auto 11em;
   grid-template-rows: auto;
@@ -470,7 +469,8 @@ li.Comment {
 @media only screen and (max-width: 750px) {
   .Election {
     grid-template-columns: 1fr auto;
-    grid-template-areas: "details details" "status action" "users users";
+    grid-template-areas:
+      "details details" "status action" "children children" "users users";
   }
 
   .buttons {

@@ -10,7 +10,8 @@
   ContextItems.AddJavascriptForPage("timeKnown", "site.timeOffsetKnown={0};".FilledWith(UserSession.TimeOffsetKnown.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("rootUrl", "site.rootUrl='{0}';".FilledWith(Url.Content("~")));
   ContextItems.AddJavascriptForPage("site.passcode='{0}';".FilledWith(new PublicElectionLister().GetPasscodeIfAvailable(UserSession.CurrentElectionGuid)));
-  ContextItems.AddJavascriptForPage("site.passcodeRaw='{0}';".FilledWith(UserSession.CurrentElection == null ? "" : UserSession.CurrentElection.ElectionPasscode));
+  var currentElection = UserSession.CurrentElection;
+  ContextItems.AddJavascriptForPage("site.passcodeRaw='{0}';".FilledWith(currentElection == null ? "" : currentElection.ElectionPasscode));
   ContextItems.AddJavascriptForPage("page", "site.context='{0}';".FilledWith(ControllerActionNamesJoined));
   ContextItems.AddJavascriptForPage("electionGuid", "site.electionGuid='{0}';".FilledWith(UserSession.CurrentElectionGuid == Guid.Empty ? "" : UserSession.CurrentElectionGuid.ToString()));
   ContextItems.AddJavascriptForPage("electionState", "site.electionState='{0}';".FilledWith(UserSession.CurrentElectionStatus));
@@ -41,11 +42,12 @@
   var classes = new List<string> {
       ControllerActionNamesJoined,
       ScreenMode + "Mode",
-      SettingsHelper.HostSupportsOnlineElections && UserSession.CurrentElection != null ? "Online" + (UserSession.CurrentElection.OnlineCurrentlyOpen ? "Open" : UserSession.CurrentElection.OnlineEnabled ? "Closed" : "NotEnabled") : null,
+      SettingsHelper.HostSupportsOnlineElections && currentElection != null ? "Online" + (currentElection.OnlineCurrentlyOpen ? "Open" : currentElection.OnlineEnabled ? "Closed" : "NotEnabled") : null,
       "Auth" + UserSession.AuthLevel,
       ContextItems.LocationModel.ShowLocationSelector(currentMenu) ? "HasLocations" : "NoLocations",
       ContextItems.LocationModel.HasMultiplePhysicalLocations ? "" : "HasOfflineLocations",
-      UserSession.CurrentElection == null ? null : "BP-" + UserSession.CurrentElection.BallotProcessRaw
+      currentElection == null ? null : "BP-" + currentElection.BallotProcessRaw,
+      currentElection == null ? null : "T-" + currentElection.ElectionType
     };
 }
 <body class="@classes.JoinedAsString(" ", true)">
@@ -85,7 +87,7 @@
           </span>
           <div class="topArea">
             <div class="who">@(UserSession.IsKnownTeller ? "Admin" : "Teller")</div>
-            @if (UserSession.CurrentElection != null)
+            @if (currentElection != null)
             {
               <div class="passcode passcodeOkay" title="Click to go to the Monitor page to change this">
                 <span class="ui-icon ui-icon-info" id="qTipPasscode"></span>
@@ -106,14 +108,17 @@
               </div>
             }
           </div>
-          @if (UserSession.CurrentElection != null)
+          @if (currentElection != null)
           {
             <div class="ElectionState">
               <span>Election State</span><span class="ui-icon ui-icon-info" id="qTipElectionStatus"></span>
               <div id="electionState"
                    data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
-                <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
+                @if (currentElection.ElectionType != ElectionTypeEnum.LSAC.Value)
+                {
+                  <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
+                }
                 <span class="other"><a href="#" id="AllPages" title="Go to another page">Other Pages</a></span>
                 <span class="QuickDash other">
                   @Html.Partial("../Dashboard/OtherItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })
@@ -153,16 +158,42 @@
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+        var showUnitSelector = currentElection?.IsLsaCU ?? false;
         var showTellerSelector = currentMenu.ShowTellerSelector;
       }
-      @if (showLocationSelector || showTellerSelector)
+      @if (showLocationSelector || showTellerSelector || showUnitSelector)
       {
         <div class="CurrentInfo">
+          @if (showUnitSelector)
+          {
+            <label for="ddlTopUnit" class="ddlTopUnit">
+              Unit:
+              @if (currentElection.IsLsaC)
+              {
+                <select id="ddlTopUnit" class="TopUnit input-mediumMax">
+                  <option value="">[All Units]</option>
+                  @foreach (var o in UserSession.UnitNames)
+                  {
+                    <option value="@o">@o</option>
+                  }
+                </select>
+              }
+              else
+              {
+                <span>@currentElection.UnitName</span>
+              }
+            </label>
+            @*<label>
+                Computer:</label>
+              <select disabled>
+                <option>@UserSession.CurrentComputerCode</option>
+              </select>*@
+          }
           @if (showLocationSelector)
           {
             <label for="ddlTopLocation">
               Location:
-              <select id="ddlTopLocation" class="TopLocation input-medium" @ContextItems.LocationModel.ShowDisabled>
+              <select id="ddlTopLocation" class="TopLocation input-mediumMax" @ContextItems.LocationModel.ShowDisabled>
                 @ContextItems.LocationModel.GetLocationOptions(true, ActionName != "FrontDesk" && ActionName != "SortBallots" && ActionName != "Reconcile")
               </select>
               <span class="ui-icon ui-icon-info" id="qTipTopLocation"></span>
@@ -177,14 +208,14 @@
           {
             <label for="ddlTopTeller1">
               Teller at Keyboard:
-              <select id="ddlTopTeller1" class="TopTeller input-medium">
+              <select id="ddlTopTeller1" class="TopTeller input-mediumMax">
                 @tellerHelper.GetTellerOptions(1).AsRawHtml()
               </select>
               <span class="ui-icon ui-icon-info" id="qTipTeller"></span>
             </label>
             <label for="ddlTopTeller2">
               Assisting:
-              <select id="ddlTopTeller2" class="TopTeller input-medium">
+              <select id="ddlTopTeller2" class="TopTeller input-mediumMax">
                 @tellerHelper.GetTellerOptions(2).AsRawHtml()
               </select>
             </label>

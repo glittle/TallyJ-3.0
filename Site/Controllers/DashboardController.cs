@@ -153,6 +153,12 @@ namespace TallyJ.Controllers
       return new { Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id) }.AsJsonResult();
     }
 
+    // [AllowTellersInActiveElection]
+    // public JsonResult ChooseUnit(string code)
+    // {
+    //   return new { Selected = new ComputerModel().MoveCurrentComputerIntoLocation(id) }.AsJsonResult();
+    // }
+
 
     [AllowTellersInActiveElection]
     public JsonResult ChooseTeller(int num, int teller, string newName = "")

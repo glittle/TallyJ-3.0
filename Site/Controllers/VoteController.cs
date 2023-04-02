@@ -117,6 +117,9 @@ namespace TallyJ.Controllers
       {
         // put election in session
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
+        UserSession.CurrentPeopleElectionGuid = electionInfo.e.PeopleElectionGuid;
+        UserSession.CurrentParentElectionGuid = electionInfo.e.ParentElectionGuid ?? Guid.Empty;
+
         UserSession.VoterInElectionPersonGuid = electionInfo.p.PersonGuid;
         // UserSession.VoterInElectionPersonName = electionInfo.p.C_FullNameFL;
         string poolDecryptError = null;
