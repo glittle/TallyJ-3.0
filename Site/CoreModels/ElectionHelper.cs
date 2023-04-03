@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Transactions;
 using System.Web.Mvc;
+using Microsoft.Practices.ObjectBuilder2;
 // using CsQuery.ExtensionMethods;
 using Newtonsoft.Json;
 using TallyJ.Code;
@@ -352,7 +353,7 @@ namespace TallyJ.CoreModels
         election.RandomizeVotersList,
         election.EmailFromAddress,
         election.EmailFromName,
-        election.VotingMethods,
+        election.VotingMethodsAdjusted,
         election.CustomMethods,
         election.Flags,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
@@ -506,7 +507,7 @@ namespace TallyJ.CoreModels
 
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
-      
+
 
       // if a LSAC, get the unit names
       var currentElection = UserSession.CurrentElection;
@@ -518,11 +519,23 @@ namespace TallyJ.CoreModels
         var peopleElectionGuid = UserSession.CurrentPeopleElectionGuid;
         var electionType = ElectionTypeEnum.LSAU.ToString();
 
-        UserSession.UnitNames = Db.Election
+        var unitElectionsInfo = Db.Election
           .Where(e => e.ParentElectionGuid == peopleElectionGuid && e.ElectionType == electionType)
-          .Select(e=>e.UnitName)
-          .OrderBy(s=>s)
+          .Select(e => new { e.UnitName, e.VotingMethods })
           .ToList();
+
+        UserSession.UnitNames = unitElectionsInfo
+          .Select(ue => ue.UnitName)
+          .OrderBy(s => s)
+          .ToList();
+
+        var votingMethods = unitElectionsInfo
+          .SelectMany(ue => ue.VotingMethods.ToCharArray())
+          .Distinct()
+          .Select(c => c.ToString())
+          .JoinedAsString("");
+
+        UserSession.UnitElectionVotingMethods = votingMethods;
       }
 
       // assign a new computer code (try to reuse a previous one if possible)
@@ -697,7 +710,7 @@ namespace TallyJ.CoreModels
         ElectionMode = electionMode,
         TallyStatus = ElectionTallyStatusEnum.NotStarted.ToString(),
         Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
-        VotingMethods = "PDM",
+        VotingMethodsAdjusted = "PDM",
         NumberToElect = rules.Num,
         NumberExtra = rules.Extra,
       };
@@ -1253,7 +1266,7 @@ namespace TallyJ.CoreModels
           PeopleElectionGuid = parentElectionGuid,
           TallyStatus = ElectionTallyStatusEnum.NotStarted.ToString(),
           Convenor = parentElection.Convenor,
-          VotingMethods = null, // rely on People ElectionGuid
+          VotingMethodsAdjusted = null, // rely on People ElectionGuid
           NumberToElect = unitInfo.num,
           NumberExtra = 0,
           DateOfElection = parentElection.DateOfElection,

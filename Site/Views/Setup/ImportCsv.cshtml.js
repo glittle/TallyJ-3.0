@@ -181,31 +181,34 @@
               var prefix = r.substr(0, 3);
 
               switch (prefix) {
-                case '~E ':
-                case '~W ':
-                case '~I ':
-                  r = r.substr(3);
+              case '~E ':
+              case '~W ':
+              case '~I ':
+                r = r.substr(3);
               }
               switch (prefix) {
-                case '~E ':
-                  r = `<div class=E>${r}</div>`;
-                  break;
-                case '~W ':
-                  r = `<div class=W>${r}</div>`;
-                  break;
-                case '~I ':
-                  r = `<div class=I>${r}</div>`;
-                  break;
-                default:
-                  r = `<div>${r}</div>`;
-                  break;
+              case '~E ':
+                r = `<div class=E>${r}</div>`;
+                break;
+              case '~W ':
+                r = `<div class=W>${r}</div>`;
+                break;
+              case '~I ':
+                r = `<div class=I>${r}</div>`;
+                break;
+              default:
+                r = `<div>${r}</div>`;
+                break;
               }
 
               info.result[i] = r;
             };
 
-            resultDiv.html(info.result.join('')).show().css('min-height', '0').toggleClass('failed', info.failed === true);
-            $('.DbCount span').text(comma(info.count));
+            resultDiv.html(info.result.join('')).show().css('min-height', '0')
+              .toggleClass('failed', info.failed === true);
+            if (!info.failed) {
+              $('.DbCount span').text(comma(info.count));
+            }
           }
         });
     });
@@ -216,22 +219,24 @@
     //$('#upload_target').load(function (ev) {
     //  ResetStatusDisplay();
     //});
+    var msg = null;
 
     local.uploader = new qq.FileUploader({
       element: $('#file-uploader')[0],
       action: publicInterface.controllerUrl + '/Upload',
       allowedExtensions: ['CSV'],
       onSubmit: function (id, fileName) {
-        ShowStatusBusy('Uploading...');
         if (fileName.length > 50) {
           alert('Please shorten the name of the file to less than 50 characters long. This one was ' + fileName.length + '.');
           return false;
         }
+        msg = ShowStatusBusy('Uploading...');
       },
       onProgress: function (id, fileName, loaded, total) {
       },
       onComplete: function (id, fileName, info) {
         ResetStatusDisplay();
+        ResetStatusDisplay(msg); // in case it hasn't been displayed yet
         getUploadsList();
         if (info.rowId) {
           setActiveUploadRowId(+info.rowId);
@@ -352,11 +357,14 @@
   };
   function showFields(info) {
     var host = $('#fieldSelector')
-      .html('<div class=ImportTips><div>Source<span class="ui-icon ui-icon-info" id="qTipImportHead"></span></div><div>TallyJ <span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div></div>')
+      .html('<div class=ImportTips><div>CSV<span class="ui-icon ui-icon-info" id="qTipImportHead"></span></div><div>TallyJ <span class="ui-icon ui-icon-info" id="qTipImportFoot"></span></div></div>')
       .show();
     var options = '<option value="{value}">{text}</option>'.filledWithEach($.map(info.possible, function (f) {
-      if (f === local.statusFieldName) {
-        return { value: f, text: 'Eligibility Status' };
+      switch (f) {
+        case local.statusFieldName:
+          return { value: f, text: 'Eligibility Status' };
+        case 'UnitName':
+          return { value: f, text: 'Electoral Unit Name' };
       }
       return { value: f, text: ExpandName(f) };
     }));
@@ -380,7 +388,7 @@
     //console.log(info.csvFields);
     $('#numColumns').text(count - 1);
 
-    site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers found in the first line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
+    site.qTips.push({ selector: '#qTipImportHead', title: 'Headers', text: 'These are the headers found in the header line of the CSV file.  One column is shown for each column found in the CSV file.  All columns are shown, but may not need to be imported.' });
     site.qTips.push({ selector: '#qTipImportFoot', title: 'TallyJ Fields', text: 'For each column shown here, select the TallyJ field that is the best match for the information in the column.' });
     ActivateTips();
     showSelectorsStatus();
@@ -412,7 +420,7 @@
   function extendUploadList(list) {
     $.each(list, function () {
       this.UploadTimeExt = this.UploadTime ? moment(this.UploadTime).format(local.timeTemplate) : '';
-      this.RowClass = this.C_RowId == local.activeFileRowId ? 'Active' : 'NotActive';
+      this.RowClass = this.C_RowId === local.activeFileRowId ? 'Active' : 'NotActive';
       this.ProcessingStatusAndSteps = this.ProcessingStatus;
     });
     return list;

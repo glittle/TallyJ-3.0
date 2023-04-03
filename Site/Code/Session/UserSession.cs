@@ -671,6 +671,12 @@ namespace TallyJ.Code.Session
       set => SessionKey.UnitNames.SetInSession(value);
     }
 
+    public static string UnitElectionVotingMethods
+    {
+      get => SessionKey.UnitElectionVotingMethods.FromSession("");
+      set => SessionKey.UnitElectionVotingMethods.SetInSession(value);
+    }
+
 
     public static string SiteVersion
     {

@@ -33,6 +33,7 @@ var site = {
     unitChanged: 'unitChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
+    personDeleted: 'personDeleted',
     personNameChanging: 'personNameChanging',
     pulse: 'pulse',
   },

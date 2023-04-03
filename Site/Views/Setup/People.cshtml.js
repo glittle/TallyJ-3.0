@@ -56,6 +56,7 @@
     resetSearch();
 
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+    site.onbroadcast(site.broadcastCode.personDeleted, personDeleted);
 
     site.qTips.push({ selector: '#qTipSearch', title: 'Searching', text: 'Type one or two parts of the person\'s name. ' });
   };
@@ -138,7 +139,7 @@
       return;
     };
 
-    editPersonPage.applyValues(panel, info.Person, true, info.CanDelete);
+    editPersonPage.applyValues(panel, info.Person, true);
 
   };
 
@@ -256,6 +257,29 @@
       $('#more').html(moreFound(info.OnFile));
     }
   };
+
+  function personDeleted(ev, personId) {
+
+    personId = +personId;
+
+    // find this person
+    var localNames = local.peopleHelper.local.localNames;
+    var i = localNames.findIndex(function (person) {
+      return person.Id === personId;
+    });
+
+    if (i !== -1) {
+      localNames.splice(i, 1);
+
+      // manually remove from visible list without affecting what else is showing
+      var el = $('#P' + personId);
+      el.fadeOut(500,
+        function () {
+          el.remove();
+          $('#more').html(moreFound(--local.totalOnFile));
+        });
+    }
+  }
 
   var publicInterface = {
     peopleUrl: '',

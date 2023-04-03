@@ -156,20 +156,21 @@
     </tr>
   *@
   <tr>
-    <td></td>
-    <td>
-      <button type="button" id="btnSave" class="btn btn-primary" accesskey="S">
-        <u>S</u>ave Changes
-      </button>
-    </td>
-  </tr>
-  @*<tr id="trDelete">
       <td></td>
       <td>
-        <div class="comments">(This person has not voted and has not been voted for.)</div>
-        <button type="button" id="btnDelete" class="btn btn-danger">
-          Delete
-        </button>
+          <button type="button" id="btnSave" class="btn btn-primary" accesskey="S">
+              <u>S</u>ave Changes
+          </button>
       </td>
-    </tr>*@
+  </tr>
+  <tr>
+      <td></td>
+      <td class="forDelete">
+          <button type="button" id="btnDelete" class="btn btn-danger btn-mini">
+              Remove from TallyJ Election
+          </button>
+          <div class="comments">This will only work if they have not registered or been voted for.</div>
+      </td>
+  </tr>
 </table>
+

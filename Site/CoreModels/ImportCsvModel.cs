@@ -12,7 +12,6 @@ using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
-using Twilio.Rest.Voice.V1;
 
 namespace TallyJ.CoreModels
 {
@@ -20,6 +19,8 @@ namespace TallyJ.CoreModels
   {
     private const string FileTypeCsv = "CSV";
     private string MappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
+    const string UnitName = "UnitName";
+
 
     private IEnumerable<string> DbFieldsList
     {
@@ -30,6 +31,7 @@ namespace TallyJ.CoreModels
                        // same list repeated below
                        "FirstName",
                        "LastName",
+                       UnitName, // removed (below) for non-two-stage elections
                        "IneligibleReasonGuid",
                        "Area",
                        "Email",
@@ -39,6 +41,12 @@ namespace TallyJ.CoreModels
                        "OtherNames",
                        "OtherInfo",
                      };
+
+        if (!UserSession.CurrentElection.IsLsaC)
+
+        {
+          list.Remove(UnitName);
+        }
 
         // screen this hard-coded list against the Person object to ensure we aren't using old field names
         var sample = new Person();
@@ -179,7 +187,7 @@ namespace TallyJ.CoreModels
       var firstDataRow = importFile.FirstDataRow.AsInt();
       if (firstDataRow > 2)
       {
-        // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        // 1-based... headers on line 1, data on line 2. If 2 or less, ignore it.
         fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
       }
 
@@ -189,7 +197,7 @@ namespace TallyJ.CoreModels
         MissingFieldAction = MissingFieldAction.ReplaceByEmpty
       };
 
-    var csvHeaders = csv.GetFieldHeaders();
+      var csvHeaders = csv.GetFieldHeaders();
 
       if (csvHeaders.Length == 1)
       {
@@ -291,6 +299,17 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
+      var currentElection = UserSession.CurrentElection;
+      if (currentElection.IsLsaU)
+      {
+        // no UI supports this, but just in case
+        return new
+        {
+          failed = true,
+          result = new[] { "Cannot import into a unit election" }
+        }.AsJsonResult();
+      }
+
       var start = DateTime.Now;
       var fileString = file.Contents.AsString(file.CodePage);
 
@@ -303,7 +322,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        numFirstRowsToSkip = 0;
+        numFirstRowsToSkip = 1;
       }
 
       // for some files, CRLF is seen as two lines
@@ -350,10 +369,19 @@ namespace TallyJ.CoreModels
           result = new[] { "First Name must be mapped" }
         }.AsJsonResult();
       }
+      if (currentElection.IsLsaC && !mappedFields.Contains(UnitName))
+      {
+        return new
+        {
+          failed = true,
+          result = new[] { "Electoral Unit must be mapped" }
+        }.AsJsonResult();
+      }
 
       var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
       var phoneNumberCleaner = new Regex(@"[^\+0-9]");
       var emailChecker = new Regex(@".*@.*\..*");
+      var numRequiredFields = 2 + (currentElection.IsLsaC ? 1 : 0);
 
       var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
       currentPeople.ForEach(p => p.TempImportLineNum = -1);
@@ -364,7 +392,6 @@ namespace TallyJ.CoreModels
       var personModel = new PeopleModel();
       // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
-      var currentLineNum = numFirstRowsToSkip > 0 ? numFirstRowsToSkip : 1; // including header row
       var rowsWithErrors = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
@@ -377,6 +404,7 @@ namespace TallyJ.CoreModels
       var unexpectedReasons = new Dictionary<string, int>();
       // var validReasons = 0;
       var continueReading = true;
+      var currentLineNum = 0;
 
       hub.StatusUpdate("Processing", true);
 
@@ -387,11 +415,11 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        // currentLineNum++;
         currentLineNum = numFirstRowsToSkip + (int)csv.CurrentRecordIndex + 1;
 
         var valuesSet = false;
-        var namesFoundInRow = 0;
+        var requiredFieldsFound = 0;
+        var requiredWarningGiven = false;
         var errorInRow = false;
 
         var duplicateInFileSearch = currentPeople.AsQueryable();
@@ -421,7 +449,6 @@ namespace TallyJ.CoreModels
           }
           var rawValue = HttpUtility.HtmlEncode(value);
           var originalValue = value;
-
 
           switch (dbFieldName)
           {
@@ -462,9 +489,11 @@ namespace TallyJ.CoreModels
               break;
             case "FirstName":
             case "LastName":
+            case UnitName:
               if (value.Trim() == "")
               {
-                result.Add($"~E Line {currentLineNum} - {dbFieldName} must not be blank");
+                result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
+                requiredWarningGiven = true;
               }
               else
               {
@@ -486,11 +515,14 @@ namespace TallyJ.CoreModels
             {
               case "LastName":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.LastName == value);
-                namesFoundInRow++;
+                requiredFieldsFound++;
                 break;
               case "FirstName":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.FirstName == value);
-                namesFoundInRow++;
+                requiredFieldsFound++;
+                break;
+              case UnitName:
+                requiredFieldsFound++;
                 break;
               case "OtherLastNames":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherLastNames == value);
@@ -581,14 +613,15 @@ namespace TallyJ.CoreModels
           result.Add($"~I Line {currentLineNum} - Ignoring blank line");
           addRow = false;
         }
-        else if (namesFoundInRow != 2 || errorInRow)
+        else if (requiredFieldsFound != numRequiredFields || errorInRow)
         {
           addRow = false;
           rowsWithErrors++;
 
-          if (namesFoundInRow != 2)
+          if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
           {
-            result.Add($"~E Line {currentLineNum} - First or last name missing");
+            result.Add($"~E Line {currentLineNum} - A required field is missing");
+            requiredWarningGiven = true;
           }
         }
 
@@ -618,7 +651,7 @@ namespace TallyJ.CoreModels
 
         if (addRow)
         { //get ready for DB
-          person.ElectionGuid = UserSession.CurrentElectionGuid;
+          person.ElectionGuid = UserSession.CurrentPeopleElectionGuid;
           person.PersonGuid = Guid.NewGuid();
 
           personModel.SetCombinedInfoAtStart(person);
@@ -754,10 +787,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public int NumberOfPeople
-    {
-      get { return new PersonCacher(Db).AllForThisElection.Count(); }
-    }
+    public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
     public JsonResult SaveCodePage(int id, int codepage)
     {

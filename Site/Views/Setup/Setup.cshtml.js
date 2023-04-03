@@ -172,7 +172,7 @@
         }
         this.election.Flags = this.flags.join('|');
 
-        var s = this.election.VotingMethods;
+        var s = this.election.VotingMethodsAdjusted;
         this.votingMethodsArray = s ? s.split('') : [];
 
         this.useOnline = !!(this.election.OnlineWhenOpen || this.election.OnlineWhenClose); // do again, to set useOnline correctly
@@ -597,7 +597,7 @@
       customs = [vue.custom1, vue.custom2, vue.custom3].join('|');
     }
 
-    var votingMethods = vue.votingMethodsArray.join('');
+    var votingMethodsAdjusted = vue.votingMethodsArray.join('');
     //    if (vue.useOnline && !votingMethods.includes('O')) {
     //      votingMethods += 'O';
     //    }
@@ -619,7 +619,7 @@
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
       RandomizeVotersList: election.RandomizeVotersList,
-      VotingMethods: votingMethods,
+      VotingMethodsAdjusted: votingMethodsAdjusted,
       CustomMethods: customs,
       Flags: flags,
     };

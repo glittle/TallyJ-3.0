@@ -5,6 +5,7 @@ using EntityFramework.Extensions;
 using TallyJ.Code;
 using TallyJ.Code.Data;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using static System.Configuration.ConfigurationManager;
@@ -56,11 +57,27 @@ namespace TallyJ.EF
 
     public bool IsLsaC => ElectionType == ElectionTypeEnum.LSAC.Value;
     public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
-    
+
     /// <summary>
     /// Either LSAC or LSAU
     /// </summary>
     public bool IsLsaCU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAC.Value;
+
+    public string VotingMethodsAdjusted
+    {
+      get
+      {
+        // if this is a LsaC election, need to collect the VotingMethods from the Unit elections
+        if (IsLsaC)
+        {
+          return string.Join(",", UserSession.UnitElectionVotingMethods);
+        }
+
+        return VotingMethods;
+      }
+      set => VotingMethods = value;
+    }
+
 
     /// <summary>
     /// This is a "fake" column that is embedded into the OwnerLoginId column
@@ -134,12 +151,12 @@ namespace TallyJ.EF
 
     public bool VotingMethodsContains(string method)
     {
-      return VotingMethods.DefaultTo("").Contains(method);
+      return VotingMethodsAdjusted.DefaultTo("").Contains(method);
     }
 
     public bool VotingMethodsContains(VotingMethodEnum method)
     {
-      return VotingMethods.DefaultTo("").Contains(method.Value);
+      return VotingMethodsAdjusted.DefaultTo("").Contains(method.Value);
     }
 
     public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];

@@ -211,6 +211,12 @@ namespace TallyJ.Controllers
     }
 
     [ForAuthenticatedTeller]
+    public JsonResult DeletePerson(int personId)
+    {
+      return new PeopleModel().DeletePerson(personId);
+    }
+
+    [ForAuthenticatedTeller]
     public JsonResult EditLocation(int id, string text)
     {
       return ContextItems.LocationModel.EditLocation(id, text);

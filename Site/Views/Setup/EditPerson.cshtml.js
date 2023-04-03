@@ -78,7 +78,7 @@
     }
   }
 
-  function applyValues(panel, personProperties, clearAll, canDelete) {
+  function applyValues(panel, personProperties, clearAll) {
     if (panel) {
       local.hostPanel = panel;
     } else {
@@ -201,25 +201,33 @@
       });
   };
 
-  //function deletePerson() {
-  //  var form = {
-  //    id: local.hostPanel.find(':input[data-name=C_RowId]').val()
-  //  };
+  function deletePerson() {
+    var form = {
+      personId: local.hostPanel.find(':input[data-name=C_RowId]').val()
+    };
 
-  //  ShowStatusBusy("Deleting...");
-  //  CallAjaxHandler(publicInterface.controllerUrl + '/DeletePerson', form, function (info) {
-  //    if (info.Message) {
-  //      ShowStatusFailed(info.Message);
-  //      return;
-  //    }
+    CallAjax2(publicInterface.controllerUrl + '/DeletePerson', form,
+      {
+        busy: 'Deleting'
+      },
+      function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          return;
+        }
+        if (info.Success) {
+          site.broadcast(site.broadcastCode.personDeleted, form.personId);
+          applyValues(null, {}, true);
+          ShowStatusDone('Deleted');
+        }
 
-  //    ShowStatusDone(info.Status);
-  //  });
-  //}
+        ShowStatusDone(info.Status);
+      });
+  }
 
   function preparePage() {
     $('#btnSave').click(saveChanges);
-    //$('#btnDelete').click(deletePerson);
+    $('#btnDelete').click(deletePerson);
     $('#ddlIneligible').html(prepareReasons()).change(changedIneligible);
 
     site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {

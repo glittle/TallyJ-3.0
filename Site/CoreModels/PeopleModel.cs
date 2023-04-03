@@ -238,13 +238,13 @@ namespace TallyJ.CoreModels
 
       //var whoCanVote = PeopleElection.CanVote;
       //var whoCanReceiveVotes = PeopleElection.CanReceive;
-      var voteCacher = new VoteCacher(Db);
-      var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
+      // var voteCacher = new VoteCacher(Db);
+      // var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
 
       return new
       {
         Person = PersonForEdit(person),
-        CanDelete = person.VotingMethod == null && !votedFor
+        // CanDelete = person.VotingMethod == null && !votedFor
       }.AsJsonResult();
     }
 
@@ -384,6 +384,55 @@ namespace TallyJ.CoreModels
         Eligible = persons.Count(p => p.IneligibleReasonGuid == null) //TODO? split to: can vote, can receive votes
       }.AsJsonResult();
     }
+
+    public JsonResult DeletePerson(int personId)
+    {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
+
+      var person = PeopleInElection.SingleOrDefault(p => p.C_RowId == personId);
+      if (person == null)
+        return new
+        {
+          Message = "Unknown person"
+        }.AsJsonResult();
+
+      if (person.VotingMethod != null)
+        return new
+        {
+          Message = "Cannot delete a person who has already voted."
+        }.AsJsonResult();
+
+      var voteCacher = new VoteCacher(Db);
+      var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
+      if (votedFor)
+        return new
+        {
+          Message = "Cannot delete a person who has been voted for."
+        }.AsJsonResult();
+
+      var onlineVotingInfo = Db.OnlineVotingInfo.SingleOrDefault(o => o.PersonGuid == person.PersonGuid);
+      if (onlineVotingInfo != null)
+        return new
+        {
+          Message = "Cannot delete a person who has voted online."
+        }.AsJsonResult();
+
+      // all checks done...
+
+      Db.Person.Attach(person);
+      Db.Person.Remove(person);
+
+      Db.SaveChanges();
+
+      new PersonCacher(Db).DropThisCache();  // force a reload
+
+      return new
+      {
+        Success = true
+      }.AsJsonResult();
+    }
+
 
     /// <Summary>Everyone</Summary>
     public IEnumerable<object> FrontDeskPersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)

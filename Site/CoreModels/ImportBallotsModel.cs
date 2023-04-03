@@ -26,6 +26,8 @@ namespace TallyJ.CoreModels
 
     /*
      *
+     * TODO: If LsaC - import people only
+     * TODO: If LsaU - import ballots only
      *
      *
      */
@@ -355,11 +357,13 @@ namespace TallyJ.CoreModels
       if (importedElectionInfo.ImportErrors.Any() || !importedElectionInfo.Ballots.Any() ||
           !importedElectionInfo.Voters.Any()) return ElectionPreviewInfo(importedElectionInfo);
 
-      // var result = new List<string>();
-
       // update election configuration
       var utcNow = DateTime.UtcNow;
       var election = UserSession.CurrentElection;
+
+      //TODO: are these needed?
+      // var peopleElection = UserSession.CurrentPeopleElection;
+      // var parentElectionGuid = UserSession.CurrentParentElectionGuid;
 
       if (election.TallyStatus == ElectionTallyStatusEnum.Finalized.Value)
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
@@ -399,7 +403,7 @@ namespace TallyJ.CoreModels
           if (!election.VotingMethodsContains(VotingMethodEnum.Imported))
           {
             dbContext.Election.Attach(election);
-            election.VotingMethods += VotingMethodEnum.Imported.Value;
+            election.VotingMethodsAdjusted += VotingMethodEnum.Imported.Value;
             dbContext.SaveChanges();
           }
 
@@ -659,7 +663,7 @@ namespace TallyJ.CoreModels
       // remove the "Imported" voting method
       var election = UserSession.CurrentElection;
       Db.Election.Attach(election);
-      election.VotingMethods = election.VotingMethods.Replace("I", "");
+      election.VotingMethodsAdjusted = election.VotingMethodsAdjusted.Replace("I", "");
 
       try
       {
