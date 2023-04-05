@@ -353,7 +353,7 @@ namespace TallyJ.CoreModels
         election.RandomizeVotersList,
         election.EmailFromAddress,
         election.EmailFromName,
-        election.VotingMethodsAdjusted,
+        election.VotingMethods,
         election.CustomMethods,
         election.Flags,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToList();
@@ -530,7 +530,7 @@ namespace TallyJ.CoreModels
           .ToList();
 
         var votingMethods = unitElectionsInfo
-          .SelectMany(ue => ue.VotingMethods.ToCharArray())
+          .SelectMany(s => s.VotingMethods.DefaultTo("").ToCharArray())
           .Distinct()
           .Select(c => c.ToString())
           .JoinedAsString("");
@@ -1113,14 +1113,17 @@ namespace TallyJ.CoreModels
                   problems.Add($"Error: {emailError}");
                 }
               }
-
-              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
+              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
               {
                 smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var smsError);
                 if (smsError.HasContent())
                 {
                   problems.Add($"Error: {smsError}");
                 }
+              }
+              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Kiosk)
+              {
+                // ignore
               }
             }
           }

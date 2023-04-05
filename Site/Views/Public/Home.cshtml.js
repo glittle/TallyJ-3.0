@@ -4,7 +4,7 @@
     hubReconnectionTime: 95000,
     warmupDone: false,
     isBad: false,
-    vue: null
+    vue: null,
   };
 
   var isBadBrowser = function () {
@@ -217,6 +217,7 @@
           mode: '',
           code: '',
           email: '',
+          kiosk: '',
           phone: '',
           phoneMethod: '',
           sending: false,
@@ -226,7 +227,8 @@
           voiceCallDone: false,
           connectedToHub: false,
           hubKey: '',
-          showCodeInput: false
+          showCodeInput: false,
+          showKiosk: GetFromStorage('kiosk', 'N') === 'Y' // set by teller on this device
         };
       },
       computed: {
@@ -393,6 +395,10 @@
                 vue.status = info.Message;
               }
             });
+        },
+        submitKiosk: function () {
+          this.code = 'K_' + this.kiosk;
+          this.submitCode();
         },
         submitCode: function () {
           var vue = this;

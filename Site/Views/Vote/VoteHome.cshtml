@@ -88,14 +88,16 @@
   </div>
 
   <div class="loginHistoryDiv" v-if="emailCodesLoaded">
-    <button type="button" class="float-right btn btn-mini" v-on:click.passive="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
+    @if (UserSession.VoterIdType != VoterIdTypeEnum.Kiosk)
+    {
+        <button type="button" class="float-right btn btn-mini" v-on:click.passive="emailTest">Send me a sample @VoterIdTypeEnum.MessageTypeFor(UserSession.VoterIdType) now</button>
 
-    <div class="title">Settings for @UserSession.VoterId</div>
-    <p class="emails">
-      @*<label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>*@
-      <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when my ballot is processed.</label>
-    </p>
-
+        <div class="title">Settings for @UserSession.VoterId</div>
+        <p class="emails">
+            @*<label><input type="checkbox" v-model="emailWhenOpen" v-on:change="saveEmailCodes" />Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when an election opens that I can vote in.</label>*@
+            <label><input type="checkbox" v-model="emailWhenProcessed" v-on:change="saveEmailCodes"/>Send me @VoterIdTypeEnum.MessageTypeAFor(UserSession.VoterIdType) when my ballot is processed.</label>
+        </p>
+    }
     @*<p class="account" v-if="hasLocalId">
         Would you like to change your password? <a class="btn btn-mini" href="@Url.Action("ChangePassword","Manage2")">Change Password</a>
       </p>
@@ -219,18 +221,18 @@
           <input v-model="randomLast" maxlength="40" type="text" placeholder="Last" v-on:keyup.enter="addRandomName" />
         </div>
         <div>
-          <label>Identifying information (optional description)</label>
-          <input v-model="randomOtherInfo" class="randomOtherInfo" type="text" maxlength="200" v-on:keyup.enter="addRandomName" />
+          <label>Extra Identifying information</label>
           <div class="randomNote">
-            Use this if the name may not be enough. But remember, your vote is anonymous so do not reference yourself in this description!
+            (Optional: Use this if the name may not be enough. But remember, your vote is anonymous so do not reference yourself in this description!)
           </div>
+          <input v-model="randomOtherInfo" class="randomOtherInfo" type="text" maxlength="200" v-on:keyup.enter="addRandomName" />
         </div>
         <p v-if="useList && nameList.length && (randomFirst || randomLast)"
            class="existing"
            @*class="invisible"
              :class="{visible: nameList.length && (randomFirst || randomLast)}"*@>Does this person show in the list above? If so, please select that name!</p>
         <div>
-          <button class="btn btnAddPerson" v-on:click.passive="addRandomName" type="button" :disabled="randomInputCount===0">Add Person</button>
+          <button class="btn btnAddPerson" v-on:click.passive="addRandomName" type="button" :disabled="randomInputCount===0">Add Person to my Ballot</button>
           <span class="randomResult">{{randomResult}}</span>
           <button class="btn btn-mini clearRandom" v-on:click.passive="clearRandom" type="button" v-if="randomInputCount>0">Clear</button>
         </div>
@@ -244,7 +246,7 @@
 
     <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open', showAllVotes ? 'showAllVotes' : '']">
       <div>
-        <h2 v-if="!savedLock" v-text="'Voting'"></h2>
+        <h2 v-if="!savedLock" v-text="'Voting for ' + numToElect + ' ' + plural(numToElect, 'People','Person')"></h2>
         <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
           <strong>You have completed online voting in this election.</strong>
         </p>

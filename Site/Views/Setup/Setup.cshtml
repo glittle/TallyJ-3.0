@@ -44,10 +44,13 @@
       <li>
         Carefully define the core settings here (in grey). These will be locked down once ballots are entered into the system.
       </li>
-      <li>
-        The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
-        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál).
-      </li>
+        <li>
+            The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
+            is being held on the 13<sup>th</sup> day of the month of Glory (Jalál).
+        </li>
+        <li>
+          * Unit Elections cannot be directly select here. Must be added on the Election List page.
+        </li>
     </ol>
   </div>
   <table class="Demographics">
@@ -302,7 +305,7 @@
         </p>
       </td>
     </tr>
-    <tr v-if="usingBallotProcess && !isLsaUnit">
+    <tr v-if="usingBallotProcess">
       <th>
         How will ballots be received?
       </th>
@@ -313,6 +316,7 @@
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText *</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Imported.Value">@VotingMethodEnum.Imported.DisplayText **</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             <el-input size="small"
@@ -340,6 +344,14 @@
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
         <p>* To use TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked after ballots have been imported.</p>
+        <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
+          Mark this device as a Kiosk?
+          <el-radio-group v-model="isKiosk" size="mini" class="ignore">
+            <el-radio-button label="Y">Yes</el-radio-button>
+            <el-radio-button label="N">No</el-radio-button>
+          </el-radio-group>
+          <span class="isKiosk" v-if="isKiosk=='Y'">Can be used as a Kiosk.</span>
+        </p>
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">

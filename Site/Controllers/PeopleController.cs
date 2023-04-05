@@ -53,7 +53,8 @@ namespace TallyJ.Controllers
           IRG = p.IneligibleReasonGuid,
           NumVotes = isSingleNameElection
             ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
-            : votes.Count(v => v.PersonGuid == p.PersonGuid)
+            : votes.Count(v => v.PersonGuid == p.PersonGuid),
+          p.UnitName
         }),
         lastVid = votes.Any() ? votes.Max(v => v.C_RowId) : 0
       }.AsJsonResult();

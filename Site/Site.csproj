@@ -686,6 +686,7 @@
     <Content Include="Images\icons\icon-144.png" />
     <Content Include="Images\icons\mstile-150x150.png" />
     <Content Include="Images\icons\safari-pinned-tab.svg" />
+    <Content Include="Images\voterKiosk.png" />
     <Content Include="Images\voterPhone.png" />
     <Content Include="MessageTemplates\Email\FullTellerInvitation.html" />
     <Content Include="MessageTemplates\Email\HeadTellerEmail.html" />

@@ -48,7 +48,7 @@ public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
     return
       BaseItems
         .Select(bi =>
-          $"<option value='{bi.Value}'{(bi.Value == selected ? " selected" : "")}{(bi.DirectlySelectable ? "" : " disabled")}>{bi.Text}</option>")
+          $"<option value='{bi.Value}'{(bi.Value == selected ? " selected" : "")}{(bi.DirectlySelectable ? "" : " data-restriction='indirect'")}>{bi.Text}{(bi.DirectlySelectable ? "" : " *")}</option>")
         .JoinedAsString()
         .AsRawHtml();
   }

@@ -68,10 +68,10 @@ namespace TallyJ.EF
       get
       {
         // if this is a LsaC election, need to collect the VotingMethods from the Unit elections
-        if (IsLsaC)
-        {
-          return string.Join(",", UserSession.UnitElectionVotingMethods);
-        }
+        // if (IsLsaC)
+        // {
+        //   return string.Join(",", UserSession.UnitElectionVotingMethods);
+        // }
 
         return VotingMethods;
       }

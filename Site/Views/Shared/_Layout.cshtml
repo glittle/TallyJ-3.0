@@ -158,7 +158,7 @@
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-        var showUnitSelector = currentElection?.IsLsaCU ?? false;
+        var showUnitSelector = currentElection?.IsLsaCU == true && currentMenu.ShowLocationSelection;
         var showTellerSelector = currentMenu.ShowTellerSelector;
       }
       @if (showLocationSelector || showTellerSelector || showUnitSelector)

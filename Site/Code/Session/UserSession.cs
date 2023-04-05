@@ -404,55 +404,55 @@ namespace TallyJ.Code.Session
       get => SessionKey.VoterLastLogin.FromSession(DateTime.MinValue);
       set => SessionKey.VoterLastLogin.SetInSession(value);
     }
-
-    public static void RecordVoterLogin_old(string voterId, string voterIdType, string source, string country)
-    {
-      var logHelper = new LogHelper();
-
-      if (voterId.HasNoContent())
-      {
-        logHelper.Add($"Empty voter Id for {voterIdType} ({UniqueId})", true);
-        // ProcessLogout();
-        return;
-      }
-
-      var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
-      if (voterIdTypeDesc.HasNoContent())
-      {
-        logHelper.Add($"Invalid voter Id type: {voterIdType} ({UniqueId})", true);
-        // ProcessLogout();
-        return;
-      }
-
-      var db = GetNewDbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
-      var utcNow = DateTime.UtcNow;
-
-      if (onlineVoter == null)
-      {
-        onlineVoter = new OnlineVoter
-        {
-          VoterId = voterId,
-          VoterIdType = voterIdType,
-          WhenRegistered = utcNow,
-          Country = country
-        };
-        db.OnlineVoter.Add(onlineVoter);
-      }
-      else
-      {
-        VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
-      }
-
-      onlineVoter.WhenLastLogin = utcNow;
-      db.SaveChanges();
-
-      VoterLoginSource = source;
-
-      logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
-
-      new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
-    }
+    //
+    // public static void RecordVoterLogin_old(string voterId, string voterIdType, string source, string country)
+    // {
+    //   var logHelper = new LogHelper();
+    //
+    //   if (voterId.HasNoContent())
+    //   {
+    //     logHelper.Add($"Empty voter Id for {voterIdType} ({UniqueId})", true);
+    //     // ProcessLogout();
+    //     return;
+    //   }
+    //
+    //   var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
+    //   if (voterIdTypeDesc.HasNoContent())
+    //   {
+    //     logHelper.Add($"Invalid voter Id type: {voterIdType} ({UniqueId})", true);
+    //     // ProcessLogout();
+    //     return;
+    //   }
+    //
+    //   var db = GetNewDbContext;
+    //   var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
+    //   var utcNow = DateTime.UtcNow;
+    //
+    //   if (onlineVoter == null)
+    //   {
+    //     onlineVoter = new OnlineVoter
+    //     {
+    //       VoterId = voterId,
+    //       VoterIdType = voterIdType,
+    //       WhenRegistered = utcNow,
+    //       Country = country
+    //     };
+    //     db.OnlineVoter.Add(onlineVoter);
+    //   }
+    //   else
+    //   {
+    //     VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
+    //   }
+    //
+    //   onlineVoter.WhenLastLogin = utcNow;
+    //   db.SaveChanges();
+    //
+    //   VoterLoginSource = source;
+    //
+    //   logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
+    //
+    //   new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
+    // }
 
     // public static void RecordVoterLogin(OnlineVoter onlineVoter, string voterId, string voterIdType, string source,
     //   string country)

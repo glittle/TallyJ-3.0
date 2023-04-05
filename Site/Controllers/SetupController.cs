@@ -44,6 +44,23 @@ namespace TallyJ.Controllers
       return new ElectionHelper().SaveNotification(emailSubject, emailText, smsText);
     }
 
+    [ForAuthenticatedTeller]
+    public JsonResult GenerateKioskCode(int personId)
+    {
+      var code = new VoterCodeHelper("").GenerateKioskCode(personId, out var errorMessage);
+
+      if (errorMessage.HasContent())
+      {
+        return new { Message = errorMessage }.AsJsonResult();
+      }
+
+      return new
+      {
+        Success = true,
+        Code = code
+      }.AsJsonResult();
+    }
+
     public JsonResult DetermineRules(string type, string mode)
     {
       return ElectionHelper.GetRules(type, mode).AsJsonResult();

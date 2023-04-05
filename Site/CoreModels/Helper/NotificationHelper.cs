@@ -34,6 +34,12 @@ namespace TallyJ.CoreModels.Helper
         return smsHelper.SendVoterSmsTestMessage(UserSession.VoterId, out error);
       }
 
+      if (voterIdType == VoterIdTypeEnum.Kiosk)
+      {
+        error = "Not applicable to kiosks.";
+        return false;
+      }
+
       error = "Invalid voter type: " + voterIdType; 
       return false;
     }
@@ -54,6 +60,13 @@ namespace TallyJ.CoreModels.Helper
         var smsHelper = new TwilioHelper();
         notificationType = "text message";
         return smsHelper.SendWhenBallotSubmitted(person, election, out error);
+      }
+
+      if (voterIdType == VoterIdTypeEnum.Kiosk)
+      {
+        notificationType = null;
+        error = null;
+        return true;
       }
 
       error = "Invalid voter type: " + voterIdType;

@@ -29,6 +29,7 @@
 
     settings.vue = new Vue({
       el: '#setupBody',
+      name: 'setup',
       components: {
         'yes-no': YesNo,
       },
@@ -46,9 +47,11 @@
         custom2: '',
         custom3: '',
         electionType: '',
+        originalElectionType: '',
         flags: [],
         flagsPre: '',
-        dummy: 1
+        dummy: 1,
+        isKiosk: GetFromStorage('kiosk', 'N'),
       },
       computed: {
         onlineDatesOkay: function () {
@@ -101,6 +104,9 @@
         'election.BallotProcessRaw': function (a) {
           this.replaceBodyBpClass(a);
         },
+        isKiosk: function (a) {
+          SetInStorage('kiosk', a);
+        },
         usingBallotProcess: function (a) {
           if (!a) {
             this.election.BallotProcessRaw = 'None';
@@ -152,6 +158,7 @@
       created: function () {
         //        this.useOnline = !!this.election.OnlineWhenOpen;
         this.electionType = this.election.ElectionType;
+        this.originalElectionType = this.election.ElectionType;
         if (this.election.OnlineWhenOpen || this.election.OnlineWhenClose) {
           this.useOnline = true;
           this.election.OnlineWhenOpen = this.election.OnlineWhenOpen ? moment.utc(this.election.OnlineWhenOpen).toISOString(true) : '';
@@ -172,7 +179,7 @@
         }
         this.election.Flags = this.flags.join('|');
 
-        var s = this.election.VotingMethodsAdjusted;
+        var s = this.election.VotingMethods;
         this.votingMethodsArray = s ? s.split('') : [];
 
         this.useOnline = !!(this.election.OnlineWhenOpen || this.election.OnlineWhenClose); // do again, to set useOnline correctly
@@ -260,7 +267,7 @@
     $('.Demographics').on('change keyup', '*:input', function () {
       var input = $(this);
 
-      if (input.closest('.forLocations').length) {
+      if (input.closest('.forLocations').length || input.parent().parent().hasClass('ignore')) {
         return; // don't flag location related inputs
       }
       setTimeout(function () {
@@ -549,7 +556,8 @@
 
     $('.Demographics :input[data-name]').each(function () {
       var input = $(this);
-      var value = election[input.data('name')] || '';
+      var dataName = input.data('name');
+      var value = election[dataName] || '';
       switch (input.attr('type')) {
         case 'date':
           var dateString = value ? moment(value).format('YYYY-MM-DD') : ''; // ('' + value).parseJsonDateForInput();
@@ -562,6 +570,15 @@
           if (input.attr('id') === 'txtDate' && value) {
             value = moment(value).toISOString(true);
           }
+
+          if (dataName === 'ElectionType') {
+            // enforce a rule
+            if (value === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+              ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+              return;
+            }
+          }
+
           input.val(value);
           break;
       }
@@ -587,6 +604,16 @@
     var vue = settings.vue;
     var election = vue.election;
 
+    if (election.ElectionType === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+      ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+      return;
+    }
+
+    if (election.ElectionType === 'Tie' && settings.vue.originalElectionType !== 'Tie') {
+      ShowStatusFailed('* Cannot directly select a Tie election. Must be added from another election.');
+      return;
+    }
+
     var testCustom = vue.custom1 + vue.custom2 + vue.custom3;
     var customs = '';
     if (testCustom) {
@@ -597,7 +624,11 @@
       customs = [vue.custom1, vue.custom2, vue.custom3].join('|');
     }
 
-    var votingMethodsAdjusted = vue.votingMethodsArray.join('');
+    if (!vue.votingMethodsArray.includes('K') && vue.isKiosk === 'Y') {
+      vue.isKiosk = 'N';
+    }
+
+    var votingMethods = vue.votingMethodsArray.join('');
     //    if (vue.useOnline && !votingMethods.includes('O')) {
     //      votingMethods += 'O';
     //    }
@@ -605,6 +636,7 @@
 
     var form = {
       C_RowId: election.C_RowId,
+      ElectionType: election.ElectionType,
       ShowAsTest: election.ShowAsTest,
       BallotProcessRaw: election.BallotProcessRaw,
       EnvNumModeRaw: election.EnvNumModeRaw,
@@ -619,7 +651,7 @@
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
       RandomizeVotersList: election.RandomizeVotersList,
-      VotingMethodsAdjusted: votingMethodsAdjusted,
+      VotingMethods: votingMethods,
       CustomMethods: customs,
       Flags: flags,
     };

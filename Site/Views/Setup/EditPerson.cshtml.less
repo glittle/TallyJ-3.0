@@ -14,8 +14,39 @@
   width: 180px;
 }
 
-.forDelete{
+.forDelete {
   padding-top: 4em;
+}
+
+.kiosk {
+  td {
+    padding-top: .5em;
+    vertical-align: top;
+  }
+}
+
+.kioskCode {
+  display: inline-block;
+  color: darkblue;
+  border: darkblue 1px solid;
+  padding: 2px 4px 3px 4px;
+  margin-left: 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  letter-spacing: 3px;
+  font-size: 0.85rem;
+
+  &.used {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+}
+
+.kioskNote {
+  display: none;
+  margin: 5px 0 0 -3px;
+  color: #666;
+  font-size: 85%;
 }
 
 #btnSave {

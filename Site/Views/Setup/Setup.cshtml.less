@@ -15,6 +15,15 @@
   }
 }
 
+.isKiosk {
+  display: inline-block;
+  font-size: 90%;
+  color: darkblue;
+  border: darkblue 1px solid;
+  padding: 2px 2px 1px 2px;
+  border-radius: 3px;
+}
+
 h2 {
   display: inline-block;
   margin: 0 20px 0 0;
@@ -30,7 +39,7 @@ h2 {
 .nameInfo {
   display: flex;
   gap: 0.3em;
-  vertical-align: top;
+  align-items: flex-start;
 }
 
 .PullInstructions {
@@ -104,7 +113,7 @@ h2 {
   background-color: #dde6dd;
 
   &.missing {
-    background-color: #e6dddd;
+    background-color: #fbbbc3;
   }
 
   .el-checkbox {

@@ -225,9 +225,36 @@
       });
   }
 
+  function generateKioskCode() {
+    var form = {
+      personId: local.hostPanel.find(':input[data-name=C_RowId]').val()
+    };
+
+    CallAjax2(publicInterface.controllerUrl + '/GenerateKioskCode', form,
+      {
+        busy: 'Getting code'
+      },
+      function (info) {
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          return;
+        }
+        if (info.Success) {
+          $('.kioskNote').show();
+          $('.kioskCode').text(info.Code);
+        } else {
+          // must have voted already
+          $('.kioskCode').addClass('used');
+        }
+
+        ShowStatusDone(info.Status);
+      });
+  }
+
   function preparePage() {
     $('#btnSave').click(saveChanges);
     $('#btnDelete').click(deletePerson);
+    $('#generateKioskCode').click(generateKioskCode);
     $('#ddlIneligible').html(prepareReasons()).change(changedIneligible);
 
     site.onbroadcast(site.broadcastCode.startNewPerson, function (ev, data) {
