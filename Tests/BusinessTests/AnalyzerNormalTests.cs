@@ -33,7 +33,7 @@ namespace Tests.BusinessTests
       _electionGuid = Guid.NewGuid();
 
       SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      BallotTestHelper.SaveElectionGuidForTests(_electionGuid);
+      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
       SessionKey.CurrentComputer.SetInSession(new Computer
       {
@@ -71,11 +71,8 @@ namespace Tests.BusinessTests
         new Ballot().ForTests()
       };
 
-      var votes = new[]
-      {
-        new Vote().ForTests(ballots[0], SamplePeople[0]),
-        new Vote().ForTests(ballots[0], SamplePeople[1])
-      };
+      new Vote().ForTests(ballots[0], SamplePeople[0]);
+      new Vote().ForTests(ballots[0], SamplePeople[1]);
 
       var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
 
@@ -1109,6 +1106,79 @@ namespace Tests.BusinessTests
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTests();
+
+      var ballots = new[]
+      {
+        new Ballot().ForTests(),
+        new Ballot().ForTests(),
+        new Ballot().ForTests(),
+      };
+
+      var votes = new[]
+      {
+        new Vote().ForTests(ballots[0], SamplePeople[0]),
+        new Vote().ForTests(ballots[0], SamplePeople[1]),
+
+        new Vote().ForTests(ballots[1], SamplePeople[0]),
+        new Vote().ForTests(ballots[1], SamplePeople[1]),
+        
+        new Vote().ForTests(ballots[2], SamplePeople[0]),
+        new Vote().ForTests(ballots[2], SamplePeople[2]),
+      };
+
+      var model = new ElectionAnalyzerNormal(_fakes); // election, votes, ballots, SamplePeople);
+
+      model.AnalyzeEverything();
+
+      var results = model.Results.OrderBy(r => r.Rank).ToList();
+
+      results.Count.ShouldEqual(3);
+
+      var result1 = results[0];
+      result1.VoteCount.ShouldEqual(3);
+      result1.Rank.ShouldEqual(1);
+      result1.Section.ShouldEqual(ResultHelper.Section.Top);
+
+      var result2 = results[1];
+      result2.VoteCount.ShouldEqual(2);
+      result2.Rank.ShouldEqual(2);
+      result2.Section.ShouldEqual(ResultHelper.Section.Top);
+
+      var result3 = results[2];
+      result3.VoteCount.ShouldEqual(1);
+      result3.Rank.ShouldEqual(3);
+      result3.Section.ShouldEqual(ResultHelper.Section.Other);
+
+      var resultSummaryFinal = model.ResultSummaryFinal;
+      resultSummaryFinal.BallotsNeedingReview.ShouldEqual(0);
+      resultSummaryFinal.NumBallotsWithManual.ShouldEqual(3);
+
+      resultSummaryFinal.DroppedOffBallots.ShouldEqual(0);
+      resultSummaryFinal.InPersonBallots.ShouldEqual(1);
+      resultSummaryFinal.MailedInBallots.ShouldEqual(0);
+      resultSummaryFinal.CalledInBallots.ShouldEqual(0);
+      resultSummaryFinal.OnlineBallots.ShouldEqual(0);
+      resultSummaryFinal.NumEligibleToVote.ShouldEqual(6);
+      resultSummaryFinal.NumVoters.ShouldEqual(1);
+      resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
+    }
+
+    [TestMethod]
+    public void Unit_In_TwoStage_Election()
+    {
+      new Election
+      {
+        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionMode = ElectionModeEnum.Normal,
+        NumberToElect = 2,
+      }.ForTests();
+
+      new Election
+      {
+        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionMode = ElectionModeEnum.Normal,
+        NumberToElect = 2,
+      }.ForTestsPersonElection();
 
       var ballots = new[]
       {

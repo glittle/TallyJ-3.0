@@ -22,7 +22,7 @@ namespace TallyJ.Code
         return false;
       }
 
-      var electionModel = new ElectionModel();
+      var electionModel = new ElectionHelper();
 
       if (UserSession.IsGuestTeller)
       {

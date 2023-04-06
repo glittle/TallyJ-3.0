@@ -6,6 +6,7 @@ namespace TallyJ.Code.Enumerations
   {
     public static readonly VoterIdTypeEnum Email = new VoterIdTypeEnum("E", "Email Address", "email", "an email");
     public static readonly VoterIdTypeEnum Phone = new VoterIdTypeEnum("P", "Phone Number", "text message", "a text message");
+    public static readonly VoterIdTypeEnum Kiosk = new VoterIdTypeEnum("K", "Kiosk Code", "kiosk code", "");
     public static readonly VoterIdTypeEnum _unknown = new VoterIdTypeEnum("X", "(Unknown)", "unknown", "unknown");
 
     static VoterIdTypeEnum()
@@ -13,6 +14,7 @@ namespace TallyJ.Code.Enumerations
       Add(_unknown);
       Add(Email);
       Add(Phone);
+      Add(Kiosk);
     }
 
     public VoterIdTypeEnum(string value, string displayText, string messageType, string messageTypeA)

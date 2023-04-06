@@ -44,9 +44,12 @@
       <li>
         Carefully define the core settings here (in grey). These will be locked down once ballots are entered into the system.
       </li>
+      <li>Provide a name for this election that you will use and see in your list of elections.</li>
+      <li>If you allow other tellers access, they will see the name and it will be listed on the public TallyJ home page while you are active in it.</li>
+      <li>Typically the name should include your locality and the election type. For example, New York Ridván @(DateTime.Today.Year).</li>
       <li>
         The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
-        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál).
+        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál). It also shows in some reports.
       </li>
     </ol>
   </div>
@@ -95,28 +98,6 @@
         <input type="number" min="1" id="txtNames" data-name="NumberToElect" />
       </td>
     </tr>
-    @*<tr class="electionDetail">
-        <th>
-          Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
-        </th>
-        <td>
-          <select id="ddlCanVote" data-name="CanVote">
-            <option value="A">Everyone on the list</option>
-            <option value="N">Named delegates</option>
-          </select>
-        </td>
-      </tr>
-      <tr class="electionDetail B">
-        <th>
-          Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
-        </th>
-        <td>
-          <select id="ddlCanReceive" data-name="CanReceive">
-            <option value="A">Everyone on the list</option>
-            <option value="N">Named individuals</option>
-          </select>
-        </td>
-      </tr>*@
     <tr>
       <th>
         Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
@@ -171,9 +152,7 @@
   <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
   <div class="PullInstructions">
     <ol>
-      <li>Provide a name for this election that you will use and see in your list of elections.</li>
-      <li>If you allow other tellers access, they will see the name and it will be listed on the public TallyJ home page while you are active in it.</li>
-      <li>Typically the name should include your locality and the election type. For example, New York Ridván @(DateTime.Today.Year).</li>
+      <li>Tellers without a system login account in your election can join as 'helper' tellers using the access code you define here.</li>
     </ol>
   </div>
 
@@ -228,11 +207,9 @@
   <div class="PullInstructions">
     <ol>
       <li>
-        If you will register voters or track envelopes with TallyJ, answer "Yes" to the first question then
-        choose between the three processes described below.
+        If you will register voters or track envelopes with TallyJ, answer "Yes" to the first question.
       </li>
-      <li>Registration involves validating the voter's identity and may take extra time.</li>
-      <li>For large communities, process B may prove to be the fastest.</li>
+      <li>The "Roll Call" may be preferred when there are a small number of voters.</li>
     </ol>
   </div>
 
@@ -308,6 +285,7 @@
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText *</el-checkbox>
+          <el-checkbox label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Imported.Value">@VotingMethodEnum.Imported.DisplayText **</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             <el-input size="small"
@@ -331,10 +309,20 @@
       </td>
       <td>
         <p v-if="!votingMethodsArray.length" class="warning">At least one voting method is required.</p>
-        <div>Select all the methods that you are using to accept ballots from voters.</div>
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
-        <p>* To use TallyJ's Online Voting, select it in Step 4 (below).</p>
-        <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked after ballots have been imported.</p>
+        <p>* To accept ballots Online using TallyJ's Online Voting, select it in Step 4 (below).</p>
+        <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked if/when ballots are imported.</p>
+          <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
+              Kiosk is only available if Online is also active. See x for details of how to use it.
+          </p>
+        <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
+          Enable this browser as a Kiosk?
+          <el-radio-group v-model="isKiosk" size="mini" class="ignore">
+            <el-radio-button label="Y">Yes</el-radio-button>
+            <el-radio-button label="N">No</el-radio-button>
+          </el-radio-group>
+          <span class="isKiosk" v-if="isKiosk=='Y'">Can be used as a Kiosk.</span>
+        </p>
       </td>
     </tr>
     @*<tr v-if="usingBallotProcess">

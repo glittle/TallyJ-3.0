@@ -163,7 +163,7 @@ namespace TallyJ.CoreModels.ExportImport
 
           _hub.StatusUpdate("Running analysis...");
 
-          new ElectionModel().JoinIntoElection(_electionGuid, Guid.Empty);
+          new ElectionHelper().JoinIntoElection(_electionGuid, Guid.Empty);
 
           var analyzer = new ResultsModel(null, _hub);
           analyzer.GenerateResults();

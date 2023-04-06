@@ -29,7 +29,7 @@ namespace TallyJ.EF
   {
     private const int CacheMinutes = 30; // long enough for a reasonable gap in usage
 
-    public CacherBase(ITallyJDbContext dbContext)
+    protected CacherBase(ITallyJDbContext dbContext)
     {
       CurrentDb = dbContext;
     }
@@ -37,10 +37,7 @@ namespace TallyJ.EF
     /// <summary>
     ///   The key for the current election's data
     /// </summary>
-    protected virtual string CacheKeyRaw
-    {
-      get { return typeof(T).Name + CurrentElectionGuid; }
-    }
+    protected virtual string CacheKeyRaw => typeof(T).Name + CurrentElectionGuid;// + CurrentPeopleElectionGuid;
 
     protected ITallyJDbContext CurrentDb { get; set; }
 
@@ -58,8 +55,6 @@ namespace TallyJ.EF
     {
       get
       {
-        var db = CurrentDb;
-
         List<T> allForThisElection;
         lock (LockCacheBaseObject)
         {

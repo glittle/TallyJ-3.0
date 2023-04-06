@@ -16,7 +16,7 @@ using TallyJ.EF;
 
 namespace TallyJ.CoreModels
 {
-  public class ElectionModel : DataConnectedModel
+  public class ElectionHelper : DataConnectedModel
   {
     private static readonly object LockObject = new object();
 
@@ -663,19 +663,25 @@ namespace TallyJ.CoreModels
 
       UserSession.ResetWhenSwitchingElections();
 
-      var election = new Election();
-      // {
-      // Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
-      // ElectionGuid = Guid.NewGuid(),
-      // Name = "[New Election]",
-      // ElectionType = "LSA",
-      // ElectionMode = ElectionMode.Normal,
-      // TallyStatus = ElectionTallyStatusEnum.NotStarted,
-      // NumberToElect = 9,
-      // NumberExtra = 0,
-      // CanVote = CanVoteOrReceive.All,
-      // CanReceive = CanVoteOrReceive.All
-      // };
+
+      var electionType = ElectionTypeEnum.Lsa.ToString();
+      var electionMode = ElectionModeEnum.Normal.ToString();
+
+      var rules = GetRules(electionType, electionMode);
+
+      var election = new Election
+      {
+        // default settings
+        ElectionGuid = Guid.NewGuid(),
+        Name = "[New Election]",
+        ElectionType = electionType,
+        ElectionMode = electionMode,
+        TallyStatus = ElectionTallyStatusEnum.NotStarted.ToString(),
+        Convenor = "[Convener]", // correct spelling is Convener. DB field name is wrong.
+        VotingMethods = "PDM",
+        NumberToElect = rules.Num,
+        NumberExtra = rules.Extra,
+      };
 
       Db.Election.Add(election);
       Db.SaveChanges();
@@ -942,7 +948,10 @@ namespace TallyJ.CoreModels
       var ballotInfoList = Db.OnlineVotingInfo
         .Where(ovi => ovi.ElectionGuid == electionGuid)
         .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
-        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid && p.VotingMethod == VotingMethodEnum.Online), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => new { ovi, p })
+        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid
+                                   && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk)),
+          ovi => ovi.PersonGuid, p => p.PersonGuid,
+          (ovi, p) => new { ovi, p })
         // .Join(Db.OnlineVoter, j => new { j.ovi.Email, j.ovi.Phone }, ov => new { ov.Email, ov.Phone }, (j, ov) => new { j.p, j.ovi, ov })
         // .OrderBy(j => j.ovi.PersonGuid) -- no defined order... will resort later
         .ToList();
@@ -1070,14 +1079,17 @@ namespace TallyJ.CoreModels
                   problems.Add($"Error: {emailError}");
                 }
               }
-
-              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
+              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
               {
                 smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var smsError);
                 if (smsError.HasContent())
                 {
                   problems.Add($"Error: {smsError}");
                 }
+              }
+              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Kiosk)
+              {
+                // ignore
               }
             }
           }
@@ -1160,6 +1172,39 @@ namespace TallyJ.CoreModels
         election.OnlineWhenClose,
         election.OnlineCloseIsEstimate,
       }.AsJsonResult();
+    }
+
+
+
+    public static object ElectionDto(Election e)
+    {
+      return new
+      {
+        e.Name,
+        e.ElectionGuid,
+        DateOfElection = e.DateOfElection.AsUtc(),
+        e.Convenor,
+        e.ElectionType,
+        e.ElectionMode,
+        e.ShowAsTest,
+        e.IsSingleNameElection,
+        e.CanBeAvailableForGuestTellers,
+        e.OnlineCurrentlyOpen,
+        OnlineWhenOpen = e.OnlineWhenOpen.AsUtc(),
+        OnlineWhenClose = e.OnlineWhenClose.AsUtc(),
+        e.EmailFromAddressWithDefault,
+        e.EmailFromNameWithDefault,
+        e.ElectionPasscode,
+        e.OnlineEnabled,
+        e.NumberToElect,
+        IsFuture = e.DateOfElection.HasValue && e.DateOfElection.AsUtc() > DateTime.UtcNow,
+        IsCurrent = e.ElectionGuid == UserSession.CurrentElectionGuid,
+        Type = ElectionTypeEnum.TextFor(e.ElectionType).DefaultTo("?"),
+        Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
+        IsTest = e.ShowAsTest.AsBoolean(),
+        TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
+        e.TallyStatus
+      };
     }
   }
 }

@@ -164,7 +164,7 @@
       <div data-vm="@VotingMethodEnum.Imported.Value" class="Btn Imported {Imported} Has{HasImported}">@VotingMethodEnum.Imported.DisplayText</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
-    {
+    { // includes Kiosk
       <div data-vm="@VotingMethodEnum.Online.Value" class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
     }
     @if (currentElection.VotingMethodsContains(VotingMethodEnum.CalledIn.Value))

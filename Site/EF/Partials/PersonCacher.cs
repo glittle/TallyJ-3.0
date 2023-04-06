@@ -24,13 +24,6 @@ namespace TallyJ.EF
     }
 
 
-    protected override object LockCacheBaseObject
-    {
-      get
-      {
-        return _lockObject ?? (_lockObject = new object());
-      }
-    }
-
+    protected override object LockCacheBaseObject => _lockObject ??= new object();
   }
 }

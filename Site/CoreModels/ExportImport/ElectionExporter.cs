@@ -139,29 +139,34 @@ namespace TallyJ.CoreModels.ExportImport
         .ToList()
         .Select(p => new
         {
+          // following the SQL order for easier comparison
           p.PersonGuid,
-          p.FirstName,
           LastName = p.LastName.DefaultTo(""),
-          p.OtherNames,
+          p.FirstName,
           p.OtherLastNames,
+          p.OtherNames,
           p.OtherInfo,
+          p.Area,
           p.BahaiId,
+          p.CombinedInfo,
+          p.CombinedSoundCodes, // now used for extra fake columns
           p.CombinedInfoAtStart,
           p.AgeGroup,
-          p.Area,
+          CanVote = p.CanVote.OnlyIfFalse(),
+          CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
+          p.IneligibleReasonGuid,
+          RegistrationTime = p.RegistrationTime.AsUtc().AsString("o").OnlyIfHasContent(),
+          p.VotingLocationGuid,
+          p.VotingMethod,
+          p.EnvNum,
+          p.Teller1,
+          p.Teller2,
           p.Email,
           p.Phone,
           p.HasOnlineBallot,
-          CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
-          CanVote = p.CanVote.OnlyIfFalse(),
-          p.IneligibleReasonGuid,
-          p.VotingMethod,
-          p.EnvNum,
-          RegistrationTime = p.RegistrationTime.AsUtc().AsString("o").OnlyIfHasContent(),
-          p.CombinedSoundCodes, // now used for extra fake columns
-          p.VotingLocationGuid,
-          TellerAtKeyboard = p.Teller1,
-          TellerAssisting = p.Teller2,
+          p.Flags,
+          p.UnitName,
+          // p.KioskCode, -- ephemeral, don't export
           Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
         }).ToList();
     }
@@ -312,28 +317,40 @@ namespace TallyJ.CoreModels.ExportImport
     {
       return new
       {
-        election.TallyStatus,
-        election.ElectionType,
-        election.ElectionMode,
-        DateOfElection = election.DateOfElection.AsUtc().AsString("u").Split(' ')[0],
-        election.NumberToElect,
-        election.NumberExtra,
+        // following the SQL order for easier comparison
+        election.ElectionGuid,
         election.Name,
         election.Convenor,
-        ShowAsTest = election.ShowAsTest.OnlyIfTrue(),
-        ListForPublic = election.ListForPublic.OnlyIfTrue(),
-        // election.ListedForPublicAsOf, -- only has value if currently loaded
-        election.ElectionPasscode,
-        // election.CanVote,
-        // election.CanReceive,
+        DateOfElection = election.DateOfElection.AsUtc().AsString("u").Split(' ')[0],
+        election.ElectionType,
+        election.ElectionMode,
+        election.NumberToElect,
+        election.NumberExtra,
         election.LastEnvNum,
-        election.OwnerLoginId,
-        election.ElectionGuid,
-        election.BallotProcessRaw,
+        election.TallyStatus,
         ShowFullReport = election.ShowFullReport.OnlyIfTrue(),
+        election.OwnerLoginId,
+        election.ElectionPasscode,
+        // election.ListedForPublicAsOf, -- only has use if currently loaded
+        // _RowVersion
+        ListForPublic = election.ListForPublic.OnlyIfTrue(),
+        ShowAsTest = election.ShowAsTest.OnlyIfTrue(),
+        UseCallInButton = election.UseCallInButton.OnlyIfTrue(),
+        HidePreBallotPages = election.HidePreBallotPages.OnlyIfTrue(),
+        MaskVotingMethod = election.MaskVotingMethod.OnlyIfTrue(),
         OnlineWhenOpen = election.OnlineWhenOpen.AsUtc(),
         OnlineWhenClose = election.OnlineWhenClose.AsUtc(),
         election.OnlineCloseIsEstimate,
+        election.OnlineSelectionProcess,
+        OnlineAnnounced = election.OnlineAnnounced.AsUtc().AsString("u").Split(' ')[0],
+        election.EmailFromAddress,
+        election.EmailFromName,
+        election.EmailText,
+        election.SmsText,
+        election.EmailSubject,
+        election.CustomMethods,
+        election.VotingMethods,
+        election.Flags,
       };
     }
   }

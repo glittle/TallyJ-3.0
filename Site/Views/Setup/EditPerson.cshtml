@@ -8,6 +8,7 @@
 }
 <input type="hidden" data-name="C_RowId" />
 <table class="personEdit">
+
     <tr>
         <td>
             First Name
@@ -142,13 +143,26 @@
             </button>
         </td>
     </tr>
-    @*<tr id="trDelete">
-          <td></td>
+  @if (UserSession.CurrentElection.VotingMethodsContains(VotingMethodEnum.Kiosk))
+  {
+    <tr class="kiosk">
+      <td>Kiosk Code</td>
           <td>
-            <div class="comments">(This person has not voted and has not been voted for.)</div>
-            <button type="button" id="btnDelete" class="btn btn-danger">
-              Delete
+        <button id="generateKioskCode" class="btn btn-small">Make or renew Kiosk Code</button>
+        <div class="kioskNote">
+          <div class="kioskCode"></div>
+          Code will expire in 15 minutes.
+        </div>
+      </td>
+    </tr>
+  }
+  <tr>
+    <td></td>
+    <td class="forDelete">
+      <button type="button" id="btnDelete" class="btn btn-danger btn-mini">
+        Remove from TallyJ Election
             </button>
+      <div class="comments">This will only work if they have not registered or been voted for.</div>
           </td>
-        </tr>*@
+  </tr>
 </table>

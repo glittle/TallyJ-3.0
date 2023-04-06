@@ -63,13 +63,13 @@
           Name
         </th>
         <th>
-          Content Encoding
+          Upload Time
         </th>
         <th>
           Headers<br />on Line
         </th>
         <th>
-          Upload Time
+          Content Encoding
         </th>
         <th>
           Size
@@ -93,9 +93,7 @@
           {OriginalFileName}
         </td>
         <td>
-          <select data-value="{CodePage}" class="codePage">
-            @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
-          </select>
+          {UploadTimeExt}
         </td>
         <td>
           <select data-value="{FirstDataRow}" class="dataRow">
@@ -103,7 +101,9 @@
           </select>
         </td>
         <td>
-          {UploadTimeExt}
+          <select data-value="{CodePage}" class="codePage">
+            @ImportHelper.Encodings.Select(kvp => "<option value='{0}'>{1}</option>".FilledWith(kvp.Key, kvp.Value)).JoinedAsString().AsRawHtml()
+          </select>
         </td>
         <td>
           {FileSize}
@@ -127,6 +127,16 @@
   For each column in <span id="activeFileName"></span> that you wish to import, select the TallyJ field it should be mapped to.
   If you have already done that, it does not need to be done again.
 </p>
+
+<div class="fieldSelector">
+  <div class="numFound">Number of columns found in this CSV file: <span id="numColumns">-</span></div>
+  @*<button type="button" id="btnPrepareFields">
+      Re-analyze the file and get column names
+    </button>*@
+  <div id="fieldSelector">
+  </div>
+  <div id="mappingError"></div>
+</div>
 <div class="PullInstructionsHandle btn btn-mini">TallyJ Fields</div>
 <div class="PullInstructions">
   <table class="fieldsList">
@@ -198,7 +208,7 @@
   After importing, use the "Edit People's Names" page to carefully review the list.
 </p>
 <p>
-  Please note that email addresses and phone numbers can only be imported when there are none on file already. Use the "Edit People's Names" page to add email addresses and phone numbers later.
+  Please note that changing someone's non-identifying details in the file, then uploading and importing again will not update their record. You can edit them directly in "Edit People's Names" or delete the Person and re-import the file.
 </p>
 <p>
   If you need to erase all the currently loaded names (before ballots are entered), use the "Delete all People Records" below before importing again.

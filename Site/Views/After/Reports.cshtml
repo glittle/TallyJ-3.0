@@ -1,6 +1,6 @@
 ﻿@using TallyJ.Code.Enumerations
-@using TallyJ.Code.Resources
 @using TallyJ.Code.Session
+@using TallyJ.EF
 @model ResultsModel
 @{
   ViewBag.Title = "Reports";
@@ -13,14 +13,15 @@
   ContextItems.AddJavascriptForPage("reportsPage.T24={0};".FilledWith(currentElection.T24.SerializedAsJsonString()));
 
   var ballotProcessEnum = currentElection.BallotProcess;
-  var showVoters = ballotProcessEnum != TallyJ.EF.BallotProcessEnum.None;
+  var showVoters = ballotProcessEnum != BallotProcessEnum.None;
   var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
   var firstHeader = false;
   var onlineEnabled = currentElection.OnlineEnabled;
 
-  var reports = new Dictionary<string, string>
+  var reportsBallots = new Dictionary<string, string>
 {
-  { "SimpleResults|Ballot Reports", "Main Election Report"},
+        { "Ballot Reports", "" },
+        { "SimpleResults", "Main Election Report" },
   { "VotesByNum", "Tellers' Report, by Votes"},
   { "VotesByName", "Tellers' Report, by Name"},
   { "Ballots", "Ballots (All for Review)"},
@@ -30,9 +31,13 @@
   { "SpoiledVotes", "Spoiled Votes"},
   { "BallotAlignment", "Ballot Alignment"},
   { "BallotsSame", "Duplicate Ballots"},
-  { "BallotsSummary", "Ballots Summary"},
+        { "BallotsSummary", "Ballots Summary" }
+    };
 
-  { "AllCanReceive|Voter Reports", "Can Be Voted For"},
+  var reportsVoters = new Dictionary<string, string>
+    {
+        { "Voter Reports", "" },
+        { "AllCanReceive", "Can Be Voted For" },
   { "Voters", showVoters ? "Participation" : null}, 
   { "Flags", "Attendance Checklists"},
   { "VotersOnline", showVoters && onlineEnabled ? "Voted Online" : null},
@@ -41,8 +46,11 @@
   { "VotersByLocationArea", hasMultipleLocations ? "Attendance by Venue" : null },
   { "ChangedPeople", "Updated People Records"},
   { "AllNonEligible", "With Eligibility Status"},
-  { "VoterEmails", onlineEnabled ? "Email & Phone List" : null},
+        { "VoterEmails", onlineEnabled ? "Email & Phone List" : null }
   };
+
+
+  var reports = reportsBallots.Concat(reportsVoters).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 }
 <link href="@ClientFile("~/Content/theme.default.min.css")" rel="stylesheet" />
 <link href="@ClientFile("~/Content/theme.dropbox.min.css")" rel="stylesheet" />
@@ -54,23 +62,27 @@
     <div>
       @foreach (var r in reports)
       {
-        if (r.Value.HasNoContent())
+                if (r.Value == null)
         {
           continue;
         }
-        var keyParts = r.Key.Split('|');
-        var href = keyParts[0];
-        if (keyParts.Length == 2)
+                // var keyParts = r.Key.Split('|');
+                // var href = keyParts[0];
+                var href = r.Key;
+                if (r.Value == "")
         {
           if (firstHeader)
           {
             @("</ul></div><div>".AsRawHtml())
           }
-          @("<h2>{0}</h2><ul>".FilledWith(keyParts[1]).AsRawHtml())
+                    @("<h2>{0}</h2><ul>".FilledWith(r.Key).AsRawHtml())
 
           firstHeader = true;
+                    continue;
         }
-        <li><a href='#@href'>@r.Value</a></li>
+                <li>
+                    <a href='#@href'>@r.Value</a>
+                </li>
       }
       @("</ul>".AsRawHtml())
     </div>

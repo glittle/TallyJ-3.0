@@ -60,6 +60,10 @@ namespace TallyJ.Controllers
       {
         personQuery = personQuery.Where(p => p.Phone == voterId);
       }
+      else if (UserSession.VoterIdType == VoterIdTypeEnum.Kiosk)
+      {
+        personQuery = personQuery.Where(p => p.KioskCode == voterId);
+      }
       else
       {
         return new
@@ -85,31 +89,6 @@ namespace TallyJ.Controllers
       // get voting info
       var votingInfo = Db.OnlineVotingInfo
         .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.PersonGuid);
-
-      // if (votingInfo == null)
-      // {
-      //   var existingByEmail = Db.OnlineVotingInfo
-      //     .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.Email);
-      //
-      //   if (existingByEmail != null)
-      //   {
-      //     return new
-      //     {
-      //       Error = "This email address was used for another person."
-      //     }.AsJsonResult();
-      //   }
-      //
-      //   var existingByPhone = Db.OnlineVotingInfo
-      //      .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.Phone == electionInfo.p.Phone);
-      //
-      //   if (existingByPhone != null)
-      //   {
-      //     return new
-      //     {
-      //       Error = "This phone number was used for another person."
-      //     }.AsJsonResult();
-      //   }
-      // }
 
       if (electionInfo.e.OnlineWhenOpen.AsUtc() <= utcNow && electionInfo.e.OnlineWhenClose.AsUtc() > utcNow)
       {
@@ -202,7 +181,7 @@ namespace TallyJ.Controllers
 
       // var now = DateTime.Now;
       var utcNow = DateTime.UtcNow;
-      if (UserSession.CurrentElection.OnlineWhenOpen.AsUtc() <= utcNow 
+      if (UserSession.CurrentElection.OnlineWhenOpen.AsUtc() <= utcNow
           && UserSession.CurrentElection.OnlineWhenClose.AsUtc() > utcNow)
       {
         // pool is JSON string
@@ -350,10 +329,11 @@ namespace TallyJ.Controllers
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
         string notificationType = null;
+        var usingKiosk = UserSession.VoterIdType == VoterIdTypeEnum.Kiosk.Value;
 
         person.HasOnlineBallot = locked;
 
-        if (person.VotingMethod.HasContent() && person.VotingMethod != VotingMethodEnum.Online)
+        if (person.VotingMethod.HasContent() && !(person.VotingMethod == VotingMethodEnum.Online || person.VotingMethod == VotingMethodEnum.Kiosk))
         {
           // teller has set. Voter can't change it...
         }
@@ -361,7 +341,7 @@ namespace TallyJ.Controllers
         {
           if (locked)
           {
-            person.VotingMethod = VotingMethodEnum.Online;
+            person.VotingMethod = usingKiosk ? VotingMethodEnum.Kiosk : VotingMethodEnum.Online;
             person.RegistrationTime = utcNow;
             person.VotingLocationGuid = new LocationModel().GetOnlineLocation().LocationGuid;
             person.EnvNum = null;
@@ -378,6 +358,10 @@ namespace TallyJ.Controllers
             // logHelper.Add("Locked ballot");
             logHelper.Add("Submitted Ballot");
 
+            if (UserSession.VoterIdType == VoterIdTypeEnum.Kiosk.Value)
+            {
+              person.KioskCode = ""; // set to an empty string, not NULL - can tell the difference: used is ""
+            }
 
             var notificationHelper = new NotificationHelper();
             var notificationSent = notificationHelper.SendWhenBallotSubmitted(person, currentElection, out notificationType, out var error);
@@ -447,9 +431,24 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
-        .Where(p => (p.Email == voterId || p.Phone == voterId) && p.CanVote == true)
-        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { p, e })
-        .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid, ovi => ovi.PersonGuid, (g, oviList) => new { g.p, g.e, ovi = oviList.FirstOrDefault() })
+
+        // find this person
+        .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
+
+        // and the elections they are in
+        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid,
+          (p, e) => new { p, e })
+
+        // get the online voting info for this person 
+        .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid,
+          ovi => ovi.PersonGuid,
+          (g, oviList) => new
+          {
+            g.p,
+            g.e,
+            ovi = oviList.FirstOrDefault()
+          })
+
         .OrderByDescending(j => j.e.OnlineWhenClose)
         .ThenByDescending(j => j.e.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
@@ -466,7 +465,6 @@ namespace TallyJ.Controllers
           OnlineWhenOpen = j.e.OnlineWhenOpen.AsUtc(),
           OnlineWhenClose = j.e.OnlineWhenClose.AsUtc(),
           j.e.OnlineCloseIsEstimate,
-          //          j.e.TallyStatus,
           person = new
           {
             name = j.p.C_FullName,

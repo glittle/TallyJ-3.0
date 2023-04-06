@@ -20,7 +20,7 @@ namespace TallyJ.CoreModels
     {
         public JsonResult GrantAccessToGuestTeller(Guid electionGuid, string codeToTry, Guid oldComputerGuid)
         {
-            var electionModel = new ElectionModel();
+            var electionModel = new ElectionHelper();
 
             var passcode = new PublicElectionLister().GetPasscodeIfAvailable(electionGuid);
             if (passcode == null)

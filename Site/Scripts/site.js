@@ -32,6 +32,7 @@ var site = {
     locationChanged: 'locationChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
+    personDeleted: 'personDeleted',
     personNameChanging: 'personNameChanging',
     pulse: 'pulse',
   },

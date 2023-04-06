@@ -20,11 +20,7 @@
       press Enter when their name is highlighted. Use the Up and Down keys to move through
       the list of matched names.
     </li>
-    @if (UserSession.CurrentElection.ElectionMode == ElectionModeEnum.Tie)
-    {
-      <li>For this tie-break election, those tied should have a status of "Eligible to vote and be voted for" and everyone else "Tie-break: Not tied"</li>
-    }
-    </ol>
+  </ol>
 </div>
 <div class="sideBySide">
   <div>
@@ -32,8 +28,8 @@
     <label class="searchlabel" for="txtSearch">Search for a <u>p</u>erson:</label>
     <input id="txtSearch" class="input-medium" accesskey="P"
            autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span>
-    <button id="btnShowAll" class="btn btn-mini" type="button">
-      Show All
+    <button id="btnShowAll" accesskey="a" class="btn btn-mini" type="button">
+      Show <u>A</u>ll
     </button>
 
 
@@ -42,17 +38,17 @@
     </button>
     <ul id="nameList"></ul>
     @*@if (Model.CurrentElection.CanReceive != ElectionModel.CanVoteOrReceive.All)
-    {
-      <div>
-        <button id="btnListTied" type="button">Search for who can be voted for in this election</button>
-      </div>
-    }*@
+      {
+        <div>
+          <button id="btnListTied" type="button">Search for who can be voted for in this election</button>
+        </div>
+      }*@
     @*@if (Model.CurrentElection.CanVote != ElectionModel.CanVoteOrReceive.All)
-    {
-      <div>
-        <button id="btnListVoters" type="button">Search for who can vote in this election</button>
-      </div>
-    }*@
+      {
+        <div>
+          <button id="btnListVoters" type="button">Search for who can vote in this election</button>
+        </div>
+      }*@
 
   </div>
   <div id="editPanel">

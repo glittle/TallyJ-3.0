@@ -18,7 +18,8 @@ namespace TallyJ.EF
 
     public int TempImportLineNum { get; set; }
 
-    public string FullName {
+    public string FullName
+    {
       get
       {
         return new[]
@@ -34,7 +35,8 @@ namespace TallyJ.EF
 
     public string FullNameAndArea => FullNameFL + Area.SurroundContentWith(" <u>", "</u>");
 
-    public string FullNameFL {
+    public string FullNameFL
+    {
       get
       {
         return new[]

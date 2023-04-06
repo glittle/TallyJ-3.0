@@ -23,13 +23,9 @@ namespace TallyJ.EF
         public string ElectionMode { get; set; }
         public Nullable<int> NumberToElect { get; set; }
         public Nullable<int> NumberExtra { get; set; }
-        public string CanVote { get; set; }
-        public string CanReceive { get; set; }
         public Nullable<int> LastEnvNum { get; set; }
         public string TallyStatus { get; set; }
         public Nullable<bool> ShowFullReport { get; set; }
-        public Nullable<System.Guid> LinkedElectionGuid { get; set; }
-        public string LinkedElectionKind { get; set; }
         public string OwnerLoginId { get; set; }
         public string ElectionPasscode { get; set; }
         public Nullable<System.DateTime> ListedForPublicAsOf { get; set; }

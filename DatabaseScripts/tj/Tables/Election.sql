@@ -8,13 +8,9 @@
     [ElectionMode]           VARCHAR (1)      NULL,
     [NumberToElect]          INT              NULL,
     [NumberExtra]            INT              NULL,
-    [CanVote]                VARCHAR (1)      NULL,
-    [CanReceive]             VARCHAR (1)      NULL,
     [LastEnvNum]             INT              NULL,
     [TallyStatus]            VARCHAR (15)     NULL,
     [ShowFullReport]         BIT              NULL,
-    [LinkedElectionGuid]     UNIQUEIDENTIFIER NULL,
-    [LinkedElectionKind]     VARCHAR (2)      NULL,
     [OwnerLoginId]           VARCHAR (50)     NULL,
     [ElectionPasscode]       NVARCHAR (50)    NULL,
     [ListedForPublicAsOf]    DATETIME2 (7)    NULL,
@@ -37,8 +33,15 @@
     [CustomMethods]          NVARCHAR (50)    NULL,
     [VotingMethods]          VARCHAR (10)     NULL,
     [Flags]                  NVARCHAR (MAX)   NULL,
+    [ParentElectionGuid]     UNIQUEIDENTIFIER NULL,
+    [PeopleElectionGuid]     UNIQUEIDENTIFIER NOT NULL,
+    [ParentTieBreakGroup]    INT              NULL,
+    [UnitName]               NVARCHAR (100)   NULL,
+    [TieBreakPersonGuids]    VARCHAR (200)    NULL,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
 
 
 
@@ -56,7 +59,9 @@
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Election]
     ON [tj].[Election]([ElectionGuid] ASC)
-    INCLUDE([Name], [Convenor], [DateOfElection], [ElectionType], [ElectionMode], [NumberToElect], [NumberExtra], [CanVote], [CanReceive], [LastEnvNum], [TallyStatus], [ShowFullReport], [LinkedElectionGuid], [LinkedElectionKind], [OwnerLoginId], [ElectionPasscode], [ListedForPublicAsOf], [_RowVersion], [ListForPublic], [ShowAsTest], [UseCallInButton], [HidePreBallotPages], [MaskVotingMethod], [OnlineWhenOpen], [OnlineWhenClose], [OnlineCloseIsEstimate], [OnlineSelectionProcess], [OnlineAnnounced]);
+    INCLUDE([Name], [Convenor], [DateOfElection], [ElectionType], [ElectionMode], [NumberToElect], [NumberExtra], [LastEnvNum], [TallyStatus], [ShowFullReport], [OwnerLoginId], [ElectionPasscode], [ListedForPublicAsOf], [_RowVersion], [ListForPublic], [ShowAsTest], [UseCallInButton], [HidePreBallotPages], [MaskVotingMethod], [OnlineWhenOpen], [OnlineWhenClose], [OnlineCloseIsEstimate], [OnlineSelectionProcess], [OnlineAnnounced], [_RowId]);
+
+
 
 
 
@@ -86,4 +91,8 @@ GRANT DELETE
     AS [dbo];
 
 
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Election Info', @level0type = N'SCHEMA', @level0name = N'tj', @level1type = N'TABLE', @level1name = N'Election';
 

@@ -29,6 +29,7 @@
 
     settings.vue = new Vue({
       el: '#setupBody',
+      name: 'setup',
       components: {
         'yes-no': YesNo,
       },
@@ -45,9 +46,12 @@
         custom1: '',
         custom2: '',
         custom3: '',
+        electionType: '',
+        originalElectionType: '',
         flags: [],
         flagsPre: '',
-        dummy: 1
+        dummy: 1,
+        isKiosk: GetFromStorage('kiosk', 'N'),
       },
       computed: {
         onlineDatesOkay: function () {
@@ -93,6 +97,9 @@
       watch: {
         'election.BallotProcessRaw': function (a) {
           this.replaceBodyBpClass(a);
+        },
+        isKiosk: function (a) {
+          SetInStorage('kiosk', a);
         },
         usingBallotProcess: function (a) {
           if (!a) {
@@ -144,6 +151,8 @@
       },
       created: function () {
         //        this.useOnline = !!this.election.OnlineWhenOpen;
+        this.electionType = this.election.ElectionType;
+        this.originalElectionType = this.election.ElectionType;
         if (this.election.OnlineWhenOpen || this.election.OnlineWhenClose) {
           this.useOnline = true;
           this.election.OnlineWhenOpen = this.election.OnlineWhenOpen ? moment.utc(this.election.OnlineWhenOpen).toISOString(true) : '';
@@ -253,7 +262,7 @@
     $('.Demographics').on('change keyup', '*:input', function () {
       var input = $(this);
 
-      if (input.closest('.forLocations').length) {
+      if (input.closest('.forLocations').length || input.parent().parent().hasClass('ignore')) {
         return; // don't flag location related inputs
       }
       setTimeout(function () {
@@ -540,7 +549,8 @@
 
     $('.Demographics :input[data-name]').each(function () {
       var input = $(this);
-      var value = election[input.data('name')] || '';
+      var dataName = input.data('name');
+      var value = election[dataName] || '';
       switch (input.attr('type')) {
         case 'date':
           var dateString = value ? moment(value).format('YYYY-MM-DD') : ''; // ('' + value).parseJsonDateForInput();
@@ -588,6 +598,10 @@
       customs = [vue.custom1, vue.custom2, vue.custom3].join('|');
     }
 
+    if (!vue.votingMethodsArray.includes('K') && vue.isKiosk === 'Y') {
+      vue.isKiosk = 'N';
+    }
+
     var votingMethods = vue.votingMethodsArray.join('');
     //    if (vue.useOnline && !votingMethods.includes('O')) {
     //      votingMethods += 'O';
@@ -596,6 +610,7 @@
 
     var form = {
       C_RowId: election.C_RowId,
+      ElectionType: election.ElectionType,
       ShowAsTest: election.ShowAsTest,
       BallotProcessRaw: election.BallotProcessRaw,
       EnvNumModeRaw: election.EnvNumModeRaw,

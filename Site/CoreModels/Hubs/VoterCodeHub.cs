@@ -15,6 +15,10 @@ namespace TallyJ.CoreModels.Hubs
 
     public void SetStatus(string key, string message, string voiceCallStatusCode = null)
     {
+      if (key.HasNoContent())
+      {
+        return;
+      }
       CoreHub.Clients.Group(key).setStatus(message, voiceCallStatusCode);
     }
 

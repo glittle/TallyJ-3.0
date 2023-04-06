@@ -21,7 +21,7 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SelectElection(Guid guid, Guid? oldComputerGuid)
     {
-      var electionModel = new ElectionModel();
+      var electionModel = new ElectionHelper();
 
       if (electionModel.JoinIntoElection(guid, oldComputerGuid.AsGuid()))
       {
@@ -48,13 +48,13 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult UpdateElectionStatus(string state)
     {
-      return new ElectionModel().SetTallyStatusJson(state);
+      return new ElectionHelper().SetTallyStatusJson(state);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult CreateElection()
     {
-      var model = new ElectionModel();
+      var model = new ElectionHelper();
       return model.Create();
     }
 

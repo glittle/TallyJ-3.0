@@ -34,14 +34,14 @@ namespace TallyJ.CoreModels.Helper
       _voterCodeHub = new VoterCodeHub();
     }
 
-    protected LogHelper LogHelper => _logHelper ?? (_logHelper = new LogHelper());
+    protected LogHelper LogHelper => _logHelper ??= new LogHelper();
 
     /// <summary>
     ///   Make and send the code
     /// </summary>
     /// <param name="type"></param>
     /// <param name="method"></param>
-    /// <param name="target"></param>
+    /// <param name="target">Email address or phone</param>
     /// <returns></returns>
     public object IssueCode(string type, string method, string target)
     {
@@ -58,9 +58,17 @@ namespace TallyJ.CoreModels.Helper
       // validate before we try to use
       var validMessage = "Unknown type";
       if (voterIdType == VoterIdTypeEnum.Email)
+      {
         validMessage = EmailHelper.IsValidEmail(target) ? "" : "Invalid email";
+      }
       else if (voterIdType == VoterIdTypeEnum.Phone)
+      {
         validMessage = TwilioHelper.IsValidPhoneNumber(target) ? "" : "Invalid phone number";
+      }
+      else if (voterIdType == VoterIdTypeEnum.Kiosk)
+      {
+        validMessage = "Invalid for kiosk";
+      }
 
       if (validMessage.HasContent())
         return new
@@ -80,7 +88,8 @@ namespace TallyJ.CoreModels.Helper
           Message = message
         };
 
-      var newCode = MakeAndSaveCode(voterIdType, target, out message);
+      var newCode = MakeCode();
+      CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message);
       if (message.HasContent())
         return new
         {
@@ -132,20 +141,18 @@ namespace TallyJ.CoreModels.Helper
     }
 
 
-    private string MakeAndSaveCode(VoterIdTypeEnum voterIdType, string target, out string errorMessage)
+    private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, bool reset = false)
     {
-      var newCode = MakeCode();
-
       // find or make this OnlineVoter record
       var db = UserSession.GetNewDbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == target && ov.VoterIdType == voterIdType);
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterIdType == voterIdType && ov.VoterId == voterId);
       var utcNow = DateTime.UtcNow;
 
       if (onlineVoter == null)
       {
         onlineVoter = new OnlineVoter
         {
-          VoterId = target,
+          VoterId = voterId,
           VoterIdType = voterIdType,
           VerifyCode = newCode,
           VerifyCodeDate = utcNow,
@@ -162,7 +169,7 @@ namespace TallyJ.CoreModels.Helper
 
         var fromDate = utcNow.AddMinutes(0 - UserAttemptMinutes);
 
-        if (verifyAttemptsStart < fromDate)
+        if (verifyAttemptsStart < fromDate || reset)
         {
           attempts = 0; // reset
           onlineVoter.VerifyAttemptsStart = utcNow;
@@ -171,7 +178,7 @@ namespace TallyJ.CoreModels.Helper
         if (attempts >= UserAttemptMax)
         {
           errorMessage = "Too many attempts. Please wait before trying again.";
-          return null;
+          return;
         }
 
         //TODO - ensure not being hit too often
@@ -185,7 +192,6 @@ namespace TallyJ.CoreModels.Helper
       db.SaveChanges();
 
       errorMessage = "";
-      return newCode;
     }
 
     private void CheckSiteUsageThresholds(out string message)
@@ -314,18 +320,31 @@ namespace TallyJ.CoreModels.Helper
 
     public object LoginWithCode(string code)
     {
-      var parts = UserSession.PendingVoterLogin?.Split('\t');
+      string[] parts;
+
+      if (code.StartsWith("K_") && code.Length == 8)
+      {
+        parts = new[] { "K", code.Substring(2).ToUpper(), "kiosk code" };
+        code = parts[1];
+      }
+      else
+      {
+        parts = UserSession.PendingVoterLogin?.Split('\t');
+      }
 
       if (parts == null || parts.Length != 3)
+      {
         return new
         {
           Success = false,
           Message = "Unexpected call"
         };
+      }
 
       var voterIdType = parts[0];
       var voterId = parts[1];
       var method = parts[2];
+
       var db = UserSession.GetNewDbContext;
 
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
@@ -333,7 +352,7 @@ namespace TallyJ.CoreModels.Helper
         return new
         {
           Success = false,
-          Message = "Unknown target: " + voterId.CleanedForErrorMessages()
+          Message = "Unknown code" // + voterId.CleanedForErrorMessages()
         };
 
       if (onlineVoter.VerifyCode == code)
@@ -401,6 +420,62 @@ namespace TallyJ.CoreModels.Helper
         Success = false,
         Message = "Invalid code."
       };
+    }
+
+    public string GenerateKioskCode(int personId, out string errorMessage)
+    {
+      var dbContext = UserSession.GetNewDbContext;
+
+      // var person = new PersonCacher(dbContext).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
+      var person = dbContext.Person
+        .SingleOrDefault(p=> p.C_RowId == personId && p.ElectionGuid == UserSession.CurrentElectionGuid);
+      if (person == null)
+      {
+        errorMessage = "Unknown person";
+        return null;
+      }
+
+      if (person.VotingMethod.HasContent())
+      {
+        errorMessage = "Already voted";
+        return null;
+      }
+
+      var kioskCode = person.KioskCode;
+
+      if (kioskCode == null)
+      {
+        // make a 4 character random letter code (upper case) avoiding I, O, and Q
+        var randomCode = "";
+        var random = new Random();
+        var letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        for (var i = 0; i < 4; i++)
+        {
+          var index = random.Next(0, letters.Length);
+          randomCode += letters[index];
+        }
+
+        // get the first letter of the first and last name. If missing, use A
+        var firstInitial = (person.FirstName.Substring(0, 1) + "A").Substring(0, 1);
+        var lastInitial = (person.LastName.Substring(0, 1) + "A").Substring(0, 1);
+
+        kioskCode = $"{firstInitial}{lastInitial}{randomCode}".ToUpper();
+      }
+
+      // for kiosk voters, the voterId is the kioskCode and also the 'secret' code
+      CreateOrUpdateOnlineVoter(VoterIdTypeEnum.Kiosk, kioskCode, kioskCode, out errorMessage, true);
+
+      if (errorMessage.HasContent())
+      {
+        return null;
+      }
+
+      person.KioskCode = kioskCode;
+
+
+      dbContext.SaveChanges();
+
+      return kioskCode;
     }
   }
 }

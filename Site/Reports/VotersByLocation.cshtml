@@ -23,6 +23,7 @@
       Custom2 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
       Custom3 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Online.ToString()),
+      OnlineKiosk = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.i.ToString()),
       Imported = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Imported.ToString()),
     })
     .OrderBy(r => r.LocationName)
@@ -40,6 +41,7 @@
     Custom2 = locations.Sum(a => a.Custom2),
     Custom3 = locations.Sum(a => a.Custom3),
     Online = locations.Sum(a => a.Online),
+    OnlineKiosk = locations.Sum(a => a.OnlineKiosk),
     Imported = locations.Sum(a => a.Imported),
   };
 
@@ -48,6 +50,7 @@
   var showCustom2 = total.Custom2.AsInt() > 0;
   var showCustom3 = total.Custom3.AsInt() > 0;
   var showOnline = total.Online.AsInt() > 0;
+  var showOnlineKiosk = total.OnlineKiosk.AsInt() > 0;
   var showImported = total.Imported.AsInt() > 0;
 }
 <style>
@@ -121,9 +124,14 @@
         @if (showCustom3)
         {
           <th>@election.Custom3Name</th>
-        }@if (showOnline)
+        }
+        @if (showOnline)
         {
           <th>Online</th>
+        }
+        @if (showOnlineKiosk)
+        {
+            <th>Kiosk</th>
         }
         @if (showImported)
         {
@@ -137,6 +145,7 @@
                        + (showCustom2 ? 1 : 0)
                        + (showCustom3 ? 1 : 0)
                        + (showImported ? 1 : 0)
+                       + (showOnlineKiosk ? 1 : 0)
                        + (showOnline ? 1 : 0))">
           (% at venue)
         </td>
@@ -174,6 +183,10 @@
             {
               <td class="method">@loc.Online @loc.Online.PercentInSpan(loc.Voted, -1, true)</td>
             }
+            @if (showOnlineKiosk)
+            {
+              <td class="method">@loc.OnlineKiosk @loc.OnlineKiosk.PercentInSpan(loc.Voted, -1, true)</td>
+            }
             @if (showImported)
             {
               <td class="method">@loc.Imported @loc.Imported.PercentInSpan(loc.Voted, -1, true)</td>
@@ -205,6 +218,10 @@
           @if (showOnline)
           {
             <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>
+          }
+          @if (showOnlineKiosk)
+          {
+            <td class="method">@total.OnlineKiosk @total.OnlineKiosk.PercentInSpan(total.Voted, -1, true)</td>
           }
           @if (showImported)
           {

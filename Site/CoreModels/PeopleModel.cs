@@ -51,7 +51,7 @@ namespace TallyJ.CoreModels
 
     private List<Person> PeopleInElection => _people ?? (_people = new PersonCacher(Db).AllForThisElection);
 
-    private int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count();
+    private int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
     public List<Person> PeopleWhoCanVote() //, bool includeIneligible = true
     {
@@ -237,13 +237,13 @@ namespace TallyJ.CoreModels
 
       //var whoCanVote = CurrentElection.CanVote;
       //var whoCanReceiveVotes = CurrentElection.CanReceive;
-      var voteCacher = new VoteCacher(Db);
-      var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
+      // var voteCacher = new VoteCacher(Db);
+      // var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
 
       return new
       {
         Person = PersonForEdit(person),
-        CanDelete = person.VotingMethod == null && !votedFor
+        // CanDelete = person.VotingMethod == null && !votedFor
       }.AsJsonResult();
     }
 
@@ -394,10 +394,59 @@ namespace TallyJ.CoreModels
       {
         Status = "Saved",
         Person = PersonForEdit(personInDatastore),
-        OnFile = persons.Count(),
+        OnFile = persons.Count,
         Eligible = persons.Count(p => p.IneligibleReasonGuid == null) //TODO? split to: can vote, can receive votes
       }.AsJsonResult();
     }
+
+    public JsonResult DeletePerson(int personId)
+    {
+      if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
+        return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
+
+      var person = PeopleInElection.SingleOrDefault(p => p.C_RowId == personId);
+      if (person == null)
+        return new
+        {
+          Message = "Unknown person"
+        }.AsJsonResult();
+
+      if (person.VotingMethod != null)
+        return new
+        {
+          Message = "Cannot delete a person who has already voted."
+        }.AsJsonResult();
+
+      var voteCacher = new VoteCacher(Db);
+      var votedFor = voteCacher.AllForThisElection.Any(v => v.PersonGuid == person.PersonGuid);
+      if (votedFor)
+        return new
+        {
+          Message = "Cannot delete a person who has been voted for."
+        }.AsJsonResult();
+
+      var onlineVotingInfo = Db.OnlineVotingInfo.SingleOrDefault(o => o.PersonGuid == person.PersonGuid);
+      if (onlineVotingInfo != null)
+        return new
+        {
+          Message = "Cannot delete a person who has voted online."
+        }.AsJsonResult();
+
+      // all checks done...
+
+      Db.Person.Attach(person);
+      Db.Person.Remove(person);
+
+      Db.SaveChanges();
+
+      new PersonCacher(Db).DropThisCache();  // force a reload
+
+      return new
+      {
+        Success = true
+      }.AsJsonResult();
+    }
+
 
     /// <Summary>Everyone</Summary>
     public IEnumerable<object> FrontDeskPersonLines(FrontDeskSortEnum sortType = FrontDeskSortEnum.ByName)
@@ -455,8 +504,7 @@ namespace TallyJ.CoreModels
 
       var ballotSources = PeopleInElection // start with everyone
         .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
-        .Where(p => p.VotingMethod != VotingMethodEnum.Online)
-        .Where(p => p.VotingMethod != VotingMethodEnum.Imported)
+        .Where(p => !(p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk || p.VotingMethod == VotingMethodEnum.Imported))
         .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
         .ToList()
         .OrderBy(p => p.VotingMethod)
@@ -547,11 +595,14 @@ namespace TallyJ.CoreModels
           Custom2 = p.VotingMethod == VotingMethodEnum.Custom2,
           Custom3 = p.VotingMethod == VotingMethodEnum.Custom3,
           Imported = p.VotingMethod == VotingMethodEnum.Imported,
-          Online = useOnline && p.VotingMethod == VotingMethodEnum.Online,
+          Online = useOnline && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk),
           HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
           CanBeOnline = useOnline &&
-                        (p.VotingMethod == VotingMethodEnum.Online || p.Email.HasContent() ||
-                         p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
+                        (p.VotingMethod == VotingMethodEnum.Online 
+                         || p.VotingMethod == VotingMethodEnum.Kiosk 
+                         || p.Email.HasContent() 
+                         || p.KioskCode.HasContent() 
+                         || p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
           OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
           // Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),
@@ -616,7 +667,7 @@ namespace TallyJ.CoreModels
       var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null) return new { Message = "Unknown person" }.AsJsonResult();
 
-      if (person.VotingMethod == VotingMethodEnum.Online)
+      if (person.VotingMethod == VotingMethodEnum.Online || person.VotingMethod == VotingMethodEnum.Kiosk)
       {
         var onlineVoter = Db.OnlineVotingInfo.SingleOrDefault(ovi =>
           ovi.PersonGuid == person.PersonGuid && ovi.ElectionGuid == person.ElectionGuid);
@@ -632,7 +683,7 @@ namespace TallyJ.CoreModels
       person.Teller2 = UserSession.GetCurrentTeller(2);
 
       var votingMethodRemoved = false;
-      Guid? oldVoteLocationGuid = null;
+      Guid? oldVoteLocationGuid;
       Guid? newVoteLocationGuid = null;
       var utcNow = DateTime.UtcNow;
 
@@ -680,7 +731,7 @@ namespace TallyJ.CoreModels
         // make number for every method
         var needEnvNum = person.EnvNum == null;
 
-        if (needEnvNum) person.EnvNum = new ElectionModel().GetNextEnvelopeNumber();
+        if (needEnvNum) person.EnvNum = new ElectionHelper().GetNextEnvelopeNumber();
       }
 
       personCacher.UpdateItemAndSaveCache(person);
@@ -816,8 +867,6 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///   Update listing for everyone updated since this version
     /// </summary>
-    /// <param name="lastRowVersion"></param>
-    /// <param name="votingMethodRemoved"></param>
     /// <summary>
     ///   Update listing for just one person
     /// </summary>
@@ -843,11 +892,10 @@ namespace TallyJ.CoreModels
       new VoterPersonalHub().Update(person);
 
       var oldestStamp = person.C_RowVersionInt.AsLong() - 5; // send last 5, to ensure none are missed
-      long newStamp;
       var rollCallModel = new RollCallModel();
       var rollCallInfo = new
       {
-        changed = rollCallModel.GetMorePeople(oldestStamp, out newStamp),
+        changed = rollCallModel.GetMorePeople(oldestStamp, out var newStamp),
         removedId = votingMethodRemoved ? person.C_RowId : 0,
         newStamp
       };

@@ -18,6 +18,7 @@
       el: '#electionListPage',
       data: {
         elections: [],
+        topList: [],
         loaded: false,
         exporting: '',
         deleting: '',
@@ -25,48 +26,45 @@
         log: '',
         tempLog: '',
         showTest: true,
-        hideOld: false,
+        //        hideOld: false,
         reloading: false,
         formatDateTime: 'YYYY MMM D [at] HH:mm',
         formatDateOnly: 'YYYY MMM D',
       },
       computed: {
-        oldElections() {
-          return this.elections.filter(e => e.old);
-        },
+        //        oldElections() {
+        //          return this.elections.filter(e => e.old);
+        //        },
         numForVoting() {
           return this.elections.filter(e => e.OnlineCurrentlyOpen).length;
         },
         numForTellers() {
           return this.elections.filter(e => e.openForTellers).length;
         },
-        currentElections() {
-          return this.elections; // .filter(e => this.showTest || !e.IsTest);
+        //        currentElections() {
+        //          return this.elections; // .filter(e => this.showTest || !e.IsTest);
+        //        },
+        //        oldElectionGuids() {
+        //          return this.oldElections.map(e => e.ElectionGuid);
+        //        },
+        electionGuids() {
+          return this.elections.map(e => e.ElectionGuid);
         },
-        oldElectionGuids() {
-          return this.oldElections.map(e => e.ElectionGuid);
-        },
-        currentElectionGuids() {
-          return this.currentElections.map(e => e.ElectionGuid);
-        },
-        oldListBtnText() {
-          var n = this.oldElections.length;
-          return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
-        }
+        //        oldListBtnText() {
+        //          var n = this.oldElections.length;
+        //          return this.hideOld ? `${n} hidden election${Plural(n)}` : 'Hide';
+        //        }
       },
       watch: {
 
       },
       mounted() {
-        this.hideOld = GetFromStorage('hideOld', false);
+        //        this.hideOld = GetFromStorage('hideOld', false);
 
         this.showElections(publicInterface.elections);
 
-        if (!this.currentElections.length) {
-          // no current, show the old
-          this.hideOld = false;
-        } else {
-          var electionGuidList = this.currentElections.map(e => e.ElectionGuid).join(',');
+        if (this.elections.length) {
+          var electionGuidList = this.elections.map(e => e.ElectionGuid).join(',');
           connectToElectionHub(electionGuidList);
         }
 
@@ -76,76 +74,85 @@
 
         site.onbroadcast(site.broadcastCode.electionStatusChanged, this.electionStatusChanged);
 
+        this.$root.$on('delete', this.deleteElection);
+        this.$root.$on('export', this.exportElection);
       },
       methods: {
         electionStatusChanged(ev, info) {
-          var election = this.elections.find(e => e.ElectionGuid === info.ElectionGuid);
-          console.log(election, info);
+          //          var election = this.elections.find(e => e.ElectionGuid === info.ElectionGuid);
+          //          console.log(election, info);
         },
-        toggleOldList() {
-          this.hideOld = !this.hideOld;
-          SetInStorage('hideOld', this.hideOld);
-        },
-        test(election) {
-          var vue = this;
+        //        toggleOldList() {
+        //          this.hideOld = !this.hideOld;
+        //          SetInStorage('hideOld', this.hideOld);
+        //        },
+        extendElection(e) {
+          e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
+          e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
+
+          var d = moment(e.DateOfElection);
+          e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
+          e.dateSort = e.DateOfElection ? d.toISOString() : '0';
+          e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
+
+          //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
+          e.old = false; //!isCurrent;
+          // OnlineCurrentlyOpen
+          //            e.old = !e.DateOfElection || !e.OnlineCurrentlyOpen || d.isBefore(moment(), 'day');
+
+          // more static info
+          e.numVoters = '';
+          e.numToElect = 'Elect ' + e.NumberToElect;
+
+          e.tellers = [];
+          e.users = [];
+          e.showUsers = false;
+          e.inEdit = false;
+
+          e.isTop = !e.ParentElectionGuid;
+          // more live info
+          e.numBallots = '';
+          e.registered = '';
+          e.numRegistered = 0;
+          e.onlineVoters = {};
+          e.lastLog = {};
+
+          // online voters
+          if (!e.OnlineEnabled) {
+            e.voterStatus = 'not used';
+            e.voterStatusCircleClass = 'na';
+            e.openCloseTime = '';
+          } else
+            if (e.OnlineCurrentlyOpen) {
+              e.voterStatus = 'Open. Closing';
+              e.voterStatusCircleClass = 'green';
+              e.openCloseTime = e.onlineClose.fromNow();
+            } else
+              if (e.onlineOpen.isAfter()) {
+                e.voterStatus = 'will open';
+                e.voterStatusCircleClass = 'future';
+                e.openCloseTime = e.onlineOpen.fromNow();
+              } else
+                if (e.onlineClose.isBefore()) {
+                  e.voterStatus = 'closed';
+                  e.voterStatusCircleClass = 'past';
+                  e.openCloseTime = e.onlineClose.fromNow();
+                } else {
+                  e.voterStatus = '';
+                  e.voterStatusCircleClass = '';
+                }
+
+          e.openForTellers = e.CanBeAvailableForGuestTellers;
+          e.pendingOpenForTellers = e.openForTellers;
+
+          return e;
         },
         showElections(list) {
           list.forEach(e => {
-            e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
-            e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
-
-            var d = moment(e.DateOfElection);
-            e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
-            e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-            e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
-
-            //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
-            e.old = false; //!isCurrent;
-            // OnlineCurrentlyOpen
-            //            e.old = !e.DateOfElection || !e.OnlineCurrentlyOpen || d.isBefore(moment(), 'day');
-
-            // more static info
-            e.numVoters = '';
-            e.tellers = [];
-            e.users = [];
-            e.showUsers = false;
-            e.inEdit = false;
-
-            // more live info
-            e.numBallots = '';
-            e.registered = '';
-            e.numRegistered = 0;
-            e.onlineVoters = {};
-            e.lastLog = {};
-
-            // online voters
-            if (!e.OnlineEnabled) {
-              e.voterStatus = 'not used';
-              e.voterStatusCircleClass = 'na';
-              e.openCloseTime = '';
-            } else
-              if (e.OnlineCurrentlyOpen) {
-                e.voterStatus = 'Open. Closing';
-                e.voterStatusCircleClass = 'green';
-                e.openCloseTime = e.onlineClose.fromNow();
-              } else
-                if (e.onlineOpen.isAfter()) {
-                  e.voterStatus = 'will open';
-                  e.voterStatusCircleClass = 'future';
-                  e.openCloseTime = e.onlineOpen.fromNow();
-                } else
-                  if (e.onlineClose.isBefore()) {
-                    e.voterStatus = 'closed';
-                    e.voterStatusCircleClass = 'past';
-                    e.openCloseTime = e.onlineClose.fromNow();
-                  } else {
-                    e.voterStatus = '';
-                    e.voterStatusCircleClass = '';
-                  }
-
-            e.openForTellers = e.CanBeAvailableForGuestTellers;
-            e.pendingOpenForTellers = e.openForTellers;
+            this.extendElection(e);
           });
+
+          var topList = list.filter(e => e.isTop);
 
           list.sort((a, b) => {
             if (a.dateSort !== b.dateSort) {
@@ -155,6 +162,7 @@
           });
 
           this.elections = list;
+          this.topList = topList;
           this.loaded = true;
         },
         getMoreStatic() {
@@ -295,19 +303,27 @@
             },
             function (info) {
               if (info.Deleted) {
-                var row = vue.$refs['e-' + guid];
-                $(row[0]).slideUp(1000, 0, function () {
-
-                  var i = vue.elections.findIndex(e => e.ElectionGuid === guid);
-                  vue.elections.splice(i, 1);
-
-                  ShowStatusDone('Deleted.');
+                $(`#${guid}`).slideUp(1000, 0, function () {
+                  debugger;
+                  vue.removeElection(vue.elections, guid);
                 });
               } else {
                 ShowStatusFailed(info.Message);
               }
               vue.deleting = '';
             });
+        },
+        removeElection(elections, guid) {
+          // remove from any childElection list
+          elections.forEach(e => {
+            this.removeElection(e.childElections, guid);
+          });
+
+          // remove from this list
+          var i = elections.findIndex(c => c.ElectionGuid === guid);
+          if (i !== -1) {
+            elections.splice(i, 1);
+          }
         },
         createElection() {
           // get the server to make an election, then go see it
@@ -550,10 +566,10 @@ Vue.component('election-detail',
         }
       },
       deleteElection() {
-        this.$emit('delete', this.e);
+        this.$root.$emit('delete', this.e,);
       },
       exportElection() {
-        this.$emit('export', this.e);
+        this.$root.$emit('export', this.e);
       },
       updateListing() {
         var vue = this;

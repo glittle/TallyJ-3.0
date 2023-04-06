@@ -26,12 +26,12 @@
         <AssociationConnector Association="TallyJ2dModel.AspNetUserRoles" />
         <EntityTypeShape EntityType="TallyJ2dModel.Ballot" Width="1.5" PointX="11.75" PointY="0.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Vote" Width="1.5" PointX="11.75" PointY="4.75" />
-        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="11.75" PointY="8.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.Person" Width="1.5" PointX="5.75" PointY="12.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineVotingInfo" Width="1.5" PointX="13.75" PointY="4.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.C_Log" Width="1.5" PointX="7.75" PointY="13.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.SmsLog" Width="1.5" PointX="14.375" PointY="8.75" />
         <EntityTypeShape EntityType="TallyJ2dModel.OnlineVoter" Width="1.5" PointX="14.375" PointY="12.75" />
+        <EntityTypeShape EntityType="TallyJ2dModel.Election" Width="1.5" PointX="10.375" PointY="13.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

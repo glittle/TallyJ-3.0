@@ -10,9 +10,12 @@
 
 .Election {
   display: grid;
-  grid-template-columns: 2fr auto 13em;
+  grid-template-columns: 1fr auto 11em;
   grid-template-rows: auto;
-  grid-template-areas: "details status action" "users users users";
+  grid-template-areas: 
+    "details status action" 
+    "children children action"
+    "users users users";
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
@@ -22,6 +25,10 @@
 
   .electionDetail {
     grid-area: details;
+  }
+
+  .children{
+    grid-area: children;
   }
 
   .statusBlocks {
@@ -167,7 +174,7 @@
     .otherButtons {
       white-space: nowrap;
       text-align: right;
-      padding: 4px 0 0;
+      padding: 4px 0 6px;
     }
 
     .el-button--micro {
@@ -184,9 +191,10 @@
       cursor: pointer;
       font-size: 85%;
       text-align: center;
-      padding: 1px;
+      padding: 1px 3px;
       background-color: #fcfcfc;
       box-shadow: 0 0 1px grey;
+      border-radius: 3px;
 
       &:hover {
         background-color: #f1f1f1;
@@ -438,9 +446,8 @@ li.Comment {
 @media only screen and (max-width: 750px) {
   .Election {
     grid-template-columns: 1fr auto;
-    grid-template-areas: "details details" 
-      "status action" 
-      "users users";
+    grid-template-areas:
+      "details details" "status action" "children children" "users users";
   }
 
   .buttons {

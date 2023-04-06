@@ -36,7 +36,7 @@ namespace Tests.BusinessTests
 
       _electionGuid = Guid.NewGuid();
       SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      BallotTestHelper.SaveElectionGuidForTests(_electionGuid);
+      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
       SessionKey.CurrentComputer.SetInSession(new Computer
       {

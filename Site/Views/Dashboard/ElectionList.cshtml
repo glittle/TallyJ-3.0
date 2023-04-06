@@ -41,36 +41,15 @@
     </div>
 
     <div class="currentElections">
-      <span v-if="loaded && !currentElections.length" class="NoneFound">None found</span>
-      <election-detail v-for="e in currentElections"
+      <span v-if="loaded && !topList.length" class="NoneFound">None found</span>
+      <election-detail v-for="e in topList"
                        :e="e"
                        :ref="'e-' + e.ElectionGuid"
                        :exporting="exporting"
                        :deleting="deleting"
-                       v-on:delete="deleteElection"
-                       v-on:export="exportElection"
                        :key="e.ElectionGuid"></election-detail>
     </div>
 
-    @*<div v-if="oldElections.length"
-         class="oldElections">
-      <div class="h3button">
-        <h3 v-if="!hideOld">Other Elections</h3>
-        <button v-on:click.passive="toggleOldList" v-text="oldListBtnText"></button>
-      </div>
-
-      <div v-if="!hideOld">
-        <election-detail v-for="e in oldElections"
-                         :old="true"
-                         :e="e"
-                         :ref="'e-' + e.ElectionGuid"
-                         :exporting="exporting"
-                         :deleting="deleting"
-                         v-on:delete="deleteElection"
-                         v-on:export="exportElection"
-                         :key="e.C_RowId"></election-detail>
-      </div>
-    </div>*@
   }
   @if (UserSession.IsKnownTeller)
   {
@@ -116,7 +95,7 @@
 
 <template id="election-detail">
   <div class="Election"
-       :key="e.ElectionGuid"
+       :id="e.ElectionGuid"
        :class="{
            current: e.IsCurrent,
            TestElection: e.IsTest,
@@ -135,6 +114,9 @@
       <div class="Detail2">
         <div>
           <span>{{e.Type}} {{e.Mode}}</span>
+        </div>
+        <div>
+          <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
           <span class="numVoters" v-text="e.registered"></span>
           <span v-if="!e.IsSingleNameElection"
@@ -168,6 +150,7 @@
           <div v-html="onlineVoteCounts"></div>
         </div>
       </div>
+
     </div>
     <div class="statusBlocks">
       <div class="statusVoters statusBlock">
@@ -195,11 +178,11 @@
       <el-button v-on:click.passive="selectElection(e)"
                  type="primary"
                  size="small"
-                 v-text="e.IsCurrent ? 'Return (Current Election)' : 'Enter'"
+                 v-text="e.IsCurrent ? 'Re-enter' : 'Enter'"
                  class="btnSelectElection">
       </el-button>
       <div class="other">
-        <div class="otherToggle" v-on:click.passive="showOtherButtons = !showOtherButtons">Save or Remove</div>
+        <div class="otherToggle" v-on:click.passive="showOtherButtons = !showOtherButtons">Other Actions...</div>
         <div class="otherButtons" v-if="showOtherButtons">
           <el-button v-on:click.passive="exportElection"
                      size="micro"
@@ -212,8 +195,8 @@
                      size="micro"
                      type="warning"
                      :class="{active: deleting === e.ElectionGuid}"
-                     title="Delete the election from this system">
-            Remove
+                     :title="e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
+            Delete
           </el-button>
         </div>
       </div>

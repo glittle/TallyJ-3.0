@@ -358,6 +358,10 @@ div.or {
     .voterEmail {
       background-image: url(../../Images/voterEmail.png?2);
     }
+
+    .voterKiosk {
+      background-image: url(../../Images/voterKiosk.png);
+    }
   }
 
   .voterLogin {
@@ -379,6 +383,15 @@ div.or {
 
     &.phone {
       border-color: #f6941e;
+    }
+
+    &.kiosk {
+      border-color: @tallyJBlue;
+
+      input {
+        width: 120px;
+        text-transform: uppercase;
+      }
     }
 
     input {

@@ -249,8 +249,24 @@
                 <div class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
                   <span>Using your phone</span>
                 </div>
+                <div v-if="showKiosk" class="voterKiosk forKioskBlock" v-on:click.passive="chooseMethod('kiosk')">
+                  <span>Using the code given to you</span>
+              </div>
               </div>
                 <div class="voterLogin" :class="mode" v-if="mode">
+                    <div v-show="mode==='kiosk'">
+                        <label for="kiosk">
+                            Enter the code given to you:
+                        </label>
+                        <div class="example">Example: GEJPWX</div>
+                        <input type="text" name="kiosk" id="kiosk"
+                               v-model="kiosk"
+                               maxlength="6"
+                               placeholder="______"
+                               pattern="[a-zA-Z]{6}"
+                               required>
+                        <button class="btn" :disabled="kiosk.length != 6" v-on:click.passive="submitKiosk">Login</button>
+                    </div>
                     <div v-show="mode==='email'">
                         <label for="email">
                             Enter your email address:

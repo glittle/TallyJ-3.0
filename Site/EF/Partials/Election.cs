@@ -41,28 +41,6 @@ namespace TallyJ.EF
   [Serializable]
   public partial class Election : IIndexedForCaching
   {
-    public Election()
-    {
-      Convenor = "[Convener]"; // correct spelling is Convener. DB field name is wrong.
-      ElectionGuid = Guid.NewGuid();
-      Name = "[New Election]";
-      ElectionType = "LSA";
-      ElectionMode = ElectionModeEnum.Normal;
-      TallyStatus = ElectionTallyStatusEnum.NotStarted;
-      NumberToElect = 9;
-      NumberExtra = 0;
-      VotingMethods = "PDM";
-
-      var rules = ElectionModel.GetRules(ElectionType, ElectionMode);
-
-      // No longer used as rules. Each person has own status.
-      // CanVote = rules.CanVote;  
-      // CanReceive = rules.CanReceive;
-
-      NumberToElect = rules.Num;
-      NumberExtra = rules.Extra;
-    }
-
     enum ExtraSettingKey
     {
       // keep names as short as possible

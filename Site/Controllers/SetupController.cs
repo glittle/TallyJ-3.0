@@ -35,18 +35,35 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SaveElection(Election election)
     {
-      return new ElectionModel().SaveElection(election);
+      return new ElectionHelper().SaveElection(election);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult SaveNotification(string emailSubject, string emailText, string smsText)
     {
-      return new ElectionModel().SaveNotification(emailSubject, emailText, smsText);
+      return new ElectionHelper().SaveNotification(emailSubject, emailText, smsText);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult GenerateKioskCode(int personId)
+    {
+      var code = new VoterCodeHelper("").GenerateKioskCode(personId, out var errorMessage);
+
+      if (errorMessage.HasContent())
+      {
+        return new { Message = errorMessage }.AsJsonResult();
+      }
+
+      return new
+      {
+        Success = true,
+        Code = code
+      }.AsJsonResult();
     }
 
     public JsonResult DetermineRules(string type, string mode)
     {
-      return ElectionModel.GetRules(type, mode).AsJsonResult();
+      return ElectionHelper.GetRules(type, mode).AsJsonResult();
     }
 
     [ForAuthenticatedTeller]
@@ -208,6 +225,12 @@ namespace TallyJ.Controllers
     public JsonResult SavePerson(Person person)
     {
       return new PeopleModel().SavePerson(person);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult DeletePerson(int personId)
+    {
+      return new PeopleModel().DeletePerson(personId);
     }
 
     [ForAuthenticatedTeller]

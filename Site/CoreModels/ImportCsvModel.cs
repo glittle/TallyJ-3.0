@@ -179,7 +179,7 @@ namespace TallyJ.CoreModels
       var firstDataRow = importFile.FirstDataRow.AsInt();
       if (firstDataRow > 2)
       {
-        // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        // 1-based... headers on line 1, data on line 2. If 2 or less, ignore it.
         fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
       }
 
@@ -303,7 +303,7 @@ namespace TallyJ.CoreModels
       }
       else
       {
-        numFirstRowsToSkip = 0;
+        numFirstRowsToSkip = 1;
       }
 
       // for some files, CRLF is seen as two lines
@@ -354,6 +354,7 @@ namespace TallyJ.CoreModels
       var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
       var phoneNumberCleaner = new Regex(@"[^\+0-9]");
       var emailChecker = new Regex(@".*@.*\..*");
+      var numRequiredFields = 2;
 
       var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
       currentPeople.ForEach(p => p.TempImportLineNum = -1);
@@ -364,7 +365,6 @@ namespace TallyJ.CoreModels
       var personModel = new PeopleModel();
       // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
-      var currentLineNum = numFirstRowsToSkip > 0 ? numFirstRowsToSkip : 1; // including header row
       var rowsWithErrors = 0;
       var peopleAdded = 0;
       var peopleSkipped = 0;
@@ -377,6 +377,7 @@ namespace TallyJ.CoreModels
       var unexpectedReasons = new Dictionary<string, int>();
       // var validReasons = 0;
       var continueReading = true;
+      var currentLineNum = 0;
 
       hub.StatusUpdate("Processing", true);
 
@@ -387,11 +388,11 @@ namespace TallyJ.CoreModels
           continue;
         }
 
-        // currentLineNum++;
         currentLineNum = numFirstRowsToSkip + (int)csv.CurrentRecordIndex + 1;
 
         var valuesSet = false;
-        var namesFoundInRow = 0;
+        var requiredFieldsFound = 0;
+        var requiredWarningGiven = false;
         var errorInRow = false;
 
         var duplicateInFileSearch = currentPeople.AsQueryable();
@@ -421,7 +422,6 @@ namespace TallyJ.CoreModels
           }
           var rawValue = HttpUtility.HtmlEncode(value);
           var originalValue = value;
-
 
           switch (dbFieldName)
           {
@@ -464,7 +464,8 @@ namespace TallyJ.CoreModels
             case "LastName":
               if (value.Trim() == "")
               {
-                result.Add($"~E Line {currentLineNum} - {dbFieldName} must not be blank");
+                result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
+                requiredWarningGiven = true;
               }
               else
               {
@@ -486,11 +487,11 @@ namespace TallyJ.CoreModels
             {
               case "LastName":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.LastName == value);
-                namesFoundInRow++;
+                requiredFieldsFound++;
                 break;
               case "FirstName":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.FirstName == value);
-                namesFoundInRow++;
+                requiredFieldsFound++;
                 break;
               case "OtherLastNames":
                 duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherLastNames == value);
@@ -581,14 +582,15 @@ namespace TallyJ.CoreModels
           result.Add($"~I Line {currentLineNum} - Ignoring blank line");
           addRow = false;
         }
-        else if (namesFoundInRow != 2 || errorInRow)
+        else if (requiredFieldsFound != numRequiredFields || errorInRow)
         {
           addRow = false;
           rowsWithErrors++;
 
-          if (namesFoundInRow != 2)
+          if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
           {
-            result.Add($"~E Line {currentLineNum} - First or last name missing");
+            result.Add($"~E Line {currentLineNum} - A required field is missing");
+            requiredWarningGiven = true;
           }
         }
 
@@ -754,10 +756,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    public int NumberOfPeople
-    {
-      get { return new PersonCacher(Db).AllForThisElection.Count(); }
-    }
+    public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
     public JsonResult SaveCodePage(int id, int codepage)
     {

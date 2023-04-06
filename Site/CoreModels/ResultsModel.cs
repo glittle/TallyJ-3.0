@@ -137,7 +137,7 @@ namespace TallyJ.CoreModels
 
         var unprocessedOnlineBallots = _election.OnlineWhenOpen.HasValue
           ? Db.OnlineVotingInfo
-            .Join(Db.Person.Where(p => p.VotingMethod == VotingMethodEnum.Online.Value), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => ovi)
+            .Join(Db.Person.Where(p => p.VotingMethod == VotingMethodEnum.Online.Value || p.VotingMethod == VotingMethodEnum.Kiosk.Value), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => ovi)
             .Count(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Submitted)
           : 0;
         if (unprocessedOnlineBallots > 0)

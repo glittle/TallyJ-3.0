@@ -46,6 +46,7 @@ namespace TallyJ.CoreModels
         //VotingMethodEnum.Registered, -- not registered (should not be used with RollCall)
         VotingMethodEnum.CalledIn,
         VotingMethodEnum.Online,
+        VotingMethodEnum.Kiosk,
         VotingMethodEnum.Imported,
         VotingMethodEnum.Custom1,
         VotingMethodEnum.Custom2,
@@ -94,7 +95,7 @@ namespace TallyJ.CoreModels
             Area = p.Area,
             TS = p.C_RowVersionInt,
             Loc = locationModel.IdFor(p.VotingLocationGuid),
-            Env = p.VotingMethod == VotingMethodEnum.Online ? null : p.EnvNum,
+            Env = (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk) ? null : p.EnvNum,
             VM = p.VotingMethod,
             Pos = ++i
           });

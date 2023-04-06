@@ -83,13 +83,14 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult UpdateElectionShowAll(bool showAll)
     {
-      return new ElectionModel().UpdateElectionShowAllJson(showAll);
+      // is this used anymore?
+      return new ElectionHelper().UpdateElectionShowAllJson(showAll);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult UpdateListing(bool listOnPage)
     {
-      return new ElectionModel().UpdateListOnPageJson(listOnPage);
+      return new ElectionHelper().UpdateListOnPageJson(listOnPage);
     }
 
     //    [ForAuthenticatedTeller]
@@ -101,13 +102,13 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SaveOnlineClose(DateTime when, bool est)
     {
-      return new ElectionModel().SaveOnlineClose(when, est);
+      return new ElectionHelper().SaveOnlineClose(when, est);
     }
 
     [ForAuthenticatedTeller]
     public JsonResult ProcessOnlineBallots()
     {
-      return new ElectionModel().ProcessOnlineBallots();
+      return new ElectionHelper().ProcessOnlineBallots();
     }
 
     //[ForAuthenticatedTeller]

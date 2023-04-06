@@ -24,6 +24,8 @@
       Custom2 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
       Custom3 = g.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.Count(p => p.VotingMethod == VotingMethodEnum.Online.ToString()),
+      OnlineKiosk = g.Count(p => p.VotingMethod == VotingMethodEnum.Kiosk.ToString()),
+      Imported = g.Count(x => x.VotingMethod == VotingMethodEnum.Imported.ToString()),
     })
     .ToList();
 
@@ -39,12 +41,16 @@
     Custom2 = areas.Sum(a => a.Custom2),
     Custom3 = areas.Sum(a => a.Custom3),
     Online = areas.Sum(a => a.Online),
+    OnlineKiosk = areas.Sum(a => a.OnlineKiosk),
+    Imported = areas.Sum(a => a.OnlineKiosk),
   };
   var showCalledIn = total.CalledIn.AsInt() > 0;
   var showCustom1 = total.Custom1.AsInt() > 0;
   var showCustom2 = total.Custom2.AsInt() > 0;
   var showCustom3 = total.Custom3.AsInt() > 0;
   var showOnline = total.Online.AsInt() > 0;
+  var showOnlineKiosk = total.OnlineKiosk.AsInt() > 0;
+  var showImported = total.Imported.AsInt() > 0;
 }
 <style>
   .pct {
@@ -123,16 +129,28 @@
         {
           <th>Online</th>
         }
+        @if (showOnlineKiosk)
+        {
+          <th>Kiosk</th>
+        }
+        @if (showImported)
+        {
+          <th>Imported</th>
+        }
       </tr>
       <tr class="pct">
         <td>(% of community)</td>
         <td>(% of area adults)</td>
-        <td colspan="@(3 
-                       + (showCalledIn ? 1 : 0) 
-                       + (showCustom1 ? 1 : 0) 
-                       + (showCustom2 ? 1 : 0) 
-                       + (showCustom3 ? 1 : 0) 
-                       + (showOnline ? 1 : 0))">(% of area voted)</td>
+        <td colspan="@(3
+                       + (showCalledIn ? 1 : 0)
+                       + (showCustom1 ? 1 : 0)
+                       + (showCustom2 ? 1 : 0)
+                       + (showCustom3 ? 1 : 0)
+                       + (showImported ? 1 : 0)
+                       + (showOnlineKiosk ? 1 : 0)
+                       + (showOnline ? 1 : 0))">
+          (% of area voted)
+        </td>
       </tr>
     </thead>
     <tbody>
@@ -167,6 +185,14 @@
             {
               <td class="method">@area.Online @area.Online.PercentInSpan(area.Voted, -1, true)</td>
             }
+            @if (showOnlineKiosk)
+            {
+              <td class="method">@area.OnlineKiosk @area.OnlineKiosk.PercentInSpan(area.Voted, -1, true)</td>
+            }
+            @if (showImported)
+            {
+              <td class="method">@area.Imported @area.Imported.PercentInSpan(area.Voted, -1, true)</td>
+            }
           </tr>
         }
       }
@@ -196,6 +222,14 @@
         @if (showOnline)
         {
           <td class="method">@total.Online @total.Online.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showOnlineKiosk)
+        {
+          <td class="method">@total.OnlineKiosk @total.OnlineKiosk.PercentInSpan(total.Voted, -1, true)</td>
+        }
+        @if (showImported)
+        {
+          <td class="method">@total.Imported @total.OnlineKiosk.PercentInSpan(total.Voted, -1, true)</td>
         }
       </tr>
 
