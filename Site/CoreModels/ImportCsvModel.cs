@@ -19,9 +19,9 @@ namespace TallyJ.CoreModels
   public class ImportCsvModel : DataConnectedModel
   {
     private const string FileTypeCsv = "CSV";
-    private string MappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
+    private readonly string _mappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
 
-    private IEnumerable<string> DbFieldsList
+    private List<string> DbFieldsList
     {
       get
       {
@@ -42,7 +42,7 @@ namespace TallyJ.CoreModels
 
         // screen this hard-coded list against the Person object to ensure we aren't using old field names
         var sample = new Person();
-        return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name));
+        return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name)).ToList();
       }
     }
 
@@ -189,7 +189,7 @@ namespace TallyJ.CoreModels
         MissingFieldAction = MissingFieldAction.ReplaceByEmpty
       };
 
-    var csvHeaders = csv.GetFieldHeaders();
+      var csvHeaders = csv.GetFieldHeaders();
 
       if (csvHeaders.Length == 1)
       {
@@ -202,14 +202,20 @@ namespace TallyJ.CoreModels
       }
 
       //mapping:   csv->db,csv->db
+      
       var currentMappings =
-        importFile.ColumnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(MappingSymbol));
-      var dbFields = DbFieldsList;
+        importFile.ColumnsToRead
+          .DefaultTo("")
+          .SplitWithString(",")
+          .Select(s => s.SplitWithString(_mappingSymbol))
+          .ToList();
+
 
       const int numSampleLinesWanted = 5;
       var numSampleLinesFound = numSampleLinesWanted;
       var sampleValues = new Dictionary<string, List<string>>();
 
+      // read first few lines to get sample values
       for (var i = 0; i < numSampleLinesFound; i++)
       {
         if (!csv.ReadNextRecord())
@@ -234,6 +240,28 @@ namespace TallyJ.CoreModels
         }
       }
 
+      var dbFields = DbFieldsList;
+
+      var doAutoMapping = importFile.ColumnsToRead == null;
+      if (doAutoMapping)
+      {
+        foreach (var csvHeader in csvHeaders)
+        {
+          // look for exact match or match with spaces removed
+          if (dbFields.Contains(csvHeader.Replace(" ", "")))
+          {
+            currentMappings.Add(new[] { csvHeader, csvHeader });
+          }
+        }
+
+        // if we found any, save them
+        if (currentMappings.Any())
+        {
+          importFile.ColumnsToRead = currentMappings.Select(cs => cs[0] + _mappingSymbol + cs[1]).JoinedAsString(",");
+          Db.SaveChanges();
+        }
+      }
+
       return new
       {
         Success = true,
@@ -241,8 +269,11 @@ namespace TallyJ.CoreModels
         csvFields = csvHeaders.Select(header => new
         {
           field = header,
-          map = currentMappings.Where(cs => cs[0] == header)
-                                                  .Select(cs => cs[1]).SingleOrDefault().DefaultTo(""),
+          map = currentMappings
+            .Where(cs => cs[0] == header)
+            .Select(cs => cs[1])
+            .SingleOrDefault()
+            .DefaultTo(""),
           sample = sampleValues[header]
         })
       }.AsJsonResult();
@@ -320,7 +351,7 @@ namespace TallyJ.CoreModels
 
       //mapping:   csv->db,csv->db
       var currentMappings =
-        columnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(MappingSymbol)).ToList();
+        columnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(_mappingSymbol)).ToList();
       var dbFields = DbFieldsList.ToList();
       var validMappings = currentMappings.Where(mapping => dbFields.Contains(mapping[1])).ToList();
 
