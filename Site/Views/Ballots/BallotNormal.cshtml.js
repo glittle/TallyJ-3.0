@@ -682,9 +682,8 @@
     findAndMarkDups(local.votesList.find('.VoteHost'));
 
     var disable = votes.length > 0;
-    local.btnDeleteBallot
-      .toggle(!disable);
-    //.toggleClass('btn-warning', !disable); // only show orange if usable
+    local.btnDeleteBallot.toggle(!disable);
+    $('#btnNewBallot').toggle(disable); // hide second Add btn if ballot is empty
 
     setTimeout(function () {
       checkScrollLength();
