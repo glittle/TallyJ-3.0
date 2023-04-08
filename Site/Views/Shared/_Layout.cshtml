@@ -82,7 +82,7 @@
         @*          @Html.Partial("MasterMenu")*@
         @*        </div>*@
         <div class="TopInfo">
-          <span class="CurrentElectionName" title="Election Name">
+          <span class="CurrentElectionName" title="Election Id: @(currentElection?.ElectionGuid)">
             @UserSession.CurrentElectionDisplayNameAndInfo
           </span>
           <div class="topArea">

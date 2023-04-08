@@ -600,9 +600,11 @@ namespace TallyJ.CoreModels
           CanBeOnline = useOnline &&
                         (p.VotingMethod == VotingMethodEnum.Online 
                          || p.VotingMethod == VotingMethodEnum.Kiosk 
+                         || p.HasOnlineBallot.GetValueOrDefault()
                          || p.Email.HasContent() 
                          || p.KioskCode.HasContent() 
-                         || p.Phone.HasContent()), // consider VotingMethod in case email/phone removed after
+                         || p.Phone.HasContent()
+                         ), // consider VotingMethod in case email/phone removed after
           OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
           // Registered = p.VotingMethod == VotingMethodEnum.Registered,
           EnvNum = ShowEnvNum(p),

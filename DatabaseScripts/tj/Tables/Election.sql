@@ -33,13 +33,10 @@
     [CustomMethods]          NVARCHAR (50)    NULL,
     [VotingMethods]          VARCHAR (10)     NULL,
     [Flags]                  NVARCHAR (MAX)   NULL,
-    [ParentElectionGuid]     UNIQUEIDENTIFIER NULL,
-    [PeopleElectionGuid]     UNIQUEIDENTIFIER NOT NULL,
-    [ParentTieBreakGroup]    INT              NULL,
-    [UnitName]               NVARCHAR (100)   NULL,
-    [TieBreakPersonGuids]    VARCHAR (200)    NULL,
     CONSTRAINT [PK_Election] PRIMARY KEY CLUSTERED ([_RowId] ASC)
 );
+
+
 
 
 

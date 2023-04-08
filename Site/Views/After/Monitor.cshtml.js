@@ -286,8 +286,8 @@
     voter.WhenStatus_Display = voter.WhenStatus
       ? '<span>Online</span> ' + moment(voter.WhenStatus).format(settings.timeTemplate) : '';
     voter.WhenStatus_Sort = voter.WhenStatus ? moment(voter.WhenStatus).toISOString() : '';
-    voter.VoteMethodClass = voter.VotingMethod === 'O' ? 'online' : 'other';
-    voter.StatusClass = voter.VotingMethod === 'O' ? voter.Status : !voter.VotingMethod ? 'none' : '';
+    voter.VoteMethodClass = (voter.VotingMethod === 'O' || voter.VotingMethod === 'K') ? 'online' : 'other';
+    voter.StatusClass = (voter.VotingMethod === 'O' || voter.VotingMethod === 'K') ? voter.Status : !voter.VotingMethod ? 'none' : '';
 
     var history = (voter.HistoryStatus || '')
       .split(';')
@@ -437,7 +437,7 @@
         },
         onlineToProcess: function () {
           return this.onlineBallots.filter(function (ob) {
-            return ob.Status === 'Submitted' && ob.VotingMethod === 'O';
+            return ob.Status === 'Submitted' && (ob.VotingMethod === 'O' || ob.VotingMethod === 'K');
           }).length;
         },
         OnlineWhenOpen_M: function () {

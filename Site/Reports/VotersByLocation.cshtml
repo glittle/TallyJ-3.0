@@ -23,7 +23,7 @@
       Custom2 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom2.ToString()),
       Custom3 = g.pList.Count(p => p.VotingMethod == VotingMethodEnum.Custom3.ToString()),
       Online = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Online.ToString()),
-      OnlineKiosk = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.i.ToString()),
+      OnlineKiosk = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Kiosk.ToString()),
       Imported = g.pList.Count(x => x.VotingMethod == VotingMethodEnum.Imported.ToString()),
     })
     .OrderBy(r => r.LocationName)

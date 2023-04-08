@@ -313,7 +313,7 @@
         <p>* To accept ballots Online using TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked if/when ballots are imported.</p>
           <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
-              Kiosk is only available if Online is also active. See x for details of how to use it.
+              Kiosk is only available if Online is also active. See <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view#heading=h.jqf7d1f9kp6j" target="_blank">Online Voting</a> for details of how to use it.
           </p>
         <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
           Enable this browser as a Kiosk?

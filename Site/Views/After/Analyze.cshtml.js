@@ -256,7 +256,7 @@
         $('#totalCounts').removeClass('onlineReady');
 
         if (info.OnlineCurrentlyOpen) {
-          onlineIssues.push('Use the <a href=Monitor>Monitor</a> page to Close online voting.');
+          onlineIssues.push('Use the <a href=Monitor>Monitor Progress</a> page to Close online voting.');
         }
         $('#btnProcessOnline').toggle(!info.OnlineCurrentlyOpen);
 

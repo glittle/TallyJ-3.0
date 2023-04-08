@@ -100,6 +100,9 @@ var vueOptions = {
     randomInputCount: function () {
       return [this.randomFirst, this.randomLast, this.randomOtherInfo].filter(function (s) { return s.trim() }).length;
     },
+    registeredOnline: function() {
+      return this.registration === 'Online' || this.registration === 'Kiosk'
+    },
     lastInTop: function () {
       return this.numToElect - 1;
     },

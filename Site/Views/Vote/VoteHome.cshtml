@@ -247,17 +247,17 @@
     <div v-bind:class="['poolSide', movingInPool ? 'moving' : '', lockInVotes ? 'locked' : 'open', showAllVotes ? 'showAllVotes' : '']">
       <div>
         <h2 v-if="!savedLock" v-text="'Voting for ' + numToElect + ' ' + plural(numToElect, 'People','Person')"></h2>
-        <p v-if="registration === 'Online' && lockInVotes" aria-live="assertive">
+        <p v-if="registeredOnline && lockInVotes" aria-live="assertive">
           <strong>You have completed online voting in this election.</strong>
         </p>
         <p v-if="registration">
           You are registered as having voted: <strong>{{registration}}</strong>.
         </p>
-        <div v-if="registration && registration !== 'Online'">
+        <div v-if="registration && !registeredOnline">
           <p><span class="OtherRegistration">This online ballot below WILL NOT be used because tellers have registered you as voting: {{registration}}.</span> </p>
           <p>If that is not correct, please contact the head teller for this election before the election is closed!</p>
         </div>
-        <p v-if="registration === 'Online' && lockInVotes">
+        <p v-if="registeredOnline && lockInVotes">
           Your ballot will be processed when the head teller closes online voting and
           accepts all online ballots.
         </p>

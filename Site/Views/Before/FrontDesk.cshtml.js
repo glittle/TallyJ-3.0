@@ -152,7 +152,7 @@
         total += num;
       }
     }
-    sumUp('Online');
+    sumUp('Online'); // includes kiosk
     sumUp('Imported');
     sumUp('CalledIn');
     sumUp('MailedIn');
@@ -202,6 +202,7 @@
       case 27: // esc
         if (personIsSelected) {
           $('#Main').removeClass('InSelection');
+          $('.Btn.selected').removeClass('selected');
         }
         else {
           resetSearch();
@@ -474,7 +475,7 @@
           btnCode = 'P';
           break;
         // case 'I': // imported
-        case 'O': // online
+        case 'O': // online/kiosk
         case 'C': // called in (if used)
         case 'R': // received (if used)
         case 'M': // mailed in
