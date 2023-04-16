@@ -168,6 +168,7 @@ namespace TallyJ.CoreModels.Helper
         {30005, "Unknown - not a mobile phone?"},
         {30006, "Landline or unreachable carrier"},
         {30008, "Unknown error at Twilio"},
+        {30032, "Cannot deliver to this number."}
       };
 
       var fakeId = -1;

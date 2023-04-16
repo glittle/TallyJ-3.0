@@ -202,6 +202,7 @@
     vote: false,
     sms: false,
     whatsapp: false,
+    smsAvailable: false,
   };
 
   function setupVoterVue() {
@@ -223,10 +224,12 @@
           sending: false,
           sent: false,
           status: '',
-          voiceStatus: '',
-          voiceCallDone: false,
+          twilioStatus: '',
+          twilioCallDone: false,
           connectedToHub: false,
           hubKey: '',
+          smsAvailable: publicInterface.smsAvailable,
+          voiceAvailable: publicInterface.voiceAvailable,
           showCodeInput: false,
           showKiosk: GetFromStorage('kiosk', 'N') === 'Y' // set by teller on this device
         };
@@ -235,9 +238,21 @@
         okayToSend: function () {
           return !!this[this.mode]; // something entered - should validate
         },
-        codePrompt: function () {
-          return this.phoneMethod === 'voice' ? (this.voiceCallDone ? 'Call completed' : 'Calling your phone...') : 'The code was sent. Please enter it below:'; // change for voice?
-        }
+//        codePrompt: function () {
+//          var msg;
+//          switch (this.phoneMethod) {
+//            case 'voice':
+//              msg = this.twilioCallDone ? 'Call completed' : 'Calling your phone...';
+//              break;
+//            case 'sms':
+//              msg = ''; // live updates will show the status
+//              break;
+//            default:
+//              msg = '?';
+//              break;
+//          }
+//          return msg;
+//        }
       },
       watch: {
         //        phone(a, b) {
@@ -322,21 +337,29 @@
 
           var hub = $.connection.voterCodeHubCore;
 
-          hub.client.setStatus = function (message, voiceCallStatus) {
-            console.log('signalR: voterPersonalHub status', message, voiceCallStatus);
-            if (voiceCallStatus) {
-              if (voiceCallStatus === 'completed') {
-                vue.voiceStatus = '';
-                vue.status = 'Call completed';
-                vue.voiceCallDone = true;
-              } else {
-                vue.voiceStatus = message;
+          hub.client.setStatus = function (message, twilioStatus) {
+            console.log('signalR: voterCodeHub status', message, twilioStatus);
+            if (twilioStatus) {
+              switch (twilioStatus) {
+                case 'completed':
+                  vue.twilioStatus = '';
+                  vue.status = 'Call completed';
+                  vue.twilioCallDone = true;
+                  break;
+                case 'delivered':
+                  vue.twilioStatus = '';
+                  vue.status = 'SMS sent';
+                  vue.twilioCallDone = true;
+                  break;
+                default:
+                  vue.twilioStatus = message;
+                  break;
               }
               vue.showCodeInput = true;
               vue.sent = true;
             } else {
               vue.status = message;
-              vue.voiceStatus = '';
+              vue.twilioStatus = '';
             }
           };
 
@@ -366,8 +389,9 @@
           var vue = this;
 
           this.sending = true;
-          this.status = 'Sending...';
-
+          if (method === 'email') {
+            this.status = 'Sending...';
+          }
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'IssueCode',
             {

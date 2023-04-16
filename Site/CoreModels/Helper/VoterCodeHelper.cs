@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels.Helper
   {
     private const string VerifyCodeSentPrefix = "Verify Code Sent via ";
     private const int UserAttemptMinutes = 15;
-    private const int UserAttemptMax = 10;
+    private int UserAttemptMax = SettingsHelper.UserAttemptMax;
     private const int EnterCodeWithinMinutes = 10;
     private readonly string _hubKey;
     private readonly VoterCodeHub _voterCodeHub;
@@ -77,7 +77,7 @@ namespace TallyJ.CoreModels.Helper
           Message = validMessage
         };
 
-      _voterCodeHub.SetStatus(_hubKey, "Preparing a code for you...");
+      _voterCodeHub.SetStatus(_hubKey, "", "Preparing");
 
       // check throttle limits
       CheckSiteUsageThresholds(out var message);
@@ -117,10 +117,10 @@ namespace TallyJ.CoreModels.Helper
         {
           _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         }
-        else
-        {
-          if (method != "voice") _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
-        }
+        // else
+        // {
+        //   if (method != "voice") _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
+        // }
       }
 
       if (sent)
@@ -223,7 +223,7 @@ namespace TallyJ.CoreModels.Helper
 
         if (utcNow - attemptsStart < UserAttemptMinutes.minutes())
         {
-          message = "Too many attempts.";
+          message = "Too many attempts. Please wait before trying again.";
           return;
         }
 
@@ -261,6 +261,7 @@ namespace TallyJ.CoreModels.Helper
         case "sms":
         case "whatsapp":
           twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, out message);
+          if (message.HasNoContent()) MonitorSmsStatus(twilioHelper);
           break;
 
         case "voice":
@@ -291,6 +292,29 @@ namespace TallyJ.CoreModels.Helper
       {
         var status = twilioHelper.GetCallStatus(sid);
         var statusDisplay = new LangResourceHelper().GetFromList("CallStatus", status) ?? status;
+
+        _voterCodeHub.SetStatus(_hubKey, statusDisplay, status);
+
+        tryAgain = activeStatusList.Contains(status);
+
+        if (tryAgain) Thread.Sleep(1.seconds());
+      } while (tryAgain);
+    }
+
+    private void MonitorSmsStatus(TwilioHelper twilioHelper)
+    {
+      // stay and monitor status
+      var sid = UserSession.TwilioMsgId;
+      if (sid.HasNoContent()) return;
+
+      var activeStatusList = new[] { "accepted", "queued", "sending" };
+      // final: delivered, delivery_unknown, undelivered, failed
+
+      bool tryAgain;
+      do
+      {
+        var status = twilioHelper.GetSmsStatus(sid);
+        var statusDisplay = new LangResourceHelper().GetFromList("SmsStatus", status) ?? status;
 
         _voterCodeHub.SetStatus(_hubKey, statusDisplay, status);
 
@@ -428,7 +452,7 @@ namespace TallyJ.CoreModels.Helper
 
       // var person = new PersonCacher(dbContext).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       var person = dbContext.Person
-        .SingleOrDefault(p=> p.C_RowId == personId && p.ElectionGuid == UserSession.CurrentElectionGuid);
+        .SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == UserSession.CurrentElectionGuid);
       if (person == null)
       {
         errorMessage = "Unknown person";

@@ -13,7 +13,10 @@ namespace TallyJ.CoreModels
     public OnlineRawVote(string text)
     {
       // this constructor used by Cdn ballot importer
+
       OtherInfo = text;
+
+      // do a rough guess at first and last name
       First = "";
       Last = "";
 

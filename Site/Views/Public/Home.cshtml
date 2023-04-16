@@ -16,6 +16,8 @@
   ContextItems.AddJavascriptForPage("dash", "homeIndexPage.dashBoardUrl={0};".FilledWith((Url.Action("Index", "Dashboard")).QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("vote", "homeIndexPage.vote={0};".FilledWith(SettingsHelper.HostSupportsOnlineElections.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("sms", "homeIndexPage.sms={0};".FilledWith(SettingsHelper.HostSupportsOnlineSmsLogin.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("smsa", "homeIndexPage.smsAvailable={0};".FilledWith(SettingsHelper.SmsAvailable.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("voicea", "homeIndexPage.voiceAvailable={0};".FilledWith(SettingsHelper.VoiceAvailable.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsapp={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
 }
 @section Metas {
@@ -246,7 +248,7 @@
                 <div class="voterEmail" v-on:click.passive="chooseMethod('email')">
                   <span>Using your email</span>
                 </div>
-                <div class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
+                <div v-if="smsAvailable || voiceAvailable" class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
                   <span>Using your phone</span>
                 </div>
                 <div v-if="showKiosk" class="voterKiosk forKioskBlock" v-on:click.passive="chooseMethod('kiosk')">
@@ -289,8 +291,8 @@
                                placeholder="+__________"
                                required autocomplete="tel">
                         <div>Send me a login code via</div>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
+                        <button v-if="smsAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
+                        <button v-if="voiceAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
                         @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
                         {
                             <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
@@ -298,8 +300,8 @@
                     </div>
                     <div v-if="showCodeInput" class="pendingCode">
                         <div v-if="sent">
-                            <div v-text="codePrompt"></div>
-                            <div class="status" v-text="voiceStatus" v-if="voiceStatus"></div>
+                            @*<div v-text="codePrompt"></div>*@
+                            <div class="status" v-text="twilioStatus" v-if="twilioStatus"></div>
                             <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
                             <div>
                                 <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Login</button>

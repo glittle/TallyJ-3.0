@@ -1,8 +1,13 @@
-﻿<Say>
+﻿<Say voice="man">
 Hello!*
 Here is the code you requested.*
 Please enter it on the website now.*
 The code is: {shortCode} .*
-Again, the code is: {longCode} .*
+Again, the code is: {longCode} ...*
+</Say>
+<Say language="fr" voice="man">
+en français, le code est: {shortCode} .*
+</Say>
+<Say voice="man">
 Goodbye.
 </Say>

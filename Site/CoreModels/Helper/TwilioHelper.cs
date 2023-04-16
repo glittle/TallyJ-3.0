@@ -479,6 +479,10 @@ namespace TallyJ.CoreModels.Helper
     {
       return CallResource.Fetch(sid)?.Status.ToString();
     }
+    public string GetSmsStatus(string sid)
+    {
+      return MessageResource.Fetch(sid)?.Status.ToString();
+    }
 
     public void SendTwilioConfirmation()
     {
