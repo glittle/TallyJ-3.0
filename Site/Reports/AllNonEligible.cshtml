@@ -12,7 +12,8 @@
       PersonName = p.FullName,
       p.CanReceiveVotes,
       p.CanVote,
-      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid())
+      InvalidReasonDesc = IneligibleReasonEnum.DescriptionFor(p.IneligibleReasonGuid.AsGuid()),
+      p.VotingMethod
     });
   var initial = ' ';
 }
@@ -51,7 +52,7 @@
   </div>
   <button class="btn btn-mini btnDownloadCsv" data-table=".Voters" type="button" title="Download in CSV format for Excel">Export</button>
   <p class="Comment">
-      Showing all who have a specific eligibility status for this election.
+    Showing all who have a specific eligibility status for this election.
   </p>
   <table class="Voters sortable">
     <thead>
@@ -60,6 +61,7 @@
         <th class="method">Status</th>
         <th class="vote">Can Vote</th>
         <th class="vote">Can Be Voted For</th>
+        <th class="vote">How Voted</th>
       </tr>
     </thead>
     <tbody>
@@ -86,6 +88,7 @@
           <td class="method">@person.InvalidReasonDesc</td>
           <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
           <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
+          <td class="vote">@Raw(VotingMethodEnum.TextFor(person.VotingMethod, "-"))</td>
         </tr>
       }
     </tbody>
