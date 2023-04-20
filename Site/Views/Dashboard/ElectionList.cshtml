@@ -195,7 +195,7 @@
                      size="micro"
                      type="warning"
                      :class="{active: deleting === e.ElectionGuid}"
-                     :title="e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
+                     :title="e.childElections && e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
             Delete
           </el-button>
         </div>

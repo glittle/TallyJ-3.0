@@ -332,14 +332,5 @@ namespace TallyJ.Controllers
       return new PeopleModel().DeleteAllPeople();
     }
 
-    // [ForAuthenticatedTeller]
-    // public JsonResult DeleteAllPeopleAndBallots()
-    // {
-    //   new LogHelper().Add("Deleted all ballots and people");
-    //
-    //   Election.EraseBallotsAndResults(UserSession.CurrentElectionGuid);
-    //
-    //   return new PeopleModel().DeleteAllPeople();
-    // }
   }
 }

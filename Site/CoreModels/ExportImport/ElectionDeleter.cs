@@ -44,68 +44,63 @@ namespace TallyJ.CoreModels.ExportImport
 
       // delete everything...
       // don't rely on stored procedures
-      using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(10)))
+      using var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromMinutes(10));
+
+      try
       {
+        Db.Result.Where(r => r.ElectionGuid == _electionGuid).Delete();
+        Db.ResultTie.Where(r => r.ElectionGuid == _electionGuid).Delete();
+        Db.ResultSummary.Where(r => r.ElectionGuid == _electionGuid).Delete();
 
-        //var electionGuidName = ReflectionHelper.GetName(() => default(Election).ElectionGuid);
+        var locationGuids = Db.Location.Where(x => x.ElectionGuid == _electionGuid).Select(l => l.LocationGuid).ToList();
 
-        try
+        // delete ballots in all locations... cascading will delete votes (NOT ANYMORE... must do manually)
+        var ballotsQuery = Db.Ballot.Where(b => locationGuids.Contains(b.LocationGuid));
+
+        Db.Vote.Where(v => ballotsQuery.Select(b => b.BallotGuid).Contains(v.BallotGuid)).Delete();
+
+        // also delete orphan votes by person
+        Db.Vote
+          .Where(v => v.PersonGuid != null && Db.Person
+            .Where(p => p.ElectionGuid == _electionGuid)
+            .Select(p => p.PersonGuid)
+            .Contains(v.PersonGuid.Value)
+          ).Delete();
+
+        ballotsQuery.Delete();
+
+        Db.OnlineVotingInfo.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Location.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Person.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Teller.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.JoinElectionUser.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.ImportFile.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Message.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Election.Where(x => x.ElectionGuid == _electionGuid).Delete();
+
+        new LogHelper(_electionGuid).Add("Deleted election '{0}'".FilledWith(electionName));
+
+        transaction.Complete();
+
+        if (_electionGuid == UserSession.CurrentElectionGuid)
         {
-          //DeleteFrom<Vote, Ballot, Location>(electionGuidName,
-          //                                   ReflectionHelper.GetName(() => default(Ballot).BallotGuid),
-          //                                   ReflectionHelper.GetName(() => default(Location).LocationGuid)
-          //  );
-          //DeleteFrom<Ballot, Location>(electionGuidName,
-          //                             ReflectionHelper.GetName(() => default(Location).LocationGuid));
-
-          //DeleteFrom<Result>(electionGuidName);
-          //DeleteFrom<Person>(electionGuidName);
-          //DeleteFrom<ResultTie>(electionGuidName);
-
-          //DeleteFrom<Computer>(electionGuidName);
-          //DeleteFrom<Location>(electionGuidName);
-          //DeleteFrom<Teller>(electionGuidName);
-          //DeleteFrom<ResultSummary>(electionGuidName);
-          //DeleteFrom<JoinElectionUser>(electionGuidName);
-          //DeleteFrom<ImportFile>(electionGuidName);
-          //DeleteFrom<Message>(electionGuidName);
-          //DeleteFrom<Election>(electionGuidName);
-
-          Election.EraseBallotsAndResults(_electionGuid);
-
-          //          Db.Computer.Where(x => x.ElectionGuid == _electionGuid);
-          Db.Location.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.Person.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.Teller.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.JoinElectionUser.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.ImportFile.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.Message.Where(x => x.ElectionGuid == _electionGuid).Delete();
-          Db.Election.Where(x => x.ElectionGuid == _electionGuid).Delete();
-
-          new LogHelper(_electionGuid).Add("Deleted election '{0}'".FilledWith(electionName));
-
-          transaction.Complete();
-
-          if (_electionGuid == UserSession.CurrentElectionGuid)
-          {
-            new CacherHelper().DropAllCachesForThisElection();
-          }
-
-          return new
-          {
-            Deleted = true
-          }.AsJsonResult();
-
+          new CacherHelper().DropAllCachesForThisElection();
         }
-        catch (Exception ex)
+
+        return new
         {
-          return new
-          {
-            Deleted = false,
-            Message = ex.GetAllMsgs("<br>")
-          }.AsJsonResult();
+          Deleted = true
+        }.AsJsonResult();
 
-        }
+      }
+      catch (Exception ex)
+      {
+        return new
+        {
+          Deleted = false,
+          Message = ex.GetAllMsgs("<br>")
+        }.AsJsonResult();
+
       }
     }
 

@@ -304,7 +304,6 @@
             function (info) {
               if (info.Deleted) {
                 $(`#${guid}`).slideUp(1000, 0, function () {
-                  debugger;
                   vue.removeElection(vue.elections, guid);
                 });
               } else {
@@ -314,6 +313,10 @@
             });
         },
         removeElection(elections, guid) {
+          if (elections == null) {
+            return;
+          }
+
           // remove from any childElection list
           elections.forEach(e => {
             this.removeElection(e.childElections, guid);
