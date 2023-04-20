@@ -196,7 +196,7 @@ namespace TallyJ.Controllers
           j.e.Name,
           j.e.Convenor,
           DateOfElection = j.e.DateOfElection.AsUtc(),
-          Email = j.adminEmails.Select(ae=>$"{ae.Email} [{ae.Role.DefaultTo("Owner")}]").JoinedAsString(", "),
+          Email = j.adminEmails.Select(ae => $"{ae.Email} [{ae.Role.DefaultTo("Owner")}]").JoinedAsString(", "),
           j.e.ElectionType,
           j.e.ElectionMode,
           j.e.ShowAsTest,
@@ -229,6 +229,47 @@ namespace TallyJ.Controllers
       //      RecentActivity = dbContext.C_Log
       //        .Where(l => l.ElectionGuid == j.e.ElectionGuid)
       //        .Max(l => l.AsOf)
+    }
+
+    public ActionResult GetUnconnectedVoters()
+    {
+      var dbContext = Db;
+
+      // var onlineBallots = dbContext.OnlineVotingInfo
+      //   .Select(ovi => new { ovi.PersonGuid });
+
+
+      var connectedVotersEmail = dbContext.OnlineVoter
+        .Join(dbContext.Person, ov => ov.VoterId, p => p.Email, (ov, p) => new { ov.C_RowId })
+        .Select(x => x.C_RowId)
+        .ToList();
+      var connectedVotersPhone = dbContext.OnlineVoter
+        .Join(dbContext.Person, ov => ov.VoterId, p => p.Phone, (ov, p) => new { ov.C_RowId })
+        .Select(x => x.C_RowId)
+        .ToList();
+
+      var connectedIds = connectedVotersEmail.Union(connectedVotersPhone).ToList();
+      var wantedTypes = new[] { VoterIdTypeEnum.Email.Value, VoterIdTypeEnum.Phone.Value };
+
+      var logLines = dbContext.OnlineVoter
+        .Where(ov => wantedTypes.Contains(ov.VoterIdType) && !connectedIds.Contains(ov.C_RowId))
+        .Select(ov => new
+        {
+          ov.C_RowId,
+          Email = ov.VoterIdType == VoterIdTypeEnum.Email.Value ? ov.VoterId : null,
+          Phone = ov.VoterIdType == VoterIdTypeEnum.Phone.Value ? ov.VoterId : null,
+          ov.Country,
+          ov.WhenRegistered,
+          ov.WhenLastLogin,
+        })
+        .ToList();
+
+      return new
+      {
+        logLines,
+        Success = true
+      }.AsJsonResult();
+
     }
   }
 }

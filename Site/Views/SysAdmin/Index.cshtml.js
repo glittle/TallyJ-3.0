@@ -62,6 +62,10 @@ Vue.component('eventLog',
             log: [],
             loaded: false
           },
+          unconnectedVoters: {
+            log: [],
+            loaded: false
+          },
         },
         numToShow: +GetFromStorage('syslognum', 25),
         lastType: GetFromStorage('syslog', ''),
@@ -209,6 +213,10 @@ Vue.component('eventLog',
             niceName = "elections list";
             logInfo.log = [];
             break;
+          case 'unconnectedVoters':
+            niceName = "unconnected voters";
+            logInfo.log = [];
+            break;
         }
 
         if (vue.moreDates && vue.moreDates.length) {
@@ -265,6 +273,15 @@ Vue.component('eventLog',
         this.lastSort = this.currentSort = 'DateOfElection_Date';
         this.sort(this.currentSort);
       },
+      extend_unconnectedVotersList: function (logLines, currentList) {
+        for (var i = 0; i < logLines.length; i++) {
+          this.extendUnconnectedVoterLine(logLines[i]);
+          currentList.push(logLines[i]);
+        }
+        // trick it to sort descending
+        this.lastSort = this.currentSort = 'C_RowId';
+        this.sort(this.currentSort);
+      },
       extendMainLogLine: function (item) {
         var vue = this;
 
@@ -312,6 +329,10 @@ Vue.component('eventLog',
       extendElectionListLine: function (item) {
         this.extendDate(item, 'RecentActivity', 'YYYY MMM DD, h:mm a');
         this.extendDate(item, 'DateOfElection', 'YYYY MMM DD');
+      },
+      extendUnconnectedVoterLine: function (item) {
+        this.extendDate(item, 'WhenRegistered', 'YYYY MMM DD, h:mm a');
+        this.extendDate(item, 'WhenLastLogin', 'YYYY MMM DD, h:mm a');
       },
       extendDate: function (obj, name, format) {
         var raw = obj[name];
