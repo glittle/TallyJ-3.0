@@ -1,0 +1,25 @@
+﻿section {
+  ol {
+    counter-reset: item;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    display: table;
+  }
+
+  li:before {
+    content: counters(item, ".") ". ";
+    counter-increment: item;
+    display: table-cell;
+    padding-right: 0.6em;
+    width: 1.6em;
+  }
+
+  li > p {
+    margin-top: .25em;
+  }
+}

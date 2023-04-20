@@ -877,7 +877,7 @@
     <None Include="compilerconfig.json" />
     <Content Include="Content\Docs\ElectionQuotes.pdf" />
     <Content Include="Content\manifest.json" />
-    <Content Include="compilerconfig.json.defaults" />
+    <None Include="compilerconfig.json.defaults" />
     <None Include="packages.config" />
     <Content Include="Reports\BallotAlignment.cshtml" />
     <Content Include="Scripts\BadiDateToday.v1.js" />
@@ -1039,6 +1039,12 @@
     <Content Include="Views\Public\Home.cshtml.min.css">
       <DependentUpon>Home.cshtml.css</DependentUpon>
     </Content>
+    <Content Include="Views\Public\Privacy.cshtml.css">
+      <DependentUpon>Privacy.cshtml.less</DependentUpon>
+    </Content>
+    <Content Include="Views\Public\Privacy.cshtml.min.css">
+      <DependentUpon>Privacy.cshtml.css</DependentUpon>
+    </Content>
     <Content Include="Views\Setup\EditPerson.cshtml.css">
       <DependentUpon>EditPerson.cshtml.less</DependentUpon>
     </Content>
@@ -1176,6 +1182,7 @@
     </Content>
     <Content Include="Scripts\jquery-3.6.3.slim.min.map" />
     <Content Include="Scripts\jquery-3.6.3.min.map" />
+    <Content Include="Views\Public\Privacy.cshtml.less" />
     <None Include="Web.Babak 1.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

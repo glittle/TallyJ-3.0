@@ -1,0 +1,21 @@
+﻿section ol {
+  counter-reset: item;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+section li {
+  margin: 0;
+  display: table;
+}
+section li:before {
+  content: counters(item, ".") ". ";
+  counter-increment: item;
+  display: table-cell;
+  padding-right: 0.6em;
+  width: 1.6em;
+}
+section li > p {
+  margin-top: 0.25em;
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlByaXZhY3kuY3NodG1sLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FDRTtFQUNFLG1CQUFBO0VBQ0EscUJBQUE7RUFDQSxTQUFBO0VBQ0EsVUFBQTs7QUFMSixPQVFFO0VBQ0UsU0FBQTtFQUNBLGNBQUE7O0FBVkosT0FhRSxHQUFFO0VBQ0EsU0FBUyxlQUFlLEtBQUssSUFBN0I7RUFDQSx1QkFBQTtFQUNBLG1CQUFBO0VBQ0Esb0JBQUE7RUFDQSxZQUFBOztBQWxCSixPQXFCRSxHQUFHO0VBQ0Qsa0JBQUEifQ== */

@@ -1,0 +1,1 @@
+﻿section ol{counter-reset:item;list-style-type:none;margin:0;padding:0}section li{margin:0;display:table}section li:before{content:counters(item,".") ". ";counter-increment:item;display:table-cell;padding-right:.6em;width:1.6em}section li>p{margin-top:.25em}
