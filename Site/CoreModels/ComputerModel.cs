@@ -154,7 +154,7 @@ namespace TallyJ.CoreModels
 
       var computer = UserSession.CurrentComputer;
       AssertAtRuntime.That(computer != null, "computer missing");
-      AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, "can't switch elections");
+      AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, $"Invalid location comp election ${computer.ElectionGuid} location ${location.ElectionGuid} session ${UserSession.CurrentElectionGuid}");
 
       computer.LocationGuid = location.LocationGuid;
       new ComputerCacher().UpdateComputer(computer);
