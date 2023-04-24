@@ -265,7 +265,9 @@ namespace TallyJ.CoreModels
         person.Area,
         person.Email,
         person.Phone,
-        person.C_FullName
+        person.C_FullName,
+        person.VotingMethod,
+        person.RegistrationLog
       };
     }
 
@@ -315,6 +317,20 @@ namespace TallyJ.CoreModels
             Message = "Invalid phone number. Must start with + and only contain digits."
           }.AsJsonResult();
 
+
+      if (personInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
+      {
+        if (personInDatastore.Email != personFromInput.Email
+            || personInDatastore.Phone != personFromInput.Phone)
+        {
+          // can't allow email or phone to be changed if they have already voted online
+          return new
+          {
+            Message = "Cannot change email or phone number after voting online."
+          }.AsJsonResult();
+        }
+      }
+
       var editableFields = new
       {
         // personFromInput.AgeGroup,
@@ -330,26 +346,9 @@ namespace TallyJ.CoreModels
         personFromInput.Phone
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
-
       changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
 
-      // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
-      if (ApplyVoteReasonFlags(personInDatastore)) changed = true;
-
-      // const string all = ElectionModel.CanVoteOrReceive.All;
-      // var canReceiveVotes = personFromInput.CanReceiveVotes.AsBoolean(CurrentElection.CanReceive == all);
-      // if (personInDatastore.CanReceiveVotes != canReceiveVotes)
-      // {
-      //   personInDatastore.CanReceiveVotes = canReceiveVotes;
-      //   changed = true;
-      // }
-      //
-      // var canVote = personFromInput.CanVote.AsBoolean(CurrentElection.CanVote == all);
-      // if (personInDatastore.CanVote != canVote)
-      // {
-      //   personInDatastore.CanVote = canVote;
-      //   changed = true;
-      // }
+      changed = ApplyVoteReasonFlags(personInDatastore) || changed;
 
       if (changed)
       {

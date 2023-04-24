@@ -85,6 +85,9 @@
       panel = local.hostPanel;
     }
 
+    clearKioskCode();
+
+    $('#btnDelete').attr('title', personProperties.C_RowId);
     // console.log(person, canDelete);
 
     function setValue(input, value) {
@@ -123,6 +126,8 @@
 
     var $phone = local.hostPanel.find('[data-name="Phone"]');
     $phone.on('change paste', fixPhone);
+
+    showVotingMethod(personProperties.VotingMethod, personProperties.RegistrationLog);
 
     startEdit(true);
 
@@ -184,27 +189,32 @@
         busy: 'Saving'
       },
       function (info) {
-      if (info.Message) {
-        ShowStatusFailed(info.Message);
+        if (info.Message) {
+          ShowStatusFailed(info.Message);
+          if (info.Person) {
+            applyValues(null, info.Person, true);
+          }
+          return;
+        }
         if (info.Person) {
           applyValues(null, info.Person, true);
-        }
-        return;
-      }
-      if (info.Person) {
-        applyValues(null, info.Person, true);
-        startEdit();
+          startEdit();
 
-        site.broadcast(site.broadcastCode.personSaved, info);
-      }
-      ShowStatusDone(info.Status);
-    });
+          site.broadcast(site.broadcastCode.personSaved, info);
+        }
+        ShowStatusDone(info.Status);
+      });
   };
 
   function deletePerson() {
     var form = {
       personId: local.hostPanel.find(':input[data-name=C_RowId]').val()
     };
+
+    if (!form.personId) {
+      // page may need a refresh?
+      return;
+    }
 
     CallAjax2(publicInterface.controllerUrl + '/DeletePerson', form,
       {
@@ -219,6 +229,7 @@
           site.broadcast(site.broadcastCode.personDeleted, form.personId);
           applyValues(null, {}, true);
           ShowStatusDone('Deleted');
+          $('#editPanel').hide();
         }
 
         ShowStatusDone(info.Status);
@@ -241,14 +252,57 @@
         }
         if (info.Success) {
           $('.kioskNote').show();
-          $('.kioskCode').text(info.Code);
+          $('.kioskCode').text(info.Code).show();
         } else {
           // must have voted already
-          $('.kioskCode').addClass('used');
+          $('.kioskCode').addClass('used').show();
         }
 
         ShowStatusDone(info.Status);
       });
+  }
+
+  function clearKioskCode() {
+    $('.kioskCode').hide();
+    $('.kioskNote').hide();
+  }
+
+  function showVotingMethod(code, log) {
+    // reset email/phone inputs
+    $('.emailPhone').prop('disabled', false);
+
+    // show the log
+    var logDiv = $('.votingMethodLog');
+
+    var timeTemplate = peoplePage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
+    var registrationLog = (log || []).map(l => {
+      var parts = l.split(';').map(s => s.trim());
+      var time = parts[0];
+      if (time.length > 6 && time[4] === '-') {
+        parts[0] = moment(time).format(timeTemplate);
+      }
+      return parts.map(s => `<td>${s}</td>`).join('');
+    });
+    logDiv.html(registrationLog.map(s => `<tr>${s}</tr>`)).toggle(registrationLog.length > 0);
+
+    // show the method
+    var div = $('.showVotingMethod');
+    if (!code) {
+      div.text('-');
+      $('tr.kiosk').show(); // if there
+      $('.forDelete').show();
+      return;
+    }
+
+    var msg = peoplePage && peoplePage.methods[code] || code;
+    div.text(msg);
+    $('tr.kiosk').hide(); // if there
+    $('.forDelete').hide();
+
+    // apply rule
+    if (code === 'O') {
+      $('.emailPhone').prop('disabled', true);
+    }
   }
 
   function preparePage() {
@@ -268,8 +322,8 @@
     site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
     site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
     site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows on Front Page and in final reports if elected.' });
-    site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Can be used to vote online.' });
-    site.qTips.push({ selector: '#qTipPhone', title: 'Phone Number', text: 'Optional. The person\'s phone number. Can be used to vote online.' });
+    site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Can be used to vote online. Cannot be changed after voting online.' });
+    site.qTips.push({ selector: '#qTipPhone', title: 'Phone Number', text: 'Optional. The person\'s phone number. Can be used to vote online. Cannot be changed after voting online.' });
     site.qTips.push({
       selector: '#qTipIneligible',
       title: 'Ineligible',

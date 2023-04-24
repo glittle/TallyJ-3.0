@@ -37,6 +37,10 @@
     text-align: center;
   }
 
+  tr.NoVote .Vote {
+    color: red;
+  }
+
   .method {
     text-align: left;
     white-space: nowrap;
@@ -83,12 +87,12 @@
         //        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
         //      }
 
-        <tr class="person @firstClass">
+        <tr class="person @firstClass @Raw(person.CanVote.GetValueOrDefault() ? "" : "NoVote")">
           <td class="name">@Raw(name)</td>
           <td class="method">@person.InvalidReasonDesc</td>
           <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
           <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
-          <td class="vote">@Raw(VotingMethodEnum.TextFor(person.VotingMethod, "-"))</td>
+          <td class="vote @(person.VotingMethod.HasContent() ? "Vote" : "")">@Raw(VotingMethodEnum.TextFor(person.VotingMethod, "-"))</td>
         </tr>
       }
     </tbody>

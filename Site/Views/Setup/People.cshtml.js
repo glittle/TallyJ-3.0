@@ -286,7 +286,8 @@
     PreparePage: preparePage,
     peopleHelper: function () {
       return local.peopleHelper;
-    }
+    },
+    methods: []
   };
   return publicInterface;
 };

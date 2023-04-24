@@ -2,167 +2,184 @@
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code.Session
 @{
-    ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
-    ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
-    // ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
+  ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
+  // ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <input type="hidden" data-name="C_RowId" />
 <table class="personEdit">
 
-    <tr>
-        <td>
-            First Name
-        </td>
-        <td>
-            <input type="text" data-name="FirstName" maxlength="50" class="text50" required />
-            <span class="ui-icon ui-icon-info" id="qTipFName"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Last Name
-        </td>
-        <td>
-            <input type="text" data-name="LastName" maxlength="50" class="text50" required />
-            <span class="ui-icon ui-icon-info" id="qTipLName"></span>
-        </td>
-    </tr>
-    <tr class="topLine">
-        <td>
-            <label for="ddlIneligible">Eligibility status</label>
-        </td>
-        <td>
-            <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
-            <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
-        </td>
-    </tr>
-    <tr id="trCanVote" class="topLine overrides">
-        <td colspan="2">
-            <label for="input2">Can vote in this election?</label>
-            <select data-name="CanVote" disabled="disabled">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-            <span class="sample">(<span>🛇</span> if No)</span>
-        </td>
-    </tr>
-    <tr id="trCanReceiveVotes" class="topLine overrides">
-        <td colspan="2">
-            <label for="input1">Can be voted for in this election?</label>
-            <select data-name="CanReceiveVotes" disabled="disabled">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-            <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
-        </td>
-    </tr>
+  <tr>
+    <td>
+      First Name
+    </td>
+    <td>
+      <input type="text" data-name="FirstName" maxlength="50" class="text50" required />
+      <span class="ui-icon ui-icon-info" id="qTipFName"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Last Name
+    </td>
+    <td>
+      <input type="text" data-name="LastName" maxlength="50" class="text50" required />
+      <span class="ui-icon ui-icon-info" id="qTipLName"></span>
+    </td>
+  </tr>
+  <tr class="topLine">
+    <td>
+      <label for="ddlIneligible">Eligibility status</label>
+    </td>
+    <td>
+      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
+      <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
+    </td>
+  </tr>
+  <tr id="trCanVote" class="topLine overrides">
+    <td colspan="2">
+      <label for="input2">Can vote in this election?</label>
+      <select data-name="CanVote" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(<span>🛇</span> if No)</span>
+    </td>
+  </tr>
+  <tr id="trCanReceiveVotes" class="topLine overrides">
+    <td colspan="2">
+      <label for="input1">Can be voted for in this election?</label>
+      <select data-name="CanReceiveVotes" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
+    </td>
+  </tr>
 
-    <tr>
+  <tr>
+    <td>
+      Other First Name(s)
+    </td>
+    <td>
+      <input type="text" data-name="OtherNames" maxlength="100" class="text100" />
+      <span class="ui-icon ui-icon-info" id="qTipOtherName"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Other Last Name(s)
+    </td>
+    <td>
+      <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />
+      <span class="ui-icon ui-icon-info" id="qTipOtherLastName"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Other Identifying Information
+    </td>
+    <td>
+      <input type="text" data-name="OtherInfo" maxlength="150" class="text150" />
+      <span class="ui-icon ui-icon-info" id="qTipOtherInfo"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Sector / Area
+    </td>
+    <td>
+      <input type="text" data-name="Area" maxlength="50" class="text50" />
+      <span class="ui-icon ui-icon-info" id="qTipArea"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Bahá'í ID
+    </td>
+    <td>
+      <input type="text" data-name="BahaiId" maxlength="20" class="text20" />
+      <span class="ui-icon ui-icon-info" id="qTipBahaiId"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Email Address
+    </td>
+    <td>
+      <input type="email" data-name="Email" maxlength="250" class="text150 emailPhone" />
+      <span class="ui-icon ui-icon-info" id="qTipEmail"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Phone Number
+    </td>
+    <td>
+      <input type="tel" data-name="Phone" maxlength="25" class="text50 emailPhone" pattern="\+[0-9]{4,15}" />
+      <span class="ui-icon ui-icon-info" id="qTipPhone"></span>
+      <div class="comments">Sample: +15873281844</div>
+    </td>
+  </tr>
+  @*        <tr>
         <td>
-            Other First Name(s)
+            Age Group
         </td>
         <td>
-            <input type="text" data-name="OtherNames" maxlength="100" class="text100" />
-            <span class="ui-icon ui-icon-info" id="qTipOtherName"></span>
+            <select data-name="AgeGroup">
+                <option value="A">Adult</option>
+                <option value="Y">Youth</option>
+                <option value="JY">Junior Youth</option>
+                <option value="C">Child</option>
+            </select>
         </td>
     </tr>
-    <tr>
-        <td>
-            Other Last Name(s)
-        </td>
-        <td>
-            <input type="text" data-name="OtherLastNames" maxlength="100" class="text100" />
-            <span class="ui-icon ui-icon-info" id="qTipOtherLastName"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Other Identifying Information
-        </td>
-        <td>
-            <input type="text" data-name="OtherInfo" maxlength="150" class="text150" />
-            <span class="ui-icon ui-icon-info" id="qTipOtherInfo"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Sector / Area
-        </td>
-        <td>
-            <input type="text" data-name="Area" maxlength="50" class="text50" />
-            <span class="ui-icon ui-icon-info" id="qTipArea"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Bahá'í ID
-        </td>
-        <td>
-            <input type="text" data-name="BahaiId" maxlength="20" class="text20" />
-            <span class="ui-icon ui-icon-info" id="qTipBahaiId"></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Email Address
-        </td>
-        <td>
-            <input type="email" data-name="Email" maxlength="250" class="text150" />
-            <span class="ui-icon ui-icon-info" id="qTipEmail"></span>
-        </td>
-    </tr> 
-    <tr>
-        <td>
-          Phone Number
-        </td>
-        <td>
-          <input type="tel" data-name="Phone" maxlength="25" class="text50" pattern="\+[0-9]{4,15}" />
-          <span class="ui-icon ui-icon-info" id="qTipPhone"></span>
-          <div class="comments">Sample: +15873281844</div>
-        </td>
-    </tr>
-    @*        <tr>
+  *@
+  <tr>
+    <td></td>
+    <td>
+      <button type="button" id="btnSave" class="btn btn-primary" accesskey="S">
+        <u>S</u>ave Changes
+      </button>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <div class="votingRelated">
+        <table>
+          @if (UserSession.CurrentElection.VotingMethodsContains(VotingMethodEnum.Kiosk))
+          {
+            <tr class="kiosk">
+              <th>Kiosk Code</th>
+              <td>
+                <button id="generateKioskCode" class="btn btn-small">Make or renew Kiosk Code</button>
+                <div class="kioskCode"></div>
+                <div class="kioskNote">
+                  Code will expire after 15 minutes.
+                </div>
+              </td>
+            </tr>
+          }
+
+          <tr class="votingMethod">
+            <th>Voting Method</th>
             <td>
-                Age Group
+              <div class="showVotingMethod"></div>
+              <table class="votingMethodLog"></table>
             </td>
-            <td>
-                <select data-name="AgeGroup">
-                    <option value="A">Adult</option>
-                    <option value="Y">Youth</option>
-                    <option value="JY">Junior Youth</option>
-                    <option value="C">Child</option>
-                </select>
-            </td>
-        </tr>
-    *@
-    <tr>
-        <td></td>
-        <td>
-            <button type="button" id="btnSave" class="btn btn-primary" accesskey="S">
-                <u>S</u>ave Changes
-            </button>
-        </td>
-    </tr>
-  @if (UserSession.CurrentElection.VotingMethodsContains(VotingMethodEnum.Kiosk))
-  {
-    <tr class="kiosk">
-      <td>Kiosk Code</td>
-          <td>
-        <button id="generateKioskCode" class="btn btn-small">Make or renew Kiosk Code</button>
-        <div class="kioskNote">
-          <div class="kioskCode"></div>
-          Code will expire in 15 minutes.
-        </div>
-      </td>
-    </tr>
-  }
+          </tr>
+
+        </table>
+      </div>
+    </td>
+  </tr>
   <tr>
     <td></td>
     <td class="forDelete">
       <button type="button" id="btnDelete" class="btn btn-danger btn-mini">
         Remove from TallyJ Election
-            </button>
-      <div class="comments">This will only work if they have not registered or been voted for.</div>
-          </td>
+      </button>
+      <div class="comments">This will only work if they have not voted or been voted for.</div>
+    </td>
   </tr>
 </table>

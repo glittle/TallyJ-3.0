@@ -549,7 +549,7 @@
       return;
     }
 
-    var btnType = btn.data('vm');
+    var btnType = '' + btn.data('vm');
     var isFlag = btnType.startsWith('flag-');
 
     if ((person.OnlineProcessed || person.Imported) && !isFlag) {

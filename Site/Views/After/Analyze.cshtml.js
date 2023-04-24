@@ -405,7 +405,7 @@
           var tieVotesFound = votes.reduce(function (acc, v) { return acc || v.TieBreakCount > 0 }, false);
           tie.After = ''
             + (tie.IsResolved || !tieVotesFound ? '' : '<p>In complex situations of ties in the tie-break, additional tie-break elections may be required that are not directly supported here. Once results are known, these tie-break vote numbers may need to be adjusted until those elected are clearly indicated. For example, multiply first round counts by 100, then add second round results.</p>')
-            + '<p>Ties are acceptable in the top {0} position{1} of the election{2}.'.filledWith(info.NumToElect, Plural(info.NumToElect),
+            + '<p>Ties are acceptable within the top {0} position{1} of the election{2}.'.filledWith(info.NumToElect, Plural(info.NumToElect),
               info.NumExtra ? ' but not in the next {0} position{1}'.filledWith(info.NumExtra, Plural(info.NumExtra)) : '')
             + '</p>'
             + '<p>If minority status can resolve this tie, simply enter vote numbers of 1 and 0 here to indicate who is to be given preference.</p>'

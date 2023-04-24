@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace TallyJ.CoreModels
   public class ElectionHelper : DataConnectedModel
   {
     private static readonly object LockObject = new object();
+
+    readonly ConcurrentDictionary<Guid, bool> _onlineBallotProcessingLocks = new();
 
     public static ElectionRules GetRules(string type, string mode)
     {
@@ -788,6 +791,7 @@ namespace TallyJ.CoreModels
 
       int nextNum;
 
+      // TODO use semaphore rather than lock?
       lock (LockObject)
       {
         var election = UserSession.CurrentElection;
@@ -907,8 +911,8 @@ namespace TallyJ.CoreModels
       // create ballot
       // change status to Processed
 
-      var utcNow = DateTime.UtcNow;
       var election = UserSession.CurrentElection;
+
       var numToElect = election.NumberToElect.AsInt(0);
 
       if (numToElect < 1)
@@ -933,7 +937,7 @@ namespace TallyJ.CoreModels
       }
 
       // ensure it has a close time in the past
-      if (!election.OnlineWhenClose.HasValue || election.OnlineWhenClose.Value.AsUtc() > utcNow)
+      if (!election.OnlineWhenClose.HasValue || election.OnlineWhenClose.Value.AsUtc() > DateTime.UtcNow)
       {
         return new
         {
@@ -943,182 +947,211 @@ namespace TallyJ.CoreModels
 
       var electionGuid = election.ElectionGuid;
 
-      // checking ElectionGuid for person is redundant but doesn't hurt
-      // checking Ready and PoolLocked is redundant but doesn't hurt
-      var ballotInfoList = Db.OnlineVotingInfo
-        .Where(ovi => ovi.ElectionGuid == electionGuid)
-        .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
-        .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid
-                                   && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk)),
-          ovi => ovi.PersonGuid, p => p.PersonGuid,
-          (ovi, p) => new { ovi, p })
-        // .Join(Db.OnlineVoter, j => new { j.ovi.Email, j.ovi.Phone }, ov => new { ov.Email, ov.Phone }, (j, ov) => new { j.p, j.ovi, ov })
-        // .OrderBy(j => j.ovi.PersonGuid) -- no defined order... will resort later
-        .ToList();
-
-      if (!ballotInfoList.Any())
+      // don't allow concurrent runs of this routine for this election
+      if (_onlineBallotProcessingLocks.ContainsKey(electionGuid))
       {
         return new
         {
-          success = true,
-          Message = "No online ballots are Submitted and marked as voting Online."
+          Message = "Another process is already processing online ballots for this election."
         }.AsJsonResult();
       }
 
-      // map person guids to their possible voter ids (email and/or phone)
-      var voterIdList = ballotInfoList
-        .Where(b => b.p.Email.HasContent())
-        .Select(b => new { VoterId = b.p.Email, b.p.PersonGuid })
-        .Concat(ballotInfoList
-          .Where(b => b.p.Phone.HasContent())
-          .Select(b => new { VoterId = b.p.Phone, b.p.PersonGuid }))
-        .GroupJoin(Db.OnlineVoter, v => v.VoterId, ov => ov.VoterId, (v, ovList) => new { v.PersonGuid, ovList })
-        .GroupBy(j => j.PersonGuid)
-        .ToDictionary(g => g.Key, j => j.SelectMany(o => o.ovList));
-
-      var ballotModel = BallotModelFactory.GetForCurrentElection();
-      var problems = new List<string>();
-      var numBallotsCreated = 0;
-      var emailHelper = new EmailHelper();
-      var smsHelper = new TwilioHelper();
-      var logHelper = new LogHelper();
-      var onlineVoteHelper = new OnlineVoteHelper();
-
-      foreach (var onlineBallotInfo in ballotInfoList)
+      try
       {
-        var name = " - " + onlineBallotInfo.p.FullName;
+        // add this ElectionGuid to the locks
+        _onlineBallotProcessingLocks[electionGuid] = true;
 
-        if (!onlineBallotInfo.p.CanVote.GetValueOrDefault())
+        // checking ElectionGuid for person is redundant but doesn't hurt
+        // checking Ready and PoolLocked is redundant but doesn't hurt
+        var ballotInfoList = Db.OnlineVotingInfo
+          .Where(ovi => ovi.ElectionGuid == electionGuid)
+          .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
+          .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid
+                                     && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk)),
+            ovi => ovi.PersonGuid, p => p.PersonGuid,
+            (ovi, p) => new { ovi, p })
+          // .Join(Db.OnlineVoter, j => new { j.ovi.Email, j.ovi.Phone }, ov => new { ov.Email, ov.Phone }, (j, ov) => new { j.p, j.ovi, ov })
+          // .OrderBy(j => j.ovi.PersonGuid)
+          // -- no defined order... will resort later
+          .ToList();
+
+        if (!ballotInfoList.Any())
         {
-          problems.Add("Not allowed to vote: " + name);
-          continue;
-        }
-
-        var pool = onlineVoteHelper.GetDecryptedListPool(onlineBallotInfo.ovi, out var errorMessage);
-        if (errorMessage.HasContent())
-        {
-          problems.Add(errorMessage + name);
-          continue;
-        }
-
-        if (pool.HasNoContent())
-        {
-          problems.Add("Empty pool" + name);
-          continue;
-        }
-
-        var completePool = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool);
-
-        var poolList = completePool.Take(numToElect).ToList();
-        if (poolList.Count != numToElect)
-        {
-          problems.Add($"Incorrect number of votes ({completePool.Count})" + name);
-          continue;
-        }
-
-        var ballotCreated = false;
-
-        using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
-        {
-          try
+          return new
           {
-            ballotCreated = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
-            if (ballotCreated)
+            success = true,
+            Message = "No online ballots are Submitted and marked as voting Online."
+          }.AsJsonResult();
+        }
+
+        // map person guids to all their possible voter accounts (email and/or phone)
+        var voterIdList = ballotInfoList
+          .Where(b => b.p.Email.HasContent())
+          .Select(b => new { VoterId = b.p.Email, b.p.PersonGuid })
+          .Concat(ballotInfoList
+            .Where(b => b.p.Phone.HasContent())
+            .Select(b => new { VoterId = b.p.Phone, b.p.PersonGuid }))
+          .GroupJoin(Db.OnlineVoter, v => v.VoterId, ov => ov.VoterId, (v, ovList) => new { v.PersonGuid, ovList })
+          .GroupBy(j => j.PersonGuid)
+          .ToDictionary(g => g.Key, j => j.SelectMany(o => o.ovList));
+
+        var ballotModel = BallotModelFactory.GetForCurrentElection();
+        var problems = new List<string>();
+        var numBallotsCreated = 0;
+        var emailHelper = new EmailHelper();
+        var smsHelper = new TwilioHelper();
+        var logHelper = new LogHelper();
+        var onlineVoteHelper = new OnlineVoteHelper();
+
+        foreach (var onlineBallotInfo in ballotInfoList)
+        {
+          var personVoting = onlineBallotInfo.p;
+
+          var name = " - " + personVoting.FullName;
+
+          if (!personVoting.CanVote.GetValueOrDefault())
+          {
+            problems.Add("Not allowed to vote: " + name);
+            continue;
+          }
+
+          var pool = onlineVoteHelper.GetDecryptedListPool(onlineBallotInfo.ovi, out var errorMessage);
+          if (errorMessage.HasContent())
+          {
+            problems.Add(errorMessage + name);
+            continue;
+          }
+
+          if (pool.HasNoContent())
+          {
+            problems.Add("Empty pool" + name);
+            continue;
+          }
+
+          var completePool = JsonConvert.DeserializeObject<List<OnlineRawVote>>(pool);
+
+          var poolList = completePool.Take(numToElect).ToList();
+          if (poolList.Count != numToElect)
+          {
+            problems.Add($"Incorrect number of votes ({completePool.Count})" + name);
+            continue;
+          }
+
+          var ballotCreated = false;
+
+          using (var transaction = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(Debugger.IsAttached ? 600 : 30)))
+          {
+            try
             {
-              onlineBallotInfo.ovi.Status = OnlineBallotStatusEnum.Processed;
-              onlineBallotInfo.ovi.WhenStatus = utcNow;
-              onlineBallotInfo.ovi.WhenBallotCreated = utcNow;
-              onlineBallotInfo.ovi.HistoryStatus += $";{onlineBallotInfo.ovi.Status}|{utcNow:u}";
-
-              onlineBallotInfo.ovi.ListPool = null; // ballot created, so wipe out the original list
-              onlineBallotInfo.ovi.PoolLocked = null;
-
-              Db.SaveChanges();
-
-              if (onlineBallotInfo.p.Email.HasContent())
+              ballotCreated = ballotModel.CreateBallotForOnlineVoter(poolList, out var message);
+              if (ballotCreated)
               {
-                logHelper.Add("Ballot processed", false, onlineBallotInfo.p.Email);
+                var utcNow = DateTime.UtcNow;
+
+                onlineBallotInfo.ovi.Status = OnlineBallotStatusEnum.Processed;
+                onlineBallotInfo.ovi.WhenStatus = utcNow;
+                onlineBallotInfo.ovi.WhenBallotCreated = utcNow;
+                onlineBallotInfo.ovi.HistoryStatus += $";{onlineBallotInfo.ovi.Status}|{utcNow:u}";
+
+                onlineBallotInfo.ovi.ListPool = null; // ballot created, so wipe out the original list
+                onlineBallotInfo.ovi.PoolLocked = null;
+
+                Db.SaveChanges();
+
+                transaction.Complete();
+
+                numBallotsCreated++;
+
+                new VoterPersonalHub().Update(personVoting);
               }
-              if (onlineBallotInfo.p.Phone.HasContent())
+              else
               {
-                logHelper.Add("Ballot processed", false, onlineBallotInfo.p.Phone);
+                problems.Add(message + name);
               }
-
-              transaction.Complete();
-
-              numBallotsCreated++;
-
-              new VoterPersonalHub().Update(onlineBallotInfo.p);
             }
-            else
+            catch (Exception e)
             {
-              problems.Add(message + name);
+              problems.Add($"Error: {e.LastException().Message}{name}");
             }
           }
-          catch (Exception e)
-          {
-            problems.Add($"Error: {e.LastException().Message}{name}");
-          }
-        }
 
-        Db.SaveChanges(); // redundant?
+          Db.SaveChanges(); // redundant?
 
-        if (ballotCreated)
-        {
-          // keep this outside the transaction
-          var personGuid = onlineBallotInfo.p.PersonGuid;
-          if (voterIdList.ContainsKey(personGuid))
+          if (ballotCreated)
           {
-            foreach (var onlineVoter in voterIdList[personGuid])
+            // keep this outside the transaction
+            var personGuid = personVoting.PersonGuid;
+
+            if (voterIdList.TryGetValue(personGuid, out var onlineVoterAccounts))
             {
-              if (onlineVoter.VoterIdType == VoterIdTypeEnum.Email)
+              foreach (var onlineVoter in onlineVoterAccounts)
               {
-                emailHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var emailError);
-                if (emailError.HasContent())
+                // there may be more than one possible way for this user to log in
+                // need to log them all
+
+
+
+                switch (onlineVoter.VoterIdType)
                 {
-                  problems.Add($"Error: {emailError}");
+                  case "E": //  VoterIdTypeEnum.Email.Value:
+                    logHelper.Add("Ballot processed", false, personVoting.Email);
+                    emailHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
+                      out var emailError);
+                    if (emailError.HasContent())
+                    {
+                      problems.Add($"Error: {emailError}");
+                    }
+
+                    break;
+                  case "P": //  VoterIdTypeEnum.Phone.Value:
+                    logHelper.Add("Ballot processed", false, personVoting.Phone);
+                    smsHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
+                      out var smsError);
+                    if (smsError.HasContent())
+                    {
+                      problems.Add($"Error: {smsError}");
+                    }
+
+                    break;
+                  case "K": //  VoterIdTypeEnum.Kiosk.Value:
+                    // don't send notification
+                    logHelper.Add("Ballot processed", false, personVoting.KioskCode);
+                    break;
                 }
               }
-              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Phone)
-              {
-                smsHelper.SendWhenProcessed(UserSession.CurrentElection, onlineBallotInfo.p, onlineVoter, logHelper, out var smsError);
-                if (smsError.HasContent())
-                {
-                  problems.Add($"Error: {smsError}");
-                }
-              }
-              else if (onlineVoter.VoterIdType == VoterIdTypeEnum.Kiosk)
-              {
-                // ignore
-              }
             }
           }
         }
+
+        // all ballots done - re-sort all (including any already processed)
+        var onlineBallots = Db.Ballot
+          .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
+          .Where(b => b.ComputerCode == ComputerModel.ComputerCodeForOnline)
+          .ToList();
+
+        // sort of random, by guid (won't keep changing) but new ones will be inserted randomly
+        var sorted = onlineBallots.OrderBy(b => b.BallotGuid).ToList();
+
+        var ballotNum = 1;
+        sorted.ForEach(b =>
+          {
+            b.BallotNumAtComputer = ballotNum++;
+          });
+        Db.SaveChanges();
+        new BallotCacher().DropThisCache();
+
+
+        return new
+        {
+          success = numBallotsCreated > 0,
+          problems
+        }.AsJsonResult();
+
       }
-
-      // all ballots done - resort all (include any already processed)
-      var onlineBallots = Db.Ballot
-        .Join(Db.Location.Where(l => l.ElectionGuid == electionGuid), b => b.LocationGuid, l => l.LocationGuid, (b, l) => b)
-        .Where(b => b.ComputerCode == ComputerModel.ComputerCodeForOnline)
-        .ToList();
-
-      // sort of random, by guid (won't keep changing) but new ones will be inserted randomly
-      var sorted = onlineBallots.OrderBy(b => b.BallotGuid).ToList();
-
-      var ballotNum = 1;
-      sorted.ForEach(b =>
-        {
-          b.BallotNumAtComputer = ballotNum++;
-        });
-      Db.SaveChanges();
-      new BallotCacher().DropThisCache();
-
-
-      return new
+      finally
       {
-        success = numBallotsCreated > 0,
-        problems
-      }.AsJsonResult();
+        _onlineBallotProcessingLocks.TryRemove(electionGuid, out var dummy);
+      }
     }
 
     public JsonResult SaveOnlineClose(DateTime when, bool est)

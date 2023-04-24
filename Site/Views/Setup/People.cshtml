@@ -9,6 +9,10 @@
   ContextItems.AddJavascriptForPage("url", "peoplePage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("peopleUrl", "peoplePage.peopleUrl={0};".FilledWith(Url.Action("Index", "People").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("namesOnFile", "peoplePage.namesOnFile={0};".FilledWith(Model.NumberOfPeople));
+  ContextItems.AddJavascriptForPage("methods", "peoplePage.methods={0};".FilledWith(VotingMethodEnum.AsJsonObject()));
+  ContextItems.AddJavascriptForPage("peoplePage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
+
+
 }
 <script src="@ClientFile("~/Scripts/PeopleHelper.js")" type="text/javascript"></script>
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
@@ -26,7 +30,7 @@
   <div>
     <span id="more"></span>
     <label class="searchlabel" for="txtSearch">Search for a <u>p</u>erson:</label>
-    <input id="txtSearch" class="input-medium" accesskey="P"
+    <input id="txtSearch" type="search" placeholder="Search" class="input-medium" accesskey="P"
            autocomplete="off"><span class="ui-icon ui-icon-info" id="qTipSearch"></span>
     <button id="btnShowAll" accesskey="a" class="btn btn-mini" type="button">
       Show <u>A</u>ll
