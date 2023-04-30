@@ -500,9 +500,17 @@ div.heading {
   margin: 0 1em;
 }
 
-#votesPanel.showAllVotes {
-  #votesList {
-    max-height: none;
+#votesPanel {
+  &.showAllVotes {
+    #votesList {
+      max-height: none;
+    }
+  }
+
+  &.empty {
+    #btnNewBallot {
+      display: none;
+    }
   }
 }
 
@@ -514,14 +522,23 @@ body.IsPhysical {
   .onlyVirtualLocation {
     display: none;
   }
+
+  .NewBallotBtns {
+    display: inline-block;
+  }
 }
 
+
 body.IsVirtual {
+  .NewBallotBtns, #btnAddToThis {
+    display: none !important;
+  }
+
   .onlyPhysicalLocation {
     display: none;
   }
 
-  .NewBallotBtns, .LocationStatusH3, .locationInfo, #btnAddToThis {
+  .LocationStatusH3, .locationInfo {
     display: none;
   }
 

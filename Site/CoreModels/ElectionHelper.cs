@@ -19,9 +19,9 @@ namespace TallyJ.CoreModels
 {
   public class ElectionHelper : DataConnectedModel
   {
-    private static readonly object LockObject = new object();
+    private static readonly object LockObject = new ();
 
-    readonly ConcurrentDictionary<Guid, bool> _onlineBallotProcessingLocks = new();
+    private static readonly ConcurrentDictionary<Guid, bool> OnlineBallotProcessingLocks = new();
 
     public static ElectionRules GetRules(string type, string mode)
     {
@@ -948,7 +948,7 @@ namespace TallyJ.CoreModels
       var electionGuid = election.ElectionGuid;
 
       // don't allow concurrent runs of this routine for this election
-      if (_onlineBallotProcessingLocks.ContainsKey(electionGuid))
+      if (OnlineBallotProcessingLocks.ContainsKey(electionGuid))
       {
         return new
         {
@@ -959,7 +959,7 @@ namespace TallyJ.CoreModels
       try
       {
         // add this ElectionGuid to the locks
-        _onlineBallotProcessingLocks[electionGuid] = true;
+        OnlineBallotProcessingLocks[electionGuid] = true;
 
         // checking ElectionGuid for person is redundant but doesn't hurt
         // checking Ready and PoolLocked is redundant but doesn't hurt
@@ -1150,7 +1150,7 @@ namespace TallyJ.CoreModels
       }
       finally
       {
-        _onlineBallotProcessingLocks.TryRemove(electionGuid, out var dummy);
+        OnlineBallotProcessingLocks.TryRemove(electionGuid, out var dummy);
       }
     }
 

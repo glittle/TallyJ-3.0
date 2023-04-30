@@ -473,7 +473,6 @@
     var location = local.location;
     var isPhysical = location.IsPhysical;
 
-    $('#btnNewBallot, #btnNewBallot2').toggle(isPhysical);
     $('.ballotDiv1').toggle(isPhysical);
     $('.ballotNumEntered').toggle(isPhysical);
   }
@@ -681,9 +680,13 @@
 
     findAndMarkDups(local.votesList.find('.VoteHost'));
 
-    var disable = votes.length > 0;
-    local.btnDeleteBallot.toggle(!disable);
-    $('#btnNewBallot').toggle(disable); // hide second Add btn if ballot is empty
+    var hasVotes = votes.length > 0;
+
+    local.btnDeleteBallot.toggle(!hasVotes);
+
+    $('#votesPanel').toggleClass('empty', !hasVotes);
+
+    // $('#btnNewBallot').toggle(hasVotes); // hide second Add btn if ballot is empty
 
     setTimeout(function () {
       checkScrollLength();

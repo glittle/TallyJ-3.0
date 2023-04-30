@@ -12,10 +12,8 @@
   display: grid;
   grid-template-columns: 1fr auto 11em;
   grid-template-rows: auto;
-  grid-template-areas: 
-    "details status action" 
-    "children children action"
-    "users users users";
+  grid-template-areas:
+    "details status action" "children children action" "users users users";
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: #ccc 1px 1px;
@@ -27,7 +25,7 @@
     grid-area: details;
   }
 
-  .children{
+  .children {
     grid-area: children;
   }
 
@@ -425,6 +423,13 @@ li.Comment {
   }
 }
 
+form.el-form.userForm {
+  border: 1px solid grey;
+  box-shadow: #ccc 0px 0px 5px 3px;
+  padding: 0 25px;
+  margin: 6px 7px 4px 5px;
+  border-radius: 5px;
+}
 
 .currentElections {
   min-height: 2em;

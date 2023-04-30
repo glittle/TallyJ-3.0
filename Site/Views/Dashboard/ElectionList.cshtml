@@ -28,16 +28,16 @@
   {
     <div class="h3button">
       <h3>Your Elections</h3>
-        <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
-        @*<el-switch v-model="showTest"
+      <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
+      @*<el-switch v-model="showTest"
                    class="showTest"
         active-text="Show Test Elections"
         active-color="#ff4949"
         inactive-text="Hide Test Elections"
         inactive-color="#13ce66"
                    ></el-switch>*@
-        <div class="topNum">{{numForVoting}} open for voting</div>
-        <div class="topNum">{{numForTellers}} open for tellers<span class="ui-icon ui-icon-info" id="qTipTellers"></span></div>
+      <div class="topNum">{{numForVoting}} open for voting</div>
+      <div class="topNum">{{numForTellers}} open for tellers<span class="ui-icon ui-icon-info" id="qTipTellers"></span></div>
     </div>
 
     <div class="currentElections">
@@ -235,14 +235,6 @@
                label-width="120px"
                v-if="showForm">
         <h3>Add/Edit Full Teller</h3>
-        <el-form-item label="Email Address"
-                      prop="email"
-                      :rules="[
-                   { required: true, message: 'Please input email address', trigger: 'blur' },
-                    { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
-                 ]">
-          <el-input :disabled="!addingNew" v-model="form.email"></el-input>
-        </el-form-item>
         <div>
           <p>
             A "full" teller has all the technical capabilities to completely manage the election.
@@ -251,6 +243,15 @@
           </p>
           <p>Regular "guest" tellers join via the "Assist as a Teller" option and do not have their own password and should NOT be added here.</p>
         </div>
+        <el-form-item label="Email Address"
+                      prop="email"
+                      :rules="[
+                   { required: true, message: 'Please input email address', trigger: 'blur' },
+                    { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
+                 ]">
+          <el-input :disabled="!addingNew" v-model="form.email"></el-input>
+        </el-form-item>
+
         <el-form-item>
           <el-button :disabled="!addingNew"
                      type="primary"

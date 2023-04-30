@@ -581,6 +581,7 @@
                 var msg = info.Message || info.problems.join('<br>');
                 ShowStatusFailed(msg);
                 vue.showProcessingNote = true;
+                refresh();
               }
             });
 
