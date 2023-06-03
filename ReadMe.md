@@ -1,4 +1,4 @@
-**TallyJ** facilitates the running of an election by tellers.
+**TallyJ** facilitates the running of an election by tellers and allows voters to cast their ballot online.
 
 It is targeted at communities of up to 50,000 members and is based on the guidelines
 for holding elections as defined by the international Bahá'í community.
