@@ -663,9 +663,9 @@
 
             vue.flags = info.Election.Flags?.split('|') || [];
             if (vue.flags.length < 2) {
-              vue.flags.length = 2;
+              vue.flags.length = 2; // we want at least 2 flags or blank spaces
             }
-            vue.election.Flags = vue.flags.join('|');
+            vue.election.Flags = vue.flags.join('|'); // update the value in case it was null or less than 2
 
 
             applyValues(info.Election);
