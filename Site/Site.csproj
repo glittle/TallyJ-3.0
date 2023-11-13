@@ -1203,6 +1203,9 @@
     <Content Include="Xsd\CdnBallotImport.xsd">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Web.Win22-SA1.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
