@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace TallyJ.Code
@@ -27,7 +28,7 @@ namespace TallyJ.Code
         result = Replace(properties, result, tokenPattern);
       }
 
-      return result;
+      return result.Normalize(NormalizationForm.FormC);
     }
 
     string Replace(IDictionary<string, object> properties, string template, string tokenPattern)
@@ -46,7 +47,7 @@ namespace TallyJ.Code
           return value == null ? "" : value.ToString();
         }
         return token;
-      });
+      }).Normalize(NormalizationForm.FormC);
     }
 
 
@@ -69,7 +70,7 @@ namespace TallyJ.Code
                                                         }
                                                         var value = array[arrayIndex];
                                                         return value.ToString();
-                                                      });
+                                                      }).Normalize(NormalizationForm.FormC);
     }
   }
 }

@@ -168,6 +168,22 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
+    public void FilledWithObjectUnicode() {
+      // test FilledWithObject with Korean characters
+      // 이때 꼭 투표해 보세요
+      // 안녕하세요 
+      // In some instances, the Korean characters are 'decomposed' but should not be!
+      var template = "안녕하세요:{A} B:{B} C:이때 꼭 투표해 보세";
+      var item = new
+      {
+                     A = 23,
+                     B = "안녕하세요"
+                   };
+
+      template.FilledWithObject(item).ShouldEqual("안녕하세요:23 B:안녕하세요 C:이때 꼭 투표해 보세");
+    }
+
+    [TestMethod]
     public void FilledWithObject2()
     {
       var template = "Name:{Name} Recursive:{MyName}";
