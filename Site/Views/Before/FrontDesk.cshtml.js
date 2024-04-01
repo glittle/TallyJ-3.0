@@ -123,7 +123,7 @@
     }
 
     $('.Voter').addClass('filterHidden');
-    $('.Voter .Btn.true' + classWanted).parent().removeClass('filterHidden hidden');
+    $('.Voter .Btn.true' + classWanted).closest('.Voter').removeClass('filterHidden hidden');
 
     btn.addClass('filtering');
   }
