@@ -28,7 +28,7 @@ public class ImportCsvModel : DataConnectedModel
       // same list is used in a switch below
       { "FirstName", 50 },
       { "LastName", 50 },
-      { "IneligibleReasonGuid", 36 }, // guid
+      { "IneligibleReasonGuid", 100 }, // guid, but we read the description as text
       { "Area", 50 },
       { "Email", 250 },
       { "Phone", 25 },
