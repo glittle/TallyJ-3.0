@@ -52,7 +52,7 @@ namespace TallyJ.Controllers
           V = (p.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.CanVote.AsBoolean() ? "1" : "0"),
           IRG = p.IneligibleReasonGuid,
           NumVotes = isSingleNameElection
-            ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount).AsInt()
+            ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount ?? 1).AsInt()
             : votes.Count(v => v.PersonGuid == p.PersonGuid)
         }),
         lastVid = votes.Any() ? votes.Max(v => v.C_RowId) : 0

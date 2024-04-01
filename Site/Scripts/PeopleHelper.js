@@ -143,7 +143,7 @@
   function extendPersonCore(p) {
     p.NameArea = p.Name + (p.Area ? ' <u>' + p.Area + '</u>' : '');
     // for searches, make lowercase
-    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase() + p.Phone);
+    p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase() + (p.Phone || ''));
     p.namePlain = p.name.replace(/[\(\)\[\]]/ig, ''); // and remove brackets 
     p.parts = p.namePlain.split(local.nameSplitter);
 
@@ -259,7 +259,8 @@
       person.Parts3 = adjustSearch(person.matchedParts.findIndex(function (p) { return p === 3; }));
 
       person.Sort1 = person.Parts5 * 10000 +
-        (person.Parts5 === 0 ? person.Parts4 * 100 : 0);
+        (person.Parts5 === 0 ? person.Parts4 * 100 : 0)
+        + person.NumVotes;
 
       //        (person.Parts5 === 0 && person.Parts4 === 0 ? person.Parts3 : 0);
 
@@ -272,7 +273,9 @@
 
   function adjustSearch(index) {
     if (index === -1) return 0;
-    return 20 - index;
+    return 1;
+    //--> don't rank by position of matched name part
+    //    return 20 - index;
   }
 
   function sortResults(result, byNameOnly) {
