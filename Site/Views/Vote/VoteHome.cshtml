@@ -366,7 +366,7 @@
 
 
 
-        <p v-if="!lockInVotes && pool.length">
+        <p v-if="!lockInVotes && poolBeyondBallot.length">
           Please note that when your ballot is processed by the tellers, this entire list of names will be removed from TallyJ.
         </p>
         <p class="emptyPoolMsg" v-if="!pool.length && poolLoaded">

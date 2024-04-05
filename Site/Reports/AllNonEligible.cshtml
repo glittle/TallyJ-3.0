@@ -27,18 +27,17 @@
     width: 40%;
   }
 
-  .person.ineligible {
-    text-decoration: line-through;
-    color: red;
-  }
-
   .vote {
     padding: 0 3px;
     text-align: center;
   }
 
-  tr.NoVote .Vote {
-    color: red;
+  .CannotReceiveVotes::before {
+    content: '🚫 ';
+  }
+
+  .CannotVote::after {
+    content: ' ⛔';
   }
 
   .method {
@@ -63,8 +62,8 @@
       <tr class="person header">
         <th class="name">Person</th>
         <th class="method">Status</th>
-        <th class="vote">Can Vote</th>
         <th class="vote">Can Be Voted For</th>
+        <th class="vote">Can Vote</th>
         <th class="vote">How Voted</th>
       </tr>
     </thead>
@@ -87,11 +86,11 @@
         //        name += "<span class=reason>{0}</span>".FilledWith(person.InvalidReasonDesc);
         //      }
 
-        <tr class="person @firstClass @Raw(person.CanVote.GetValueOrDefault() ? "" : "NoVote")">
+        <tr class="person @firstClass @Raw(person.CanVote.GetValueOrDefault() ? "" : "NoVote") @Raw(person.CanReceiveVotes.GetValueOrDefault() ? "" : "NoVote")">
           <td class="name">@Raw(name)</td>
           <td class="method">@person.InvalidReasonDesc</td>
-          <td class="vote">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
-          <td class="vote">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
+          <td class="vote @(person.CanReceiveVotes.GetValueOrDefault() ? "" : "CannotReceiveVotes")">@Raw(person.CanReceiveVotes.GetValueOrDefault() ? "Yes" : "No")</td>
+          <td class="vote @(person.CanVote.GetValueOrDefault() ? "" : "CannotVote")">@Raw(person.CanVote.GetValueOrDefault() ? "Yes" : "No")</td>
           <td class="vote @(person.VotingMethod.HasContent() ? "Vote" : "")">@Raw(VotingMethodEnum.TextFor(person.VotingMethod, "-"))</td>
         </tr>
       }

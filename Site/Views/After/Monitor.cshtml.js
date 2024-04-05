@@ -95,7 +95,7 @@
 
     clearInterval(settings.autoMinutesTimeout);
 
-    info.OnlineBallots.forEach(extendVoter);
+    info.OnlineBallots?.forEach(extendVoter);
 
     if (settings.vue) {
       settings.vue.onlineBallots = info.OnlineBallots;

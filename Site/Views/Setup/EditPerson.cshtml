@@ -36,6 +36,16 @@
       <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
     </td>
   </tr>
+  <tr id="trCanReceiveVotes" class="topLine overrides">
+      <td colspan="2">
+          <label for="input1">Can be voted for in this election?</label>
+          <select data-name="CanReceiveVotes" disabled="disabled">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+          </select>
+          <span class="sample CannotReceiveVotes"></span>
+      </td>
+  </tr>
   <tr id="trCanVote" class="topLine overrides">
     <td colspan="2">
       <label for="input2">Can vote in this election?</label>
@@ -43,17 +53,7 @@
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-      <span class="sample">(<span>🛇</span> if No)</span>
-    </td>
-  </tr>
-  <tr id="trCanReceiveVotes" class="topLine overrides">
-    <td colspan="2">
-      <label for="input1">Can be voted for in this election?</label>
-      <select data-name="CanReceiveVotes" disabled="disabled">
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
+      <span class="sample CannotVote"></span>
     </td>
   </tr>
 
@@ -177,9 +177,9 @@
     <td></td>
     <td class="forDelete">
       <button type="button" id="btnDelete" class="btn btn-danger btn-mini">
-        Remove from TallyJ Election
+        Remove from this Election
       </button>
-      <div class="comments">This will only work if they have not voted or been voted for.</div>
+      <p class="comments">This will only work if they have not voted or been voted for.</p>
     </td>
   </tr>
 </table>

@@ -434,6 +434,7 @@ namespace TallyJ.Controllers
 
         // find this person
         .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
+        .Where(p => p.CanVote.Value)
 
         // and the elections they are in
         .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid,

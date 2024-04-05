@@ -189,17 +189,14 @@
         busy: 'Saving'
       },
       function (info) {
+        if (info.Person) {
+          applyValues(null, info.Person, true);
+        }
         if (info.Message) {
           ShowStatusFailed(info.Message);
-          if (info.Person) {
-            applyValues(null, info.Person, true);
-          }
           return;
         }
         if (info.Person) {
-          applyValues(null, info.Person, true);
-          startEdit();
-
           site.broadcast(site.broadcastCode.personSaved, info);
         }
         ShowStatusDone(info.Status);

@@ -271,6 +271,25 @@ namespace TallyJ.CoreModels
       };
     }
 
+    public static object PersonForList(Person p, bool isSingleNameElection, List<Vote> votes)
+    {
+      return new
+      {
+        Id = p.C_RowId,
+        //p.PersonGuid,
+        Name = p.C_FullName,
+        p.Area,
+        p.Email,
+        p.Phone,
+        V = (p.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.CanVote.AsBoolean() ? "1" : "0"),
+        IRG = p.IneligibleReasonGuid,
+        NumVotes = isSingleNameElection
+          ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount ?? 1).AsInt()
+          : votes.Count(v => v.PersonGuid == p.PersonGuid)
+      };
+    }
+
+
     public JsonResult SavePerson(Person personFromInput)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)

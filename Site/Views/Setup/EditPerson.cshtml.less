@@ -97,7 +97,7 @@
 }
 
 .overrides, .comments {
-  color: #666;
+  color: #333;
   font-size: 85%;
 }
 
@@ -131,8 +131,16 @@
   font-style: normal;
 }
 
-.CannotReceiveVotesSample {
-  text-decoration: line-through;
+#trCanVote, #trCanReceiveVotes {
+  .sample {
+    visibility: hidden;
+  }
+
+  &.IsNo {
+    .sample {
+      visibility: visible;
+    }
+  }
 }
 
 #trDelete div {

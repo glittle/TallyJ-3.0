@@ -26,19 +26,21 @@ namespace TallyJ.Code.Enumerations
     public static readonly IneligibleReasonEnum Ineligible_Not_in_this_local_unit = new IneligibleReasonEnum("2add3a15-ec2d-437c-916f-7c581e693baa", GroupName.Ineligible, "Not in this local unit");
     public static readonly IneligibleReasonEnum Ineligible_Non_Bahai = new IneligibleReasonEnum("D127534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not a registered Bahá'í");
     public static readonly IneligibleReasonEnum Ineligible_Not_Adult = new IneligibleReasonEnum("32e44592-a7d8-408a-b169-8871800f62aa", GroupName.Ineligible, "Under 18 years old");
-    public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Other");
     public static readonly IneligibleReasonEnum Ineligible_Resides_elsewhere = new IneligibleReasonEnum("D327534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Resides elsewhere");
     public static readonly IneligibleReasonEnum Ineligible_Rights_removed = new IneligibleReasonEnum("D027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Rights removed (entirely)");
     public static readonly IneligibleReasonEnum Ineligible_NotDelegate_OnOther = new IneligibleReasonEnum("E027534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Not a delegate and on other Institution");
+    public static readonly IneligibleReasonEnum Ineligible_Other = new IneligibleReasonEnum("D527534D-D7E8-E011-A095-002269C41D11", GroupName.Ineligible, "Other (cannot vote or be voted for)");
 
     public static readonly IneligibleReasonEnum IneligiblePartial1_Older_Youth = new IneligibleReasonEnum("e6dd1cdd-5da0-4222-9f17-f02ce6313b0a", GroupName.IneligiblePartial1, "Youth aged 18/19/20", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_On_Institution_already = new IneligibleReasonEnum("C05EAE49-B01B-E111-A7FB-002269C41D11", GroupName.IneligiblePartial1, "By-election: On Institution already", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_On_other_Institution = new IneligibleReasonEnum("D427534D-D7E8-E011-A095-002269C41D11", GroupName.IneligiblePartial1, "On other Institution (e.g. Counsellor)", true);
     public static readonly IneligibleReasonEnum IneligiblePartial1_Rights_removed = new IneligibleReasonEnum("920A1A55-C4A5-42E5-9BCE-31756B6A20B9", GroupName.IneligiblePartial1, "Rights removed (cannot be voted for)", true);
-    public static readonly IneligibleReasonEnum IneligiblePartial1_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.IneligiblePartial1, "Tie-break: Not tied", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_Not_in_TieBreak = new IneligibleReasonEnum("EB159A43-FB09-4FA9-AC12-3F451073010B", GroupName.IneligiblePartial1, "Tie-break election: Not tied", true);
+    public static readonly IneligibleReasonEnum IneligiblePartial1_Other = new IneligibleReasonEnum("24278180-fe1b-4604-9f86-d453b151d824", GroupName.IneligiblePartial1, "Other (can vote but not be voted for)", true);
 
     public static readonly IneligibleReasonEnum IneligiblePartial2_Not_a_Delegate = new IneligibleReasonEnum("4B2B0F32-4E14-43A4-9103-C5E9C81E8783", GroupName.IneligiblePartial2, "Not a delegate in this election", false, true);
     public static readonly IneligibleReasonEnum IneligiblePartial2_Rights_removed = new IneligibleReasonEnum("84FA30C9-F007-44E8-B097-CCA430AAA3AA", GroupName.IneligiblePartial2, "Rights removed (cannot vote)", false, true);
+    public static readonly IneligibleReasonEnum IneligiblePartial2_Other = new IneligibleReasonEnum("f4c7de9e-d487-49ae-9868-5cd208cd863a", GroupName.IneligiblePartial2, "Other (cannot vote but can be voted for)", false, true);
 
 
     public static readonly IneligibleReasonEnum Unreadable_In_another_language_not_translatable = new IneligibleReasonEnum("D627534D-D7E8-E011-A095-002269C41D11", GroupName.Unreadable, "In an unknown language");
@@ -68,9 +70,11 @@ namespace TallyJ.Code.Enumerations
       Add(IneligiblePartial1_On_Institution_already);
       Add(IneligiblePartial1_Not_in_TieBreak);
       Add(IneligiblePartial1_Rights_removed);
+      Add(IneligiblePartial1_Other);
 
       Add(IneligiblePartial2_Not_a_Delegate);
       Add(IneligiblePartial2_Rights_removed);
+      Add(IneligiblePartial2_Other);
 
       //      Add(Unreadable_Vote_is_blank);
       Add(Unreadable_Writing_illegible);

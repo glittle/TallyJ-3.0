@@ -41,20 +41,7 @@ namespace TallyJ.Controllers
 
       return new
       {
-        people = new PersonCacher(Db).AllForThisElection.Select(p => new
-        {
-          Id = p.C_RowId,
-          //p.PersonGuid,
-          Name = p.C_FullName,
-          p.Area,
-          p.Email,
-          p.Phone,
-          V = (p.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.CanVote.AsBoolean() ? "1" : "0"),
-          IRG = p.IneligibleReasonGuid,
-          NumVotes = isSingleNameElection
-            ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount ?? 1).AsInt()
-            : votes.Count(v => v.PersonGuid == p.PersonGuid)
-        }),
+        people = new PersonCacher(Db).AllForThisElection.Select(p => PeopleModel.PersonForList(p, isSingleNameElection, votes)),
         lastVid = votes.Any() ? votes.Max(v => v.C_RowId) : 0
       }.AsJsonResult();
     }
@@ -85,7 +72,7 @@ namespace TallyJ.Controllers
             people = new List<string>()
           }.AsJsonResult();
       }
-      
+
       var rnd = new Random();
 
       var useRandom = currentElection.RandomizeVotersList;
@@ -103,36 +90,37 @@ namespace TallyJ.Controllers
       return new
       {
         people = allForThisElection
+          .Where(p => p.CanReceiveVotes.AsBoolean())
           .Select(p =>
           {
-            var irg = p.IneligibleReasonGuid;
-            string descriptionFor = null;
+            // var irg = p.IneligibleReasonGuid;
+            // string descriptionFor = null;
 
-            if (irg != null)
-            {
-              if (p.CanReceiveVotes.GetValueOrDefault())
-              {
-                // if they can receive votes, ignore any other status they may have (e.g. not a delegate)
-                irg = null;
-              }
+            // if (irg != null)
+            // {
+            // if (p.CanReceiveVotes.GetValueOrDefault())
+            // {
+            //   // if they can receive votes, ignore any other status they may have (e.g. not a delegate)
+            //   irg = null;
+            // }
 
-              if (irg != null)
-              {
-                descriptionFor = IneligibleReasonEnum.DescriptionFor(irg.Value);
-              }
-            }
+            // if (irg != null)
+            // {
+            //   descriptionFor = IneligibleReasonEnum.DescriptionFor(irg.Value);
+            // }
+            // }
 
             return new
             {
               Id = p.C_RowId,
               Name = p.FullName,
-              IRG = descriptionFor,
+              // IRG = descriptionFor,
               p.OtherInfo,
               p.Area,
               sort = useRandom ? rnd.Next(maxRnd) : nonRandom++
             };
           })
-          .OrderBy(p=> p.sort)
+          .OrderBy(p => p.sort)
       }.AsJsonResult();
     }
 

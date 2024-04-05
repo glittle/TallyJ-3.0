@@ -58,6 +58,7 @@
       editedPerson.Name = editedPerson.C_FullName;
       editedPerson.Id = editedPerson.C_RowId;
       editedPerson.NumVotes = 0;
+      editedPerson.Ineligible = editedPerson.IneligibleReasonGuid;
 
       extendPersonCore(editedPerson);
 
@@ -126,7 +127,6 @@
     // decode compressed info from the server
 
     p.Ineligible = p.IRG;
-    p.classesList = [];
 
     if (forVoter) {
       p.CanReceiveVotes = !p.Ineligible; // server filters to correct list
@@ -141,6 +141,8 @@
   }
 
   function extendPersonCore(p) {
+    p.classesList = [];
+
     p.NameArea = p.Name + (p.Area ? ' <u>' + p.Area + '</u>' : '');
     // for searches, make lowercase
     p.name = removeAccents.process(p.NameArea.toLowerCase() + (p.Email || '').toLowerCase() + (p.Phone || ''));

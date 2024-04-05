@@ -44,11 +44,7 @@
   }
 
   .CannotReceiveVotes {
-    text-decoration: line-through;
-  }
-
-  .CannotVote:after {
-    content: ' 🛇';
+    //text-decoration: line-through;
   }
 
   .Fuzzy {
@@ -62,6 +58,17 @@
     display: block;
   }
 }
+
+
+.CannotReceiveVotes::before {
+  content: '🚫 ';
+}
+
+.CannotVote::after {
+  content: ' ⛔';
+}
+
+
 
 //#action {
 //  width: 20px;
