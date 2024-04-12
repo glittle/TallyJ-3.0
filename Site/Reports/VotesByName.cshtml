@@ -22,7 +22,7 @@
     @if (people.Count > 20)
     {
       <text>
-      column-width: 15em;
+      column-width: 12em;
       column-gap: 1em;
       column-rule-width: 4px;
       </text>
@@ -48,11 +48,11 @@
       <div id="titleDate"></div>
     </div>
   </div>
-  <p class="Comment">
+  <p class="Comment noPrint">
     "If the assembled friends choose to have a full Tellers’ Report including the names
     of all who are voted for and the number of votes received, this is acceptable." (Spoiled votes and names on spoiled ballots are not included.)
   </p>
-  <p class="Comment Selection">
+  <p class="Comment Selection noPrint">
     Showing those with <select id="limitNum"></select> or more votes cast for them (<span id="numShown"></span> people).
   </p>
   <div class="Votes">
@@ -67,13 +67,14 @@
 </div>
 <script>
   var list = [@String.Join(",", people.Select(p => p.VoteCount).Distinct().OrderByDescending(n=>n).ToArray())];
+  var leastVotes = list.slice(-1)[0] || 1;
   $('#limitNum')
-    .html('<option>{0}</option>'.filledWithEach(list))
-    .val(localStorage.getItem('votesByNumLimit') || 1)
-    .change(updateList);
-
+      .html('<option>{0}</option>'.filledWithEach(list))
+      .val(localStorage.getItem('votesByNumLimit') || leastVotes)
+      .change(updateList);
+ 
   function updateList() {
-    var limit = +$('#limitNum').val() || 1;
+    var limit = +$('#limitNum').val() || leastVotes;
     localStorage.setItem('votesByNumLimit', limit);
     var letter = '';
     $('.person').each(function (i, el) {
