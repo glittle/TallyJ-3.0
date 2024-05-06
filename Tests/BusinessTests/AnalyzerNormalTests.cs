@@ -22,6 +22,13 @@ namespace Tests.BusinessTests
 
     private List<Person> SamplePeople { get; set; }
 
+    /// <summary>
+    /// Initializes the test environment by setting up the necessary fake objects and session keys for testing.
+    /// </summary>
+    /// <remarks>
+    /// This method initializes the test environment by creating a fake database context, setting up session keys, and creating sample people for testing purposes.
+    /// It also sets the current election and computer information in the session for testing.
+    /// </remarks>
     [TestInitialize]
     public void Init()
     {
@@ -56,6 +63,14 @@ namespace Tests.BusinessTests
      
     }
 
+    /// <summary>
+    /// Test method for analyzing election results with two people.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with a specified number of people to elect and no extra people.
+    /// It creates a set of ballots and assigns votes to the sample people.
+    /// Then it analyzes the election results and verifies the expected outcome.
+    /// </remarks>
     [TestMethod]
     public void Ballot_TwoPeople()
     {
@@ -110,6 +125,13 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
+    /// <summary>
+    /// Tests the scenario where the name of a person on a ballot is changed and verifies the election analysis results.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with specified parameters, creates sample ballots and votes, modifies the person combined information in one of the votes, and then analyzes the election results.
+    /// The method then verifies various aspects of the election analysis results, including the number of ballots needing review, the number of ballots with manual entries, the count of dropped off, in-person, mailed-in, called-in, and online ballots, the number of eligible voters, the number of actual voters, and the final result type.
+    /// </remarks>
     [TestMethod]
     public void Ballot_TwoPeople_NameChanged()
     {
@@ -153,6 +175,13 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
+    /// <summary>
+    /// Tests the ballot process with two people and extended names.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with the number of people to elect as 2 and no extra people. It then creates ballots and votes for the sample people, analyzes the election, and checks the results.
+    /// The method verifies various properties of the election results, such as the number of ballots needing review, the number of ballots with manual entries, the number of dropped off, in-person, mailed-in, called-in, and online ballots, the number of eligible voters, the number of actual voters, and the result type.
+    /// </remarks>
     [TestMethod]
     public void Ballot_TwoPeople_NameExtended()
     {
@@ -196,6 +225,13 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
+    /// <summary>
+    /// Test method for analyzing spoiled votes in an election.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with specific parameters and creates test data for analyzing spoiled votes.
+    /// It then analyzes the votes and verifies the results against expected values.
+    /// </remarks>
     [TestMethod]
     public void Ballot_TwoNames_AllSpoiled()
     {
@@ -245,7 +281,13 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
-
+    /// <summary>
+    /// Tests the Ballot_OlderYouth method by simulating an election and analyzing the results.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with a specified number of positions to elect and extra positions, and then creates test ballots and votes to analyze the election results.
+    /// The method then performs the analysis and checks various properties and statuses to ensure the correctness of the election process.
+    /// </remarks>
     [TestMethod]
     public void Ballot_OlderYouth()
     {
@@ -295,7 +337,15 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
-
+    /// <summary>
+    /// Test case for handling a scenario where two people have all spoiled votes.
+    /// </summary>
+    /// <remarks>
+    /// This test case sets up an election with the number of people to elect as 2 and no extra people allowed to vote.
+    /// It then creates a single ballot and two votes, both of which are marked as spoiled.
+    /// The ElectionAnalyzerNormal class is used to analyze the votes and the results are checked for correctness.
+    /// The test verifies that the ballots and votes are in the expected states, and also checks various summary statistics.
+    /// </remarks>
     [TestMethod]
     public void Ballot_TwoPeople_AllSpoiled()
     {
@@ -345,6 +395,14 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
+    /// <summary>
+    /// Test case for conducting an election with 3 people and no tie required.
+    /// </summary>
+    /// <remarks>
+    /// This test case sets up an election with 3 people and no extra candidates to be elected.
+    /// It creates sample ballots and votes for the candidates, then analyzes the election results using the ElectionAnalyzerNormal class.
+    /// The test verifies the results by checking the rankings, tie-breaker requirements, and other properties of the election results.
+    /// </remarks>
     [TestMethod]
     public void Election_3_people_with_Tie_Not_Required()
     {
@@ -416,6 +474,14 @@ namespace Tests.BusinessTests
       result3.TieBreakRequired.ShouldEqual(false);
     }
 
+    /// <summary>
+    /// Test method to simulate an election with 3 people resulting in a 3-way tie.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with 1 position to elect and 0 extra positions. It creates 3 sample ballots and 3 sample votes, each with a count of 10.
+    /// The ElectionAnalyzerNormal class is used to analyze the election and the results are sorted and checked for ties and tie-break requirements.
+    /// The method then asserts the expected results for the tie scenario.
+    /// </remarks>
     [TestMethod]
     public void Election_3_people_with_3_way_Tie()
     {
@@ -481,6 +547,13 @@ namespace Tests.BusinessTests
       result3.ForceShowInOther = true;
     }
 
+    /// <summary>
+    /// Tests the election with two sets of ties and verifies the results.
+    /// </summary>
+    /// <remarks>
+    /// This method creates an election with a specified number to elect and extra number, and then creates and assigns ballots and votes to simulate the election process.
+    /// It then analyzes the election results and verifies the expected summary, ties, and individual results against the actual results.
+    /// </remarks>
     [TestMethod]
     public void ElectionWithTwoSetsOfTies()
     {
@@ -598,6 +671,14 @@ namespace Tests.BusinessTests
 
     }
 
+    /// <summary>
+    /// Tests the ElectionTieSpanningTopExtraOther method.
+    /// </summary>
+    /// <remarks>
+    /// This method tests the ElectionTieSpanningTopExtraOther method by setting up an election with a specific configuration and then analyzing the results.
+    /// It creates sample ballots and votes, and then uses the ElectionAnalyzerNormal class to analyze the election.
+    /// The method then checks the summary and results to ensure that the election analysis was performed correctly.
+    /// </remarks>
     [TestMethod]
     public void ElectionTieSpanningTopExtraOther()
     {
@@ -694,7 +775,14 @@ namespace Tests.BusinessTests
       results[4].ForceShowInOther.ShouldEqual(true);
     }
 
-
+    /// <summary>
+    /// Tests the scenario where the election results in a tie with a tie break tied in the top section.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election scenario with a specific number of candidates to elect and extra candidates, along with a set of ballots and votes.
+    /// It then analyzes the election results and verifies the expected summary and individual results based on the scenario.
+    /// The method also applies tie break counts and re-analyzes the results to ensure tie resolution.
+    /// </remarks>
     [TestMethod]
     public void ElectionTieWithTieBreakTiedInTopSection()
     {
@@ -822,6 +910,15 @@ namespace Tests.BusinessTests
 
     }
 
+    /// <summary>
+    /// Tests the scenario where an election results in a tie with a tie-break required in the extra section.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with the number of candidates to elect and the number of extra sections.
+    /// It then creates sample ballots and votes to simulate a tied election result with a tie-break required in the extra section.
+    /// The method then analyzes the election results and verifies the expected outcome, including tied results and tie-break requirements.
+    /// </remarks>
+    /// <exception cref="AssertionException">Thrown if the test assertions fail.</exception>
     [TestMethod]
     public void ElectionTieWithTieBreakTiedInExtraSection()
     {
@@ -952,7 +1049,14 @@ namespace Tests.BusinessTests
 
     }
 
-
+    /// <summary>
+    /// Tests the scenario where an election results in a tie with a tie-break required in the extra section.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an election with the number of candidates to elect as 2 and the number of extra candidates as 2.
+    /// It then creates and initializes the required number of ballots and votes for testing purposes.
+    /// The method then analyzes the election results and verifies the expected outcomes based on the test scenario.
+    /// </remarks>
     [TestMethod]
     public void ElectionTieWithTieBreakTiedInExtraSection2()
     {
@@ -1096,7 +1200,13 @@ namespace Tests.BusinessTests
       results[3].ForceShowInOther.ShouldEqual(false);
     }
 
-    
+    /// <summary>
+    /// Tests the NSA election process and verifies the results.
+    /// </summary>
+    /// <remarks>
+    /// This method sets up an NSA election with a normal mode and 2 candidates to be elected. It then creates sample ballots and votes for testing purposes.
+    /// The method initializes an ElectionAnalyzerNormal object using fake data and analyzes the election results. It then verifies the expected results by checking the rankings, sections, and summary statistics.
+    /// </remarks>
     [TestMethod]
     public void NSA_Election_1()
     {
@@ -1163,6 +1273,14 @@ namespace Tests.BusinessTests
       resultSummaryFinal.ResultType.ShouldEqual(ResultType.Final);
     }
 
+    /// <summary>
+    /// Unit test for a two-stage election process.
+    /// </summary>
+    /// <remarks>
+    /// This unit test simulates a two-stage election process, where multiple ballots and votes are created and analyzed to produce election results.
+    /// The test sets up multiple elections with different parameters, creates sample ballots and votes, and then analyzes the results using the ElectionAnalyzerNormal class.
+    /// The test validates the correctness of the election results by comparing the expected outcome with the actual results obtained from the analysis.
+    /// </remarks>
     [TestMethod]
     public void Unit_In_TwoStage_Election()
     {

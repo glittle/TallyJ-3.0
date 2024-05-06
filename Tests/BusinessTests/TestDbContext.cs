@@ -34,22 +34,42 @@ namespace Tests.BusinessTests
 
     public DbSet<SmsLog> SmsLog { get; set; }
 
+    /// <summary>
+    /// Increments the SaveChangesCount and returns 1.
+    /// </summary>
+    /// <returns>1</returns>
     public int SaveChanges()
     {
       this.SaveChangesCount++;
       return 1;
     }
 
+    /// <summary>
+    /// Performs a bulk insert of the specified entities.
+    /// </summary>
+    /// <typeparam name="T">The type of entities to be inserted.</typeparam>
+    /// <param name="entities">The collection of entities to be inserted.</param>
+    /// <remarks>
+    /// This method performs a bulk insert of the specified entities into the database.
+    /// </remarks>
     public void BulkInsert<T>(IEnumerable<T> entities)
     {
       // ignore
     }
 
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <exception cref="NotImplementedException">Thrown when a particular method or operation is not implemented.</exception>
     public void Dispose()
     {
       throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Gets the current row version.
+    /// </summary>
+    /// <returns>The current row version.</returns>
     public long CurrentRowVersion()
     {
       return 1;
