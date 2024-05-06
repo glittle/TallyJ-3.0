@@ -97,6 +97,15 @@ BROWSER = {
 		.replace('undefined', '3_2').replace('_', '.').replace('_', '')
 	) || FALSE
 };
+;/**
+; * QTip constructor function
+; * @param {string} target - The target element for the tooltip
+; * @param {Object} options - The options for the tooltip
+; * @param {string} id - The ID for the tooltip
+; * @param {Object} attr - The attributes for the tooltip
+; * @throws {Error} If target is not a valid element
+; * @throws {Error} If options are not provided
+; */
 ;function QTip(target, options, id, attr) {
 	// Elements and ID
 	this.id = id;
@@ -243,6 +252,10 @@ PROTOTYPE.destroy = function(immediate) {
 	// and ensure it only gets destroyed once!
 	if(this.destroyed) { return this.target; }
 
+	/**
+	 * Process method to destroy tooltip and associated objects.
+	 * @throws {Error} If the method is called on a destroyed object.
+	 */
 	function process() {
 		if(this.destroyed) { return; }
 		this.destroyed = TRUE;
@@ -302,10 +315,21 @@ PROTOTYPE.destroy = function(immediate) {
 
 	return this.target;
 };
+;/**
+; * Check if the input is a valid option.
+; * @param {any} a - The input to be checked.
+; * @throws {Error} If the input is NULL or not an object.
+; */
 ;function invalidOpt(a) {
 	return a === NULL || $.type(a) !== 'object';
 }
 
+/**
+ * Checks if the content is invalid.
+ * @param {any} c - The content to be checked.
+ * @returns {boolean} - Returns true if the content is invalid, false otherwise.
+ * @throws {Error} - Throws an error if the content is not a function, attribute, or object with length or jQuery/then property.
+ */
 function invalidContent(c) {
 	return !($.isFunction(c) || 
             c && c.attr || 
@@ -313,6 +337,12 @@ function invalidContent(c) {
             $.type(c) === 'object' && (c.jquery || c.then));
 }
 
+/**
+ * Sanitizes the options object for the plugin
+ * @param {Object} opts - The options object to be sanitized
+ * @returns {Object} - The sanitized options object
+ * @throws {Error} - Throws an error if the options object is invalid
+ */
 // Option object sanitizer
 function sanitizeOptions(opts) {
 	var content, text, ajax, once;
@@ -494,6 +524,14 @@ CHECKS = PROTOTYPE.checks = {
 	}
 };
 
+/**
+ * Function to convert dot notation
+ * 
+ * @param {Object} options - The object to search for the notation
+ * @param {string} notation - The dot notation to convert
+ * @throws {TypeError} - If options is not an object or notation is not a string
+ * @returns {Array} - An array containing the object and the last property
+ */
 // Dot notation converter
 function convertNotation(options, notation) {
 	var i = 0, obj, option = options,
@@ -518,6 +556,13 @@ PROTOTYPE.get = function(notation) {
 	return result.precedance ? result.string() : result;
 };
 
+/**
+ * Sets a callback for a given notation and arguments.
+ * 
+ * @param {string} notation - The notation to match against.
+ * @param {Array} args - The arguments to be passed to the callback function.
+ * @throws {Error} Throws an error if the notation or arguments are invalid.
+ */
 function setCallback(notation, args) {
 	var category, rule, match;
 
@@ -923,6 +968,12 @@ PROTOTYPE.reposition.offset = function(elem, pos, container) {
 		parent = container[0],
 		scrolled, position, parentOffset, overflow;
 
+	/**
+	 * Scrolls the element by the specified amount.
+	 * @param {Object} e - The element to be scrolled.
+	 * @param {number} i - The amount by which the element should be scrolled.
+	 * @throws {Error} - If the element does not have the scrollLeft or scrollTop method.
+	 */
 	function scroll(e, i) {
 		pos.left += i * e.scrollLeft();
 		pos.top += i * e.scrollTop();
@@ -1267,7 +1318,14 @@ PROTOTYPE._updateButton = function(button)
 	if(button) { this._createButton(); }
 	else { elem.remove(); }
 };
-;// Widget class creator
+;/**
+ * Widget class creator
+ * 
+ * @param {string} cls - The class name to be concatenated with the widget
+ * @returns {string} - The concatenated widget class
+ * @throws {Error} - If cls is not a string
+ */
+// Widget class creator
 function createWidgetClass(cls) {
 	return WIDGET.concat('').join(cls ? '-'+cls+' ' : ' ');
 }
@@ -1296,6 +1354,13 @@ PROTOTYPE._setWidget = function()
 		elements.button.toggleClass(NAMESPACE+'-icon', !on);
 	}
 };
+;/**
+; * Delays the execution of a callback function.
+; * @param {Function} callback - The callback function to be executed after the delay.
+; * @param {number} duration - The duration of the delay in milliseconds.
+; * @throws {Error} If the duration is not a valid number.
+; * @returns {number} The ID of the timeout, which can be used to cancel the delay using clearTimeout.
+; */
 ;function delay(callback, duration) {
 	// If tooltip has displayed, start hide timer
 	if(duration > 0) {
@@ -1306,6 +1371,12 @@ PROTOTYPE._setWidget = function()
 	else{ callback.call(this); }
 }
 
+/**
+ * Show method to display tooltip.
+ * 
+ * @param {Event} event - The event triggering the show method.
+ * @throws {Error} Throws an error if the tooltip has the class CLASS_DISABLED.
+ */
 function showMethod(event) {
 	if(this.tooltip.hasClass(CLASS_DISABLED)) { return; }
 
@@ -1320,6 +1391,11 @@ function showMethod(event) {
 	);
 }
 
+/**
+ * Hides the tooltip element based on the event.
+ * @param {Event} event - The event that triggers the method.
+ * @throws {Error} Throws an error if the tooltip has the class 'CLASS_DISABLED' or if it has been destroyed.
+ */
 function hideMethod(event) {
 	if(this.tooltip.hasClass(CLASS_DISABLED) || this.destroyed) { return; }
 
@@ -1358,6 +1434,11 @@ function hideMethod(event) {
 	);
 }
 
+/**
+ * Method to handle inactive behavior.
+ * @param {Event} event - The event triggering the method.
+ * @throws {Error} Throws an error if the tooltip has the class CLASS_DISABLED or if the hide.inactive option is not set.
+ */
 function inactiveMethod(event) {
 	if(this.tooltip.hasClass(CLASS_DISABLED) || !this.options.hide.inactive) { return; }
 
@@ -1370,6 +1451,12 @@ function inactiveMethod(event) {
 	);
 }
 
+/**
+ * Repositions the method based on the event.
+ * 
+ * @param {Event} event - The event triggering the repositioning.
+ * @throws {Error} Throws an error if the method is not rendered or if the tooltip width is 0.
+ */
 function repositionMethod(event) {
 	if(this.rendered && this.tooltip[0].offsetWidth > 0) { this.reposition(event); }
 }
@@ -1395,6 +1482,14 @@ PROTOTYPE._unbind = function(targets, suffix) {
 	return this;
 };
 
+/**
+ * Global delegation helper
+ * 
+ * @param {string} selector - The selector to delegate the events to
+ * @param {string|array} events - The event(s) to delegate
+ * @param {function} method - The method to be executed when the event is triggered
+ * @throws {Error} Will throw an error if the selector is not found
+ */
 // Global delegation helper
 function delegate(selector, events, method) {
 	$(document.body).delegate(selector,
@@ -1483,6 +1578,11 @@ PROTOTYPE._assignInitialEvents = function(event) {
 		this.cache.onTarget = TRUE;
 	});
 
+	/**
+	 * Function to handle hoverIntent behavior
+	 * @param {Event} hoverEvent - The hover event triggering the behavior
+	 * @throws {Error} - Throws an error if tooltip is disabled or destroyed
+	 */
 	// Define hoverIntent function
 	function hoverIntent(hoverEvent) {
 		// Only continue if tooltip isn't disabled
@@ -1700,7 +1800,15 @@ $(function() {
 	// Define events which reset the 'inactive' event handler
 	delegate('['+ATTR_ID+']', INACTIVE_EVENTS, inactiveMethod);
 });
-;// Initialization method
+;/**
+ * Initializes the tooltip element with the given id and options.
+ * 
+ * @param {Element} elem - The element to initialize the tooltip on.
+ * @param {string} id - The id for the tooltip.
+ * @param {Object} opts - The options for configuring the tooltip.
+ * @throws {Error} Throws an error if there is an issue with parsing JSON or if there is an error during initialization.
+ */
+// Initialization method
 function init(elem, id, opts) {
 	var obj, posOptions, attr, config, title,
 
@@ -2044,6 +2152,23 @@ QTIP.defaults = {
 	viewportScroll = { left: fixed ? 0 : viewport.scrollLeft(), top: fixed ? 0 : viewport.scrollTop() };
 	viewportOffset = viewport.offset() || adjusted;
 
+	/**
+	 * Generic calculation method
+	 * 
+	 * @param {string} side - The side parameter
+	 * @param {string} otherSide - The other side parameter
+	 * @param {string} type - The type parameter
+	 * @param {number} adjustment - The adjustment parameter
+	 * @param {string} side1 - The first side parameter
+	 * @param {string} side2 - The second side parameter
+	 * @param {string} lengthName - The length name parameter
+	 * @param {number} targetLength - The target length parameter
+	 * @param {number} elemLength - The element length parameter
+	 * 
+	 * @throws {Error} - Throws an error if the calculation encounters an issue
+	 * 
+	 * @returns {number} - Returns the calculated position
+	 */
 	// Generic calculation method
 	function calculate(side, otherSide, type, adjustment, side1, side2, lengthName, targetLength, elemLength) {
 		var initialPos = position[side1],

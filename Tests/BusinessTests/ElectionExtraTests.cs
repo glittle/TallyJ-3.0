@@ -9,6 +9,14 @@ namespace Tests.BusinessTests
   [TestClass]
 
   public class ElectionExtraTests {
+
+    /// <summary>
+    /// Tests the functionality of the Election class by setting and checking the BallotProcessRaw property and OwnerLoginId property.
+    /// </summary>
+    /// <remarks>
+    /// This method creates an instance of the Election class and tests the functionality of the BallotProcessRaw property by setting it to different values and checking if it matches the expected values.
+    /// It also tests the OwnerLoginId property by setting it to null and checking if it matches the expected value.
+    /// </remarks>
     [TestMethod]
     public void ExtraFakeTest() {
        var election = new Election();
