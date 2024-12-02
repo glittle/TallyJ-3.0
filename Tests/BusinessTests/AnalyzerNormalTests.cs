@@ -30,6 +30,8 @@ namespace Tests.BusinessTests
       Db.ForTests();
       UnityInstance.Offer(Db);
 
+      // ForTests adds to Db
+
       _electionGuid = Guid.NewGuid();
 
       SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
