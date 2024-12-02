@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Web;
+using TallyJ.Code.Session;
 using TallyJ.EF;
 
 namespace TallyJ.Code.Enumerations
@@ -59,6 +60,8 @@ namespace TallyJ.Code.Enumerations
       var mainList = BaseItems
         .Where(bi => bi.Visible)
         .Where(bi => showAll || ShowAsSelected(bi, currentState))
+        // hard code to not show Finalized for LSAC
+        .Where(bi=> bi!=Finalized || bi==Finalized && UserSession.CurrentElection.ElectionType != ElectionTypeEnum.LSAC.Value)
         .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, ShowAsSelected(bi, currentState)))
         .JoinedAsString();
       return mainList.AsRawHtml();

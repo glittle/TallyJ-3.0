@@ -349,8 +349,13 @@ namespace TallyJ.CoreModels.ExportImport
         election.SmsText,
         election.EmailSubject,
         election.CustomMethods,
-        election.VotingMethods,
+        VotingMethods = election.VotingMethodsAdjusted,
         election.Flags,
+        election.ParentElectionGuid,
+        election.PeopleElectionGuid,
+        election.ParentTieBreakGroup,
+        election.UnitName,
+        election.TieBreakPersonGuids,
       };
     }
   }

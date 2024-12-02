@@ -47,26 +47,31 @@
       <li>Provide a name for this election that you will use and see in your list of elections.</li>
       <li>If you allow other tellers access, they will see the name and it will be listed on the public TallyJ home page while you are active in it.</li>
       <li>Typically the name should include your locality and the election type. For example, New York Ridván @(DateTime.Today.Year).</li>
-      <li>
-        The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
-        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál). It also shows in some reports.
-      </li>
+        <li>
+            The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
+            is being held on the 13<sup>th</sup> day of the month of Glory (Jalál). It also shows in some reports.
+        </li>
+        <li>
+          * Unit Elections cannot be directly select here. Must be added on the Election List page.
+        </li>
     </ol>
   </div>
   <table class="Demographics">
-    <tr class="electionDetail T">
+    <tr class="electionDetail">
       <th>
         Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
       </th>
       <td>
-        <select id="ddlType" data-name="ElectionType">
+        <select id="ddlType" v-model="electionType"
+                :disabled="[@ElectionTypeEnum.LockedForJs].includes(electionType)"
+                data-name="ElectionType">
           @ElectionTypeEnum.ForHtmlSelect()
         </select>
         <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
         <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
       </td>
     </tr>
-    <tr class="electionDetail">
+    <tr class="electionDetail" v-if="!isLsaCentral">
       <th>
         Variation<span class="ui-icon ui-icon-info" id="qTipVariation"></span>
       </th>
@@ -84,13 +89,12 @@
         <span id="VariationNotice">
           Special Notes:
           <span class="ui-icon ui-icon-info" id="qTipNoteN"></span>
-          <span class="ui-icon ui-icon-info" id="qTipNoteLSA2"></span>
           <span class="ui-icon ui-icon-info" id="qTipNoteT"></span>
           <span class="ui-icon ui-icon-info" id="qTipNoteB"></span>
         </span>
       </td>
     </tr>
-    <tr class="electionDetail">
+    <tr class="electionDetail" v-if="!isLsaCentral">
       <th>
         Spaces on Ballot<span class="ui-icon ui-icon-info" id="qTipNum"></span>
       </th>
@@ -98,7 +102,29 @@
         <input type="number" min="1" id="txtNumToElect" data-name="NumberToElect" />
       </td>
     </tr>
-    <tr>
+    @*<tr class="electionDetail">
+        <th>
+          Who can vote?<span class="ui-icon ui-icon-info" id="qTipCanVote"></span>
+        </th>
+        <td>
+          <select id="ddlCanVote" data-name="CanVote">
+            <option value="A">Everyone on the list</option>
+            <option value="N">Named delegates</option>
+          </select>
+        </td>
+      </tr>
+      <tr class="electionDetail B">
+        <th>
+          Who can be voted for?<span class="ui-icon ui-icon-info" id="qTipCanReceive"></span>
+        </th>
+        <td>
+          <select id="ddlCanReceive" data-name="CanReceive">
+            <option value="A">Everyone on the list</option>
+            <option value="N">Named individuals</option>
+          </select>
+        </td>
+      </tr>*@
+    <tr v-if="!isLsaCentral">
       <th>
         Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
       </th>
@@ -122,13 +148,16 @@
       <td>
         <div class="nameInfo">
           <input type="text" id="txtName" data-name="Name">
-          <span>Displayed for tellers and voters. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
+          <span v-if="!isLsaCentral">Displayed for tellers and voters and on some reports. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
+          <span v-else>Displayed in your list of elections@(SettingsHelper.HostSupportsOnlineElections ? " and for online voters (if enabled)" : "").</span>
         </div>
       </td>
     </tr>
     <tr>
       <th>
-        Date of Election<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+        <span v-if="isLsaCentral">Approximate<br />Date of Unit Elections</span>
+        <span v-else>Date of Election</span>
+        <span class="ui-icon ui-icon-info" id="qTipDate"></span>
       </th>
       <td>
         <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
@@ -149,14 +178,15 @@
   <h2>
     Step 2 <span>List the election for tellers</span>
   </h2>
-  <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
-  <div class="PullInstructions">
+  <div v-if="isLsaCentral">(Not used for @ElectionTypeEnum.LSAC.DisplayText)</div>
+  <div v-if="!isLsaCentral" class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+  <div v-if="!isLsaCentral" class="PullInstructions">
     <ol>
       <li>Tellers without a system login account in your election can join as 'helper' tellers using the access code you define here.</li>
     </ol>
   </div>
 
-  <table class="Demographics">
+  <table v-if="!isLsaCentral" class="Demographics">
 
     <tr>
       <th>
@@ -214,7 +244,7 @@
   </div>
 
   <table class="Demographics">
-    <tr>
+    <tr v-if="!isLsaCentral && !isLsaUnit">
       <th>
         Use "Gathering Ballots"?<span class="ui-icon ui-icon-info" id="qTipPreBallot"></span>
       </th>
@@ -225,7 +255,7 @@
         Use TallyJ to register voters or record the collection of ballot envelopes?
       </td>
     </tr>
-    <tr v-if="usingBallotProcess">
+    <tr v-if="usingBallotProcess && !isLsaCentral">
       <th>
         Use "Roll Call"?
       </th>
@@ -336,7 +366,7 @@
           Are you set up to accept ballots by telephone?
         </td>
       </tr>*@
-    <tr v-if="usingBallotProcess">
+    <tr v-if="usingBallotProcess && !isLsaUnit">
       <th>
         Show Envelope Numbers?<span class="ui-icon ui-icon-info" id="qTipEnvNum"></span>
       </th>
@@ -347,7 +377,7 @@
         </div>
       </td>
     </tr>
-    <tr class="forLocations">
+    <tr class="forLocations" v-if="!isLsaCentral">
       <th>
         Multiple locations?<span class="ui-icon ui-icon-info" id="qTipLocation"></span>
       </th>
@@ -358,7 +388,7 @@
         Are tellers collecting ballots in multiple locations / polling stations for this election?
       </td>
     </tr>
-    <tr class="forLocations" v-show="MultipleLocations">
+    <tr class="forLocations" v-show="MultipleLocations" v-if="!isLsaCentral">
       <th></th>
       <td colspan="2">
         <div class="locations">
@@ -377,7 +407,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr v-if="!isLsaCentral">
       <th>
         Time display format
       </th>
@@ -386,7 +416,7 @@
       </td>
       <td></td>
     </tr>
-    <tr v-if="usingBallotProcess">
+    <tr v-if="usingBallotProcess && !isLsaUnit">
       <th>
         Checklist Items
       </th>
@@ -410,7 +440,7 @@
         </ul>
       </td>
     </tr>
-    <tr>
+    <tr v-if="!isLsaCentral">
       <th>
         Email From Name
       </th>
@@ -422,7 +452,7 @@
         be recognized by voters so that the email is not rejected as spam!
       </td>
     </tr>
-    <tr>
+    <tr v-if="!isLsaCentral">
       <th>
         Email From Address
       </th>
@@ -446,15 +476,16 @@
 
   @if (SettingsHelper.HostSupportsOnlineElections)
   {
-    <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
-    <div class="PullInstructions">
+    <div v-if="isLsaCentral">(Not used for @ElectionTypeEnum.LSAC.DisplayText)</div>
+    <div v-if="!isLsaCentral" class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
+    <div v-if="!isLsaCentral" class="PullInstructions">
       <ol>
         <li>This election can be made available so that voters can cast their ballots online.</li>
         <li>To vote online, the email address a voter uses to log in to TallyJ must match the email address in their record in this election.</li>
       </ol>
     </div>
 
-    <table class="Demographics">
+    <table class="Demographics" v-if="!isLsaCentral">
       <tbody>
         <tr class="lockAfterBallots">
           <th>
@@ -609,7 +640,7 @@
 
   <div class="newStep"></div>
   <h2>Other Information</h2>
-  <table class="Demographics">
+  <table class="Demographics" v-if="!isLsaCentral">
     <tr>
       <th>
         Teller Names<span class="ui-icon ui-icon-info" id="qTipTellers"></span>

@@ -1,58 +1,71 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 
-namespace TallyJ.Code.Enumerations
+namespace TallyJ.Code.Enumerations;
+
+public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
 {
-  public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
+  public static readonly ElectionTypeEnum LSA = new("LSA", "Local Spiritual Assembly");
+
+  public static readonly ElectionTypeEnum LSAC = new("LSAC",
+    "Voter Management for Units in Two-Stage LSA Election");
+
+  public static readonly ElectionTypeEnum
+    LSAU = new("LSAU", "Unit Election in Two-Stage LSA Election", false); // was Lsa1
+
+  // public static readonly ElectionTypeEnum LSAF = new("LSAF", "Two-Stage Local Spiritual Assembly - Final"); // was Lsa2
+
+  public static readonly ElectionTypeEnum NSA = new("NSA", "National Spiritual Assembly");
+  public static readonly ElectionTypeEnum Con = new("Con", "Unit Convention");
+  public static readonly ElectionTypeEnum Reg = new("Reg", "Regional Council");
+  public static readonly ElectionTypeEnum Tie = new("Tie", "Tie-Break", false);
+  public static readonly ElectionTypeEnum Oth = new("Oth", "Other");
+
+  static ElectionTypeEnum()
   {
-    public static readonly ElectionTypeEnum Lsa = new ElectionTypeEnum("LSA", "Local Spiritual Assembly");
-    public static readonly ElectionTypeEnum Lsa1 = new ElectionTypeEnum("LSA1", "Local Spiritual Assembly (Two-Stage) Local Unit");
-    public static readonly ElectionTypeEnum Lsa2 = new ElectionTypeEnum("LSA2", "Local Spiritual Assembly (Two-Stage) Final");
-    public static readonly ElectionTypeEnum Nsa = new ElectionTypeEnum("NSA", "National Spiritual Assembly");
-    public static readonly ElectionTypeEnum Con = new ElectionTypeEnum("Con", "Unit Convention");
-    public static readonly ElectionTypeEnum Reg = new ElectionTypeEnum("Reg", "Regional Council");
-    public static readonly ElectionTypeEnum Oth = new ElectionTypeEnum("Oth", "Other");
+    Add(LSA);
+    Add(LSAC);
+    Add(LSAU);
+    // Add(LSAF);
+    Add(NSA);
+    Add(Con);
+    Add(Reg);
+    Add(Tie);
+    Add(Oth);
+  }
 
-    static ElectionTypeEnum()
-    {
-      Add(Lsa);
-      Add(Lsa1);
-      Add(Lsa2);
-      Add(Nsa);
-      Add(Con);
-      Add(Reg);
-      Add(Oth);
-    }
+  public ElectionTypeEnum(string key, string display, bool directlySelectable = true)
+    : base(key, display)
+  {
+    DirectlySelectable = directlySelectable;
+    ;
+  }
 
-    public ElectionTypeEnum(string key, string display)
-      : base(key, display)
-    {
-    }
+  public bool DirectlySelectable { get; }
 
-    public static HtmlString ForHtmlSelect(string selected = "")
-    {
-      return
-        BaseItems
-          .Select(bi => "<option value='{0}'{2}>{1}</option>"
-                          .FilledWith(bi.Value, bi.Text, bi.Value == selected ? " selected" : ""))
-          .JoinedAsString()
-          .AsRawHtml();
-    }
+  public static HtmlString ForHtmlSelect(string selected = "")
+  {
+    return
+      BaseItems
+        .Select(bi =>
+          $"<option value='{bi.Value}'{(bi.Value == selected ? " selected" : "")}{(bi.DirectlySelectable ? "" : " data-restriction='indirect'")}>{bi.Text}{(bi.DirectlySelectable ? "" : " *")}</option>")
+        .JoinedAsString()
+        .AsRawHtml();
+  }
 
-    public static string AsJsonObject()
-    {
-      return BaseItems
-        .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))
-        .JoinedAsString(", ")
-        .SurroundContentWith("{", "}");
-    }
+  public static string LockedForJs => BaseItems.Where(i => !i.DirectlySelectable).Select(i => i.Value).JoinedAsString(",", "'", "'");
 
-    public static string TextFor(string electionType)
-    {
-      var item = BaseItems.SingleOrDefault(i => i.Value == electionType);
-      return item == null ? "" : item.DisplayText;
-    }
+  public static string AsJsonObject()
+  {
+    return BaseItems
+      .Select(l => "{0}:{1}".FilledWith(l.Value.ToString().QuotedForJavascript(), l.Text.QuotedForJavascript()))
+      .JoinedAsString(", ")
+      .SurroundContentWith("{", "}");
+  }
+
+  public static string TextFor(string electionType)
+  {
+    var item = BaseItems.SingleOrDefault(i => i.Value == electionType);
+    return item == null ? "" : item.DisplayText;
   }
 }

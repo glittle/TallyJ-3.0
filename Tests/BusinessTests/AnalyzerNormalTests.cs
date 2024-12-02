@@ -1102,7 +1102,7 @@ namespace Tests.BusinessTests
     {
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTests();

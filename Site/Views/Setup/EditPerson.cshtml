@@ -27,6 +27,26 @@
       <span class="ui-icon ui-icon-info" id="qTipLName"></span>
     </td>
   </tr>
+  @if (UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU
+       || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC)
+  {
+    <tr>
+      <td>
+        Local Electoral Unit
+      </td>
+      <td>
+        <select data-name="UnitName" class="UnitName">
+          <option value="">[Select Unit]</option>
+          @foreach (var o in UserSession.UnitNames)
+          {
+            <option value="@o">@o</option>
+          }
+        </select>
+        <span class="ui-icon ui-icon-info" id="qTipUnit"></span>
+      </td>
+    </tr>
+  }
+
   <tr class="topLine">
     <td>
       <label for="ddlIneligible">Eligibility status</label>
@@ -36,16 +56,6 @@
       <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
     </td>
   </tr>
-  <tr id="trCanReceiveVotes" class="topLine overrides">
-      <td colspan="2">
-          <label for="input1">Can be voted for in this election?</label>
-          <select data-name="CanReceiveVotes" disabled="disabled">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-          </select>
-          <span class="sample CannotReceiveVotes"></span>
-      </td>
-  </tr>
   <tr id="trCanVote" class="topLine overrides">
     <td colspan="2">
       <label for="input2">Can vote in this election?</label>
@@ -53,7 +63,17 @@
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-      <span class="sample CannotVote"></span>
+      <span class="sample">(<span>🛇</span> if No)</span>
+    </td>
+  </tr>
+  <tr id="trCanReceiveVotes" class="topLine overrides">
+    <td colspan="2">
+      <label for="input1">Can be voted for in this election?</label>
+      <select data-name="CanReceiveVotes" disabled="disabled">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <span class="sample">(<span class="CannotReceiveVotesSample">name</span> if No)</span>
     </td>
   </tr>
 
@@ -183,3 +203,4 @@
     </td>
   </tr>
 </table>
+

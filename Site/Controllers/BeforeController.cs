@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.CoreModels;
@@ -35,7 +36,17 @@ namespace TallyJ.Controllers
       return View(new RollCallModel());
     }
 
-    public JsonResult PeopleForFrontDesk() {
+    public JsonResult PeopleForFrontDesk(string unit = null) {
+      if (unit.HasContent())
+      {
+        var currentElection = UserSession.CurrentElection;
+        if (currentElection.ElectionType == ElectionTypeEnum.LSAC.Value)
+        {
+          // temporary for this request
+          currentElection.UnitName = unit;
+        }
+      }
+
       return new PeopleModel().FrontDeskPersonLines().AsJsonResult();
     }
 

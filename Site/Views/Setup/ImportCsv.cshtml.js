@@ -207,8 +207,8 @@
             resultDiv.html(info.result.join('')).show().css('min-height', '0')
               .toggleClass('failed', info.failed === true);
             if (!info.failed) {
-            $('.DbCount span').text(comma(info.count));
-          }
+              $('.DbCount span').text(comma(info.count));
+            }
           }
         });
     });
@@ -362,7 +362,7 @@
     var options = '<option value="{value}">{text}</option>'.filledWithEach($.map(info.possible, function (f) {
       switch (f) {
         case local.statusFieldName:
-        return { value: f, text: 'Eligibility Status' };
+          return { value: f, text: 'Eligibility Status' };
         case 'UnitName':
           return { value: f, text: 'Electoral Unit Name' };
       }

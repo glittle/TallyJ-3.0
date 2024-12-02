@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Data;
+using TallyJ.Code.Enumerations;
 using TallyJ.Code.UnityRelated;
 
 namespace TallyJ.EF
@@ -108,7 +109,7 @@ namespace TallyJ.EF
       var electionsInfo = Db.Election
         .Where(e => activeElectionGuids.Contains(e.ElectionGuid))
         .ToList()
-        .Where(e => e.CanBeAvailableForGuestTellers)
+        .Where(e => e.CanBeAvailableForGuestTellers && e.ElectionType!=ElectionTypeEnum.LSAC)
         .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
         .ToList();
 

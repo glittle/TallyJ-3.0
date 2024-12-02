@@ -449,7 +449,8 @@ var vueOptions = {
 
       CallAjaxHandler(GetRootUrl() + 'Vote/JoinElection',
         {
-          electionGuid: eInfo.id
+          electionGuid: eInfo.id,
+          peopleElectionGuid: eInfo.peopleElectionId,
         },
         function (info) {
           if (info.open) {

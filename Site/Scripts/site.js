@@ -30,6 +30,7 @@ var site = {
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
     locationChanged: 'locationChanged',
+    unitChanged: 'unitChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
     personDeleted: 'personDeleted',
@@ -657,6 +658,11 @@ function CheckTimeOffset() {
     });
 }
 
+function topUnitChanged(ev) {
+  var ddl = $(ev.currentTarget);
+  site.broadcast(site.broadcastCode.unitChanged, ddl.val());
+}
+
 function topLocationChanged(ev) {
   var ddl = $(ev.currentTarget);
   var form = {
@@ -726,6 +732,7 @@ function tellerChanged(ev) {
 }
 
 function PrepareTopLocationAndTellers() {
+  $('#ddlTopUnit').change(topUnitChanged);
   $('#ddlTopLocation').change(topLocationChanged);
 
   $('.TopTeller').change(tellerChanged).each(function () {

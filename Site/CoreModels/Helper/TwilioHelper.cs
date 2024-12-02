@@ -176,7 +176,7 @@ namespace TallyJ.CoreModels.Helper
 
       phoneNumbersToSendTo.AddRange(db.Person
         .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
-        .Where(p => p.CanVote.Value)
+        .Where(p => p.CanVoteInElection.Value)
         .Where(p => personIds.Contains(p.C_RowId))
         .Select(p => new NamePhone
         {

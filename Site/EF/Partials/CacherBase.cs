@@ -11,18 +11,18 @@ namespace TallyJ.EF
   public abstract class CacherBase
   {
     private Guid _currentElectionGuid;
+    private Guid _currentPeopleElectionGuid;
     protected abstract object LockCacheBaseObject { get; }
 
-    public Guid CurrentElectionGuid
-    {
-      get
-      {
-        return _currentElectionGuid != Guid.Empty
-          ? _currentElectionGuid
-          : (_currentElectionGuid = UserSession.CurrentElectionGuid);
-      }
-    }
+    public Guid CurrentElectionGuid =>
+      _currentElectionGuid != Guid.Empty
+        ? _currentElectionGuid
+        : (_currentElectionGuid = UserSession.CurrentElectionGuid);
 
+    public Guid CurrentPeopleElectionGuid =>
+      _currentPeopleElectionGuid != Guid.Empty
+        ? _currentPeopleElectionGuid
+        : (_currentPeopleElectionGuid = UserSession.CurrentPeopleElectionGuid);
   }
 
   public abstract class CacherBase<T> : CacherBase, ICacherBase<T> where T : class, IIndexedForCaching

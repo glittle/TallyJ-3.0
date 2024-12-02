@@ -38,7 +38,7 @@ namespace TallyJ.Controllers
       //      }
     }
 
-    public JsonResult JoinElection(Guid electionGuid)
+    public JsonResult JoinElection(Guid electionGuid, Guid peopleElectionGuid)
     {
       var voterId = UserSession.VoterId;
       if (voterId.HasNoContent())
@@ -49,8 +49,10 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
+      // for two-stage elections, this will be the 'central' election guid
+
       // confirm that this person is in the election
-      var personQuery = Db.Person.Where(p => p.ElectionGuid == electionGuid);
+      var personQuery = Db.Person.Where(p => p.ElectionGuid == peopleElectionGuid);
 
       if (UserSession.VoterIdType == VoterIdTypeEnum.Email)
       {
@@ -73,7 +75,10 @@ namespace TallyJ.Controllers
       }
 
       var electionInfo = personQuery
-        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { e, p })
+        .Join(Db.Election.Where(e => e.ElectionGuid == electionGuid), 
+          p => p.ElectionGuid,
+          e => e.PeopleElectionGuid,
+          (p, e) => new { e, p })
         .SingleOrDefault();
 
       if (electionInfo == null)
@@ -94,6 +99,9 @@ namespace TallyJ.Controllers
       {
         // put election in session
         UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
+        UserSession.CurrentPeopleElectionGuid = electionInfo.e.PeopleElectionGuid;
+        UserSession.CurrentParentElectionGuid = electionInfo.e.ParentElectionGuid ?? Guid.Empty;
+
         UserSession.VoterInElectionPersonGuid = electionInfo.p.PersonGuid;
         // UserSession.VoterInElectionPersonName = electionInfo.p.C_FullNameFL;
         string poolDecryptError = null;
@@ -317,7 +325,7 @@ namespace TallyJ.Controllers
           }.AsJsonResult();
         }
 
-        if (!person.CanVote.AsBoolean())
+        if (!person.CanVoteInElection.AsBoolean())
         {
           return new
           {
@@ -434,11 +442,20 @@ namespace TallyJ.Controllers
 
         // find this person
         .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
-        .Where(p => p.CanVote.Value)
 
-        // and the elections they are in
-        .Join(Db.Election, p => p.ElectionGuid, e => e.ElectionGuid,
-          (p, e) => new { p, e })
+        // and the elections they are in - for 2-stage, this will be the LSAC election
+        .Join(Db.Election, p => p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
+          (p, peopleElection) => new { p, peopleElection })
+
+        // and if there is a unit LSAU election that they are in
+        .GroupJoin(Db.Election, j => j.peopleElection.ElectionGuid, childElection => childElection.PeopleElectionGuid,
+          (j, childList) => new
+          {
+            j.p,
+            j.peopleElection,
+            targetElection = childList.FirstOrDefault(e => e.ElectionType == ElectionTypeEnum.LSAU && e.UnitName != null && e.UnitName == j.p.UnitName)
+                             ?? j.peopleElection
+          })
 
         // get the online voting info for this person 
         .GroupJoin(Db.OnlineVotingInfo, g => g.p.PersonGuid,
@@ -446,26 +463,30 @@ namespace TallyJ.Controllers
           (g, oviList) => new
           {
             g.p,
-            g.e,
+            g.peopleElection,
+            g.targetElection,
             ovi = oviList.FirstOrDefault()
           })
 
-        .OrderByDescending(j => j.e.OnlineWhenClose)
-        .ThenByDescending(j => j.e.DateOfElection)
+        .OrderByDescending(j => j.targetElection.OnlineWhenClose)
+        .ThenByDescending(j => j.targetElection.DateOfElection)
         .ThenBy(j => j.p.C_RowId)
         .ToList()
         .Select(j => new
         {
-          id = j.e.ElectionGuid,
-          j.e.Name,
-          j.e.Convenor,
-          j.e.ElectionType,
-          DateOfElection = j.e.DateOfElection.AsUtc(),
-          j.e.EmailFromAddress,
-          j.e.EmailFromName,
-          OnlineWhenOpen = j.e.OnlineWhenOpen.AsUtc(),
-          OnlineWhenClose = j.e.OnlineWhenClose.AsUtc(),
-          j.e.OnlineCloseIsEstimate,
+          id = j.targetElection.ElectionGuid,
+          peopleElectionId = j.peopleElection.ElectionGuid, // where the people records are
+          j.targetElection.Name,
+          j.targetElection.Convenor,
+          j.targetElection.ElectionType,
+          j.targetElection.UnitName, //TODO show this
+          DateOfElection = j.targetElection.DateOfElection.AsUtc(),
+          j.targetElection.EmailFromAddress,
+          j.targetElection.EmailFromName,
+          OnlineWhenOpen = j.targetElection.OnlineWhenOpen.AsUtc(),
+          OnlineWhenClose = j.targetElection.OnlineWhenClose.AsUtc(),
+          j.targetElection.OnlineCloseIsEstimate,
+          //          j.e.TallyStatus,
           person = new
           {
             name = j.p.C_FullName,

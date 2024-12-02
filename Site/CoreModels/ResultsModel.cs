@@ -179,7 +179,7 @@ namespace TallyJ.CoreModels
           return new
           {
             NeedReview = needReview.Concat(needReview2).Distinct(),
-            _election.VotingMethods,
+            VotingMethods = _election.VotingMethodsAdjusted,
             ResultsFinal = _analyzer.ResultSummaryFinal
                 .GetPropertiesExcept(null, new[] { "ElectionGuid" }),
             ResultsCalc =
@@ -243,7 +243,7 @@ namespace TallyJ.CoreModels
           NumExtra = _election.NumberExtra,
           // ShowCalledIn = _election.UseCallInButton,
           // _election.CustomMethods,
-          _election.VotingMethods,
+          VotingMethods = _election.VotingMethodsAdjusted,
           ShowOnline = _election.OnlineWhenOpen.HasValue,
           ResultsManual =
             (_analyzer.ResultSummaries.FirstOrDefault(rs => rs.ResultType == ResultType.Manual) ?? new ResultSummary())

@@ -142,6 +142,14 @@
   <table class="fieldsList">
     <tr><th>First Name</th><td><em>Required</em></td><td>The individual's first/given name.</td></tr>
     <tr><th>Last Name</th><td><em>Required</em></td><td>The individual's last name/surname.</td></tr>
+    @if (UserSession.CurrentElection.IsLsaCU)
+    {
+      <tr>
+        <th>Electoral Unit Name</th>
+        <td><em>Required</em></td>
+        <td>The Electoral Unit where this person participates. Only for two-stage local elections. "Area", if used, can be the same or different.</td>
+      </tr>
+    }
     <tr><th>Bahá'í Id</th><td></td><td>Useful for reporting.</td></tr>
     <tr><th>Eligibility Status</th><td></td><td>See below for details.</td></tr>
     <tr><th>Area</th><td></td><td>Geographical area. Useful for reporting.</td></tr>
@@ -151,15 +159,6 @@
     <tr><th>Other Last Names</th><td></td><td>Other names this person may be known by.</td></tr>
     <tr><th>Other Info</th><td></td><td>Other distinguishing information to identify this person.</td></tr>
   </table>
-</div>
-<div class="fieldSelector">
-  <div class="numFound">Number of columns found in this CSV file: <span id="numColumns">-</span></div>
-  @*<button type="button" id="btnPrepareFields">
-      Re-analyze the file and get column names
-    </button>*@
-  <div id="fieldSelector">
-  </div>
-  <div id="mappingError"></div>
 </div>
 <p class="aboutEligibility">
   To set the "Eligibility Status" of anyone being imported, map a column to the Eligibility Status field.
@@ -185,14 +184,15 @@
         <dt>For a by-election</dt>
         <dd>Set those serving on the Institution to: <strong>By-election: On Institution already</strong></dd>
         <dd>All other voters should be blank</dd>
-        <dt>For a local unit election for a two-stage local Assembly election</dt>
-        <dd>Voters in the local Unit for this election should be blank</dd>
         <dd>All others should have a status of: <strong>Not in this local unit</strong></dd>
         <dt>For a National Convention or 2<sup>nd</sup> stage local Assembly election</dt>
         <dd>Delegates should be blank</dd>
         <dd>People that can be voted for (but are not delegates) should have a status of: <strong>Not a delegate in this election</strong></dd>
         <dd>Counsellors living in this country should have a status of: <strong>Not a delegate and on other Institution</strong></dd>
         <dd>Others (youth, recently moved, etc) should have an appropriate status reason.</dd>
+        <dt>For a two-stage local Assembly election</dt>
+        <dd>All names are loaded into a "Voter Management" election with their unit names included.</dd>
+        <dd>From that central election, create Unit elections for each electoral unit.</dd>
       </dl>
     </div>
   </div>

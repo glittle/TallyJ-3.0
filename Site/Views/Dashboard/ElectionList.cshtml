@@ -102,8 +102,10 @@
            SingleName: e.IsSingleNameElection,
            IsFuture: e.IsFuture,
            deleting: e.ElectionGuid === deleting,
-           noOnline: !e.OnlineEnabled
-           }">
+           noOnline: !e.OnlineEnabled,
+           central: isLsaCentral,
+           unit: isLsaUnit,
+        }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
         <span class="dateDisplay">{{e.dateDisplay}}</span>
@@ -119,14 +121,14 @@
           <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
           <span class="numVoters" v-text="e.registered"></span>
-          <span v-if="!e.IsSingleNameElection"
+          <span v-if="!e.IsSingleNameElection && !isLsaCentral"
                 class="numBallots"
                 v-text="e.numBallots">
           </span>
         </div>
       </div>
 
-      <div class="row tellers">
+      <div class="row tellers" v-if="!isLsaCentral">
         <span class="tellerStatus">
           Tellers
         </span>
@@ -152,8 +154,31 @@
       </div>
 
     </div>
+    <div class="children" v-if="isLsaCentral">
+      <div v-if="!e.childElections.length">
+        (No unit elections defined)
+      </div>
+
+      <election-detail v-for="c in e.childElections"
+                       :e="c"
+                       :ref="'e-' + c.ElectionGuid"
+                       :exporting="exporting"
+                       :deleting="deleting"
+                       :key="c.ElectionGuid"></election-detail>
+
+      <div class="addChildren">
+        <el-input type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 6}"
+                  placeholder="New unit names with number to elect. E.g.&#10;North Unit, 2&#10;South Unit, 1"
+                  v-model="newChildren">
+        </el-input><span class="ui-icon ui-icon-info" id="qTipAdd"></span>
+        <el-button v-on:click="addUnitElections" size="mini">
+          Add new unit elections
+        </el-button>
+      </div>
+    </div>
     <div class="statusBlocks">
-      <div class="statusVoters statusBlock">
+      <div class="statusVoters statusBlock" v-if="!isLsaUnit">
         <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
         <div class="statusLabel">
           <div>Online Voting</div>
@@ -161,7 +186,7 @@
           <div v-text="e.openCloseTime"></div>
         </div>
       </div>
-      <div class="statusTellers statusBlock">
+      <div class="statusTellers statusBlock" v-if="!isLsaCentral">
         <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
         <div class="statusLabel" :title="tellerToggleTitle">
           <div>Tellers</div>
@@ -194,6 +219,7 @@
           <el-button v-on:click.passive="deleteElection"
                      size="micro"
                      type="warning"
+                     :disabled="e.childElections.length !== 0"
                      :class="{active: deleting === e.ElectionGuid}"
                      :title="e.childElections && e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
             Delete

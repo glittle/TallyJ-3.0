@@ -238,21 +238,21 @@
         okayToSend: function () {
           return !!this[this.mode]; // something entered - should validate
         },
-//        codePrompt: function () {
-//          var msg;
-//          switch (this.phoneMethod) {
-//            case 'voice':
-//              msg = this.twilioCallDone ? 'Call completed' : 'Calling your phone...';
-//              break;
-//            case 'sms':
-//              msg = ''; // live updates will show the status
-//              break;
-//            default:
-//              msg = '?';
-//              break;
-//          }
-//          return msg;
-//        }
+        //        codePrompt: function () {
+        //          var msg;
+        //          switch (this.phoneMethod) {
+        //            case 'voice':
+        //              msg = this.twilioCallDone ? 'Call completed' : 'Calling your phone...';
+        //              break;
+        //            case 'sms':
+        //              msg = ''; // live updates will show the status
+        //              break;
+        //            default:
+        //              msg = '?';
+        //              break;
+        //          }
+        //          return msg;
+        //        }
       },
       watch: {
         //        phone(a, b) {

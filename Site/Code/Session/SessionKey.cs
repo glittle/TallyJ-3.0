@@ -8,6 +8,8 @@ namespace TallyJ.Code.Session
         public const string CurrentLocationGuid = "LocationGuid";
         public const string CurrentBallotFilter = "BallotFilter";
         public const string CurrentElectionGuid = "ElectionGuid";
+        public const string CurrentPeopleElectionGuid = "PeopleElectionGuid";
+        public const string CurrentParentElectionGuid = "ParentElectionGuid";
         public const string CurrentTeller = "CurrentTeller";
 
         public const string IsGuestTeller = "IsGuestTeller";
@@ -26,6 +28,8 @@ namespace TallyJ.Code.Session
         public const string VoterLoginError = "VoterLoginError";
         public const string TwilioMsgId = "TwilioMsgId";
         public const string PendingVoterLogin = "PendingVoterLogin";
+        public const string UnitNames = "UnitNames";
+        public const string UnitElectionVotingMethods = "UnitElectionVotingMethods";
 
         public const string ActivePrincipal = "ActivePrincipal";
 

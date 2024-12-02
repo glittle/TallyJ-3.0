@@ -115,7 +115,10 @@
               <div id="electionState"
                    data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
-                <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
+                @if (currentElection.ElectionType != ElectionTypeEnum.LSAC.Value)
+                {
+                  <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
+                }
                 <span class="other"><a href="#" id="AllPages" title="Go to another page">Other Pages</a></span>
                 <span class="QuickDash other">
                   @Html.Partial("../Dashboard/OtherItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })
@@ -155,11 +158,37 @@
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
+        var showUnitSelector = currentElection?.IsLsaCU == true && currentMenu.ShowLocationSelection;
         var showTellerSelector = currentMenu.ShowTellerSelector;
       }
-      @if (showLocationSelector || showTellerSelector)
+      @if (showLocationSelector || showTellerSelector || showUnitSelector)
       {
         <div class="CurrentInfo">
+          @if (showUnitSelector)
+          {
+            <label for="ddlTopUnit" class="ddlTopUnit">
+              Unit:
+              @if (currentElection.IsLsaC)
+              {
+                <select id="ddlTopUnit" class="TopUnit input-mediumMax">
+                  <option value="">[All Units]</option>
+                  @foreach (var o in UserSession.UnitNames)
+                  {
+                    <option value="@o">@o</option>
+                  }
+                </select>
+              }
+              else
+              {
+                <span>@currentElection.UnitName</span>
+              }
+            </label>
+            @*<label>
+                Computer:</label>
+              <select disabled>
+                <option>@UserSession.CurrentComputerCode</option>
+              </select>*@
+          }
           @if (showLocationSelector)
           {
             <label for="ddlTopLocation">

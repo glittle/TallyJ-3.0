@@ -38,7 +38,7 @@ namespace TallyJ.CoreModels.Helper
       var people = dbContext.Person
         .Where(p => p.ElectionGuid == electionGuid
                     && (hasOnlineBallot.Contains(p.PersonGuid) 
-                        || p.CanVote.Value
+                        || p.CanVoteInElection.Value
                         && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
         .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
           (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })

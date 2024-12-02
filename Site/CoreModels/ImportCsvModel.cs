@@ -13,45 +13,46 @@ using TallyJ.CoreModels.Helper;
 using TallyJ.CoreModels.Hubs;
 using TallyJ.EF;
 
-namespace TallyJ.CoreModels;
-
-public class ImportCsvModel : DataConnectedModel
+namespace TallyJ.CoreModels
 {
-  private const string FileTypeCsv = "CSV";
-  private readonly string _mappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
-  private Dictionary<string, int> _dict;
-
-  public ImportCsvModel()
+  public class ImportCsvModel : DataConnectedModel
   {
-    _dict = new Dictionary<string, int>
-    {
-      // same list is used in a switch below
-      { "FirstName", 50 },
-      { "LastName", 50 },
-      { "IneligibleReasonGuid", 100 }, // guid, but we read the description as text
-      { "Area", 50 },
-      { "Email", 250 },
-      { "Phone", 25 },
-      { "BahaiId", 20 },
-      { "OtherLastNames", 100 },
-      { "OtherNames", 100 },
-      { "OtherInfo", 150 }
-    };
-  }
+    private const string FileTypeCsv = "CSV";
+    private string MappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
+    const string UnitName = "UnitName";
 
-  private List<string> DbFieldsList
-  {
-    get
-    {
-      var list = _dict.Keys.ToList();
 
-      // filter this hard-coded list against the Person object to ensure we aren't using old field names
-      var sample = new Person();
-      return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name)).ToList();
+    private IEnumerable<string> DbFieldsList
+    {
+      get
+      {
+        var list = new List<string>
+                     {
+                       // same list repeated below
+                       "FirstName",
+                       "LastName",
+                       UnitName, // removed (below) for non-two-stage elections
+                       "IneligibleReasonGuid",
+                       "Area",
+                       "Email",
+                       "Phone",
+                       "BahaiId",
+                       "OtherLastNames",
+                       "OtherNames",
+                       "OtherInfo",
+                     };
+
+        if (!UserSession.CurrentElection.IsLsaC)
+
+        {
+          list.Remove(UnitName);
+        }
+
+        // screen this hard-coded list against the Person object to ensure we aren't using old field names
+        var sample = new Person();
+        return list.Intersect(sample.GetAllPropertyInfos().Select(pi => pi.Name));
+      }
     }
-  }
-
-  public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
   public string ProcessUpload(out int rowId)
   {
@@ -172,10 +173,12 @@ public class ImportCsvModel : DataConnectedModel
     var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents)?.CodePage;
     var fileString = importFile.Contents.AsString(importFileCodePage);
 
-    var firstDataRow = importFile.FirstDataRow.AsInt();
-    if (firstDataRow > 2)
-      // 1-based... headers on line 1, data on line 2. If 2 or less, ignore it.
-      fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
+      var firstDataRow = importFile.FirstDataRow.AsInt();
+      if (firstDataRow > 2)
+      {
+        // 1-based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
+      }
 
     var textReader = new StringReader(fileString);
     var csv = new CsvReader.CsvReader(textReader, true)
@@ -183,7 +186,7 @@ public class ImportCsvModel : DataConnectedModel
       MissingFieldAction = MissingFieldAction.ReplaceByEmpty
     };
 
-    var csvHeaders = csv.GetFieldHeaders();
+      var csvHeaders = csv.GetFieldHeaders();
 
     if (csvHeaders.Length == 1)
       // likely failed to parse in this codepage
@@ -288,24 +291,41 @@ public class ImportCsvModel : DataConnectedModel
         result = new[] { "File not found" }
       }.AsJsonResult();
 
-    var columnsToRead = file.ColumnsToRead;
-    if (columnsToRead == null)
-      return new
+      var columnsToRead = file.ColumnsToRead;
+      if (columnsToRead == null)
       {
-        failed = true,
-        result = new[] { "Mapping not defined" }
-      }.AsJsonResult();
+        return new
+        {
+          failed = true,
+          result = new[] { "Mapping not defined" }
+        }.AsJsonResult();
+      }
+
+      var currentElection = UserSession.CurrentElection;
+      if (currentElection.IsLsaU)
+      {
+        // no UI supports this, but just in case
+        return new
+        {
+          failed = true,
+          result = new[] { "Cannot import into a unit election" }
+        }.AsJsonResult();
+      }
 
     var start = DateTime.Now;
     var fileString = file.Contents.AsString(file.CodePage);
 
-    var firstDataRow = file.FirstDataRow.AsInt();
-    var numFirstRowsToSkip = firstDataRow - 2;
-    if (numFirstRowsToSkip > 0)
-      // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
-      fileString = fileString.GetLinesAfterSkipping(numFirstRowsToSkip);
-    else
-      numFirstRowsToSkip = 1;
+      var firstDataRow = file.FirstDataRow.AsInt();
+      var numFirstRowsToSkip = firstDataRow - 2;
+      if (numFirstRowsToSkip > 0)
+      {
+        // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
+        fileString = fileString.GetLinesAfterSkipping(numFirstRowsToSkip);
+      }
+      else
+      {
+        numFirstRowsToSkip = 1;
+      }
 
     // for some files, CRLF is seen as two lines
     fileString = fileString.Replace("\r\n", "\r");
@@ -332,24 +352,36 @@ public class ImportCsvModel : DataConnectedModel
         result = new[] { "Mapping not defined" }
       }.AsJsonResult();
 
-    var mappedFields = dbFields.Where(f => validMappings.Select(m => m[1]).Contains(f)).ToList();
-    if (!mappedFields.Contains("LastName"))
-      return new
+      var mappedFields = dbFields.Where(f => validMappings.Select(m => m[1]).Contains(f)).ToList();
+      if (!mappedFields.Contains("LastName"))
       {
-        failed = true,
-        result = new[] { "Last Name must be mapped" }
-      }.AsJsonResult();
-    if (!mappedFields.Contains("FirstName"))
-      return new
+        return new
+        {
+          failed = true,
+          result = new[] { "Last Name must be mapped" }
+        }.AsJsonResult();
+      }
+      if (!mappedFields.Contains("FirstName"))
       {
-        failed = true,
-        result = new[] { "First Name must be mapped" }
-      }.AsJsonResult();
+        return new
+        {
+          failed = true,
+          result = new[] { "First Name must be mapped" }
+        }.AsJsonResult();
+      }
+      if (currentElection.IsLsaC && !mappedFields.Contains(UnitName))
+      {
+        return new
+        {
+          failed = true,
+          result = new[] { "Electoral Unit must be mapped" }
+        }.AsJsonResult();
+      }
 
-    var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
-    var phoneNumberCleaner = new Regex(@"[^\+0-9]");
-    var emailChecker = new Regex(@".*@.*\..*");
-    var numRequiredFields = 2;
+      var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
+      var phoneNumberCleaner = new Regex(@"[^\+0-9]");
+      var emailChecker = new Regex(@".*@.*\..*");
+      var numRequiredFields = 2 + (currentElection.IsLsaC ? 1 : 0);
 
     var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
     currentPeople.ForEach(p => p.TempImportLineNum = -1);
@@ -360,19 +392,19 @@ public class ImportCsvModel : DataConnectedModel
     var personModel = new PeopleModel();
     // var defaultReason = new ElectionModel().GetDefaultIneligibleReason();
 
-    var rowsWithErrors = 0;
-    var peopleAdded = 0;
-    var peopleSkipped = 0;
-    // var peopleSkipWarningGiven = false;
+      var rowsWithErrors = 0;
+      var peopleAdded = 0;
+      var peopleSkipped = 0;
+      // var peopleSkipWarningGiven = false;
 
     var hub = new ImportHub();
     var peopleToLoad = new List<Person>();
     var result = new List<string>();
 
-    var unexpectedReasons = new Dictionary<string, int>();
-    // var validReasons = 0;
-    var continueReading = true;
-    var currentLineNum = 0;
+      var unexpectedReasons = new Dictionary<string, int>();
+      // var validReasons = 0;
+      var continueReading = true;
+      var currentLineNum = 0;
 
     hub.StatusUpdate("Processing", true);
 
@@ -380,12 +412,12 @@ public class ImportCsvModel : DataConnectedModel
     {
       if (csv.GetCurrentRawData() == null) continue;
 
-      currentLineNum = numFirstRowsToSkip + (int)csv.CurrentRecordIndex + 1;
+        currentLineNum = numFirstRowsToSkip + (int)csv.CurrentRecordIndex + 1;
 
-      var valuesSet = false;
-      var requiredFieldsFound = 0;
-      var requiredWarningGiven = false;
-      var errorInRow = false;
+        var valuesSet = false;
+        var requiredFieldsFound = 0;
+        var requiredWarningGiven = false;
+        var errorInRow = false;
 
       var duplicateInFileSearch = currentPeople.AsQueryable();
       var doDupQuery = false;
@@ -400,31 +432,20 @@ public class ImportCsvModel : DataConnectedModel
         var csvColumnName = currentMapping[0];
         var dbFieldName = currentMapping[1];
 
-        string value;
-        try
-        {
-          value = csv[csvColumnName] ?? "";
-        }
-        catch (Exception e)
-        {
-          result.Add($"~E Line {currentLineNum} - {e.Message.Split('\r')[0]}. Are there \"\" marks missing?");
-          errorInRow = true;
-          continueReading = false;
-          break;
-        }
-
-        _dict.TryGetValue(dbFieldName, out int maxSize);
-        if (value.Length > maxSize)
-        {
-          result.Add($"~E Line {currentLineNum} - {dbFieldName} is too long. Max length is {maxSize}.");
-          requiredWarningGiven = true;
-          errorInRow = true;
-          // continueReading = false;
-          break;
-        }
-
-        var rawValue = HttpUtility.HtmlEncode(value);
-        var originalValue = value;
+          string value;
+          try
+          {
+            value = csv[csvColumnName] ?? "";
+          }
+          catch (Exception e)
+          {
+            result.Add($"~E Line {currentLineNum} - {e.Message.Split('\r')[0]}. Are there \"\" marks missing?");
+            errorInRow = true;
+            continueReading = false;
+            break;
+          }
+          var rawValue = HttpUtility.HtmlEncode(value);
+          var originalValue = value;
 
         switch (dbFieldName)
         {
@@ -451,28 +472,31 @@ public class ImportCsvModel : DataConnectedModel
 
                   result.Add($"~E Line {currentLineNum} - Invalid Eligibility Status reason: {rawValue}");
 
-                  if (unexpectedReasons.ContainsKey(value))
-                    unexpectedReasons[value] += 1;
-                  else
-                    unexpectedReasons.Add(value, 1);
+                    if (unexpectedReasons.ContainsKey(value))
+                    {
+                      unexpectedReasons[value] += 1;
+                    }
+                    else
+                    {
+                      unexpectedReasons.Add(value, 1);
+                    }
+                  }
                 }
               }
-            }
-
-            break;
-          case "FirstName":
-          case "LastName":
-            if (value.Trim() == "")
-            {
-              result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
-              requiredWarningGiven = true;
-            }
-            else
-            {
-              person.SetPropertyValue(dbFieldName, value);
-            }
-
-            break;
+              break;
+            case "FirstName":
+            case "LastName":
+            case UnitName:
+              if (value.Trim() == "")
+              {
+                result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
+                requiredWarningGiven = true;
+              }
+              else
+              {
+                person.SetPropertyValue(dbFieldName, value);
+              }
+              break;
 
           default:
             person.SetPropertyValue(dbFieldName, value);
@@ -483,48 +507,51 @@ public class ImportCsvModel : DataConnectedModel
 
         valuesSet = valuesSet || value.HasContent();
 
-        if (value.HasContent())
-        {
-          doDupQuery = true;
-          switch (dbFieldName)
+          if (value.HasContent())
           {
-            case "LastName":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.LastName == value);
-              requiredFieldsFound++;
-              break;
-            case "FirstName":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.FirstName == value);
-              requiredFieldsFound++;
-              break;
-            case "OtherLastNames":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherLastNames == value);
-              break;
-            case "OtherNames":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherNames == value);
-              break;
-            case "OtherInfo":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherInfo == value);
-              break;
-            case "Area":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.Area == value);
-              break;
-            case "BahaiId":
-              duplicateInFileSearch = duplicateInFileSearch.Where(p => p.BahaiId == value);
-              break;
-            case "Email":
-              if (value.HasContent())
-              {
-                value = value.ToLower();
-                if (!emailChecker.IsMatch(value))
+            doDupQuery = true;
+            switch (dbFieldName)
+            {
+              case "LastName":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.LastName == value);
+                requiredFieldsFound++;
+                break;
+              case "FirstName":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.FirstName == value);
+                requiredFieldsFound++;
+                break;
+              case UnitName:
+                requiredFieldsFound++;
+                break;
+              case "OtherLastNames":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherLastNames == value);
+                break;
+              case "OtherNames":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherNames == value);
+                break;
+              case "OtherInfo":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.OtherInfo == value);
+                break;
+              case "Area":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.Area == value);
+                break;
+              case "BahaiId":
+                duplicateInFileSearch = duplicateInFileSearch.Where(p => p.BahaiId == value);
+                break;
+              case "Email":
+                if (value.HasContent())
                 {
-                  result.Add($"~E Line {currentLineNum} - Invalid email: {rawValue}");
-                  errorInRow = true;
-                }
-                else if (knownEmails.Contains(value))
-                {
-                  result.Add($"~E Line {currentLineNum} - Duplicate email: {rawValue}");
-                  errorInRow = true;
-                }
+                  value = value.ToLower();
+                  if (!emailChecker.IsMatch(value))
+                  {
+                    result.Add($"~E Line {currentLineNum} - Invalid email: {rawValue}");
+                    errorInRow = true;
+                  }
+                  else if (knownEmails.Contains(value))
+                  {
+                    result.Add($"~E Line {currentLineNum} - Duplicate email: {rawValue}");
+                    errorInRow = true;
+                  }
 
                 if (!errorInRow) knownEmails.Add(value);
               }
@@ -583,18 +610,17 @@ public class ImportCsvModel : DataConnectedModel
           result.Add($"~I Line {currentLineNum} - Ignoring blank line");
           addRow = false;
         }
-      }
-      else if (requiredFieldsFound != numRequiredFields || errorInRow)
-      {
-        addRow = false;
-        rowsWithErrors++;
-
-        if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
+        else if (requiredFieldsFound != numRequiredFields || errorInRow)
         {
-          result.Add($"~E Line {currentLineNum} - A required field is missing");
-          requiredWarningGiven = true;
+          addRow = false;
+          rowsWithErrors++;
+
+          if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
+          {
+            result.Add($"~E Line {currentLineNum} - A required field is missing");
+            requiredWarningGiven = true;
+          }
         }
-      }
 
       if (doDupQuery)
       {
@@ -619,11 +645,10 @@ public class ImportCsvModel : DataConnectedModel
       }
 
 
-      if (addRow)
-      {
-        //get ready for DB
-        person.ElectionGuid = UserSession.CurrentElectionGuid;
-        person.PersonGuid = Guid.NewGuid();
+        if (addRow)
+        { //get ready for DB
+          person.ElectionGuid = UserSession.CurrentPeopleElectionGuid;
+          person.PersonGuid = Guid.NewGuid();
 
         personModel.SetCombinedInfoAtStart(person);
         personModel.ApplyVoteReasonFlags(person);
@@ -750,9 +775,11 @@ public class ImportCsvModel : DataConnectedModel
       }
 
 
-      return msg;
+        return msg;
+      }
     }
-  }
+
+    public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
   public JsonResult SaveCodePage(int id, int codepage)
   {

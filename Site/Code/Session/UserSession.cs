@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
@@ -121,7 +122,13 @@ namespace TallyJ.Code.Session
 
         // reset so we don't use data we just loaded
         ItemKey.CurrentElection.SetInPageItems<Election>(null);
-        //        HttpContext.Current.Items[ItemKey.CurrentElection] = null;
+
+        if (value == Guid.Empty)
+        {
+          // clear out these as well
+          CurrentPeopleElectionGuid = value;
+          CurrentParentElectionGuid = value;
+        }
       }
     }
 
@@ -134,9 +141,8 @@ namespace TallyJ.Code.Session
       get
       {
         // check temp cache for page rendering
-        //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
         var election = ItemKey.CurrentElection.FromPageItems<Election>(null);
-        if (election != null)
+        if (election != null && CurrentElectionGuid == election.ElectionGuid)
         {
           return election;
         }
@@ -147,12 +153,12 @@ namespace TallyJ.Code.Session
         if (hasElection)
         {
           var cacher = new ElectionCacher();
-          election = cacher.AllForThisElection.FirstOrDefault();
-          if (election != null && election.ElectionGuid != currentElectionGuid)
+          election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == currentElectionGuid);
+          if (election != null)
           {
             // occasionally, when changing elections, the cacher has the old election...need to flush it
             cacher.DropThisCache();
-            election = cacher.AllForThisElection.FirstOrDefault();
+            election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == currentElectionGuid);
           }
 
           // even if have valid guid, may be null if election was just deleted
@@ -169,6 +175,123 @@ namespace TallyJ.Code.Session
         }
 
         return election;
+      }
+    }
+
+    public static string CurrentElectionStatusName
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election == null
+          ? ElectionTallyStatusEnum.NotStarted
+          : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
+      }
+    }
+
+    public static string CurrentElectionStatus
+    {
+      get
+      {
+        var election = CurrentElection;
+        return election == null || election.TallyStatus.HasNoContent()
+          ? ElectionTallyStatusEnum.NotStarted
+          : election.TallyStatus;
+      }
+    }
+
+
+    /// <summary>
+    ///   The current election, as stored in Page items.  On first access, is loaded from DB. Could be null.  Setting this also
+    ///   sets the CurrentElectionGuid into Session.
+    /// </summary>
+    public static Election CurrentPeopleElection
+    {
+      get
+      {
+        // check temp cache for page rendering
+        //var election = HttpContext.Current.Items[ItemKey.CurrentElection] as Election;
+        var election = ItemKey.CurrentPeopleElection.FromPageItems<Election>(null);
+        if (election != null)
+        {
+          return election;
+        }
+
+        var electionGuid = CurrentPeopleElectionGuid;
+
+        if (electionGuid.HasContent())
+        {
+          var cacher = new ElectionCacher();
+          //TODO check for other uses of AllForThisElection
+          election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+          if (election != null)
+          {
+            // occasionally, when changing elections, the cacher has the old election...need to flush it
+            cacher.DropThisCache();
+            election = cacher.AllForThisElection.FirstOrDefault(e => e.ElectionGuid == electionGuid);
+          }
+
+          // even if have valid guid, may be null if election was just deleted
+          if (election == null)
+          {
+            // CurrentPeopleElectionGuid = Guid.Empty;
+          }
+          else
+          {
+            // save for next use in this same rendering
+            //            HttpContext.Current.Items[ItemKey.CurrentElection] = election;
+            ItemKey.CurrentPeopleElection.SetInPageItems(election);
+          }
+        }
+
+        return election;
+      }
+    }
+
+    /// <summary>
+    /// People election guid.
+    /// </summary>
+    public static Guid CurrentPeopleElectionGuid
+    {
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentPeopleElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
+      set
+      {
+        SessionKey.CurrentPeopleElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
+        ItemKey.CurrentElection.SetInPageItems<Election>(null);
+      }
+
+    }
+
+    /// <summary>
+    /// Parent or self
+    /// </summary>
+    public static Guid CurrentParentElectionGuid
+    {
+      get
+      {
+        if (CurrentContext.Session.IsAvailable)
+        {
+          return SessionKey.CurrentParentElectionGuid.FromSession(Guid.Empty);
+        }
+
+        return Guid.Empty;
+      }
+      set
+      {
+        SessionKey.CurrentParentElectionGuid.SetInSession(value);
+
+        // reset so we don't use data we just loaded
+        ItemKey.CurrentElection.SetInPageItems<Election>(null);
       }
     }
 
@@ -281,55 +404,55 @@ namespace TallyJ.Code.Session
       get => SessionKey.VoterLastLogin.FromSession(DateTime.MinValue);
       set => SessionKey.VoterLastLogin.SetInSession(value);
     }
-
-    public static void RecordVoterLogin_old(string voterId, string voterIdType, string source, string country)
-    {
-      var logHelper = new LogHelper();
-
-      if (voterId.HasNoContent())
-      {
-        logHelper.Add($"Empty voter Id for {voterIdType} ({UniqueId})", true);
-        // ProcessLogout();
-        return;
-      }
-
-      var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
-      if (voterIdTypeDesc.HasNoContent())
-      {
-        logHelper.Add($"Invalid voter Id type: {voterIdType} ({UniqueId})", true);
-        // ProcessLogout();
-        return;
-      }
-
-      var db = GetNewDbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
-      var utcNow = DateTime.UtcNow;
-
-      if (onlineVoter == null)
-      {
-        onlineVoter = new OnlineVoter
-        {
-          VoterId = voterId,
-          VoterIdType = voterIdType,
-          WhenRegistered = utcNow,
-          Country = country
-        };
-        db.OnlineVoter.Add(onlineVoter);
-      }
-      else
-      {
-        VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
-      }
-
-      onlineVoter.WhenLastLogin = utcNow;
-      db.SaveChanges();
-
-      VoterLoginSource = source;
-
-      logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
-
-      new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
-    }
+    //
+    // public static void RecordVoterLogin_old(string voterId, string voterIdType, string source, string country)
+    // {
+    //   var logHelper = new LogHelper();
+    //
+    //   if (voterId.HasNoContent())
+    //   {
+    //     logHelper.Add($"Empty voter Id for {voterIdType} ({UniqueId})", true);
+    //     // ProcessLogout();
+    //     return;
+    //   }
+    //
+    //   var voterIdTypeDesc = VoterIdTypeEnum.TextFor(voterIdType);
+    //   if (voterIdTypeDesc.HasNoContent())
+    //   {
+    //     logHelper.Add($"Invalid voter Id type: {voterIdType} ({UniqueId})", true);
+    //     // ProcessLogout();
+    //     return;
+    //   }
+    //
+    //   var db = GetNewDbContext;
+    //   var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
+    //   var utcNow = DateTime.UtcNow;
+    //
+    //   if (onlineVoter == null)
+    //   {
+    //     onlineVoter = new OnlineVoter
+    //     {
+    //       VoterId = voterId,
+    //       VoterIdType = voterIdType,
+    //       WhenRegistered = utcNow,
+    //       Country = country
+    //     };
+    //     db.OnlineVoter.Add(onlineVoter);
+    //   }
+    //   else
+    //   {
+    //     VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
+    //   }
+    //
+    //   onlineVoter.WhenLastLogin = utcNow;
+    //   db.SaveChanges();
+    //
+    //   VoterLoginSource = source;
+    //
+    //   logHelper.Add($"Voter login via {source} {voterId}", true, voterId);
+    //
+    //   new VoterPersonalHub().Login(voterId); // in case same email is logged into a different computer
+    // }
 
     // public static void RecordVoterLogin(OnlineVoter onlineVoter, string voterId, string voterIdType, string source,
     //   string country)
@@ -542,27 +665,18 @@ namespace TallyJ.Code.Session
       set => SessionKey.PendingVoterLogin.SetInSession(value);
     }
 
-    public static string CurrentElectionStatusName
+    public static List<string> UnitNames
     {
-      get
-      {
-        var election = CurrentElection;
-        return election == null
-          ? ElectionTallyStatusEnum.NotStarted
-          : ElectionTallyStatusEnum.TextFor(election.TallyStatus);
-      }
+      get => SessionKey.UnitNames.FromSession(new List<string>());
+      set => SessionKey.UnitNames.SetInSession(value);
     }
 
-    public static string CurrentElectionStatus
+    public static string UnitElectionVotingMethods
     {
-      get
-      {
-        var election = CurrentElection;
-        return election == null || election.TallyStatus.HasNoContent()
-          ? ElectionTallyStatusEnum.NotStarted
-          : election.TallyStatus;
-      }
+      get => SessionKey.UnitElectionVotingMethods.FromSession("");
+      set => SessionKey.UnitElectionVotingMethods.SetInSession(value);
     }
+
 
     public static string SiteVersion
     {

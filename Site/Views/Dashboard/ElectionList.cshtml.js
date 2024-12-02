@@ -13,6 +13,7 @@
 
   function preparePage() {
     site.qTips.push({ selector: '#qTipTellers', title: 'Open for Tellers', text: 'If an election is open for tellers, it will remain open for up to one hour after the head teller leaves.' });
+    site.qTips.push({ selector: '#qTipAdd', title: 'Adding Unit Elections', text: 'List the units to be added, one per line. On each line, specify the number of people to elect (which can be changed later).' });
 
     settings.vue = new Vue({
       el: '#electionListPage',
@@ -93,7 +94,9 @@
           var d = moment(e.DateOfElection);
           e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
           e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-          e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
+          e.nameDisplay = e.ElectionType !== 'LSAU'
+            ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
+            : e.UnitName;
 
           //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
           e.old = false; //!isCurrent;
@@ -102,7 +105,7 @@
 
           // more static info
           e.numVoters = '';
-          e.numToElect = 'Elect ' + e.NumberToElect;
+          e.numToElect = e.ElectionType !== 'LSAC' ? 'Elect ' + e.NumberToElect : '';
 
           e.tellers = [];
           e.users = [];
@@ -110,6 +113,9 @@
           e.inEdit = false;
 
           e.isTop = !e.ParentElectionGuid;
+          e.childElections = [];
+          e.addedToParent = false;
+
           // more live info
           e.numBallots = '';
           e.registered = '';
@@ -152,9 +158,46 @@
             this.extendElection(e);
           });
 
+          // move sub elections to their parents
           var topList = list.filter(e => e.isTop);
 
-          list.sort((a, b) => {
+          var fnAddChildren = (e) => {
+            e.childElections = list.filter(c => c.ParentElectionGuid === e.ElectionGuid);
+            e.childElections.forEach(c => {
+              c.addedToParent = true;
+              // append their children
+              fnAddChildren(c);
+            });
+
+            e.childElections.sort((a, b) => {
+              if (a.dateSort !== b.dateSort) {
+                return a.dateSort > b.dateSort ? -1 : 1;
+              }
+              return a.Name > b.Name ? 1 : -1;
+            });
+          };
+
+          topList.forEach(e => {
+            fnAddChildren(e);
+
+            if (e.ElectionType === 'LSAC') {
+              // sum up childElections into NumToElect
+              e.numToElect = 'Total to Elect ' + e.childElections.reduce((a, c) => a + c.NumberToElect, 0);
+            }
+          });
+
+          // add the non-top ones that are not added to a parent
+          var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
+          orphanList.forEach(e => {
+            // adjust their name to show the parent's name as well
+            e.nameDisplay = e.Name;
+          });
+
+          // add the orphans to the topList
+          topList = topList.concat(orphanList);
+
+          // sort by date, then name
+          topList.sort((a, b) => {
             if (a.dateSort !== b.dateSort) {
               return a.dateSort > b.dateSort ? -1 : 1;
             }
@@ -204,7 +247,7 @@
           return users;
         },
         refreshLive() {
-          this.getMoreLive(this.currentElectionGuids);
+          this.getMoreLive(this.electionGuids);
         },
         getMoreLive(electionGuids) {
           // dynamically changing during an election
@@ -304,6 +347,7 @@
             function (info) {
               if (info.Deleted) {
                 $(`#${guid}`).slideUp(1000, 0, function () {
+                  debugger;
                   vue.removeElection(vue.elections, guid);
                 });
               } else {
@@ -313,10 +357,6 @@
             });
         },
         removeElection(elections, guid) {
-          if (elections == null) {
-            return;
-          }
-
           // remove from any childElection list
           elections.forEach(e => {
             this.removeElection(e.childElections, guid);
@@ -480,6 +520,7 @@ Vue.component('election-detail',
         formatDateTime: 'YYYY MMM D [at] HH:mm',
         formatDateOnly: 'YYYY MMM D',
         showOtherButtons: false,
+        newChildren: '',
         addingNew: false,
         addingNow: false,
         form: {
@@ -506,6 +547,12 @@ Vue.component('election-detail',
       },
       selectedUser: function () {
         return this.users.find(u => u.selected);
+      },
+      isLsaUnit: function () {
+        return this.e.ElectionType === 'LSAU';
+      },
+      isLsaCentral: function () {
+        return this.e.ElectionType === 'LSAC';
       },
       onlineOpenText: function () {
         return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + ' - ' + this.e.onlineOpen.fromNow() :
@@ -567,6 +614,53 @@ Vue.component('election-detail',
         else {
           ShowStatusFailed("Unable to select");
         }
+      },
+      addUnitElections() {
+        // check for invalid letters
+        if (/[;<]/.test(this.newChildren)) {
+          ShowStatusFailed('Cannot include ; or < in names');
+          return;
+        }
+
+        // clean up the names; each needs , N to indicate number to elect
+        // x, 3\n y,2
+        var unitsInfo = this.newChildren
+          .split('\n')
+          .map(n => n.trim())
+          .filter(n => n && n.includes(','))
+          .map(s => {
+            var x = s.split(',');
+            return { name: x[0], num: +x[1] };
+          });
+
+        if (!unitsInfo.length) {
+          return;
+        }
+        //        if (unitsInfo.filter(a => a.length !== 2)) {
+        //          ShowStatusFailed('Must include a count for each unit');
+        //          return;
+        //        }
+
+        var vue = this;
+
+        CallAjax2(electionListPage.electionsUrl + '/CreateUnitElection',
+          {
+            parentElectionGuid: vue.e.ElectionGuid,
+            unitsInfo: JSON.stringify(unitsInfo)
+          },
+          {
+            busy: 'Creating unit election' + Plural(unitsInfo.length)
+          },
+          function (info) {
+            if (info.Success) {
+              // add all the info.elections to the childElections list
+              info.elections.forEach(e => {
+                var election = electionListPage.settings.vue.extendElection(e);
+                electionListPage.settings.vue.elections.push(election);
+                vue.e.childElections.push(election);
+              });
+            }
+          });
       },
       deleteElection() {
         this.$root.$emit('delete', this.e,);

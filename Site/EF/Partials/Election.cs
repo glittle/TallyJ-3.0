@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
+using TallyJ.Code.Session;
+using TallyJ.Code.UnityRelated;
+using TallyJ.CoreModels;
 using static System.Configuration.ConfigurationManager;
 
 namespace TallyJ.EF;
@@ -45,21 +48,61 @@ public partial class Election : IIndexedForCaching
     EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
 
   public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
-
-
-  /// <summary>
-  ///   This is a "fake" column that is embedded into the OwnerLoginId column
-  /// </summary>
-  /// <remarks>
-  ///   Must be a string to serialize out to client
-  /// </remarks>
-  public string BallotProcessRaw
+  [Serializable]
+  public partial class Election : IIndexedForCaching
   {
-    get => GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessEnum.Roll.ToString();
-    set
+    enum ExtraSettingKey
     {
-      if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
-        throw new ApplicationException("Invalid process key: " + value);
+      // keep names as short as possible
+      BP, // Ballot Process?
+      Env, // Envelope Mode
+      T24, // use 24 hour time?
+      RV, // randomize voters list displayed for voters
+    }
+
+    public string EmailFromAddressWithDefault => EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
+    public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
+
+
+    public bool IsLsaC => ElectionType == ElectionTypeEnum.LSAC.Value;
+    public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
+
+    /// <summary>
+    /// Either LSAC or LSAU
+    /// </summary>
+    public bool IsLsaCU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAC.Value;
+
+    public string VotingMethodsAdjusted
+    {
+      get
+      {
+        // if this is a LsaC election, need to collect the VotingMethods from the Unit elections
+        // if (IsLsaC)
+        // {
+        //   return string.Join(",", UserSession.UnitElectionVotingMethods);
+        // }
+
+        return VotingMethods;
+      }
+      set => VotingMethods = value;
+    }
+
+
+    /// <summary>
+    /// This is a "fake" column that is embedded into the OwnerLoginId column
+    /// </summary>
+    /// <remarks>
+    /// Must be a string to serialize out to client
+    /// </remarks>
+    public string BallotProcessRaw
+    {
+      get { return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessEnum.Roll.ToString(); }
+      set
+      {
+        if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
+        {
+          throw new ApplicationException("Invalid process key: " + value);
+        }
 
       SetExtraSetting(ExtraSettingKey.BP, value);
     }
@@ -107,9 +150,20 @@ public partial class Election : IIndexedForCaching
     }
   }
 
-  public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];
-  public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
-  public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
+
+    public bool VotingMethodsContains(string method)
+    {
+      return VotingMethodsAdjusted.DefaultTo("").Contains(method);
+    }
+
+    public bool VotingMethodsContains(VotingMethodEnum method)
+    {
+      return VotingMethodsAdjusted.DefaultTo("").Contains(method.Value);
+    }
+
+    public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];
+    public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
+    public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
 
   public List<string> FlagsList => Flags.DefaultTo("").SplitWithString("|").ToList();
   //public List<VotingMethodEnum> VotingMethods

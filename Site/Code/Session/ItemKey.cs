@@ -8,6 +8,7 @@ namespace TallyJ.Code.Session
 		public const string JsTemplates = "JSTmpl";
     public const string ClientFilesSent = "ClientFilesSent";
     public const string CurrentElection = "CurrentElection";
+    public const string CurrentPeopleElection = "CurrentPeopleElection";
     public const string CurrentLocation = "CurrentLocation";
   }
 }

@@ -39,7 +39,7 @@ namespace TallyJ.EF
         PersonFullName = person.C_FullName;
         PersonCombinedInfo = person.CombinedInfo;
         PersonIneligibleReasonGuid = person.IneligibleReasonGuid;
-        PersonCanReceiveVotes = person.CanReceiveVotes.AsBoolean();
+        PersonCanReceiveVotes = person.CanReceiveVotesInElection.AsBoolean();
         PersonGuid = person.PersonGuid;
       }
       else

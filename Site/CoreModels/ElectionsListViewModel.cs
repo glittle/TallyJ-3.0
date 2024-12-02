@@ -31,7 +31,7 @@ namespace TallyJ.CoreModels
       {
         return;
       }
-          
+
       var pendingInvitations = Db.JoinElectionUser
         .Where(u => u.UserId == Guid.Empty && u.InviteEmail == email);
 
@@ -51,7 +51,9 @@ namespace TallyJ.CoreModels
 
       var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
         .GroupBy(p => p.ElectionGuid)
-        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => p.CanVote.Value) })
+        .ToList()
+        .Join(MyElections(), g => g.Key, e => e.PeopleElectionGuid, (g, e) => new { e.ElectionGuid, people = g.Where(p => e.ElectionType != ElectionTypeEnum.LSAU.ToString() || p.UnitName == e.UnitName).ToList() })
+        .Select(j => new { j.ElectionGuid, Num = j.people.Count(p => p.CanVote.GetValueOrDefault()) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
       var tellerCounts = Db.Teller.Where(l => electionGuids.Contains(l.ElectionGuid))

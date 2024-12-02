@@ -64,6 +64,12 @@
         showImported: function () {
           return this.votingMethodsArray.includes('I');
         },
+        isLsaCentral: function() {
+          return this.electionType === 'LSAC';
+        },
+        isLsaUnit: function() {
+          return this.electionType === 'LSAU';
+        },
         closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
         }
@@ -191,7 +197,7 @@
         site.qTips.push({ selector: '#qTipConvener', title: 'Convener', text: 'What institution is responsible for this election?  For local elections, this is typically the Local Spiritual Assembly.' });
         site.qTips.push({ selector: '#qTipDate', title: 'Election Date', text: 'When is this election being held?  LSA elections must be held on the day designated by the National Spiritual Assembly.' });
         //    site.qTips.push({ selector: '#qTipDate2', title: 'Choosing a Date', text: 'Date selection may have problems. Try different options, or type the date in the format: YYYY-MM-DD' });
-        site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ, including how tie-breaks are handled.' });
+        site.qTips.push({ selector: '#qTipType', title: 'Type of Election', text: 'Choose the type of election. This affects a number of aspects of TallyJ.' });
         site.qTips.push({ selector: '#qTipVariation', title: 'Variation of Election', text: 'Choose the variation for this election. This affects a number of aspects of TallyJ, including how vote spaces will appear on each ballot.' });
         site.qTips.push({ selector: '#qTipNum', title: 'Spaces on Ballot', text: 'This is the number of names that will be written on each ballot paper.' });
         site.qTips.push({ selector: '#qTipNumNext', title: 'Next Highest', text: 'For Conventions only. This is the number of those with the "next highest number of votes" to be reported to the National Spiritual Assembly. If changed after running Analyze, run Analyze again!' });
@@ -209,7 +215,6 @@
         site.qTips.push({ selector: '#qTipNoteB', title: 'By-election', text: 'Be sure to set the eligibility of each current member of this institution to "On Institution already".' });
         site.qTips.push({ selector: '#qTipNoteT', title: 'Tie-break', text: 'Be sure to set the eligibility of each of the people tied in this tie-break.' });
         site.qTips.push({ selector: '#qTipNoteN', title: 'National Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibility of each delegate.' });
-        site.qTips.push({ selector: '#qTipNoteLSA2', title: 'Second Stage Local Election', text: 'To use the Front Desk and Roll Call pages, be sure to set the eligibility of each delegate.' });
         site.qTips.push({ selector: '#qTipEnvNum', title: 'Envelope Numbers', text: 'For every ballot envelope received, a number is created. When appropriate this should be associated with the envelope until all envelopes are ready to be opened.' });
         //site.qTips.push({ selector: '#qTip', title: '', text: '' });
 
@@ -250,7 +255,7 @@
 
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
-      $('.showGlory13').toggle(($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N');
+      $('.showGlory13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
       getBadiDate();
     });
 
@@ -292,7 +297,7 @@
     showLocations(publicInterface.Locations);
     showTellers(publicInterface.Tellers);
 
-    $('.showGlory13').toggle(($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N');
+    $('.showGlory13').toggle($('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N');
     //$('#txtName').focus();
 
 
@@ -302,12 +307,14 @@
       }
     });
 
-    settings.badiDateGetter = BadiDateToday({
-      locationIdentification: 3,
-      use24HourClock: settings.vue.election.T24
-    });
+    if (!settings.vue.isLsaCentral) {
+      settings.badiDateGetter = BadiDateToday({
+        locationIdentification: 3,
+        use24HourClock: settings.vue.election.T24
+      });
 
-    getBadiDate();
+      getBadiDate();
+    }
   };
 
   function getBadiDate() {
@@ -367,11 +374,11 @@
     if (found) {
       settings.isGlory13.addClass('isGlory13');
     }
-    $('.showGlory13').toggleClass('missing', ($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N' && !found);
+    $('.showGlory13').toggleClass('missing', $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N' && !found);
   }
 
   function showBadiInfo(di, target, intro) {
-    if (di.bMonth === 2 && di.bDay === 13 && ($('#ddlType').val() === 'LSA' || $('#ddlType').val() === 'LSA2') && $('#ddlMode').val() === 'N') {
+    if (di.bMonth === 2 && di.bDay === 13 && $('#ddlType').val() === 'LSA' && $('#ddlMode').val() === 'N') {
       settings.isGlory13 = target;
     }
 
@@ -563,6 +570,15 @@
           if (input.attr('id') === 'txtDate' && value) {
             value = moment(value).toISOString(true);
           }
+
+          if (dataName === 'ElectionType') {
+            // enforce a rule
+            if (value === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+              ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+              return;
+            }
+          }
+
           input.val(value);
           break;
       }
@@ -587,6 +603,16 @@
   function saveChanges() {
     var vue = settings.vue;
     var election = vue.election;
+
+    if (election.ElectionType === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+      ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+      return;
+    }
+
+    if (election.ElectionType === 'Tie' && settings.vue.originalElectionType !== 'Tie') {
+      ShowStatusFailed('* Cannot directly select a Tie election. Must be added from another election.');
+      return;
+    }
 
     var testCustom = vue.custom1 + vue.custom2 + vue.custom3;
     var customs = '';
@@ -705,7 +731,7 @@
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
-    if (type === 'Con' || type === 'LSA1') {
+    if (type === 'Con' || type === 'LSAU') {
       if (mode === "B") {
         mode = "N";
         $("#ddlMode").val("N");
@@ -718,9 +744,6 @@
     var classes = [];
     if (type === 'NSA') {
       classes.push('NoteN');
-    }
-    if (type === 'LSA2') {
-      classes.push('NoteLSA2');
     }
     if (mode === 'B') {
       classes.push('NoteB');

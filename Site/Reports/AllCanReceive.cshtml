@@ -4,12 +4,16 @@
 @using TallyJ.EF
 @inherits RazorEngine.Templating.TemplateBase
 @{
+  var showUnitName = UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU 
+    || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC;
+
   var people = new PersonCacher().AllForThisElection
-    .Where(p => p.CanReceiveVotes.GetValueOrDefault())
+    .Where(p => p.CanReceiveVotesInElection.GetValueOrDefault())
     .OrderBy(p => p.FullName)
     .Select(p => new
     {
       PersonName = p.FullName,
+      p.UnitName
     });
   var initial = ' ';
 }
@@ -27,6 +31,12 @@
   b {
     display: inline-block;
     margin: .5em 0 0 .7em;
+  }
+  
+  .unit{
+    display: inline-block;
+    margin: 0 0 0 .7em;
+    color: blue;
   }
 </style>
 <div class="body">
@@ -53,7 +63,13 @@
         firstClass = "first";
       }
 
-      <div class="person @firstClass">@Raw(name)</div>
+        <div class="person @firstClass">
+            <span>@Raw(name)</span>
+            @if (showUnitName && person.UnitName.HasContent())
+            {
+                <span class="unit">(@Raw(person.UnitName))</span>
+            }
+        </div>
     }
   </div>
 </div>

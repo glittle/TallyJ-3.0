@@ -251,7 +251,7 @@ namespace TallyJ.CoreModels.Helper
 
       peopleToSendTo.AddRange(db.Person
         .Where(p => p.ElectionGuid == election.ElectionGuid && p.Email != null && p.Email.Trim().Length > 0)
-        .Where(p => p.CanVote.Value)
+        .Where(p => p.CanVoteInElection.Value)
         .Where(p => personIds.Contains(p.C_RowId))
         .Select(p => new NameEmail
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -56,6 +57,13 @@ namespace TallyJ.Controllers
     {
       var model = new ElectionHelper();
       return model.Create();
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult CreateUnitElection(Guid parentElectionGuid, string unitsInfo)
+    {
+      var model = new ElectionHelper();
+      return model.CreateUnitElection(parentElectionGuid, unitsInfo);
     }
 
     [ForAuthenticatedTeller]

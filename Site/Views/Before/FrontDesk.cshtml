@@ -8,9 +8,9 @@
   ViewBag.Title = "Front Desk";
   ViewBag.Message = "Record who is voting...";
 
-  var currentElection = UserSession.CurrentElection;
-  var ballotProcess = currentElection.BallotProcessRaw;
-  var ballotProcessEnum = currentElection.BallotProcess;
+  var currentPeopleElection = UserSession.CurrentPeopleElection;
+  var ballotProcess = currentPeopleElection.BallotProcessRaw;
+  var ballotProcessEnum = currentPeopleElection.BallotProcess;
 
   var inPersonName = "In Person";
 
@@ -25,8 +25,8 @@
   ContextItems.AddJavascriptForPage("lastrow", "frontDeskPage.lastRowVersion={0};".FilledWith(Model.LastRowVersion));
   //ContextItems.AddJavascriptForPage("people", "frontDeskPage.initial={0};".FilledWith(Model.FrontDeskPersonLines().SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("people", "frontDeskPage.ballotProcess={0};".FilledWith(ballotProcess.QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("frontDeskPage.T24={0};".FilledWith(UserSession.CurrentElection.T24.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("flags", "frontDeskPage.flags={0};".FilledWith(currentElection.Flags.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("frontDeskPage.T24={0};".FilledWith(currentPeopleElection.T24.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("flags", "frontDeskPage.flags={0};".FilledWith(currentPeopleElection.Flags.QuotedForJavascript()));
 
 }
 <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
@@ -64,59 +64,59 @@
   <span class="info fakeEsc">(Esc to clear)</span>
 </div>
 <div class="Counts">
-  @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
+  @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
   {
     <div class="Imported" data-status="Imported" title="Click to filter the list">
       Imported
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("O"))
+  @if (currentPeopleElection.VotingMethodsContains("O"))
   {
     <div class="Online" data-status="Online" title="Click to filter the list">
       Online
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("C"))
+  @if (currentPeopleElection.VotingMethodsContains("C"))
   {
     <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
       Called In
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("M"))
+  @if (currentPeopleElection.VotingMethodsContains("M"))
   {
     <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
       Mailed In
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("D"))
+  @if (currentPeopleElection.VotingMethodsContains("D"))
   {
     <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
       Dropped Off
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("1"))
+  @if (currentPeopleElection.VotingMethodsContains("1"))
   {
     <div class="Custom1" data-status="Custom1" title="Click to filter the list">
-      @currentElection.Custom1Name
+      @currentPeopleElection.Custom1Name
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("2"))
+  @if (currentPeopleElection.VotingMethodsContains("2"))
   {
     <div class="Custom2" data-status="Custom2" title="Click to filter the list">
-      @currentElection.Custom2Name
+      @currentPeopleElection.Custom2Name
       <i>0</i>
     </div>
   }
-  @if (currentElection.VotingMethodsContains("3"))
+  @if (currentPeopleElection.VotingMethodsContains("3"))
   {
     <div class="Custom3" data-status="Custom3" title="Click to filter the list">
-      @currentElection.Custom3Name
+      @currentPeopleElection.Custom3Name
       <i>0</i>
     </div>
   }
@@ -127,7 +127,7 @@
         <i>0</i>
       </div>
     }*@
-  @if (currentElection.VotingMethodsContains("P"))
+  @if (currentPeopleElection.VotingMethodsContains("P"))
   {
     <div class="InPerson" data-status="InPerson" title="Click to filter the list">
       @inPersonName
@@ -141,7 +141,7 @@
   <span class="Other">
     Other <i>0</i>
   </span>
-  @foreach (var f in currentElection.FlagsList)
+  @foreach (var f in currentPeopleElection.FlagsList)
   {
     <div class="Flag flag-@f" data-status="flag-@f" title="Click to filter the list">
       @f
@@ -150,7 +150,7 @@
   }
 
 </div>
-<div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
+<div id="Main" class="@(new[] {"EnvMode-" + currentPeopleElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
     Type the first letter of any button to select it. Press &larr; or &rarr; to move the selection. Press Enter to click. Press Esc when done.
   </div>
@@ -159,61 +159,62 @@
 
 <script type="text/x-template" id="frontDeskLineTemplate">
   <div id="P{PersonId}" class="Voter VM-{VotingMethod} OnlineProcessed-{OnlineProcessed} Imported-{Imported} {extraClass}" data-name="{NameLower}">
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
     {
       <div data-vm="@VotingMethodEnum.Imported.Value" class="Btn Imported {Imported} Has{HasImported}">@VotingMethodEnum.Imported.DisplayText</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Online.Value))
     { // includes Kiosk
       <div data-vm="@VotingMethodEnum.Online.Value" class="Btn Online {Online} Has{HasOnline} Can{CanBeOnline}">Online</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.CalledIn.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.CalledIn.Value))
     {
       <div data-vm="@VotingMethodEnum.CalledIn.Value" class="Btn CalledIn {CalledIn}">Called In</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.MailedIn.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.MailedIn.Value))
     {
       <div data-vm="@VotingMethodEnum.MailedIn.Value" class="Btn MailedIn {MailedIn}">Mailed In</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.DroppedOff.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.DroppedOff.Value))
     {
       <div data-vm="@VotingMethodEnum.DroppedOff.Value" class="Btn DroppedOff {DroppedOff}">Dropped Off</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom1.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Custom1.Value))
     {
-      <div data-vm="@VotingMethodEnum.Custom1.Value" class="Btn Custom1 {Custom1}">@currentElection.Custom1Name</div>
+      <div data-vm="@VotingMethodEnum.Custom1.Value" class="Btn Custom1 {Custom1}">@currentPeopleElection.Custom1Name</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom2.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Custom2.Value))
     {
-      <div data-vm="@VotingMethodEnum.Custom2.Value" class="Btn Custom2 {Custom2}">@currentElection.Custom2Name</div>
+      <div data-vm="@VotingMethodEnum.Custom2.Value" class="Btn Custom2 {Custom2}">@currentPeopleElection.Custom2Name</div>
     }
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Custom3.Value))
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.Custom3.Value))
     {
-      <div data-vm="@VotingMethodEnum.Custom3.Value" class="Btn Custom3 {Custom3}">@currentElection.Custom3Name</div>
+      <div data-vm="@VotingMethodEnum.Custom3.Value" class="Btn Custom3 {Custom3}">@currentPeopleElection.Custom3Name</div>
     }
     <div class="Env">{EnvNum}</div>
     @*@switch (ballotProcessEnum)
-      {
-        case BallotProcessEnum.RegV:
-          <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
-          break;
-      }*@
-    @if (currentElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
+    {
+      case BallotProcessEnum.RegV:
+        <div data-vm="@VotingMethodEnum.Registered.Value" class="Btn Registered {Registered}">Registered</div>
+        break;
+    }*@
+    @if (currentPeopleElection.VotingMethodsContains(VotingMethodEnum.InPerson.Value))
     {
       <div data-vm="@VotingMethodEnum.InPerson.Value" class="Btn InPerson {InPerson}">@inPersonName</div>
     }
     <b>{FullName}</b>
     <p>{BahaiId}</p>
-    @if (currentElection.FlagsList.Count > 0)
+    @if (currentPeopleElection.FlagsList.Count > 0)
     {
-        <div class="flags">
-        @foreach (var flag in currentElection.FlagsList)
+      <div class="flags">
+        @foreach (var flag in currentPeopleElection.FlagsList)
         {
-            <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
+          <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
         }
       </div>
     }
     <u title="Lives in">{Area}</u>
     <i>{^VotedAt}</i>
+    <em title="Electoral Unit">{UnitName}</em>
   </div>
 </script>

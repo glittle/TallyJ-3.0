@@ -19,6 +19,7 @@
   function prepare(cb) {
     startLoadingAllNames(cb);
     site.onbroadcast(site.broadcastCode.personSaved, personSaved);
+//    site.onbroadcast(site.broadcastCode.personDeleted, personDeleted);
   }
 
   function startLoadingAllNames(cb) {

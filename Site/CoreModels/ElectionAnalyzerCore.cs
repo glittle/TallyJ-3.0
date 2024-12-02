@@ -852,7 +852,7 @@ namespace TallyJ.CoreModels
     protected void FillResultSummaryCalc()
     {
       ResultSummaryCalc.NumVoters = People.Count(p => p.VotingMethod.HasContent());
-      ResultSummaryCalc.NumEligibleToVote = People.Count(p => p.CanVote.AsBoolean());
+      ResultSummaryCalc.NumEligibleToVote = People.Count(p => p.CanVoteInElection.AsBoolean());
 
       ResultSummaryCalc.InPersonBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
       ResultSummaryCalc.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);

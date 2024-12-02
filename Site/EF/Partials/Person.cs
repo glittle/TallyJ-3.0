@@ -4,12 +4,46 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using TallyJ.Code;
+using TallyJ.Code.Enumerations;
+using TallyJ.Code.Session;
 
 namespace TallyJ.EF
 {
   [MetadataType(typeof(PersonMetadata))]
   public partial class Person : IIndexedForCaching
   {
+
+
+    public bool? CanVoteInElection
+    {
+      get
+      {
+        // check current election for Units
+        var election = ItemKey.CurrentElection.FromPageItems(new Election());
+
+        return election.IsLsaC && election.UnitName != UnitName && election.UnitName.HasContent()
+            || election.IsLsaU && election.UnitName != UnitName
+          ? false
+          : CanVote;
+      }
+      set => CanVote = value;
+    }
+
+    public bool? CanReceiveVotesInElection
+    {
+      get
+      {
+        // check current election for Units
+        var election = ItemKey.CurrentElection.FromPageItems(new Election());
+
+        return election.IsLsaC && election.UnitName != UnitName && election.UnitName.HasContent()
+            || election.IsLsaU && election.UnitName != UnitName
+          ? false
+          : CanReceiveVotes;
+      }
+      set => CanReceiveVotes = value;
+    }
+
     enum ExtraSettingKey
     {
       // keep names as short as possible
@@ -104,7 +138,7 @@ namespace TallyJ.EF
             .Split(SplitChar)
             .Select(s => s.Split('='))
             .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
-            // any that are not recognized are ignored and lost
+              // any that are not recognized are ignored and lost
               .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
         }
 
