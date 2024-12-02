@@ -1193,26 +1193,26 @@
     </Content>
     <Content Include="Views\Public\Privacy.cshtml.less" />
     <None Include="Web.Babak 1.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.Local Files 3.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
-    <None Include="Web.Standalone.config">
+    <None Include="web.Standalone.config">
       <SubType>Designer</SubType>
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.TallyJ v3 Prod.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.TallyJ v3 UAT.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <Content Include="Xsd\CdnBallotImport.xsd">
       <SubType>Designer</SubType>
     </Content>
     <None Include="Web.Win22-SA1.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1285,11 +1285,11 @@
     <Content Include="Views\Setup\Setup.cshtml.js">
       <DependentUpon>Setup.cshtml</DependentUpon>
     </Content>
-    <Content Include="Web.config">
+    <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Site.less" />
