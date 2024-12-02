@@ -1,6 +1,5 @@
 using System.Web.Mvc;
 using Microsoft.Practices.Unity;
-using Unity;
 using Unity.Mvc3;
 
 namespace TallyJ

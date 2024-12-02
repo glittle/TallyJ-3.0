@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
+using System.Web.Configuration;
 using TallyJ.EF;
 
 namespace TallyJ.Code.Data
@@ -35,7 +36,14 @@ namespace TallyJ.Code.Data
         //var x = new ITallyJDbContext();
         //x.Configuration.ValidateOnSaveEnabled = true;
 
-        var cnString = "MultipleActiveResultSets=True;" + ConfigurationManager.ConnectionStrings["MainConnection3"].ConnectionString;
+        var settings = WebConfigurationManager.ConnectionStrings["MainConnection3"];
+
+        if (settings == null)
+        {
+          throw new ConfigurationErrorsException("MainConnection3 not found");
+        }
+
+        var cnString = "MultipleActiveResultSets=True;" + settings.ConnectionString;
 
         var connection = new SqlConnection(cnString);
         var workspace = new MetadataWorkspace(
