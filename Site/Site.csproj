@@ -1192,28 +1192,9 @@
       <DependentUpon>ImportBallots.cshtml</DependentUpon>
     </Content>
     <Content Include="Views\Public\Privacy.cshtml.less" />
-    <None Include="Web.Babak 1.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="Web.Local Files 3.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Standalone.config">
-      <SubType>Designer</SubType>
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="Web.TallyJ v3 Prod.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="Web.TallyJ v3 UAT.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
     <Content Include="Xsd\CdnBallotImport.xsd">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Web.Win22-SA1.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
@@ -1284,13 +1265,6 @@
     </Content>
     <Content Include="Views\Setup\Setup.cshtml.js">
       <DependentUpon>Setup.cshtml</DependentUpon>
-    </Content>
-    <Content Include="web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-      <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\Site.less" />
     <Content Include="Scripts\AjaxLogin.js" />
