@@ -1195,6 +1195,32 @@
     <Content Include="Xsd\CdnBallotImport.xsd">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="web.Azure.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.AzureDebug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Babak 1.config" >
+      <DependentUpon>web.config</DependentUpon></None>
+    <Content Include="web.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Local Files 3.config">
+      <DependentUpon>web.config</DependentUpon></None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Standalone.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.TallyJ v3 Prod.config">
+      <DependentUpon>web.config</DependentUpon></None>
+    <None Include="web.TallyJ v3 UAT.config" >
+      <DependentUpon>web.config</DependentUpon></None>
+    <None Include="web.Win22-SA1.config" >
+      <DependentUpon>web.config</DependentUpon></None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
