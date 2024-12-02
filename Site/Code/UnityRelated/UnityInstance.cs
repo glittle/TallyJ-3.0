@@ -19,7 +19,7 @@ namespace TallyJ.Code.UnityRelated
 			{
 				if (e.ParamName.Equals("section", StringComparison.OrdinalIgnoreCase))
 				{
-					throw new Exception("The neccesary configuration for Unity has not been added to the web.config file.");
+					throw new Exception("The necessary configuration for Unity has not been added to the web.config file.");
 				}
 			}
 		}

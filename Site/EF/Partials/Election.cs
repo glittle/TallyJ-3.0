@@ -48,61 +48,45 @@ public partial class Election : IIndexedForCaching
     EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
 
   public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
-  [Serializable]
-  public partial class Election : IIndexedForCaching
+  public bool IsLsaC => ElectionType == ElectionTypeEnum.LSAC.Value;
+  public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
+
+  /// <summary>
+  /// Either LSAC or LSAU
+  /// </summary>
+  public bool IsLsaCU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAC.Value;
+
+  public string VotingMethodsAdjusted
   {
-    enum ExtraSettingKey
+    get
     {
-      // keep names as short as possible
-      BP, // Ballot Process?
-      Env, // Envelope Mode
-      T24, // use 24 hour time?
-      RV, // randomize voters list displayed for voters
+      // if this is a LsaC election, need to collect the VotingMethods from the Unit elections
+      // if (IsLsaC)
+      // {
+      //   return string.Join(",", UserSession.UnitElectionVotingMethods);
+      // }
+
+      return VotingMethods;
     }
+    set => VotingMethods = value;
+  }
 
-    public string EmailFromAddressWithDefault => EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
-    public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
 
-
-    public bool IsLsaC => ElectionType == ElectionTypeEnum.LSAC.Value;
-    public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
-
-    /// <summary>
-    /// Either LSAC or LSAU
-    /// </summary>
-    public bool IsLsaCU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAC.Value;
-
-    public string VotingMethodsAdjusted
+  /// <summary>
+  /// This is a "fake" column that is embedded into the OwnerLoginId column
+  /// </summary>
+  /// <remarks>
+  /// Must be a string to serialize out to client
+  /// </remarks>
+  public string BallotProcessRaw
+  {
+    get { return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessEnum.Roll.ToString(); }
+    set
     {
-      get
+      if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
       {
-        // if this is a LsaC election, need to collect the VotingMethods from the Unit elections
-        // if (IsLsaC)
-        // {
-        //   return string.Join(",", UserSession.UnitElectionVotingMethods);
-        // }
-
-        return VotingMethods;
+        throw new ApplicationException("Invalid process key: " + value);
       }
-      set => VotingMethods = value;
-    }
-
-
-    /// <summary>
-    /// This is a "fake" column that is embedded into the OwnerLoginId column
-    /// </summary>
-    /// <remarks>
-    /// Must be a string to serialize out to client
-    /// </remarks>
-    public string BallotProcessRaw
-    {
-      get { return GetExtraSetting(ExtraSettingKey.BP) ?? BallotProcessEnum.Roll.ToString(); }
-      set
-      {
-        if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
-        {
-          throw new ApplicationException("Invalid process key: " + value);
-        }
 
       SetExtraSetting(ExtraSettingKey.BP, value);
     }
@@ -151,19 +135,9 @@ public partial class Election : IIndexedForCaching
   }
 
 
-    public bool VotingMethodsContains(string method)
-    {
-      return VotingMethodsAdjusted.DefaultTo("").Contains(method);
-    }
-
-    public bool VotingMethodsContains(VotingMethodEnum method)
-    {
-      return VotingMethodsAdjusted.DefaultTo("").Contains(method.Value);
-    }
-
-    public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];
-    public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
-    public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
+  public string Custom1Name => (CustomMethods.DefaultTo("") + "||").Split('|')[0];
+  public string Custom2Name => (CustomMethods.DefaultTo("") + "||").Split('|')[1];
+  public string Custom3Name => (CustomMethods.DefaultTo("") + "||").Split('|')[2];
 
   public List<string> FlagsList => Flags.DefaultTo("").SplitWithString("|").ToList();
   //public List<VotingMethodEnum> VotingMethods
@@ -269,12 +243,11 @@ public partial class Election : IIndexedForCaching
 
   public bool VotingMethodsContains(string method)
   {
-    return VotingMethods.DefaultTo("").Contains(method);
+    return VotingMethodsAdjusted.DefaultTo("").Contains(method);
   }
-
   public bool VotingMethodsContains(VotingMethodEnum method)
   {
-    return VotingMethods.DefaultTo("").Contains(method.Value);
+    return VotingMethodsAdjusted.DefaultTo("").Contains(method.Value);
   }
 
   private string GetExtraSetting(ExtraSettingKey setting)

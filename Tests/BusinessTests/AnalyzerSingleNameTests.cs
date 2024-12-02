@@ -35,6 +35,8 @@ namespace Tests.BusinessTests
       UnityInstance.Offer(Db);
 
       _electionGuid = Guid.NewGuid();
+
+      SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
       SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
       ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 

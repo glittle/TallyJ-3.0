@@ -32,6 +32,7 @@ namespace Tests.BusinessTests
 
       _electionGuid = Guid.NewGuid();
 
+      SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
       SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
       ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
@@ -1168,14 +1169,14 @@ namespace Tests.BusinessTests
     {
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTests();
 
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTestsPersonElection();

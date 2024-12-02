@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
 {
   public class ElectionHelper : DataConnectedModel
   {
-    private static readonly object LockObject = new ();
+    private static readonly object LockObject = new();
 
     private static readonly ConcurrentDictionary<Guid, bool> OnlineBallotProcessingLocks = new();
 
@@ -667,7 +667,7 @@ namespace TallyJ.CoreModels
       UserSession.ResetWhenSwitchingElections();
 
 
-      var electionType = ElectionTypeEnum.Lsa.ToString();
+      var electionType = ElectionTypeEnum.LSA.ToString();
       var electionMode = ElectionModeEnum.Normal.ToString();
 
       var rules = GetRules(electionType, electionMode);
@@ -1208,6 +1208,106 @@ namespace TallyJ.CoreModels
     }
 
 
+    public JsonResult CreateUnitElection(Guid parentElectionGuid, string unitsInfo)
+    {
+      List<UnitInfo> unitsInfoList;
+      try
+      {
+        unitsInfoList = JsonConvert.DeserializeObject<List<UnitInfo>>(unitsInfo);
+      }
+      catch (Exception e)
+      {
+        return new
+        {
+          Success = false,
+          Message = "Invalid request"
+        }.AsJsonResult();
+      }
+
+      if (UserSession.IsGuestTeller)
+      {
+        return new
+        {
+          Success = false,
+          Message = "Not authorized"
+        }.AsJsonResult();
+      }
+
+      var parentElection = Db.Election.SingleOrDefault(e => e.ElectionGuid == parentElectionGuid);
+      if (parentElection == null)
+      {
+        return new
+        {
+          Success = false,
+          Message = "Parent election not found"
+        }.AsJsonResult();
+      }
+
+      if (parentElection.ElectionType != ElectionTypeEnum.LSAC.ToString())
+      {
+        return new
+        {
+          Success = false,
+          Message = $"Parent election must be a '{ElectionTypeEnum.LSAC.DisplayText}'"
+        }.AsJsonResult();
+      }
+
+
+      var elections = new List<Election>();
+
+      foreach (var unitInfo in unitsInfoList)
+      {
+        // create election with defaults
+        var election = new Election
+        {
+          ElectionGuid = Guid.NewGuid(),
+          Name = $"{parentElection.Name} - {unitInfo.name}",
+          UnitName = unitInfo.name,
+          ElectionType = ElectionTypeEnum.LSAU.ToString(),
+          ElectionMode = ElectionModeEnum.Normal.ToString(),
+          ParentElectionGuid = parentElectionGuid,
+          PeopleElectionGuid = parentElectionGuid,
+          TallyStatus = ElectionTallyStatusEnum.NotStarted.ToString(),
+          Convenor = parentElection.Convenor,
+          VotingMethodsAdjusted = null, // rely on People ElectionGuid
+          NumberToElect = unitInfo.num,
+          NumberExtra = 0,
+          DateOfElection = parentElection.DateOfElection,
+          ShowAsTest = parentElection.ShowAsTest,
+
+        };
+
+        Db.Election.Add(election);
+        Db.SaveChanges();
+
+        elections.Add(election);
+
+        var join = new JoinElectionUser
+        {
+          ElectionGuid = election.ElectionGuid,
+          UserId = UserSession.UserGuid,
+          Role = null  // leave role empty for owner/Main head teller
+        };
+        Db.JoinElectionUser.Add(join);
+
+        var mainLocation = new Location
+        {
+          Name = "Main Location",
+          LocationGuid = Guid.NewGuid(),
+          ElectionGuid = election.ElectionGuid,
+          SortOrder = 1
+        };
+        Db.Location.Add(mainLocation);
+        Db.SaveChanges();
+      }
+
+      return new
+      {
+        Success = elections.Any(),
+        elections = elections.Select(ElectionDto)
+      }.AsJsonResult();
+    }
+
 
     public static object ElectionDto(Election e)
     {
@@ -1238,6 +1338,12 @@ namespace TallyJ.CoreModels
         TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
         e.TallyStatus
       };
+    }
+
+    public class UnitInfo
+    {
+      public string name { get; set; }
+      public int num { get; set; }
     }
   }
 }
