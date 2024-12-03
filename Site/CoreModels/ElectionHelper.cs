@@ -1336,7 +1336,10 @@ namespace TallyJ.CoreModels
         Mode = ElectionModeEnum.TextFor(e.ElectionMode).SurroundContentWith(" (", ")"),
         IsTest = e.ShowAsTest.AsBoolean(),
         TallyStatusDisplay = ElectionTallyStatusEnum.Parse(e.TallyStatus).DisplayText,
-        e.TallyStatus
+        e.TallyStatus,
+        e.ParentElectionGuid,
+        e.ParentTieBreakGroup,
+        e.UnitName
       };
     }
 

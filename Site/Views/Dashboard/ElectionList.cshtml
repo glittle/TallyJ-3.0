@@ -103,20 +103,20 @@
            IsFuture: e.IsFuture,
            deleting: e.ElectionGuid === deleting,
            noOnline: !e.OnlineEnabled,
-           central: isLsaCentral,
-           unit: isLsaUnit,
+           parent: isLsaCentral,
+           child: isLsaUnit,
         }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
-        <span class="dateDisplay">{{e.dateDisplay}}</span>
         <span v-if="e.IsTest" class="Test">TEST</span>
-        <span v-else class="NotTest">MAIN</span>
+        @*<span v-else class="NotTest">MAIN</span>*@
         {{e.nameDisplay}}
       </div>
       <div class="Detail2">
         <div>
           <span>{{e.Type}} {{e.Mode}}</span>
-        </div>
+        <span class="dateDisplay"> - {{e.dateDisplay}}</span>
+      </div>
         <div>
           <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
@@ -173,12 +173,12 @@
                   v-model="newChildren">
         </el-input><span class="ui-icon ui-icon-info" id="qTipAdd"></span>
         <el-button v-on:click="addUnitElections" size="mini">
-          Add new unit elections
+          Add {{(e.childElections.length ? 'more' : 'new')}} unit elections
         </el-button>
       </div>
     </div>
     <div class="statusBlocks">
-      <div class="statusVoters statusBlock" v-if="!isLsaUnit">
+      <div class="statusVoters statusBlock" @*v-if="!isLsaUnit"*@>
         <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
         <div class="statusLabel">
           <div>Online Voting</div>
@@ -186,7 +186,7 @@
           <div v-text="e.openCloseTime"></div>
         </div>
       </div>
-      <div class="statusTellers statusBlock" v-if="!isLsaCentral">
+      <div class="statusTellers statusBlock" @*v-if="!isLsaCentral"*@>
         <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
         <div class="statusLabel" :title="tellerToggleTitle">
           <div>Tellers</div>
@@ -195,6 +195,7 @@
                      v-on:change="updateListing">
           </el-switch>
           <div v-html="e.openForTellers ? 'Open' : 'Closed'"></div>
+          <div v-if="!e.ElectionPasscode" class="noCode">(No Code)</div>
         </div>
       </div>
     </div>
@@ -227,7 +228,7 @@
         </div>
       </div>
       <div class="showUsers">
-        <button class="btn btn-mini" v-on:click.passive="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' + (e.isOwner ? '/Add' : ''))) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>
+        <button class="btn btn-mini" v-on:click.passive="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' )) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>@*+ (e.isOwner ? '/Add' : '')*@
       </div>
     </div>
 

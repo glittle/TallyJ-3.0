@@ -94,9 +94,10 @@
           var d = moment(e.DateOfElection);
           e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
           e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-          e.nameDisplay = e.ElectionType !== 'LSAU'
+          e.nameDisplay = (e.ElectionType !== 'LSAU'
             ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
-            : e.UnitName;
+            : e.UnitName);
+//            + ` (${e.ElectionGuid})`;
 
           //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
           e.old = false; //!isCurrent;
@@ -176,7 +177,7 @@
               return a.Name > b.Name ? 1 : -1;
             });
           };
-
+          
           topList.forEach(e => {
             fnAddChildren(e);
 
@@ -659,6 +660,7 @@ Vue.component('election-detail',
                 electionListPage.settings.vue.elections.push(election);
                 vue.e.childElections.push(election);
               });
+              vue.newChildren = '';
             }
           });
       },

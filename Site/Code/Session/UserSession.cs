@@ -244,7 +244,7 @@ namespace TallyJ.Code.Session
           }
         }
 
-        return election;
+        return CurrentElection;
       }
     }
 
