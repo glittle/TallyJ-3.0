@@ -347,8 +347,14 @@
                   vue.twilioCallDone = true;
                   break;
                 case 'delivered':
-                  vue.twilioStatus = '';
-                  vue.status = 'SMS sent';
+                case 'sent':
+                  vue.twilioStatus = 'SMS sent. Please enter the code below:';
+                  vue.status = '';
+                  vue.twilioCallDone = true;
+                  break;
+                case 'emailSent':
+                  vue.twilioStatus = 'Email sent. Please enter the code below:';
+                  vue.status = '';
                   vue.twilioCallDone = true;
                   break;
                 default:
@@ -434,6 +440,7 @@
               code: vue.code
             }, function (info) {
               if (info.Success) {
+                vue.twilioStatus = '';
                 vue.status = 'Success. Entering the site...';
                 location.href = site.rootUrl + 'Vote';
 

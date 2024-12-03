@@ -105,7 +105,7 @@ namespace TallyJ.CoreModels.Helper
         if (message.HasContent())
           _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         else
-          _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
+          _voterCodeHub.SetStatus(_hubKey, null, "emailSent");
 
         method = type;
       }
