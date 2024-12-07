@@ -27,7 +27,7 @@
   @if (electionsInfo.Count > 0)
   {
     <div class="h3button">
-      <h3>Your Elections</h3>
+      <h3>Your Elections ({{topList.length}})</h3>
       <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
       @*<el-switch v-model="showTest"
                    class="showTest"
@@ -115,8 +115,8 @@
       <div class="Detail2">
         <div>
           <span>{{e.Type}} {{e.Mode}}</span>
-        <span class="dateDisplay"> - {{e.dateDisplay}}</span>
-      </div>
+          <span class="dateDisplay"> - {{e.dateDisplay}}</span>
+        </div>
         <div>
           <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
@@ -168,12 +168,13 @@
 
       <div class="addChildren">
         <el-input type="textarea"
+                  v-if="e.openToAdd"
                   :autosize="{ minRows: 2, maxRows: 6}"
-                  placeholder="New unit names with number to elect. E.g.&#10;North Unit, 2&#10;South Unit, 1"
-                  v-model="newChildren">
-        </el-input><span class="ui-icon ui-icon-info" id="qTipAdd"></span>
-        <el-button v-on:click="addUnitElections" size="mini">
-          Add {{(e.childElections.length ? 'more' : 'new')}} unit elections
+                  placeholder="New unit names with number to elect. E.g.&#10;North, 2&#10;South, 1"
+                  v-model="e.newChildren">
+        </el-input><span class="ui-icon ui-icon-info" v-if="e.openToAdd" id="qTipAdd"></span>
+        <el-button v-on:click="addUnitElections(e)" size="mini">
+          Add {{(e.childElections.length ? 'more' : 'new')}} unit elections{{(e.openToAdd ? '' : '...')}}
         </el-button>
       </div>
     </div>

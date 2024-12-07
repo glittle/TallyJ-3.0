@@ -123,6 +123,8 @@
           e.numRegistered = 0;
           e.onlineVoters = {};
           e.lastLog = {};
+          e.openToAdd = false;
+          e.newChildren = '';
 
           // online voters
           if (!e.OnlineEnabled) {
@@ -521,7 +523,6 @@ Vue.component('election-detail',
         formatDateTime: 'YYYY MMM D [at] HH:mm',
         formatDateOnly: 'YYYY MMM D',
         showOtherButtons: false,
-        newChildren: '',
         addingNew: false,
         addingNow: false,
         form: {
@@ -616,16 +617,21 @@ Vue.component('election-detail',
           ShowStatusFailed("Unable to select");
         }
       },
-      addUnitElections() {
+      addUnitElections(election) {
+        if (!election.openToAdd) {
+          election.openToAdd = true;
+          return;
+        }
+        
         // check for invalid letters
-        if (/[;<]/.test(this.newChildren)) {
+        if (/[;<]/.test(election.newChildren)) {
           ShowStatusFailed('Cannot include ; or < in names');
           return;
         }
 
         // clean up the names; each needs , N to indicate number to elect
         // x, 3\n y,2
-        var unitsInfo = this.newChildren
+        var unitsInfo = election.newChildren
           .split('\n')
           .map(n => n.trim())
           .filter(n => n && n.includes(','))
@@ -635,6 +641,8 @@ Vue.component('election-detail',
           });
 
         if (!unitsInfo.length) {
+          election.openToAdd = false;
+
           return;
         }
         //        if (unitsInfo.filter(a => a.length !== 2)) {
@@ -646,7 +654,7 @@ Vue.component('election-detail',
 
         CallAjax2(electionListPage.electionsUrl + '/CreateUnitElection',
           {
-            parentElectionGuid: vue.e.ElectionGuid,
+            parentElectionGuid: election.ElectionGuid,
             unitsInfo: JSON.stringify(unitsInfo)
           },
           {
@@ -658,9 +666,10 @@ Vue.component('election-detail',
               info.elections.forEach(e => {
                 var election = electionListPage.settings.vue.extendElection(e);
                 electionListPage.settings.vue.elections.push(election);
-                vue.e.childElections.push(election);
+                election.childElections.push(election);
               });
-              vue.newChildren = '';
+              election.newChildren = '';
+              election.openToAdd = false;
             }
           });
       },
