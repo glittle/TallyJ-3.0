@@ -1243,12 +1243,12 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      if (parentElection.ElectionType != ElectionTypeEnum.LSAC.ToString())
+      if (parentElection.ElectionType != ElectionTypeEnum.LSAM.ToString())
       {
         return new
         {
           Success = false,
-          Message = $"Parent election must be a '{ElectionTypeEnum.LSAC.DisplayText}'"
+          Message = $"Parent election must be a '{ElectionTypeEnum.LSAM.DisplayText}'"
         }.AsJsonResult();
       }
 

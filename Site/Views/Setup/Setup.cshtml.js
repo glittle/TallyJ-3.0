@@ -64,8 +64,8 @@
         showImported: function () {
           return this.votingMethodsArray.includes('I');
         },
-        isLsaCentral: function() {
-          return this.electionType === 'LSAC';
+        isLsaMain: function() {
+          return this.electionType === 'LSAM';
         },
         isLsaUnit: function() {
           return this.electionType === 'LSAU';
@@ -307,7 +307,7 @@
       }
     });
 
-    if (!settings.vue.isLsaCentral) {
+    if (!settings.vue.isLsaMain) {
       settings.badiDateGetter = BadiDateToday({
         locationIdentification: 3,
         use24HourClock: settings.vue.election.T24

@@ -40,7 +40,7 @@ namespace TallyJ.Controllers
       if (unit.HasContent())
       {
         var currentElection = UserSession.CurrentElection;
-        if (currentElection.ElectionType == ElectionTypeEnum.LSAC.Value)
+        if (currentElection.ElectionType == ElectionTypeEnum.LSAM.Value)
         {
           // temporary for this request
           currentElection.UnitName = unit;

@@ -60,8 +60,7 @@ namespace TallyJ.Code.Enumerations
       var mainList = BaseItems
         .Where(bi => bi.Visible)
         .Where(bi => showAll || ShowAsSelected(bi, currentState))
-        // hard code to not show Finalized for LSAC
-        .Where(bi=> bi!=Finalized || bi==Finalized && UserSession.CurrentElection.ElectionType != ElectionTypeEnum.LSAC.Value)
+        .Where(bi=> bi!=Finalized || bi==Finalized)
         .Select(bi => liTemplate.FilledWith(bi.Value, bi.Text, ShowAsSelected(bi, currentState)))
         .JoinedAsString();
       return mainList.AsRawHtml();

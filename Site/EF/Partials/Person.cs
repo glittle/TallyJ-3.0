@@ -21,8 +21,7 @@ namespace TallyJ.EF
         // check current election for Units
         var election = ItemKey.CurrentElection.FromPageItems(new Election());
 
-        return election.IsLsaC && election.UnitName != UnitName && election.UnitName.HasContent()
-            || election.IsLsaU && election.UnitName != UnitName
+        return election.IsLsaU && election.UnitName != UnitName
           ? false
           : CanVote;
       }
@@ -36,8 +35,7 @@ namespace TallyJ.EF
         // check current election for Units
         var election = ItemKey.CurrentElection.FromPageItems(new Election());
 
-        return election.IsLsaC && election.UnitName != UnitName && election.UnitName.HasContent()
-            || election.IsLsaU && election.UnitName != UnitName
+        return election.IsLsaU && election.UnitName != UnitName
           ? false
           : CanReceiveVotes;
       }

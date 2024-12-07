@@ -106,7 +106,7 @@
 
           // more static info
           e.numVoters = '';
-          e.numToElect = e.ElectionType !== 'LSAC' ? 'Elect ' + e.NumberToElect : '';
+          e.numToElect = e.ElectionType !== 'LSAM' ? 'Elect ' + e.NumberToElect : '';
 
           e.tellers = [];
           e.users = [];
@@ -183,7 +183,7 @@
           topList.forEach(e => {
             fnAddChildren(e);
 
-            if (e.ElectionType === 'LSAC') {
+            if (e.ElectionType === 'LSAM') {
               // sum up childElections into NumToElect
               e.numToElect = 'Total to Elect ' + e.childElections.reduce((a, c) => a + c.NumberToElect, 0);
             }
@@ -553,8 +553,8 @@ Vue.component('election-detail',
       isLsaUnit: function () {
         return this.e.ElectionType === 'LSAU';
       },
-      isLsaCentral: function () {
-        return this.e.ElectionType === 'LSAC';
+      isLsaMain: function () {
+        return this.e.ElectionType === 'LSAM';
       },
       onlineOpenText: function () {
         return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + ' - ' + this.e.onlineOpen.fromNow() :

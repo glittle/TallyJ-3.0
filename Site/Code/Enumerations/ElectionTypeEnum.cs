@@ -7,11 +7,9 @@ public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
 {
   public static readonly ElectionTypeEnum LSA = new("LSA", "Local Spiritual Assembly");
 
-  public static readonly ElectionTypeEnum LSAC = new("LSAC",
-    "Voter Management for Units in Two-Stage LSA Election");
+  public static readonly ElectionTypeEnum LSAM = new("LSAM", "Main election in Two-Stage LSA Election");
 
-  public static readonly ElectionTypeEnum
-    LSAU = new("LSAU", "Unit Election in Two-Stage LSA Election", false); // was Lsa1
+  public static readonly ElectionTypeEnum LSAU = new("LSAU", "Unit Election in Two-Stage LSA Election", false); // was Lsa1
 
   // public static readonly ElectionTypeEnum LSAF = new("LSAF", "Two-Stage Local Spiritual Assembly - Final"); // was Lsa2
 
@@ -24,7 +22,7 @@ public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
   static ElectionTypeEnum()
   {
     Add(LSA);
-    Add(LSAC);
+    Add(LSAM);
     Add(LSAU);
     // Add(LSAF);
     Add(NSA);

@@ -49,7 +49,7 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
-      // for two-stage elections, this will be the 'central' election guid
+      // for two-stage elections, this will be the 'main' election guid
 
       // confirm that this person is in the election
       var personQuery = Db.Person.Where(p => p.ElectionGuid == peopleElectionGuid);
@@ -443,7 +443,7 @@ namespace TallyJ.Controllers
         // find this person
         .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
 
-        // and the elections they are in - for 2-stage, this will be the LSAC election
+        // and the elections they are in - for 2-stage, this will be the LSAM election
         .Join(Db.Election, p => p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
           (p, peopleElection) => new { p, peopleElection })
 

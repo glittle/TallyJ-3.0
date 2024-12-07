@@ -42,8 +42,7 @@ public class ImportCsvModel : DataConnectedModel
                        "OtherInfo",
                      };
 
-      if (!UserSession.CurrentElection.IsLsaC)
-
+      if (!UserSession.CurrentElection.IsLsaM)
       {
         list.Remove(UnitName);
       }
@@ -358,7 +357,7 @@ public class ImportCsvModel : DataConnectedModel
       return new
       {
         failed = true,
-        result = new[] { "Last Name must be mapped" }
+        result = new[] { "Last Name must be included" }
       }.AsJsonResult();
     }
     if (!mappedFields.Contains("FirstName"))
@@ -366,22 +365,22 @@ public class ImportCsvModel : DataConnectedModel
       return new
       {
         failed = true,
-        result = new[] { "First Name must be mapped" }
+        result = new[] { "First Name must be included" }
       }.AsJsonResult();
     }
-    if (currentElection.IsLsaC && !mappedFields.Contains(UnitName))
+    if (currentElection.IsLsaM && !mappedFields.Contains(UnitName))
     {
       return new
       {
         failed = true,
-        result = new[] { "Electoral Unit must be mapped" }
+        result = new[] { "Electoral Unit must be included" }
       }.AsJsonResult();
     }
 
     var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
     var phoneNumberCleaner = new Regex(@"[^\+0-9]");
     var emailChecker = new Regex(@".*@.*\..*");
-    var numRequiredFields = 2 + (currentElection.IsLsaC ? 1 : 0);
+    var numRequiredFields = 2 + (currentElection.IsLsaM ? 1 : 0);
 
     var currentPeople = new PersonCacher(Db).AllForThisElection.ToList();
     currentPeople.ForEach(p => p.TempImportLineNum = -1);

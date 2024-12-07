@@ -5,7 +5,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var showUnitName = UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAU 
-    || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAC;
+    || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSAM;
 
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanReceiveVotesInElection.GetValueOrDefault())
