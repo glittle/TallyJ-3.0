@@ -48,20 +48,20 @@ public partial class Election : IIndexedForCaching
     EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
 
   public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
-  public bool IsLsaM => ElectionType == ElectionTypeEnum.LSAM.Value;
-  public bool IsLsaU => ElectionType == ElectionTypeEnum.LSAU.Value;
+  public bool IsLsa2M => ElectionType == ElectionTypeEnum.LSA2M.Value;
+  public bool IsLsa2U => ElectionType == ElectionTypeEnum.LSA2U.Value;
 
   /// <summary>
-  /// Either LSAM or LSAU
+  /// Either LSA2M or LSA2U
   /// </summary>
-  public bool IsLsaMorU => ElectionType == ElectionTypeEnum.LSAU.Value || ElectionType == ElectionTypeEnum.LSAM.Value;
+  public bool IsLsa2 => ElectionType == ElectionTypeEnum.LSA2U.Value || ElectionType == ElectionTypeEnum.LSA2M.Value;
 
   public string VotingMethodsAdjusted
   {
     get
     {
-      // if this is a LsaM election, need to collect the VotingMethods from the Unit elections
-      // if (IsLsaM)
+      // if this is a Lsa2M election, need to collect the VotingMethods from the Unit elections
+      // if (IsLsa2M)
       // {
       //   return string.Join(",", UserSession.UnitElectionVotingMethods);
       // }

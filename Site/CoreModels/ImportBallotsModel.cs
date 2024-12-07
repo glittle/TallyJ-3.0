@@ -26,7 +26,7 @@ namespace TallyJ.CoreModels
 
     /*
      *
-     * TODO: If LsaU - import ballots only
+     * TODO: If Lsa2U - import ballots only
      *
      *
      */

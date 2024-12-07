@@ -443,17 +443,17 @@ namespace TallyJ.Controllers
         // find this person
         .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
 
-        // and the elections they are in - for 2-stage, this will be the LSAM election
+        // and the elections they are in - for 2-stage, this will be the LSA2M election
         .Join(Db.Election, p => p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
           (p, peopleElection) => new { p, peopleElection })
 
-        // and if there is a unit LSAU election that they are in
+        // and if there is a unit LSA2U election that they are in
         .GroupJoin(Db.Election, j => j.peopleElection.ElectionGuid, childElection => childElection.PeopleElectionGuid,
           (j, childList) => new
           {
             j.p,
             j.peopleElection,
-            targetElection = childList.FirstOrDefault(e => e.ElectionType == ElectionTypeEnum.LSAU && e.UnitName != null && e.UnitName == j.p.UnitName)
+            targetElection = childList.FirstOrDefault(e => e.ElectionType == ElectionTypeEnum.LSA2U && e.UnitName != null && e.UnitName == j.p.UnitName)
                              ?? j.peopleElection
           })
 

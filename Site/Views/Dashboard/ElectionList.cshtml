@@ -103,8 +103,8 @@
            IsFuture: e.IsFuture,
            deleting: e.ElectionGuid === deleting,
            noOnline: !e.OnlineEnabled,
-           parent: isLsaMain,
-           child: isLsaUnit,
+           parent: isLsa2M,
+           child: isLsa2U,
         }">
     <div class="electionDetail">
       <div class="Detail1" :title="e.ElectionGuid">
@@ -121,14 +121,14 @@
           <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
           <span class="numVoters" v-text="e.registered"></span>
-          <span v-if="!e.IsSingleNameElection && !isLsaMain"
+          <span v-if="!e.IsSingleNameElection && !isLsa2M"
                 class="numBallots"
                 v-text="e.numBallots">
           </span>
         </div>
       </div>
 
-      <div class="row tellers" v-if="!isLsaMain">
+      <div class="row tellers" v-if="!isLsa2M">
         <span class="tellerStatus">
           Tellers
         </span>
@@ -154,7 +154,7 @@
       </div>
 
     </div>
-    <div class="children" v-if="isLsaMain">
+    <div class="children" v-if="isLsa2M">
       <div v-if="!e.childElections.length">
         (No unit elections defined)
       </div>
@@ -179,7 +179,7 @@
       </div>
     </div>
     <div class="statusBlocks">
-      <div class="statusVoters statusBlock" @*v-if="!isLsaUnit"*@>
+      <div class="statusVoters statusBlock" @*v-if="!isLsa2U"*@>
         <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
         <div class="statusLabel">
           <div>Online Voting</div>
@@ -187,7 +187,7 @@
           <div v-text="e.openCloseTime"></div>
         </div>
       </div>
-      <div class="statusTellers statusBlock" @*v-if="!isLsaMain"*@>
+      <div class="statusTellers statusBlock" @*v-if="!isLsa2M"*@>
         <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
         <div class="statusLabel" :title="tellerToggleTitle">
           <div>Tellers</div>

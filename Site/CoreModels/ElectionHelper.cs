@@ -68,7 +68,7 @@ namespace TallyJ.CoreModels
           break;
 
         case "NSA":
-        case "LSA2":
+        case "LSA2M":
           // rules.CanVote = CanVoteOrReceive.NamedPeople; // delegates
           // rules.CanVoteLocked = true;
 
@@ -97,7 +97,7 @@ namespace TallyJ.CoreModels
           break;
 
         case "Con":
-        case "LSA1":
+        case "LSA2U":
           // rules.CanVote = CanVoteOrReceive.All;
           // rules.CanVoteLocked = true;
 
@@ -1243,12 +1243,12 @@ namespace TallyJ.CoreModels
         }.AsJsonResult();
       }
 
-      if (parentElection.ElectionType != ElectionTypeEnum.LSAM.ToString())
+      if (parentElection.ElectionType != ElectionTypeEnum.LSA2M.ToString())
       {
         return new
         {
           Success = false,
-          Message = $"Parent election must be a '{ElectionTypeEnum.LSAM.DisplayText}'"
+          Message = $"Parent election must be a '{ElectionTypeEnum.LSA2M.DisplayText}'"
         }.AsJsonResult();
       }
 
@@ -1263,7 +1263,7 @@ namespace TallyJ.CoreModels
           ElectionGuid = Guid.NewGuid(),
           Name = $"{parentElection.Name} - {unitInfo.name}",
           UnitName = unitInfo.name,
-          ElectionType = ElectionTypeEnum.LSAU.ToString(),
+          ElectionType = ElectionTypeEnum.LSA2U.ToString(),
           ElectionMode = ElectionModeEnum.Normal.ToString(),
           ParentElectionGuid = parentElectionGuid,
           PeopleElectionGuid = parentElectionGuid,

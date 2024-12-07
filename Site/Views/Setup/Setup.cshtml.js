@@ -64,11 +64,11 @@
         showImported: function () {
           return this.votingMethodsArray.includes('I');
         },
-        isLsaMain: function() {
-          return this.electionType === 'LSAM';
+        isLsa2M: function() {
+          return this.electionType === 'LSA2M';
         },
-        isLsaUnit: function() {
-          return this.electionType === 'LSAU';
+        isLsa2U: function() {
+          return this.electionType === 'LSA2U';
         },
         closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
@@ -307,7 +307,7 @@
       }
     });
 
-    if (!settings.vue.isLsaMain) {
+    if (!settings.vue.isLsa2M) {
       settings.badiDateGetter = BadiDateToday({
         locationIdentification: 3,
         use24HourClock: settings.vue.election.T24
@@ -573,7 +573,7 @@
 
           if (dataName === 'ElectionType') {
             // enforce a rule
-            if (value === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+            if (value === 'LSA2U' && settings.vue.originalElectionType !== 'LSA2U') {
               ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
               return;
             }
@@ -604,7 +604,7 @@
     var vue = settings.vue;
     var election = vue.election;
 
-    if (election.ElectionType === 'LSAU' && settings.vue.originalElectionType !== 'LSAU') {
+    if (election.ElectionType === 'LSA2U' && settings.vue.originalElectionType !== 'LSA2U') {
       ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
       return;
     }
@@ -731,7 +731,7 @@
     var type = $('#ddlType').val();
     var mode = $('#ddlMode').val();
 
-    if (type === 'Con' || type === 'LSAU') {
+    if (type === 'Con' || type === 'LSA2U') {
       if (mode === "B") {
         mode = "N";
         $("#ddlMode").val("N");

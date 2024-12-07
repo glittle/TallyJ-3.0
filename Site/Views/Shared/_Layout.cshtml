@@ -115,7 +115,7 @@
               <div id="electionState"
                    data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
-                @if (currentElection.ElectionType != ElectionTypeEnum.LSAM.Value)
+                @if (currentElection.ElectionType != ElectionTypeEnum.LSA2M.Value)
                 {
                   <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
                 }
@@ -158,7 +158,7 @@
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-        var showUnitSelector = currentElection?.IsLsaMorU == true && currentMenu.ShowLocationSelection;
+        var showUnitSelector = currentElection?.IsLsa2 == true && currentMenu.ShowLocationSelection;
         var showTellerSelector = currentMenu.ShowTellerSelector;
       }
       @if (showLocationSelector || showTellerSelector || showUnitSelector)
@@ -168,7 +168,7 @@
           {
             <label for="ddlTopUnit" class="ddlTopUnit">
               Unit:
-              @if (currentElection.IsLsaM)
+              @if (currentElection.IsLsa2M)
               {
                 <select id="ddlTopUnit" class="TopUnit input-mediumMax">
                   <option value="">[All Units]</option>

@@ -94,7 +94,7 @@
           var d = moment(e.DateOfElection);
           e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
           e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-          e.nameDisplay = (e.ElectionType !== 'LSAU'
+          e.nameDisplay = (e.ElectionType !== 'LSA2U'
             ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
             : e.UnitName);
 //            + ` (${e.ElectionGuid})`;
@@ -106,7 +106,7 @@
 
           // more static info
           e.numVoters = '';
-          e.numToElect = e.ElectionType !== 'LSAM' ? 'Elect ' + e.NumberToElect : '';
+          e.numToElect = e.ElectionType !== 'LSA2M' ? 'Elect ' + e.NumberToElect : '';
 
           e.tellers = [];
           e.users = [];
@@ -183,7 +183,7 @@
           topList.forEach(e => {
             fnAddChildren(e);
 
-            if (e.ElectionType === 'LSAM') {
+            if (e.ElectionType === 'LSA2M') {
               // sum up childElections into NumToElect
               e.numToElect = 'Total to Elect ' + e.childElections.reduce((a, c) => a + c.NumberToElect, 0);
             }
@@ -550,11 +550,11 @@ Vue.component('election-detail',
       selectedUser: function () {
         return this.users.find(u => u.selected);
       },
-      isLsaUnit: function () {
-        return this.e.ElectionType === 'LSAU';
+      isLsa2U: function () {
+        return this.e.ElectionType === 'LSA2U';
       },
-      isLsaMain: function () {
-        return this.e.ElectionType === 'LSAM';
+      isLsa2M: function () {
+        return this.e.ElectionType === 'LSA2M';
       },
       onlineOpenText: function () {
         return this.e.OnlineWhenOpen ? 'Open: ' + this.e.onlineOpen.format(this.formatDateTime) + ' - ' + this.e.onlineOpen.fromNow() :
