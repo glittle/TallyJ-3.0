@@ -42,6 +42,12 @@ h2 {
   align-items: flex-start;
 }
 
+.unitNameInfo {
+  display: flex;
+  gap: 0.3em;
+  align-items: center;
+}
+
 .PullInstructions {
   margin-top: 0;
 }
@@ -150,12 +156,8 @@ h2 {
 }
 
 table.Demographics {
-  //float: left;
   margin-left: 20px;
-  //padding: 10px 10px 10px 10px;
-  //border-spacing: 0;
-  //border: 1px solid #8DC63E;
-  //max-width: 600px;
+
   td:nth-child(3) {
     width: 99%;
   }
@@ -171,6 +173,30 @@ table.Demographics {
   h3 {
     font-size: 15px;
     margin: -2px 0 -5px 10px;
+  }
+
+  .relatedElectionLists {
+    margin: 0 0 10px 20px;
+    min-width: 50vw;
+
+    h3 {
+      margin: 5px 0 5px 0;
+      line-height: 1.3;
+    }
+
+    .relatedElections {
+      margin: 0 0 10px 20px;
+
+      button {
+        margin: 0 0 0 20px;
+        font-size: 100%;
+      }
+
+      .thisElection {
+        margin: 0 0 0 20px;
+        font-style: italic;
+      }
+    }
   }
 }
 

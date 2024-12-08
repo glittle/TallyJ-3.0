@@ -47,6 +47,16 @@ public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
         .AsRawHtml();
   }
 
+  public static HtmlString ForHtmlElSelect(string selected = "")
+  {
+    return
+      BaseItems
+        .Select(bi =>
+          $"<el-option value='{bi.Value}' label='{bi.Text}'></el-option>")
+        .JoinedAsString()
+        .AsRawHtml();
+  }
+
   public static string LockedForJs => BaseItems.Where(i => !i.DirectlySelectable).Select(i => i.Value).JoinedAsString(",", "'", "'");
 
   public static string AsJsonObject()

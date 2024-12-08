@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -36,12 +37,43 @@ namespace TallyJ.CoreModels
 
     public Election CurrentElection
     {
-      get { return _election ?? (_election = UserSession.CurrentElection); }
+      get { return _election ??= UserSession.CurrentElection; }
+    }
+
+    /// <summary>
+    ///  child and sibling elections. For 2 stage and tie-break elections
+    /// </summary>
+    public object ChildAndSiblingElectionInfo
+    {
+      get
+      {
+        return Db.Election
+          .Where(e => e.ParentElectionGuid == CurrentElection.ElectionGuid || e.ParentElectionGuid != null && e.ParentElectionGuid == CurrentElection.ParentElectionGuid)
+          .ToList()
+          .Select(e => new { Name = e.UnitName ?? e.Name, guid = e.ElectionGuid, e.ElectionType })
+          .OrderBy(e => e.Name)
+          .ToList();
+      }
+    }
+    public object ParentElectionInfo
+    {
+      get
+      {
+        if (CurrentElection.ParentElectionGuid != null)
+        {
+          return Db.Election
+            .Where(e => e.ElectionGuid == CurrentElection.ParentElectionGuid)
+            .Select(e => new { e.Name, guid = e.ElectionGuid, e.ElectionType })
+            .FirstOrDefault();
+        }
+
+        return null;
+      }
     }
 
     public ElectionHelper CurrentElectionHelper
     {
-      get { return _electionHelper ?? (_electionHelper = new ElectionHelper()); }
+      get { return _electionHelper ??= new ElectionHelper(); }
     }
 
     public object RulesForCurrentElection

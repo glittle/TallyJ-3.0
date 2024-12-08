@@ -112,12 +112,6 @@ namespace TallyJ.CoreModels
                 rules.Extra = 3;
                 rules.ExtraLocked = false;
               }
-              else
-              {
-                // LSA Unit has no extra (to be confirmed)
-                rules.Extra = 0;
-                rules.ExtraLocked = false;
-              }
 
               // rules.CanReceive = CanVoteOrReceive.All;
               break;
@@ -330,6 +324,7 @@ namespace TallyJ.CoreModels
       var editableFields = new
       {
         election.Name,
+        election.UnitName,
         election.DateOfElection,
         election.Convenor,
         election.ElectionType,
@@ -365,13 +360,13 @@ namespace TallyJ.CoreModels
       //   editableFields.Add(election.CanReceive);
       // }
 
+      var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
+
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
       {
         // just turned on
         election.ListedForPublicAsOf = DateTime.UtcNow;
       }
-
-      var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
       election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null;
       election.OnlineWhenOpen = election.OnlineWhenOpen.HasValue ? election.OnlineWhenOpen.Value.ToUniversalTime() : (DateTime?)null;

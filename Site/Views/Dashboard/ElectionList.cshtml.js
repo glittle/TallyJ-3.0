@@ -94,10 +94,9 @@
           var d = moment(e.DateOfElection);
           e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
           e.dateSort = e.DateOfElection ? d.toISOString() : '0';
-          e.nameDisplay = (e.ElectionType !== 'LSA2U'
+          e.nameDisplay = e.ElectionType !== 'LSA2U'
             ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
-            : e.UnitName);
-          //            + ` (${e.ElectionGuid})`;
+            : e.UnitName;
 
           //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
           e.old = false; //!isCurrent;
@@ -168,47 +167,49 @@
             e.childElections = list.filter(c => c.ParentElectionGuid === e.ElectionGuid);
             e.childElections.forEach(c => {
               c.addedToParent = true;
+              c.sort = (c.UnitName ?? c.Name).toLowerCase();
               // append their children
               fnAddChildren(c);
             });
 
             e.childElections.sort((a, b) => {
-              if (a.dateSort !== b.dateSort) {
-                return a.dateSort > b.dateSort ? -1 : 1;
-              }
-              return a.Name > b.Name ? 1 : -1;
+              //              if (a.dateSort !== b.dateSort) {
+              //                return a.dateSort > b.dateSort ? -1 : 1;
+              //              }
+              return a.sort > b.sort ? 1 : -1;
             });
           };
 
           topList.forEach(e => {
             fnAddChildren(e);
+          });
 
-            // add the non-top ones that are not added to a parent
-            var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
-            orphanList.forEach(e => {
-              // adjust their name to show the parent's name as well
-              e.nameDisplay = e.Name;
-            });
+          // add the non-top ones that are not added to a parent
+          var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
+          orphanList.forEach(e => {
+            // adjust their name to show the parent's name as well
+            e.nameDisplay = e.Name;
+          });
 
-            // add the orphans to the topList
-            topList = topList.concat(orphanList);
+          // add the orphans to the topList
+          topList = topList.concat(orphanList);
 
-            // sort by date, then name
-            topList.sort((a, b) => {
-              if (a.dateSort !== b.dateSort) {
-                return a.dateSort > b.dateSort ? -1 : 1;
-              }
-              return a.Name > b.Name ? 1 : -1;
-            });
+          // sort by date, then name
+          topList.sort((a, b) => {
+            if (a.dateSort !== b.dateSort) {
+              return a.dateSort > b.dateSort ? -1 : 1;
+            }
+            return a.Name > b.Name ? 1 : -1;
+          });
 
-            this.elections = list;
-            this.topList = topList;
-            this.loaded = true;
-          },
-            getMoreStatic() {
-            // relative stable during an election
-            var vue = this;
-            CallAjax2(publicInterface.moreStaticUrl,
+          this.elections = list;
+          this.topList = topList;
+          this.loaded = true;
+        },
+        getMoreStatic() {
+          // relative stable during an election
+          var vue = this;
+          CallAjax2(publicInterface.moreStaticUrl,
             null,
             {
               busy: 'Loading Details'

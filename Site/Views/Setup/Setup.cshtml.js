@@ -64,14 +64,64 @@
         showImported: function () {
           return this.votingMethodsArray.includes('I');
         },
-        isLsa2M: function() {
+        isLsa2M: function () {
           return this.electionType === 'LSA2M';
         },
-        isLsa2U: function() {
+        isLsa2U: function () {
           return this.electionType === 'LSA2U';
+        },
+        isChild: function () {
+          return this.isLsa2U || this.electionType === 'Tie';
+        },
+        hasNextHighest: function () {
+          return this.electionType === 'Con';
         },
         closeIsPast: function () {
           return moment(this.election.OnlineWhenClose).isBefore();
+        },
+        parentElection: function () {
+          return publicInterface.ParentElection;
+        },
+        hasRelatedElections: function () {
+          return this.relatedElectionLists ? Object.keys(this.relatedElectionLists).length > 0 : false;
+        },
+        relatedElectionLists: function () {
+          // related election can be of two types - Tie and LSA2U
+          var relatedTypes = {};
+
+          var parentElection = this.parentElection;
+          if (parentElection) {
+            relatedTypes[parentElection.ElectionType] = {
+              name: 'Parent',
+              elections: [
+                {
+                  name: parentElection.Name,
+                  guid: parentElection.guid,
+                }
+              ]
+            }
+          }
+
+          var childElections = publicInterface.ChildAndSiblingElections;
+          if (childElections) {
+            for (var i = 0; i < childElections.length; i++) {
+              var ce = childElections[i];
+              const cet = ce.ElectionType;
+
+              var typeInfo = relatedTypes[cet];
+              if (!typeInfo) {
+                const name = cet === 'LSA2U' ? 'Unit' : (cet === 'Tie' ? 'Tie-break' : '??');
+                relatedTypes[cet] = typeInfo = { name, elections: [] };
+              }
+
+              typeInfo.elections.push({
+                name: ce.Name,
+                guid: ce.guid,
+              });
+            }
+          }
+
+          return relatedTypes;
         }
         //        onlineOpen: {
         //          get: function () {
@@ -250,8 +300,45 @@
           if (!when) return '';
           return '(' + moment(when).fromNow() + ')';
         },
+        plural: function (s, a, b, c) {
+          return Plural(s, a, b, c);
+        },
+        switchToElection(guid) {
+          var form =
+          {
+            guid: guid,
+            oldComputerGuid: GetFromStorage('compcode_' + guid, null)
+          };
+
+          clearElectionRelatedStorageItems();
+
+          ShowStatusBusy('Switching to election...'); // will reload page so don't need to clear it
+          CallAjaxHandler(setupIndexPage.electionsUrl + '/SelectElection', form, this.afterSelectElection);
+        },
+        afterSelectElection(info) {
+          if (info.Selected) {
+            SetInStorage('compcode_' + info.ElectionGuid, info.CompGuid);
+            location.href = site.rootUrl + 'Setup';
+          }
+          else {
+            ShowStatusFailed("Unable to select");
+          }
+        },
       }
     });
+
+    function clearElectionRelatedStorageItems() {
+      // same in ElectionList.cshtml.js
+      for (var key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          if (key.substr(0, 5) === 'name_') {
+            localStorage.removeItem(key);
+          } else if (key === 'ActiveUploadRowId') {
+            localStorage.removeItem(key);
+          }
+        }
+      }
+    };
 
     $(document).on('change keyup', '#ddlType, #ddlMode', function (ev) {
       startToAdjustByType(ev);
@@ -303,18 +390,16 @@
 
     $(window).on('beforeunload', function () {
       if ($('.btnSave').hasClass('btn-primary')) {
-        return "Changes have been made and not saved.";
+        return 'Changes have been made and not saved.';
       }
     });
 
-    if (!settings.vue.isLsa2U) {
-      settings.badiDateGetter = BadiDateToday({
-        locationIdentification: 3,
-        use24HourClock: settings.vue.election.T24
-      });
+    settings.badiDateGetter = BadiDateToday({
+      locationIdentification: 3,
+      use24HourClock: settings.vue.election.T24
+    });
 
-      getBadiDate();
-    }
+    getBadiDate();
   };
 
   function getBadiDate() {
@@ -674,8 +759,12 @@
     });
 
     if (!form.Name) {
-      ShowStatusFailed('Election name is required.');
-      return;
+      if (vue.isChild) {
+        form.Name = `${vue.parentElection.Name} - ${form.UnitName}`;
+      } else {
+        ShowStatusFailed('Election name is required.');
+        return;
+      }
     }
 
     CallAjax2(publicInterface.controllerUrl + '/SaveElection', form,
@@ -732,13 +821,13 @@
     var mode = $('#ddlMode').val();
 
     if (type === 'Con' || type === 'LSA2U') {
-      if (mode === "B") {
-        mode = "N";
-        $("#ddlMode").val("N");
+      if (mode === 'B') {
+        mode = 'N';
+        $('#ddlMode').val('N');
       }
-      $("#modeB").attr("disabled", "disabled");
+      $('#modeB').attr('disabled', 'disabled');
     } else {
-      $("#modeB").removeAttr("disabled");
+      $('#modeB').removeAttr('disabled');
     }
 
     var classes = [];

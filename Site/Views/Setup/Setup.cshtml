@@ -17,12 +17,14 @@
 
   ContextItems.AddJavascriptForPage("setupIndexPage.controllerUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Election={0};".FilledWith(Model.CurrentElection.SerializedAsJsonString()));
-  //  ContextItems.AddJavascriptForPage("setupIndexPage.OnlineElection={0};".FilledWith(Model.CurrentOnlineElection.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.ChildAndSiblingElections={0};".FilledWith(Model.ChildAndSiblingElectionInfo.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.ParentElection={0};".FilledWith(Model.ParentElectionInfo.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("setupIndexPage.Locations={0};".FilledWith(Model.LocationsJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.Tellers={0};".FilledWith(Model.TellersJson));
   ContextItems.AddJavascriptForPage("setupIndexPage.initialRules('{type}','{mode}',{rules});".FilledWith(Model.RulesForCurrentElection));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasBallots={0};".FilledWith(Model.HasBallots.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("setupIndexPage.hasOnlineBallots={0};".FilledWith(Model.HasOnlineBallots.SerializedAsJsonString()));
+  ContextItems.AddJavascriptForPage("setupIndexPage.electionsUrl={0};".FilledWith(Url.Action("Index", "Elections").QuotedForJavascript()));
 }
 <button type="button" class="btnSave btn" accesskey="S">
   <u>S</u>ave Changes
@@ -47,13 +49,13 @@
       <li>Provide a name for this election that you will use and see in your list of elections.</li>
       <li>If you allow other tellers access, they will see the name and it will be listed on the public TallyJ home page while you are active in it.</li>
       <li>Typically the name should include your locality and the election type. For example, New York Ridván @(DateTime.Today.Year).</li>
-        <li>
-            The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
-            is being held on the 13<sup>th</sup> day of the month of Glory (Jalál). It also shows in some reports.
-        </li>
-        <li>
-          * Unit Elections cannot be directly select here. Must be added on the Election List page.
-        </li>
+      <li>
+        The election date is optional, but for Local Spiritual Assembly elections, this will help to confirm that the election
+        is being held on the 13<sup>th</sup> day of the month of Glory (Jalál). It also shows in some reports.
+      </li>
+      <li>
+        * Unit Elections cannot be directly select here. Must be added on the Election List page.
+      </li>
     </ol>
   </div>
   <table class="Demographics">
@@ -62,13 +64,28 @@
         Type of Election<span class="ui-icon ui-icon-info" id="qTipType"></span>
       </th>
       <td>
-        <select id="ddlType" v-model="electionType"
-                :disabled="[@ElectionTypeEnum.LockedForJs].includes(electionType)"
-                data-name="ElectionType">
-          @ElectionTypeEnum.ForHtmlSelect()
-        </select>
+        <el-select id="ddlType" v-model="electionType"
+                   size="mini"
+                   :disabled="!!([@ElectionTypeEnum.LockedForJs.AsRawHtml()].includes(electionType) || hasRelatedElections)"
+                   data-name="ElectionType">
+          @ElectionTypeEnum.ForHtmlElSelect()
+        </el-select>
         <span class="ui-icon ui-icon-info" id="qTipLocked1"></span>
         <span class="ui-state-error-text"><span class="ui-icon ui-icon-info" id="qTipLocked2"></span></span>
+
+        <div v-if="hasRelatedElections" class="relatedElectionLists">
+          <div v-for="ret in relatedElectionLists" :key="ret.name">
+            <h3 v-text="ret.name + ' election' + plural(ret.elections.length)"></h3>
+            <div class="relatedElections">
+              <div v-for="re in ret.elections" :key="re.guid">
+                {{re.name}}
+                <el-button size="small" type="text" v-if="re.guid !== election.ElectionGuid" v-on:click="switchToElection(re.guid)">Go to Election</el-button>
+                <span class="thisElection" v-else>(this election)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </td>
     </tr>
     <tr class="electionDetail">
@@ -124,7 +141,7 @@
           </select>
         </td>
       </tr>*@
-    <tr>
+    <tr v-if="hasNextHighest">
       <th>
         Report on next highest<span class="ui-icon ui-icon-info" id="qTipNumNext"></span>
       </th>
@@ -132,7 +149,7 @@
         <input type="number" min="0" id="txtExtras" data-name="NumberExtra" />
       </td>
     </tr>
-    <tr>
+    <tr v-if="!isChild">
       <th>
         Convener<span class="ui-icon ui-icon-info" id="qTipConvener"></span>
       </th>
@@ -141,7 +158,7 @@
         Name of the responsible Assembly
       </td>
     </tr>
-    <tr>
+    <tr v-if="!isChild">
       <th>
         Name in TallyJ<span class="ui-icon ui-icon-info" id="qTipName"></span>
       </th>
@@ -149,6 +166,17 @@
         <div class="nameInfo">
           <input type="text" id="txtName" data-name="Name">
           <span>Displayed for tellers and voters and on some reports. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
+        </div>
+      </td>
+    </tr>
+    <tr v-if="isLsa2U">
+      <th>
+        Unit Name<span class="ui-icon ui-icon-info" id="qTipName"></span>
+      </th>
+      <td>
+        <div class="unitNameInfo">
+          <span>{{parentElection.Name}} -</span>
+          <input type="text" id="txtName" data-name="UnitName">
         </div>
       </td>
     </tr>
@@ -339,9 +367,9 @@
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
         <p>* To accept ballots Online using TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked if/when ballots are imported.</p>
-          <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
-              Kiosk is only available if Online is also active. See <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view#heading=h.jqf7d1f9kp6j" target="_blank">Online Voting</a> for details of how to use it.
-          </p>
+        <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
+          Kiosk is only available if Online is also active. See <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view#heading=h.jqf7d1f9kp6j" target="_blank">Online Voting</a> for details of how to use it.
+        </p>
         <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
           Enable this browser as a Kiosk?
           <el-radio-group v-model="isKiosk" size="mini" class="ignore">
