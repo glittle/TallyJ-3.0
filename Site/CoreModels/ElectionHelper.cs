@@ -365,13 +365,13 @@ namespace TallyJ.CoreModels
       //   editableFields.Add(election.CanReceive);
       // }
 
+      var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
+
       if (!currentListed.AsBoolean() && election.ListForPublic.AsBoolean())
       {
         // just turned on
         election.ListedForPublicAsOf = DateTime.UtcNow;
       }
-
-      var changed = electionFromBrowser.CopyPropertyValuesTo(election, editableFields);
 
       election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null;
       election.OnlineWhenOpen = election.OnlineWhenOpen.HasValue ? election.OnlineWhenOpen.Value.ToUniversalTime() : (DateTime?)null;
