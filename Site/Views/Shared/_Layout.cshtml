@@ -115,10 +115,7 @@
               <div id="electionState"
                    data-state="@UserSession.CurrentElectionStatus">
                 @currentMenu.StateSelectorItems()
-                @if (currentElection.ElectionType != ElectionTypeEnum.LSA2M.Value)
-                {
-                  <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
-                }
+                <span class="ui-icon ui-icon-info" id="qTipFinalized"></span>
                 <span class="other"><a href="#" id="AllPages" title="Go to another page">Other Pages</a></span>
                 <span class="QuickDash other">
                   @Html.Partial("../Dashboard/OtherItems", new ViewDataDictionary { { "ShowHomeLink", "Yes" } })

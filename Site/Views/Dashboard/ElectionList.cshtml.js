@@ -97,7 +97,7 @@
           e.nameDisplay = (e.ElectionType !== 'LSA2U'
             ? e.Name + (e.Convenor ? (` (${e.Convenor})`) : '')
             : e.UnitName);
-//            + ` (${e.ElectionGuid})`;
+          //            + ` (${e.ElectionGuid})`;
 
           //var isCurrent = e.CanBeAvailableForGuestTellers || e.OnlineCurrentlyOpen || d.isSameOrAfter(moment(), 'day');
           e.old = false; //!isCurrent;
@@ -106,7 +106,7 @@
 
           // more static info
           e.numVoters = '';
-          e.numToElect = e.ElectionType !== 'LSA2M' ? 'Elect ' + e.NumberToElect : '';
+          e.numToElect = 'Elect ' + e.NumberToElect;
 
           e.tellers = [];
           e.users = [];
@@ -179,42 +179,36 @@
               return a.Name > b.Name ? 1 : -1;
             });
           };
-          
+
           topList.forEach(e => {
             fnAddChildren(e);
 
-            if (e.ElectionType === 'LSA2M') {
-              // sum up childElections into NumToElect
-              e.numToElect = 'Total to Elect ' + e.childElections.reduce((a, c) => a + c.NumberToElect, 0);
-            }
-          });
+            // add the non-top ones that are not added to a parent
+            var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
+            orphanList.forEach(e => {
+              // adjust their name to show the parent's name as well
+              e.nameDisplay = e.Name;
+            });
 
-          // add the non-top ones that are not added to a parent
-          var orphanList = list.filter(e => !e.addedToParent && !e.isTop);
-          orphanList.forEach(e => {
-            // adjust their name to show the parent's name as well
-            e.nameDisplay = e.Name;
-          });
+            // add the orphans to the topList
+            topList = topList.concat(orphanList);
 
-          // add the orphans to the topList
-          topList = topList.concat(orphanList);
+            // sort by date, then name
+            topList.sort((a, b) => {
+              if (a.dateSort !== b.dateSort) {
+                return a.dateSort > b.dateSort ? -1 : 1;
+              }
+              return a.Name > b.Name ? 1 : -1;
+            });
 
-          // sort by date, then name
-          topList.sort((a, b) => {
-            if (a.dateSort !== b.dateSort) {
-              return a.dateSort > b.dateSort ? -1 : 1;
-            }
-            return a.Name > b.Name ? 1 : -1;
-          });
-
-          this.elections = list;
-          this.topList = topList;
-          this.loaded = true;
-        },
-        getMoreStatic() {
-          // relative stable during an election
-          var vue = this;
-          CallAjax2(publicInterface.moreStaticUrl,
+            this.elections = list;
+            this.topList = topList;
+            this.loaded = true;
+          },
+            getMoreStatic() {
+            // relative stable during an election
+            var vue = this;
+            CallAjax2(publicInterface.moreStaticUrl,
             null,
             {
               busy: 'Loading Details'
@@ -622,7 +616,7 @@ Vue.component('election-detail',
           election.openToAdd = true;
           return;
         }
-        
+
         // check for invalid letters
         if (/[;<]/.test(election.newChildren)) {
           ShowStatusFailed('Cannot include ; or < in names');

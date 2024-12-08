@@ -443,6 +443,8 @@ namespace TallyJ.Controllers
         // find this person
         .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
 
+        // TODO review this logic for 2 stage elections
+
         // and the elections they are in - for 2-stage, this will be the LSA2M election
         .Join(Db.Election, p => p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
           (p, peopleElection) => new { p, peopleElection })

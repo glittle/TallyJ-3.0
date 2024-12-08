@@ -58,16 +58,7 @@ public partial class Election : IIndexedForCaching
 
   public string VotingMethodsAdjusted
   {
-    get
-    {
-      // if this is a Lsa2M election, need to collect the VotingMethods from the Unit elections
-      // if (IsLsa2M)
-      // {
-      //   return string.Join(",", UserSession.UnitElectionVotingMethods);
-      // }
-
-      return VotingMethods;
-    }
+    get => VotingMethods;
     set => VotingMethods = value;
   }
 

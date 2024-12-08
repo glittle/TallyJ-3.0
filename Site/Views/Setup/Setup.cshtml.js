@@ -307,7 +307,7 @@
       }
     });
 
-    if (!settings.vue.isLsa2M) {
+    if (!settings.vue.isLsa2U) {
       settings.badiDateGetter = BadiDateToday({
         locationIdentification: 3,
         use24HourClock: settings.vue.election.T24
@@ -574,7 +574,7 @@
           if (dataName === 'ElectionType') {
             // enforce a rule
             if (value === 'LSA2U' && settings.vue.originalElectionType !== 'LSA2U') {
-              ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+              ShowStatusFailed('* Cannot directly create a Unit election. Must be added on the Election List page.');
               return;
             }
           }
@@ -605,12 +605,12 @@
     var election = vue.election;
 
     if (election.ElectionType === 'LSA2U' && settings.vue.originalElectionType !== 'LSA2U') {
-      ShowStatusFailed('* Cannot directly select a Unit election. Must be added on the Election List page.');
+      ShowStatusFailed('* Cannot directly create a Unit election. Must be added on the Election List page.');
       return;
     }
 
     if (election.ElectionType === 'Tie' && settings.vue.originalElectionType !== 'Tie') {
-      ShowStatusFailed('* Cannot directly select a Tie election. Must be added from another election.');
+      ShowStatusFailed('* Cannot directly create a Tie election. Must be added from another election.');
       return;
     }
 

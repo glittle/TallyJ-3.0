@@ -42,6 +42,7 @@ namespace TallyJ.Controllers
         var currentElection = UserSession.CurrentElection;
         if (currentElection.ElectionType == ElectionTypeEnum.LSA2M.Value)
         {
+          // TODO review this logic for 2 stage elections
           // temporary for this request
           currentElection.UnitName = unit;
         }

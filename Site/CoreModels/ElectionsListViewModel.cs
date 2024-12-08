@@ -52,7 +52,9 @@ namespace TallyJ.CoreModels
       var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
         .GroupBy(p => p.ElectionGuid)
         .ToList()
-        .Join(MyElections(), g => g.Key, e => e.PeopleElectionGuid, (g, e) => new { e.ElectionGuid, people = g.Where(p => e.ElectionType != ElectionTypeEnum.LSA2U.ToString() || p.UnitName == e.UnitName).ToList() })
+        .Join(MyElections(), g => g.Key, e => e.PeopleElectionGuid, 
+          (g, e) => new { e.ElectionGuid, 
+            people = g.Where(p => e.ElectionType != ElectionTypeEnum.LSA2U.ToString() || p.UnitName == e.UnitName).ToList() })
         .Select(j => new { j.ElectionGuid, Num = j.people.Count(p => p.CanVote.GetValueOrDefault()) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 

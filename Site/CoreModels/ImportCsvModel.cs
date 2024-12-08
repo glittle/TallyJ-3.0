@@ -42,7 +42,7 @@ public class ImportCsvModel : DataConnectedModel
                        "OtherInfo",
                      };
 
-      if (!UserSession.CurrentElection.IsLsa2M)
+      if (!UserSession.CurrentElection.IsLsa2M) // LSA2U can't import people at all
       {
         list.Remove(UnitName);
       }

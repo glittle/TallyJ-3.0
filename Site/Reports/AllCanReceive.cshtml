@@ -4,8 +4,7 @@
 @using TallyJ.EF
 @inherits RazorEngine.Templating.TemplateBase
 @{
-  var showUnitName = UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSA2U 
-    || UserSession.CurrentElection.ElectionType == ElectionTypeEnum.LSA2M;
+  var showUnitName = UserSession.CurrentElection.IsLsa2;
 
   var people = new PersonCacher().AllForThisElection
     .Where(p => p.CanReceiveVotesInElection.GetValueOrDefault())

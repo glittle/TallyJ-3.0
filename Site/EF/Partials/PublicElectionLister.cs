@@ -109,7 +109,7 @@ namespace TallyJ.EF
       var electionsInfo = Db.Election
         .Where(e => activeElectionGuids.Contains(e.ElectionGuid))
         .ToList()
-        .Where(e => e.CanBeAvailableForGuestTellers && e.ElectionType!=ElectionTypeEnum.LSA2M)
+        .Where(e => e.CanBeAvailableForGuestTellers)
         .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
         .ToList();
 

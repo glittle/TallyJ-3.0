@@ -121,14 +121,14 @@
           <span class="numToElect" v-text="e.numToElect"></span>
           <span class="numVoters" v-text="e.numVoters"></span>
           <span class="numVoters" v-text="e.registered"></span>
-          <span v-if="!e.IsSingleNameElection && !isLsa2M"
+          <span v-if="!e.IsSingleNameElection"
                 class="numBallots"
                 v-text="e.numBallots">
           </span>
         </div>
       </div>
 
-      <div class="row tellers" v-if="!isLsa2M">
+      <div class="row tellers">
         <span class="tellerStatus">
           Tellers
         </span>
@@ -179,7 +179,7 @@
       </div>
     </div>
     <div class="statusBlocks">
-      <div class="statusVoters statusBlock" @*v-if="!isLsa2U"*@>
+      <div class="statusVoters statusBlock">
         <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
         <div class="statusLabel">
           <div>Online Voting</div>
@@ -187,7 +187,7 @@
           <div v-text="e.openCloseTime"></div>
         </div>
       </div>
-      <div class="statusTellers statusBlock" @*v-if="!isLsa2M"*@>
+      <div class="statusTellers statusBlock">
         <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
         <div class="statusLabel" :title="tellerToggleTitle">
           <div>Tellers</div>

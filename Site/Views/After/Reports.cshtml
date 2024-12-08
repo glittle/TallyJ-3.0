@@ -17,7 +17,6 @@
   var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
   var firstHeader = false;
   var onlineEnabled = currentElection.OnlineEnabled;
-  var isControlCentre = currentElection.ElectionType == ElectionTypeEnum.LSA2M;
 
   var reportsBallots = new Dictionary<string, string>
     {
@@ -51,9 +50,7 @@
     };
 
 
-  var reports = isControlCentre
-      ? reportsVoters
-      : reportsBallots.Concat(reportsVoters).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+  var reports = reportsBallots.Concat(reportsVoters).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 }
 <link href="@ClientFile("~/Content/theme.default.min.css")" rel="stylesheet"/>
 <link href="@ClientFile("~/Content/theme.dropbox.min.css")" rel="stylesheet"/>

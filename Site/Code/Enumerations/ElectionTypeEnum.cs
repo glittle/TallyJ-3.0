@@ -21,7 +21,6 @@ public class ElectionTypeEnum : BaseEnumeration<ElectionTypeEnum, string>
     Add(LSA);
     Add(LSA2M);
     Add(LSA2U);
-    // Add(LSAF);
     Add(NSA);
     Add(Con);
     Add(Reg);
