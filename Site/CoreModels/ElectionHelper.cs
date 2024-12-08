@@ -116,7 +116,7 @@ namespace TallyJ.CoreModels
               {
                 // LSA Unit has no extra (to be confirmed)
                 rules.Extra = 0;
-                rules.ExtraLocked = true;
+                rules.ExtraLocked = false;
               }
 
               // rules.CanReceive = CanVoteOrReceive.All;
@@ -133,7 +133,7 @@ namespace TallyJ.CoreModels
               break;
 
             case ElectionMode.ByElection:
-              throw new ApplicationException("Unit Conventions cannot have by-elections");
+              throw new ApplicationException("Unit Conventions and Elections and cannot have by-elections");
           }
 
           // rules.CanReceiveLocked = true;
