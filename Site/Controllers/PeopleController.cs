@@ -90,7 +90,7 @@ namespace TallyJ.Controllers
       return new
       {
         people = allForThisElection
-          .Where(p => p.CanReceiveVotes.AsBoolean())
+          .Where(p => p.Voter.CanReceiveVotes.AsBoolean())
           .Select(p =>
           {
             // var irg = p.IneligibleReasonGuid;

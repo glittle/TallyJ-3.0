@@ -54,7 +54,7 @@
       return new
       {
     //person,
-    Reason = v.InvalidReasonGuid ?? (person == null ? null : (person.CanReceiveVotesInElection.GetValueOrDefault() ? null : person.IneligibleReasonGuid))
+    Reason = v.InvalidReasonGuid ?? (person == null ? null : (person.CanReceiveVotes.GetValueOrDefault() ? null : person.IneligibleReasonGuid))
       };
     })
 .GroupBy(r => r.Reason, (r, rList) => new

@@ -32,9 +32,10 @@ namespace TallyJ.CoreModels
         var onlineBallots = SettingsHelper.HostSupportsOnlineElections
           ? Db.Person
             .Where(p => p.ElectionGuid == currentElectionGuid)
-            .Join(Db.OnlineVotingInfo, p => new { p.PersonGuid, p.ElectionGuid },
-               ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (p, ovi) =>
-                new { p, ovi })
+            .Join(Db.Voter, p => new { p.PersonGuid, p.ElectionGuid }, pv => new { pv.PersonGuid, pv.ElectionGuid }, (p, pv) => new { p, pv })
+            .Join(Db.OnlineVotingInfo, j => new { j.p.PersonGuid, j.p.ElectionGuid },
+               ovi => new { ovi.PersonGuid, ovi.ElectionGuid }, (j, ovi) =>
+                new { j.p, j.pv, ovi })
             .Select(j => new
             {
               // j.p.C_RowId,
@@ -44,6 +45,7 @@ namespace TallyJ.CoreModels
               // j.p.Phone,
               // j.p.CombinedSoundCodes,
               j.p,
+              j.pv,
               j.ovi,
             })
             .ToList()
@@ -51,14 +53,14 @@ namespace TallyJ.CoreModels
             {
               PersonId = j.p.C_RowId,
               j.p.C_FullName,
-              j.p.VotingMethod,
+              j.pv.VotingMethod,
               j.ovi.Status,
               WhenStatus = j.ovi.WhenStatus.AsUtc(),
               j.ovi.HistoryStatus,
-              j.p.RegistrationLog,
-              RegistrationTime = j.p.RegistrationTime.AsUtc(),
+              j.pv.RegistrationLog,
+              RegistrationTime = j.pv.RegistrationTime.AsUtc(),
               votesReady = j.ovi.PoolLocked.GetValueOrDefault(),
-              VotingMethod_Display = VotingMethodEnum.TextFor(j.p.VotingMethod).DefaultTo("-"),
+              VotingMethod_Display = VotingMethodEnum.TextFor(j.pv.VotingMethod).DefaultTo("-"),
               j.p.Email,
               j.p.Phone
             })

@@ -34,6 +34,7 @@ namespace TallyJ.CoreModels.ExportImport
       //var computers = Db.Computer.Where(c => c.ElectionGuid == _electionGuid);
 
       var people = Db.Person.Where(p => p.ElectionGuid == _electionGuid);
+      var voters = Db.Voter.Where(p => p.ElectionGuid == _electionGuid);
       var tellers = Db.Teller.Where(t => t.ElectionGuid == _electionGuid);
       var results = Db.Result.Where(r => r.ElectionGuid == _electionGuid);
       var resultSummaries = Db.ResultSummary.Where(r => r.ElectionGuid == _electionGuid);
@@ -68,6 +69,7 @@ namespace TallyJ.CoreModels.ExportImport
         onlineVoterInfo = ExportOnlineVoterInfos(onlineVoterInfo),
         location = ExportLocationBallotVote(locations, ballots, votes, logs),
         person = ExportPeople(people),
+        personVoters = ExportVoters(voters),
         reason = ExportReasons(),
         log = ExportLogs(logs.Where(l => l.LocationGuid == null))
       };
@@ -152,6 +154,22 @@ namespace TallyJ.CoreModels.ExportImport
           p.CombinedSoundCodes, // now used for extra fake columns
           p.CombinedInfoAtStart,
           p.AgeGroup,
+          p.Email,
+          p.Phone,
+          p.UnitName,
+          Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
+        }).ToList();
+    }
+
+    private IList ExportVoters(IQueryable<Voter> personVoters)
+    {
+      return personVoters
+        .OrderBy(p => p.PersonGuid)
+        .ToList()
+        .Select(p => new
+        {
+          // following the SQL order for easier comparison
+          p.PersonGuid,
           CanVote = p.CanVote.OnlyIfFalse(),
           CanReceiveVotes = p.CanReceiveVotes.OnlyIfFalse(),
           p.IneligibleReasonGuid,
@@ -161,13 +179,10 @@ namespace TallyJ.CoreModels.ExportImport
           p.EnvNum,
           p.Teller1,
           p.Teller2,
-          p.Email,
-          p.Phone,
           p.HasOnlineBallot,
           p.Flags,
-          p.UnitName,
+          p.RegLog
           // p.KioskCode, -- ephemeral, don't export
-          Changed = (p.CombinedInfoAtStart != p.CombinedInfo).OnlyIfTrue(),
         }).ToList();
     }
 

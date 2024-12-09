@@ -423,7 +423,8 @@ public class ImportCsvModel : DataConnectedModel
 
       var person = new Person
       {
-        TempImportLineNum = currentLineNum
+        TempImportLineNum = currentLineNum,
+        Voter = new Voter()
       };
 
       foreach (var currentMapping in validMappings)
@@ -463,7 +464,7 @@ public class ImportCsvModel : DataConnectedModel
                 var match = IneligibleReasonEnum.GetFor(value);
                 if (match != null)
                 {
-                  person.IneligibleReasonGuid = match.Value;
+                  person.Voter.IneligibleReasonGuid = match.Value;
                 }
                 else
                 {

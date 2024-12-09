@@ -6,9 +6,9 @@ using EntityFramework.BulkInsert.Extensions;
 
 namespace TallyJ.EF
 {
-  public partial class TallyJ2dEntities : ITallyJDbContext
+  public partial class TallyJEntities : ITallyJDbContext
   {
-    public TallyJ2dEntities(DbConnection connection)
+    public TallyJEntities(DbConnection connection)
       : base(connection, true)
     {
       Database.CommandTimeout = 180; // default 30 seconds is too short

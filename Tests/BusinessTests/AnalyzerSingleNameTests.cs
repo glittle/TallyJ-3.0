@@ -17,18 +17,16 @@ namespace Tests.BusinessTests
   public class AnalyzerSingleNameTests
   {
     private AnalyzerFakes _fakes;
-    private List<Person> _samplePeople;
     private ITallyJDbContext Db;
     private Guid _electionGuid;
-
-    private List<Person> SamplePeople
-    {
-      get { return _samplePeople; }
-    }
+    private List<Person> SamplePeople { get; set; }
 
     [TestInitialize]
     public void Init()
     {
+      UnityInstance.Reset();
+      ElectionTestHelper.Reset();
+
       _fakes = new AnalyzerFakes();
       Db = _fakes.DbContext;
       Db.ForTests();
@@ -36,9 +34,9 @@ namespace Tests.BusinessTests
 
       _electionGuid = Guid.NewGuid();
 
-      SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
-      SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
+      // SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
+      // SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
+      // ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
       SessionKey.CurrentComputer.SetInSession(new Computer
       {
@@ -46,20 +44,26 @@ namespace Tests.BusinessTests
         ComputerCode = "TEST",
         ElectionGuid = _electionGuid
       });
-
-      _samplePeople = new List<Person>
-      {// 0 - 7
-        new Person {FirstName="x0",CombinedInfo="person", VotingMethod=VotingMethodEnum.InPerson}.ForTests(),
-        new Person {FirstName="x1",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x2",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x3",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x4",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x5",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x6",CombinedInfo="person"}.ForTests(),
-        new Person {FirstName="x7",CombinedInfo="person"}.ForTests(),
-      };
     }
 
+    public void AfterElectionCreated()
+    {
+      UserSession.CurrentPeopleElectionGuid = ElectionTestHelper.ElectionGuid;
+
+      SamplePeople = 
+      [
+        // 0 - 7
+        new Person {FirstName="x0",CombinedInfo="person", Voter = new Voter{ VotingMethod=VotingMethodEnum.InPerson}}.ForTests(),
+        new Person {FirstName="x1",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x2",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x3",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x4",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x5",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x6",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+        new Person {FirstName="x7",CombinedInfo="person", Voter = new Voter()}.ForTests(),
+      ];
+
+    }
 
     [TestMethod]
     public void Election_3_people()
@@ -69,6 +73,8 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -112,6 +118,8 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -175,6 +183,8 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
      {
@@ -240,6 +250,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
           {
             new Ballot().ForTests()
@@ -286,6 +298,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
                       {
                         new Ballot().ForTests(),
@@ -302,7 +316,7 @@ namespace Tests.BusinessTests
                       new Vote() {SingleNameElectionCount = 4 }.ForTests(ballots[1], SamplePeople[3]),
                       new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], SamplePeople[4]),
                       new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], SamplePeople[5]),// 5 - will require review
-                      new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], new Person {FirstName="z1", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests()),
+                      new Vote() {SingleNameElectionCount = 27}.ForTests(ballots[0], new Person {FirstName="z1", Voter = new Voter { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other }}.ForTests()),
                     };
       votes[5].PersonCombinedInfo = "different"; // these will be invalid
 
@@ -335,6 +349,9 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
+
       var ballots = new[]
                       {
                         new Ballot().ForTests(),
@@ -342,7 +359,7 @@ namespace Tests.BusinessTests
                         new Ballot().ForTests(),
                       };
 
-      SamplePeople[5].IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased;
+      SamplePeople[5].Voter.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased;
       new PeopleModel().ApplyVoteReasonFlags(SamplePeople[5]);
 
       var votes = new[]
@@ -353,7 +370,7 @@ namespace Tests.BusinessTests
                       new Vote{SingleNameElectionCount = 5 }.ForTests(ballots[0], SamplePeople[3]),
 
                       new Vote{SingleNameElectionCount = 27}.ForTests(ballots[1], SamplePeople[5]), // spoiled person
-                      new Vote{SingleNameElectionCount = 27}.ForTests(ballots[1], new Person { FirstName = "z2", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other}.ForTests()),// spoiled
+                      new Vote{SingleNameElectionCount = 27}.ForTests(ballots[1], new Person { FirstName = "z2", Voter = new Voter { IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other }}.ForTests()),// spoiled
 
                       new Vote{SingleNameElectionCount = 27}.ForTests(ballots[2], SamplePeople[4]),// #6 - will be Needs Review
                     };
@@ -414,6 +431,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
                       {
                         new Ballot().ForTests()
@@ -453,6 +472,8 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
                       {
@@ -496,6 +517,8 @@ namespace Tests.BusinessTests
         NumberToElect = 1,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
                       {

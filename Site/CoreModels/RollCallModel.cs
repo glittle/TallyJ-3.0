@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
@@ -54,8 +55,8 @@ namespace TallyJ.CoreModels
       }.Select(vm => vm.Value).ToList();
 
       return IncludeAbsentees
-        ? peopleInCurrentElection.Where(p => withAbsentees.Contains(p.VotingMethod)).ToList()
-        : peopleInCurrentElection.Where(p => p.VotingMethod == VotingMethodEnum.InPerson).ToList();
+        ? peopleInCurrentElection.Where(p => withAbsentees.Contains(p.Voter.VotingMethod)).ToList()
+        : peopleInCurrentElection.Where(p => p.Voter.VotingMethod == VotingMethodEnum.InPerson).ToList();
     }
 
     public IEnumerable<object> Voters(int numBlanksBefore = 3, int numBlanksAfter = 6)
@@ -63,39 +64,67 @@ namespace TallyJ.CoreModels
       return PersonLines(PeopleInCurrentElection(), numBlanksBefore, numBlanksAfter, IncludeAbsentees);
     }
 
+
+    class RoleCallPersonInfo
+    {
+      public int PersonId { get; set; }
+      public string LastName { get; set; }
+      public string VotingMethod { get; set; }
+      public string FirstName { get; set; }
+      public string FullName { get; set; }
+      public string Area { get; set; }
+      public long? TS { get; set; }
+      public int Loc { get; set; }
+      public int? Env { get; set; }
+    }
+
     /// <Summary>Only those listed</Summary>
     public IEnumerable<object> PersonLines(List<Person> people, int numBlanksBefore, int numBlanksAfter,
       bool includeAbsentees)
     {
-      var before = new List<Person>();
-      var after = new List<Person>();
+      var before = new List<RoleCallPersonInfo>();
+      var after = new List<RoleCallPersonInfo>();
       while (numBlanksBefore > 0)
       {
-        before.Add(new Person { C_RowId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "BLANK" });
+        before.Add(new RoleCallPersonInfo { PersonId = 0 - numBlanksBefore, LastName = "&nbsp;", VotingMethod = "BLANK" });
         numBlanksBefore--;
       }
       var offset = 0;
       const int firstBlankAfter = -100;
       while (numBlanksAfter > 0)
       {
-        after.Add(new Person { C_RowId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "BLANK" });
+        after.Add(new RoleCallPersonInfo { PersonId = firstBlankAfter + offset++, LastName = "&nbsp;", VotingMethod = "BLANK" });
         numBlanksAfter--;
       }
       var locationModel = new LocationModel();
       //      var currentElection = UserSession.CurrentElection;
       var i = 0;
+
+      var roleCallPeople = people.Select(p => new RoleCallPersonInfo
+      {
+        PersonId = p.C_RowId,
+        LastName = p.LastName,
+        FirstName = p.FirstName,
+        VotingMethod = p.Voter.VotingMethod.ToString(),
+        FullName = p.C_FullName,
+        Area = p.Area,
+        TS = p.C_RowVersionInt,
+        Loc = locationModel.IdFor(p.Voter.VotingLocationGuid),
+        Env = (p.Voter.VotingMethod == VotingMethodEnum.Online || p.Voter.VotingMethod == VotingMethodEnum.Kiosk) ? null : p.Voter.EnvNum,
+      });
+
       return
-        before.Concat(people
+        before.Concat(roleCallPeople
           .OrderBy(p => p.LastName)
           .ThenBy(p => p.FirstName)).Concat(after)
           .Select(p => new
           {
-            PersonId = p.C_RowId,
-            FullName = p.C_FullName, //.FullNameFL,
-            Area = p.Area,
-            TS = p.C_RowVersionInt,
-            Loc = locationModel.IdFor(p.VotingLocationGuid),
-            Env = (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk) ? null : p.EnvNum,
+            p.PersonId,
+            p.FullName, //.FullNameFL,
+            p.Area,
+            p.TS,
+            p.Loc,
+            p.Env,
             VM = p.VotingMethod,
             Pos = ++i
           });

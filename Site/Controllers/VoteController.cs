@@ -64,7 +64,7 @@ namespace TallyJ.Controllers
       }
       else if (UserSession.VoterIdType == VoterIdTypeEnum.Kiosk)
       {
-        personQuery = personQuery.Where(p => p.KioskCode == voterId);
+        personQuery = personQuery.Where(p => p.Voter.KioskCode == voterId);
       }
       else
       {
@@ -135,7 +135,7 @@ namespace TallyJ.Controllers
           electionInfo.e.NumberToElect,
           OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
           electionInfo.e.RandomizeVotersList,
-          registration = VotingMethodEnum.TextFor(electionInfo.p.VotingMethod),
+          registration = VotingMethodEnum.TextFor(electionInfo.p.Voter.VotingMethod),
           votingInfo,
           poolDecryptError
         }.AsJsonResult();
@@ -325,7 +325,7 @@ namespace TallyJ.Controllers
           }.AsJsonResult();
         }
 
-        if (!person.CanVoteInElection.AsBoolean())
+        if (!person.Voter.CanVote.AsBoolean())
         {
           return new
           {
@@ -333,15 +333,16 @@ namespace TallyJ.Controllers
           }.AsJsonResult();
         }
 
-        Db.Person.Attach(person);
+        var voter = person.Voter;
+
         var peopleModel = new PeopleModel();
         var votingMethodRemoved = false;
         string notificationType = null;
         var usingKiosk = UserSession.VoterIdType == VoterIdTypeEnum.Kiosk.Value;
 
-        person.HasOnlineBallot = locked;
+        voter.HasOnlineBallot = locked;
 
-        if (person.VotingMethod.HasContent() && !(person.VotingMethod == VotingMethodEnum.Online || person.VotingMethod == VotingMethodEnum.Kiosk))
+        if (voter.VotingMethod.HasContent() && !(voter.VotingMethod == VotingMethodEnum.Online || voter.VotingMethod == VotingMethodEnum.Kiosk))
         {
           // teller has set. Voter can't change it...
         }
@@ -349,26 +350,26 @@ namespace TallyJ.Controllers
         {
           if (locked)
           {
-            person.VotingMethod = usingKiosk ? VotingMethodEnum.Kiosk : VotingMethodEnum.Online;
-            person.RegistrationTime = utcNow;
-            person.VotingLocationGuid = new LocationModel().GetOnlineLocation().LocationGuid;
-            person.EnvNum = null;
+            voter.VotingMethod = usingKiosk ? VotingMethodEnum.Kiosk : VotingMethodEnum.Online;
+            voter.RegistrationTime = utcNow;
+            voter.VotingLocationGuid = new LocationModel().GetOnlineLocation().LocationGuid;
+            voter.EnvNum = null;
 
-            var log = person.RegistrationLog;
+            var log = voter.RegistrationLog;
             log.Add(new[]
             {
-              person.RegistrationTime.AsUtc().AsString("o"),
+              voter.RegistrationTime.AsUtc().AsString("o"),
               UserSession.VoterLoginSource,
-              VotingMethodEnum.TextFor(person.VotingMethod),
+              VotingMethodEnum.TextFor(voter.VotingMethod),
             }.JoinedAsString("; ", true));
-            person.RegistrationLog = log;
+            voter.RegistrationLog = log;
 
             // logHelper.Add("Locked ballot");
             logHelper.Add("Submitted Ballot");
 
             if (UserSession.VoterIdType == VoterIdTypeEnum.Kiosk.Value)
             {
-              person.KioskCode = ""; // set to an empty string, not NULL - can tell the difference: used is ""
+              voter.KioskCode = ""; // set to an empty string, not NULL - can tell the difference: used is ""
             }
 
             var notificationHelper = new NotificationHelper();
@@ -381,21 +382,21 @@ namespace TallyJ.Controllers
           else
           {
             // not online or anywhere
-            person.VotingMethod = null;
-            person.VotingLocationGuid = null;
-            person.EnvNum = null;
+            voter.VotingMethod = null;
+            voter.VotingLocationGuid = null;
+            voter.EnvNum = null;
 
             votingMethodRemoved = true;
 
-            var log = person.RegistrationLog;
-            person.RegistrationTime = utcNow; // set time so that the log will have it
+            var log = voter.RegistrationLog;
+            voter.RegistrationTime = utcNow; // set time so that the log will have it
             log.Add(new[]
             {
-              person.RegistrationTime.AsUtc().AsString("o"),
+              voter.RegistrationTime.AsUtc().AsString("o"),
               "Cancel Online",
             }.JoinedAsString("; ", true));
-            person.RegistrationTime = null; // don't keep it visible
-            person.RegistrationLog = log;
+            voter.RegistrationTime = null; // don't keep it visible
+            voter.RegistrationLog = log;
 
             // logHelper.Add("Unlocked ballot");
             logHelper.Add("Recalled Ballot");
@@ -404,7 +405,10 @@ namespace TallyJ.Controllers
 
         Db.SaveChanges();
 
+        //TODO: verify that voter is saved
+
         personCacher.UpdateItemAndSaveCache(person);
+
         peopleModel.UpdateFrontDeskListing(person, votingMethodRemoved);
 
 
@@ -413,9 +417,9 @@ namespace TallyJ.Controllers
         {
           success = true,
           notificationType,
-          person.VotingMethod,
+          voter.VotingMethod,
           ElectionGuid = UserSession.CurrentElectionGuid,
-          RegistrationTime = person.RegistrationTime.AsUtc(),
+          RegistrationTime = voter.RegistrationTime.AsUtc(),
           WhenStatus = onlineVotingInfo.WhenStatus.AsUtc(),
           onlineVotingInfo.PoolLocked
         }.AsJsonResult();
@@ -441,7 +445,7 @@ namespace TallyJ.Controllers
       var list = Db.Person
 
         // find this person
-        .Where(p => p.Email == voterId || p.Phone == voterId || p.KioskCode == voterId)
+        .Where(p => p.Email == voterId || p.Phone == voterId || p.Voter.KioskCode == voterId)
 
         // TODO review this logic for 2 stage elections
 
@@ -492,8 +496,8 @@ namespace TallyJ.Controllers
           person = new
           {
             name = j.p.C_FullName,
-            j.p.VotingMethod,
-            RegistrationTime = j.p.RegistrationTime.AsUtc(),
+            j.p.Voter.VotingMethod,
+            RegistrationTime = j.p.Voter.RegistrationTime.AsUtc(),
             j.ovi?.PoolLocked,
             j.ovi?.Status,
             WhenStatus = j.ovi?.WhenStatus.AsUtc()

@@ -250,15 +250,16 @@ namespace TallyJ.CoreModels.Helper
       var personIds = list.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
 
       peopleToSendTo.AddRange(db.Person
-        .Where(p => p.ElectionGuid == election.ElectionGuid && p.Email != null && p.Email.Trim().Length > 0)
-        .Where(p => p.CanVoteInElection.Value)
-        .Where(p => personIds.Contains(p.C_RowId))
-        .Select(p => new NameEmail
+        .Join(db.Voter, p => p.PersonGuid, pv => pv.PersonGuid, (p, pv) => new { p, pv })
+        .Where(j => j.p.ElectionGuid == election.ElectionGuid && j.p.Email != null && j.p.Email.Trim().Length > 0)
+        .Where(j => j.pv.CanVote.Value) //TODO - check if this worked in LINQ
+        .Where(j => personIds.Contains(j.p.C_RowId))
+        .Select(j => new NameEmail
         {
-          Email = p.Email,
-          PersonName = p.C_FullNameFL,
-          FirstName = p.FirstName,
-          VoterContact = p.Email
+          Email = j.p.Email,
+          PersonName = j.p.C_FullNameFL,
+          FirstName = j.p.FirstName,
+          VoterContact = j.p.Email
         })
         );
 

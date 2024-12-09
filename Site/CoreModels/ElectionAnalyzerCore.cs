@@ -31,15 +31,7 @@ namespace TallyJ.CoreModels
     private const int ThresholdForCloseVote = 3;
     protected readonly Savers Savers;
 
-    //private readonly Func<int> _saveChanges;
-    //private List<Ballot> _fakeBallots;
     private Election _election;
-    //private List<Person> _fakePeople;
-    //private List<ResultSummary> _fakeResultSummaries;
-    //private List<ResultTie> _fakeResultTies;
-    //private List<Result> _fakeResults;
-    //private List<VoteInfo> _fakeVoteinfos;
-    //private List<Vote> _fakeVotes;
     protected IStatusUpdateHub _hub;
     private List<Result> _results;
     private List<ResultSummary> _resultSummaries;
@@ -48,6 +40,7 @@ namespace TallyJ.CoreModels
     private List<Ballot> _ballots;
     private List<Vote> _votes;
     private List<Person> _people;
+    private List<Voter> _personVoters;
 
     //private ResultSummaryCacher _localResultSummaryCacher;
 
@@ -330,13 +323,7 @@ namespace TallyJ.CoreModels
 
 
     /// <Summary>Current Results records</Summary>
-    public List<Person> People
-    {
-      get
-      {
-        return _people ?? (_people = new PersonCacher(Db).AllForThisElection);
-      }
-    }
+    public List<Person> People => _people ??= new PersonCacher(Db).AllForThisElection;
 
     /// <Summary>Current Results records</Summary>
     public List<ResultTie> ResultTies
@@ -851,19 +838,21 @@ namespace TallyJ.CoreModels
 
     protected void FillResultSummaryCalc()
     {
-      ResultSummaryCalc.NumVoters = People.Count(p => p.VotingMethod.HasContent());
-      ResultSummaryCalc.NumEligibleToVote = People.Count(p => p.CanVoteInElection.AsBoolean());
+      var personVoters = People.Select(p=>p.Voter).ToList();
 
-      ResultSummaryCalc.InPersonBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
-      ResultSummaryCalc.MailedInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
-      ResultSummaryCalc.DroppedOffBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
-      ResultSummaryCalc.CalledInBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
-      ResultSummaryCalc.OnlineBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk);
-      ResultSummaryCalc.ImportedBallots = People.Count(p => p.VotingMethod == VotingMethodEnum.Imported);
+      ResultSummaryCalc.NumVoters = personVoters.Count(p => p.VotingMethod.HasContent());
+      ResultSummaryCalc.NumEligibleToVote = personVoters.Count(p => p.CanVote.AsBoolean());
 
-      ResultSummaryCalc.Custom1Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom1);
-      ResultSummaryCalc.Custom2Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom2);
-      ResultSummaryCalc.Custom3Ballots = People.Count(p => p.VotingMethod == VotingMethodEnum.Custom3);
+      ResultSummaryCalc.InPersonBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.InPerson);
+      ResultSummaryCalc.MailedInBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.MailedIn);
+      ResultSummaryCalc.DroppedOffBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.DroppedOff);
+      ResultSummaryCalc.CalledInBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.CalledIn);
+      ResultSummaryCalc.OnlineBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk);
+      ResultSummaryCalc.ImportedBallots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.Imported);
+
+      ResultSummaryCalc.Custom1Ballots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.Custom1);
+      ResultSummaryCalc.Custom2Ballots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.Custom2);
+      ResultSummaryCalc.Custom3Ballots = personVoters.Count(p => p.VotingMethod == VotingMethodEnum.Custom3);
     }
 
     /// <summary>

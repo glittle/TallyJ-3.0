@@ -293,7 +293,7 @@ namespace TallyJ.CoreModels
           else
           {
             vote.PersonGuid = person1.PersonGuid;
-            invalidReason = person1.IneligibleReasonGuid;
+            invalidReason = person1.Voter.IneligibleReasonGuid;
           }
 
           vote.StatusCode = invalidReason == null ? VoteStatusCode.Ok : VoteStatusCode.Spoiled;
@@ -377,7 +377,7 @@ namespace TallyJ.CoreModels
         {
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+          vote.InvalidReasonGuid = person.Voter.CanReceiveVotes.AsBoolean(true) ? null : person.Voter.IneligibleReasonGuid;
           //          VoteHelperLocal.IneligibleToReceiveVotes(person.IneligibleReasonGuid,
           //            person.CanReceiveVotes);
         }
@@ -704,7 +704,7 @@ namespace TallyJ.CoreModels
             PersonGuid = person.PersonGuid,
             PersonCombinedInfo = person.CombinedInfo,
             SingleNameElectionCount = 1, // okay if set for normal election too
-            InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid
+            InvalidReasonGuid = person.Voter.CanReceiveVotes.AsBoolean(true) ? null : person.Voter.IneligibleReasonGuid
           };
         }
         else
@@ -734,7 +734,7 @@ namespace TallyJ.CoreModels
             vote.StatusCode = VoteStatusCode.Ok;
             vote.PersonGuid = person.PersonGuid;
             vote.PersonCombinedInfo = person.CombinedInfo;
-            vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid;
+            vote.InvalidReasonGuid = person.Voter.CanReceiveVotes.AsBoolean(true) ? null : person.Voter.IneligibleReasonGuid;
           }
         }
 
@@ -836,7 +836,7 @@ namespace TallyJ.CoreModels
         {
           var ballotSources = new PersonCacher(Db)
             .AllForThisElection
-            .Count(p => !string.IsNullOrEmpty(p.VotingMethod) && p.VotingLocationGuid == currentLocationGuid);
+            .Count(p => !string.IsNullOrEmpty(p.Voter.VotingMethod) && p.Voter.VotingLocationGuid == currentLocationGuid);
           location.BallotsCollected = ballotSources;
           locationCacher.UpdateItemAndSaveCache(location);
         }

@@ -65,7 +65,7 @@ namespace TallyJ.CoreModels.Helper
 
       return SendVoice(phone, text, null, out error);
     }
-    
+
 
     public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
     {
@@ -176,7 +176,7 @@ namespace TallyJ.CoreModels.Helper
 
       phoneNumbersToSendTo.AddRange(db.Person
         .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
-        .Where(p => p.CanVoteInElection.Value)
+        .Join(db.Voter.Where(pv => pv.CanVote.Value), p => p.PersonGuid, pv => pv.PersonGuid, (p, pv) => p)
         .Where(p => personIds.Contains(p.C_RowId))
         .Select(p => new NamePhone
         {

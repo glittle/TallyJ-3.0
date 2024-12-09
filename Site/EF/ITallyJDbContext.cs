@@ -23,6 +23,7 @@ namespace TallyJ.EF
     DbSet<Ballot> Ballot { get; set; }
     DbSet<Location> Location { get; set; }
     DbSet<Person> Person { get; set; }
+    DbSet<Voter> Voter { get; set; }
     DbSet<Teller> Teller { get; set; }
     
     DbSet<OnlineVoter> OnlineVoter { get; set; }

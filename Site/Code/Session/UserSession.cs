@@ -176,6 +176,7 @@ namespace TallyJ.Code.Session
 
         return election;
       }
+      set => ItemKey.CurrentElection.SetInPageItems(value);
     }
 
     public static string CurrentElectionStatusName

@@ -13,7 +13,7 @@
   var locations = locationModel.GetLocations_All().ToDictionary(l => l.LocationGuid, l => l.Name);
 
   var people = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVoteInElection.HasValue && p.CanVoteInElection.Value)
+    .Where(p => p.CanVote.HasValue && p.CanVote.Value)
     // .Where(p => p.IneligibleReasonGuid == null)
     .OrderBy(p => p.FullName)
     .Select(p => new

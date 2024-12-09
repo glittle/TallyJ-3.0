@@ -60,6 +60,7 @@ namespace TallyJ.CoreModels.ExportImport
         Db.Vote.Where(v => ballotsQuery.Select(b => b.BallotGuid).Contains(v.BallotGuid)).Delete();
 
         // also delete orphan votes by person
+        // TODO verify this is correct for 2-stage elections
         Db.Vote
           .Where(v => v.PersonGuid != null && Db.Person
             .Where(p => p.ElectionGuid == _electionGuid)
@@ -72,6 +73,7 @@ namespace TallyJ.CoreModels.ExportImport
         Db.OnlineVotingInfo.Where(x => x.ElectionGuid == _electionGuid).Delete();
         Db.Location.Where(x => x.ElectionGuid == _electionGuid).Delete();
         Db.Person.Where(x => x.ElectionGuid == _electionGuid).Delete();
+        Db.Voter.Where(x => x.ElectionGuid == _electionGuid).Delete();
         Db.Teller.Where(x => x.ElectionGuid == _electionGuid).Delete();
         Db.JoinElectionUser.Where(x => x.ElectionGuid == _electionGuid).Delete();
         Db.ImportFile.Where(x => x.ElectionGuid == _electionGuid).Delete();

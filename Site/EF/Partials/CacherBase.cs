@@ -51,7 +51,7 @@ namespace TallyJ.EF
       return AllForThisElection.FirstOrDefault(t => t.C_RowId == rowId);
     }
 
-    public List<T> AllForThisElection
+    public virtual List<T> AllForThisElection
     {
       get
       {

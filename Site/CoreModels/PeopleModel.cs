@@ -37,10 +37,6 @@ namespace TallyJ.CoreModels
     public PeopleModel()
     {
     }
-    public PeopleModel(string unit)
-    {
-      _unit = unit;
-    }
 
     public PeopleModel(Election peopleElection)
     {
@@ -61,7 +57,7 @@ namespace TallyJ.CoreModels
     {
       {
         return PeopleInElection
-          .Where(p => p.CanVoteInElection.AsBoolean())
+          .Where(p => p.Voter.CanVote.AsBoolean())
           .ToList();
       }
     }
@@ -128,11 +124,11 @@ namespace TallyJ.CoreModels
         if (peopleElectionGuid != person.ElectionGuid)
           hub.StatusUpdate("Found unexpected person. Please review. Name: " + person.C_FullName);
 
-        var matchedReason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
-        if (person.IneligibleReasonGuid.HasValue && matchedReason == null)
+        var matchedReason = IneligibleReasonEnum.Get(person.Voter.IneligibleReasonGuid);
+        if (person.Voter.IneligibleReasonGuid.HasValue && matchedReason == null)
         {
           personSaver(DbAction.Attach, person);
-          person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
+          person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Other;
 
           hub.StatusUpdate("Found unknown ineligible reason. Set to Unknown. Name: " + person.C_FullName);
 
@@ -173,8 +169,10 @@ namespace TallyJ.CoreModels
         // }
 
         if (changesMade)
+        {
           //          personSaver(DbAction.Save, person);
           Db.SaveChanges();
+        }
       }
 
       hub.StatusUpdate("Reviewed {0} people".FilledWith(numDone));
@@ -183,41 +181,44 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///   Set person's flag based on what is default for this election
     /// </summary>
-    public bool ApplyVoteReasonFlags(Person person)
+    public bool ApplyVoteReasonFlags(Person person, Election election = null)
     {
-      // using only what they have
+      election ??= UserSession.CurrentElection;
 
+      // using only what they have
       var changed = false;
 
-      var reason = IneligibleReasonEnum.Get(person.IneligibleReasonGuid);
+      var reason = IneligibleReasonEnum.Get(person.Voter.IneligibleReasonGuid);
 
       if (reason == null)
       {
-        // no reason, so set to true
-        if (!person.CanVoteInElection.GetValueOrDefault())
+        // no reason given
+        var canParticipate = !election.IsLsa2 || election.UnitName == person.UnitName;
+
+        if (person.Voter.CanVote.GetValueOrDefault() != canParticipate)
         {
-          person.CanVoteInElection = true;
+          person.Voter.CanVote = canParticipate;
           changed = true;
         }
 
-        if (!person.CanReceiveVotesInElection.GetValueOrDefault())
+        if (person.Voter.CanReceiveVotes.GetValueOrDefault() != canParticipate)
         {
-          person.CanReceiveVotesInElection = true;
+          person.Voter.CanReceiveVotes = canParticipate;
           changed = true;
         }
       }
       else
       {
         // update to match what this reason implies
-        if (person.CanVoteInElection != reason.CanVote)
+        if (person.Voter.CanVote != reason.CanVote)
         {
-          person.CanVoteInElection = reason.CanVote;
+          person.Voter.CanVote = reason.CanVote;
           changed = true;
         }
 
-        if (person.CanReceiveVotesInElection != reason.CanReceiveVotes)
+        if (person.Voter.CanReceiveVotes != reason.CanReceiveVotes)
         {
-          person.CanReceiveVotesInElection = reason.CanReceiveVotes;
+          person.Voter.CanReceiveVotes = reason.CanReceiveVotes;
           changed = true;
         }
       }
@@ -255,10 +256,10 @@ namespace TallyJ.CoreModels
         person.C_RowId,
         //person.AgeGroup,
         person.BahaiId,
-        CanReceiveVotes = person.CanReceiveVotesInElection,
-        CanVote = person.CanVoteInElection,
+        CanReceiveVotes = person.Voter.CanReceiveVotes,
+        CanVote = person.Voter.CanVote,
         person.FirstName,
-        person.IneligibleReasonGuid,
+        person.Voter.IneligibleReasonGuid,
         person.LastName,
         person.OtherInfo,
         person.OtherLastNames,
@@ -267,8 +268,8 @@ namespace TallyJ.CoreModels
         person.Email,
         person.Phone,
         person.C_FullName,
-        person.VotingMethod,
-        person.RegistrationLog,
+        person.Voter.VotingMethod,
+        person.Voter.RegistrationLog,
         person.UnitName
       };
     }
@@ -283,8 +284,8 @@ namespace TallyJ.CoreModels
         p.Area,
         p.Email,
         p.Phone,
-        V = (p.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.CanVote.AsBoolean() ? "1" : "0"),
-        IRG = p.IneligibleReasonGuid,
+        V = (p.Voter.CanReceiveVotes.AsBoolean() ? "1" : "0") + (p.Voter.CanVote.AsBoolean() ? "1" : "0"),
+        IRG = p.Voter.IneligibleReasonGuid,
         NumVotes = isSingleNameElection
           ? votes.Where(v => v.PersonGuid == p.PersonGuid).Sum(v => v.SingleNameElectionCount ?? 1).AsInt()
           : votes.Count(v => v.PersonGuid == p.PersonGuid)
@@ -328,7 +329,7 @@ namespace TallyJ.CoreModels
 
       var beforeChanges = personInDatastore.GetAllProperties();
 
-      if (personFromInput.IneligibleReasonGuid == Guid.Empty) personFromInput.IneligibleReasonGuid = null;
+      if (personFromInput.Voter.IneligibleReasonGuid == Guid.Empty) personFromInput.Voter.IneligibleReasonGuid = null;
 
       if (personFromInput.Phone != null)
         //check via Twilio to ensure real number?
@@ -339,7 +340,7 @@ namespace TallyJ.CoreModels
           }.AsJsonResult();
 
 
-      if (personInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
+      if (personInDatastore.Voter.VotingMethod == VotingMethodEnum.Online.Value)
       {
         if (personInDatastore.Email != personFromInput.Email
             || personInDatastore.Phone != personFromInput.Phone)
@@ -357,7 +358,7 @@ namespace TallyJ.CoreModels
         // personFromInput.AgeGroup,
         personFromInput.BahaiId,
         personFromInput.FirstName,
-        personFromInput.IneligibleReasonGuid,
+        personFromInput.Voter.IneligibleReasonGuid,
         personFromInput.LastName,
         personFromInput.OtherInfo,
         personFromInput.OtherLastNames,
@@ -416,7 +417,7 @@ namespace TallyJ.CoreModels
         Status = "Saved",
         Person = PersonForEdit(personInDatastore),
         OnFile = persons.Count,
-        Eligible = persons.Count(p => p.IneligibleReasonGuid == null) //TODO? split to: can vote, can receive votes
+        Eligible = persons.Count(p => p.Voter.IneligibleReasonGuid == null) //TODO? split to: can vote, can receive votes
       }.AsJsonResult();
     }
 
@@ -432,7 +433,7 @@ namespace TallyJ.CoreModels
           Message = "Unknown person"
         }.AsJsonResult();
 
-      if (person.VotingMethod != null)
+      if (person.Voter.VotingMethod != null)
         return new
         {
           Message = "Cannot delete a person who has already voted."
@@ -453,10 +454,19 @@ namespace TallyJ.CoreModels
           Message = "Cannot delete a person who has voted online."
         }.AsJsonResult();
 
+      // TODO does this work?
+      var voter = person.Voter;
+
       // all checks done...
 
       Db.Person.Attach(person);
       Db.Person.Remove(person);
+
+      if (voter != null)
+      {
+        Db.Voter.Attach(voter);
+        Db.Voter.Remove(voter);
+      }
 
       Db.SaveChanges();
 
@@ -493,19 +503,19 @@ namespace TallyJ.CoreModels
       var ballotSources = PeopleInElection // start with everyone
         .Where(
           p =>
-            p.EnvNum.HasValue && string.IsNullOrEmpty(p.VotingMethod)
-            || string.IsNullOrEmpty(p.VotingMethod) && (p.Teller1 != null || p.Teller2 != null))
+            p.Voter.EnvNum.HasValue && string.IsNullOrEmpty(p.Voter.VotingMethod)
+            || string.IsNullOrEmpty(p.Voter.VotingMethod) && (p.Voter.Teller1 != null || p.Voter.Teller2 != null))
         .ToList()
-        .OrderBy(p => p.EnvNum)
+        .OrderBy(p => p.Voter.EnvNum)
         .Select(p => new
         {
           PersonId = p.C_RowId,
           C_FullName = p.FullName,
-          VotedAt = hasMultipleLocations ? LocationName(p.VotingLocationGuid) : null,
+          VotedAt = hasMultipleLocations ? LocationName(p.Voter.VotingLocationGuid) : null,
           // When = p.RegistrationTime.FromSql().AsString("o"),
-          RegistrationTime = p.RegistrationTime.AsUtc(),
-          Log = p.RegistrationLog,
-          p.EnvNum,
+          RegistrationTime = p.Voter.RegistrationTime.AsUtc(),
+          Log = p.Voter.RegistrationLog,
+          p.Voter.EnvNum,
           Tellers = ShowTellers(p)
         })
         .ToList();
@@ -524,20 +534,20 @@ namespace TallyJ.CoreModels
           .Single();
 
       var ballotSources = PeopleInElection // start with everyone
-        .Where(p => !string.IsNullOrEmpty(p.VotingMethod))
-        .Where(p => !(p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk || p.VotingMethod == VotingMethodEnum.Imported))
-        .Where(p => forLocationId == WantAllLocations || p.VotingLocationGuid == forLocationGuid)
+        .Where(p => !string.IsNullOrEmpty(p.Voter.VotingMethod))
+        .Where(p => !(p.Voter.VotingMethod == VotingMethodEnum.Online || p.Voter.VotingMethod == VotingMethodEnum.Kiosk || p.Voter.VotingMethod == VotingMethodEnum.Imported))
+        .Where(p => forLocationId == WantAllLocations || p.Voter.VotingLocationGuid == forLocationGuid)
         .ToList()
-        .OrderBy(p => p.VotingMethod)
-        .ThenByDescending(p => p.RegistrationTime)
+        .OrderBy(p => p.Voter.VotingMethod)
+        .ThenByDescending(p => p.Voter.RegistrationTime)
         .Select(p => new
         {
           PersonId = p.C_RowId,
           C_FullName = p.FullName,
-          VotedAt = LocationName(p.VotingLocationGuid),
-          RegistrationTime = p.RegistrationTime.AsUtc(),
-          Log = p.RegistrationLog,
-          p.VotingMethod,
+          VotedAt = LocationName(p.Voter.VotingLocationGuid),
+          RegistrationTime = p.Voter.RegistrationTime.AsUtc(),
+          Log = p.Voter.RegistrationLog,
+          p.Voter.VotingMethod,
           EnvNum = ShowEnvNum(p),
           Tellers = ShowTellers(p)
         })
@@ -577,6 +587,8 @@ namespace TallyJ.CoreModels
     {
       var peopleCount = people.Count;
       if (peopleCount == 0) return new List<object>();
+      if (people.Any(p => p.Voter == null)) throw new ApplicationException("Voter is null");
+
       var hasMultipleLocations = ContextItems.LocationModel.HasMultipleLocations;
       var useOnline = UserSession.CurrentPeopleElection.OnlineEnabled;
       var firstPersonGuid = people[0].PersonGuid;
@@ -593,55 +605,60 @@ namespace TallyJ.CoreModels
         .ThenBy(p => p.LastName)
         .ThenBy(p => p.FirstName)
         .ThenBy(p => p.C_RowId)
-        .Select(p => new
+        .Select(p =>
         {
-          PersonId = p.C_RowId,
-          p.FullName,
-          NameLower = (p.FullName + p.BahaiId).WithoutDiacritics(true).ReplacePunctuation(' ')
-            .Replace(" ", "").Replace("\"", "\\\""),
-          p.Area,
-          RegistrationTime = p.RegistrationTime.AsUtc(),
-          VotedAt = new[]
-                    {
-                      ShowTellers(p),
-                      hasMultipleLocations ? LocationName(p.VotingLocationGuid) : ""
-                    }.JoinedAsString("; ", true),
-          Log = p.RegistrationLog,
-          p.VotingMethod,
-          InPerson = p.VotingMethod == VotingMethodEnum.InPerson,
-          DroppedOff = p.VotingMethod == VotingMethodEnum.DroppedOff,
-          MailedIn = p.VotingMethod == VotingMethodEnum.MailedIn,
-          CalledIn = p.VotingMethod == VotingMethodEnum.CalledIn,
-          Custom1 = p.VotingMethod == VotingMethodEnum.Custom1,
-          Custom2 = p.VotingMethod == VotingMethodEnum.Custom2,
-          Custom3 = p.VotingMethod == VotingMethodEnum.Custom3,
-          Imported = p.VotingMethod == VotingMethodEnum.Imported,
-          Online = useOnline && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk),
-          HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
-          CanBeOnline = useOnline &&
-                        (p.VotingMethod == VotingMethodEnum.Online 
-                         || p.VotingMethod == VotingMethodEnum.Kiosk 
-                         || p.HasOnlineBallot.GetValueOrDefault()
-                         || p.Email.HasContent() 
-                         || p.KioskCode.HasContent() 
-                         || p.Phone.HasContent()
-                         ), // consider VotingMethod in case email/phone removed after
-          OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
-          // Registered = p.VotingMethod == VotingMethodEnum.Registered,
-          EnvNum = ShowEnvNum(p),
-          CanVote = p.CanVoteInElection,
-          CanReceiveVotes = p.CanReceiveVotesInElection, // for ballot entry page
-          p.IneligibleReasonGuid, // for ballot entry page
-          p.BahaiId,
-          p.UnitName,
-          flags = p.Flags.SplitWithString("|")
+          var votingMethod = p.Voter.VotingMethod;
+          return new
+          {
+            PersonId = p.C_RowId,
+            p.FullName,
+            NameLower = (p.FullName + p.BahaiId).WithoutDiacritics(true).ReplacePunctuation(' ')
+              .Replace(" ", "").Replace("\"", "\\\""),
+            p.Area,
+            RegistrationTime = p.Voter.RegistrationTime.AsUtc(),
+            VotedAt = new[]
+            {
+              ShowTellers(p),
+              hasMultipleLocations ? LocationName(p.Voter.VotingLocationGuid) : ""
+            }.JoinedAsString("; ", true),
+            Log = p.Voter.RegistrationLog,
+            VotingMethod = votingMethod,
+            InPerson = votingMethod == VotingMethodEnum.InPerson,
+            DroppedOff = votingMethod == VotingMethodEnum.DroppedOff,
+            MailedIn = votingMethod == VotingMethodEnum.MailedIn,
+            CalledIn = votingMethod == VotingMethodEnum.CalledIn,
+            Custom1 = votingMethod == VotingMethodEnum.Custom1,
+            Custom2 = votingMethod == VotingMethodEnum.Custom2,
+            Custom3 = votingMethod == VotingMethodEnum.Custom3,
+            Imported = votingMethod == VotingMethodEnum.Imported,
+            Online = useOnline &&
+                     (votingMethod == VotingMethodEnum.Online || votingMethod == VotingMethodEnum.Kiosk),
+            HasOnline = useOnline && p.Voter.HasOnlineBallot.GetValueOrDefault(),
+            CanBeOnline = useOnline &&
+                          (votingMethod == VotingMethodEnum.Online
+                           || votingMethod == VotingMethodEnum.Kiosk
+                           || p.Voter.HasOnlineBallot.GetValueOrDefault()
+                           || p.Email.HasContent()
+                           || p.Voter.KioskCode.HasContent()
+                           || p.Phone.HasContent()
+                          ), // consider VotingMethod in case email/phone removed after
+            OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
+            // Registered = votingMethod == VotingMethodEnum.Registered,
+            EnvNum = ShowEnvNum(p),
+            CanVote = p.Voter.CanVote,
+            CanReceiveVotes = p.Voter.CanReceiveVotes, // for ballot entry page
+            p.Voter.IneligibleReasonGuid, // for ballot entry page
+            p.BahaiId,
+            p.UnitName,
+            flags = p.Voter.Flags.SplitWithString("|")
+          };
         });
     }
 
     public static string FormatRegistrationLog(Person p)
     {
-      return p.RegistrationLog.Count > 1
-        ? p.RegistrationLog
+      return p.Voter.RegistrationLog.Count > 1
+        ? p.Voter.RegistrationLog
           .JoinedAsString("\n")
           .SurroundContentWith(" <span class=Log title=\"", "\"></span>")
         : "";
@@ -649,7 +666,7 @@ namespace TallyJ.CoreModels
 
     private static int? ShowEnvNum(Person p)
     {
-      return p.EnvNum;
+      return p.Voter.EnvNum;
 
       //let client show/hide
       //return p.VotingMethod.HasNoContent() || p.VotingMethod == VotingMethodEnum.Registered
@@ -661,8 +678,8 @@ namespace TallyJ.CoreModels
     {
       var names = new List<string>
       {
-        p.Teller1,
-        p.Teller2
+        p.Voter.Teller1,
+        p.Voter.Teller2
       };
       return names.JoinedAsString(", ", true);
     }
@@ -691,7 +708,10 @@ namespace TallyJ.CoreModels
       var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null) return new { Message = "Unknown person" }.AsJsonResult();
 
-      if (person.VotingMethod == VotingMethodEnum.Online || person.VotingMethod == VotingMethodEnum.Kiosk)
+      var voter = person.Voter;
+      if (voter == null) return new { Message = "Unknown person voter" }.AsJsonResult();
+
+      if (voter.VotingMethod == VotingMethodEnum.Online || voter.VotingMethod == VotingMethodEnum.Kiosk)
       {
         var onlineVoter = Db.OnlineVotingInfo.SingleOrDefault(ovi =>
           ovi.PersonGuid == person.PersonGuid && ovi.ElectionGuid == person.ElectionGuid);
@@ -702,70 +722,66 @@ namespace TallyJ.CoreModels
       }
 
       Db.Person.Attach(person);
+      Db.Voter.Attach(voter);
 
-      person.Teller1 = UserSession.GetCurrentTeller(1);
-      person.Teller2 = UserSession.GetCurrentTeller(2);
+      voter.Teller1 = UserSession.GetCurrentTeller(1);
+      voter.Teller2 = UserSession.GetCurrentTeller(2);
 
       var votingMethodRemoved = false;
       Guid? oldVoteLocationGuid;
       Guid? newVoteLocationGuid = null;
       var utcNow = DateTime.UtcNow;
 
-      if (person.VotingMethod == voteType || forceDeselect || !person.CanVoteInElection.AsBoolean())
+      if (voter.VotingMethod == voteType || forceDeselect || !voter.CanVote.AsBoolean())
       {
-        oldVoteLocationGuid = person.VotingLocationGuid;
+        oldVoteLocationGuid = voter.VotingLocationGuid;
 
         // it is already set this way...turn if off
-        person.VotingMethod = null;
-        person.VotingLocationGuid = null;
-        person.RegistrationTime = utcNow;
+        voter.VotingMethod = null;
+        voter.VotingLocationGuid = null;
+        voter.RegistrationTime = utcNow;
         votingMethodRemoved = true;
 
-        var log = person.RegistrationLog;
+        var log = voter.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.AsUtc().AsString("o"),
+          voter.RegistrationTime.AsUtc().AsString("o"),
           "De-selected",
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));
-        person.RegistrationLog = log;
+        voter.RegistrationLog = log;
       }
       else
       {
-        person.VotingMethod = voteType;
+        voter.VotingMethod = voteType;
 
-        oldVoteLocationGuid = person.VotingLocationGuid;
+        oldVoteLocationGuid = voter.VotingLocationGuid;
 
-        person.VotingLocationGuid = UserSession.CurrentLocationGuid;
-        person.RegistrationTime = utcNow;
+        voter.VotingLocationGuid = UserSession.CurrentLocationGuid;
+        voter.RegistrationTime = utcNow;
 
-        newVoteLocationGuid = person.VotingLocationGuid;
+        newVoteLocationGuid = voter.VotingLocationGuid;
 
-        var log = person.RegistrationLog;
+        var log = voter.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.AsUtc().AsString("o"),
-          VotingMethodEnum.TextFor(person.VotingMethod),
+          voter.RegistrationTime.AsUtc().AsString("o"),
+          VotingMethodEnum.TextFor(voter.VotingMethod),
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));
-        person.RegistrationLog = log;
+        voter.RegistrationLog = log;
 
         // make number for every method
-        var needEnvNum = person.EnvNum == null;
+        var needEnvNum = voter.EnvNum == null;
 
-        if (needEnvNum) person.EnvNum = new ElectionHelper().GetNextEnvelopeNumber();
+        if (needEnvNum) voter.EnvNum = new ElectionHelper().GetNextEnvelopeNumber();
       }
 
       personCacher.UpdateItemAndSaveCache(person);
 
       UpdateFrontDeskListing(person, votingMethodRemoved);
-
-      //      if (lastRowVersion == 0)
-      //      {
-      //        lastRowVersion = person.C_RowVersionInt.AsLong() - 1;
-      //      }
 
       UpdateLocationCounts(newVoteLocationGuid, oldVoteLocationGuid, personCacher);
 
@@ -792,25 +808,27 @@ namespace TallyJ.CoreModels
       var personCacher = new PersonCacher(Db);
       var person = personCacher.AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       if (person == null) return new { Message = "Unknown person" }.AsJsonResult();
+      var voter = person.Voter;
+      if (voter == null) return new { Message = "Unknown person" }.AsJsonResult();
 
       Db.Person.Attach(person);
 
-      person.Teller1 = UserSession.GetCurrentTeller(1);
-      person.Teller2 = UserSession.GetCurrentTeller(2);
+      voter.Teller1 = UserSession.GetCurrentTeller(1);
+      voter.Teller2 = UserSession.GetCurrentTeller(2);
 
       var utcNow = DateTime.UtcNow;
 
       var allowedFlags = UserSession.CurrentPeopleElection.FlagsList;
-      var currentFlags = person.Flags.DefaultTo("").Split('|').ToList();
+      var currentFlags = voter.Flags.DefaultTo("").Split('|').ToList();
 
       var incomingFlag = flag.Substring(5);
 
       if (currentFlags.Contains(incomingFlag) || forceDeselect)
       {
         // it is already set this way...turn if off
-        person.Flags = currentFlags.Where(f => f != incomingFlag).JoinedAsString("|");
+        voter.Flags = currentFlags.Where(f => f != incomingFlag).JoinedAsString("|");
 
-        var log = person.RegistrationLog;
+        var log = voter.RegistrationLog;
         log.Add(new[]
         {
           utcNow.AsString("o"),
@@ -818,16 +836,16 @@ namespace TallyJ.CoreModels
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));
-        person.RegistrationLog = log;
+        voter.RegistrationLog = log;
       }
       else
       {
         currentFlags.Add(incomingFlag);
-        person.Flags = currentFlags.JoinedAsString("|");
+        voter.Flags = currentFlags.JoinedAsString("|");
 
-        person.VotingLocationGuid = UserSession.CurrentLocationGuid;
+        voter.VotingLocationGuid = UserSession.CurrentLocationGuid;
 
-        var log = person.RegistrationLog;
+        var log = voter.RegistrationLog;
         log.Add(new[]
         {
           utcNow.AsString("o"),
@@ -835,7 +853,7 @@ namespace TallyJ.CoreModels
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));
-        person.RegistrationLog = log;
+        voter.RegistrationLog = log;
       }
       personCacher.UpdateItemAndSaveCache(person);
 
@@ -871,7 +889,7 @@ namespace TallyJ.CoreModels
 
       var oldCount = location.BallotsCollected;
       var newCount = personCacher.AllForThisElection.Count(
-        p => p.VotingLocationGuid == location.LocationGuid && !string.IsNullOrEmpty(p.VotingMethod));
+        p => p.Voter.VotingLocationGuid == location.LocationGuid && !string.IsNullOrEmpty(p.Voter.VotingMethod));
       if (oldCount == newCount) return;
 
       Db.Location.Attach(location);
@@ -903,10 +921,11 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///   Update listing
     /// </summary>
-    /// <param name="person">The people to update</param>
+    /// <param name="person">The people to update. Must have Voter embedded</param>
     /// <param name="votingMethodRemoved"></param>
     public void UpdateFrontDeskListing(Person person, bool votingMethodRemoved)
     {
+      if (person == null) throw new ApplicationException("Person is null");
       var updateInfo = new
       {
         PersonLines = FrontDeskPersonLines(new List<Person> { person }),
@@ -946,6 +965,11 @@ namespace TallyJ.CoreModels
         {
           newRows = Db.Person.Where(p => p.ElectionGuid == PeopleElectionGuid).Take(500).Delete();
           rows += newRows;
+        } while (newRows > 0);
+
+        do
+        {
+          newRows = Db.Voter.Where(p => p.ElectionGuid == PeopleElectionGuid).Take(500).Delete();
         } while (newRows > 0);
 
         int oviRows;

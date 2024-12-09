@@ -36,23 +36,24 @@ namespace TallyJ.CoreModels.Helper
         .Select(ovi => ovi.PersonGuid);
 
       var people = dbContext.Person
-        .Where(p => p.ElectionGuid == electionGuid
-                    && (hasOnlineBallot.Contains(p.PersonGuid) 
-                        || p.CanVoteInElection.Value
-                        && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
-        .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
-          (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
+        .Join(dbContext.Voter, p => p.PersonGuid, pv => pv.PersonGuid, (p, pv) => new { p, pv })
+        .Where(j => j.p.ElectionGuid == electionGuid
+                    && (hasOnlineBallot.Contains(j.p.PersonGuid)
+                        || j.pv.CanVote.Value
+                        && (j.p.Email != null && j.p.Email.Trim().Length > 0 || j.p.Phone != null && j.p.Phone.Trim().Length > 0)))
+        .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), j => j.p.PersonGuid, ovi => ovi.PersonGuid,
+          (j, oviList) => new { j.p, j.pv, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
         .Select(j => new
         {
           j.p.C_RowId,
           j.p.C_FullName,
-          j.p.VotingMethod,
+          j.pv.VotingMethod,
           j.p.Email,
           j.p.Phone,
           j.Status
         })
         .ToList()
-        .Select(p=>new
+        .Select(p => new
         {
           p.C_RowId,
           p.C_FullName,

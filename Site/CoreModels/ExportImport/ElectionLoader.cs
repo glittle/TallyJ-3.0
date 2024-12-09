@@ -28,6 +28,7 @@ namespace TallyJ.CoreModels.ExportImport
     private XmlElement _xmlRoot;
     private ImportHub _hub;
     private List<Person> _people;
+    private List<Voter> _voters;
     private Dictionary<Location, XmlElement> _locationsToProcess;
     private Guid _defaultLocationGuid;
 
@@ -152,6 +153,8 @@ namespace TallyJ.CoreModels.ExportImport
           LoadLocations();
 
           LoadPeople();
+
+          LoadVoters();
 
           LoadBallots();
 
@@ -390,6 +393,37 @@ namespace TallyJ.CoreModels.ExportImport
       _hub.StatusUpdate("Loaded {0:n0} people.".FilledWith(rowsProcessed));
     }
 
+    private void LoadVoters()
+    {
+      var votersXml = _xmlRoot.SelectNodes("t:voter", _nsm);
+      var numToLoad = votersXml?.Count ?? 0;
+
+      if (votersXml == null || numToLoad == 0)
+      {
+        throw new LoaderException("No voters in the file");
+      }
+
+      _peopleModel = new PeopleModel(_election);
+
+      _voters = new List<Voter>();
+      var rowsProcessed = 0;
+
+      foreach (XmlElement voterXml in votersXml)
+      {
+        LoadVoter(voterXml, _voters, _people);
+
+        rowsProcessed++;
+        if (rowsProcessed % 100 == 0)
+        {
+          _hub.StatusUpdate("Processing {0:n0} voters".FilledWith(rowsProcessed, numToLoad), true);
+        }
+      }
+
+      Db.BulkInsert(_voters);
+
+      _hub.StatusUpdate("Loaded {0:n0} voters.".FilledWith(rowsProcessed));
+    }
+
     private void LoadPerson(XmlElement personXml, List<Person> people)
     {
       // need to map Guid to new Guid
@@ -398,8 +432,8 @@ namespace TallyJ.CoreModels.ExportImport
       personXml.CopyAttributeValuesTo(person);
 
       // old version 
-      personXml.CopyAttributeValueTo("TellerAtKeyboard", person, p => person.Teller1);
-      personXml.CopyAttributeValueTo("TellerAssisting", person, p => person.Teller2);
+      personXml.CopyAttributeValueTo("TellerAtKeyboard", person, p => person.Voter.Teller1);
+      personXml.CopyAttributeValueTo("TellerAssisting", person, p => person.Voter.Teller2);
 
       // reset Guid to a new guid
       var oldGuid = person.PersonGuid;
@@ -409,13 +443,44 @@ namespace TallyJ.CoreModels.ExportImport
 
       // pre version 2.3.6, the export did not include the Location's Guid, so we cannot map back to it
       // if missing, map to first location
-      UpdateGuidFromMapping(person, o => o.VotingLocationGuid, _defaultLocationGuid);
+      UpdateGuidFromMapping(person, o => o.Voter.VotingLocationGuid, _defaultLocationGuid);
 
       person.ElectionGuid = _electionGuid;
 
       // leave the "AtStart" alone, so we preserve change from when the election was originally set up
       _peopleModel.SetCombinedInfos(person);
-      _peopleModel.ApplyVoteReasonFlags(person);
+      _peopleModel.ApplyVoteReasonFlags(person, _election);
+    }
+
+    private void LoadVoter(XmlElement voterXml, List<Voter> voters, List<Person> people)
+    {
+      // need to map Guid to new Guid
+      var voter = new Voter();
+      voterXml.CopyAttributeValuesTo(voter);
+
+      // reset Guid to a new guid
+      var oldGuid = voter.PersonGuid;
+
+      _guidMap.TryGetValue(oldGuid, out var newGuid);
+      voter.PersonGuid = newGuid;
+      
+      // TODO is this right for 2-level elections?
+      voter.ElectionGuid = _electionGuid;
+
+      var person = people.SingleOrDefault(p => p.PersonGuid == voter.PersonGuid);
+      if (person != null)
+      {
+        person.Voter = voter; // should crash if person not found
+
+        _peopleModel.ApplyVoteReasonFlags(person, _election);
+
+        voters.Add(voter);
+      }
+      else
+      {
+        _hub.StatusUpdate("Skipping Voter without a matching Person: " + oldGuid, true);
+
+      }
     }
 
     private void LoadBallots()

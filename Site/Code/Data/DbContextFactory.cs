@@ -10,18 +10,18 @@ namespace TallyJ.Code.Data
 {
   public class DbContextFactory : IDbContextFactory
   {
-    private List<ITallyJDbContext> _tallyJ2Entities;
+    private List<ITallyJDbContext> _tallyEntities;
 
     public DbContextFactory()
     {
-      _tallyJ2Entities = new List<ITallyJDbContext>();
+      _tallyEntities = new List<ITallyJDbContext>();
     }
 
     #region IDbContextFactory Members
 
     public void CloseAll()
     {
-      _tallyJ2Entities.ForEach(d => d.Dispose());
+      _tallyEntities.ForEach(d => d.Dispose());
     }
 
     public ITallyJDbContext GetNewDbContext
@@ -53,8 +53,8 @@ namespace TallyJ.Code.Data
 
         var entityConnection = new EntityConnection(workspace, connection);
 
-        var tallyJDbContext = new TallyJ2dEntities(entityConnection);
-        _tallyJ2Entities.Add(tallyJDbContext);
+        var tallyJDbContext = new TallyJEntities(entityConnection);
+        _tallyEntities.Add(tallyJDbContext);
 
         return tallyJDbContext;
       }

@@ -22,6 +22,7 @@ namespace Tests.BusinessTests
       this.Ballot = new TestDbSet<Ballot>();
       this.Location = new TestDbSet<Location>();
       this.Person = new TestDbSet<Person>();
+      this.Voter = new TestDbSet<Voter>();
       this.Teller = new TestDbSet<Teller>();
       this.OnlineVoter = new TestDbSet<OnlineVoter>();
       this.OnlineVotingInfo = new TestDbSet<OnlineVotingInfo>();
@@ -68,6 +69,7 @@ namespace Tests.BusinessTests
     public DbSet<Ballot> Ballot { get; set; }
     public DbSet<Location> Location { get; set; }
     public DbSet<Person> Person { get; set; }
+    public DbSet<Voter> Voter { get; set; }
     public DbSet<Teller> Teller { get; set; }
     public DbSet<OnlineVoter> OnlineVoter { get; set; }
     public DbSet<Memberships> Memberships { get; set; }

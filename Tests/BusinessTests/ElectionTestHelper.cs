@@ -19,20 +19,30 @@ namespace Tests.BusinessTests
     static Guid _locationGuid;
     static Guid _electionGuid;
 
+    public static void Reset()
+    {
+      _rowId = 1;
+      _locationGuid = Guid.Empty;
+      _electionGuid = Guid.Empty;
+    }
+
     public static ITallyJDbContext Db { get; private set; }
 
-    public static void SaveElectionGuidForTests(Guid guid)
-    {
-      _electionGuid = guid;
-    }
+    // public static void SaveElectionGuidForTests(Guid guid)
+    // {
+    //   _electionGuid = guid;
+    // }
 
     public static void ForTests(this ITallyJDbContext context)
     {
       Db = context;
     }
 
+    public static Guid ElectionGuid => _electionGuid;
+
     public static Election ForTests(this Election election)
     {
+      _electionGuid = Guid.NewGuid();
       election.ElectionGuid = _electionGuid;
       election.C_RowId = 1;
 
@@ -40,6 +50,7 @@ namespace Tests.BusinessTests
       ItemKey.CurrentElection.SetInPageItems(election);
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
+      UserSession.CurrentElection = election;
 
       new Location().ForTests();
       return election;
@@ -67,13 +78,12 @@ namespace Tests.BusinessTests
     public static Person ForTests(this Person person)
     {
       person.PersonGuid = Guid.NewGuid();
-      person.CombinedInfo = "abc";
-      person.CanVote = true;
-      person.CanReceiveVotes = true;
-      person.C_RowId = _rowId++;
       person.ElectionGuid = _electionGuid;
 
-      new PeopleModel().ApplyVoteReasonFlags(person);
+      person.CombinedInfo = "abc";
+      person.C_RowId = _rowId++;
+
+      // new PeopleModel().ApplyVoteReasonFlags(person);
 
       Db.Person.Add(person);
       return person;
@@ -82,7 +92,7 @@ namespace Tests.BusinessTests
     {
       vote.PersonGuid = person.PersonGuid;
       vote.PersonCombinedInfo = person.CombinedInfo;
-      vote.InvalidReasonGuid = person.IneligibleReasonGuid;
+      vote.InvalidReasonGuid = person.Voter.IneligibleReasonGuid;
       vote.BallotGuid = ballot.BallotGuid;
       vote.StatusCode = status;
       vote.C_RowId = _rowId++;

@@ -7,7 +7,7 @@
   var showUnitName = UserSession.CurrentElection.IsLsa2;
 
   var people = new PersonCacher().AllForThisElection
-    .Where(p => p.CanReceiveVotesInElection.GetValueOrDefault())
+    .Where(p => p.Voter.CanReceiveVotes.GetValueOrDefault())
     .OrderBy(p => p.FullName)
     .Select(p => new
     {

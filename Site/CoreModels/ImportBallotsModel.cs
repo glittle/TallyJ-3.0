@@ -295,13 +295,13 @@ namespace TallyJ.CoreModels
           incomingVoter.PersonGuid = person.PersonGuid;
 
           // only get the method if not Registered
-          if (person.VotingMethod != null)
+          if (person.Voter.VotingMethod != null)
           {
             incomingVoter.ImportBlocked = true;
           }
-          incomingVoter.VotingMethod = VotingMethodEnum.TextFor(person.VotingMethod);
+          incomingVoter.VotingMethod = VotingMethodEnum.TextFor(person.Voter.VotingMethod);
 
-          if (!person.CanVoteInElection.GetValueOrDefault())
+          if (!person.Voter.CanVote.GetValueOrDefault())
             electionInfo.ImportErrors.Add($"{person.FullNameFL} is not permitted to vote.");
         }
         else
@@ -413,18 +413,18 @@ namespace TallyJ.CoreModels
           {
             var person = personCacher.AllForThisElection.Single(p => p.PersonGuid == voter.PersonGuid);
             dbContext.Person.Attach(person);
-            person.VotingMethod = VotingMethodEnum.Imported.Value;
-            person.VotingLocationGuid = importLocation.LocationGuid;
-            person.RegistrationTime = utcNow;
-            person.EnvNum = null;
+            person.Voter.VotingMethod = VotingMethodEnum.Imported.Value;
+            person.Voter.VotingLocationGuid = importLocation.LocationGuid;
+            person.Voter.RegistrationTime = utcNow;
+            person.Voter.EnvNum = null;
 
-            var log = person.RegistrationLog;
+            var log = person.Voter.RegistrationLog;
             log.Add(new[]
             {
-              person.RegistrationTime.AsUtc().AsString("o"),
-              VotingMethodEnum.TextFor(person.VotingMethod)
+              person.Voter.RegistrationTime.AsUtc().AsString("o"),
+              VotingMethodEnum.TextFor(person.Voter.VotingMethod)
             }.JoinedAsString("; ", true));
-            person.RegistrationLog = log;
+            person.Voter.RegistrationLog = log;
 
             peopleToUpdate.Add(person);
 
@@ -604,7 +604,7 @@ namespace TallyJ.CoreModels
           vote.StatusCode = VoteStatusCode.Ok;
           vote.PersonGuid = person.PersonGuid;
           vote.PersonCombinedInfo = person.CombinedInfo;
-          vote.InvalidReasonGuid = person.CanReceiveVotesInElection.AsBoolean(true) ? null : person.IneligibleReasonGuid; // status code will be updated later if this is set
+          vote.InvalidReasonGuid = person.Voter.CanReceiveVotes.AsBoolean(true) ? null : person.Voter.IneligibleReasonGuid; // status code will be updated later if this is set
         }
 
         db.Vote.Add(vote);
@@ -638,21 +638,22 @@ namespace TallyJ.CoreModels
       var personCacher = new PersonCacher(Db);
       var peopleModel = new PeopleModel();
       var people = personCacher.AllForThisElection
-        .Where(p => p.VotingMethod == VotingMethodEnum.Imported.Value);
+        .Where(p => p.Voter.VotingMethod == VotingMethodEnum.Imported.Value);
       foreach (var person in people)
       {
-        Db.Person.Attach(person);
-        person.VotingMethod = null;
-        person.VotingLocationGuid = null;
-        person.RegistrationTime = DateTime.UtcNow;
+        var voter = person.Voter;
+        Db.Voter.Attach(voter);
+        voter.VotingMethod = null;
+        voter.VotingLocationGuid = null;
+        voter.RegistrationTime = DateTime.UtcNow;
 
-        var log = person.RegistrationLog;
+        var log = voter.RegistrationLog;
         log.Add(new[]
         {
-          person.RegistrationTime.AsUtc().AsString("o"),
+          voter.RegistrationTime.AsUtc().AsString("o"),
           "Imports Removed",
         }.JoinedAsString("; ", true));
-        person.RegistrationLog = log;
+        voter.RegistrationLog = log;
       }
 
       // delete the Imported location. This also deletes all ballots in that location

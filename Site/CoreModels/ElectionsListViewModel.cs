@@ -50,12 +50,16 @@ namespace TallyJ.CoreModels
       var electionGuids = MyElections().Select(e => e.ElectionGuid).ToList();
 
       var personCount = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
-        .GroupBy(p => p.ElectionGuid)
+        .GroupJoin(Db.Voter, p => new { p.PersonGuid, p.ElectionGuid }, pv => new { pv.PersonGuid, pv.ElectionGuid }, (p, pvList) => new { p = new { p.ElectionGuid, p.UnitName }, pv = pvList.Select(pv => new { pv.CanVote }).FirstOrDefault() })
+        .GroupBy(ppv => ppv.p.ElectionGuid)
         .ToList()
-        .Join(MyElections(), g => g.Key, e => e.PeopleElectionGuid, 
-          (g, e) => new { e.ElectionGuid, 
-            people = g.Where(p => e.ElectionType != ElectionTypeEnum.LSA2U.ToString() || p.UnitName == e.UnitName).ToList() })
-        .Select(j => new { j.ElectionGuid, Num = j.people.Count(p => p.CanVote.GetValueOrDefault()) })
+        .Join(MyElections(), g => g.Key, e => e.PeopleElectionGuid,
+          (g, e) => new
+          {
+            e.ElectionGuid,
+            people = g.Where(p => e.ElectionType != ElectionTypeEnum.LSA2U.ToString() || p.p.UnitName == e.UnitName).ToList()
+          })
+        .Select(j => new { j.ElectionGuid, Num = j.people.Count(p => p.pv.CanVote.GetValueOrDefault()) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
       var tellerCounts = Db.Teller.Where(l => electionGuids.Contains(l.ElectionGuid))
@@ -145,9 +149,9 @@ namespace TallyJ.CoreModels
         .ToDictionary(g => g.ElectionGuid, g => g.Voters);
 
 
-      var registeredCounts = Db.Person.Where(p => electionGuids.Contains(p.ElectionGuid))
+      var registeredCounts = Db.Voter.Where(p => electionGuids.Contains(p.ElectionGuid))
         .GroupBy(p => p.ElectionGuid)
-        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(p => !string.IsNullOrEmpty(p.VotingMethod)) })
+        .Select(g => new { ElectionGuid = g.Key, Num = g.Count(pv => !string.IsNullOrEmpty(pv.VotingMethod)) })
         .ToDictionary(g => g.ElectionGuid, g => g.Num);
 
 

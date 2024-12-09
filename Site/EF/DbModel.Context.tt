@@ -59,7 +59,7 @@ using System.Linq;
     public <#=code.Escape(container)#>()
         : base("name=<#=container.Name#>")
     {
-       Database.SetInitializer<TallyJ2dEntities>(null);
+       Database.SetInitializer<TallyJEntities>(null);
 <#
 if (!loader.IsLazyLoadingEnabled(container))
 {

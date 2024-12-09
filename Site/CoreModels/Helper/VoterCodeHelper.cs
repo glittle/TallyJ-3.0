@@ -458,14 +458,15 @@ namespace TallyJ.CoreModels.Helper
         errorMessage = "Unknown person";
         return null;
       }
+      var voter = dbContext.Voter.SingleOrDefault(pv => pv.PersonGuid == person.PersonGuid);
 
-      if (person.VotingMethod.HasContent())
+      if (voter.VotingMethod.HasContent())
       {
         errorMessage = "Already voted";
         return null;
       }
 
-      var kioskCode = person.KioskCode;
+      var kioskCode = voter.KioskCode;
 
       if (kioskCode == null)
       {
@@ -494,7 +495,7 @@ namespace TallyJ.CoreModels.Helper
         return null;
       }
 
-      person.KioskCode = kioskCode;
+      voter.KioskCode = kioskCode;
 
 
       dbContext.SaveChanges();

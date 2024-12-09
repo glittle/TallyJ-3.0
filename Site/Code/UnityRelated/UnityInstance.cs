@@ -46,5 +46,22 @@ namespace TallyJ.Code.UnityRelated
     public static void Offer<TService>(TService service) {
       Container.RegisterInstance(service);
     }
-	}
+
+		public static void Reset()
+    {
+      Container.Dispose();
+      Container = new UnityContainer();
+      try
+      {
+        UnityContainerExtensions.LoadConfiguration(Container);
+      }
+      catch (ArgumentNullException e)
+      {
+        if (e.ParamName.Equals("section", StringComparison.OrdinalIgnoreCase))
+        {
+          throw new Exception("The necessary configuration for Unity has not been added to the web.config file.");
+        }
+      }
+    }
+  }
 }

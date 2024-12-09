@@ -7,7 +7,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var locations = new PersonCacher().AllForThisElection
-    .Where(p => p.CanVoteInElection.HasValue && p.CanVoteInElection.Value && p.VotingMethod == VotingMethodEnum.InPerson.ToString())
+    .Where(p => p.CanVote.HasValue && p.CanVote.Value && p.VotingMethod == VotingMethodEnum.InPerson.ToString())
     .Join(new LocationCacher().AllForThisElection, p => p.VotingLocationGuid, l => l.LocationGuid, (p, l) => new { l, p })
     .GroupBy(g => g.l.Name)
     .Select(g => new

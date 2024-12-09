@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema targetNamespace="urn:tallyj.bahai:v2" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="TallyJ2">
+<xs:schema targetNamespace="urn:tallyj.bahai:v3" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="TallyJ3">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="election">
@@ -172,19 +172,23 @@
             <xs:attribute name="BahaiId" type="xs:string" use="optional" />
             <xs:attribute name="CombinedInfoAtStart" type="xs:string" use="optional" />
             <xs:attribute name="AgeGroup" type="xs:string" use="optional" />
+            <xs:attribute name="Changed" type="xs:boolean" use="optional" />
+            <xs:attribute name="Email" type="xs:string" use="optional" />
+            <xs:attribute name="Phone" type="xs:string" use="optional" />
+          </xs:complexType>
+        </xs:element> 
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="voter">
+          <xs:complexType>
+            <xs:attribute name="PersonGuid" type="xs:string" use="required" />
             <xs:attribute name="CanVote" type="xs:boolean" use="optional" />
             <xs:attribute name="CanReceiveVotes" type="xs:boolean" use="optional" />
             <xs:attribute name="IneligibleReasonGuid" type="xs:string" use="optional" />
             <xs:attribute name="RegistrationTime" type="xs:string" use="optional" />
-            <xs:attribute name="CombinedSoundCodes" type="xs:string" use="optional" />
             <xs:attribute name="VotingLocationGuid" type="xs:string" use="optional" />
             <xs:attribute name="VotingMethod" type="xs:string" use="optional" />
             <xs:attribute name="EnvNum" type="xs:positiveInteger" use="optional" />
             <xs:attribute name="TellerAtKeyboard" type="xs:string" use="optional" />
             <xs:attribute name="TellerAssisting" type="xs:string" use="optional" />
-            <xs:attribute name="Changed" type="xs:boolean" use="optional" />
-            <xs:attribute name="Email" type="xs:string" use="optional" />
-            <xs:attribute name="Phone" type="xs:string" use="optional" />
             <xs:attribute name="HasOnlineBallot" type="xs:boolean" use="optional" />
           </xs:complexType>
         </xs:element>

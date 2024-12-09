@@ -42,8 +42,8 @@ namespace TallyJ.CoreModels.Hubs
           CoreHub.Clients.Group("Voter" + person.Email).updateVoter(new
           {
             updateRegistration = true,
-            person.VotingMethod,
-            RegistrationTime = person.RegistrationTime.AsUtc(),
+            person.Voter.VotingMethod,
+            RegistrationTime = person.Voter.RegistrationTime.AsUtc(),
             person.ElectionGuid
           });
 
@@ -51,8 +51,8 @@ namespace TallyJ.CoreModels.Hubs
           CoreHub.Clients.Group("Voter" + person.Phone).updateVoter(new
           {
             updateRegistration = true,
-            person.VotingMethod,
-            RegistrationTime = person.RegistrationTime.AsUtc(),
+            person.Voter.VotingMethod,
+            RegistrationTime = person.Voter.RegistrationTime.AsUtc(),
             person.ElectionGuid
           });
       }

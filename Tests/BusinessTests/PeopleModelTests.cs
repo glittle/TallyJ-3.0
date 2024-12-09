@@ -15,27 +15,27 @@ namespace Tests.BusinessTests
     {
       var model = new PeopleModel();
 
-      var person = new Person();
+      var person = new Person() { Voter = new Voter() };
 
-      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
+      person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial1_Not_in_TieBreak;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(true);
-      person.CanReceiveVotesInElection.ShouldEqual(false);
+      person.Voter.CanVote.ShouldEqual(true);
+      person.Voter.CanReceiveVotes.ShouldEqual(false);
 
-      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+      person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(false);
-      person.CanReceiveVotesInElection.ShouldEqual(true);
+      person.Voter.CanVote.ShouldEqual(false);
+      person.Voter.CanReceiveVotes.ShouldEqual(true);
 
-      person.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently;
+      person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(false);
-      person.CanReceiveVotesInElection.ShouldEqual(false);
+      person.Voter.CanVote.ShouldEqual(false);
+      person.Voter.CanReceiveVotes.ShouldEqual(false);
 
-      person.IneligibleReasonGuid = null;
+      person.Voter.IneligibleReasonGuid = null;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(true);
-      person.CanReceiveVotesInElection.ShouldEqual(true);
+      person.Voter.CanVote.ShouldEqual(true);
+      person.Voter.CanReceiveVotes.ShouldEqual(true);
 
     }
 
@@ -46,33 +46,36 @@ namespace Tests.BusinessTests
 
       var person = new Person
       {
-        IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased
+        Voter = new Voter
+        {
+          IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Deceased
+        }
       };
 
       // ensure correct flags
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(false);
-      person.CanReceiveVotesInElection.ShouldEqual(false);
+      person.Voter.CanVote.ShouldEqual(false);
+      person.Voter.CanReceiveVotes.ShouldEqual(false);
 
-      
-      
-      person.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+
+
+      person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(false);
-      person.CanReceiveVotesInElection.ShouldEqual(true);
+      person.Voter.CanVote.ShouldEqual(false);
+      person.Voter.CanReceiveVotes.ShouldEqual(true);
 
 
       // ensure correct flags if person has null
-      person.IneligibleReasonGuid = null;
+      person.Voter.IneligibleReasonGuid = null;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(true);
-      person.CanReceiveVotesInElection.ShouldEqual(true);
+      person.Voter.CanVote.ShouldEqual(true);
+      person.Voter.CanReceiveVotes.ShouldEqual(true);
 
       // ensure correct flags if person has a status
-      person.IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person;
+      person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.Unidentifiable_Unknown_person;
       model.ApplyVoteReasonFlags(person);
-      person.CanVoteInElection.ShouldEqual(false);
-      person.CanReceiveVotesInElection.ShouldEqual(false);
+      person.Voter.CanVote.ShouldEqual(false);
+      person.Voter.CanReceiveVotes.ShouldEqual(false);
 
     }
   }

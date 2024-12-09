@@ -19,6 +19,10 @@ namespace TallyJ.EF
     {
     }
 
+    public partial class Voter : IHasElectionGuid
+    {
+    }
+
     //public partial class Computer : IHasElectionGuid {}
     public partial class Teller : IHasElectionGuid
     {

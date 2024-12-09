@@ -7,7 +7,7 @@
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var election = UserSession.CurrentElection;
-  var people = new PersonCacher().AllForThisElection.Where(p => p.CanVoteInElection.GetValueOrDefault()).ToList();
+  var people = new PersonCacher().AllForThisElection.Where(p => p.CanVote.GetValueOrDefault()).ToList();
   var locations = new LocationCacher().AllForThisElection
     .GroupJoin(people, l => l.LocationGuid, p => p.VotingLocationGuid, (l, pList) => new { l, pList })
     .Select(g => new

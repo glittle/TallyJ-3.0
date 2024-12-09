@@ -601,7 +601,9 @@
     <Compile Include="EF\Other\VoteInfo.cs" />
     <Compile Include="EF\Partials\BallotCacher.cs" />
     <Compile Include="EF\Partials\CacherHelper.cs" />
+    <Compile Include="EF\Partials\PersonVoterCacher.cs" />
     <Compile Include="EF\Partials\OnlineVoter.cs" />
+    <Compile Include="EF\Partials\Voter.cs" />
     <Compile Include="EF\Partials\PublicElectionLister.cs" />
     <Compile Include="EF\Partials\ComputerCacher.cs" />
     <Compile Include="EF\Partials\ElectionCacher.cs" />
@@ -645,6 +647,9 @@
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Vote.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EF\Voter.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="OwinStartup.cs" />
@@ -1243,6 +1248,9 @@
     </None>
     <None Include="web.Win22-SA1.config">
       <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="Xsd\TallyJv3-Export.xsd">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

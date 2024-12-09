@@ -961,13 +961,13 @@ namespace TallyJ.CoreModels
         var ballotInfoList = Db.OnlineVotingInfo
           .Where(ovi => ovi.ElectionGuid == electionGuid)
           .Where(ovi => ovi.Status == OnlineBallotStatusEnum.Submitted && ovi.PoolLocked.Value)
-          .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid
-                                     && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk)),
-            ovi => ovi.PersonGuid, p => p.PersonGuid,
-            (ovi, p) => new { ovi, p })
-          // .Join(Db.OnlineVoter, j => new { j.ovi.Email, j.ovi.Phone }, ov => new { ov.Email, ov.Phone }, (j, ov) => new { j.p, j.ovi, ov })
-          // .OrderBy(j => j.ovi.PersonGuid)
-          // -- no defined order... will resort later
+          .Join(Db.Voter.Where(pv => pv.ElectionGuid == electionGuid
+                                     && (pv.VotingMethod == VotingMethodEnum.Online || pv.VotingMethod == VotingMethodEnum.Kiosk)),
+            ovi => ovi.PersonGuid, pv => pv.PersonGuid,
+            (ovi, pv) => new { ovi, pv })
+          .Join(Db.Person.Where(p => p.ElectionGuid == electionGuid),
+            ovi => ovi.pv.PersonGuid, p => p.PersonGuid,
+            (ovi, p) => new { ovi.ovi, ovi.pv, p })
           .ToList();
 
         if (!ballotInfoList.Any())
@@ -1000,11 +1000,12 @@ namespace TallyJ.CoreModels
 
         foreach (var onlineBallotInfo in ballotInfoList)
         {
-          var personVoting = onlineBallotInfo.p;
+          var person = onlineBallotInfo.p;
+          var voter = person.Voter;
 
-          var name = " - " + personVoting.FullName;
+          var name = " - " + person.FullName;
 
-          if (!personVoting.CanVote.GetValueOrDefault())
+          if (!voter.CanVote.GetValueOrDefault())
           {
             problems.Add("Not allowed to vote: " + name);
             continue;
@@ -1057,7 +1058,7 @@ namespace TallyJ.CoreModels
 
                 numBallotsCreated++;
 
-                new VoterPersonalHub().Update(personVoting);
+                new VoterPersonalHub().Update(person);
               }
               else
               {
@@ -1075,7 +1076,7 @@ namespace TallyJ.CoreModels
           if (ballotCreated)
           {
             // keep this outside the transaction
-            var personGuid = personVoting.PersonGuid;
+            var personGuid = person.PersonGuid;
 
             if (voterIdList.TryGetValue(personGuid, out var onlineVoterAccounts))
             {
@@ -1089,8 +1090,8 @@ namespace TallyJ.CoreModels
                 switch (onlineVoter.VoterIdType)
                 {
                   case "E": //  VoterIdTypeEnum.Email.Value:
-                    logHelper.Add("Ballot processed", false, personVoting.Email);
-                    emailHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
+                    logHelper.Add("Ballot processed", false, person.Email);
+                    emailHelper.SendWhenProcessed(election, person, onlineVoter, logHelper,
                       out var emailError);
                     if (emailError.HasContent())
                     {
@@ -1099,8 +1100,8 @@ namespace TallyJ.CoreModels
 
                     break;
                   case "P": //  VoterIdTypeEnum.Phone.Value:
-                    logHelper.Add("Ballot processed", false, personVoting.Phone);
-                    smsHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
+                    logHelper.Add("Ballot processed", false, person.Phone);
+                    smsHelper.SendWhenProcessed(election, person, onlineVoter, logHelper,
                       out var smsError);
                     if (smsError.HasContent())
                     {
@@ -1110,7 +1111,7 @@ namespace TallyJ.CoreModels
                     break;
                   case "K": //  VoterIdTypeEnum.Kiosk.Value:
                     // don't send notification
-                    logHelper.Add("Ballot processed", false, personVoting.KioskCode);
+                    logHelper.Add("Ballot processed", false, voter.KioskCode);
                     break;
                 }
               }
