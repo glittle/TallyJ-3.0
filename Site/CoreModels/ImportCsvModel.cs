@@ -368,13 +368,24 @@ public class ImportCsvModel : DataConnectedModel
         result = new[] { "First Name must be included" }
       }.AsJsonResult();
     }
-    if (currentElection.IsLsa2M && !mappedFields.Contains(UnitName))
+
+    List<string> unitNames;
+    if (currentElection.IsLsa2M)
     {
-      return new
+      if (!mappedFields.Contains(UnitName))
       {
-        failed = true,
-        result = new[] { "Electoral Unit must be included" }
-      }.AsJsonResult();
+        return new
+        {
+          failed = true,
+          result = new[] { "Electoral Unit must be included" }
+        }.AsJsonResult();
+      }
+      
+      unitNames = UserSession.CurrentUnitElectionNames;
+    }
+    else
+    {
+      unitNames = [];
     }
 
     var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
@@ -435,7 +446,7 @@ public class ImportCsvModel : DataConnectedModel
         string value;
         try
         {
-          value = csv[csvColumnName] ?? "";
+          value = (csv[csvColumnName] ?? "").Trim();
         }
         catch (Exception e)
         {
@@ -448,11 +459,11 @@ public class ImportCsvModel : DataConnectedModel
         var rawValue = HttpUtility.HtmlEncode(value);
         var originalValue = value;
 
+        // check for special and required values
         switch (dbFieldName)
         {
           case "IneligibleReasonGuid":
             // match value to the list of Enums
-            value = value.Trim();
             if (value.HasContent())
             {
               if (value == "Eligible")
@@ -489,7 +500,7 @@ public class ImportCsvModel : DataConnectedModel
           case "FirstName":
           case "LastName":
           case UnitName:
-            if (value.Trim() == "")
+            if (value == "")
             {
               result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
               requiredWarningGiven = true;
@@ -506,7 +517,11 @@ public class ImportCsvModel : DataConnectedModel
             break;
         }
 
-        ;
+        // for 2-level elections, set everyone to "not a delegate" for now
+        if (currentElection.IsLsa2M && person.Voter.IneligibleReasonGuid == null)
+        {
+          person.Voter.IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial2_Not_a_Delegate;
+        }
 
         valuesSet = valuesSet || value.HasContent();
 
@@ -524,6 +539,11 @@ public class ImportCsvModel : DataConnectedModel
               requiredFieldsFound++;
               break;
             case UnitName:
+              if (!unitNames.Contains(value))
+              {
+                result.Add($"~E Line {currentLineNum} - Invalid unit: {rawValue}");
+                errorInRow = true;
+              }
               requiredFieldsFound++;
               break;
             case "OtherLastNames":
@@ -596,6 +616,7 @@ public class ImportCsvModel : DataConnectedModel
 
               break;
             case "IneligibleReasonGuid":
+              // already processed
               break;
             default:
               throw new ApplicationException("Unexpected: " + dbFieldName);

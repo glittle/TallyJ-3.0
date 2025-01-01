@@ -36,17 +36,17 @@ namespace TallyJ.Controllers
       return View(new RollCallModel());
     }
 
-    public JsonResult PeopleForFrontDesk(string unit = null) {
-      if (unit.HasContent())
-      {
-        var currentElection = UserSession.CurrentElection;
-        if (currentElection.ElectionType == ElectionTypeEnum.LSA2M.Value)
-        {
-          // TODO review this logic for 2 stage elections
-          // temporary for this request
-          currentElection.UnitName = unit;
-        }
-      }
+    public JsonResult PeopleForFrontDesk() {
+      // if (unit.HasContent())
+      // {
+      //   var currentElection = UserSession.CurrentElection;
+      //   if (currentElection.ElectionType == ElectionTypeEnum.LSA2M.Value)
+      //   {
+      //     // TODO review this logic for 2 stage elections
+      //     // temporary for this request
+      //     currentElection.UnitName = unit;
+      //   }
+      // }
 
       return new PeopleModel().FrontDeskPersonLines().AsJsonResult();
     }

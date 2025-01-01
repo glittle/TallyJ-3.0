@@ -41,7 +41,7 @@ namespace TallyJ.Code
       if (currentElection != null && currentElection.ListForPublic.AsBoolean())
       {
         LogTime("init");
-        var db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;
+        var db = UserSession.GetNewDbContext;
         LogTime("resolve");
 
         db.Election.Attach(currentElection);

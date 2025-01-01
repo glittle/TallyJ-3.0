@@ -155,37 +155,11 @@
       @*<div class="PageTitle">@currentMenu.CurrentMenuTitle</div>*@
       @{
         var showLocationSelector = ContextItems.LocationModel.ShowLocationSelector(currentMenu);
-        var showUnitSelector = currentElection?.IsLsa2 == true && currentMenu.ShowLocationSelection;
         var showTellerSelector = currentMenu.ShowTellerSelector;
       }
-      @if (showLocationSelector || showTellerSelector || showUnitSelector)
+      @if (showLocationSelector || showTellerSelector)
       {
         <div class="CurrentInfo">
-          @if (showUnitSelector)
-          {
-            <label for="ddlTopUnit" class="ddlTopUnit">
-              Unit:
-              @if (currentElection.IsLsa2M)
-              {
-                <select id="ddlTopUnit" class="TopUnit input-mediumMax">
-                  <option value="">[All Units]</option>
-                  @foreach (var o in UserSession.UnitNames)
-                  {
-                    <option value="@o">@o</option>
-                  }
-                </select>
-              }
-              else
-              {
-                <span>@currentElection.UnitName</span>
-              }
-            </label>
-            @*<label>
-                Computer:</label>
-              <select disabled>
-                <option>@UserSession.CurrentComputerCode</option>
-              </select>*@
-          }
           @if (showLocationSelector)
           {
             <label for="ddlTopLocation">

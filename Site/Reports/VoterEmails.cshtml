@@ -1,13 +1,9 @@
-﻿@using System.Data.Entity.SqlServer
-@using System.Linq
-@using System.Web;
+﻿@using System.Linq
 @using TallyJ.Code.Enumerations
 @using TallyJ.Code
 @using TallyJ.Code.Data
 @using TallyJ.Code.Session
 @using TallyJ.Code.UnityRelated
-@using TallyJ.EF
-@using TallyJ.CoreModels
 @inherits RazorEngine.Templating.TemplateBase
 @{
   var dbContext = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext;

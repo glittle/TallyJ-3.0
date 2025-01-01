@@ -28,7 +28,7 @@
   {
     <div class="h3button">
       <h3>Your Elections ({{topList.length}})</h3>
-      <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
+      <button v-on:click.passive="refreshLive">Refresh Counts of Registrations and Ballots</button>
       @*<el-switch v-model="showTest"
                    class="showTest"
         active-text="Show Test Elections"
@@ -132,7 +132,7 @@
         <span class="tellerStatus">
           Tellers
         </span>
-        <i class="el-icon-s-opportunity" v-if="e.ElectionPasscode" :title="'Access code: ' + e.ElectionPasscode"></i>
+        <i class="el-icon-info" v-if="e.ElectionPasscode" :title="'Access code:\n' + e.ElectionPasscode"></i>
         <span class="names">
           ({{e.tellers.length}}) {{e.tellers.join(', ')}}
         </span>

@@ -149,31 +149,31 @@ namespace TallyJ.CoreModels
         new PersonCacher().DropThisCache();
       }
 
-      var electionInfo = ProcessFile(id);
+      var importDto = ProcessFile(id);
 
-      return ElectionPreviewInfo(electionInfo);
+      return ElectionPreviewInfo(importDto);
     }
 
     public JsonResult LoadFile(int id)
     {
-      var electionInfo = ProcessFile(id);
+      var importDto = ProcessFile(id);
 
-      if (electionInfo.ImportErrors.Any()) return ElectionPreviewInfo(electionInfo);
+      if (importDto.ImportErrors.Any()) return ElectionPreviewInfo(importDto);
 
-      return ImportPeopleAndBallots(electionInfo);
+      return ImportPeopleAndBallots(importDto);
     }
 
-    private static JsonResult ElectionPreviewInfo(CdnImportDto electionInfo)
+    private static JsonResult ElectionPreviewInfo(CdnImportDto dto)
     {
       return new
       {
-        numBallots = electionInfo.Ballots.Count,
-        voters = electionInfo.Voters.OrderBy(v => v.lastname).ThenBy(v => v.firstname),
-        electionInfo.locality,
-        electionInfo.localunit,
-        electionInfo.ImportErrors,
-        electionInfo.AlreadyLoaded,
-        electionInfo.HasUnregistered
+        numBallots = dto.Ballots.Count,
+        voters = dto.Voters.OrderBy(v => v.lastname).ThenBy(v => v.firstname),
+        dto.locality,
+        dto.localunit,
+        dto.ImportErrors,
+        dto.AlreadyLoaded,
+        dto.HasUnregistered
       }.AsJsonResult();
     }
 
@@ -184,26 +184,25 @@ namespace TallyJ.CoreModels
           fi => fi.ElectionGuid == UserSession.CurrentElectionGuid && fi.C_RowId == id);
       if (importFile == null) throw new ApplicationException("File not found");
 
-      var electionInfo = ParseCdnBallotsFile(importFile);
-      return electionInfo;
+      var importDto = ParseCdnBallotsFile(importFile);
+      return importDto;
     }
 
     private CdnImportDto ParseCdnBallotsFile(ImportFile importFile)
     {
       var xml = new XmlDocument();
-      var electionInfo = new CdnImportDto();
-      string xmlString;
+      var importDto = new CdnImportDto();
 
       try
       {
         var importFileCodePage = importFile.CodePage ?? ImportHelper.DetectCodePage(importFile.Contents)?.CodePage;
-        xmlString = importFile.Contents.AsString(importFileCodePage);
+        var xmlString = importFile.Contents.AsString(importFileCodePage);
         xml.LoadXml(xmlString);
       }
       catch (Exception e)
       {
-        electionInfo.ImportErrors.Add(e.GetBaseException().Message);
-        return electionInfo;
+        importDto.ImportErrors.Add(e.GetBaseException().Message);
+        return importDto;
       }
 
       var path = HttpContext.Current.Server.MapPath("~/Xsd/CdnBallotImport.xsd");
@@ -222,8 +221,8 @@ namespace TallyJ.CoreModels
 
       if (fatal || issues.Any())
       {
-        electionInfo.ImportErrors.Add("The import file is not in the expected format:\n" + issues.JoinedAsString("\n"));
-        return electionInfo;
+        importDto.ImportErrors.Add("The import file is not in the expected format:\n" + issues.JoinedAsString("\n"));
+        return importDto;
       }
 
       try
@@ -231,24 +230,24 @@ namespace TallyJ.CoreModels
         var electionNode = xml.DocumentElement;
         if (electionNode == null)
         {
-          electionInfo.ImportErrors.Add("No content?");
-          return electionInfo;
+          importDto.ImportErrors.Add("No content?");
+          return importDto;
         }
 
-        electionNode.CopyAttributeValuesTo(electionInfo);
+        electionNode.CopyAttributeValuesTo(importDto);
 
         foreach (XmlElement incomingVoter in electionNode.SelectNodes("descendant::voter"))
         {
           var voted = new Voter();
           incomingVoter.CopyAttributeValuesTo(voted);
-          electionInfo.Voters.Add(voted);
+          importDto.Voters.Add(voted);
         }
 
         foreach (XmlElement incomingBallot in electionNode.SelectNodes("descendant::ballot"))
         {
           var ballot = new IncomingBallot();
           incomingBallot.CopyAttributeValuesTo(ballot);
-          electionInfo.Ballots.Add(ballot);
+          importDto.Ballots.Add(ballot);
 
 
           foreach (XmlElement incomingVote in incomingBallot.SelectNodes("vote"))
@@ -260,27 +259,27 @@ namespace TallyJ.CoreModels
       }
       catch (Exception e)
       {
-        electionInfo.ImportErrors.Add(e.GetBaseException().Message);
-        return electionInfo;
+        importDto.ImportErrors.Add(e.GetBaseException().Message);
+        return importDto;
       }
 
-      AnalyzeImportData(electionInfo);
+      AnalyzeImportData(importDto);
 
-      return electionInfo;
+      return importDto;
     }
 
-    private void AnalyzeImportData(CdnImportDto electionInfo)
+    private void AnalyzeImportData(CdnImportDto importDto)
     {
       // file is good; analyze more
-      if (electionInfo.Voters.Count != electionInfo.Ballots.Count)
-        electionInfo.ImportErrors.Add(
-          $"The number of voters ({electionInfo.Voters.Count}) and the number of ballots ({electionInfo.Ballots.Count}) must match.");
+      if (importDto.Voters.Count != importDto.Ballots.Count)
+        importDto.ImportErrors.Add(
+          $"The number of voters ({importDto.Voters.Count}) and the number of ballots ({importDto.Ballots.Count}) must match.");
 
       // check if these people are valid
 
       var knownPeople = new PersonCacher(Db).AllForThisElection;
 
-      foreach (var incomingVoter in electionInfo.Voters)
+      foreach (var incomingVoter in importDto.Voters)
       {
         var matched = knownPeople
           // match on Baha'i ID (valid for Canada)
@@ -302,19 +301,19 @@ namespace TallyJ.CoreModels
           incomingVoter.VotingMethod = VotingMethodEnum.TextFor(person.Voter.VotingMethod);
 
           if (!person.Voter.CanVote.GetValueOrDefault())
-            electionInfo.ImportErrors.Add($"{person.FullNameFL} is not permitted to vote.");
+            importDto.ImportErrors.Add($"{person.FullNameFL} is not permitted to vote.");
         }
         else
         {
-          electionInfo.ImportErrors.Add(
+          importDto.ImportErrors.Add(
             $"The Bahá'í ID ({incomingVoter.bahaiid}) for {incomingVoter.firstname} {incomingVoter.lastname} is not registered in TallyJ.");
-          electionInfo.HasUnregistered = true;
+          importDto.HasUnregistered = true;
         }
       }
 
-      var numAlreadyVoted = electionInfo.Voters.Count(v => v.ImportBlocked);
+      var numAlreadyVoted = importDto.Voters.Count(v => v.ImportBlocked);
       if (numAlreadyVoted > 0)
-        electionInfo.ImportErrors.Add(
+        importDto.ImportErrors.Add(
           $"{numAlreadyVoted.Plural("Some people have", "A person has")} already voted. You must change their registration on the Front Desk, if appropriate.");
 
       // check ballots
@@ -323,7 +322,7 @@ namespace TallyJ.CoreModels
       var numToElect = UserSession.CurrentElection.NumberToElect.AsInt(0);
       var invalidNumVotes = false;
 
-      foreach (var incomingBallot in electionInfo.Ballots)
+      foreach (var incomingBallot in importDto.Ballots)
       {
         var matched = importedBallots.FirstOrDefault(b => b.BallotNumAtComputer == incomingBallot.index);
         if (matched != null) incomingBallot.AlreadyLoaded = true;
@@ -332,20 +331,20 @@ namespace TallyJ.CoreModels
       }
 
       if (invalidNumVotes)
-        electionInfo.ImportErrors.Add(
+        importDto.ImportErrors.Add(
           $"At least one ballot has the incorrect number of votes. Expecting {numToElect}.");
 
-      var numBallotsAlreadyIn = electionInfo.Ballots.Count(b => b.AlreadyLoaded);
+      var numBallotsAlreadyIn = importDto.Ballots.Count(b => b.AlreadyLoaded);
       if (numBallotsAlreadyIn > 0)
       {
-        if (numBallotsAlreadyIn == electionInfo.Ballots.Count)
+        if (numBallotsAlreadyIn == importDto.Ballots.Count)
         {
-          electionInfo.ImportErrors.Add("All ballots already loaded");
-          electionInfo.AlreadyLoaded = true;
+          importDto.ImportErrors.Add("All ballots already loaded");
+          importDto.AlreadyLoaded = true;
         }
         else
         {
-          electionInfo.ImportErrors.Add($"{numBallotsAlreadyIn} {numBallotsAlreadyIn.Plural()} already loaded.");
+          importDto.ImportErrors.Add($"{numBallotsAlreadyIn} {numBallotsAlreadyIn.Plural()} already loaded.");
         }
       }
     }

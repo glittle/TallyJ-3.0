@@ -151,7 +151,6 @@ namespace TallyJ.CoreModels.ExportImport
           p.Area,
           p.BahaiId,
           p.CombinedInfo,
-          p.CombinedSoundCodes, // now used for extra fake columns
           p.CombinedInfoAtStart,
           p.AgeGroup,
           p.Email,

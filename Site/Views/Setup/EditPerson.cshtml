@@ -4,9 +4,20 @@
 @{
   ContextItems.AddJavascriptForPage("editPersonUrl", "editPersonPage.controllerUrl={0};".FilledWith(Url.Action("Index", "Setup").QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("editPersonInvalids", "editPersonPage.invalidReasons={0};".FilledWith(IneligibleReasonEnum.InvalidReasonsJsonString()));
-  // ContextItems.AddJavascriptForPage("editPersonRules", "editPersonPage.defaultRules={rules};".FilledWith(new SetupModel().RulesForCurrentElection));
 }
 <input type="hidden" data-name="C_RowId" />
+<div class="votingRelated">
+    <table>
+
+        <tr class="votingMethod">
+            <th>Voting Method</th>
+            <td>
+                <div class="showVotingMethod"></div>
+                <table class="votingMethodLog"></table>
+            </td>
+        </tr>
+    </table>
+</div>
 <table class="personEdit">
 
   <tr>
@@ -36,7 +47,7 @@
       <td>
         <select data-name="UnitName" class="UnitName">
           <option value="">[Select Unit]</option>
-          @foreach (var o in UserSession.UnitNames)
+          @foreach (var o in UserSession.CurrentUnitElectionNames)
           {
             <option value="@o">@o</option>
           }
@@ -51,14 +62,14 @@
       <label for="ddlIneligible">Eligibility status</label>
     </td>
     <td>
-      <select id="ddlIneligible" data-name="IneligibleReasonGuid"></select>
+      <select id="ddlIneligible" data-name="v:IneligibleReasonGuid"></select>
       <span class="ui-icon ui-icon-info" id="qTipIneligible"></span>
     </td>
   </tr>
   <tr id="trCanVote" class="topLine overrides">
     <td colspan="2">
       <label for="input2">Can vote in this election?</label>
-      <select data-name="CanVote" disabled="disabled">
+      <select data-name="v:CanVote" disabled="disabled">
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
@@ -68,7 +79,7 @@
   <tr id="trCanReceiveVotes" class="topLine overrides">
     <td colspan="2">
       <label for="input1">Can be voted for in this election?</label>
-      <select data-name="CanReceiveVotes" disabled="disabled">
+      <select data-name="v:CanReceiveVotes" disabled="disabled">
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
@@ -164,32 +175,26 @@
   </tr>
   <tr>
     <td colspan="2">
-      <div class="votingRelated">
-        <table>
-          @if (UserSession.CurrentElection.VotingMethodsContains(VotingMethodEnum.Kiosk))
-          {
-            <tr class="kiosk">
+     
+
+      @if (UserSession.CurrentElection.VotingMethodsContains(VotingMethodEnum.Kiosk))
+      {
+        <div class="votingRelated kiosk">
+          <table>
+            <tr>
               <th>Kiosk Code</th>
               <td>
-                <button id="generateKioskCode" class="btn btn-small">Make or renew Kiosk Code</button>
+                <button id="generateKioskCode" class="btn btn-small">Make or renew a Kiosk Code</button>
                 <div class="kioskCode"></div>
                 <div class="kioskNote">
                   Code will expire after 15 minutes.
                 </div>
               </td>
             </tr>
-          }
 
-          <tr class="votingMethod">
-            <th>Voting Method</th>
-            <td>
-              <div class="showVotingMethod"></div>
-              <table class="votingMethodLog"></table>
-            </td>
-          </tr>
-
-        </table>
-      </div>
+          </table>
+        </div>
+      }
     </td>
   </tr>
   <tr>

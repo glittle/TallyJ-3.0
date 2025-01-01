@@ -256,10 +256,8 @@ namespace TallyJ.CoreModels
         person.C_RowId,
         //person.AgeGroup,
         person.BahaiId,
-        CanReceiveVotes = person.Voter.CanReceiveVotes,
-        CanVote = person.Voter.CanVote,
         person.FirstName,
-        person.Voter.IneligibleReasonGuid,
+        person.UnitName,
         person.LastName,
         person.OtherInfo,
         person.OtherLastNames,
@@ -268,9 +266,15 @@ namespace TallyJ.CoreModels
         person.Email,
         person.Phone,
         person.C_FullName,
-        person.Voter.VotingMethod,
-        person.Voter.RegistrationLog,
-        person.UnitName
+        Voter = new
+        {
+          person.Voter.CanReceiveVotes,
+          person.Voter.CanVote,
+          person.Voter.VotingMethod,
+          person.Voter.IneligibleReasonGuid,
+          person.Voter.KioskCode,
+          person.Voter.RegistrationLog,
+        }
       };
     }
 
@@ -293,57 +297,68 @@ namespace TallyJ.CoreModels
     }
 
 
-    public JsonResult SavePerson(Person personFromInput)
+    public JsonResult SavePerson(Person incomingPerson, Voter incomingVoter)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
 
-      var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
+      var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == incomingPerson.C_RowId);
+      Voter voterInDatastore = null;
       var changed = false;
 
       if (personInDatastore == null)
       {
-        if (personFromInput.C_RowId != -1)
+        if (incomingPerson.C_RowId != -1)
           return new
           {
             Message = "Unknown ID"
           }.AsJsonResult();
 
         // create new
+       
         personInDatastore = new Person
         {
           PersonGuid = Guid.NewGuid(),
-          ElectionGuid = PeopleElectionGuid
+          ElectionGuid = PeopleElectionGuid,
         };
-
+        voterInDatastore = new Voter
+        {
+          PersonGuid = personInDatastore.PersonGuid,
+          ElectionGuid = personInDatastore.ElectionGuid
+        };
         Db.Person.Add(personInDatastore);
+        Db.Voter.Add(voterInDatastore);
 
+        personInDatastore.Voter = voterInDatastore;
         PeopleInElection.Add(personInDatastore);
 
         changed = true;
       }
       else
       {
+        voterInDatastore = personInDatastore.Voter;
         Db.Person.Attach(personInDatastore);
+        Db.Voter.Attach(voterInDatastore);
       }
 
-      var beforeChanges = personInDatastore.GetAllProperties();
+      var originalPerson = personInDatastore.GetAllProperties();
+      var originalVoter = voterInDatastore.GetAllProperties();
 
-      if (personFromInput.Voter.IneligibleReasonGuid == Guid.Empty) personFromInput.Voter.IneligibleReasonGuid = null;
+      if (incomingVoter.IneligibleReasonGuid == Guid.Empty) incomingVoter.IneligibleReasonGuid = null;
 
-      if (personFromInput.Phone != null)
+      if (incomingPerson.Phone != null)
         //check via Twilio to ensure real number?
-        if (!new Regex(@"\+[0-9]{4,15}").IsMatch(personFromInput.Phone))
+        if (!new Regex(@"\+[0-9]{4,15}").IsMatch(incomingPerson.Phone))
           return new
           {
             Message = "Invalid phone number. Must start with + and only contain digits."
           }.AsJsonResult();
 
 
-      if (personInDatastore.Voter.VotingMethod == VotingMethodEnum.Online.Value)
+      if (voterInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
       {
-        if (personInDatastore.Email != personFromInput.Email
-            || personInDatastore.Phone != personFromInput.Phone)
+        if (personInDatastore.Email != incomingPerson.Email
+            || personInDatastore.Phone != incomingPerson.Phone)
         {
           // can't allow email or phone to be changed if they have already voted online
           return new
@@ -353,23 +368,44 @@ namespace TallyJ.CoreModels
         }
       }
 
-      var editableFields = new
+      if (voterInDatastore.VotingMethod != null)
+      {
+        if (personInDatastore.UnitName != incomingPerson.UnitName)
+        {
+          // can't change unit if already voted.
+          // TODO: only limit if one of the elections counting ballots?
+          return new
+          {
+            Message = "Cannot change electoral unit after voting."
+          }.AsJsonResult();
+
+        }
+      }
+
+      var editablePersonFields = new
       {
         // personFromInput.AgeGroup,
-        personFromInput.BahaiId,
-        personFromInput.FirstName,
-        personFromInput.Voter.IneligibleReasonGuid,
-        personFromInput.LastName,
-        personFromInput.OtherInfo,
-        personFromInput.OtherLastNames,
-        personFromInput.OtherNames,
-        personFromInput.Area,
-        personFromInput.Email,
-        personFromInput.Phone,
-        personFromInput.UnitName
+        incomingPerson.BahaiId,
+        incomingPerson.FirstName,
+        incomingPerson.LastName,
+        incomingPerson.OtherInfo,
+        incomingPerson.OtherLastNames,
+        incomingPerson.OtherNames,
+        incomingPerson.Area,
+        incomingPerson.Email,
+        incomingPerson.Phone,
+        incomingPerson.UnitName
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
-      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
+      changed = incomingPerson.CopyPropertyValuesTo(personInDatastore, editablePersonFields) || changed;
+
+      var editableVoterFields = new
+      {
+        incomingVoter.IneligibleReasonGuid,
+        incomingVoter.KioskCode,
+      }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
+      
+      changed = incomingVoter.CopyPropertyValuesTo(voterInDatastore, editableVoterFields) || changed;
 
       changed = ApplyVoteReasonFlags(personInDatastore) || changed;
 
@@ -384,7 +420,8 @@ namespace TallyJ.CoreModels
         catch (Exception e)
         {
           // revert person object back to what it was
-          beforeChanges.CopyPropertyValuesTo(personInDatastore);
+          originalPerson.CopyPropertyValuesTo(personInDatastore);
+          originalVoter.CopyPropertyValuesTo(voterInDatastore);
 
           if (e.GetAllMsgs(";").Contains("IX_PersonEmail"))
             return new

@@ -5,20 +5,23 @@
   };
 
   function startNewPerson(panel, ineligible, first, last) {
-    var reason = $.grep(publicInterface.invalidReasons, function (e) {
-      return e.Guid === ineligible;
-    });
+    var reason = $.grep(publicInterface.invalidReasons,
+      function (e) {
+        return e.Guid === ineligible;
+      });
     var personInfo = {
       C_RowId: -1,
-      CanVote: true,
-      CanReceiveVotes: true,
       FirstName: first,
-      LastName: last
+      LastName: last,
+      Voter: {
+        CanVote: true,
+        CanReceiveVotes: true,
+      }
     };
     if (reason.length === 1) {
-      personInfo.IneligibleReasonGuid = reason.Guid;
-      personInfo.CanVote = reason.CanVote;
-      personInfo.CanReceiveVotes = reason.CanReceiveVotes;
+      personInfo.Voter.IneligibleReasonGuid = reason.Guid;
+      personInfo.Voter.CanVote = reason.CanVote;
+      personInfo.Voter.CanReceiveVotes = reason.CanReceiveVotes;
     }
     applyValues(panel, personInfo, true);
 
@@ -30,18 +33,22 @@
     var ineligible = ddl.val();
     ddl[0].size = 1;
 
-    var reason = $.grep(publicInterface.invalidReasons, function (e) {
-      return e.Guid === ineligible;
-    });
+    var reason = $.grep(publicInterface.invalidReasons,
+      function (e) {
+        return e.Guid === ineligible;
+      });
 
     var canVote = reason.length > 0 ? reason[0].CanVote : true; // publicInterface.defaultRules.CanVote == 'A';
-    var canReceiveVotes = reason.length > 0 ? reason[0].CanReceiveVotes : true; // publicInterface.defaultRules.CanReceive == 'A';
+    var canReceiveVotes =
+      reason.length > 0 ? reason[0].CanReceiveVotes : true; // publicInterface.defaultRules.CanReceive == 'A';
 
-    applyValues(null, {
-      InEligible: reason.Guid,
-      CanVote: canVote, //ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
-      CanReceiveVotes: canReceiveVotes // ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
-    }, false);
+    applyValues(null,
+      {
+        InEligible: reason.Guid,
+        CanVote: canVote, //ineligible ? false : publicInterface.defaultRules.CanVote == 'A',
+        CanReceiveVotes: canReceiveVotes // ineligible ? false : publicInterface.defaultRules.CanReceive == 'A'
+      },
+      false);
 
     $('#trCanVote').toggleClass('IsNo', !canVote);
     $('#trCanReceiveVotes').toggleClass('IsNo', !canReceiveVotes);
@@ -85,7 +92,7 @@
       panel = local.hostPanel;
     }
 
-    clearKioskCode();
+    clearKioskCode(personProperties.Voter?.KioskCode);
 
     $('#btnDelete').attr('title', personProperties.C_RowId);
     // console.log(person, canDelete);
@@ -104,7 +111,8 @@
     if (clearAll) {
       panel.find(':input[data-name]').each(function () {
         var input = $(this);
-        var value = personProperties[input.data('name')];
+        let name = input.data('name');
+        var value = name.startsWith('v:') ? personProperties.Voter?.[name.substring(2)] : personProperties[name];
         if (!value && value !== false) {
           value = '';
         }
@@ -118,6 +126,9 @@
             var input = $(this);
             if (input.data('name') === prop) {
               setValue(input, personProperties[prop]);
+            }
+            if (input.data('name') === 'v:' + prop) {
+              setValue(input, personProperties.Voter?.[prop]);
             }
           });
         }
@@ -151,7 +162,18 @@
   };
 
   function saveChanges() {
-    var form = {};
+    var errors = [];
+
+    var phoneInput = local.hostPanel.find('input[data-name="Phone"]');
+    var validationMessage = phoneInput[0].validationMessage;
+    if (validationMessage) {
+      errors.push('Phone Number: ' + validationMessage);
+    }
+
+    var form = {
+      Person: {},
+      Voter: {}
+    };
     var inputs = local.hostPanel.find(':input[data-name]');
     inputs.each(function () {
       var input = $(this);
@@ -164,19 +186,16 @@
           value = input.val();
           break;
       }
-      form[input.data('name')] = value;
+      let name = input.data('name');
+      if (name.startsWith('v:')) {
+        form.Voter[name.substring(2)] = value;
+      } else {
+        form.Person[name] = value;
+      }
     });
 
-    var errors = [];
-
-    if (!form.FirstName || !form.LastName) {
+    if (!form.Person.FirstName || !form.Person.LastName) {
       errors.push('First and Last names are required.');
-    }
-
-    var phoneInput = local.hostPanel.find('input[data-name="Phone"]');
-    var validationMessage = phoneInput[0].validationMessage;
-    if (validationMessage) {
-      errors.push('Phone Number: ' + validationMessage);
     }
 
     if (errors.length) {
@@ -184,7 +203,8 @@
       return;
     }
 
-    CallAjax2(publicInterface.controllerUrl + '/SavePerson', form,
+    CallAjax2(publicInterface.controllerUrl + '/SavePerson',
+      form,
       {
         busy: 'Saving'
       },
@@ -214,7 +234,8 @@
       return;
     }
 
-    CallAjax2(publicInterface.controllerUrl + '/DeletePerson', form,
+    CallAjax2(publicInterface.controllerUrl + '/DeletePerson',
+      form,
       {
         busy: 'Deleting'
       },
@@ -239,7 +260,8 @@
       personId: local.hostPanel.find(':input[data-name=C_RowId]').val()
     };
 
-    CallAjax2(publicInterface.controllerUrl + '/GenerateKioskCode', form,
+    CallAjax2(publicInterface.controllerUrl + '/GenerateKioskCode',
+      form,
       {
         busy: 'Getting code'
       },
@@ -260,9 +282,14 @@
       });
   }
 
-  function clearKioskCode() {
-    $('.kioskCode').hide();
-    $('.kioskNote').hide();
+  function clearKioskCode(code) {
+    if (code) {
+      $('.kioskNote').show();
+      $('.kioskCode').text(code).show();
+    } else {
+      $('.kioskCode').hide();
+      $('.kioskNote').hide();
+    }
   }
 
   function showVotingMethod(code, log) {
@@ -287,14 +314,18 @@
     var div = $('.showVotingMethod');
     if (!code) {
       div.text('-');
-      $('tr.kiosk').show(); // if there
+      $('.kiosk').show(); // if there
       $('.forDelete').show();
+      $('.UnitName').prop('disabled', false);
       return;
     }
 
+    // if voted, disable UnitName
+    $('.UnitName').prop('disabled', true);
+
     var msg = peoplePage && peoplePage.methods[code] || code;
     div.text(msg);
-    $('tr.kiosk').hide(); // if there
+    $('.kiosk').hide(); // if there
     $('.forDelete').hide();
 
     // apply rule
@@ -319,7 +350,7 @@
     site.qTips.push({ selector: '#qTipOtherLastName', title: 'Other Names', text: 'Optional. If a person may be known by other last names, enter them here.' });
     site.qTips.push({ selector: '#qTipOtherInfo', title: 'Other Identifying Information', text: 'Optional. Anything else that may be commonly used to identify this person. E.g. Doctor' });
     site.qTips.push({ selector: '#qTipArea', title: 'Sector / Area', text: 'Optional. For a city, the sector or neighbourhood they live in. For a regional or national election, their home town.' });
-    site.qTips.push({ selector: '#qTipUnit', title: 'Local Unit', text: 'For two-stage elections, which unit is this person in?' });
+    site.qTips.push({ selector: '#qTipUnit', title: 'Local Unit', text: 'For two-stage elections, which unit is this person in? Cannot be changed after voting.' });
     site.qTips.push({ selector: '#qTipBahaiId', title: 'Bahá\'í ID', text: 'Optional. The person\'s ID. Shows on Front Page and in final reports if elected.' });
     site.qTips.push({ selector: '#qTipEmail', title: 'Email Address', text: 'Optional. The person\'s email address. Can be used to vote online. Cannot be changed after voting online.' });
     site.qTips.push({ selector: '#qTipPhone', title: 'Phone Number', text: 'Optional. The person\'s phone number. Can be used to vote online. Cannot be changed after voting online.' });

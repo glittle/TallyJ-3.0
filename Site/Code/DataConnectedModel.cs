@@ -1,4 +1,5 @@
 using TallyJ.Code.Data;
+using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.EF;
 
@@ -23,7 +24,7 @@ namespace TallyJ.Code
     /// </summary>
     protected ITallyJDbContext Db
     {
-      get => _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext);
+      get => _db ??= UserSession.GetNewDbContext;
       set => _db = value;
     }
 

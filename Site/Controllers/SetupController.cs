@@ -222,9 +222,9 @@ namespace TallyJ.Controllers
     //}
 
     [ForAuthenticatedTeller]
-    public JsonResult SavePerson(Person person)
+    public JsonResult SavePerson(Person person, Voter voter)
     {
-      return new PeopleModel().SavePerson(person);
+      return new PeopleModel().SavePerson(person, voter);
     }
 
     [ForAuthenticatedTeller]

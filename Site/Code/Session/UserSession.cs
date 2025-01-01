@@ -179,6 +179,49 @@ namespace TallyJ.Code.Session
       set => ItemKey.CurrentElection.SetInPageItems(value);
     }
 
+    public static List<GuidStringPair> CurrentUnitElectionGuidsAndNames
+    {
+      get
+      {
+        var electionType = CurrentElection.ElectionType;
+        if (electionType == ElectionTypeEnum.LSA2M || electionType == ElectionTypeEnum.LSA2U)
+        {
+          // if we are the Main election, use our guid, otherwise use our parent's guid
+          var parentElectionGuid = CurrentElection.IsLsa2M ? CurrentElectionGuid : CurrentElection.ParentElectionGuid;
+
+          return GetNewDbContext.Election
+            .Where(unitElection => unitElection.ParentElectionGuid == parentElectionGuid)
+            .ToList()
+            .Select(unitElection => new GuidStringPair(unitElection.ElectionGuid, unitElection.UnitName ?? unitElection.Name))
+            .OrderBy(pair => pair.Name)
+            .ToList();
+        }
+
+        return [];
+      }
+    }
+
+    public static List<string> CurrentUnitElectionNames
+    {
+      get
+      {
+        var electionType = CurrentElection.ElectionType;
+        if (electionType == ElectionTypeEnum.LSA2M || electionType == ElectionTypeEnum.LSA2U)
+        {
+          // if we are the Main election, use our guid, otherwise use our parent's guid
+          var parentElectionGuid = CurrentElection.IsLsa2M ? CurrentElectionGuid : CurrentElection.ParentElectionGuid;
+
+          return GetNewDbContext.Election
+            .Where(unitElection => unitElection.ParentElectionGuid == parentElectionGuid)
+            .Select(unitElection => unitElection.UnitName ?? unitElection.Name)
+            .OrderBy(s => s)
+            .ToList();
+        }
+
+        return [];
+      }
+    }
+
     public static string CurrentElectionStatusName
     {
       get

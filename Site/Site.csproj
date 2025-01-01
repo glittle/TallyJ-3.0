@@ -413,6 +413,7 @@
     <Compile Include="Code\ForSysAdminAttribute.cs" />
     <Compile Include="Code\Helpers\NewtonSoftBasedJsonResult.cs" />
     <Compile Include="Code\Resources\LangResourceHelper.cs" />
+    <Compile Include="Code\Session\GuidStringPair.cs" />
     <Compile Include="Code\SettingsHelper.cs" />
     <Compile Include="Code\DataConnectedModel.cs" />
     <Compile Include="Code\Enumerations\BallotStatusEnum.cs" />
@@ -517,7 +518,6 @@
     <Compile Include="CoreModels\RollCallModel.cs" />
     <Compile Include="CoreModels\Savers.cs" />
     <Compile Include="CoreModels\SearchResult.cs" />
-    <Compile Include="CoreModels\UploadProvider.cs" />
     <Compile Include="CoreModels\VoteAnalyzer.cs" />
     <Compile Include="CoreModels\VoteHelper.cs" />
     <Compile Include="CoreModels\BallotModelCore.cs" />

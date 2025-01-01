@@ -9,7 +9,7 @@ namespace TallyJ.EF
   public partial class Person : IIndexedForCaching
   {
     /// <summary>
-    /// Associated Voter record for this election. Manually loaded.
+    /// Associated Voter record for this election. Manually loaded and saved.
     /// </summary>
     public Voter Voter { get; set; }
     //

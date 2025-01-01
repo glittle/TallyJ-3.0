@@ -43,14 +43,14 @@ namespace TallyJ.CoreModels
     /// <summary>
     ///  child and sibling elections. For 2 stage and tie-break elections
     /// </summary>
-    public object ChildAndSiblingElectionInfo
+    public List<GuidStringPair> ChildAndSiblingElectionInfo
     {
       get
       {
         return Db.Election
           .Where(e => e.ParentElectionGuid == CurrentElection.ElectionGuid || e.ParentElectionGuid != null && e.ParentElectionGuid == CurrentElection.ParentElectionGuid)
           .ToList()
-          .Select(e => new { Name = e.UnitName ?? e.Name, guid = e.ElectionGuid, e.ElectionType })
+          .Select(e => new GuidStringPair(e.ElectionGuid, e.UnitName ?? e.Name))
           .OrderBy(e => e.Name)
           .ToList();
       }
@@ -63,7 +63,7 @@ namespace TallyJ.CoreModels
         {
           return Db.Election
             .Where(e => e.ElectionGuid == CurrentElection.ParentElectionGuid)
-            .Select(e => new { e.Name, guid = e.ElectionGuid, e.ElectionType })
+            .Select(e => new GuidStringPair(e.ElectionGuid, e.Name))
             .FirstOrDefault();
         }
 

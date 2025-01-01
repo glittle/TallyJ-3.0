@@ -32,11 +32,9 @@
     local.lineTemplate = document.getElementById('frontDeskLineTemplate').innerText;
     local.timeTemplate = frontDeskPage.T24 ? 'YYYY MMM D, H:mm' : 'YYYY MMM D, h:mm a';
 
-    var unit = GetFromStorage('unit', '');
-
     //TODO deal with units on hub
     connectToFrontDeskHub();
-    startGettingPeople(unit);
+    startGettingPeople();
 
     $('#Main')
       .on('click', '.Btn:not(.Hasfalse)', function (ev) {
@@ -77,11 +75,11 @@
       }
     }).scroll();
 
-    site.onbroadcast(site.broadcastCode.unitChanged, function (ev, unit) {
-      SetInStorage('unit', unit);
-      $('#Main').empty();
-      startGettingPeople(unit);
-    });
+    //    site.onbroadcast(site.broadcastCode.unitChanged, function (ev, unit) {
+    //      SetInStorage('unit', unit);
+    //      $('#Main').empty();
+    //      startGettingPeople(unit);
+    //    });
 
     resetSearch();
   };
@@ -624,11 +622,9 @@
     });
   };
 
-  function startGettingPeople(unit) {
+  function startGettingPeople() {
     CallAjax2(publicInterface.controllerUrl + '/PeopleForFrontDesk',
-      {
-        unit: unit
-      },
+      {},
       {
         busy: 'Getting names'
       },

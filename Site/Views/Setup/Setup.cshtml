@@ -340,7 +340,7 @@
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText *</el-checkbox>
-          <el-checkbox label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText</el-checkbox>
+          <el-checkbox :disabled="!useOnline" class="kioskCb" label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText *</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Imported.Value">@VotingMethodEnum.Imported.DisplayText **</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             <el-input size="small"

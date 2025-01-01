@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -74,14 +75,14 @@ namespace TallyJ.Controllers
         }.AsJsonResult();
       }
 
-      var electionInfo = personQuery
-        .Join(Db.Election.Where(e => e.ElectionGuid == electionGuid), 
+      var electionPersonInfo = personQuery
+        .Join(Db.Election.Where(e => e.ElectionGuid == electionGuid),
           p => p.ElectionGuid,
           e => e.PeopleElectionGuid,
           (p, e) => new { e, p })
         .SingleOrDefault();
 
-      if (electionInfo == null)
+      if (electionPersonInfo == null)
       {
         return new
         {
@@ -93,16 +94,16 @@ namespace TallyJ.Controllers
 
       // get voting info
       var votingInfo = Db.OnlineVotingInfo
-        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionInfo.p.PersonGuid);
+        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == electionPersonInfo.p.PersonGuid);
 
-      if (electionInfo.e.OnlineWhenOpen.AsUtc() <= utcNow && electionInfo.e.OnlineWhenClose.AsUtc() > utcNow)
+      if (electionPersonInfo.e.OnlineWhenOpen.AsUtc() <= utcNow && electionPersonInfo.e.OnlineWhenClose.AsUtc() > utcNow)
       {
         // put election in session
-        UserSession.CurrentElectionGuid = electionInfo.e.ElectionGuid;
-        UserSession.CurrentPeopleElectionGuid = electionInfo.e.PeopleElectionGuid;
-        UserSession.CurrentParentElectionGuid = electionInfo.e.ParentElectionGuid ?? Guid.Empty;
+        UserSession.CurrentElectionGuid = electionPersonInfo.e.ElectionGuid;
+        UserSession.CurrentPeopleElectionGuid = electionPersonInfo.e.PeopleElectionGuid;
+        UserSession.CurrentParentElectionGuid = electionPersonInfo.e.ParentElectionGuid ?? Guid.Empty;
 
-        UserSession.VoterInElectionPersonGuid = electionInfo.p.PersonGuid;
+        UserSession.VoterInElectionPersonGuid = electionPersonInfo.p.PersonGuid;
         // UserSession.VoterInElectionPersonName = electionInfo.p.C_FullNameFL;
         string poolDecryptError = null;
 
@@ -110,8 +111,8 @@ namespace TallyJ.Controllers
         {
           votingInfo = new OnlineVotingInfo
           {
-            ElectionGuid = electionInfo.e.ElectionGuid,
-            PersonGuid = electionInfo.p.PersonGuid,
+            ElectionGuid = electionPersonInfo.e.ElectionGuid,
+            PersonGuid = electionPersonInfo.p.PersonGuid,
             Status = OnlineBallotStatusEnum.New,
             WhenStatus = utcNow,
             HistoryStatus = "New|{0}".FilledWith(utcNow.ToString("u"))
@@ -131,11 +132,11 @@ namespace TallyJ.Controllers
         return new
         {
           open = true,
-          voterName = electionInfo.p.C_FullName,
-          electionInfo.e.NumberToElect,
-          OnlineSelectionProcess = electionInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
-          electionInfo.e.RandomizeVotersList,
-          registration = VotingMethodEnum.TextFor(electionInfo.p.Voter.VotingMethod),
+          voterName = electionPersonInfo.p.C_FullName,
+          electionPersonInfo.e.NumberToElect,
+          OnlineSelectionProcess = electionPersonInfo.e.OnlineSelectionProcess.DefaultTo(OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)),
+          electionPersonInfo.e.RandomizeVotersList,
+          registration = VotingMethodEnum.TextFor(electionPersonInfo.p.Voter.VotingMethod),
           votingInfo,
           poolDecryptError
         }.AsJsonResult();
@@ -443,21 +444,27 @@ namespace TallyJ.Controllers
       }
 
       var list = Db.Person
-
+        .Join(Db.Voter, p => p.PersonGuid, v => v.PersonGuid, (p, v) =>
+        new
+        {
+          p,
+          v
+        })
         // find this person
-        .Where(p => p.Email == voterId || p.Phone == voterId || p.Voter.KioskCode == voterId)
+        .Where(pv => pv.p.Email == voterId || pv.p.Phone == voterId || pv.v.KioskCode == voterId)
 
         // TODO review this logic for 2 stage elections
 
         // and the elections they are in - for 2-stage, this will be the LSA2M election
-        .Join(Db.Election, p => p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
-          (p, peopleElection) => new { p, peopleElection })
+        .Join(Db.Election, pv => pv.p.ElectionGuid, peopleElection => peopleElection.ElectionGuid,
+          (p, peopleElection) => new { p.p, p.v, peopleElection })
 
         // and if there is a unit LSA2U election that they are in
         .GroupJoin(Db.Election, j => j.peopleElection.ElectionGuid, childElection => childElection.PeopleElectionGuid,
           (j, childList) => new
           {
             j.p,
+            j.v,
             j.peopleElection,
             targetElection = childList.FirstOrDefault(e => e.ElectionType == ElectionTypeEnum.LSA2U && e.UnitName != null && e.UnitName == j.p.UnitName)
                              ?? j.peopleElection
@@ -469,6 +476,7 @@ namespace TallyJ.Controllers
           (g, oviList) => new
           {
             g.p,
+            g.v,
             g.peopleElection,
             g.targetElection,
             ovi = oviList.FirstOrDefault()
@@ -496,8 +504,8 @@ namespace TallyJ.Controllers
           person = new
           {
             name = j.p.C_FullName,
-            j.p.Voter.VotingMethod,
-            RegistrationTime = j.p.Voter.RegistrationTime.AsUtc(),
+            j.v.VotingMethod,
+            RegistrationTime = j.v.RegistrationTime.AsUtc(),
             j.ovi?.PoolLocked,
             j.ovi?.Status,
             WhenStatus = j.ovi?.WhenStatus.AsUtc()

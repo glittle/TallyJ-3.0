@@ -279,28 +279,15 @@
           <Property Name="Area" Type="nvarchar" MaxLength="50" />
           <Property Name="BahaiId" Type="varchar" MaxLength="20" />
           <Property Name="CombinedInfo" Type="nvarchar(max)" />
-          <Property Name="CombinedSoundCodes" Type="varchar(max)" />
           <Property Name="CombinedInfoAtStart" Type="nvarchar(max)" />
           <Property Name="AgeGroup" Type="varchar" MaxLength="2" />
-          <Property Name="CanVote" Type="bit" />
-          <Property Name="CanReceiveVotes" Type="bit" />
-          <Property Name="IneligibleReasonGuid" Type="uniqueidentifier" />
-          <Property Name="RegistrationTime" Type="datetime2" Precision="0" />
-          <Property Name="VotingLocationGuid" Type="uniqueidentifier" />
-          <Property Name="VotingMethod" Type="varchar" MaxLength="1" />
-          <Property Name="EnvNum" Type="int" />
           <Property Name="_RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
           <Property Name="_FullName" Type="nvarchar" MaxLength="461" StoreGeneratedPattern="Computed" />
           <Property Name="_RowVersionInt" Type="bigint" StoreGeneratedPattern="Computed" />
           <Property Name="_FullNameFL" Type="nvarchar" MaxLength="460" StoreGeneratedPattern="Computed" />
-          <Property Name="Teller1" Type="nvarchar" MaxLength="25" />
-          <Property Name="Teller2" Type="nvarchar" MaxLength="25" />
           <Property Name="Email" Type="nvarchar" MaxLength="250" />
           <Property Name="Phone" Type="varchar" MaxLength="25" />
-          <Property Name="HasOnlineBallot" Type="bit" />
-          <Property Name="Flags" Type="varchar" MaxLength="100" />
           <Property Name="UnitName" Type="varchar" MaxLength="100" />
-          <Property Name="KioskCode" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="Result">
           <Key>
@@ -622,13 +609,13 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </AssociationSet>
           <EntitySet Name="Ballot" EntityType="TallyJModel.Ballot" />
           <EntitySet Name="Vote" EntityType="TallyJModel.Vote" />
-          <EntitySet Name="Person" EntityType="TallyJModel.Person" />
           <EntitySet Name="OnlineVotingInfo" EntityType="TallyJModel.OnlineVotingInfo" />
           <EntitySet Name="C_Log" EntityType="TallyJModel.C_Log" />
           <EntitySet Name="SmsLog" EntityType="TallyJModel.SmsLog" />
           <EntitySet Name="OnlineVoter" EntityType="TallyJModel.OnlineVoter" />
           <EntitySet Name="Election" EntityType="TallyJModel.Election" />
           <EntitySet Name="Voter" EntityType="TallyJModel.Voter" />
+          <EntitySet Name="Person" EntityType="TallyJModel.Person" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -924,44 +911,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="PersonCombinedInfo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="OnlineVoteRaw" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="Person">
-          <Key>
-            <PropertyRef Name="C_RowId" />
-          </Key>
-          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
-          <Property Name="PersonGuid" Type="Guid" Nullable="false" />
-          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="OtherLastNames" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="OtherNames" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="OtherInfo" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Area" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="BahaiId" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="CombinedInfo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CombinedSoundCodes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="CombinedInfoAtStart" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="AgeGroup" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
-          <Property Name="CanVote" Type="Boolean" />
-          <Property Name="CanReceiveVotes" Type="Boolean" />
-          <Property Name="IneligibleReasonGuid" Type="Guid" />
-          <Property Name="RegistrationTime" Type="DateTime" Precision="0" />
-          <Property Name="VotingLocationGuid" Type="Guid" />
-          <Property Name="VotingMethod" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="EnvNum" Type="Int32" />
-          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_FullName" Type="String" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_RowVersionInt" Type="Int64" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="C_FullNameFL" Type="String" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="Teller1" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
-          <Property Name="Teller2" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Phone" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="HasOnlineBallot" Type="Boolean" />
-          <Property Name="Flags" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="UnitName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="KioskCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="OnlineVotingInfo">
           <Key>
             <PropertyRef Name="C_RowId" />
@@ -1087,6 +1036,31 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Flags" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Name="C_RowVersionInt" Type="Int64" annotation:StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="Person">
+          <Key>
+            <PropertyRef Name="C_RowId" />
+          </Key>
+          <Property Name="C_RowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ElectionGuid" Type="Guid" Nullable="false" />
+          <Property Name="PersonGuid" Type="Guid" Nullable="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="OtherLastNames" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="OtherNames" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="OtherInfo" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Area" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BahaiId" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CombinedInfo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CombinedInfoAtStart" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AgeGroup" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="C_RowVersion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_FullName" Type="String" MaxLength="461" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_RowVersionInt" Type="Int64" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="C_FullNameFL" Type="String" MaxLength="460" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="UnitName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1348,45 +1322,6 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Person">
-            <EntityTypeMapping TypeName="TallyJModel.Person">
-              <MappingFragment StoreEntitySet="Person">
-                <ScalarProperty Name="KioskCode" ColumnName="KioskCode" />
-                <ScalarProperty Name="UnitName" ColumnName="UnitName" />
-                <ScalarProperty Name="Flags" ColumnName="Flags" />
-                <ScalarProperty Name="HasOnlineBallot" ColumnName="HasOnlineBallot" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Teller2" ColumnName="Teller2" />
-                <ScalarProperty Name="Teller1" ColumnName="Teller1" />
-                <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
-                <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
-                <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
-                <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
-                <ScalarProperty Name="EnvNum" ColumnName="EnvNum" />
-                <ScalarProperty Name="VotingMethod" ColumnName="VotingMethod" />
-                <ScalarProperty Name="VotingLocationGuid" ColumnName="VotingLocationGuid" />
-                <ScalarProperty Name="RegistrationTime" ColumnName="RegistrationTime" />
-                <ScalarProperty Name="IneligibleReasonGuid" ColumnName="IneligibleReasonGuid" />
-                <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
-                <ScalarProperty Name="CanVote" ColumnName="CanVote" />
-                <ScalarProperty Name="AgeGroup" ColumnName="AgeGroup" />
-                <ScalarProperty Name="CombinedInfoAtStart" ColumnName="CombinedInfoAtStart" />
-                <ScalarProperty Name="CombinedSoundCodes" ColumnName="CombinedSoundCodes" />
-                <ScalarProperty Name="CombinedInfo" ColumnName="CombinedInfo" />
-                <ScalarProperty Name="BahaiId" ColumnName="BahaiId" />
-                <ScalarProperty Name="Area" ColumnName="Area" />
-                <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
-                <ScalarProperty Name="OtherNames" ColumnName="OtherNames" />
-                <ScalarProperty Name="OtherLastNames" ColumnName="OtherLastNames" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
-                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
-                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="OnlineVotingInfo">
             <EntityTypeMapping TypeName="TallyJModel.OnlineVotingInfo">
               <MappingFragment StoreEntitySet="OnlineVotingInfo">
@@ -1513,6 +1448,32 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
                 <ScalarProperty Name="IneligibleReasonGuid" ColumnName="IneligibleReasonGuid" />
                 <ScalarProperty Name="CanReceiveVotes" ColumnName="CanReceiveVotes" />
                 <ScalarProperty Name="CanVote" ColumnName="CanVote" />
+                <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
+                <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
+                <ScalarProperty Name="C_RowId" ColumnName="_RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Person">
+            <EntityTypeMapping TypeName="TallyJModel.Person">
+              <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="UnitName" ColumnName="UnitName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="C_FullNameFL" ColumnName="_FullNameFL" />
+                <ScalarProperty Name="C_RowVersionInt" ColumnName="_RowVersionInt" />
+                <ScalarProperty Name="C_FullName" ColumnName="_FullName" />
+                <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
+                <ScalarProperty Name="AgeGroup" ColumnName="AgeGroup" />
+                <ScalarProperty Name="CombinedInfoAtStart" ColumnName="CombinedInfoAtStart" />
+                <ScalarProperty Name="CombinedInfo" ColumnName="CombinedInfo" />
+                <ScalarProperty Name="BahaiId" ColumnName="BahaiId" />
+                <ScalarProperty Name="Area" ColumnName="Area" />
+                <ScalarProperty Name="OtherInfo" ColumnName="OtherInfo" />
+                <ScalarProperty Name="OtherNames" ColumnName="OtherNames" />
+                <ScalarProperty Name="OtherLastNames" ColumnName="OtherLastNames" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="PersonGuid" ColumnName="PersonGuid" />
                 <ScalarProperty Name="ElectionGuid" ColumnName="ElectionGuid" />
                 <ScalarProperty Name="C_RowId" ColumnName="_RowId" />

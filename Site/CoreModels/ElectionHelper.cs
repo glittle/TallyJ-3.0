@@ -504,6 +504,11 @@ namespace TallyJ.CoreModels
       // move into new election
       UserSession.CurrentElectionGuid = wantedElectionGuid;
 
+      var election = UserSession.CurrentElection;
+
+      UserSession.CurrentPeopleElectionGuid = election.PeopleElectionGuid;
+      UserSession.CurrentParentElectionGuid = election.ParentElectionGuid ?? Guid.Empty;
+
       // assign a new computer code (try to reuse a previous one if possible)
       var computerModel = new ComputerModel();
       computerModel.GetComputerForMe(oldComputerGuid);
@@ -685,6 +690,8 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
 
       UserSession.CurrentElectionGuid = election.ElectionGuid;
+      UserSession.CurrentPeopleElectionGuid = election.ElectionGuid;
+
 
       //      new ElectionStatusSharer().SetStateFor(election);
 

@@ -30,7 +30,6 @@ var site = {
   broadcastCode: {
     electionStatusChanged: 'electionStatusChanged',
     locationChanged: 'locationChanged',
-    unitChanged: 'unitChanged',
     startNewPerson: 'startNewPerson',
     personSaved: 'personSaved',
     personDeleted: 'personDeleted',
@@ -658,11 +657,6 @@ function CheckTimeOffset() {
     });
 }
 
-function topUnitChanged(ev) {
-  var ddl = $(ev.currentTarget);
-  site.broadcast(site.broadcastCode.unitChanged, ddl.val());
-}
-
 function topLocationChanged(ev) {
   var ddl = $(ev.currentTarget);
   var form = {
@@ -732,7 +726,6 @@ function tellerChanged(ev) {
 }
 
 function PrepareTopLocationAndTellers() {
-  $('#ddlTopUnit').change(topUnitChanged);
   $('#ddlTopLocation').change(topLocationChanged);
 
   $('.TopTeller').change(tellerChanged).each(function () {
@@ -886,11 +879,11 @@ function HasErrors(data, jqXhr) {
       console.log(data);
       return true;
     }
-//    if (/Error\:/.test(data)) {
-//      ShowStatusFailed(
-//        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
-//      return true;
-//    }
+    //    if (/Error\:/.test(data)) {
+    //      ShowStatusFailed(
+    //        'An error occurred on the server. The Technical Support Team has been provided with the error details.');
+    //      return true;
+    //    }
   }
 
   var jsonHeader = jqXhr.getResponseHeader('x-responded-json');
@@ -1040,8 +1033,8 @@ function CallAjaxHandler(handlerUrl,
   };
 
   if (form) {
-    options.data = form;
-    // options.contentType = "application/x-www-form-urlencoded";
+    options.data = JSON.stringify(form);
+    options.contentType = "application/json; charset=utf-8";
   }
   if (waitForResponse) {
     options.async = false;
